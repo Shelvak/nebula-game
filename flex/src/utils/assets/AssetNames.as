@@ -84,11 +84,6 @@ package utils.assets
       public static const TECHNOLOGIES_IMAGE_FOLDER: String = IMAGE_FOLDER + "technologies/";
       
       /**
-       * Path to folder where galaxy images reside.
-       */
-      public static const GALAXY_IMAGE_FOLDER: String = IMAGE_FOLDER + "galaxy/";
-      
-      /**
        * Path to folder where solar system images reside. 
        */
       public static const SS_IMAGE_FOLDER:String = IMAGE_FOLDER + "solar_system/";
@@ -235,7 +230,10 @@ package utils.assets
       
       
       public static const INFO_SCREEN_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "info_screen/";
+      public static const LEFT_HIDABLE_MENU_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "left_hidable_menu/";
       public static const ANNOUNCEMENTS_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "announcements/";
+      public static const DAILY_BONUS_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "daily_bonus/";
+      public static const MAIN_QUEST_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "main_quest/";
       
       
       /**
@@ -350,14 +348,6 @@ package utils.assets
        */
       public static function getSSImageName(variation:int) : String {
          return SS_IMAGE_FOLDER + variation;
-      }
-      
-      
-      /**
-       * Builds and returns full name of a dead start (kind of solar system) image.
-       */
-      public static function getDeadStarImageName(variation:int) : String {
-         return SS_IMAGE_FOLDER + "dead_star_" + variation;
       }
       
       

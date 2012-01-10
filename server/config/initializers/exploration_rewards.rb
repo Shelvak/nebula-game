@@ -9,7 +9,7 @@
 # file.
 
 # Create initializer which can be called as needed.
-class ExplorationRewardsInitializer
+class ExplorationRewardsInitializer < GameConfig::Initializer
   # Divider for all calculated weights.
   STARTING_POINT = 100_000.0
   # Multiplier to tweak probabilities
@@ -18,19 +18,7 @@ class ExplorationRewardsInitializer
   ZETIUM_MULT = 30
   UNIT_MULT = 4
   
-  def self.initialize
-    return if @initialized
-
-    # Reset to default set scope. This is needed because lazy 
-    # initialization might happen in other set scope.
-    CONFIG.with_set_scope('default') do
-      generate
-      @initialized = true
-    end
-  end
-  
   class << self
-    protected
     def add(side, item)
       CONFIG["tiles.exploration.rewards.#{side}"] ||= []
       CONFIG["tiles.exploration.rewards.#{side}"].push item

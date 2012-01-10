@@ -1,11 +1,15 @@
 package controllers.objects.actions.customcontrollers
 {
    import controllers.ui.NavigationController;
-   
+
+   import models.location.LocationMinimal;
+
    import models.map.MapType;
+   import models.player.PlayerMinimal;
    import models.solarsystem.MSSMetadata;
    import models.solarsystem.MSolarSystem;
-   
+   import models.solarsystem.SSKind;
+
    import utils.Objects;
    
    
@@ -44,6 +48,20 @@ package controllers.objects.actions.customcontrollers
          if (ML.latestSSMap != null && ML.latestSSMap.id == ss.id) {
             ML.latestSSMap = null;
          }
+      }
+
+      public override function objectCreated(objectSubclass:String,
+                                             object:Object,
+                                             reason:String): * {
+         var ssMetadata:MSSMetadata = Objects.create(MSSMetadata, object);
+         var ss:MSolarSystem = new MSolarSystem();
+         ss.id = ssMetadata.id;
+         ss.metadata = ssMetadata;
+         ss.x = object["x"];
+         ss.y = object["y"];
+         ss.kind = object["kind"];
+         ss.player = Objects.create(PlayerMinimal, object["player"]);
+         ML.latestGalaxy.addObject(ss);
       }
    }
 }

@@ -780,6 +780,22 @@ describe Player do
         player.save!
       end
 
+      it "should progress BeInAlliance objective if it is not nil" do
+        player = Factory.create(:player)
+        Objective::BeInAlliance.should_receive(:progress).with(player)
+
+        player.alliance = Factory.create(:alliance)
+        player.save!
+      end
+
+      it "should not progress BeInAlliance objective if it is nil" do
+        player = Factory.create(:player, :alliance => Factory.create(:alliance))
+        Objective::BeInAlliance.should_not_receive(:progress).with(player)
+
+        player.alliance = nil
+        player.save!
+      end
+
       it "should not update chat hub if alliance id does not change" do
         player = Factory.create(:player,
           :alliance => Factory.create(:alliance))
@@ -1177,6 +1193,41 @@ describe Player do
       planet.player_id.should be_nil
     end
 
+    describe "home solar system" do
+      let(:player) { Factory.create(:player) }
+      let(:home_ss) { Factory.create(:solar_system, :player => player) }
+
+      before(:each) { home_ss() }
+
+      it "should destroy players home solar system" do
+        player.destroy!
+        lambda do
+          home_ss.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "should dispatch solar system destroyed if not detached" do
+        should_fire_event(
+          Event::FowChange::SsDestroyed.all_except(home_ss.id, player.id),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY
+        ) do
+          player.destroy!
+        end
+      end
+
+      it "should not dispatch solar system destroyed if detached" do
+        home_ss.detach!
+        should_not_fire_event(
+          Event::FowChange::SsDestroyed.all_except(home_ss.id, player.id),
+          EventBroker::FOW_CHANGE,
+          EventBroker::REASON_SS_ENTRY
+        ) do
+          player.destroy!
+        end
+      end
+    end
+
     it "should call control manager" do
       player = Factory.create :player
       ControlManager.instance.should_receive(:player_destroyed).with(player)
@@ -1429,5 +1480,205 @@ describe Player do
                     :build => lambda { Factory.build(:player) },
                     :change => lambda { |player| player.scientists += 1 },
                     :notify_on_create => false, :notify_on_destroy => false
+  end
+
+  describe "#relocatable?" do
+    let(:galaxy) { Factory.create(:galaxy) }
+    let(:player) { Factory.create(:player, :galaxy => galaxy) }
+    let(:home_ss) do
+      Factory.create(:solar_system, :player => player, :galaxy => galaxy,
+                     :x => 0, :y => 0)
+    end
+    let(:home_planet) do
+      Factory.create(:planet, :player => player, :solar_system => home_ss)
+    end
+    let(:other_ss) do
+      Factory.create(:solar_system, :galaxy => galaxy, :x => 1, :y => 0)
+    end
+    let(:other_planet) { Factory.create(:planet, :solar_system => other_ss) }
+    let(:other_owned_planet) do
+      Factory.create(:planet, :player => player, :solar_system => other_ss)
+    end
+    def unit_in(location)
+      Factory.create(:u_crow, :player => player, :location => location)
+    end
+
+    before(:each) do
+      home_planet()
+    end
+
+    it "should return false if player belongs to alliance" do
+      player.alliance = Factory.create(:alliance)
+      player.should_not be_relocatable
+    end
+
+    it "should return false if player has units in galaxy" do
+      unit_in(GalaxyPoint.new(galaxy.id, 0, 0))
+      player.should_not be_relocatable
+    end
+
+    it "should return false if player has units not in home ss" do
+      unit_in(SolarSystemPoint.new(other_ss.id, 0, 0))
+      player.should_not be_relocatable
+    end
+
+    it "should return false if player has units in planet not in home ss" do
+      unit_in(other_planet)
+      player.should_not be_relocatable
+    end
+
+    it "should return false if player has planets not in home ss" do
+      other_owned_planet()
+      player.should_not be_relocatable
+    end
+
+    it "should return false if player has any routes" do
+      Factory.create(:route, :player => player)
+      player.should_not be_relocatable
+    end
+
+    it "should return true if player only has planets in home ss" do
+      player.should be_relocatable
+    end
+
+    it "should return true if player has units in home ss" do
+      unit_in(SolarSystemPoint.new(home_ss.id, 0, 0))
+      player.should be_relocatable
+    end
+
+    it "should return true if player has units in planet in home ss" do
+      unit_in(home_planet)
+      player.should be_relocatable
+    end
+  end
+
+  describe "#active?" do
+    let(:player) { Factory.build(:player) }
+
+    it "should return false if he has never logged in" do
+      player.last_seen = nil
+      player.should_not be_active
+    end
+
+    it "should return false if he hasn't been active for required period" do
+      period = 3.days
+      Cfg.should_receive(:player_inactivity_time).with(player.points).
+        and_return(period)
+      player.last_seen = (period + 10.minutes).ago
+      player.should_not be_active
+    end
+
+    it "should return true if he is currently connected" do
+      Dispatcher.instance.should_receive(:connected?).with(player.id).
+        and_return(true)
+      player.should be_active
+    end
+
+    it "should return true if he has been active for required period" do
+      period = 3.days
+      Cfg.should_receive(:player_inactivity_time).with(player.points).
+        and_return(period)
+      player.last_seen = (period - 10.minutes).ago
+      player.should be_active
+    end
+  end
+
+  describe "#check_activity!" do
+    let(:player) do
+      player = Factory.create(:player)
+      player.stub!(:detach!)
+      player
+    end
+
+    shared_examples_for "not relocating" do
+      it "should not hide player" do
+        player.should_not_receive(:detach!)
+        player.check_activity!
+      end
+
+      it "should register new callback" do
+        player.check_activity!
+        player.should have_callback(
+                        CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+                        Cfg.player_inactivity_time(player.points).from_now
+                      )
+      end
+    end
+
+    describe "player is inactive" do
+      before(:each) do
+        player.should_receive(:active?).and_return(false)
+      end
+
+      describe "relocatable" do
+        before(:each) do
+          player.should_receive(:relocatable?).and_return(true)
+        end
+
+        it "should detach player" do
+          player.should_receive(:detach!)
+          player.check_activity!
+        end
+
+        it "should not register new callback" do
+          player.check_activity!
+          player.should_not have_callback(
+                              CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
+                            )
+        end
+      end
+
+      describe "non relocatable" do
+        before(:each) do
+          player.should_receive(:relocatable?).and_return(false)
+        end
+
+        it_should_behave_like "not relocating"
+      end
+    end
+
+    describe "player is active" do
+      before(:each) do
+        player.should_receive(:active?).and_return(true)
+      end
+
+      it_should_behave_like "not relocating"
+    end
+  end
+
+  describe "#deatch!" do
+    let(:player) { Factory.build(:player) }
+
+    it "should fail if player is already detached" do
+      player.detached = true
+      lambda do
+        player.detach!
+      end.should raise_error(ArgumentError)
+    end
+
+    it "should detach player solar systems" do
+      SolarSystem.should_receive(:detach_player).with(player.id)
+      player.detach!
+    end
+
+    it "should mark player as detached" do
+      lambda do
+        player.detach!
+        player.reload
+      end.should change(player, :detached?).from(false).to(true)
+    end
+  end
+
+  describe "on callback" do
+    describe "inactivity check" do
+      let(:player) { Factory.create(:player) }
+
+      it "should find model and invoke #check_activity! on it" do
+        Player.should_receive(:find).with(player.id).and_return(player)
+        player.should_receive(:check_activity!)
+        Player.
+          on_callback(player.id, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+      end
+    end
   end
 end

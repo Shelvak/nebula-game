@@ -21,6 +21,7 @@ object Runner extends BenchmarkableMock {
       val createdAt = DB.date(new Date())
       TableIds.initialize()
       val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
+      val galaxy = new Galaxy(galaxyRow.id, ruleset)
 
       val battleground = benchmark("create battleground") { 
         () =>
@@ -48,16 +49,8 @@ object Runner extends BenchmarkableMock {
               Config.marketBotRandomResourceCooldown.fromNow
             ).values
           }
-          val battlegroundRow = Manager.readBattleground(
-            galaxyRow.id,
-            new Galaxy(galaxyRow.id, ruleset),
-            battleground
-          )
-          Manager.callbacks += CallbackRow(
-            battlegroundRow, ruleset,
-            CallbackRow.Events.Spawn,
-            Calendar.getInstance
-          ).values
+
+          Manager.readSolarSystem(galaxy, None, battleground)
         }
       }
       printBenchmarkResults()

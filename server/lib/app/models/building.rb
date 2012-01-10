@@ -233,16 +233,19 @@ class Building < ActiveRecord::Base
 
   # Can this building be managed?
   def managable?; self.class.managable?; end
-
   def self.managable?; property('managable', true); end
+
+  # Can this building be destroyed?
+  def destroyable?; self.class.destroyable?; end
+  def self.destroyable?; property('destroyable', true) && managable?; end
 
   # Self-destructs +Building+, returning some resources to
   # +SsObject::Planet+ pool.
   def self_destruct!(with_credits=false)
     planet = self.planet
 
-    raise GameLogicError.new("This building is not managable!") \
-      unless managable?
+    raise GameLogicError.new("This building is not destroyable!") \
+      unless destroyable?
 
     raise GameLogicError.new("Cannot self-destruct upgrading buildings!") if
       upgrading?

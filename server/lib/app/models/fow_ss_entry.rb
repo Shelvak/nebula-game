@@ -18,6 +18,13 @@ class FowSsEntry < ActiveRecord::Base
       value.nil? ? [] : value.split(",").map(&:to_i)
     }
 
+  def initialize(*args)
+    super(*args)
+    # Ensure they are not nils.
+    self.alliance_planet_player_ids ||= []
+    self.alliance_ship_player_ids ||= []
+  end
+
   class << self
     # Returns +Player+ ids that observe _solar_system_id_.
     def observer_player_ids(solar_system_id)
@@ -162,6 +169,12 @@ class FowSsEntry < ActiveRecord::Base
     # Returns +SolarSystemMetadata+ constructed from _fse_player_ and
     # _fse_alliance_.
     #
+    # If coords ([x, y]) are given, they are also merged into metadata as
+    # :x and :y.
+    #
+    # Same goes with kind, which must be Fixnum and player which must be
+    # Player#minimal.
+    #
     # Each entry is determined by merging player and alliance entries by
     # rules.
     #
@@ -169,36 +182,44 @@ class FowSsEntry < ActiveRecord::Base
     # in that zone.
     # _fse_alliance_ can be nil if player is not in alliance.
     #
-    def merge_metadata(fse_player, fse_alliance)
+    def merge_metadata(fse_player, fse_alliance, coords=nil, kind=nil,
+        player=nil)
+      typesig binding, [FowSsEntry, NilClass], [FowSsEntry, NilClass],
+                       [Array, NilClass], [Fixnum, NilClass], [Hash, NilClass]
+
       # If player doesn't have visibility in that zone, then it's
       # their allies for sure.
       player_id = fse_player ? [fse_player.player_id] : []
 
       SolarSystemMetadata.new(
-        :id => (fse_player or fse_alliance).solar_system_id,
+        :id => (fse_player || fse_alliance).solar_system_id,
+        :x => coords.try(:[], 0),
+        :y => coords.try(:[], 1),
+        :kind => kind,
+        :player => player,
 
         # Player may not have visibility of that SS, but alliance may have.
-        :player_planets => fse_player ? fse_player.player_planets : false,
-        :player_ships => fse_player ? fse_player.player_ships : false,
+        :player_planets => !! (fse_player ? fse_player.player_planets : false),
+        :player_ships => !! (fse_player ? fse_player.player_ships : false),
 
         # Alliance status overrides player status. Same player may be enemy
         # in pvp relationship, but an ally or nap in alliance relationship.
-        :enemy_planets => fse_alliance \
-          ? fse_alliance.enemy_planets : fse_player.enemy_planets,
-        :enemy_ships => fse_alliance \
-          ? fse_alliance.enemy_ships : fse_player.enemy_ships,
+        :enemy_planets => !! (fse_alliance \
+          ? fse_alliance.enemy_planets : fse_player.enemy_planets),
+        :enemy_ships => !! (fse_alliance \
+          ? fse_alliance.enemy_ships : fse_player.enemy_ships),
 
         # You can't see alliance stuff if you're not in one.
-        :alliance_planets => fse_alliance \
+        :alliance_planets => !! (fse_alliance \
           ? (fse_alliance.alliance_planet_player_ids - player_id).present? \
-          : false,
-        :alliance_ships => fse_alliance \
+          : false),
+        :alliance_ships => !! (fse_alliance \
           ? (fse_alliance.alliance_ship_player_ids - player_id).present? \
-          : false,
+          : false),
 
         # Same with naps.
-        :nap_planets => fse_alliance ? fse_alliance.nap_planets : false,
-        :nap_ships => fse_alliance ? fse_alliance.nap_ships : false
+        :nap_planets => !! (fse_alliance ? fse_alliance.nap_planets : false),
+        :nap_ships => !! (fse_alliance ? fse_alliance.nap_ships : false)
       )
     end
 
@@ -248,7 +269,7 @@ class FowSsEntry < ActiveRecord::Base
       # destroyed
       if status == :destroyed && alliance_status == :destroyed
         EventBroker.fire(
-          Event::FowChange::SsDestroyed.new(solar_system_id,
+          Event::FowChange::SsDestroyed.by_player_and_ally(solar_system_id,
             destroyed_player_id, destroyed_alliance_id),
           EventBroker::FOW_CHANGE,
           EventBroker::REASON_SS_ENTRY)

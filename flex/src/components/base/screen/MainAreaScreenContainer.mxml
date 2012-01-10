@@ -1,160 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<screen:ScreenContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx"
-         width="100%" height="100%" 
-         xmlns:screen="components.base.screen.*">
+<screen:ScreenContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        width="100%" height="100%"
+                        xmlns:screen="components.base.screen.*">
    <fx:Script>
       <![CDATA[
-         import components.alliance.AllianceRatings;
-         import components.alliance.AllianceScreen;
-         import components.base.viewport.ViewportZoomable;
-         import components.chat.CChat;
-         import components.credits.VipScreen;
-         import components.defensiveportal.DefensivePortalScreen;
-         import components.firstlogin.WelcomeScreen;
-         import components.healing.HealingScreen;
-         import components.infoscreen.InfoScreen;
-         import components.map.controllers.IMapViewportController;
-         import components.market.MarketScreen;
-         import components.notifications.NotificationsScreen;
-         import components.player.PlayerScreen;
-         import components.quests.QuestsScreen;
-         import components.ratings.RatingScreen;
-         import components.squadronsscreen.CSquadronsScreen;
-         import components.technologytree.TechnologyTree;
-         import components.unitsscreen.StorageScreen;
-         import components.unitsscreen.facilities.UnitsBuild;
-         import components.unitsscreen.loadunload.LoadUnloadScreen;
-         import components.unitsscreen.simple.UnitsScreen;
-         
-         import controllers.navigation.MCMainArea;
-         import controllers.screens.MainAreaScreens;
-         import controllers.ui.NavigationController;
-         
-         import models.events.ScreensSwitchEvent;
-         
-         protected override function addEventListeners():void
-         {
-            MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, createContent);
+      import components.alliance.AllianceRatings;
+      import components.alliance.AllianceScreen;
+      import components.base.viewport.ViewportZoomable;
+      import components.chat.CChat;
+      import components.credits.VipScreen;
+      import components.defensiveportal.DefensivePortalScreen;
+      import components.healing.HealingScreen;
+      import components.infoscreen.InfoScreen;
+      import components.map.controllers.IMapViewportController;
+      import components.market.MarketScreen;
+      import components.notifications.NotificationsScreen;
+      import components.player.PlayerScreen;
+      import components.quests.QuestsScreen;
+      import components.ratings.RatingScreen;
+      import components.squadronsscreen.CSquadronsScreen;
+      import components.technologytree.TechnologyTree;
+      import components.unitsscreen.StorageScreen;
+      import components.unitsscreen.facilities.UnitsBuild;
+      import components.unitsscreen.loadunload.LoadUnloadScreen;
+      import components.unitsscreen.simple.UnitsScreen;
+
+      import controllers.navigation.MCMainArea;
+      import controllers.screens.MainAreaScreens;
+      import controllers.ui.NavigationController;
+
+      import models.events.ScreensSwitchEvent;
+
+
+      protected override function addEventListeners(): void {
+         MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, createContent);
+      }
+
+      private var created: Boolean = false;
+
+      private function addMapElements(e: ScreensSwitchEvent): void {
+         if (e.screenName == screenName) {
+            addElement(e.mapViewport);
+            addElement(e.mapController);
+            callLater(ViewportZoomable(e.mapViewport).invalidateDisplayList);
          }
-         
-         private var created: Boolean = false;
-         
-         private function addMapElements(e: ScreensSwitchEvent): void
-         {
-            if (e.screenName == screenName)
-            {
-               addElement(e.mapViewport);
-               addElement(e.mapController);
-               callLater(ViewportZoomable(e.mapViewport).invalidateDisplayList);
+      }
+
+      private function destroyMapElements(e: ScreensSwitchEvent): void {
+         if (screenName == e.screenName) {
+            if (numElements > 1) {
+               IMapViewportController(getElementAt(1)).cleanup();
             }
+            if (numElements > 0) {
+               ViewportZoomable(getElementAt(0)).cleanup();
+            }
+            removeAllElements();
          }
-         
-         private function destroyMapElements(e: ScreensSwitchEvent): void
-         {
-            if (screenName == e.screenName)
-            {
-               if (numElements > 1)
-               {
-                  IMapViewportController(getElementAt(1)).cleanup();
-               }
-               if (numElements > 0)
-               {
-                  ViewportZoomable(getElementAt(0)).cleanup();
-               }
-               removeAllElements();
-            }
+      }
+
+      private var NC: NavigationController = NavigationController.getInstance();
+
+      private function createContent(e: ScreensSwitchEvent): void {
+         if (MA.currentName != screenName) {
+            this.visible = false;
+            return;
          }
-         
-         private var NC: NavigationController = NavigationController.getInstance();
-         
-         private function createContent(e: ScreensSwitchEvent): void
-         {
-            if (MA.currentName != screenName)
-            {
-               this.visible = false;
-               return;
-            }
-            else
-            {
-               this.visible = true;
-            }
-            if (!created)
-            {
-               created = true;
-               switch (screenName)
-               {
-                  case MainAreaScreens.GALAXY:
-                  case MainAreaScreens.SOLAR_SYSTEM:
-                  case MainAreaScreens.PLANET:
-                     MA.addEventListener(ScreensSwitchEvent.MAP_ELEMENTS_ADDED, addMapElements);
-                     MA.addEventListener(ScreensSwitchEvent.DESTROY_MAP_ELEMENTS, destroyMapElements);
-                     break;
-                  case MainAreaScreens.TECH_TREE:
-                     addElement(new TechnologyTree());
-                     break;
-                  case MainAreaScreens.FACILITIES:
-                     addElement(new UnitsBuild());
-                     break;
-                  case MainAreaScreens.UNITS:
-                     addElement(new UnitsScreen());
-                     break;
-                  case MainAreaScreens.STORAGE:
-                     addElement(new StorageScreen());
-                     break;
-                  case MainAreaScreens.LOAD_UNLOAD:
-                     addElement(new LoadUnloadScreen());
-                     break;
-                  case MainAreaScreens.HEAL:
-                     addElement(new HealingScreen());
-                     break;
-                  case MainAreaScreens.INFO:
-                     addElement(new InfoScreen());
-                     break;
-                  case MainAreaScreens.NOTIFICATIONS:
-                     addElement(new NotificationsScreen());
-                     break;
-                  case MainAreaScreens.QUESTS:
-                     addElement(new QuestsScreen());
-                     break;
-                  case MainAreaScreens.SQUADRONS:
-                     addElement(new CSquadronsScreen());
-                     break;
-                  case MainAreaScreens.RATINGS:
-                     addElement(new RatingScreen());
-                     break;
-                  case MainAreaScreens.MARKET:
-                     addElement(new MarketScreen());
-                     break;
-                  case MainAreaScreens.PLAYER:
-                     addElement(new PlayerScreen());
-                     break;
-                  case MainAreaScreens.DEFENSIVE_PORTAL:
-                     addElement(new DefensivePortalScreen());
-                     break;
-                  case MainAreaScreens.VIP:
-                     addElement(new VipScreen());
-                     break;
-                  case MainAreaScreens.ALLY_RATINGS:
-                     addElement(new AllianceRatings());
-                     break;
-                  case MainAreaScreens.ALLIANCE:
-                     addElement(new AllianceScreen());
-                     break;
-                  case MainAreaScreens.WELCOME:
-                     addElement(new WelcomeScreen());
-                     break;
-                  case MainAreaScreens.CHAT:
-                     addElement(new CChat());
-                     break;
-               }
+         else {
+            this.visible = true;
+         }
+         if (!created) {
+            created = true;
+            switch (screenName) {
+               case MainAreaScreens.GALAXY:
+               case MainAreaScreens.SOLAR_SYSTEM:
+               case MainAreaScreens.PLANET:
+                  MA.addEventListener(ScreensSwitchEvent.MAP_ELEMENTS_ADDED,
+                                      addMapElements);
+                  MA.addEventListener(ScreensSwitchEvent.DESTROY_MAP_ELEMENTS,
+                                      destroyMapElements);
+                  break;
+               case MainAreaScreens.TECH_TREE:
+                  addElement(new TechnologyTree());
+                  break;
+               case MainAreaScreens.FACILITIES:
+                  addElement(new UnitsBuild());
+                  break;
+               case MainAreaScreens.UNITS:
+                  addElement(new UnitsScreen());
+                  break;
+               case MainAreaScreens.STORAGE:
+                  addElement(new StorageScreen());
+                  break;
+               case MainAreaScreens.LOAD_UNLOAD:
+                  addElement(new LoadUnloadScreen());
+                  break;
+               case MainAreaScreens.HEAL:
+                  addElement(new HealingScreen());
+                  break;
+               case MainAreaScreens.INFO:
+                  addElement(new InfoScreen());
+                  break;
+               case MainAreaScreens.NOTIFICATIONS:
+                  addElement(new NotificationsScreen());
+                  break;
+               case MainAreaScreens.QUESTS:
+                  addElement(new QuestsScreen());
+                  break;
+               case MainAreaScreens.SQUADRONS:
+                  addElement(new CSquadronsScreen());
+                  break;
+               case MainAreaScreens.RATINGS:
+                  addElement(new RatingScreen());
+                  break;
+               case MainAreaScreens.MARKET:
+                  addElement(new MarketScreen());
+                  break;
+               case MainAreaScreens.PLAYER:
+                  addElement(new PlayerScreen());
+                  break;
+               case MainAreaScreens.DEFENSIVE_PORTAL:
+                  addElement(new DefensivePortalScreen());
+                  break;
+               case MainAreaScreens.VIP:
+                  addElement(new VipScreen());
+                  break;
+               case MainAreaScreens.ALLY_RATINGS:
+                  addElement(new AllianceRatings());
+                  break;
+               case MainAreaScreens.ALLIANCE:
+                  addElement(new AllianceScreen());
+                  break;
+               case MainAreaScreens.CHAT:
+                  addElement(new CChat());
+                  break;
             }
          }
-         
-         [Bindable]
-         private var MA: MCMainArea = MCMainArea.getInstance();
-         
+      }
+
+      [Bindable]
+      private var MA: MCMainArea = MCMainArea.getInstance();
       ]]>
    </fx:Script>
 </screen:ScreenContainer>

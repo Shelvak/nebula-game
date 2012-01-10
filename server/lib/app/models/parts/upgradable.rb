@@ -3,6 +3,8 @@ module Parts
     def self.included(klass)
       klass.scope :upgrading,
         {:conditions => "upgrade_ends_at IS NOT NULL"}
+      klass.scope :not_upgrading,
+        {:conditions => "upgrade_ends_at IS NULL"}
       klass.validate :validate_upgrade_resources, :if => lambda { |record|
         record.just_started? && ! record.skip_resources?
       }

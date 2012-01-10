@@ -250,19 +250,40 @@ describe DispatcherEventHandler do
             EventBroker::REASON_SS_ENTRY)
         end
 
+        it "should send created if it was created" do
+          player_ids = [1,2,3]
+          metadatas = player_ids.each_with_object({}) do |id, hash|
+            hash[id] = mock(SolarSystemMetadata)
+          end
+          event = Event::FowChange::SsCreated.new(10, 5, 50, [])
+          event.stub!(:player_ids).and_return(player_ids)
+          event.stub!(:metadatas).and_return(metadatas)
+
+          player_ids.each do |player_id|
+            @dispatcher.should_receive(:push_to_player).with(
+              player_id,
+                ObjectsController::ACTION_CREATED,
+                {
+                  'objects' => [metadatas[player_id]],
+                  'reason' => nil
+                }
+            )
+          end
+
+          @handler.fire(event, EventBroker::FOW_CHANGE,
+            EventBroker::REASON_SS_ENTRY)
+        end
+
         it "should send destroyed if it was destroyed" do
           player_ids = [1,2,3]
-          metadata = SolarSystemMetadata.new(:id => 10)
-          event = Event::FowChange::SsDestroyed.new(10, nil, nil)
-          event.stub!(:player_ids).and_return(player_ids)
-          event.stub!(:metadata).and_return(metadata)
+          event = Event::FowChange::SsDestroyed.new(10, player_ids)
 
           player_ids.each do |player_id|
             @dispatcher.should_receive(:push_to_player).with(
               player_id,
               ObjectsController::ACTION_DESTROYED,
               {
-                'objects' => [metadata],
+                'objects' => [event.metadata],
                 'reason' => nil
               }
             )

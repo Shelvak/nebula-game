@@ -1,10 +1,9 @@
 package spacemule.modules.pmg.objects.planet
 
-import buildings._
-import spacemule.modules.config.objects.Config
 import collection.mutable.ListBuffer
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.Troop
+import spacemule.modules.config.objects.{UnitsEntry, Config}
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,48 +13,7 @@ import spacemule.modules.pmg.objects.Troop
  * To change this template use File | Settings | File Templates.
  */
 
-object Building {
-  // Player controlled buildings
-
-  val Mothership = "Mothership"
-  val Screamer = "Screamer"
-  val Thunder = "Thunder"
-  val Vulcan = "Vulcan"
-
-  // These buildings are NPC origin, but players control them
-
-  val NpcHall = "NpcHall"
-  val NpcInfantryFactory = "NpcInfantryFactory"
-  val NpcTankFactory = "NpcTankFactory"
-  val NpcSpaceFactory = "NpcSpaceFactory"
-
-  // NPC buildings
-
-  val NpcMetalExtractor = "NpcMetalExtractor"
-  val NpcGeothermalPlant = "NpcGeothermalPlant"
-  val NpcZetiumExtractor = "NpcZetiumExtractor"
-  val NpcSolarPlant = "NpcSolarPlant"
-  val NpcCommunicationsHub = "NpcCommunicationsHub"
-  val NpcTemple = "NpcTemple"
-  val NpcExcavationSite = "NpcExcavationSite"
-  val NpcResearchCenter = "NpcResearchCenter"
-  val NpcJumpgate = "NpcJumpgate"
-
-  def create(name: String, x: Int, y: Int, level: Int=1): Building = {
-    val building = name match {
-      case Mothership | Screamer | Thunder | Vulcan | NpcHall |
-        NpcInfantryFactory | NpcTankFactory | NpcSpaceFactory =>
-        new buildings.Player(name, x, y, level)
-      case NpcMetalExtractor | NpcGeothermalPlant | NpcZetiumExtractor | 
-        NpcSolarPlant | NpcCommunicationsHub | NpcTemple | NpcExcavationSite |
-        NpcResearchCenter | NpcJumpgate =>
-        new buildings.Npc(name, x, y, level)
-    }
-    return building
-  }
-}
-
-class Building(val name: String, val x: Int, val y: Int, val level: Int) {
+class Building(val name: String, val x: Int, val y: Int, val level: Int=1) {
   val area = Config.getBuildingArea(name)
   val xEnd = x + area.width - 1 // -1 because xEnd is inclusive.
   val yEnd = y + area.height - 1 // -1 because yEnd is inclusive.
@@ -70,6 +28,12 @@ class Building(val name: String, val x: Int, val y: Int, val level: Int) {
       (y to yEnd).foreach { y =>
         block(Coords(x, y))
       }
+    }
+  }
+  
+  def createUnits(entries: Seq[UnitsEntry]) {
+    entries.foreach { entry =>
+      units ++= entry.createTroops()
     }
   }
 

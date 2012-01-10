@@ -1,5 +1,28 @@
 # Class that stores game config data.
 class GameConfig
+  # Helper class for game config initializers.
+  class Initializer
+    # Synchronize all initializations against one mutex
+    @@mutex = Mutex.new
+
+    def self.initialize
+      @@mutex.synchronize do
+        return if @initialized
+
+        # Reset to default set scope. This is needed because lazy
+        # initialization might happen in other set scope.
+        CONFIG.with_set_scope('default') do
+          generate
+          @initialized = true
+        end
+      end
+    end
+
+    def self.generate
+      raise NotImplementedError.new("This method is not implemented!")
+    end
+  end
+
   # Default config set name
   DEFAULT_SET = 'default'
 

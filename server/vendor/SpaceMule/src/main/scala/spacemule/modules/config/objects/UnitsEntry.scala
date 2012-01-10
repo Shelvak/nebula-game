@@ -6,42 +6,44 @@
 package spacemule.modules.config.objects
 
 import spacemule.helpers.Converters._
+import collection.mutable.ListBuffer
+import spacemule.modules.pmg.objects.Troop
 
 object UnitsEntry {
-  def foreach(entries: Iterable[UnitsEntry])(block: (String, Int) => Unit) {
-    entries.foreach { entry =>
-      val count = entry.count match {
-        case Left(number) => number
-        case Right(range) => range.random
-      }
-
-      count.times { () => block(entry.kind, entry.flanks.random) }
+  /**
+   * Extract data from dynamicly typed data store:
+   *
+    [
+      [count, type, flank, hp_percentage],
+      ...
+    ]
+   */
+  def extract(entries: Any): Seq[UnitsEntry] = {
+    entries.asInstanceOf[Seq[IndexedSeq[Any]]].map { entryArray =>
+      new UnitsEntry(
+        entryArray(1).asInstanceOf[String].camelcase,
+        entryArray(0).asInstanceOf[Long].toInt,
+        entryArray(2).asInstanceOf[Long].toInt,
+        entryArray(3) match {
+          case l: Long => l.toDouble
+          case d: Double => d
+        }
+      )
     }
   }
 }
 
-class UnitsEntry(val kind: String, val count: Either[Int, Range],
-                 val flanks: IndexedSeq[Int]) {
-  /**
-   * Creates units entry from definition.
-   */
-  def this(definition: Seq[Any]) = {
-    this(
-      definition(0).asInstanceOf[String].camelcase,
-      definition(1) match {
-        case long: Long => Left(long.toInt)
-        case any: Any => {
-            val seq = any.asInstanceOf[Seq[Long]]
-            Right(seq(0).toInt to seq(1).toInt)
-        }
-      },
-      definition(2) match {
-        case long: Long => IndexedSeq(long.toInt)
-        case any: Any => {
-            val seq = any.asInstanceOf[Seq[Long]]
-            seq.map { _.toInt }.toIndexedSeq
-        }
-      }
-    )
+class UnitsEntry(
+  // Dirac, Thor, Demosis, ...
+  val kind: String,
+  val count: Int,
+  val flank: Int,
+  val hpPercentage: Double = 1.0
+) {
+  def createTroops() = {
+    var troops = List.empty[Troop]
+    count.times { () => troops = Troop(kind, flank, hpPercentage) :: troops }
+
+    troops
   }
 }

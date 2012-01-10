@@ -6,17 +6,18 @@ describe SolarSystem do
                     %w{id x y kind},
                     %w{galaxy_id}
 
-    shieldable_fields = %w{shield_ends_at shield_owner_id}
-
-    describe "when has shield" do
-      it_behaves_like "as json", 
-                      Factory.create(:solar_system, opts_shielded),
-                      nil, shieldable_fields, []
+    describe "when belongs to player" do
+      it "should have player => Player#minimal" do
+        ss = Factory.create(:solar_system, :player => Factory.create(:player))
+        ss.as_json["player"].should == Player.minimal(ss.player_id)
+      end
     end
 
-    describe "when does not have shield" do
-      it_behaves_like "as json", Factory.create(:solar_system),
-                      nil, [], shieldable_fields
+    describe "when does not belong to player" do
+      it "should have player => nil" do
+        ss = Factory.create(:solar_system)
+        ss.as_json["player"].should be_nil
+      end
     end
   end
 
@@ -317,81 +318,253 @@ describe SolarSystem do
     end
   end
 
-  describe ".on_callback" do
-    describe "player inactivity check" do
-      before(:each) do
-        @ss = Factory.create(:solar_system)
-        @player = Factory.create(:player, :galaxy => @ss.galaxy)
-        @planet = Factory.create(:planet, :solar_system => @ss,
-          :player => @player)
-      end
+  describe "#detach!" do
+    let(:player) { Factory.create(:player) }
+    let(:solar_system) { Factory.create(:solar_system, :player => player) }
 
-      it "should fail if we have more than 1 player in that SS" do
-        Factory.create(:planet, :solar_system => @ss, :angle => 90,
-          :player => Factory.create(:player, :galaxy => @ss.galaxy))
+    it "should fail if already detached" do
+      solar_system.x = nil; solar_system.y = nil
+      lambda do
+        solar_system.detach!
+      end.should raise_error(RuntimeError)
+    end
+
+    it "should fail if it is not a home solar system" do
+      solar_system.player = nil
+      lambda do
+        solar_system.detach!
+      end.should raise_error(RuntimeError)
+    end
+
+    it "should fail if player is currently connected" do
+      Dispatcher.instance.stub!(:connected?).with(player.id).and_return(true)
+      lambda do
+        solar_system.detach!
+      end.should raise_error(RuntimeError)
+    end
+
+    it "should deactivate all player radars in solar system" do
+      radars = [
+        Factory.create(:planet, :player => player, :position => 0),
+        Factory.create(:planet, :player => player, :position => 1),
+      ].map do |planet|
+        Factory.create!(:b_radar, opts_active + {:planet => planet})
+      end
+      solar_system.detach!
+      radars.each { |r| r.reload.should be_inactive }
+    end
+
+    it "should not deactivate non-player radars in solar system" do
+      radars = [
+        Factory.create(:planet, :position => 0),
+        Factory.create(:planet, :position => 1),
+      ].map do |planet|
+        Factory.create!(:b_radar, opts_active + {:planet => planet})
+      end
+      solar_system.detach!
+      radars.each { |r| r.reload.should be_active }
+    end
+
+    it "should not fail if player owned radar is inactive" do
+      radars = [
+        Factory.create(:planet, :player => player, :position => 0),
+        Factory.create(:planet, :player => player, :position => 1),
+      ].map do |planet|
+        Factory.create!(:b_radar, opts_inactive + {:planet => planet})
+      end
+      solar_system.detach!
+      radars.each { |r| r.reload.should be_inactive }
+    end
+
+    it "should fire ss destroyed event for other players" do
+      Factory.create(:fse_player, :player => player,
+                     :solar_system => solar_system)
+      Factory.create(:fse_player, :solar_system => solar_system)
+      should_fire_event(
+        Event::FowChange::SsDestroyed.all_except(solar_system.id, player.id),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      ) { solar_system.detach! }
+    end
+
+    it "should remove other player fow ss entries" do
+      fse = Factory.create(:fse_player, :solar_system => solar_system)
+      solar_system.detach!
+      lambda do
+        fse.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should not remove owner fow ss entry" do
+      fse = Factory.create(:fse_player, :solar_system => solar_system,
+                           :player => player)
+      solar_system.detach!
+      lambda do
+        fse.reload
+      end.should_not raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should set coordinates to nil" do
+      solar_system.detach!
+      [solar_system.x, solar_system.y].should == [nil, nil]
+    end
+
+    it "should save the record" do
+      solar_system.detach!
+      solar_system.should be_saved
+    end
+  end
+
+  describe "#attach!" do
+    let(:x) { 3 }
+    let(:y) { 4 }
+    let(:coords) do
+      {:x => x - 5, :x_end => x + 5, :y => y - 2, :y_end => y + 2}
+    end
+    let(:galaxy) { Factory.create(:galaxy) }
+    let(:player) { Factory.create(:player, :galaxy => galaxy) }
+    let(:solar_system) do
+      Factory.create(:ss_detached, :player => player, :galaxy => galaxy)
+    end
+    let(:fse) do
+      Factory.create(:fse_player, :player => player,
+        :solar_system => solar_system)
+    end
+
+    def create_fges(merged={})
+      [
+        Factory.create(:fge_player, coords.merge(merged)),
+        Factory.create(:fge_alliance, coords.merge(merged)),
+      ]
+    end
+
+    before(:each) { fse() }
+
+    it "should fail if it is already attached" do
+      solar_system.x = x; solar_system.y = y
+      lambda do
+        solar_system.attach!(x, y)
+      end.should raise_error(RuntimeError)
+    end
+
+    it "should fail if it does not belong to a player" do
+      solar_system.player = nil
+      lambda do
+        solar_system.attach!(x, y)
+      end.should raise_error(RuntimeError)
+    end
+
+    describe "when spot is occupied" do
+      it "should fail" do
+        Factory.create(:solar_system, :galaxy => solar_system.galaxy,
+          :x => x, :y => y)
         lambda do
-          SolarSystem.on_callback(@ss.id,
-            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
-        end.should raise_error(GameLogicError)
+          solar_system.attach!(x, y)
+        end.should raise_error(ArgumentError)
       end
 
-      describe "if player does not have enough points and have not logged" +
-      " in for a certain period of time" do
-        before(:each) do
-          @player.economy_points = 0
-          @player.last_seen = (Cfg.player_last_seen_in + 10.minutes).ago
-          @player.save!
-        end
-
-        it "should kill solar system" do
-          SolarSystem.should_receive(:find).with(@ss.id).and_return(@ss)
-          @ss.should_receive(:die!)
-          SolarSystem.on_callback(@ss.id,
-            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
-        end
-
-        it "should not fail if last_seen is nil" do
-          @player.last_seen = nil
-          @player.save!
-          SolarSystem.on_callback(@ss.id,
-            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
-        end
-
-        it "should destroy player" do
-          SolarSystem.on_callback(@ss.id,
-            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
-          lambda do
-            @player.reload
-          end.should raise_error(ActiveRecord::RecordNotFound)
-        end
-      end
-
-      it "should not erase SS if player has enough points" do
-        @player.economy_points = CONFIG[
-          'galaxy.player.inactivity_check.points']
-        @player.last_seen = (Cfg.player_last_seen_in + 1.day).ago
-        @player.save!
-
-        SolarSystem.on_callback(@ss.id,
-          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+      it "should not fail if another solar system is in other galaxy" do
+        Factory.create(:solar_system, :x => x, :y => y)
         lambda do
-          @ss.reload
-        end.should_not raise_error(ActiveRecord::RecordNotFound)
-      end
-
-      it "should not erase SS if player has logged in recently" do
-        @player.economy_points = 0
-        @player.last_seen = (Cfg.player_last_seen_in - 10.minutes).ago
-        @player.save!
-
-        SolarSystem.on_callback(@ss.id,
-          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
-        lambda do
-          @ss.reload
-        end.should_not raise_error(ActiveRecord::RecordNotFound)
+          solar_system.attach!(x, y)
+        end.should_not raise_error(ArgumentError)
       end
     end
 
+    it "should fail if there is no owner FSE" do
+      fse.destroy!
+      lambda do
+        solar_system.attach!(x, y)
+      end.should raise_error(RuntimeError)
+    end
+
+    it "should create FSEs for players who will be able to see it" do
+      fow_galaxy_entries = create_fges(:galaxy => galaxy)
+      solar_system.attach!(x, y)
+      fow_galaxy_entries.each do |fge|
+        FowSsEntry.where(
+          :solar_system_id => solar_system.id, :player_id => fge.player_id,
+          :alliance_id => fge.alliance_id, :counter => fge.counter
+        ).exists?.should be_true
+      end
+    end
+
+    it "should not create FSEs for player from other galaxy" do
+      create_fges()
+      lambda do
+        solar_system.attach!(x, y)
+      end.should_not change(
+        FowSsEntry.where(:solar_system_id => solar_system.id), :count
+      )
+    end
+
+    it "should set its coordinates" do
+      solar_system.attach!(x, y)
+      [solar_system.x, solar_system.y].should == [x, y]
+    end
+
+    it "should save the record" do
+      solar_system.attach!(x, y)
+      solar_system.should be_saved
+    end
+
+    it "should dispatch created with FSEs" do
+      entries = create_fges(:galaxy => galaxy).map do |fge|
+        FowSsEntry.new(
+          :solar_system_id => solar_system.id,
+          :counter => fge.counter,
+          :player_id => fge.player_id,
+          :alliance_id => fge.alliance_id,
+          :enemy_planets => fse.player_planets,
+          :enemy_ships => fse.player_ships
+        )
+      end
+      player = Player.minimal(player.id)
+      should_fire_event(
+        Event::FowChange::SsCreated.
+          new(solar_system.id, x, y, solar_system.kind, player, entries),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      ) do
+        solar_system.attach!(x, y)
+      end
+    end
+
+    it "should activate inactive radars that belong to player" do
+      radars = [
+        Factory.create(:planet, :player => player, :position => 0),
+        Factory.create(:planet, :player => player, :position => 1),
+      ].map do |planet|
+        Factory.create!(:b_radar, opts_inactive + {:planet => planet})
+      end
+      solar_system.attach!(x, y)
+      radars.each { |r| r.reload.should be_active }
+    end
+
+    it "should not activate inactive non-player radars" do
+      radars = [
+        Factory.create(:planet, :position => 0),
+        Factory.create(:planet, :position => 1),
+      ].map do |planet|
+        Factory.create!(:b_radar, opts_inactive + {:planet => planet})
+      end
+      solar_system.attach!(x, y)
+      radars.each { |r| r.reload.should be_inactive }
+    end
+
+    it "should not fail if player radar is upgrading" do
+      radars = [
+        Factory.create(:planet, :player => player, :position => 0),
+        Factory.create(:planet, :player => player, :position => 1),
+      ].map do |planet|
+        Factory.create!(:b_radar, opts_upgrading + {:planet => planet})
+      end
+      solar_system.attach!(x, y)
+      radars.each { |r| r.reload.should be_inactive }
+    end
+  end
+
+  describe ".on_callback" do
     describe "spawn" do
       before(:each) do
         @solar_system = Factory.create(:battleground)

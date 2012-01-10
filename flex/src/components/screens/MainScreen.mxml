@@ -13,6 +13,7 @@ bars and so on.
                     xmlns:raid="components.raid.*"
                     xmlns:ui="components.ui.*"
                     xmlns:cchat="components.chat.*"
+                    xmlns:quests="components.quests.*"
                     width="100%"
                     height="100%"
                     mouseEnabled="false"
@@ -89,5 +90,7 @@ bars and so on.
       </base:AdvancedContainer>
       <cchat:CChatOpenChanButtons right="0" bottom="0"/>
    </s:SkinnableContainer>
+
+   <quests:CMainQuestPresentationScreen verticalCenter="0" horizontalCenter="0"/>
    
 </base:BaseContainer>

@@ -283,14 +283,24 @@ class Dispatcher
       return
     end
 
-    LOGGER.block("Message queue processing", :level => :debug,
-    :server_name => to_s) do
+    LOGGER.block(
+      "Message queue processing", :level => :debug, :server_name => to_s
+    ) do
       @queue_processing = true
-      ActiveRecord::Base.transaction(:joinable => false) do
+      process = lambda do
         until @message_queue.blank?
-          handle_message(@message_queue.shift)
+          message = @message_queue.shift
+          handle_message(message)
         end
       end
+
+      # Avoid nesting transactions.
+      if ActiveRecord::Base.connection.open_transactions == 0
+        ActiveRecord::Base.transaction(:joinable => false, &process)
+      else
+        process.call
+      end
+
       @queue_processing = false
     end
   # Ensure that even if we fail somewhere while handling the message, 

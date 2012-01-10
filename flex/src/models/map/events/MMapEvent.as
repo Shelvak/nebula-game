@@ -21,6 +21,11 @@ package models.map.events
       /**
        * @see MMap
        */
+      public static const UICMD_DESELECT_SELECTED_OBJECT: String = "uicmdDeselectSelectedObject";
+
+      /**
+       * @see MMap
+       */
       public static const UICMD_MOVE_TO: String = "uicmdMoveTo";
 
       /**
@@ -61,6 +66,8 @@ package models.map.events
 
       /**
        * Relevant only for <code>UICMD_*</code> and <code>OBJECT_*</code> events.
+       * for <code>UICMD_DESELECT_SELECTED_OBJECT</code> this will be
+       * <code>null</code>.
        */
       public var object: *;
 

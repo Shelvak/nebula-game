@@ -10,7 +10,6 @@ package models.notification
       public static const EXPLORATION_FINISHED:int = 5;
       public static const PLANET_ANNEXED:int = 6;
       public static const ALLIANCE_INVITATION:int = 7;
-      public static const PLANET_PROTECTED: int = 8;
       public static const KICKED_FROM_ALLIANCE: int = 9;
       public static const ALLIANCE_JOINED:int = 10;
       public static const MARKET_OFFER_BOUGHT:int = 11;

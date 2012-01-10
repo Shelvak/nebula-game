@@ -1228,14 +1228,8 @@
     <label.openWormhole value="Enter battleground" />
     <label.wormhole value="Battleground"/>
     <label.pulsar value="Pulsar-{0}"/>
-    <label.deadStar>
-      <p>This star is dead. A civilization once lived here but now it's
-      long gone.</p>
-      <p>Visiting this star is forbidden.</p>
-    </label.deadStar>
-    <label.shield>
-      <![CDATA[This solar system is shielded for<br/><span fontWeight="bold">{0}</span>]]>
-    </label.shield>
+    <label.shield value="This solar system is shielded."/>
+    <label.ssOwner value="Owned by"/>
     <label.over value="Fleet over"/>
     <message.noRadar value="You need a Radar to explore the galaxy" />
 
@@ -2129,327 +2123,107 @@
 
     <Destroy value="Destroy" />
 
-    <title.1 value="The Beginning" />
-    <about.1>
+    <!-- ################## -->
+    <!-- ### Main quest ### -->
+    <!-- ################## -->
+    
+    <title.10 value="The Beginning" />
+    <about.10>
       <p>Welcome, Commander.</p>
+      
       <p>
         We have landed in this planet in our 
         [reference:Buildings/Mothership.name] and it seems we are not alone. We 
         have set up our defenses but they are draining more energy than our 
-        generators can create. This cannot continue for long! 
+        generators can produce. This cannot continue for long!
       </p>
+      
       <p>
         You must build a [reference:Buildings/CollectorT1.name] to fulfill our 
         energy needs. Do not waste time. Do it now! 
       </p>
-      <p>To enter your planet select it from selector in top-left corner and 
-      start building immediately.</p>
-    </about.1>
+    </about.10>
 
-    <title.2 value="Warming Up" />
-    <about.2>
+    <title.20 value="Warming Up" />
+    <about.20>
       <p>I see you did well, Commander.</p>
+      
       <p>
         Our energy levels are now normal. However it seems we are stuck here. 
         At least for now. 
       </p>
+      
       <p>
-        The good thing is that we have spotted nearby ore deposits. We should 
+        The good thing is that we have spotted ore deposits nearby. We should
         build a [reference:Buildings/MetalExtractor.name] to draw metal from 
         one of those deposits. 
       </p>
+      
       <p>Our future rests in your hands, Commander.</p>
-    </about.2>
+    </about.20>
 
-    <title.3 value="Growing Needs" />
-    <about.3>
-      <p>Hello, Commander.</p>
+    <title.30 value="Growing Needs" />
+    <about.30>
+      <p>Commander,</p>
       <p>
         It seems that our extractors are working properly. However we need more 
-        resources to keep our growth steady. Build two more resource extractors 
-        and they will be put to good use. 
+        resources to keep our growth steady. Upgrade extractors so that they
+        fulfill our needs. 
       </p>
-    </about.3>
-
-    <title.22 value="Interesting Discoveries" />
-    <about.22>
-      <p>Good day, Commander!</p>
+    </about.30>
+    
+    <title.40 value="Increase" />
+    <about.40>
+      <p>Commander,</p>
       <p>
-        Our scouts located interesting object nearby. It seems to be remains of 
-        some giant animal. Unfortunately only bones are left now and even those 
-        are half buried. 
+         Resource extraction is our top priority! Build even more MEX'es so that
+         extraction rates become steady for sure.
       </p>
-      <p>
-        Still it would be best if you would send team of explorers to check it 
-        out. Perhaps they can find something useful there. 
-      </p>
-    </about.22>
-
-    <title.23 value="Spoils of Curiosity" />
-    <about.23>
-      <p>Wonderful news!</p>
-      <p>
-        Remember that research expedition you sent out recently? They are back 
-        and they brought an alien robot with them! Of course it's a bit damaged 
-        but our scientists have managed to turn it on. He is now a loyal 
-        servant! Isn't that wonderful news? 
-      </p>
-      <p>
-        Oh, that research team also brought back some resources with them. 
-        Perhaps it would be wise to continue our exploration of that site? You 
-        never know what you might find there... It could prove very useful. 
-      </p>
-    </about.23>
-
-    <title.4 value="Getting More" />
-    <about.4>
-      <p>It is good to see you, Commander.</p>
-      <p>
-        Our resource production is steady now. As wonderful as it is I cannot 
-        get it out of my head that we aren't pushing to the limits of our 
-        capabilities. There is so much raw metal and energy out there! 
-      </p>
-      <p>
-        Call me greedy if you want, but I suggest we should upgrade our 
-        extractors. Surplus resources never hurt anyone, did they? 
-      </p>
-    </about.4>
-
-    <title.5 value="Getting More. Even More." />
-    <about.5>
-      <p>Hello again, Commander.</p>
-      <p>
-        I see you have listened to my advice and upgraded our resource 
-        extractors. Do not stop here and invest even more into them. It will be 
-        rewarded in time. 
-      </p>
-      <p>See you soon!</p>
-    </about.5>
-
-    <title.6 value="Unrest" />
-    <about.6>
-      <p>Hurry!</p>
-      <p>
-        Our scouts report hearing strange noises in the wind and our scanners 
-        are reading strange anomalies. I fear we are not alone. Our defence 
-        perimeter may not be sufficient for keeping whatever is out there out 
-        of the base. 
-      </p>
-      <p>
-        We need troops. Order construction of 
-        [reference:Buildings/Barracks.name] now. 
-      </p>
-      <p>Our people need to feel safe.</p>
-    </about.6>
-
-    <title.7 value="Arming Up" />
-    <about.7>
-      <p>Commander.</p>
-      <p>
-        Construction of your [reference:Buildings/Barracks.name] is complete as 
-        you ordered. A few men have volunteered to become our first 
-        Troopers but their numbers are low. They will not 
-        save us if someone attacks. 
-      </p>
-      <p>
-        We need to have trained personnel that is able to defend us. Order 
-        training of Troopers in our 
-        [reference:Buildings/Barracks.name]. 
-      </p>
-    </about.7>
-
-    <StrenghteningForces.title value="Strenghtening Forces" />
-    <StrenghteningForces.about>
-      <p>Commander.</p>
-      <p>
-        I watch as you grow fierce and strong. But you must not stop here. You 
-        must go on. Increase our army strength. Make your enemies tremble in 
-        fear! 
-      </p>
-    </StrenghteningForces.about>
-
-    <title.66 ref="StrenghteningForces.title" />
-    <about.66 ref="StrenghteningForces.about" />
-
-    <title.67 value="[reference:StrenghteningForces.title] (II)" />
-    <about.67 ref="StrenghteningForces.about" />
-
-    <title.68 value="[reference:StrenghteningForces.title] (III)" />
-    <about.68 ref="StrenghteningForces.about" />
-
-    <title.69 value="[reference:StrenghteningForces.title] (IV)" />
-    <about.69 ref="StrenghteningForces.about" />
-
-    <title.70 value="[reference:StrenghteningForces.title] (V)" />
-    <about.70 ref="StrenghteningForces.about" />
-
-    <title.71 value="[reference:StrenghteningForces.title] (VI)" />
-    <about.71 ref="StrenghteningForces.about" />
-
-    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 ref="StrenghteningForces.about" />
-
-    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 ref="StrenghteningForces.about" />
-
-    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 ref="StrenghteningForces.about" />
-
-    <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 ref="StrenghteningForces.about" />
-
-    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 ref="StrenghteningForces.about" />
-
-    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 ref="StrenghteningForces.about" />
-
-    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 ref="StrenghteningForces.about" />
-
-    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 ref="StrenghteningForces.about" />
-
-    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 ref="StrenghteningForces.about" />
-
-    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 ref="StrenghteningForces.about" />
-
-    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 ref="StrenghteningForces.about" />
-
-    <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 ref="StrenghteningForces.about" />
-
-    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 ref="StrenghteningForces.about" />
-
-    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 ref="StrenghteningForces.about" />
-
-    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 ref="StrenghteningForces.about" />
-
-    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 ref="StrenghteningForces.about" />
-
-    <title.95 value="[reference:StrenghteningForces.title] (VII)" />
-    <about.95 ref="StrenghteningForces.about" />
-
-    <title.96 value="[reference:StrenghteningForces.title] (VIII)" />
-    <about.96 ref="StrenghteningForces.about" />
-
-    <title.97 value="[reference:StrenghteningForces.title] (IX)" />
-    <about.97 ref="StrenghteningForces.about" />
-
-    <title.98 value="[reference:StrenghteningForces.title] (X)" />
-    <about.98 ref="StrenghteningForces.about" />
-
-    <title.99 value="[reference:StrenghteningForces.title] (XI)" />
-    <about.99 ref="StrenghteningForces.about" />
-
-    <title.100 value="[reference:StrenghteningForces.title] (XII)" />
-    <about.100 ref="StrenghteningForces.about" />
-
-    <title.101 value="[reference:StrenghteningForces.title] (XIII)" />
-    <about.101 ref="StrenghteningForces.about" />
-
-    <title.102 value="[reference:StrenghteningForces.title] (XIV)" />
-    <about.102 ref="StrenghteningForces.about" />
-
-    <title.8 value="First Encounter" />
-    <about.8>
-      <p>Commander.</p>
-      <p>
-        We have a problem. Our metal needs are growing and those two 
-        MetalExtractors won't keep us running for long. We 
-        need to claim another ore site. 
-      </p>
-      <p>
-        Fortunately our scouts located one nearby our base. Unfortunately it is 
-        guarded by robotic alien creatures. I think we will not be able to 
-        avoid combat. As I was told they guard it with their lives. 
-      </p>
-      <p>
-        We must act. Intelligence estimates that 12 
-        Troopers will be able to take down the guards. It 
-        may take less or more depending on your strategic skills. But we have 
-        to take that ore site over. It is crucial to our survival. 
-      </p>
-      <p>We trust in you, Commander.</p>
-    </about.8>
-
-    <title.32 value="Fruits of Bravery" />
-    <about.32>
-      <p>Great news!</p>
-      <p>
-        We have claimed that ore site! We are free to build and upgrade a 
-        [reference:Buildings/MetalExtractor.name] there. I suggest you do it 
-        now. Those resources will surely be used by our people. 
-      </p>
-    </about.32>
-
-    <title.9 value="Loathing on Metal" />
-    <about.9>
-      <p>Commander, it is nice to see you!</p>
-      <p>
-        Now that we are up and running with our metal production we can 
-        continue to increase its gains. Our scientists claim they can upgrade 
-        our metal extraction rates to numbers we never saw before! And I 
-        believe them. 
-      </p>
-      <p>
-        Lets upgrade one of our MetalExtractors and see if 
-        they can deliver what they promised. 
-      </p>
-    </about.9>
-
-    <title.10 value="Loathing on Energy" />
-    <about.10>
-      <p>Great news!</p>
-      <p>
-        Folks at our science department say they found a way to boost our 
-        energy production levels! They just need a little investment, thats 
-        all. 
-      </p>
-      <p>
-        Lets give them those resources and I am sure we will get a lot more 
-        back than we gave. Order upgrading one of Wind panels now! 
-      </p>
-    </about.10>
-
-    <title.116 value="Empowering Riches" />
-    <about.116>
+    </about.40>
+    
+    <title.50 value="Unrest" />
+    <about.50>
       <p>Commander!</p>
-      <p>In your last mission, "[reference:title.8]" you were rewarded with
-      some creds. Go and take your reward if you haven't done so already.</p>
-      <p>Creds are a useful and powerful tool. They can be spent on various
-      tasks like accelerating your constructions, researches and unit
-      training. They can even be used for moving buildings or speeding up
-      fleets!</p>
-      <p>And how do you get more creds? You can buy them from our shop which
-      is accessible from N44 menu in bottom-left corner. You can also gain
-      them by conquering and holding special battleground planets about which
-      you will learn later.</p>
-      <p>And you can become a VIP. Becoming a VIP gives you more creds than
-      you spend on the VIP service and allows you to use them daily as you
-      see fit.</p>
-      <p>So go, order your first VIP and be rewarded greatly!</p>
-    </about.116>
-
-    <title.117 value="Could you work a little faster?" />
-    <about.117>
-      <p>Congratulations on becoming a VIP, Commander.</p>
-      <p>As of now you have a daily number of creds to spend so why not spend
-      some on something that is really useful?</p>
-      <p>I suggest we accelerate construction of any builing. That
-      [reference:Buildings/ResearchCenter.name] that needs to be built seems
-      like a good option.</p>
-    </about.117>
-
-    <title.11 value="Unresting Minds" />
-    <about.11>
+      
+      <p>
+        Our scouts report hearing strange noises in the wind. Suspicions that we
+        are not alone have been confirmed. Our scanners are picking up strange
+        anomalies in this planet. Until we know what we are dealing with, we can't
+        feel safe only behind the thick walls.
+      </p>
+      
+      <p>We need troops. Order construction of [reference:Buildings/Barracks.name] now. </p>
+      
+      <p>Our people need to feel safe.</p>
+    </about.50>
+    
+    <title.60 value="Arming Up" />
+    <about.60>
+      <p>Commander.</p>
+      <p>
+        Construction of your [reference:Buildings/Barracks.name] has been complete as
+        ordered. We now must train more troops to defend ourselves. Go to the barracks
+        and order training of troopers.
+      </p>
+    </about.60>
+    
+    <title.70 value="First Encounter" />
+    <about.70>
+      <p>Commander.</p>
+      <p>
+        A few lightly guarded alien buildings have been located outside of
+        our base territory. We should attack and destroy them. Our troops need this
+        kind of exercise. Even better, alien wreckages will replenish our supplies.
+      </p>
+      <p>
+        Intelligence estimates that an alien Gnat is of the same strength as our
+        Trooper. I suggest sending a few extra troops to the battle so that we
+        would gain an advantage over the alien forces.
+      </p>
+    </about.70>
+    
+    <title.80 value="Unresting Minds" />
+    <about.80>
       <p>Hello again, Commander.</p>
       <p>
         Our colony is prospering. We have steady resource income, our troops 
@@ -2457,531 +2231,230 @@
         the weather is nice. It's almost like I can call this place home. 
       </p>
       <p>
-        There is only one tiny problem. We must progress forward and having a 
-        [reference:Buildings/ResearchCenter.name] would be a great plus. We 
-        already have a group of our colonists that would apply to work there. 
+        This wonderful day is perfect for laying ground for our future.
+        [reference:Buildings/ResearchCenter.name] would be a great start. We 
+        already have a group of our colonists that would apply to work there.
+        We do not want to make them wait, do we?
       </p>
       <p>
-        I highly recommend you order building of a 
-        [reference:Buildings/ResearchCenter.name] in this planet. After all, 
-        one or two tricks from the science fun bag won't hurt us, will it? 
+        My recommendation? You should order construction of a
+        [reference:Buildings/ResearchCenter.name] in this planet at once.
+        After all, one or two tricks from the science fun bag won't hurt us, will it? 
       </p>
-    </about.11>
+    </about.80>
 
-    <title.24 value="Things Around Us" />
-    <about.24>
+    <title.90 value="Interesting Discoveries" />
+    <about.90>
+      <p>Good day, Commander!</p>
       <p>
-        Now that we have a [reference:Buildings/ResearchCenter.name] a lot more 
-        scientists are eager to explore. Our scouts have discovered other 
-        interesting objects in this planet and we have people burning to go 
-        there. 
-      </p>
-      <p>
-        I suggest we try exploring those objects. I am certain there is more to 
-        discover. 
-      </p>
-    </about.24>
-
-    <title.25 value="Useful Discoveries" />
-    <about.25>
-      <p>Well, that was unexpected!</p>
-      <p>
-        Bringing a bunch of those alien robots really made the crowd crazy in 
-        our, ehrm, excuse me, jar-head lab. They demand they mount an even 
-        bigger expedition to another object. They say they found some 
-        references that they might find one of these 
-        [reference:Units/Glancer.name] robots down there. And that would 
-        certainly prove useful to us. 
-      </p>
-      <p>I say let them go. Order an exploration mission.</p>
-    </about.25>
-
-    <title.26 value="Unsatisfiable Intelligence" />
-    <about.26>
-      <p>They are out of their minds!</p>
-      <p>
-        Our scientists want to mount yet another expedition. To the huge 
-        mountain out there. However it requires a lot of personnel and we 
-        probably don't have enough right now. 
+        Our scouts located interesting object nearby. It seems to be remains of 
+        some giant creature. Unfortunately they do no have the knowledge for making
+        a fair assessment of the finding and only reported that they had found "some bones".
       </p>
       <p>
-        We need to upgrade our [reference:Buildings/ResearchCenter.name]. 
-        Beware that while upgrading you won't be able to research any 
-        technologies. However you will still be able to send exploration 
-        missions. 
+        Still it would be best if you would send team of explorers to check it 
+        out. Perhaps they can find something useful.
       </p>
-      <p>It is up to you, Commander.</p>
-    </about.26>
-
-    <title.12 value="Strength in Shadows" />
-    <about.12>
-      <p>Greetings, Commander.</p>
-      <p>
-        Now that we have a [reference:Buildings/ResearchCenter.name] we should 
-        think about investing to our military power. Go to your 
-        [reference:Buildings/ResearchCenter.name] and order research on 
-        [reference:Technologies/Seeker.name]. These advanced warriors are very 
-        useful destroying lightly armored enemy troops. They will help us 
-        greatly in battles against alien robots. 
-      </p>
-      <p>
-        After researching that technology I suggest we should build at least 
-        several of these great warriors. 
-      </p>
-    </about.12>
-
-    <title.13 value="Great Warriors" />
-    <about.13>
-      <p>Commander.</p>
-      <p>
-        You have already lead quite a few battles yourself. And I see your 
-        progress. Perhaps you have noticed that few of our men also have 
-        improved their combat skills greatly. They are more effective in 
-        battlefield and can withstand more enemy fire if necessary. 
-      </p>
-      <p>
-        I suggest we preserve these skilled warriors and hope we can train 
-        more. Do not let them die. These are great warriors. We need them 
-        alive. 
-      </p>
-    </about.13>
-
-    <ThirstForKnowledge.title value="Thirst For Knowledge" />
-    <ThirstForKnowledge.about>
-      <p>Commander.</p>
-      <p>
-        Important discoveries awaits us! Our enemies may build more fleets but 
-        we will build better ones! Invest into our research and see that it is 
-        worth its price. 
-      </p>
-    </ThirstForKnowledge.about>
-
-    <title.72 ref="ThirstForKnowledge.title" />
-    <about.72 ref="ThirstForKnowledge.about" />
-
-    <title.73 value="[reference:ThirstForKnowledge.title] (II)" />
-    <about.73 ref="ThirstForKnowledge.about" />
-
-    <title.74 value="[reference:ThirstForKnowledge.title] (III)" />
-    <about.74 ref="ThirstForKnowledge.about" />
-
-    <title.75 value="[reference:ThirstForKnowledge.title] (IV)" />
-    <about.75 ref="ThirstForKnowledge.about" />
-
-    <title.76 value="[reference:ThirstForKnowledge.title] (V)" />
-    <about.76 ref="ThirstForKnowledge.about" />
-
-    <title.77 value="[reference:ThirstForKnowledge.title] (VI)" />
-    <about.77 ref="ThirstForKnowledge.about" />
-
-    <title.78 value="[reference:ThirstForKnowledge.title] (VII)" />
-    <about.78 ref="ThirstForKnowledge.about" />
-
-    <title.79 value="[reference:ThirstForKnowledge.title] (VIII)" />
-    <about.79 ref="ThirstForKnowledge.about" />
+    </about.90>
     
-    <title.118 value="Fulfilling our needs" />
-    <about.118>
-      <p>Hello, Commander.</p>
-      <p>In different times we need different things and it's not always
-      easy to plan ahead. Research a market so that we could trade with
-      other inhabitants of this galaxy.</p>
-      <p>Afterall they might be in need of something we have surplus and
-      vice verca. Why shouldn't we help each other? We could even make
-      a friend or two in this way.</p>
-    </about.118>
-
-    <title.27 value="Shards of Technology" />
-    <about.27>
-      <p>Commander!</p>
+    <title.100 value="Shards of Technology" />
+    <about.100>
+      <p>Commander,</p>
       <p>
-        Our scouts have detected a strange building guarded by alien robots. 
-        They managed to take some samples of the material lying around it and 
-        our researchers were working on them for quite some time. 
+        Our scouts have detected a few strange buildings guarded by alien robots. 
+        They managed to take some samples of the material lying around them and
+        our researchers were working on the samples for quite some time.
       </p>
       <p>
-        It seems that this building is full of zetium, a new crystal material. 
+        It seems that those building are full of zetium, a new crystal material. 
         Looks like it is very useful and can be used in many ways, even 
         interstellar space travel. We need those crystals! 
       </p>
-      <p>Go and destroy that building so we could claim them for ourselves.</p>
-    </about.27>
-
-    <EchoesOfBattle.title value="Echoes Of Battle" />
-    <EchoesOfBattle.about>
-      <p>Commander.</p>
       <p>
-        There is much unrest in this galaxy. We are peaceful people but others 
-        are not so willing to share this peaceful bliss of mind. We must defend 
-        ourselves from their brutal ways and what is the best defense than 
-        preemptive first strike? 
+         Its about time the crystals are freed of the alien heels. Order our
+         scientists to begin researching the technology required for this
+         material processing immediately.
       </p>
-      <p>And don't forget about those aliens out there too...</p>
-    </EchoesOfBattle.about>
-
-    <title.80 ref="EchoesOfBattle.title" />
-    <about.80 ref="EchoesOfBattle.about" />
-
-    <title.81 value="[reference:EchoesOfBattle.title] (II)" />
-    <about.81 ref="EchoesOfBattle.about" />
-
-    <title.82 value="[reference:EchoesOfBattle.title] (III)" />
-    <about.82 ref="EchoesOfBattle.about" />
-
-    <title.83 value="[reference:EchoesOfBattle.title] (IV)" />
-    <about.83 ref="EchoesOfBattle.about" />
-
-    <title.84 value="[reference:EchoesOfBattle.title] (V)" />
-    <about.84 ref="EchoesOfBattle.about" />
-
-    <title.85 value="[reference:EchoesOfBattle.title] (VI)" />
-    <about.85 ref="EchoesOfBattle.about" />
-
-    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 ref="EchoesOfBattle.about" />
-
-    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 ref="EchoesOfBattle.about" />
-
-    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 ref="EchoesOfBattle.about" />
-
-    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 ref="EchoesOfBattle.about" />
-
-    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 ref="EchoesOfBattle.about" />
-
-    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 ref="EchoesOfBattle.about" />
-
-    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 ref="EchoesOfBattle.about" />
-
-    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 ref="EchoesOfBattle.about" />
-
-    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 ref="EchoesOfBattle.about" />
-
-    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 ref="EchoesOfBattle.about" />
-
-    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 ref="EchoesOfBattle.about" />
-
-    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 ref="EchoesOfBattle.about" />
-
-    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 ref="EchoesOfBattle.about" />
-
-    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 ref="EchoesOfBattle.about" />
-
-    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 ref="EchoesOfBattle.about" />
-
-    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 ref="EchoesOfBattle.about" />
-
-    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 ref="EchoesOfBattle.about" />
-
-    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 ref="EchoesOfBattle.about" />
-
-    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 ref="EchoesOfBattle.about" />
-
-    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 ref="EchoesOfBattle.about" />
-
-    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 ref="EchoesOfBattle.about" />
-
-    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 ref="EchoesOfBattle.about" />
-
-    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 ref="EchoesOfBattle.about" />
-
-    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 ref="EchoesOfBattle.about" />
-
-    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 ref="EchoesOfBattle.about" />
-
-    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 ref="EchoesOfBattle.about" />
-
-    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 ref="EchoesOfBattle.about" />
-
-    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 ref="EchoesOfBattle.about" />
-
-    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 ref="EchoesOfBattle.about" />
-
-    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 ref="EchoesOfBattle.about" />
-
-    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 ref="EchoesOfBattle.about" />
-
-    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 ref="EchoesOfBattle.about" />
-
-    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 ref="EchoesOfBattle.about" />
-
-    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 ref="EchoesOfBattle.about" />
-
-    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 ref="EchoesOfBattle.about" />
-
-    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 ref="EchoesOfBattle.about" />
-
-    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 ref="EchoesOfBattle.about" />
-
-    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 ref="EchoesOfBattle.about" />
-
-    <title.86 value="[reference:EchoesOfBattle.title] (VII)" />
-    <about.86 ref="EchoesOfBattle.about" />
-
-    <title.87 value="[reference:EchoesOfBattle.title] (VIII)" />
-    <about.87 ref="EchoesOfBattle.about" />
-
-    <title.88 value="[reference:EchoesOfBattle.title] (IX)" />
-    <about.88 ref="EchoesOfBattle.about" />
-
-    <title.89 value="[reference:EchoesOfBattle.title] (X)" />
-    <about.89 ref="EchoesOfBattle.about" />
-
-    <title.90 value="[reference:EchoesOfBattle.title] (XI)" />
-    <about.90 ref="EchoesOfBattle.about" />
-
-    <title.91 value="[reference:EchoesOfBattle.title] (XII)" />
-    <about.91 ref="EchoesOfBattle.about" />
-
-    <title.92 value="[reference:EchoesOfBattle.title] (XIII)" />
-    <about.92 ref="EchoesOfBattle.about" />
-
-    <title.93 value="[reference:EchoesOfBattle.title] (XIV)" />
-    <about.93 ref="EchoesOfBattle.about" />
-
-    <title.94 value="[reference:EchoesOfBattle.title] (XV)" />
-    <about.94 ref="EchoesOfBattle.about" />
-
-    <title.106 value="[reference:EchoesOfBattle.title] (XVI)" />
-    <about.106 ref="EchoesOfBattle.about" />
-
-    <title.107 value="[reference:EchoesOfBattle.title] (XVII)" />
-    <about.107 ref="EchoesOfBattle.about" />
-
-    <title.108 value="[reference:EchoesOfBattle.title] (XVIII)" />
-    <about.108 ref="EchoesOfBattle.about" />
-
-    <title.109 value="[reference:EchoesOfBattle.title] (XIX)" />
-    <about.109 ref="EchoesOfBattle.about" />
-
-    <title.110 value="[reference:EchoesOfBattle.title] (XX)" />
-    <about.110 ref="EchoesOfBattle.about" />
-
-    <title.111 value="[reference:EchoesOfBattle.title] (XXI)" />
-    <about.111 ref="EchoesOfBattle.about" />
-
-    <title.112 value="[reference:EchoesOfBattle.title] (XXII)" />
-    <about.112 ref="EchoesOfBattle.about" />
-
-    <title.113 value="[reference:EchoesOfBattle.title] (XXIII)" />
-    <about.113 ref="EchoesOfBattle.about" />
-
-    <title.114 value="[reference:EchoesOfBattle.title] (XXIV)" />
-    <about.114 ref="EchoesOfBattle.about" />
-
-    <title.115 value="[reference:EchoesOfBattle.title] (XXV)" />
-    <about.115 ref="EchoesOfBattle.about" />
-
-    <title.14 value="Harnessing The Crystals" />
-    <about.14>
-      <p>Commander,</p>
-      <p>
-        Our scientists have received zetium examples gathered by our scouts.
-        They say that it is a very powerful and useful material and wish to
-        begin research of practical application of this new material.
-      </p>
-      <p>
-        Hurry! Go to your [reference:Buildings/ResearchCenter.name] and order 
-        research now. 
-      </p>
-    </about.14>
-
-    <title.15 value="Fruits of Patience" />
-    <about.15>
-      <p>Finally!</p>
+    </about.100>
+    
+    <title.110 value="Fruits of Patience" />
+    <about.110>
+      <p>Commander!</p>
       <p>
         Our research on [reference:Technologies/ZetiumExtraction.name] has 
         payed of. We are now able to build much needed buildings that will 
         extract precious zetium from these crystals. 
       </p>
-    </about.15>
-
-    <title.121 value="Holding Breath" />
-    <about.121>
+      <p>
+        Of course we must get rid of those aliens occupying zetium fields.
+        Assemble a strong army and attack the alien buildings.
+      </p>
+    </about.110>
+    
+    <title.120 value="Critical damage" />
+    <about.120>
+      <p>Commander!</p>
+      <p>
+        Our troops have been injured! We need some way to heal them. Tell scientists
+        to begin researching [obj:1:HealingCenter:what:dc] technology. Once they
+        have completed the task, build it immediately.
+      </p>
+    </about.120>
+    
+    <title.130 value="Saving Every Bit" />
+    <about.130>
+      <p>Welcome back, Commander.</p>
+      <p>
+        I'm afraid I've miscalculated when saying "there can't be too much of
+        resources". Our analytics have presented me with a plan of resource
+        extraction and energy production rates covering a few cycles. According
+        to their prognosis we won't be able to consume everything we are currently
+        producing. Although it may sound as bad news, in fact it is not. All we have
+        to do is build some additional storage buildings to store excess resources.
+      </p>
+      <p>
+        Order construction of buildings that store each resource type, 
+        Commander.
+      </p>
+    </about.130>
+    
+    <title.140 value="Strong economy" />
+    <about.140>
+      <p>Commander, hello again.</p>
+      <p>
+        Each and every empire needs strong economy. We must be prepared
+        for unexpectedly high demand for resources. Let's upgrade our mining
+        facilities.
+      </p>
+    </about.140>
+    
+    <title.150 value="Fulfilling our needs" />
+    <about.150>
+      <p>Hello, Commander.</p>
+      <p>In different times we need different things and it's not always
+      easy to plan ahead. Research a market so that we could trade with
+      other inhabitants of this galaxy.</p>
+      <p>After all they might be in need of something we have surplus and
+      vice versa. Why shouldn't we help each other? We could even make
+      a friend or two in this way.</p>
+    </about.150>
+    
+    <title.160 value="Holding Breath" />
+    <about.160>
       <p>Commander.</p>
       <p>We need more space for our people. Soon enough we won't have any
       rooms left.</p>
       <p>Commence building of living pods immediately!</p>
-    </about.121>
-
-    <title.16 value="Achieving Greatness" />
-    <about.16>
-      <p>Commander.</p>
-      <p>
-        As a great leader you have brought us many victories. All your efforts 
-        are appreciated. 
-      </p>
-    </about.16>
-
-
-    <title.28 value="More Glory" />
-    <about.28>
-      <p>Commander.</p>
-      <p>Your deeds are most glorious.</p>
-      <p>May luck be with you.</p>
-    </about.28>
-
-    <title.29 value="Even More Glory" />
-    <about.29>
-      <p>Commander.</p>
-      <p>
-        All our neighbors know about your skills. You are truly worthy. Keep it 
-        up! 
-      </p>
-    </about.29>
-
-    <title.30 value="Top of the Hill" />
-    <about.30>
-      <p>Commander.</p>
-      <p>
-        You are truly a great leader. Your people thrive and prosper under your 
-        ruling. 
-      </p>
-      <p>I Wish best luck in your future affairs, Commander.</p>
-    </about.30>
-
-    <title.33 value="The Unstoppable Force" />
-    <about.33>
-      <p>Commander.</p>
-      <p>
-        You are known in whole sector of this galaxy. Our allies respect you 
-        and our enemies fear you. 
-      </p>
-      <p>You are truly unstoppable.</p>
-    </about.33>
-
-    <title.64 value="Mayhem Unleashed" />
-    <about.64>
-      <p>Commander.</p>
-      <p>You are a leader in economy, science and war. Keep this on!</p>
-    </about.64>
-
-    <title.17 value="Saving Every Bit" />
-    <about.17>
-      <p>Welcome back, Commander.</p>
-      <p>
-        Now that we have a sufficient income for all three resource types we 
-        need to be sure they are not wasted. We need to build some additional 
-        storages to store excess resources we are not using at the moment. 
-      </p>
-      <p>
-        Order construction of buildings that store each resource type, 
-        Commander. 
-      </p>
-    </about.17>
-
-    <title.18 value="Reaching To The Stars" />
-    <about.18>
+    </about.160>
+    
+    <title.170 value="Reaching To The Stars" />
+    <about.170>
       <p>Commander.</p>
       <p>
         Our scientists have found a way to use zetium in space travel! This is 
         a glorious day! Order them to start researching of 
         [reference:Technologies/SpaceFactory.name] now. 
       </p>
-      <p>Galaxy awaits us!</p>
-    </about.18>
-
-    <title.19 value="Tools of Travel" />
-    <about.19>
+      <p>We need plans in order to build the factory so do not hesitate!</p>
+    </about.170>
+    
+    <title.180 value="Tools of Travel" />
+    <about.180>
       <p>Commander!</p>
       <p>
-        Now that we have [reference:Technologies/SpaceFactory.name] technology 
-        we must build a [reference:Buildings/SpaceFactory.name] on this planet. 
+        Space factory project and specifications of technologies to be used
+        have already been handed over to builders. Our hard-working colonists
+        are eager to grab their tools and begin the work. Order construction of
+        a space factory in this planet.
       </p>
       <p>
-        I suggest you construct on that gray leveled building ground - it looks 
-        like building on such terrain will save us a lot of time. 
+        Pay attention to those grey and level fields. Tey seem to be a perfect
+        place for construction. If we build the factory there, work will be
+        completed much sooner.
       </p>
-    </about.19>
-
-    <title.31 value="Threatening Space" />
-    <about.31>
+    </about.180>
+    
+    <title.190 value="Threatening Space" />
+    <about.190>
       <p>Hello, Commander.</p>
       <p>
         We have built our [reference:Buildings/SpaceFactory.name]. Now we need 
         ships to travel space. Unfortunately we cannot rely only on our 
         [reference:Units/Mule.name] class transporter ships. They are strongly 
         armored however without any offensive power they will be ripped apart 
-        in seconds by alien ships hovering planets and other objects in our 
+        in seconds by alien ships hovering above planets and other objects in our
         solar system. 
       </p>
       <p>
         We need combat ships to counter them. Go to your 
-        [reference:Buildings/SpaceFactory.name] and order construction now. 
+        [reference:Buildings/SpaceFactory.name] and order construction of your first
+        Crow class ship. 
       </p>
-    </about.31>
+    </about.190>
     
-    <title.119 value="Fearsome Fleets" />
-    <about.119>
+    <title.200 value="Spy revealed" />
+    <about.200>
+      <p>Commander!</p>
+      <p>
+        Our scanners have picked up an enemy space ship orbiting our planet.
+        It is definitely spying on us!
+      </p>
+      <p>
+        Assemble a fleet, lift it to the planet orbit and shoot down the enemy spy.
+      </p>
+    </about.200>
+    
+    <title.210 value="Expanding Ground" />
+    <about.210>
       <p>Commander.</p>
-      <p>Good job on building those crows. They are fast and deadly. I'm
-      so proud about them. Lets put them to a good use, shall we?</p>
-      <p>There are some alien dirac ships hovering nearby planet. I suggest
-      we take our fleet and wipe them out. That planet looks like a nice
-      expansion spot and I wouldn't want any alien scum flying around 
-      there.</p>
-    </about.119>
+      <p>
+        Now that we have mastered space travel we should start expanding to 
+        other planets. Our sensors indicate there is a nearby planet that can
+        sustain life. However it is guarded by alien ships. 
+      </p>
+      <p>
+        Use your fleet to destroy the guards and take over that planet. 
+      </p>
+      <p>To annex a planet we must land our ships on its soil.</p>
+    </about.210>
     
-    <title.120 value="Freighting Minerals" />
-    <about.120>
-      <p>Good job on cleaning up those diracs, Commander!</p>
-      <p>We sure showed them! Anyway, back to bussiness. Its an awful mess
-      down there after that battle - we've got wreckages flying everywhere.
-      We should clean it up.</p>
-      <p>Why the frowned face? Oh, I must have forgot to mention that those
+    <title.220 value="Economy of the Words" />
+    <about.220>
+      <p>Greetings, Commander,</p>
+      <p>
+        Let me congratulate you on taking ownership of the second planet.
+        We are now officially a multi-planetary civilization!
+        Of course we still need to build our base there and many other task awaits.
+      </p>
+      <p>
+        Our first task - development of second planet's economy. We need to construct
+        resource extractors so that we can further advance growth of the colony.
+      </p>
+      <p>So let us not waste any time and start working.</p>
+    </about.220>
+    
+    <title.230 value="Freighting Minerals" />
+    <about.230>
+      <p>Its an awful mess down there after that battle - we've got wreckages
+      floating everywhere. We should clean it up.</p>
+      <p>Why the frowned face? Oh, I must have forgotten to mention that those
       wreckages can be used as resources in our worlds. Heh, I see you're 
       smiling already.</p>
-      <p>Right on! Lets collect those resources! Build your first mule 
-      class ship!</p>
-    </about.120>
-
-    <title.35 value="Cleansing" />
-    <about.35>
+      <p>And for that we will need a mule class ship. Right on! Lets collect
+      those resources! Build your first mule class ship!</p>
+    </about.230>
+    
+    <title.240 value="Cleansing" />
+    <about.240>
       <p>Hello, Commander.</p>
       <p>
         As we have built our [reference:Buildings/SpaceFactory.name] we should 
-        train our pilots a bit! As an easy first task go pick on some Diracs. 
+        train our pilots a bit! As an easy first task go pick on some Diracs.
       </p>
-    </about.35>
-
-    <title.36 value="Boiling Waters" />
-    <about.36>
+    </about.240>
+    
+    <title.250 value="Boiling Waters" />
+    <about.250>
       <p>Commander.</p>
       <p>
         Your recent activity in this region has made alien ships more cautious. 
@@ -2989,65 +2462,20 @@
         their powerful [reference:Units/Thor.name] class ships. Show them who 
         rules this galaxy! 
       </p>
-    </about.36>
-
-    <title.37 value="Fire Against Fire" />
-    <about.37>
+    </about.250>
+    
+    <title.260 value="Fire Against Fire" />
+    <about.260>
       <p>Greetings, Commander.</p>
       <p>
-        It seems there is no stopping these alien ships. You must strike at 
+        It seems there is no stopping those alien ships. You must strike at 
         their strongest spot to make them bow down to your might! It is the 
         only way to stop the rebellion! 
       </p>
-    </about.37>
-
-    <title.20 value="Expanding Ground" />
-    <about.20>
-      <p>Commander.</p>
-      <p>
-        Now that we have mastered space travel we should start expanding to 
-        other planets. Our sensors indicate there is a nearby life supporting 
-        planet. However it is guarded by alien ships. 
-      </p>
-      <p>
-        Use fleet you just built to annex that planet and take over its 
-        control. 
-      </p>
-      <p>To annex a planet we must land with our ships on its soil.</p>
-    </about.20>
-
-    <title.122 value="Fortifying Colonies" />
-    <about.122>
-      <p>Commander!</p>
-      <p>
-        We have found some abandoned mobile structures in our second colony
-        ready for deployment. We should use them to fortify our second base as
-        our intelligence reports raiders are heading this way.
-      </p>
-      <p>Go, deploy them at once!</p>
-    </about.122>
-
-    <title.21 value="The Second Outpost" />
-    <about.21>
-      <p>Great job, Commander!</p>
-      <p>
-        We now control two planets! We should start building immediately! Load 
-        your Mobile Deployable Headquarters into our 
-        [reference:Units/Mule.name] and travel to our new colony. 
-      </p>
-      <p>
-        Deploy that [reference:Units/Mdh.name] to 
-        [reference:Buildings/Headquarters.name] and start constructing. 
-      </p>
-      <p>
-        Oh, and I suggest we take as many resources as we can with that 
-        [reference:Units/Mule.name] to our new colony. They will prove to be 
-        very useful there. 
-      </p>
-    </about.21>
-
-    <title.34 value="Eye in the Sky" />
-    <about.34>
+    </about.260>
+    
+    <title.270 value="Eye in the Sky" />
+    <about.270>
       <p>Commander!</p>
       <p>
         We now have plenty of space in our new colony. After establishing an 
@@ -3064,152 +2492,616 @@
         if you do not have enough energy generated. And if it runs out of 
         energy - it will simply shut down keeping you blind from enemy actions. 
       </p>
-    </about.34>
+    </about.270>
+    
+    <title.280 value="Technical progress" />
+    <about.280>
+      <p>Greetings, Commander.</p>
+      <p>
+         Our radar have been completed and we now see that other solar systems
+         with unoccupied planets exist. Our strategists say that one more planet
+         would be of a great use for us. However, to colonise it we need some
+         special equipment that can only be produced in a ground factory.
+      </p>
+      <p>
+        So do not hesitate. Begin researching Ground Factory immediately.
+      </p>
+    </about.280>
+    
+    <title.290 value="MDH" />
+    <about.290>
+      <p>Commander.</p>
+      <p>
+        We already have a ground factory. We now require Mobile Deployable
+        Headquarters technology, or MDH for short. The MDH had already
+        been deployed in our second planet once we arrived there. However that
+        probably is only a fortunate coincidence.
+      </p>
+      <p>
+        Since the travel will take a great deal of time it would be
+        unpleasant if and MDH wasn't already on the planet. So our own unit will
+        come in handy since we want to colonise that third planet.
+      </p>
+    </about.290>
+    
+    <title.300 value="The third world" />
+    <about.300>
+      <p>Commander.</p>
+      <p>
+        The MDH technology is now at our disposal. The only thing left for us to do
+        is fly to another solar systems and take control of a third planet.
+      </p>
+      <p>
+        Use your ground factory to build an MDH unit. Load that unit to a mule class
+        ship and send it to a third planet along with an escort. Do not forget to
+        bring along some ground troops - the planet will probably be guarded by
+        alien forces.
+      </p>
+      <p>Good luck!</p>
+    </about.300>
+    
+    <title.310 value="Fortifying Colonies" />
+    <about.310>
+      <p>Commander!</p>
+      <p>
+         Our intelligence reports the attack by alien forces on our third colony
+         is imminent. We must build up defences quickly to ensure safety of our people.
+      </p>
+      <p>
+         You have been rewarded with a few mobile turrets for the completion of your
+         last task. You can claim them directly to your third planet and deploy
+         the turrets there.
+      </p>
+    </about.310>
+    
+    <title.320 value="New economy" />
+    <about.320>
+      <p>Commander.</p>
+      <p>
+        We require new technologies to boost our economy in the new planet.
+        Our scientists think that after analyzing alien mining facilities they
+        could adapt their technologies for increasing resource extraction rates.
+      </p>
+      <p>
+        Research new extractor technologies and build those advanced extractors
+        in the third planet. And do not forget to replace our old mining facilities
+        in other two planets with more advanced counterparts.
+      </p>
+    </about.320>
+    
+    <title.330 value="Circle of Friends" />
+    <about.330>
+      <p>Hello, Commander.</p>
+      <p>
+        Turns out this galaxy is much larger than we have anticipated. And in such a
+        huge galaxy fighting alone is very difficult.
+      </p>
+      <p>
+        Contact other commanders and become a member of an alliance. You can research
+        Alliance technology and create your own alliance or you can expect someone to
+        invite you to an already existing alliance.
+      </p>
+    </about.330>
+    
+    <title.340 value="Closer to Victory" />
+    <about.340>
+      <p>Commander.</p>
+      <p>
+        In order to win, we together with our allies need to collect a certain
+        amount of Victory Points, or VPs for short. Try to collect a few VPs and
+        you will be generously rewarded.
+      </p>
+    </about.340>
+    
+    <!-- ################### -->
+    <!-- ### Side quests ### -->
+    <!-- ################### -->
 
-    <title.38 value="Gaining Ground" />
-    <about.38>
+    <title.10010 value="Leveling to the Ground" />
+    <about.10010>
+      <p>Commander.</p>
+      <p>
+        There are lots and lots of alien mines draining the precious metal deposits.
+      </p>
+      <p>
+        We must get rid of them so that construction of our own extractors
+        would be possible.
+      </p>
+    </about.10010>
+
+    <EconomySideQuest.title value="Industrial zone"/>
+    <EconomySideQuest.about>
+      <p>Commander.</p>
+      <p>
+        The colonists and the base crew admire the growth of the power of our
+        economy. But we can't stop at the halfway. Let us increase our industrial
+        potential. Let us not stop the progress!
+      </p>
+    </EconomySideQuest.about>
+    
+    <title.10020 ref="EconomySideQuest.title" />
+    <about.10020 ref="EconomySideQuest.about" />
+
+    <title.10021 value="[reference:EconomySideQuest.title] (II)" />
+    <about.10021 ref="EconomySideQuest.about" />
+
+    <title.10022 value="[reference:EconomySideQuest.title] (III)" />
+    <about.10022 ref="EconomySideQuest.about" />
+
+    <title.10023 value="[reference:EconomySideQuest.title] (IV)" />
+    <about.10023 ref="EconomySideQuest.about" />
+
+    <title.10024 value="[reference:EconomySideQuest.title] (V)" />
+    <about.10024 ref="EconomySideQuest.about" />
+
+    <title.10040 value="[reference:EconomySideQuest.title] (VI)" />
+    <about.10040 ref="EconomySideQuest.about" />
+
+    <title.10041 value="[reference:EconomySideQuest.title] (VII)" />
+    <about.10041 ref="EconomySideQuest.about" />
+
+    <title.10042 value="[reference:EconomySideQuest.title] (VIII)" />
+    <about.10042 ref="EconomySideQuest.about" />
+
+    <title.10043 value="[reference:EconomySideQuest.title] (IX)" />
+    <about.10043 ref="EconomySideQuest.about" />
+
+    <title.10044 value="[reference:EconomySideQuest.title] (X)" />
+    <about.10044 ref="EconomySideQuest.about" />
+
+    <title.10045 value="[reference:EconomySideQuest.title] (XI)" />
+    <about.10045 ref="EconomySideQuest.about" />
+
+    <title.10046 value="[reference:EconomySideQuest.title] (XII)" />
+    <about.10046 ref="EconomySideQuest.about" />
+
+    <title.10047 value="[reference:EconomySideQuest.title] (XIII)" />
+    <about.10047 ref="EconomySideQuest.about" />
+
+    <title.10048 value="[reference:EconomySideQuest.title] (XIV)" />
+    <about.10048 ref="EconomySideQuest.about" />
+
+    <title.10049 value="[reference:EconomySideQuest.title] (XV)" />
+    <about.10049 ref="EconomySideQuest.about" />
+
+    <title.10060 value="[reference:EconomySideQuest.title] (XVI)" />
+    <about.10060 ref="EconomySideQuest.about" />
+
+    <title.10061 value="[reference:EconomySideQuest.title] (XVII)" />
+    <about.10061 ref="EconomySideQuest.about" />
+
+    <title.10062 value="[reference:EconomySideQuest.title] (XVIII)" />
+    <about.10062 ref="EconomySideQuest.about" />
+
+    <title.10063 value="[reference:EconomySideQuest.title] (XIX)" />
+    <about.10063 ref="EconomySideQuest.about" />
+
+    <title.10064 value="[reference:EconomySideQuest.title] (XX)" />
+    <about.10064 ref="EconomySideQuest.about" />
+
+    <title.10065 value="[reference:EconomySideQuest.title] (XXI)" />
+    <about.10065 ref="EconomySideQuest.about" />
+
+    <title.10066 value="[reference:EconomySideQuest.title] (XXII)" />
+    <about.10066 ref="EconomySideQuest.about" />
+
+    <title.10067 value="[reference:EconomySideQuest.title] (XXIII)" />
+    <about.10067 ref="EconomySideQuest.about" />
+
+    <title.10068 value="[reference:EconomySideQuest.title] (XXIV)" />
+    <about.10068 ref="EconomySideQuest.about" />
+
+    <title.10069 value="[reference:EconomySideQuest.title] (XXV)" />
+    <about.10069 ref="EconomySideQuest.about" />
+    
+    <WarSideQuest.title value="Echos Of Battles" />
+    <WarSideQuest.about>
+      <p>Commander.</p>
+      <p>
+        Galaxy is dangerous and unquiet place. Of course, we are peaceful people,
+        but the dangers around us may recognize our sober minds as a sign of fear
+        and a lack of strong will. We must defend ourselves against predatory neighbours. 
+        And the best defence... yes, you've guessed right, Commander - is
+        a good offence! Let's launch a preemptive strike on them!
+      </p>
+      <p>
+         Remember that prevention of evil intention is a legitimate way of defence.
+         Do not waver. Attack the alien forces without fear each time you encounter them.
+         We can't reason with them anyway.
+      </p>
+    </WarSideQuest.about>
+    
+    <title.10100 ref="WarSideQuest.title" />
+    <about.10100 ref="WarSideQuest.about" />
+
+    <title.10101 value="[reference:WarSideQuest.title] (II)" />
+    <about.10101 ref="WarSideQuest.about" />
+
+    <title.10102 value="[reference:WarSideQuest.title] (III)" />
+    <about.10102 ref="WarSideQuest.about" />
+
+    <title.10103 value="[reference:WarSideQuest.title] (IV)" />
+    <about.10103 ref="WarSideQuest.about" />
+
+    <title.10104 value="[reference:WarSideQuest.title] (V)" />
+    <about.10104 ref="WarSideQuest.about" />
+
+    <title.10120 value="[reference:WarSideQuest.title] (VI)" />
+    <about.10120 ref="WarSideQuest.about" />
+
+    <title.10121 value="[reference:WarSideQuest.title] (VII)" />
+    <about.10121 ref="WarSideQuest.about" />
+
+    <title.10122 value="[reference:WarSideQuest.title] (VIII)" />
+    <about.10122 ref="WarSideQuest.about" />
+
+    <title.10123 value="[reference:WarSideQuest.title] (IX)" />
+    <about.10123 ref="WarSideQuest.about" />
+
+    <title.10124 value="[reference:WarSideQuest.title] (X)" />
+    <about.10124 ref="WarSideQuest.about" />
+
+    <title.10125 value="[reference:WarSideQuest.title] (XI)" />
+    <about.10125 ref="WarSideQuest.about" />
+
+    <title.10126 value="[reference:WarSideQuest.title] (XII)" />
+    <about.10126 ref="WarSideQuest.about" />
+
+    <title.10127 value="[reference:WarSideQuest.title] (XIII)" />
+    <about.10127 ref="WarSideQuest.about" />
+
+    <title.10128 value="[reference:WarSideQuest.title] (XIV)" />
+    <about.10128 ref="WarSideQuest.about" />
+
+    <title.10129 value="[reference:WarSideQuest.title] (XV)" />
+    <about.10129 ref="WarSideQuest.about" />
+
+    <title.10140 value="[reference:WarSideQuest.title] (XVI)" />
+    <about.10140 ref="WarSideQuest.about" />
+
+    <title.10141 value="[reference:WarSideQuest.title] (XVII)" />
+    <about.10141 ref="WarSideQuest.about" />
+
+    <title.10142 value="[reference:WarSideQuest.title] (XVIII)" />
+    <about.10142 ref="WarSideQuest.about" />
+
+    <title.10143 value="[reference:WarSideQuest.title] (XIX)" />
+    <about.10143 ref="WarSideQuest.about" />
+
+    <title.10144 value="[reference:WarSideQuest.title] (XX)" />
+    <about.10144 ref="WarSideQuest.about" />
+
+    <title.10145 value="[reference:WarSideQuest.title] (XXI)" />
+    <about.10145 ref="WarSideQuest.about" />
+
+    <title.10146 value="[reference:WarSideQuest.title] (XXII)" />
+    <about.10146 ref="WarSideQuest.about" />
+
+    <title.10147 value="[reference:WarSideQuest.title] (XXIII)" />
+    <about.10147 ref="WarSideQuest.about" />
+
+    <title.10148 value="[reference:WarSideQuest.title] (XXIV)" />
+    <about.10148 ref="WarSideQuest.about" />
+
+    <title.10149 value="[reference:WarSideQuest.title] (XXV)" />
+    <about.10149 ref="WarSideQuest.about" />
+    
+    <title.10160 value="Achieving Greatness" />
+    <about.10160>
+      <p>Commander.</p>
+      <p>
+        As a great leader you have brought us many victories. All your efforts 
+        are appreciated. 
+      </p>
+    </about.10160>
+    
+    <title.10170 value="More Glory" />
+    <about.10170>
+      <p>Commander.</p>
+      <p>Your deeds are most glorious.</p>
+      <p>May luck be with you.</p>
+    </about.10170>
+    
+    <title.10180 value="Even More Glory" />
+    <about.10180>
+      <p>Commander.</p>
+      <p>
+        All our neighbors know of your skills. You are truly worthy. Keep it
+        up! 
+      </p>
+    </about.10180>
+    
+    <title.10190 value="Top of the Hill" />
+    <about.10190>
+      <p>Commander.</p>
+      <p>
+        People who have not been lucky enough to thrive and prosper under your 
+        ruling do not understand the meaning of those words. But do. We are
+         grateful for that, Commander.
+      </p>
+      <p>I am speaking on behalf of all the people of our colonies.</p>
+    </about.10190>
+    
+    <title.10200 value="The Unstoppable Force" />
+    <about.10200>
+      <p>Commander.</p>
+      <p>
+        You are known in whole sector of this galaxy. Billions of mothers name
+        their suns after you. Our allies respect you and our enemies fear you.
+      </p>
+      <p>You are truly unstoppable.</p>
+    </about.10200>
+    
+    <title.10210 value="Deity" />
+    <about.10210>
+      <p>Commander.</p>
+      <p>
+         You are a leader in economy, science and war. We are leaders everywhere.
+         Have you considered creating your own religion?
+      </p>
+    </about.10210>
+    
+    <ScienceSideQuest.title value="Thirst Of Knowledge" />
+    <ScienceSideQuest.about>
+      <p>Commander.</p>
+      <p>
+        Inventions! Progress! Science is the key for our advancement. Eenemies
+        may build more fleets but we will build better ones! Invest into
+        research and you'll see that it is worth its price.
+      </p>
+    </ScienceSideQuest.about>
+    
+    <title.10220 ref="ScienceSideQuest.title" />
+    <about.10220 ref="ScienceSideQuest.about" />
+
+    <title.10225 value="[reference:ScienceSideQuest.title] (II)" />
+    <about.10225 ref="ScienceSideQuest.about" />
+
+    <title.10230 value="[reference:ScienceSideQuest.title] (III)" />
+    <about.10230 ref="ScienceSideQuest.about" />
+
+    <title.10235 value="[reference:ScienceSideQuest.title] (IV)" />
+    <about.10235 ref="ScienceSideQuest.about" />
+
+    <title.10240 value="[reference:ScienceSideQuest.title] (V)" />
+    <about.10240 ref="ScienceSideQuest.about" />
+
+    <title.10245 value="[reference:ScienceSideQuest.title] (VI)" />
+    <about.10245 ref="ScienceSideQuest.about" />
+
+    <title.10250 value="[reference:ScienceSideQuest.title] (VII)" />
+    <about.10250 ref="ScienceSideQuest.about" />
+
+    <title.10255 value="[reference:ScienceSideQuest.title] (VIII)" />
+    <about.10255 ref="ScienceSideQuest.about" />
+
+    <title.10260 value="[reference:ScienceSideQuest.title] (IX)" />
+    <about.10260 ref="ScienceSideQuest.about" />
+
+    <title.10265 value="[reference:ScienceSideQuest.title] (X)" />
+    <about.10265 ref="ScienceSideQuest.about" />
+
+    <title.10270 value="[reference:ScienceSideQuest.title] (XI)" />
+    <about.10270 ref="ScienceSideQuest.about" />
+
+    <title.10275 value="[reference:ScienceSideQuest.title] (XII)" />
+    <about.10275 ref="ScienceSideQuest.about" />
+
+    <title.10280 value="[reference:ScienceSideQuest.title] (XIII)" />
+    <about.10280 ref="ScienceSideQuest.about" />
+
+    <title.10285 value="[reference:ScienceSideQuest.title] (XIV)" />
+    <about.10285 ref="ScienceSideQuest.about" />
+
+    <title.10290 value="[reference:ScienceSideQuest.title] (XV)" />
+    <about.10290 ref="ScienceSideQuest.about" />
+    
+    <TechnologySideQuest.title value="Mastering Science" />
+    <TechnologySideQuest.about>
+      <p>Commander.</p>
+      <p>
+        This technology is extremely important for our future development.
+        Research it and you will be greatly awarded.
+      </p>
+    </TechnologySideQuest.about>
+    
+    <title.10300 ref="TechnologySideQuest.title" />
+    <about.10300 ref="TechnologySideQuest.about" />
+
+    <title.10305 value="[reference:TechnologySideQuest.title] (II)" />
+    <about.10305 ref="TechnologySideQuest.about" />
+
+    <title.10310 value="[reference:TechnologySideQuest.title] (III)" />
+    <about.10310 ref="TechnologySideQuest.about" />
+
+    <title.10315 value="[reference:TechnologySideQuest.title] (IV)" />
+    <about.10315 ref="TechnologySideQuest.about" />
+
+    <title.10320 value="[reference:TechnologySideQuest.title] (V)" />
+    <about.10320 ref="TechnologySideQuest.about" />
+
+    <title.10325 value="[reference:TechnologySideQuest.title] (VI)" />
+    <about.10325 ref="TechnologySideQuest.about" />
+
+    <title.10330 value="[reference:TechnologySideQuest.title] (VII)" />
+    <about.10330 ref="TechnologySideQuest.about" />
+
+    <title.10335 value="[reference:TechnologySideQuest.title] (VIII)" />
+    <about.10335 ref="TechnologySideQuest.about" />
+
+    <title.10340 value="[reference:TechnologySideQuest.title] (IX)" />
+    <about.10340 ref="TechnologySideQuest.about" />
+
+    <title.10345 value="[reference:TechnologySideQuest.title] (X)" />
+    <about.10345 ref="TechnologySideQuest.about" />
+
+    <title.10350 value="[reference:TechnologySideQuest.title] (XI)" />
+    <about.10350 ref="TechnologySideQuest.about" />
+
+    <title.10355 value="[reference:TechnologySideQuest.title] (XII)" />
+    <about.10355 ref="TechnologySideQuest.about" />
+    
+    <title.10400 value="Things Around Us" />
+    <about.10400>
+      <p>
+        In our [reference:Buildings/ResearchCenter.name] a lot of
+        scientists are eager to explore. Our scouts have discovered quite a few
+        interesting objects in this planet and we have people burning to go 
+        there. 
+      </p>
+      <p>
+        I suggest we try exploring those objects. I am certain there is more to 
+        discover. 
+      </p>
+    </about.10400>
+    
+    <title.10405 value="[reference:title.10400] (II)" />
+    <about.10405>
+      <p>
+        Explorers are back but they are burning of their desire to continue the
+        search. By all means we should let them do it.
+      </p>
+    </about.10405>
+    
+    <title.10410 value="Useful Discoveries" />
+    <about.10410>
+      <p>Well, that was unexpected!</p>
+      <p>
+        Bringing a bunch of those alien robots really made the crowd crazy in 
+        our, ehrm, excuse me, jar-head lab. They demand we mount an even
+        bigger expedition to another object. They say they found some 
+        references that they might find one of these 
+        [reference:Units/Glancer.name] robots down there. And that would 
+        certainly prove useful to us. 
+      </p>
+      <p>I say let them go. Order a mega-exploration mission.</p>
+    </about.10410>
+    
+    <title.10415 value="[reference:title.10410] (II)" />
+    <about.10415>
+      <p>
+        Scholars say that somewhere around the unexplored objects we could
+        find a whole army! Would you like to try, Commander?
+      </p>
+    </about.10415>
+    
+    <title.10420 value="Unsatisfiable Intelligence" />
+    <about.10420>
+      <p>They are out of their minds!</p>
+      <p>
+        Our scientists want to mount yet another expedition. To the huge 
+        mountain out there. However it requires a lot of personnel and we 
+        probably don't have enough right now. 
+      </p>
+      <p>
+        We need to upgrade our [reference:Buildings/ResearchCenter.name]. 
+        Beware that while upgrading you won't be able to research any 
+        technologies. However you will still be able to send exploration 
+        missions. 
+      </p>
+      <p>It is up to you, Commander.</p>
+    </about.10420>
+    
+    <title.10425 value="Spoils of Curiosity" />
+    <about.10425>
+      <p>Wonderful news!</p>
+      <p>
+        Remember that research expedition you sent out recently? They are back 
+        and they brought alien robots with them! Of course they are a bit damaged 
+        but our scientists have managed to turn them on. They are now loyal 
+        servants of yours! Isn't that wonderful news? 
+      </p>
+      <p>
+        Oh, that research team also brought back some resources with them. 
+        Perhaps it would be wise to continue our exploration of that site? You 
+        never know what you might find there... It could prove very useful. 
+      </p>
+    </about.10425>
+    
+    <title.10450 value="The First Reward" />
+    <about.10450>
+      <p>Commander.</p>
+      <p>
+        Make sure we have enough mines to fulfill our basic needs.
+        Someone is whispering me we will need much more of them soon...
+      </p>
+    </about.10450>
+    
+    <title.10460 value="Empowering Riches" />
+    <about.10460>
+      <p>Commander!</p>
+      <p>In your last mission, "[reference:title.8]" you were rewarded with
+      some creds. Go and take your reward if you haven't done so already.</p>
+      <p>Creds are a useful and powerful tool. They can be spent on various
+      tasks like accelerating your constructions, researches and unit
+      training. They can even be used for moving buildings or speeding up
+      fleets!</p>
+      <p>And how do you get more creds? You can buy them from our shop which
+      is accessible from N44 menu in bottom-left corner. You can also gain
+      them by conquering and holding special battleground planets about which
+      you will learn later.</p>
+      <p>And you can become a VIP. Becoming a VIP gives you more creds than
+      you spend on the VIP service and allows you to use them daily as you
+      see fit.</p>
+      <p>So go, order your first VIP and be rewarded greatly!</p>
+    </about.10460>
+    
+    <title.10470 value="Could you work a little faster?" />
+    <about.10470>
+      <p>Congratulations on becoming a VIP, Commander.</p>
+      <p>As of now you have a daily number of creds to spend so why not spend
+      some on something that is really useful?</p>
+      <p>I suggest we accelerate construction of any building. There are
+      plenty of different buildings we will need sooner of later. Speed up
+      their construction with creds.</p>
+    </about.10470>
+    
+    <title.10500 value="Gaining Ground" />
+    <about.10500>
       <p>Commander.</p>
       <p>
         It is time to expand your empire. Gain another colony so we could 
         thrive there! Make our ancestors proud. 
       </p>
-    </about.38>
-
-
+    </about.10500>
     
-    <expanding_empire.title value="Expanding Empire" />
-
-    <title.39 value="[reference:expanding_empire.title]" />
-    <about.39>
+    <title.10510 value="Growing empire" />
+    <about.10510>
       <p>Good job, Commander.</p>
       <p>
         Even if we have conquered that pesky world we should not stop with it. 
         There is much ground to cover. Go and conquer yet another world. Make 
         it fall to the might of our empire! 
       </p>
-    </about.39>
-
-    <title.40 value="[reference:expanding_empire.title] (II)" />
-    <about.40>
-      <p>Commander.</p>
-      <p>I am sure you are happy with our empire. But will you stop at this?</p>
-    </about.40>
-
-    <title.41 value="[reference:expanding_empire.title] (III)" />
-    <about.41>
-      <p>Commander.</p>
-      <p>
-        It is astonishing work you have done! But we need more ground to live 
-        on, our population is growing. You need to acquire more planets! 
-      </p>
-    </about.41>
-
-    <title.42 value="[reference:expanding_empire.title] (IV)" />
-    <about.42>
-      <p>Commander.</p>
-      <p>
-        We have ultimate empire, all our puny neighbors are in fear. I say - 
-        lets take one more planet from them, just to show them our might. Shall 
-        we? 
-      </p>
-    </about.42>
-
-    <title.43 value="Corrupting Transport Lines" />
-    <about.43>
-      <p>Commander.</p>
-      <p>
-        We should destroy some enemy transporters and corrupt their supplies. 
-        Hunt down some Mules and cripple their transport lines. 
-      </p>
-    </about.43>
-
-    <destroying_enemy_will.title value="Destroying Enemy Will" />
-    <destroying_enemy_will.about>
-      <p>Commander.</p>
-      <p>
-        We have spotted nearby enemy activity. Destroy their fleet and troops 
-        to crush the resistance and show them our true power! 
-      </p>
-    </destroying_enemy_will.about>
-
-    <title.44 ref="destroying_enemy_will.title" />
-    <about.44 ref="destroying_enemy_will.about" />
-
-    <title.45 value="[reference:destroying_enemy_will.title] (II)" />
-    <about.45 ref="destroying_enemy_will.about" />
-
-    <title.46 value="[reference:destroying_enemy_will.title] (III)" />
-    <about.46 ref="destroying_enemy_will.about" />
-
-    <title.47 value="[reference:destroying_enemy_will.title] (IV)" />
-    <about.47 ref="destroying_enemy_will.about" />
-
-    <title.48 value="[reference:destroying_enemy_will.title] (V)" />
-    <about.48 ref="destroying_enemy_will.about" />
-
-    <title.49 value="[reference:destroying_enemy_will.title] (VI)" />
-    <about.49 ref="destroying_enemy_will.about" />
-
-    <title.50 value="[reference:destroying_enemy_will.title] (VII)" />
-    <about.50 ref="destroying_enemy_will.about" />
-
-    <title.51 value="[reference:destroying_enemy_will.title] (VIII)" />
-    <about.51 ref="destroying_enemy_will.about" />
-
-    <title.52 value="[reference:destroying_enemy_will.title] (IX)" />
-    <about.52 ref="destroying_enemy_will.about" />
-
-    <title.53 value="[reference:destroying_enemy_will.title] (X)" />
-    <about.53 ref="destroying_enemy_will.about" />
-
-    <title.54 value="[reference:destroying_enemy_will.title] (XI)" />
-    <about.54 ref="destroying_enemy_will.about" />
-
-    <crushing_enemy_defenses.title value="Crushing Enemy Defenses" />
-    <crushing_enemy_defenses.about>
-      <p>Commander.</p>
-      <p>
-        We cannot allow our enemies to reign for no more! Attack their planets 
-        and crush their defenses! Hurry! 
-      </p>
-    </crushing_enemy_defenses.about>
-
-    <title.55 ref="crushing_enemy_defenses.title" />
-    <about.55 ref="crushing_enemy_defenses.about" />
-
-    <title.56 value="[reference:crushing_enemy_defenses.title] (II)" />
-    <about.56 ref="crushing_enemy_defenses.about" />
-
-    <title.57 value="[reference:crushing_enemy_defenses.title] (III)" />
-    <about.57 ref="crushing_enemy_defenses.about" />
-
-    <title.58 value="[reference:crushing_enemy_defenses.title] (IV)" />
-    <about.58 ref="crushing_enemy_defenses.about" />
-
-    <title.59 value="[reference:crushing_enemy_defenses.title] (V)" />
-    <about.59 ref="crushing_enemy_defenses.about" />
-
-    <title.60 value="[reference:crushing_enemy_defenses.title] (VI)" />
-    <about.60 ref="crushing_enemy_defenses.about" />
-
-    <title.61 value="[reference:crushing_enemy_defenses.title] (VII)" />
-    <about.61 ref="crushing_enemy_defenses.about" />
-
-    <title.62 value="[reference:crushing_enemy_defenses.title] (VIII)" />
-    <about.62 ref="crushing_enemy_defenses.about" />
-
-    <title.63 value="[reference:crushing_enemy_defenses.title] (IX)" />
-    <about.63 ref="crushing_enemy_defenses.about" />
-
-    <title.65 value="Overtaking Enemies" />
-    <about.65>
+    </about.10510>
+    
+    <DestroyingEnemies.title value="Destroying Enemy Will" />
+    <DestroyingEnemies.about>
       <p>Commander!</p>
       <p>
-        We have enemies at our front lines! We must stop them! Go ahead and 
-        conquer one of their worlds. That will most certainly stop them from 
-        advancing on us. 
+        Shake the grounds of our enemies' power! Let us destroy the cornerstone
+        of their empire - annihilate enemy forces.
       </p>
-    </about.65>
+    </DestroyingEnemies.about>
+    
+    <title.10550 value="[reference:DestroyingEnemies.title] (I)" />
+    <about.10550 ref="DestroyingEnemies.about" />
+
+    <title.10555 value="[reference:DestroyingEnemies.title] (II)" />
+    <about.10555 ref="DestroyingEnemies.about" />
+
+    <title.10560 value="[reference:DestroyingEnemies.title] (III)" />
+    <about.10560 ref="DestroyingEnemies.about" />
+
+    <title.10565 value="[reference:DestroyingEnemies.title] (IV)" />
+    <about.10565 ref="DestroyingEnemies.about" />
+
+    <title.10570 value="[reference:DestroyingEnemies.title] (V)" />
+    <about.10570 ref="DestroyingEnemies.about" />
+
+    <title.10575 value="[reference:DestroyingEnemies.title] (VI)" />
+    <about.10575 ref="DestroyingEnemies.about" />
+
   </Quests>
 
   <Ratings>

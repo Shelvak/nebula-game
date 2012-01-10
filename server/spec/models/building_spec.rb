@@ -105,6 +105,14 @@ describe Building do
       end
     end
 
+    it "should fail if building is not destroyable" do
+      with_config_values 'buildings.test_building.destroyable' => false do
+        lambda do
+          @building.self_destruct!
+        end.should raise_error(GameLogicError)
+      end
+    end
+
     it "should progress objective" do
       Objective::SelfDestruct.should_receive(:progress).with(@building)
       @building.self_destruct!

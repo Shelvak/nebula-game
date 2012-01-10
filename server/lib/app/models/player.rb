@@ -14,6 +14,9 @@ class Player < ActiveRecord::Base
   belongs_to :alliance
   belongs_to :galaxy
   # FK :dependent => :delete_all
+  has_many :solar_systems
+  has_one :home_solar_system, :class_name => SolarSystem.to_s
+  # FK :dependent => :delete_all
   has_many :fow_ss_entries
   # FK :dependent => :delete_all
   has_many :fow_galaxy_entries
@@ -56,9 +59,11 @@ class Player < ActiveRecord::Base
     1 => :first_time,
     2 => :vip_free,
     3 => :referral_submitted,
-    # For defensive portals - skip ally planets when transfering. Don't send
+    # For defensive portals - skip ally planets when transferring. Don't send
     # units to ally planets or receive units from them.
     4 => :portal_without_allies,
+    # This player has been detached from galaxy map.
+    5 => :detached,
     # No index there anyway.
     :flag_query_mode => :bit_operator,
     :check_for_column => false
@@ -419,12 +424,17 @@ class Player < ActiveRecord::Base
   end
 
   # Before +Player+ destruction leave alliance if he is in one.
-  # Upon +Player+ destroy all shielded solar systems should become dead
-  # stars.
   before_destroy do
+    # Dispatch that home solar system is destroyed. This needs to be in
+    # before_destroy so that visibilities can be gathered.
+    home_ss = home_solar_system
+    EventBroker.fire(
+      Event::FowChange::SsDestroyed.all_except(home_ss.id, id),
+      EventBroker::FOW_CHANGE,
+      EventBroker::REASON_SS_ENTRY
+    ) unless home_ss.detached?
+
     leave_alliance! unless alliance_id.nil?
-    solar_system_ids = planets.map(&:solar_system_id).uniq
-    SolarSystem.shielded.where(:id => solar_system_ids).each(&:die!)
     true
   end
 
@@ -451,6 +461,10 @@ class Player < ActiveRecord::Base
   after_save do
     dispatcher = Dispatcher.instance
     dispatcher.update_player(self) if dispatcher.connected?(id)
+
+    Objective::BeInAlliance.progress(self) \
+      if alliance_id_changed? && ! alliance_id.nil?
+
     if alliance_id_changed? || language_changed?
       hub = Chat::Pool.instance.hub_for(self)
       hub.on_alliance_change(self) if alliance_id_changed?
@@ -504,6 +518,115 @@ class Player < ActiveRecord::Base
         self.scientists += scientists_exploring
         return if self.scientists >= scientists
       end
+    end
+  end
+
+  # Can this players home solar system be moved?
+  def relocatable?
+    return false unless alliance_id.nil?
+    return false if Route.where(:player_id => id).exists?
+
+    home_ss_id = SolarSystem.select("id").where(:player_id => id).c_select_value
+    raise "Home solar system could not be found for #{self}!" if home_ss_id.nil?
+
+    return false if SsObject::Planet.where(:player_id => id).
+      where("solar_system_id!=?", home_ss_id).exists?
+
+    home_planet_ids = SsObject::Planet.
+      select("id").
+      where(:solar_system_id => home_ss_id).
+      c_select_values
+    raise "No home planets could not be found for #{self}!" \
+      if home_planet_ids.blank?
+
+    return false if Unit.where(:player_id => id).
+      where(
+        "location_type=? OR (location_type=? AND location_id!=?) OR " +
+          "(location_type=? AND location_id NOT IN (?))",
+          Location::GALAXY,
+          Location::SOLAR_SYSTEM, home_ss_id,
+          Location::SS_OBJECT, home_planet_ids
+      ).exists?
+
+    true
+  end
+
+  # Is this player active?
+  def active?
+    Dispatcher.instance.connected?(id) || (
+      ! last_seen.nil? &&
+        last_seen >= Cfg.player_inactivity_time(points).ago
+    )
+  end
+
+  # Check if this player is active. If he is not active and can be relocated,
+  # then hide his solar system. If he is active - schedule next check.
+  def check_activity!
+    if active? || ! relocatable?
+      # Schedule next check in the future if player is active or not
+      # relocatable.
+      CallbackManager.register_or_update(
+        self, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+        Cfg.player_inactivity_time(points).from_now
+      )
+    else
+      detach!
+    end
+  end
+
+  def detached?
+    home_solar_system.detached?
+  end
+
+  # Detach this players home solar system from galaxy map.
+  def detach!
+    raise ArgumentError.
+            new("Cannot detach #{self} which is already detached!") if detached?
+
+    home_solar_system.detach!
+  end
+
+  # Reattach this players home solar system to galaxy map. Placer
+  # tries to place player in a zone which has closes average player point value
+  # to his.
+  def attach!
+    raise ArgumentError.new("Cannot attach #{self} which is not detached!") \
+      unless detached?
+
+    zone = Galaxy.find_zone_by_points(points)
+    SolarSystem.attach_player(id, zone)
+  end
+
+  def self.on_callback(id, event)
+    case event
+      when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
+        player = find(id)
+        player.check_activity!
+      else
+        raise CallbackManager::UnknownEvent.new(self, id, event)
+    end
+  end
+
+  # Checks if player is active.
+  def self.check_activity!(id)
+    player_ids = SsObject.connection.select_values(
+      "SELECT DISTINCT(player_id) FROM `#{SsObject.table_name
+      }` WHERE `solar_system_id`=#{id.to_i} AND `player_id` IS NOT NULL"
+    )
+    raise GameLogicError.new(
+            "Cannot check player activity if more than one player exists in SS #{
+            id}! Player IDs: #{player_ids.inspect}#") if player_ids.size > 1
+    return if player_ids.size > 1
+
+    player = Player.find(player_ids[0])
+    if player.last_seen.nil? || ! (
+    player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
+      player.last_seen >= Cfg.player_last_seen_in.ago)
+      # This player is inactive. Destroy him.
+      player.destroy!
+
+      # Change solar system into a dead one.
+      find(id).die!
     end
   end
 end

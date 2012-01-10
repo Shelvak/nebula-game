@@ -26,6 +26,10 @@ group :production_require do
   gem 'mail', '>=2.2'
 end
 
+group :development_require do
+  gem 'awesome_print'
+end
+
 group :development_require, :test_require do
   gem 'pry'
 end

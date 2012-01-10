@@ -293,6 +293,15 @@ class DispatcherEventHandler
               'reason' => nil
             }
           )
+        elsif fow_change_event.is_a?(Event::FowChange::SsCreated)
+          # Create single solar system
+          @dispatcher.push_to_player(player_id,
+            ObjectsController::ACTION_CREATED,
+            {
+              'objects' => [fow_change_event.metadatas[player_id]],
+              'reason' => nil
+            }
+          )
         else
           # Update single solar system
           @dispatcher.push_to_player(player_id,

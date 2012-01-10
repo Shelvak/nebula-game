@@ -17,8 +17,10 @@ describe CombatLogsController do
     it_behaves_like "with param options", %w{id}
 
     it "should return log" do
-      should_respond_with :log => @combat_log.info
       invoke @action, @params
+      response_should_include(
+        :log => @combat_log.info
+      )
     end
   end
 end

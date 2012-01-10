@@ -2,8 +2,6 @@
 class SolarSystem < ActiveRecord::Base
   belongs_to :galaxy
 
-  include Parts::CleanAsJson
-  include Parts::Shieldable
   include Parts::Object
   include Zone
 
@@ -13,8 +11,8 @@ class SolarSystem < ActiveRecord::Base
   KIND_WORMHOLE = 1
   # Battleground solar system
   KIND_BATTLEGROUND = 2
-  # Dead solar system
-  KIND_DEAD = 3
+
+  belongs_to :player
 
   # Foreign keys take care of the destruction
   has_many :ss_objects
@@ -22,9 +20,6 @@ class SolarSystem < ActiveRecord::Base
   has_many :asteroids, :class_name => "SsObject::Asteroid"
   has_many :jumpgates, :class_name => "SsObject::Jumpgate"
   has_many :fow_ss_entries
-
-  validates_uniqueness_of :galaxy_id, :scope => [:x, :y],
-    :message => "[galaxy_id, x, y] should be unique for SolarSystem."
 
   scope :in_galaxy, Proc.new { |galaxy|
     galaxy = galaxy.id if galaxy.is_a? Galaxy
@@ -44,8 +39,11 @@ class SolarSystem < ActiveRecord::Base
     where(:galaxy_id => galaxy_id, :x => nil, :y => nil).first
   end
 
+  # Is this solar system detached from galaxy map?
+  def detached?; x.nil? && y.nil?; end
+
   # Is this solar system a global battleground?
-  def main_battleground?; x.nil? && y.nil?; end
+  def main_battleground?; x.nil? && y.nil? && battleground?; end
   
   def normal?; kind == KIND_NORMAL; end
   scope :normal, where(:kind => KIND_NORMAL)
@@ -109,8 +107,8 @@ class SolarSystem < ActiveRecord::Base
     raise ActiveRecord::RecordNotFound if entries == 0
 
     ss = SolarSystem.find(id)
-    raise ActiveRecord::RecordNotFound if ss.has_shield? &&
-      ss.shield_owner_id != player.id
+    raise ActiveRecord::RecordNotFound if ! ss.player_id.nil? &&
+      ss.player_id != player.id
 
     ss
   end
@@ -132,12 +130,13 @@ class SolarSystem < ActiveRecord::Base
   end
 
   def as_json(options=nil)
-    hash = defined?(super) ? super(options) : {}
-    hash["id"] = id
-    hash["x"] = x
-    hash["y"] = y
-    hash["kind"] = kind
-    hash
+    {
+      "id" => id,
+      "x" => x,
+      "y" => y,
+      "kind" => kind,
+      "player" => player_id.nil? ? nil : Player.minimal(player_id)
+    }
   end
 
   def galaxy_point
@@ -148,17 +147,6 @@ class SolarSystem < ActiveRecord::Base
   def orbit_count
     SsObject.maximum(:position,
       :conditions => {:solar_system_id => id}) + 1
-  end
-  
-  # Kill solar system. Turns it into dead solar system.
-  def die!
-    self.kind = KIND_DEAD
-    save!
-    delete_assets!
-    fow_ss_entries.update_all(:enemy_planets => false, :enemy_ships => false)
-    CallbackManager.unregister(self, CallbackManager::EVENT_SPAWN)
-    
-    EventBroker.fire(self, EventBroker::CHANGED)
   end
   
   # Removes all ss_objects/wreckages/units in this solar system.
@@ -192,10 +180,107 @@ class SolarSystem < ActiveRecord::Base
     end
   end
 
+  # Detaches solar system from galaxy.
+  def detach!
+    raise RuntimeError.new(
+      "Cannot detach already detached solar system #{self}!"
+    ) if detached?
+
+    raise RuntimeError.new(
+      "Cannot detach non-home solar system #{self}!"
+    ) if player_id.nil?
+
+    raise RuntimeError.new(
+      "Cannot detach solar system #{self} while player is connected!"
+    ) if Dispatcher.instance.connected?(player_id)
+
+    # Deactivate radars.
+    Building::Radar.for_player(player_id).active.each(&:deactivate!)
+
+    # Remove this solar system from everyone except owner.
+    # Needs to go before deletion so we could track who sees this solar system.
+    EventBroker.fire(
+      Event::FowChange::SsDestroyed.all_except(id, player_id),
+      EventBroker::FOW_CHANGE,
+      EventBroker::REASON_SS_ENTRY
+    )
+    # Remove fow ss entries for everyone except owner.
+    fow_ss_entries.where("player_id != ?", player_id).delete_all
+
+    # Set coordinates to detached state.
+    self.x = self.y = nil
+    save!
+  end
+
+  # Attaches solar system to the galaxy at specified coordinates.
+  def attach!(x, y)
+    raise RuntimeError.new(
+      "Cannot attach #{self} to #{x},#{y} because it is already attached!"
+    ) unless detached?
+
+    raise RuntimeError.new(
+      "Cannot attach non-home solar system #{self} to #{x},#{y}!"
+    ) if player_id.nil?
+
+    # DB index: lookup
+    raise ArgumentError.new(
+      "Cannot attach #{self} to #{x},#{y} because it is occupied!"
+    ) if self.class.where(:galaxy_id => galaxy_id, :x => x, :y => y).exists?
+
+    # Just a safety net, there should be none but if there is - fire up the
+    # alarm bells.
+    raise RuntimeError.new(
+      "There are active radars in #{self
+        }! Visibility will be inconsistent, cannot proceed!"
+    ) if Building::Radar.for_player(player_id).active.count > 0
+
+    owner_fse = fow_ss_entries.where(:player_id => player_id).first
+    raise RuntimeError.new(
+      "Cannot find owner FSE for player #{player_id}!"
+    ) if owner_fse.nil?
+
+    entries = FowGalaxyEntry.
+      select("counter, player_id, alliance_id").
+      where(:galaxy_id => galaxy_id).
+      where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
+      c_select_all.map do |row|
+        # By idea player is not in the alliance so we don't need to create
+        # alliance entries or view him from a different perspective instead of
+        # enemy.
+        FowSsEntry.new(
+          :solar_system_id => id,
+          :counter => row['counter'],
+          :player_id => row['player_id'],
+          :alliance_id => row['alliance_id'],
+          :enemy_planets => owner_fse.player_planets,
+          :enemy_ships => owner_fse.player_ships
+        )
+      end
+
+    self.x, self.y = x, y
+    save!
+
+    unless entries.blank?
+      BulkSql::FowSsEntry.save(entries)
+      player = Player.minimal(player_id)
+      # Dispatch updates for other connected players. We don't dispatch to self
+      # because this method does not work if player is connected.
+      EventBroker.fire(
+        Event::FowChange::SsCreated.new(id, x, y, kind, player, entries),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      )
+    end
+
+    # Activate radars.
+    Building::Radar.for_player(player_id).inactive.not_upgrading.
+      each(&:activate!)
+
+    true
+  end
+
   def self.on_callback(id, event)
     case event
-    when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
-      check_player_activity(id)
     when CallbackManager::EVENT_SPAWN
       solar_system = find(id)
       solar_system.spawn!
@@ -206,27 +291,4 @@ class SolarSystem < ActiveRecord::Base
       raise CallbackManager::UnknownEvent.new(self, id, event)
     end
   end
-
-  # Checks if player in +SolarSystem+ _id_ is active.
-  def self.check_player_activity(id)
-    player_ids = SsObject.connection.select_values(
-      "SELECT DISTINCT(player_id) FROM `#{SsObject.table_name
-        }` WHERE `solar_system_id`=#{id.to_i} AND `player_id` IS NOT NULL"
-    )
-    raise GameLogicError.new(
-      "Cannot check player activity if more than one player exists in SS #{
-      id}! Player IDs: #{player_ids.inspect}#") if player_ids.size > 1
-    return if player_ids.size > 1
-
-    player = Player.find(player_ids[0])
-    if player.last_seen.nil? || ! (
-        player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
-        player.last_seen >= Cfg.player_last_seen_in.ago)
-      # This player is inactive. Destroy him.
-      player.destroy!
-      
-      # Change solar system into a dead one.
-      find(id).die!
-    end
-   end
 end

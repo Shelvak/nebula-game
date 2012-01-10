@@ -38,103 +38,19 @@ shared_examples_for "adding new solar systems" do
   end
 end
 
-shared_examples_for "with orbit units" do |type, subtype|
-  subtype ||= 'planet'
-
-  it "should have correct number of planet orbit units" do
-    (@planets || @solar_systems.map { |ss| ss.planets}.flatten).each do |planet|
-      planet.solar_system_point.should have_correct_unit_count(
-        "ss_object.#{type}.orbit.#{subtype}.units"
-      )
-    end
-  end
-
-  it "should have correct number of asteroid orbit units" do
-    @solar_systems.each do |solar_system|
-      solar_system.asteroids.each do |asteroid|
-        asteroid.solar_system_point.should have_correct_unit_count(
-          "ss_object.#{type}.orbit.asteroid.units",
-          "ss_object.#{type}.orbit.rich_asteroid.units"
-        )
-      end
-    end
-  end
-
-  it "should have correct number of jumpgate orbit units" do
-    @solar_systems.each do |solar_system|
-      solar_system.jumpgates.each do |jumpgate|
-        jumpgate.solar_system_point.should have_correct_unit_count(
-          "ss_object.#{type}.orbit.jumpgate.units"
-        )
-      end
-    end
-  end
-end
-
-shared_examples_for "with planet units" do |type, subtype|
-  subtype ||= 'planet'
-  
-  it "should have correct number of planet ground units" do
-    (@planets || @solar_systems.map { |ss| ss.planets}.flatten).each do |planet|
-      planet.should have_correct_unit_count(
-        "ss_object.#{type}.#{subtype}.units"
-      )
-    end
-  end
-end
-
-shared_examples_for "starting resources" do |resolver, additional_items|
-  Resources::TYPES.each do |resource|
-    (
-      [[:_generation_rate, nil], [:_usage_rate, nil], [:_storage, nil]] +
-      (additional_items || []).map { |block| block.call(resource) }
-    ).each do |attr_suffix, value|
-      attr = :"#{resource}#{attr_suffix}"
-      value = resolver.call(attr) if value.nil?
-
-      it "should have correct ##{attr}" do
-        models = @models || [@model]
-        models.each do |model|
-          model.send(attr).should be_within(0.1).of(value)
-        end
-      end
-    end
-  end
-end
-
-shared_examples_for "with registered raid" do |raid_arg|
-  it "should have #next_raid set" do
-    models = @models || [@model]
-    models.each do |model|
-      model.next_raid_at.should_not be_nil
-    end
-  end
-
-  it "should have correct raid_arg set" do
-    models = @models || [@model]
-    models.each do |model|
-      model.raid_arg.should == raid_arg
-    end
-  end
-
-  it "should have raid registered" do
-    models = @models || [@model]
-    models.each do |model|
-      model.should have_callback(
-                     CallbackManager::EVENT_RAID, model.next_raid_at)
-    end
-  end
-end
-
-# Buildings which are standing in battleground.
-bg_planet_buildings = [
-  Building::NpcHall, Building::NpcInfantryFactory,
-  Building::NpcTankFactory, Building::NpcSpaceFactory
-]
-
 describe SpaceMule do
   before(:all) do
+    # Ensure we're not testing against randomness: leave only one map of
+    # each type.
+    PmgConfigInitializer.initialize
+    @old_maps = CONFIG.filter(/^(solar_system|planet)\.map\./)
+    @old_maps.each { |key, map_set| CONFIG[key] = [map_set[0]] }
+
     @mule = SpaceMule.instance
+  end
+
+  after(:all) do
+    @old_maps.each { |key, map_set| CONFIG[key] = map_set }
   end
 
   describe "#create_galaxy" do
@@ -179,43 +95,15 @@ describe SpaceMule do
         @ss.kind.should == SolarSystem::KIND_BATTLEGROUND
       end
 
-      it "should create battleground jumpgates" do
-        @ss.jumpgates.count.should == CONFIG[
-          "solar_system.battleground.jumpgate.positions"].size
-      end
-
-      it "should create battleground planets" do
-        @ss.planets.count.should == CONFIG[
-          "solar_system.battleground.planet.positions"].size
-      end
-
-      it "should not create any asteroids" do
-        (
-          @ss.ss_objects.count - @ss.jumpgates.count - @ss.planets.count
-        ).should == 0
+      it "should be created from static configuration" do
+        @ss.should be_created_from_static_ss_configuration(
+                     CONFIG['solar_system.map.battleground'][0]['map']
+                   )
       end
 
       it "should register callback for spawn" do
-         @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
       end
-
-      describe "battleground planets" do
-        before(:all) do
-          @models = @ss.planets.all
-        end
-
-        it_should_behave_like "starting resources",
-          lambda { |attr|
-            bg_planet_buildings.inject(0.0) do |sum, klass|
-              sum + klass.send(attr, klass.max_level)
-            end
-          }
-
-        it_should_behave_like "with registered raid", 0
-      end
-      
-      it_behaves_like "with planet units", 'battleground'
-      it_behaves_like "with orbit units", 'battleground'
     end
   
     it "should have spawn callback for first convoy" do
@@ -241,7 +129,9 @@ describe SpaceMule do
 
       @galaxy = Factory.create(:galaxy)
 
-      diameter = CONFIG['galaxy.zone.diameter']
+      # Ensure we see them, because the center is not filled, so need to take
+      # a bit bigger rectangle...
+      diameter = CONFIG['galaxy.zone.diameter'] * 10
       rectangle = Rectangle.new(
         -diameter, -diameter, diameter, diameter
       )
@@ -249,6 +139,9 @@ describe SpaceMule do
         :galaxy => @galaxy)
       @alliance_fge = Factory.create(:fge_alliance, :rectangle => rectangle,
         :galaxy => @galaxy)
+      # Create a player for alliance.
+      Factory.create(:player, :alliance_id => @alliance_fge.alliance_id)
+
       @existing_player = Factory.create(:player, :galaxy => @galaxy)
       @web_user_id = @existing_player.web_user_id + 1
       @players = {
@@ -260,35 +153,28 @@ describe SpaceMule do
                              :web_user_id => @web_user_id).first
     end
 
-    it "should start quests for player" do
-      QuestProgress.where(:player_id => @player.id,
-        :quest_id => @quest.id, :completed => 0).count.should == 1
-    end
-
-    it "should start objectives for player" do
-      ObjectiveProgress.where(:player_id => @player.id,
-        :objective_id => @objective.id, :completed => 0).count.should == 1
-    end
-
-    describe "returned value" do
-      it "should return created player ids" do
-        @result.player_ids[@web_user_id].should == @player.id
+    describe "player" do
+      it "should start quests" do
+        QuestProgress.
+          where(:player_id => @player.id, :quest_id => @quest.id,
+                :completed => 0).
+          count.should == 1
       end
 
-      it "should return existing player ids too" do
-        @mule.create_players(@galaxy.id, @galaxy.ruleset, @players).
-          player_ids[@web_user_id].should == @player.id
+      it "should start objectives" do
+        ObjectiveProgress.
+          where(:player_id => @player.id, :objective_id => @objective.id,
+                :completed => 0).
+          count.should == 1
       end
 
-      it "should merge created player ids with existing player ids" do
-        @result.player_ids.should equal_to_hash(
-          @web_user_id => @player.id,
-          @existing_player.web_user_id => @existing_player.id
+      it "should register callback for inactivity check" do
+        @player.should have_callback(
+          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+          Cfg.player_inactivity_time(@player.points).from_now
         )
       end
-    end
 
-    describe "player attributes" do
       it "should set scientists" do
         @player.scientists.should ==
           CONFIG["buildings.mothership.scientists"].to_i
@@ -301,7 +187,7 @@ describe SpaceMule do
       it "should set population_max" do
         @player.population_max.should ==
           CONFIG["galaxy.player.population"] +
-          CONFIG["buildings.mothership.population"]
+            CONFIG["buildings.mothership.population"]
       end
 
       it "should set created_at" do
@@ -309,27 +195,43 @@ describe SpaceMule do
       end
     end
 
-    describe "homeworld" do
+    describe "returned value" do
+      it "should return created player ids" do
+        @result[@web_user_id].should == @player.id
+      end
+
+      it "should return existing player ids too" do
+        result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
+        result[@web_user_id].should == @player.id
+      end
+
+      it "should merge created player ids with existing player ids" do
+        @result.should equal_to_hash(
+          @web_user_id => @player.id,
+          @existing_player.web_user_id => @existing_player.id
+        )
+      end
+    end
+
+    describe "home solar system" do
       before(:all) do
-        @model = SsObject::Planet.where(:player_id => @player.id).first
+        @condition = SolarSystem.
+          where(:player_id => @player.id, :kind => SolarSystem::KIND_NORMAL)
+        @ss = @condition.first
       end
 
-      it "should create one homeworld for player" do
-        SsObject::Planet.where(:player_id => @player.id).count.should == 1
+      it "should only have one home solar system" do
+        @condition.count.should == 1
       end
 
-      it_should_behave_like "starting resources",
-        lambda { |attr| Building::Mothership.send(attr, 1) },
-        [
-          lambda { |resource|
-            ["", CONFIG["buildings.mothership.#{resource}.starting"]]
-          }
-        ]
+      it "should register callback for spawn" do
+        @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+      end
 
-      it "should set your starting buildings to be without points" do
-        @model.buildings.each do |building|
-          building.should be_without_points
-        end
+      it "should be created from static configuration" do
+        @ss.should be_created_from_static_ss_configuration(
+                     CONFIG['solar_system.map.home'][0]['map']
+                   )
       end
     end
 
@@ -337,53 +239,6 @@ describe SpaceMule do
       player_count = Player.count
       @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
       Player.count.should == player_count
-    end
-
-    describe "home solar system" do
-      before(:all) do
-        @ss = SsObject::Planet.where(:player_id => @player.id
-          ).first.solar_system
-      end
-
-      it "should be shielded" do
-        @ss.should have_shield
-      end
-
-      it "should have correct shield owner" do
-        @ss.shield_owner_id.should == @player.id
-      end
-
-      it "should have correct shield time" do
-        @ss.shield_ends_at.should be_within(10).of(
-          CONFIG.evalproperty('galaxy.player.shield_duration').
-            seconds.from_now
-        )
-      end
-
-      it "should not have any other shielded ss" do
-        SolarSystem.where(
-          ["galaxy_id=? AND id!=?", @ss.galaxy_id, @ss.id]
-        ).all.each do |ss|
-          ss.should_not have_shield
-        end
-      end
-
-      it "should create other planets in that ss with specified area" do
-        @ss.planets.where(:player_id => nil).each do |planet|
-          (planet.width + planet.height).should == CONFIG[
-            'planet.home_system.area']
-        end
-      end
-
-      it "should register callback for inactivity check" do
-        @ss.should have_callback(
-          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
-          CONFIG.evalproperty('galaxy.player.inactivity_check').from_now)
-      end
-
-      it "should register callback for spawn" do
-         @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
-      end
     end
 
     describe "wormholes" do
@@ -426,28 +281,20 @@ describe SpaceMule do
         end
       end
 
-      describe "planets" do
-        before(:all) do
-          @models = SsObject::Planet.
-            where(:solar_system_id => @pulsars.map(&:id)).all
+      it "should be created from static configuration" do
+        @pulsars.each do |pulsar|
+          pulsar.should be_created_from_static_ss_configuration(
+                       CONFIG['solar_system.map.pulsar'][0]['map']
+                     )
         end
-
-        it_should_behave_like "starting resources",
-          lambda { |attr|
-            bg_planet_buildings.inject(0.0) do |sum, klass|
-              sum + klass.send(attr, 1)
-            end
-          }
       end
     end
 
-    describe "fixed free solar systems" do
+    describe "free solar systems" do
       before(:all) do
         @solar_systems = SolarSystem.where(
           :galaxy_id => @galaxy.id, :kind => SolarSystem::KIND_NORMAL
-        ).all.reject do |ss|
-          ss.planets.where("player_id IS NOT NULL").count > 0
-        end
+        ).where("player_id IS NULL").all
       end
 
       it "should register callback for spawn" do
@@ -455,28 +302,12 @@ describe SpaceMule do
           ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
         end
       end
-    end
 
-    describe "asteroids" do
-      before(:all) do
-        @asteroids = SsObject::Asteroid.where(
-          :solar_system_id => @galaxy.solar_systems.map(&:id)
-        )
-      end
-
-      it "should register callbacks for them" do
-        @asteroids.each do |asteroid|
-          asteroid.should have_callback(CallbackManager::EVENT_SPAWN,
-            CONFIG.evalproperty('ss_object.asteroid.wreckage.time.first').
-              from_now)
-        end
-      end
-
-      it "should have spawn resources properly set" do
-        @asteroids.each do |asteroid|
-          asteroid.should have_generation_rates(
-            'ss_object.asteroid', 'ss_object.rich_asteroid'
-          )
+      it "should be created from static configuration" do
+        @solar_systems.each do |ss|
+          ss.should be_created_from_static_ss_configuration(
+                      CONFIG['solar_system.map.free'][0]['map']
+                    )
         end
       end
     end
@@ -487,8 +318,6 @@ describe SpaceMule do
         @planets = @models =
           SsObject::Planet.where(:solar_system_id => ss_ids).all
       end
-
-      it_should_behave_like "with registered raid", 0
 
       it "should not place any tiles offmap" do
         @planets.each { |planet| planet.should_not have_offmap(Tile) }
@@ -521,101 +350,9 @@ describe SpaceMule do
           planet.should_not have_blank_npc_buildings
         end
       end
-
-      describe "homeworld" do
-        before(:all) do
-          @homeworld = SsObject::Planet.where(
-            :player_id => @player.id).first
-        end
-        
-        it "should set #owner_changed" do
-          @homeworld.owner_changed.
-            should be_within(SPEC_TIME_PRECISION).of(Time.now)
-        end
-        
-        describe "resources" do
-          it "should set last_resources_update" do
-            @homeworld.last_resources_update.should_not be_nil
-          end
-
-          %w{metal energy zetium}.each do |resource|
-            [
-              ["starting", ""],
-              ["generate", "_rate"],
-              ["store", "_storage"]
-            ].each do |config_name, attr_name|
-              it "should set #{resource} #{config_name}" do
-                @homeworld.send("#{resource}#{attr_name}").should be_within(
-                  0.5).of(
-                    CONFIG.evalproperty(
-                      "buildings.mothership.#{resource}.#{config_name}"
-                    )
-                  )
-              end
-            end
-          end
-        end
-      end
-    end
-
-    describe "units" do
-      describe "home solar system" do
-        before(:each) do
-          @homeworld = SsObject::Planet.where(:player_id => @player.id).
-            first
-          @ss = @homeworld.solar_system
-          @solar_systems = [@ss]
-        end
-
-        describe "homeworld" do
-          before(:each) do
-            @planets = [@homeworld]
-          end
-
-          it_behaves_like "with planet units", 'homeworld'
-          it_behaves_like "with orbit units", 'homeworld'
-        end
-
-        describe "expansion planets" do
-          before(:each) do
-            @planets = @ss.planets - [@homeworld]
-          end
-
-          it_behaves_like "with planet units", 'homeworld', 'expansion_planet'
-          it_behaves_like "with orbit units", 'homeworld', 'expansion_planet'
-        end
-      end
-        
-      describe "regular solar systems" do
-        before(:each) do
-          homeworld_ss_id = SsObject::Planet.
-            where(:player_id => @player.id).first.solar_system_id
-          @solar_systems = SolarSystem.where(
-            "galaxy_id=? AND kind=? AND id!=?", 
-            @galaxy.id, SolarSystem::KIND_NORMAL, homeworld_ss_id
-          )
-        end
-        
-        it_behaves_like "with planet units", 'regular'
-        it_behaves_like "with orbit units", 'regular'
-      end
-      
-      describe "mini battleground solar systems" do
-        before(:each) do
-          homeworld_ss_id = SsObject::Planet.
-            where(:player_id => @player.id).first.solar_system_id
-          @solar_systems = SolarSystem.where(
-            "galaxy_id=? AND kind=? AND x IS NOT NULL AND y IS NOT NULL", 
-            @galaxy.id, SolarSystem::KIND_BATTLEGROUND
-          )
-        end
-        
-        it_behaves_like "with planet units", 'battleground'
-        it_behaves_like "with orbit units", 'battleground'
-      end
     end
     
-    it "should create fow ss entry" do
+    it "should create fow ss entry for player" do
       fse = FowSsEntry.where(:player_id => @player.id).first
       {
         :player_planets => fse.player_planets,

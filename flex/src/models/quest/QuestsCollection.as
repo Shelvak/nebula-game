@@ -1,29 +1,21 @@
 package models.quest
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
    import controllers.screens.MainAreaScreens;
    import controllers.ui.NavigationController;
-   
-   import globalevents.GlobalEvent;
-   
-   import models.ModelLocator;
+
    import models.ModelsCollection;
-   import models.notification.Notification;
-   import models.notification.parts.QuestLog;
    import models.objectives.QuestObjective;
    import models.quest.events.QuestCollectionEvent;
    import models.quest.events.QuestEvent;
-   
-   import mx.collections.ListCollectionView;
+
    import mx.collections.Sort;
    import mx.collections.SortField;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
-   
+
    import utils.datastructures.Collections;
-   
-   
+
+
    /**
     * Dispatched when quest has been selected or deselected. If both are true, only one event will be
     * dispatched. 
@@ -47,12 +39,6 @@ package models.quest
     */
    public class QuestsCollection extends ModelsCollection
    {
-      private static function get ML() : ModelLocator
-      {
-         return ModelLocator.getInstance();
-      }
-      
-      
       private var allQuests: ModelsCollection;
       /**
        * @see mx.collections.ArrayCollection#ArrayCollection()
@@ -97,6 +83,21 @@ package models.quest
       public function get hasQuests() : Boolean
       {
          return questsTotal > 0;
+      }
+
+      [Bindable(event="countersUpdated")]
+      public function get hasUncompletedMainQuest(): Boolean {
+         return currentUncompletedMainQuest != null;
+      }
+
+      [Bindable(event="countersUpdated")]
+      public function get currentUncompletedMainQuest(): Quest {
+         var idx:int = Collections.findFirstIndex(
+            allQuests, function(quest:Quest): Boolean {
+               return quest.isMainQuest && quest.status == Quest.STATUS_STARTED;
+            }
+         );
+         return idx >= 0 ? Quest(allQuests.getItemAt(idx)) : null;
       }
       
       
@@ -214,12 +215,11 @@ package models.quest
       public function applyCompletedFilter(completed: Boolean) : void
       {
          selectedFilter = completed?1:0;
-         filterFunction = function(quest:Quest) : Boolean
-         {
+         filterFunction = function(quest:Quest) : Boolean {
             return (completed
                ? quest.status == Quest.STATUS_REWARD_TAKEN 
                : quest.status != Quest.STATUS_REWARD_TAKEN);
-         }
+         };
          refresh();
          updateSelectionAfterFilter();
          if (hasEventListener(QuestCollectionEvent.FILTER))
@@ -235,7 +235,7 @@ package models.quest
          updateSelectionAfterFilter();
          if (_selectedQuest != null)
          {
-            var newId: int = _selectedQuest.id
+            var newId: int = _selectedQuest.id;
             _selectedQuest = null;
             select(newId);
          }
@@ -252,8 +252,7 @@ package models.quest
          }
          else
          {
-            var selectAfterUpdate: Function = function (e: QuestCollectionEvent): void
-            {
+            function selectAfterUpdate(e:QuestCollectionEvent): void {
                select(selectedItem.id);
                removeEventListener(QuestCollectionEvent.UPDATE_COMPLETED, selectAfterUpdate);
             }

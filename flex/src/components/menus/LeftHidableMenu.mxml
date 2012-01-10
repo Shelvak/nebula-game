@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:base="components.base.*"
+         xmlns:announcement="components.announcement.*"
+         currentState="visible">
+   <fx:Script>
+      <![CDATA[
+      import components.dailybonus.DailyBonusComp;
+      import components.dailybonus.DailyBonusEvent;
+      import components.popups.ActionConfirmationPopup;
+
+      import controllers.dailybonus.DailyBonusCommand;
+
+      import models.ModelLocator;
+      import models.quest.MMainQuestLine;
+      import models.solarsystem.MSSObject;
+
+      import utils.locale.Localizer;
+
+
+      private static const ITEMS_X_HIDDEN: int = -100;
+      private static const ITEMS_X_VISIBLE: int = 0;
+
+      private function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      private function get MQL(): MMainQuestLine {
+         return MMainQuestLine.getInstance();
+      }
+
+      private function btnHide_clickHandler(): void {
+         currentState = "hidden";
+      }
+
+      private function btnShow_clickHandler(): void {
+         currentState = "visible";
+      }
+
+      private function showDailyBonus(): void {
+         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var cont: DailyBonusComp = new DailyBonusComp();
+         cont.reward = ML.player.dailyBonus;
+         cont.addEventListener(DailyBonusEvent.CLOSE_PANEL,
+                               function(e: DailyBonusEvent): void {
+                                  popUp.close();
+                               });
+         popUp.title = Localizer.string('Popups', 'title.dailyBonus');
+         popUp.addElement(cont);
+         popUp.confirmButtonLabel = Localizer.string('Quests',
+                                                     'label.claimReward');
+         popUp.cancelButtonLabel = Localizer.string('Quests',
+                                                    'label.claimLater');
+         popUp.confirmButtonClickHandler = function(button: Button): void {
+            new DailyBonusCommand(
+               DailyBonusCommand.CLAIM,
+               {'planetId': MSSObject(cont.planetSelector.selectedItem).id}
+            ).dispatch();
+         };
+         popUp.show();
+      }
+
+      private function btnTutorial_clickHandler(event: MouseEvent): void {
+         MQL.openCurrentUncompletedQuest();
+      }
+      ]]>
+   </fx:Script>
+   <s:states>
+      <s:State name="visible"/>
+      <s:State name="hidden"/>
+   </s:states>
+   <s:transitions>
+      <s:Transition fromState="hidden" toState="visible" autoReverse="true">
+         <s:Parallel>
+            <s:Sequence target="{grpItems}">
+               <s:SetAction property="visible" value="true"/>
+               <s:Move xFrom="{ITEMS_X_HIDDEN}" xTo="{ITEMS_X_VISIBLE}"/>
+            </s:Sequence>
+            <s:SetAction target="{btnShow}" property="visible" value="false"/>
+            <s:SetAction target="{btnHide}" property="visible" value="true"/>
+         </s:Parallel>
+      </s:Transition>
+      <s:Transition fromState="visible" toState="hidden" autoReverse="true">
+         <s:Parallel>
+            <s:Sequence target="{grpItems}">
+               <s:Move xFrom="{ITEMS_X_VISIBLE}" xTo="{ITEMS_X_HIDDEN}"/>
+               <s:SetAction property="visible" value="false"/>
+            </s:Sequence>
+            <s:SetAction target="{btnHide}" property="visible" value="false"/>
+               <s:SetAction target="{btnShow}" property="visible" value="true"/>
+         </s:Parallel>
+      </s:Transition>
+   </s:transitions>
+   <s:Button
+      id="btnHide"
+      skinClass="components.menus.skins.LeftHidableMenuHideButtonSkin"
+      click="btnHide_clickHandler()"
+      visible.visible="true"
+      visible.hidden="false"/>
+   <s:Button
+      id="btnShow"
+      skinClass="components.menus.skins.LeftHidableMenuShowButtonSkin"
+      click="btnShow_clickHandler()"
+      visible.visible="false"
+      visible.hidden="true"/>
+   <base:AdvancedContainer id="grpItems" y="40" x="{ITEMS_X_VISIBLE}"
+      width="100" height="100">
+      <base:layout>
+         <s:VerticalLayout gap="10" horizontalAlign="left"/>
+      </base:layout>
+      <s:Button
+         skinClass="components.skins.DailyBonusButtonSkin"
+         visible="{ML.player.dailyBonus != null}"
+         click="showDailyBonus()"/>
+      <announcement:AnnouncementButton/>
+      <s:Button id="btnTutorial" label="Tutorial" visible="{MQL.showButton}"
+                click="btnTutorial_clickHandler(event)"/>
+   </base:AdvancedContainer>
+</s:Group>

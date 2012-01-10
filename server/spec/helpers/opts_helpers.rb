@@ -56,7 +56,7 @@ def opts_upgrading
   RSpecOptionsHelper.new(
     :upgrade_ends_at => 20.minutes.from_now,
     :pause_remainder => nil
-  )
+  ) + opts_inactive
 end
 
 def opts_just_upgraded
@@ -77,10 +77,4 @@ end
 
 def opts_built
   RSpecOptionsHelper.new(:level => 1)
-end
-
-def opts_shielded(player_id=nil)
-  player_id ||= Factory.create(:player).id
-  RSpecOptionsHelper.new(:shield_ends_at => 10.hours.from_now,
-    :shield_owner_id => player_id)
 end

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<local:IRSector xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:local="components.map.controllers.*"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:base="components.base.*"
+                height="66">
+   <fx:Script>
+      <![CDATA[
+      import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+
+
+      private function get overLabel(): String {
+         return Localizer.string("Galaxy", "label.over");
+      }
+
+      private function getIconImage(sector: Sector): BitmapData {
+         if (sector == null) {
+            return null;
+         }
+         if (sector.hasObject) {
+            return sector.object.imageData;
+         }
+         return bigShipIcon;
+      }
+      ]]>
+   </fx:Script>
+   <s:Group left="0" right="0" top="0" bottom="0">
+      <s:layout>
+         <s:HorizontalLayout paddingLeft="5" gap="5" verticalAlign="middle"/>
+      </s:layout>
+      <s:BitmapImage width="50"
+                     height="50"
+                     fillMode="scale"
+                     source="{getIconImage(sector)}"/>
+      <base:AdvancedContainer>
+         <base:layout>
+            <s:VerticalLayout gap="4"
+                              horizontalAlign="left"
+                              verticalAlign="middle"/>
+         </base:layout>
+         <s:Label visible="{sector.hasObject}" text="{overLabel}"/>
+         <s:Label visible="{sector.hasObject}" text="{sector.object.name}"/>
+         <s:Label text="{sector.sectorLabel}"/>
+      </base:AdvancedContainer>
+   </s:Group>
+</local:IRSector>

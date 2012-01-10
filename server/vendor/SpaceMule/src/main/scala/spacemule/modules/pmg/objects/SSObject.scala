@@ -1,9 +1,7 @@
 package spacemule.modules.pmg.objects
 
 import scala.collection.mutable.ListBuffer
-import spacemule.helpers.Random
-import spacemule.modules.config.objects.UnitsEntry
-import spacemule.modules.pmg.classes.{UnitChance, ObjectChance}
+import spacemule.modules.config.objects.{ResourcesEntry, UnitsEntry}
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,29 +23,12 @@ trait SSObject {
   /**
    * Ground units.
    */
-  var units = ListBuffer[Troop]()
-  
-  /**
-   * Units in orbit.
-   */
-  var orbitUnits = ListBuffer[Troop]()
+  protected[this] var _units = Seq.empty[Troop]
+  def units = _units
 
-  /**
-   * Provide initialization code here.
-   */
-  def initialize = {}
-
-  def createUnits(entries: Iterable[UnitsEntry]): scala.Unit = 
-    createUnits(entries, units)
-  
-  def createOrbitUnits(entries: Iterable[UnitsEntry]): scala.Unit =
-    createUnits(entries, orbitUnits)
-  
-  private def createUnits(
-    entries: Iterable[UnitsEntry], target: ListBuffer[Troop]
-  ): scala.Unit = {
-    UnitsEntry.foreach(entries) { case (name, flank) =>
-      target += Troop(name, flank)
+  def createUnits(entries: Iterable[UnitsEntry]) {
+    entries.foreach { entry =>
+      _units = _units ++ entry.createTroops()
     }
   }
 }

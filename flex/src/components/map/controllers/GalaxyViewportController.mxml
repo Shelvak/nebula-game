@@ -9,7 +9,8 @@
    <fx:Script>
       <![CDATA[
       import components.base.viewport.Viewport;
-      import components.map.controllers.GalaxyPlayerObjects;
+
+      import models.galaxy.Galaxy;
 
       import mx.events.FlexEvent;
       import mx.events.ResizeEvent;
@@ -22,13 +23,15 @@
          initializeControllers();
       }
 
+      private var f_cleanupCalled:Boolean = false;
       public function cleanup(): void {
-         _viewport = null;
-         if (playerObjects != null && playerObjects.dataProvider != null) {
-            GalaxyPlayerObjects(playerObjects.dataProvider).cleanup();
-            playerObjects.dataProvider = null;
+         if (f_cleanupCalled) {
+            return;
          }
+         f_cleanupCalled = true;
+         _viewport = null;
          zoom.cleanup();
+         watchedObjects.cleanup();
       }
 
       private function this_initializeHandler(event: FlexEvent): void {
@@ -39,16 +42,17 @@
          if (zoom != null) {
             zoom.setViewport(_viewport);
          }
-         if (playerObjects != null) {
-            playerObjects.dataProvider =
-               new GalaxyPlayerObjects(ML.latestGalaxy);
+         if (watchedObjects != null && watchedObjects.model == null) {
+            var galaxy:Galaxy = ML.latestGalaxy;
+            watchedObjects.model =
+               new WatchedObjects(galaxy, new GalaxySectorsProvider(galaxy));
          }
       }
 
       private function this_resizeHandler(event: ResizeEvent): void {
-         if (playerObjects != null) {
-            playerObjects.maxHeight = this.height - 110;
-            playerObjects.invalidateSize();
+         if (watchedObjects != null) {
+            watchedObjects.maxHeight = this.height - 110;
+            watchedObjects.invalidateSize();
             invalidateSize();
          }
       }
@@ -56,11 +60,10 @@
    </fx:Script>
    
    <ctrl:ViewportZoomController id="zoom"/>
-   <ctrl:MapObjectsList
+   <ctrl:CWatchedObjects
+      id="watchedObjects"
       right="2" bottom="2"
-      id="playerObjects"
-      skinClass="components.skins.MapObjectsListSkin"
-      itemRendererFunction="GalaxyPlayerObjects.itemRendererFunction">
-   </ctrl:MapObjectsList>
+      skinClass="components.skins.MapObjectsListSkin">
+   </ctrl:CWatchedObjects>
 
 </base:BaseContainer>

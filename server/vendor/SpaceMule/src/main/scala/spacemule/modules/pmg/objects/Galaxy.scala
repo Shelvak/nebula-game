@@ -1,12 +1,10 @@
 package spacemule.modules.pmg.objects
 
 import scala.collection.mutable.HashMap
-import solar_systems.{Resource, Expansion, Homeworld}
+import solar_systems.{Homeworld, Pulsar, Wormhole}
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects.solar_systems.MiniBattleground
-import spacemule.modules.pmg.objects.solar_systems.Wormhole
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,13 +16,12 @@ import spacemule.modules.pmg.objects.solar_systems.Wormhole
 
 class Galaxy(val id: Int, val ruleset: String) {
   val zoneDiameter = Config.zoneDiameter
-  val expansionSystems = Config.expansionSolarSystems
-  val resourceSystems = Config.resourceSolarSystems
+  val freeSystems = Config.freeSolarSystems
   val wormholes = Config.wormholes
   val miniBattlegrounds = Config.miniBattlegrounds
   val zones = new HashMap[Coords, Zone]()
 
-  def addExistingSS(x: Int, y: Int): scala.Unit = {
+  def addExistingSS(x: Int, y: Int, age: Int) {
     // For some reason -1 / 2 == 0 instead of -1 in Java.
     // We must fix this.
     val zoneX = (x.toFloat / zoneDiameter).floor.toInt
@@ -40,18 +37,23 @@ class Galaxy(val id: Int, val ruleset: String) {
         }
     }
 
-    // Calculate coordinate in zone. Ensure that in-zone coordinate is
-    // calculated correctly if absolute coord is negative.
-    def calcCoord(c: Int) = {
-      if (c >= 0) c % zoneDiameter
-      else {
-        val mod = c.abs % zoneDiameter
-        if (mod == 0) 0 else zoneDiameter - mod
-      }
+    if (age >= Config.zoneMaturityAge) {
+      zone.markAsMature()
     }
-    val ssX = calcCoord(x)
-    val ssY = calcCoord(y)
-    zone.markAsTaken(Coords(ssX, ssY))
+    else {
+      // Calculate coordinate in zone. Ensure that in-zone coordinate is
+      // calculated correctly if absolute coord is negative.
+      def calcCoord(c: Int) = {
+        if (c >= 0) c % zoneDiameter
+        else {
+          val mod = c.abs % zoneDiameter
+          if (mod == 0) 0 else zoneDiameter - mod
+        }
+      }
+      val ssX = calcCoord(x)
+      val ssY = calcCoord(y)
+      zone.markAsTaken(Coords(ssX, ssY))
+    }
   }
 
   /**
@@ -66,7 +68,7 @@ class Galaxy(val id: Int, val ruleset: String) {
    */
   private def randomZone(): Zone = {
     val zone = new Zone(0, 0, zoneDiameter)
-    var slot = 1
+    var slot = 2 // Start from 2, leave 4 center zones empty
     while (true) {
       // Shamelessly stolen from Mykolas, I don't really have much idea on what
       // is going on here.
@@ -86,12 +88,11 @@ class Galaxy(val id: Int, val ruleset: String) {
         // Check if we have zone in these coords
         zones.get(zone.coords) match {
           // If we do find existing zone
-          case Some(existing) => {
-              // Add if there are room for one more player there
-              if (existing.playerCount < Config.playersPerZone) {
-                return existing
-              }
-          }
+          case Some(existing) =>
+            // Add if there are room for one more player there
+            if (! existing.isFull) {
+              return existing
+            }
           case None => return zone
         }
       }
@@ -114,12 +115,10 @@ class Galaxy(val id: Int, val ruleset: String) {
     if (zone.playerCount == 0) {
       wormholes.foreach { coords =>
         zone.addSolarSystem(new Wormhole(), coords) }
-      expansionSystems.foreach { coords =>
-        zone.addSolarSystem(new Expansion(), coords) }
-      resourceSystems.foreach { coords =>
-        zone.addSolarSystem(new Resource(), coords) }
+      freeSystems.foreach { coords =>
+        zone.addSolarSystem(new SolarSystem(Config.freeSsConfig), coords) }
       miniBattlegrounds.foreach { coords =>
-        zone.addSolarSystem(new MiniBattleground(), coords) }
+        zone.addSolarSystem(new Pulsar(), coords) }
     }
 
     zone.addSolarSystem(new Homeworld(player))

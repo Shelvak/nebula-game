@@ -12,8 +12,7 @@ class BulkSql
       @connection = ActiveRecord::Base.
         connection. # We can't use savepoints when using this.
         #connection_pool.checkout. # But this somehow deadlocks the mysql.
-        raw_connection.
-        with_connection_retry_guard { |c| c }
+        jdbc_connection
     end
 
     def create_statement
@@ -41,6 +40,8 @@ class BulkSql
     # Saves a lot of objects really fast.
     # WARNING: not thread safe!
     def save(objects)
+      return true if objects.blank?
+
       LOGGER.block("Running bulk updates for #{self}", :level => :debug) do
         klass = self.klass
         primary_key = klass.primary_key.to_sym
@@ -102,7 +103,12 @@ class BulkSql
     private
 
     def encode_value(value)
-      value.nil? ? NULL : value.to_s
+      case value
+        when nil then NULL
+        when true then "1"
+        when false then "0"
+        else value.to_s
+      end
     end
 
     def execute_inserts(columns, objects, table_name=nil)

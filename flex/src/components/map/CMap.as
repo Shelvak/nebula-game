@@ -3,32 +3,30 @@ package components.map
    import com.developmentarc.core.utils.EventBroker;
 
    import components.base.BaseContainer;
-
    import components.base.viewport.ViewportZoomable;
-   
+
    import controllers.navigation.MCMainArea;
-   
+
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
    import flash.geom.Point;
    import flash.geom.Rectangle;
-   
-   import globalevents.GMapEvent;
+
    import globalevents.GlobalEvent;
-   
+
    import interfaces.ICleanable;
-   
+
    import models.BaseModel;
    import models.events.ScreensSwitchEvent;
    import models.location.LocationMinimal;
    import models.map.MMap;
    import models.map.events.MMapEvent;
-   
+
    import mx.graphics.BitmapFillMode;
-   
+
    import spark.primitives.BitmapImage;
-   
-   
+
+
    /**
     * Base class for all maps. A map is not ordinary Flex component and therefore does not follow
     * Flex components lifecycle. Map is drawn, measured and all objects are created when instance is
@@ -203,24 +201,6 @@ package components.map
       }
       
       
-      /**
-       * Actual width of a map (with respect to scaling).
-       */
-      public function get scaledWidth() : Number
-      {
-         return width * scaleX;
-      }
-      
-      
-      /**
-       * Actual height of a map (with respect to scaling).
-       */
-      public function get scaledHeight() : Number
-      {
-         return height * scaleY;
-      }
-      
-      
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
@@ -278,29 +258,27 @@ package components.map
        * When invoked, map should reset itself to initial state. This is an empty method in
        * <code>CMap</code>: override if needed.
        */
-      protected function reset() : void
-      {
+      protected function reset() : void {
       }
       
-      
-      protected function zoomArea(area:Rectangle, operationCompleteHandler:Function = null) : void
-      {
+      protected function zoomArea(area:Rectangle, operationCompleteHandler:Function = null) : void {
          _viewport.zoomArea(area, true, operationCompleteHandler);
       }
       
-      
-      protected function centerLocation(location:LocationMinimal, operationCompleteHandler:Function) : void
-      {
+      protected function centerLocation(location:LocationMinimal, operationCompleteHandler:Function) : void {
       }
       
-      
-      protected function zoomObjectImpl(object:*, operationCompleteHandler:Function = null) : void
-      {
+      protected function zoomObjectImpl(object:*, operationCompleteHandler:Function = null) : void {
       }
       
-      
-      protected function selectObjectImpl(object:*, operationCompleteHandler:Function = null) : void
-      {
+      protected function selectObjectImpl(object:*, operationCompleteHandler:Function = null) : void {
+         selectModel(BaseModel(object));
+         callOperationCompleteHandler(operationCompleteHandler);
+      }
+
+      protected function deselectSelectedObjectImpl(operationCompleteHandler:Function = null) : void {
+         deselectSelectedObject();
+         callOperationCompleteHandler(operationCompleteHandler);
       }
       
       
@@ -312,7 +290,6 @@ package components.map
       
       protected function addGlobalEventHandlers() : void
       {
-         EventBroker.subscribe(GMapEvent.SELECT_OBJECT, global_selectMapObjectHandler);
          MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGING, mainAreaChangingHandler);
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
@@ -320,15 +297,8 @@ package components.map
       
       protected function removeGlobalEventHandlers() : void
       {
-         EventBroker.unsubscribe(GMapEvent.SELECT_OBJECT, global_selectMapObjectHandler);
          MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGING, mainAreaChangingHandler);
          EventBroker.unsubscribe(GlobalEvent.APP_RESET, global_appResetHandler);
-      }
-      
-      
-      private function global_selectMapObjectHandler(event:GMapEvent) : void
-      {
-         selectModel(event.object);
       }
       
       
@@ -346,42 +316,63 @@ package components.map
       
       protected function addModelEventHandlers(model:MMap) : void
       {
-         model.addEventListener(MMapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler, false, 0, true);
-         model.addEventListener(MMapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler, false, 0, true);
-         model.addEventListener(MMapEvent.UICMD_MOVE_TO, model_uicmdMoveToHandler, false, 0, true);
+         model.addEventListener(
+            MMapEvent.UICMD_ZOOM_OBJECT,
+            model_uicmdZoomObjectHandler, false, 0, true
+         );
+         model.addEventListener(
+            MMapEvent.UICMD_SELECT_OBJECT,
+            model_uicmdSelectObjectHandler, false, 0, true
+         );
+         model.addEventListener(
+            MMapEvent.UICMD_DESELECT_SELECTED_OBJECT,
+            model_uicmdDeselectSelectedObjectHandler, false, 0, true
+         );
+         model.addEventListener(
+            MMapEvent.UICMD_MOVE_TO,
+            model_uicmdMoveToHandler, false, 0, true
+         );
       }
       
       
       protected function removeModelEventHandlers(model:MMap) : void
       {
-         model.removeEventListener(MMapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler, false);
-         model.removeEventListener(MMapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler, false);
-         model.removeEventListener(MMapEvent.UICMD_MOVE_TO, model_uicmdMoveToHandler, false);
+         model.removeEventListener(
+            MMapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler, false
+         );
+         model.removeEventListener(
+            MMapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler, false
+         );
+         model.removeEventListener(
+            MMapEvent.UICMD_DESELECT_SELECTED_OBJECT,
+            model_uicmdDeselectSelectedObjectHandler, false
+         );
+         model.removeEventListener(
+            MMapEvent.UICMD_MOVE_TO, model_uicmdMoveToHandler, false
+         );
       }
-      
-      
-      private function model_uicmdZoomObjectHandler(event:MMapEvent) : void
-      {
-         if (viewport)
-         {
+
+
+      private function model_uicmdZoomObjectHandler(event: MMapEvent): void {
+         if (viewport) {
             zoomObjectImpl(event.object, event.operationCompleteHandler);
          }
       }
-      
-      
-      private function model_uicmdSelectObjectHandler(event:MMapEvent) : void
-      {
-         if (viewport)
-         {
+
+      private function model_uicmdSelectObjectHandler(event: MMapEvent): void {
+         if (viewport) {
             selectObjectImpl(event.object, event.operationCompleteHandler);
          }
       }
-      
-      
-      private function model_uicmdMoveToHandler(event:MMapEvent) : void
-      {
-         if (viewport)
-         {
+
+      private function model_uicmdDeselectSelectedObjectHandler(event: MMapEvent): void {
+         if (viewport) {
+            deselectSelectedObjectImpl(event.operationCompleteHandler);
+         }
+      }
+
+      private function model_uicmdMoveToHandler(event: MMapEvent): void {
+         if (viewport) {
             centerLocation(event.object, event.operationCompleteHandler);
          }
       }
@@ -395,6 +386,12 @@ package components.map
       public function getModel() : MMap
       {
          return MMap(model);
+      }
+
+      private function callOperationCompleteHandler(handler:Function): void {
+         if (handler != null) {
+            handler.call();
+         }
       }
       
       

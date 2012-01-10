@@ -117,17 +117,17 @@ class Cfg; class << self
   # Number of notifications sent to player.
   def notification_limit; CONFIG['notifications.limit']; end
 
+  def notification_expiration_time
+    CONFIG.evalproperty('notifications.expiration_time')
+  end
+
+  def combat_log_expiration_time
+    notification_expiration_time * 4
+  end
+
   ### combat.yml ###
 
   def max_flanks; CONFIG['combat.flanks.max']; end
-  
-  # For how long planet is protected after protection is initiated?
-  def planet_protection_duration(galaxy)
-    key = galaxy.finished? \
-      ? 'combat.cooldown.protection.finished_galaxy.duration' \
-      : 'combat.cooldown.protection.duration'
-    CONFIG.evalproperty(key)
-  end
 
   ### raiding.yml ###
 
@@ -163,20 +163,23 @@ class Cfg; class << self
 
   ### galaxy.yml ###
 
+  def galaxy_zone_death_age(diagonal_no)
+    CONFIG.evalproperty('galaxy.zone.death_age', 'arg' => diagonal_no)
+  end
+
   def player_initial_population; CONFIG['galaxy.player.population']; end
   def player_max_population; CONFIG['galaxy.player.population.max']; end
 
-  # Time in seconds that has passed to still count player as active.
-  def player_last_seen_in
-    CONFIG.evalproperty('galaxy.player.inactivity_check.last_seen_in')
+  # Returns number of seconds player is required to be last seen ago to be
+  # considered active.
+  def player_inactivity_time(points)
+    CONFIG['galaxy.player.inactivity_check'].each do |points_required, seconds|
+      return seconds if points <= points_required
+    end
   end
 
   def player_referral_points_needed
     CONFIG['galaxy.player.referral.points_needed']
-  end
-
-  def player_protected_planets
-    CONFIG['galaxy.player.protected_planets']
   end
 
   def galaxy_convoy_units_definition

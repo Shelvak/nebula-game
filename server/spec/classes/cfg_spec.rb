@@ -3,6 +3,12 @@ require File.expand_path(
 )
 
 describe Cfg do
+  describe ".galaxy_zone_death_age" do
+    it "should return a number" do
+      Cfg.galaxy_zone_death_age(3).should be_instance_of(Fixnum)
+    end
+  end
+
   describe ".foliage_removal_cost" do
     it "should return rounded number" do
       with_config_values(

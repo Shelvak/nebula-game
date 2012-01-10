@@ -1,0 +1,1 @@
+{"date":"2012-01-02T19:40:48+02:00","apocalypse":false,"ratings":[{"id":1,"name":"Test Player","victory_points":0,"alliance_vps":0,"death_date":null,"planets_count":1,"bg_planets_count":0,"economy_points":0,"science_points":0,"army_points":5262,"war_points":3968,"last_seen":true,"alliance":null}],"alliance_ratings":[]}

@@ -2,25 +2,26 @@
 class Quest::DSL
   def id; @quest_id; end
 
-  def initialize(parent_id, quest_id, help_url_id, achievement)
+  def initialize(parent_id, quest_id, main_quest_slides, achievement)
     @quest_id = quest_id
     @parent_id = parent_id
-    @help_url_id = help_url_id
+    @main_quest_slides = main_quest_slides
     @achievement = achievement
     @rewards = Rewards.new
     @objectives = []
   end
 
   def to_s
-    "<Quest::DSL id=#{@quest_id} parent=#{@parent_id} help_url=#{
-      @help_url_id}>"
+    "<Quest::DSL id=#{@quest_id} parent=#{@parent_id} main_quest_slides=#{
+      @main_quest_slides.inspect} achievement=#{@achievement}>"
   end
 
   # Saves quest with it's objectives and returns Quest.
   def save!
     quest = Quest.new(
       :parent_id => @parent_id,
-      :help_url_id => @help_url_id,
+      :main_quest_slides => @main_quest_slides.nil? \
+        ? nil : @main_quest_slides.join(","),
       :rewards => @achievement ? nil : @rewards,
       :achievement => @achievement
     )
@@ -53,8 +54,11 @@ class Quest::DSL
       unless rewards == quest.rewards
     errors.push "Expected achievement to be #{@achievement}, but it was #{
       quest.achievement}" unless @achievement == quest.achievement
-    errors.push "Expected help_url_id to be #{@help_url_id}, but it was #{
-      quest.help_url_id}" unless @help_url_id == quest.help_url_id
+    expected = @main_quest_slides.nil? \
+      ? nil \
+      : @main_quest_slides.join(",")
+    errors.push "Expected main_quest_slides to be #{expected}, but it was #{
+      quest.main_quest_slides}" unless expected == quest.main_quest_slides
     
     defined_objectives = @objectives.dup
     quest.objectives.all.reject do |objective|
@@ -104,7 +108,7 @@ class Quest::DSL
   # * :count - 1
   # * :level - 1
   #
-  def reward_cost(klass, options)
+  def reward_cost(klass, options={})
     options.reverse_merge!(:count => 1, :level => 1)
 
     metal_cost = klass.metal_cost(options[:level])
@@ -117,54 +121,27 @@ class Quest::DSL
   end
 
   # Rewards resources for given amount of points.
-  def reward_resources_for_points(points)
-    reward = (points * 0.03).ceil
+  def reward_resources_for_points(points, multiplier=nil)
+    multiplier ||= 0.03
+
+    reward = (points * multiplier).ceil
     metal = (Resources.volume_to_metal(reward) * 2).round
     energy = (Resources.volume_to_energy(reward) * 2).round
     zetium = (Resources.volume_to_zetium(reward) * 0.7).round
-#    puts "#{points} -> #{metal}, #{energy}, #{zetium}"
+    #puts "#{points} -> #{metal} m, #{energy} e, #{zetium} z"
     
     reward_metal metal
     reward_energy energy
     reward_zetium zetium
   end
 
-  # Rewards units for points
-  def reward_units_for_points(points, unit_list)
-    points_left = (points * 0.03).round
-    units = {}
-    can_exit = false
-    until can_exit
-      reduced = false
-      unit_list.each do |klass, count, level|
-        level ||= 1
-        count.times do
-          key = [klass, level]
+  # Rewards creds for given amount of points.
+  def reward_creds_for_points(points, multiplier=nil)
+    multiplier ||= 0.5
+    creds = (Math.log10(points) ** 5 * multiplier).round
+    #puts "#{points} -> #{creds} creds"
 
-          points_required = Resources.total_volume(
-            klass.metal_cost(level),
-            klass.energy_cost(level),
-            klass.zetium_cost(level)
-          )
-
-          if points_left >= points_required
-            units[key] ||= 0
-            units[key] += 1
-            points_left -= points_required
-            reduced = true
-          end
-        end
-      end
-
-      can_exit = true unless reduced
-    end
-
-#    puts "units for points #{points}"
-    units.each do |key, count|
-      klass, level = key
-#      puts "  #{klass.to_s} (#{level}) * #{count}"
-      reward_unit klass, :count => count, :level => level
-    end
+    reward_creds creds
   end
 
   # Define a unit for rewards.
@@ -240,6 +217,13 @@ class Quest::DSL
     @objectives.push([
       Objective::Accelerate,
       {:key => klass.to_s, :count => options[:count]}
+    ])
+  end
+
+  def be_in_alliance
+    @objectives.push([
+      Objective::BeInAlliance,
+      {:key => Objective::BeInAlliance::KEY}
     ])
   end
 

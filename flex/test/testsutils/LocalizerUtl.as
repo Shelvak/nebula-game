@@ -16,7 +16,7 @@ package testsutils
       }
       
       public static function setUp() : void {
-         StartupInfo.getInstance().locale = Locale.EN;
+         StartupInfo.getInstance().locale = Locale.TEST;
       }
       
       public static function addBundle(bundleName:String, content:Object) : void {

@@ -22,36 +22,6 @@ object AreaTile {
   val Titan = AreaTile(6)
 
   val types = List[AreaTile](Regular, Noxrium, Junkyard, Titan, Sand)
-
-  /**
-   * Return tile counts for each area tile type.
-   */
-  def tileCounts(unusedCount: Int): HashMap[AreaTile, AreaTileConfig] = {
-    val tileCounts = HashMap[AreaTile, AreaTileConfig]()
-
-    // Get numbers from random ranges for each type
-    val proportions = HashMap[AreaTile, Int]()
-    var totalProportion = 0
-
-    types.foreach { areaTile =>
-      val config = Config.planetAreaTileConfig(areaTile)
-      // At this time #count is proportion count.
-      proportions(areaTile) = config.count
-      totalProportion += config.count
-
-      // Store config with isle count for now.
-      tileCounts(areaTile) = config
-    }
-
-    proportions.foreach { case (areaTile, proportion) =>
-      // Store actual tile count instead of proportion.
-      tileCounts(areaTile).count = (
-        proportion.toDouble / totalProportion * unusedCount
-      ).floor.toInt
-    }
-
-    return tileCounts
-  }
 }
 
-case class AreaTile(kind: Int) extends Tile
+case class AreaTile(override val kind: Int) extends Tile(kind)

@@ -46,52 +46,6 @@ describe Notification do
     end
   end
 
-  describe "on update" do
-    describe "#expires_at" do
-      before(:each) do
-        @notification = Factory.create :notification
-      end
-
-      it "should update cm if changed" do
-        @notification.expires_at += 1.week
-        CallbackManager.should_receive(:update).with(@notification,
-          CallbackManager::EVENT_DESTROY, @notification.expires_at)
-        @notification.save!
-      end
-
-      it "should not update cm if not changed" do
-        @notification.created_at -= 1.week
-        CallbackManager.should_not_receive(:update)
-        @notification.save!
-      end
-    end
-
-    describe "combat notification" do
-      before(:each) do
-        @combat_log = Factory.create :combat_log
-        @notification = Factory.create :notification,
-          :event => Notification::EVENT_COMBAT,
-          :params => {:log_id => @combat_log.sha1_id}
-      end
-
-      it "should update combat log expires_at" do
-        expires_at = @combat_log.expires_at + 1.week
-        @notification.expires_at = expires_at
-        @notification.save!
-        @combat_log.reload
-        @combat_log.expires_at.to_s(:db).should == expires_at.to_s(:db)
-      end
-
-      it "should not overwrite combat log expires_at with earlier value" do
-        old_expires_at = @combat_log.expires_at
-        @notification.expires_at = old_expires_at
-        @notification.save!
-        @combat_log.reload
-        @combat_log.expires_at.to_s(:db).should == old_expires_at.to_s(:db)
-      end
-    end
-  end
-
   describe "notifier" do
     it_behaves_like "notifier",
       :build => lambda { Factory.build :notification },
@@ -117,14 +71,14 @@ describe Notification do
     it "should set expiration time" do
       @model.save!
       @model.expires_at.should be_within(SPEC_TIME_PRECISION).of(
-        CONFIG.evalproperty('notifications.expiration_time').from_now
+        Cfg.notification_expiration_time.from_now
       )
     end
 
     it "should register to CallbackManager for deletion" do
       @model.save!
-      CallbackManager.has?(@model, CallbackManager::EVENT_DESTROY,
-        @model.expires_at).should be_true
+      @model.
+        should have_callback(CallbackManager::EVENT_DESTROY, @model.expires_at)
     end
   end
 
@@ -457,45 +411,6 @@ describe Notification do
     it "should not create duplicate invitations" do
       notification = Notification.send(@method, *@args)
       Notification.send(@method, *@args).should == notification
-    end
-  end
-
-  describe ".create_for_planet_protected" do
-    before(:all) do
-      @planet = Factory.create(:planet_with_player)
-      @player_id = Factory.create(:player).id
-      @outcome = Combat::OUTCOME_LOSE
-      @duration = 50.minutes
-
-      @event = Notification::EVENT_PLANET_PROTECTED
-      @method = :create_for_planet_protected
-      @args = [@player_id, @planet, @outcome, @duration]
-    end
-
-    it_behaves_like "create for"
-
-    it "should have :planet" do
-      Notification.send(
-        @method, *@args
-      ).params[:planet].should == @planet.client_location.as_json
-    end
-
-    it "should have :owner_id" do
-      Notification.send(
-        @method, *@args
-      ).params[:owner_id].should == @planet.player_id
-    end
-
-    it "should have :duration" do
-      Notification.send(
-        @method, *@args
-      ).params[:duration].should == @duration
-    end
-    
-    it "should have :outcome" do
-      Notification.send(
-        @method, *@args
-      ).params[:outcome].should == @outcome
     end
   end
 

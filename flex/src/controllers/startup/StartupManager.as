@@ -57,6 +57,7 @@ package controllers.startup
    import models.ModelLocator;
    import models.announcement.MAnnouncement;
    import models.chat.MChat;
+   import models.quest.MainQuestSlideFactory;
    import models.time.MTimeEventFixedMoment;
 
    import mx.logging.ILogger;
@@ -179,6 +180,7 @@ package controllers.startup
          MAnnouncement.getInstance().reset();
          AllianceScreenM.getInstance().reset();
          ApplicationLocker.reset();
+         MainQuestSlideFactory.getInstance().reset();
       }
       
       

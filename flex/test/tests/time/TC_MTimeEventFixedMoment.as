@@ -1,7 +1,7 @@
 package tests.time
 {
    import ext.hamcrest.date.dateEqual;
-   import ext.hamcrest.events.causesTarget;
+   import ext.hamcrest.events.causes;
    import ext.hamcrest.events.event;
    import ext.hamcrest.object.equals;
    
@@ -35,6 +35,7 @@ package tests.time
       [Before]
       public function setUp() : void {
          DateUtil.now = new Date().time;
+         DateUtil.timeDiff = 0;
          timeEvent = new MTimeEventFixedMoment();
       }
       
@@ -79,7 +80,7 @@ package tests.time
                + "OCCURES_AT_CHANGE, HAS_OCCURED_CHANGE and "
                + "OCCURRED_BEFORE_CHANGE",
             function():void{ timeEvent.occuresAt = new Date() },
-            causesTarget (timeEvent) .toDispatch (
+            causes (timeEvent) .toDispatch (
                event (MTimeEventEvent.OCCURES_IN_CHANGE),
                event (MTimeEventEvent.OCCURES_AT_CHANGE),
                event (MTimeEventEvent.HAS_OCCURED_CHANGE),
@@ -90,7 +91,7 @@ package tests.time
          assertThat(
             "calling update() should dispatch OCCURES_IN_CHANGE",
             function():void{ timeEvent.update() },
-            causesTarget (timeEvent) .toDispatchEvent (MTimeEventEvent.OCCURES_IN_CHANGE)
+            causes (timeEvent) .toDispatchEvent (MTimeEventEvent.OCCURES_IN_CHANGE)
          );
       }
 
@@ -103,21 +104,21 @@ package tests.time
          assertThat(
             "should not dispatch OCCURRED_BEFORE_CHANGE if event has not yet occurred",
             timeEvent.update,
-            not (causesTarget (timeEvent) .toDispatchEvent (MTimeEventEvent.OCCURRED_BEFORE_CHANGE))
+            not (causes (timeEvent) .toDispatchEvent (MTimeEventEvent.OCCURRED_BEFORE_CHANGE))
          );
 
          DateUtil.now = new Date(2005, 0, 1).time;
          assertThat(
             "should dispatch OCCURRED_BEFORE_CHANGE when current time reaches occuresAt",
             timeEvent.update,
-            causesTarget (timeEvent) .toDispatchEvent (MTimeEventEvent.OCCURRED_BEFORE_CHANGE)
+            causes (timeEvent) .toDispatchEvent (MTimeEventEvent.OCCURRED_BEFORE_CHANGE)
          );
 
          DateUtil.now = new Date(2005, 0, 2).time;
          assertThat(
             "should dispatch OCCURRED_BEFORE_CHANGE when occuresAt is in the past and time advances further",
             timeEvent.update,
-            causesTarget (timeEvent) .toDispatchEvent (MTimeEventEvent.OCCURRED_BEFORE_CHANGE)
+            causes (timeEvent) .toDispatchEvent (MTimeEventEvent.OCCURRED_BEFORE_CHANGE)
          );
       }
       
@@ -133,19 +134,19 @@ package tests.time
          assertThat(
             "should not dispatch HAS_OCCURED_CHANGE if current time has not yet reached occuresAt",
             function():void{ DateUtil.now = new Date(2000, 0, 2).time; timeEvent.update() },
-            not (causesTarget (timeEvent) .toDispatchEvent (MTimeEventEvent.HAS_OCCURED_CHANGE))
+            not (causes (timeEvent) .toDispatchEvent (MTimeEventEvent.HAS_OCCURED_CHANGE))
          );
          
          assertThat(
             "should dispatch HAS_OCCURED_CHANGE when current time reaches occuresAt",
             function():void{ DateUtil.now = new Date(2000, 0, 3).time; timeEvent.update() },
-            causesTarget (timeEvent) .toDispatchEvent (MTimeEventEvent.HAS_OCCURED_CHANGE)
+            causes (timeEvent) .toDispatchEvent (MTimeEventEvent.HAS_OCCURED_CHANGE)
          );
          
          assertThat(
             "should not dispatch HAS_OCCURED_CHANGE if current time has has already passed occuresAt",
             function():void{ DateUtil.now = new Date(2000, 0, 4).time; timeEvent.update() },
-            not (causesTarget (timeEvent) .toDispatchEvent (MTimeEventEvent.HAS_OCCURED_CHANGE))
+            not (causes (timeEvent) .toDispatchEvent (MTimeEventEvent.HAS_OCCURED_CHANGE))
          );
       }
       

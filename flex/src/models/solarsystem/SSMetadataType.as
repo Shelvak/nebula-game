@@ -1,8 +1,8 @@
 package models.solarsystem
 {
    /**
-    * Defines string type constants of available solar system medata type (actually name
-    * of status image). Used in <code>SolarSystemTileSkin</code> and
+    * Defines string type constants of available solar system metadata type
+    * (actually name of status image). Used in <code>SolarSystemTileSkin</code> and
     * </code>ImagePreloader</code>. 
     */   
    public final class SSMetadataType
@@ -15,5 +15,6 @@ package models.solarsystem
       public static const ENEMY_SHIPS:String = "enemyShips";
       public static const NAP_PLANETS:String = "napPlanets";
       public static const NAP_SHIPS:String = "napShips";
+      public static const NPC_SHIPS:String = "npcShips";
    }
 }

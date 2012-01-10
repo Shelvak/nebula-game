@@ -41,8 +41,6 @@ class Notification < ActiveRecord::Base
   EVENT_PLANET_ANNEXED = 6
   # You have received an alliance invitation.
   EVENT_ALLIANCE_INVITATION = 7
-  # Planet protection has been initiated.
-  EVENT_PLANET_PROTECTED = 8
   # You have been kicked from alliance
   EVENT_ALLIANCE_KICK = 9
   # Player has joined alliance.
@@ -59,36 +57,17 @@ class Notification < ActiveRecord::Base
   default_scope order("`read` ASC, `created_at` DESC")
 
   protected
-  before_save :set_timestamps
-  def set_timestamps
+  before_save do
     self.created_at ||= Time.now
-    self.expires_at ||= self.created_at +
-      CONFIG.evalproperty('notifications.expiration_time')
-
-    CallbackManager.update(self, CallbackManager::EVENT_DESTROY,
-      self.expires_at) if expires_at_changed? and ! new_record?
-    true
-  end
-
-  after_create :register_to_cm
-  def register_to_cm
-    CallbackManager.register(self, CallbackManager::EVENT_DESTROY,
-      expires_at)
+    self.expires_at ||= self.created_at + Cfg.notification_expiration_time
 
     true
   end
 
-  after_update :update_related
-  def update_related
-    case event
-    when EVENT_COMBAT
-      CombatLog.update_all(
-        ["expires_at=?", expires_at],
-        ["sha1_id=? AND expires_at<?", self.params[:log_id], expires_at]
-      )
-    end
-
-    true
+  after_save do
+    CallbackManager.register_or_update(
+      self, CallbackManager::EVENT_DESTROY, self.expires_at
+    )
   end
 
   def self.on_callback(id, event)
@@ -390,30 +369,6 @@ class Notification < ActiveRecord::Base
       :event => EVENT_ALLIANCE_INVITATION,
       :player_id => player.id,
       :params => {:alliance => alliance.as_json(:mode => :minimal)}
-    )
-    model.save!
-
-    model
-  end
-
-  # EVENT_PLANET_PROTECTED = 8
-  #
-  # params = {
-  #   :planet => ClientLocation#as_json,
-  #   :owner_id => Fixnum (ID of planet owner),
-  #   :duration => Fixnum (duration of protection),
-  #   :outcome => Fixnum (what was the outcome of that battle for you)
-  # }
-  def self.create_for_planet_protected(player_id, planet, outcome, duration)
-    model = new(
-      :event => EVENT_PLANET_PROTECTED,
-      :player_id => player_id,
-      :params => {
-        :planet => planet.client_location.as_json,
-        :owner_id => planet.player_id,
-        :duration => duration,
-        :outcome => outcome
-      }
     )
     model.save!
 
