@@ -432,6 +432,35 @@
       <p>Gali pakviesti tik tuos žaidėjus, kurių planetas matai (išskyrus 
       arenoje esančias planetas).</p>
     </label.explanationInvite>
+
+    <giveAway.label.actionButton value="Perduoti sąjungą"/>
+    <giveAway.title.confirmationPopup value="Ar esi įsitikinęs?"/>
+    <giveAway.message.confirmationPopup>
+       Ar esi tikras, jog nori perduoti sąjungą {0}?
+    </giveAway.message.confirmationPopup>
+    <giveAway.message.techLevelTooLow>
+       Deja žaidėjas {0} neturi pakankamo sąjungos technologijos lygio,
+       kad galėtų perimti vadovavimą.
+    </giveAway.message.techLevelTooLow>
+
+    <takeOver.header value="Perimk sąjungos vadovavimą"/>
+    <takeOver.label.takeOwnershipButton value="Perimti vadovavimą"/>
+    <takeOver.title.confirmationPopup value="Ar esi tikras?"/>
+    <takeOver.message.confirmationPopup>
+       Ar esi tikras, jog nori perimti sąjungos vadovavimą?
+    </takeOver.message.confirmationPopup>
+    <takeOver.message.ownerIsActive>
+       Perimti sąjungos vadovavimą iš dabartinio sąjungos vadovo galėsi jeigu
+       jis prie žaidimo neprisijungs {0} d.
+    </takeOver.message.ownerIsActive>
+    <takeOver.message.techLevelTooLow>
+       Tu negali perimti sąjungos vadovavimo, nes neturi {0} lygio
+       sąjungos technologijos.
+    </takeOver.message.techLevelTooLow>
+    <takeOver.message.ownerIsInactive>
+       Kadangi dabartinis sąjungos vadovas prie žaidimo nebuvo prisijungęs {0} d.,
+       tu gali perimti sąjungos vadovavimą į savo rankas.
+    </takeOver.message.ownerIsInactive>
   </Alliances>
 
   <BattleMap>    
@@ -1814,6 +1843,29 @@
       <p>Žaidėjas (-a) "{0}" prisijungė prie tavo sąjungos "{1}".</p>
       <p>Prašome jį ar ją šiltai sutikti!</p>
     </content.allianceJoined>
+
+    <title.allianceOwnerChanged>
+       Pasikeitė sąjungos „{0}“ vadas!
+    </title.allianceOwnerChanged>
+    <content.allianceOwnerChanged.forOldOwner>
+       <![CDATA[ Iš tavęs buvo perimtas sąjungos „<a href="event:alliance">{0}</a>“
+       vadovavimas, nuo šiol jos vadas yra „<a href="event:newOwner">{1}</a>“. ]]>
+    </content.allianceOwnerChanged.forOldOwner>
+    <content.allianceOwnerChanged.forNewOwner>
+       <![CDATA[ Tu perėmei sąjungos „<a href="event:alliance">{0}</a>“ vadovavimą iš
+       senojo vado „<a href="event:oldOwner">{1}</a>“. "" ]]>
+    </content.allianceOwnerChanged.forNewOwner>
+    <content.allianceOwnerChanged.forOthers>
+       <![CDATA[
+       <p>
+          Pasikeitė sąjungos „<a href="event:alliance">{0}</a>“ vadas!
+       </p>
+       <p>
+          Iki šiol jai vadovavo „<a href="event:oldOwner">{1}</a>“. Nuo dabar naujasis
+          vadas yra „<a href="event:newOwner">{2}</a>“.
+       </p>
+       ]]>
+    </content.allianceOwnerChanged.forOthers>
 
     <prop.alive value="Gyvi" />
     <prop.destroyed value="Sunaikinti" />
