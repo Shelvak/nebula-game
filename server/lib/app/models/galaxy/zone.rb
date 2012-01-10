@@ -35,6 +35,7 @@ class Galaxy::Zone
       unless quarter >= 1 && quarter <= 4
     @slot = slot
     @quarter = quarter
+    @diameter = Cfg.galaxy_zone_diameter
 
     # Calculate diagonal number.
     @diagonal = (((1 + 8 * slot) ** 0.5 - 1) / 2).ceil
@@ -49,8 +50,56 @@ class Galaxy::Zone
     @y = @y * -1 - 1 if qt_y == -1
   end
 
+  def ==(other); eql?(other); end
+
+  def eql?(other)
+    other.is_a?(self.class) && @slot == other.slot && @quarter == other.quarter
+  end
+
   def to_s
     "<Galaxy::Zone Q%d (%5d,%5d), slot %5d>" % [@quarter, @x, @y, @slot]
+  end
+
+  # Returns absolute x and y ranges. Both ranges are inclusive.
+  def ranges
+    x_start, y_start = absolute(0, 0)
+    x_end, y_end = absolute(@diameter - 1, @diameter - 1)
+
+    [x_start..x_end, y_start..y_end]
+  end
+
+  # Yields each coordinate in this zone.
+  def each_coord
+    x_range, y_range = ranges
+    x_range.each { |x| y_range.each { |y| yield [x, y] } }
+  end
+
+  # Returns free spot in the zone for given galaxy id. Raises error if such spot
+  # cannot be found.
+  def free_spot_coords(galaxy_id)
+    x_range, y_range = ranges
+
+    possible = Set.new
+    each_coord { |coords| possible.add(coords) }
+
+    SolarSystem.
+      select("x, y").
+      where(:galaxy_id => galaxy_id, :x => x_range, :y => y_range).
+      c_select_all.each { |row| possible.delete([row['x'], row['y']]) }
+
+    if possible.blank?
+      raise RuntimeError.new(
+              "No possible spaces for #{self} in galaxy #{galaxy_id}!"
+            )
+    else
+      possible.to_a.random_element
+    end
+  end
+
+  private
+
+  def absolute(x, y)
+    [@x * @diameter + x, @y * @diameter + y]
   end
 
   # Looks up zone by zone coordinates.
@@ -85,6 +134,22 @@ class Galaxy::Zone
     return 2 if x <  0 && y <= -1
     return 3 if x <  0 && y >  -1
     return 4
+  end
+
+  # Calculate relative (in-zone) coordinates for given absolute galaxy
+  # coordinates.
+  def self.relative_coords(x, y)
+    diameter = Cfg.galaxy_zone_diameter
+
+    # Calculate coordinate in zone. Ensure that in-zone coordinate is
+    # calculated correctly if absolute coord is negative.
+    calc_coord = lambda do |c|
+      return c % diameter if c >= 0
+      mod = c.abs % diameter
+      mod == 0 ? 0 : diameter - mod
+    end
+
+    [calc_coord[x], calc_coord[y]]
   end
 
   # Returns +Array+ of zones, ordering by difference between target points and
@@ -157,4 +222,21 @@ ORDER BY points_diff, quarter, slot
     end
   end
 
+  # Return +Galaxy::Zone+ to which we can reattach one player. Creates empty
+  # zone if no zones are free.
+  def self.zone_for_reattachment(galaxy_id, target_points)
+    rows = list_for(galaxy_id, target_points)
+    rows.each do |row|
+      next if row['player_count'] >= Cfg.galaxy_zone_max_player_count
+      return new(row['slot'], row['quarter'])
+    end
+
+    quarter = rows.last['quarter']
+    slot = rows.last['slot'] + 1
+    galaxy = Galaxy.find(galaxy_id)
+
+    SpaceMule.instance.create_zone(galaxy_id, galaxy.ruleset, slot, quarter)
+
+    new(slot, quarter)
+  end
 end

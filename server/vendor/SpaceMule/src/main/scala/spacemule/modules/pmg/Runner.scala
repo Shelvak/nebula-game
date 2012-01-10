@@ -1,10 +1,9 @@
 package spacemule.modules.pmg
 
+import objects.{Zone, Galaxy, Player}
 import persistence.objects.{SaveResult, CallbackRow, GalaxyRow}
 import spacemule.helpers.Converters._
 import spacemule.helpers.BenchmarkableMock
-import spacemule.modules.pmg.objects.Galaxy
-import spacemule.modules.pmg.objects.Player
 import spacemule.modules.pmg.objects.solar_systems.Battleground
 import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.config.objects.Config
@@ -73,6 +72,29 @@ object Runner extends BenchmarkableMock {
       players.foreach { case(webUserId, name) =>
         val player = Player(name, webUserId)
         benchmark("create player") { () => galaxy.createZoneFor(player) }
+      }
+
+      val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
+      printBenchmarkResults()
+
+      result
+    }
+  }
+  
+  def createZone(
+    ruleset: String,
+    galaxyId: Int,
+    // [1, 4]
+    quarter: Int,
+    // [1, inf)
+    slot: Int
+  ) = {
+    Config.withSetScope(ruleset) { () =>
+      TableIds.initialize()
+      val galaxy = new Galaxy(galaxyId, ruleset)
+
+      benchmark("generate zone") { () =>
+        galaxy.addZone(Zone(slot, quarter, Config.zoneDiameter))
       }
 
       val result = benchmark("save galaxy") { () => Manager.save(galaxy) }

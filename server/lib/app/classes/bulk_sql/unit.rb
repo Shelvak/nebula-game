@@ -1,3 +1,3 @@
 class BulkSql::Unit < BulkSql
-  def self.klass; ::Unit; end
+  def self.save(objects); super(objects, ::Unit); end
 end

@@ -163,6 +163,10 @@ class Cfg; class << self
 
   ### galaxy.yml ###
 
+  def galaxy_zone_start_slot; CONFIG['galaxy.zone.start_slot']; end
+
+  def galaxy_zone_max_player_count; CONFIG['galaxy.zone.players']; end
+
   def galaxy_zone_diameter; CONFIG['galaxy.zone.diameter']; end
 
   def galaxy_zone_death_age(diagonal_no)

@@ -96,6 +96,11 @@ class SpaceMule
     PlayerCreator.invoke(galaxy_id, ruleset, players)
   end
 
+  # Creates a new, empty zone with only non-player solar systems.
+  def create_zone(galaxy_id, ruleset, slot, quarter)
+    PlayerCreator.create_zone(galaxy_id, ruleset, slot, quarter)
+  end
+
   # Sends message to space mule for combat simulation.
   #
   # _location_ is +Location+ object.

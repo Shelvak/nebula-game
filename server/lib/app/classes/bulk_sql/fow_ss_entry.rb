@@ -1,3 +1,3 @@
 class BulkSql::FowSsEntry < BulkSql
-  def self.klass; ::FowSsEntry; end
+  def self.save(objects); super(objects, ::FowSsEntry); end
 end

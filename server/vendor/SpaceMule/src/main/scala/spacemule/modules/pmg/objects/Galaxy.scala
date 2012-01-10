@@ -21,7 +21,12 @@ class Galaxy(val id: Int, val ruleset: String) {
   val miniBattlegrounds = Config.miniBattlegrounds
   val zones = new HashMap[Coords, Zone]()
 
-  def addExistingSS(x: Int, y: Int, age: Int) {
+  def addExistingSS(
+    x: Int,
+    y: Int,
+    playerId: Int, // 0 if NULL.
+    age: Int
+  ) {
     // For some reason -1 / 2 == 0 instead of -1 in Java.
     // We must fix this.
     val zoneX = (x.toFloat / zoneDiameter).floor.toInt
@@ -52,27 +57,20 @@ class Galaxy(val id: Int, val ruleset: String) {
       }
       val ssX = calcCoord(x)
       val ssY = calcCoord(y)
-      zone.markAsTaken(Coords(ssX, ssY))
+      zone.markAsTaken(Coords(ssX, ssY), playerId != 0)
     }
   }
-
-  /**
-   * Quarters for random zone finder.
-   */
-  private val Quarters = IndexedSeq(
-    Coords(1, 1), Coords(1, -1), Coords(-1, 1), Coords(-1, -1)
-  )
 
   /**
    * Find random zone trying to start from galaxy center.
    */
   private def randomZone(): Zone = {
     val zone = new Zone(0, 0, zoneDiameter)
-    var slot = 2 // Start from 2, leave 4 center zones empty
+    var slot = Config.zoneStartSlot
     while (true) {
       // Shamelessly stolen from Mykolas, I don't really have much idea on what
       // is going on here.
-      Quarters.shuffled.foreach { quarter =>
+      Zone.Quarters.shuffled.foreach { quarter =>
         // find logical coordinates in the first quarter
         val diag = ((math.sqrt(1 + 8 * slot) - 1) / 2).ceil
         val x = (diag / 2 * (1 + diag) - slot).toInt
@@ -106,21 +104,28 @@ class Galaxy(val id: Int, val ruleset: String) {
   /**
    * Creates zone for player and returns homeworld id.
    */
-  def createZoneFor(player: Player) = {    
+  def createZoneFor(player: Player) {
     val zone = randomZone()
+    addZone(zone)
+
+    zone.addSolarSystem(new Homeworld(player))
+  }
+
+  /**
+   * Adds zone to galaxy and creates non-player solar systems if it is empty.
+   */
+  def addZone(zone: Zone) {
     zones(zone.coords) = zone
     /**
      * Only add additional solar systems if it is first player in that zone.
      */
-    if (zone.playerCount == 0) {
+    if (! zone.hasPlayers) {
       wormholes.foreach { coords =>
-        zone.addSolarSystem(new Wormhole(), coords) }
+        zone.addSolarSystem(new Wormhole(), coords, false) }
       freeSystems.foreach { coords =>
-        zone.addSolarSystem(new SolarSystem(Config.freeSsConfig), coords) }
+        zone.addSolarSystem(new SolarSystem(Config.freeSsConfig), coords, false) }
       miniBattlegrounds.foreach { coords =>
-        zone.addSolarSystem(new Pulsar(), coords) }
+        zone.addSolarSystem(new Pulsar(), coords, false) }
     }
-
-    zone.addSolarSystem(new Homeworld(player))
   }
 }

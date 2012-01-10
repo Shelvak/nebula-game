@@ -39,11 +39,10 @@ class BulkSql
   class << self
     # Saves a lot of objects really fast.
     # WARNING: not thread safe!
-    def save(objects)
+    def save(objects, klass)
       return true if objects.blank?
 
       LOGGER.block("Running bulk updates for #{self}", :level => :debug) do
-        klass = self.klass
         primary_key = klass.primary_key.to_sym
         last_pk = klass.maximum(primary_key) || 0
 
@@ -83,11 +82,11 @@ class BulkSql
         LOGGER.block(
           "Running updates for #{update_objects.size} objects",
           :level => :debug
-        ) { execute_updates(update_columns.to_a, update_objects) }
+        ) { execute_updates(update_columns.to_a, update_objects, klass) }
         LOGGER.block(
           "Running inserts for #{insert_objects.size} objects",
           :level => :debug
-        ) { execute_inserts(insert_columns.to_a, insert_objects) }
+        ) { execute_inserts(insert_columns.to_a, insert_objects, klass) }
 
         true
       end
@@ -111,7 +110,7 @@ class BulkSql
       end
     end
 
-    def execute_inserts(columns, objects, table_name=nil)
+    def execute_inserts(columns, objects, klass, table_name=nil)
       return if objects.size == 0
 
       table_name ||= klass.table_name
@@ -145,10 +144,9 @@ class BulkSql
       statement.execute(statement_text)
     end
 
-    def execute_updates(columns, objects)
+    def execute_updates(columns, objects, klass)
       return if objects.size == 0
 
-      klass = self.klass
       primary_key = klass.primary_key
       table_name = klass.table_name
       tmp_table_name = "#{table_name}_bulk"
@@ -173,7 +171,7 @@ class BulkSql
       connection.execute(create_tmp_table)
 
       # Use bulk insert to add data to temporary table
-      execute_inserts(columns, objects, tmp_table_name)
+      execute_inserts(columns, objects, klass, tmp_table_name)
 
       # Execute mass update from temporary table to the original table.
       # Exclude first column that is always ID.
