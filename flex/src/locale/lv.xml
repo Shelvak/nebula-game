@@ -1915,9 +1915,17 @@
     <title.allianceInvitation value="Alianses ielūgums"/>
     <message.allianceInvitation value="Ielūgums pievienoties aliansei '{0}'"/>
     <message.allianceInvitation.long>
-      Jūs esat ielūgts pievienoties aliansei {0}. Spiediet
-      '[reference:Notifications/label.allianceInvitation.join]', lai apstiprrinātu ielūgumu.
+        <![CDATA[
+      Jūs esat ielūgts pievienoties aliansei <a href="event:openAlliance">{0}</a>.
+      Spiediet '[reference:Notifications/label.allianceInvitation.join]', lai
+      apstiprrinātu ielūgumu.
+      ]]>
     </message.allianceInvitation.long>
+    <message.allianceInvitation.denied>
+        <![CDATA[
+      Jūs esat ielūgts pievienoties aliansei <a href="event:openAlliance">{0}</a>.
+      ]]>
+    </message.allianceInvitation.denied>
     <label.allianceInvitation.join value="Pievienoties"/>
     <message.allianceInvitation.cooldown value="Jūs nevarat pievienoties nevienai aliansei {0} (līdz {1})."/>
     <message.allianceInvitation.alreadyInAlliance>
