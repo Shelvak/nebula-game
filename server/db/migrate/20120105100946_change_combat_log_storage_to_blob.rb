@@ -1,6 +1,8 @@
 class ChangeCombatLogStorageToBlob < ActiveRecord::Migration
   def self.up
-    change_column :combat_logs, :info, 'LONGBLOB', :null => false
+    # Because Ruby migrations somehow fucking fails on Win32 by trying to
+    # add a default column.
+    execute("ALTER TABLE `combat_logs` CHANGE `info` `info` LONGBLOB NOT NULL")
     execute "ALTER TABLE `combat_logs` DROP PRIMARY KEY"
     add_index :combat_logs, :sha1_id, :unique => true, :name => :lookup
     add_column :combat_logs, :id, :primary_key
