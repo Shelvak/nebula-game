@@ -1,14 +1,60 @@
 package models.alliance
 {
+   import config.Config;
+
+   import flash.events.EventDispatcher;
+
+   import models.alliance.events.MAllianceEvent;
    import models.factories.RatingsPlayerFactory;
    import models.player.MRatingPlayer;
-   
+   import models.technology.Technology;
+
    import mx.collections.ArrayCollection;
-   
-   public class MAlliance
+
+   import utils.Events;
+   import utils.datastructures.Collections;
+
+
+   [Event(name="ownerChange", type="models.alliance.events.MAllianceEvent")]
+
+   public class MAlliance extends EventDispatcher
    {
-      [Bindable]
-      public var ownerId: int;
+      public static function technologyLevelRequiredForPlayers(numPlayers:int): int {
+         const maxLevel:int = Config.getTechnologyMaxLevel(Technology.ALLIANCE);
+         for (var level:int = 1; level <= maxLevel; level++) {
+            if (numPlayers <= Config.getAllianceMaxPlayers(level)) {
+               return level;
+            }
+         }
+         throw new ArgumentError(
+            "Alliance technology can only support up to "
+               + Config.getAllianceMaxPlayers(maxLevel) + " players but [param "
+               + "numPlayers] was " + numPlayers
+         );
+         return 0;   // unreachable
+      }
+
+      private var _ownerId: int;
+      [Bindable(event="ownerChange")]
+      public function set ownerId(value: int): void {
+         if (_ownerId != value) {
+            _ownerId = value;
+            Events.dispatchSimpleEvent(
+               this,
+               MAllianceEvent,
+               MAllianceEvent.OWNER_CHANGE
+            );
+         }
+      }
+      public function get ownerId(): int {
+         return _ownerId;
+      }
+
+      [Bindable(event="ownerChange")]
+      public function get owner(): MRatingPlayer {
+         return Collections.findFirstWithId(players, ownerId);
+      }
+
       [Bindable]
       public var name: String;
       

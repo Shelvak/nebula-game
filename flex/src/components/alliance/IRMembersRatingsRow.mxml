@@ -1,24 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                 xmlns:s="library://ns.adobe.com/flex/spark" 
-                xmlns:mx="library://ns.adobe.com/flex/mx"
-                autoDrawBackground="false" xmlns:base="components.base.*">
+                xmlns:base="components.base.*"
+                autoDrawBackground="false">
    <fx:Script>
       <![CDATA[
       import components.popups.ErrorPopup;
       import components.ratings.RatingsWidths;
 
       import controllers.alliances.AlliancesCommand;
+      import controllers.alliances.actions.GiveAwayActionParams;
       import controllers.ui.NavigationController;
 
       import models.ModelLocator;
       import models.player.MRatingPlayer;
+      import models.player.PlayerMinimal;
+
+      import spark.components.PopUpAnchor;
 
       import utils.DateUtil;
 
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
       import utils.locale.Localizer;
+
 
       [Bindable]
       private var player: MRatingPlayer;
@@ -34,20 +39,51 @@
       [Bindable]
       private var ML: ModelLocator = ModelLocator.getInstance();
 
-      protected function button1_clickHandler(event: MouseEvent): void {
+      private function setupPopupButtons(popup: ErrorPopup): void {
+         popup.retryButtonLabel = Localizer.string('Popups', 'label.yes');
+         popup.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+         popup.showCancelButton = true;
+         popup.showRetryButton = true;
+      }
+
+      private function btnKick_clickHandler(event: MouseEvent): void {
          var popUp: ErrorPopup = new ErrorPopup();
-         popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
-         popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
-         popUp.showCancelButton = true;
-         popUp.showRetryButton = true;
+         setupPopupButtons(popUp);
          popUp.message = Localizer.string('Popups', 'message.kick', [data.name]);
          popUp.title = Localizer.string('Popups', 'title.kick');
-         popUp.retryButtonClickHandler = function (button: Button = null): void {
-            new AlliancesCommand(AlliancesCommand.KICK, {'playerId': data.id}).dispatch();
-            new AlliancesCommand(AlliancesCommand.SHOW, {'id': ML.player.allianceId}).dispatch();
-         };
+         popUp.retryButtonClickHandler =
+            function (button: Button = null): void {
+               new AlliancesCommand(
+                  AlliancesCommand.KICK, {'playerId': data.id}
+               ).dispatch();
+               new AlliancesCommand(
+                  AlliancesCommand.SHOW, {'id': ML.player.allianceId}
+               ).dispatch();
+            };
          popUp.show();
       }
+
+      private function btnTransferOwnership_clickHandler(event: MouseEvent): void {
+         const popup: ErrorPopup = new ErrorPopup();
+         popup.title = Localizer.string(
+            "Alliances", "giveAway.title.confirmationPopup"
+         );
+         popup.message = Localizer.string(
+            "Alliances", "giveAway.message.confirmationPopup", [player.name]
+         );
+         setupPopupButtons(popup);
+         popup.retryButtonClickHandler =
+            function (button: Button = null): void {
+               new AlliancesCommand(
+                  AlliancesCommand.GIVE_AWAY,
+                  new GiveAwayActionParams(
+                     new PlayerMinimal(player.id, player.name)
+                  )
+               ).dispatch();
+            };
+         popup.show();
+      }
+      
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">
@@ -114,9 +150,15 @@
       <s:Group width="{RatingsWidths.action}" 
                visible="{player.allianceOwnerId == ML.player.id 
                &amp;&amp; ML.player.id != player.id}">
-         <s:Button label="{Localizer.string('Alliances', 'label.kick')}" 
-                   maxWidth="{RatingsWidths.action - 10}" horizontalCenter="0"
-                   click="button1_clickHandler(event)"/>
+         <s:layout>
+            <s:HorizontalLayout gap="5" horizontalAlign="center"/>
+         </s:layout>
+         <s:Button id="btnKick"
+            label="{Localizer.string('Alliances', 'label.kick')}"
+            click="btnKick_clickHandler(event)"/>
+         <s:Button id="btnTransferOwnership"
+            label="{Localizer.string('Alliances', 'giveAway.label.actionButton')}"
+            click="btnTransferOwnership_clickHandler(event)"/>
       </s:Group>
    </s:Group>
 </s:ItemRenderer>
