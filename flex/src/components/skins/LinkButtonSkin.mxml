@@ -9,6 +9,10 @@
    <fx:Metadata>
       [HostComponent("spark.components.Button")]
    </fx:Metadata>
+
+   <fx:Script>
+      import styles.LinkStyle;
+   </fx:Script>
    
    <!-- states -->
    <s:states>
@@ -20,12 +24,12 @@
    
    <s:Label id="labelDisplay"
             maxDisplayedLines="1"
-            fontWeight="bold"
-            color.up="0xFFC000"
-            color.over="0x00D8E3"
-            color.down="0x00D8E3"
+            fontWeight="{LinkStyle.APP_URL.normalState.fontWeight}"
+            color.up="{LinkStyle.APP_URL.normalState.color}"
+            color.over="{LinkStyle.APP_URL.hoverState.color}"
+            color.down="{LinkStyle.APP_URL.activeState.color}"
             color.disabled="0xE0E0E0"
             left="0" right="0">
    </s:Label>
-   
+
 </s:SparkSkin>
