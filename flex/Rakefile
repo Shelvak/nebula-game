@@ -146,11 +146,12 @@ namespace :build do
       end
 
       info "Compiling SpaceGame..." do
+        # -show-binding-warnings << Mykolas says it's OK.
         compiler_flags = %w{
           as3 strict incremental optimize
           verbose-stacktraces
           headless-server report-invalid-styles-as-warnings
-          show-actionscript-warnings show-binding-warnings
+          show-actionscript-warnings
           show-invalid-css-property-warnings show-unused-type-selector-warnings
           warn-array-tostring-changes warn-assignment-within-conditional
           warn-bad-array-cast warn-bad-bool-assignment warn-bad-date-cast
