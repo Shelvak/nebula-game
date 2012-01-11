@@ -69,6 +69,8 @@ package models.infoscreen
       }
       
       private static const MAX_WEAK_LENGTH: int = 1000;
+
+      private static const XP_NEEDED: String = 'xpNeeded';
       
       //properties that dont need to be displayed in difference column of datagrid
       private static const diffIgnorableProperties: Array =
@@ -352,6 +354,13 @@ package models.infoscreen
                         newValue = TechnologyUpgradable.getMod(model.type, selectedLevel,
                            element.slice(4));
                      }
+                  }
+                  else if (element == XP_NEEDED)
+                  {
+                     currentValue = StringUtil.evalFormula(model.infoData[element],
+                        {"level": model.usefulLevel + 1});
+                     newValue = StringUtil.evalFormula(model.infoData[element],
+                        {"level": selectedLevel + 1});
                   }
                   else
                   {
