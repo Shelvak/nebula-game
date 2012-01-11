@@ -29,7 +29,6 @@
       import utils.Events;
       import utils.MathUtil;
       import utils.UrlNavigate;
-      import utils.assets.events.ImagePreloaderEvent;
       import utils.locale.Localizer;
       import utils.locale.XMLBundlesLoader;
 
@@ -128,17 +127,12 @@
       /* ### IMAGES ### */
       /* ############## */
 
-      private function IMG_unpackProgressHandler(event: ImagePreloaderEvent): void {
-         unpackProgress.setProgress(IMG.currentUnpackingProgress, 1);
-      }
 
       /**
        * Starts downloading images.
        */
       private function loadImages(): void {
          IMG.addEventListener(ProgressEvent.PROGRESS, imageLoaded);
-         IMG.addEventListener(ImagePreloaderEvent.UNPACK_PROGRESS,
-                              IMG_unpackProgressHandler);
          IMG.addEventListener(Event.COMPLETE, imagesLoadComplete);
          IMG.startDownload();
       }
@@ -157,8 +151,6 @@
       private function imagesLoadComplete(event: Event): void {
          DisplayManager.setFPSForGame();
          IMG.removeEventListener(ProgressEvent.PROGRESS, imageLoaded);
-         IMG.removeEventListener(ImagePreloaderEvent.UNPACK_PROGRESS,
-                                 IMG_unpackProgressHandler);
          IMG.removeEventListener(Event.COMPLETE, imagesLoadComplete);
          StartupManager.initializeAppAfterLoad();
       }
@@ -209,9 +201,9 @@
             <s:Label id="lblFileName" showTruncationTip="false" maxWidth="300"
                      maxDisplayedLines="1" text="{IMG.currentModuleLabel}"
                      color="0xAFAFAF"/>
-            <mx:ProgressBar id="unpackProgress" width="100%" mode="manual"
-                            label="" labelPlacement="center"
-                            height="12" trackHeight="12"/>
+           <s:Label id="lblFileProgress" showTruncationTip="false" maxWidth="300"
+                    maxDisplayedLines="1" text="{IMG.currentModuleProgress}"
+                    color="0xAFAFAF"/>
          </s:Group>
       </s:Group>
       <s:Group width="675" height="214">

@@ -1,40 +1,58 @@
-/**
- * Created by IntelliJ IDEA.
- * User: Jho
- * Date: 12/12/11
- * Time: 7:21 PM
- * To change this template use File | Settings | File Templates.
- */
-package utils {
-   import flashx.textLayout.conversion.TextConverter;
-   import flashx.textLayout.elements.Configuration;
+package utils
+{
    import flashx.textLayout.elements.TextFlow;
-   import flashx.textLayout.elements.TextFlow;
-   import flashx.textLayout.events.DamageEvent;
-   import flashx.textLayout.formats.ITextLayoutFormat;
-   import flashx.textLayout.formats.TextDecoration;
-   import flashx.textLayout.formats.TextLayoutFormat;
-   import flashx.textLayout.formats.TextLayoutFormat;
 
-   import mx.core.FlexGlobals;
+   import spark.utils.TextFlowUtil;
 
-   import mx.events.FlexEvent;
+   import styles.LinkState;
+   import styles.LinkStyle;
 
-   public class TextFlowUtil {
-      public static function importFromString(value:String): TextFlow
-      {
-          var cfg:Configuration = new Configuration();
 
-          Object(cfg.defaultLinkNormalFormat).color = 0x00D8E3;
-          Object(cfg.defaultLinkHoverFormat).color = 0x00D8E3;
-          Object(cfg.defaultLinkActiveFormat).color = 0x00D8E3;
-          Object(cfg.defaultLinkNormalFormat).textDecoration  = TextDecoration.UNDERLINE;
-          Object(cfg.defaultLinkHoverFormat).textDecoration  = TextDecoration.UNDERLINE;
-          Object(cfg.defaultLinkActiveFormat).textDecoration  = TextDecoration.UNDERLINE;
-          var flow: TextFlow = TextConverter.importToFlow(value,
-                  TextConverter.TEXT_FIELD_HTML_FORMAT, cfg);
+   public class TextFlowUtil
+   {
+      private static const EVENT_HREF:RegExp = /<a(.+?)(href=["']event:[^>]+?)>([^<]+?)<\/a>/;
+      private static const LINK_HREF:RegExp = /<a(.+?)(href=["'].+?:\/\/[^>]+?)>([^<]+?)<\/a>/;
+      
+      private static function addLinkStyles(html:String): String {
+         var match:Array = null;
+         var substitute:String = null;
+         while (match = EVENT_HREF.exec(html)) {
+            substitute = "<a" + match[1] + match[2] + ">"
+                            + createLinkFormats(LinkStyle.APP_URL)
+                            + match[3] + "</a>";
+            html = html.replace(match[0], substitute);
+         }
+         while (match = LINK_HREF.exec(html)) {
+            substitute = "<a" + match[1] + match[2] + ">"
+                            + createLinkFormats(LinkStyle.EXTERNAL_URL)
+                            + match[3] + "</a>";
+            html = html.replace(match[0], substitute);
+         }
+         return html;
+      }
 
-         return flow.getTextFlow();
+      private static function createLinkFormats(linkStyle:LinkStyle): String {
+         return StringUtil.substitute(
+            "<linkNormalFormat>{0}</linkNormalFormat>" +
+               "<linkActiveFormat>{1}</linkActiveFormat>" +
+               "<linkHoverFormat>{2}</linkHoverFormat>",
+            createLinkStateFormat(linkStyle.normalState),
+            createLinkStateFormat(linkStyle.activeState),
+            createLinkStateFormat(linkStyle.hoverState)
+         );
+      }
+
+      private static function createLinkStateFormat(linkState:LinkState): String {
+         return StringUtil.substitute(
+            "<TextLayoutFormat color='0x{0}' textDecoration='{1}' fontWeight='{2}'/>",
+            linkState.color.toString(16),
+            linkState.textDecoration,
+            linkState.fontWeight
+         );
+      }
+
+      public static function importFromString(value: String): TextFlow {
+         return spark.utils.TextFlowUtil.importFromString(addLinkStyles(value));
       }
    }
 }

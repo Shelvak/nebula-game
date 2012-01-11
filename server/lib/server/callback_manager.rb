@@ -204,10 +204,9 @@ class CallbackManager
     private
 
     def process_callback(row, delete_row)
-      title = "Callback for #{row['class']} (evt: '#{
+      title = "Callback @ #{row['ends_at']} for #{row['class']} (evt: '#{
         STRING_NAMES[row['event'].to_i]}', obj id: #{
-        row['object_id']}, ruleset: #{row['ruleset']}, ends at: #{
-        row['ends_at']})"
+        row['object_id']}, ruleset: #{row['ruleset']})"
       LOGGER.block(title, :level => :info) do
         time = Benchmark.realtime do
           ActiveRecord::Base.transaction(:joinable => false) do

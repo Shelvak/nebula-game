@@ -88,7 +88,7 @@ package models.player
          _allianceCooldown = new MTimeEventFixedMoment();
          _allianceCooldown.occuresAt = DateUtil.BEGINNING;
          _allianceCooldown.addEventListener
-            (MTimeEventEvent.HAS_OCCURED_CHANGE, allianceCooldown_hasOccuredChange, false, 0, true);
+            (MTimeEventEvent.HAS_OCCURED_CHANGE, allianceCooldown_hasOccuredChange,  false, 0, true);
       }
       
       

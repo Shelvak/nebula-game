@@ -10,13 +10,13 @@
    <s:layout>
       <s:VerticalLayout gap="5"/>
    </s:layout>
-   
-   <s:Label id="message"/>
+
+   <s:RichEditableText editable="false" id="message"/>
    <s:Label id="joinRestrictionMessage"/>
    <s:Button id="joinButton"/>
    
    <!-- SkinParts
-   name=message, type=spark.components.Label, required=true
+   name=message, type=spark.components.RichEditableText, required=true
    name=joinRestrictionMessage, type=spark.components.Label, required=true
    name=joinButton, type=spark.components.Button, required=true
    -->

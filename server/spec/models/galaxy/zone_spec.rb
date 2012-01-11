@@ -44,7 +44,7 @@ describe Galaxy::Zone do
 
     it "should return a coordinate pair that fits into that zone" do
       x, y = zone.free_spot_coords(galaxy.id)
-      zone.should == Galaxy::Zone.lookup(x, y)
+      zone.should == Galaxy::Zone.lookup_by_coords(x, y)
     end
 
     it "should find a free spot even if only one spot exists" do
@@ -77,6 +77,19 @@ describe Galaxy::Zone do
           it "should look up zone correctly for (#{x},#{y})" do
             looked_up = Galaxy::Zone.lookup(x, y)
             [looked_up.x, looked_up.y].should == [x, y]
+          end
+        end
+      end
+    end
+  end
+
+  describe ".lookup_by_coords" do
+    1.upto(4) do |quarter|
+      [1, 2, 3].each do |slot|
+        it "should lookup all #{quarter},#{slot} coords to correct zone" do
+          zone = Galaxy::Zone.new(slot, quarter)
+          zone.each_coord do |x, y|
+            Galaxy::Zone.lookup_by_coords(x, y).should == zone
           end
         end
       end
@@ -174,7 +187,7 @@ describe Galaxy::Zone do
     end
   end
 
-  describe ".zone_for_reattachment" do
+  describe ".for_reattachment" do
     let(:galaxy_id) { 10 }
     let(:target_points) { 12356 }
 
@@ -183,7 +196,7 @@ describe Galaxy::Zone do
         {'quarter' => 3, 'slot' => 1, 'points_diff' => 1, 'player_count' => 0},
         {'quarter' => 2, 'slot' => 1, 'points_diff' => 1, 'player_count' => 0},
       ])
-      zone = Galaxy::Zone.zone_for_reattachment(galaxy_id, target_points)
+      zone = Galaxy::Zone.for_reattachment(galaxy_id, target_points)
       [zone.slot, zone.quarter].should == [1, 3]
     end
 
@@ -193,7 +206,7 @@ describe Galaxy::Zone do
          'player_count' => Cfg.galaxy_zone_max_player_count},
         {'quarter' => 2, 'slot' => 1, 'points_diff' => 1, 'player_count' => 0},
       ])
-      zone = Galaxy::Zone.zone_for_reattachment(galaxy_id, target_points)
+      zone = Galaxy::Zone.for_reattachment(galaxy_id, target_points)
       [zone.slot, zone.quarter].should == [1, 2]
     end
 
@@ -211,7 +224,7 @@ describe Galaxy::Zone do
 
       SpaceMule.instance.should_receive(:create_zone).
         with(galaxy.id, galaxy.ruleset, slot, quarter)
-      zone = Galaxy::Zone.zone_for_reattachment(galaxy.id, target_points)
+      zone = Galaxy::Zone.for_reattachment(galaxy.id, target_points)
       [zone.slot, zone.quarter].should == [slot, quarter]
     end
   end

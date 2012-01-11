@@ -563,19 +563,29 @@ class Player < ActiveRecord::Base
   # then hide his solar system. If he is active - schedule next check.
   def check_activity!
     if active? || ! relocatable?
-      # Schedule next check in the future if player is active or not
-      # relocatable.
-      CallbackManager.register_or_update(
-        self, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
-        Cfg.player_inactivity_time(points).from_now
-      )
+      register_check_activity!
     else
-      detach!
+      CallbackManager.
+        unregister(self, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
+      detach! unless detached?
     end
   end
 
+  # Schedule next check in the future to check player is active.
+  def register_check_activity!
+    CallbackManager.register_or_update(
+      self, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+      Cfg.player_inactivity_time(points).from_now
+    )
+  end
+
   def detached?
-    home_solar_system.detached?
+    home_ss = home_solar_system
+    raise RuntimeError.new(
+      "Player #{self} does not have home solar system!"
+    ) if home_ss.nil?
+
+    home_ss.detached?
   end
 
   # Detach this players home solar system from galaxy map.
@@ -583,6 +593,7 @@ class Player < ActiveRecord::Base
     raise ArgumentError.
             new("Cannot detach #{self} which is already detached!") if detached?
 
+    LOGGER.info "Detaching #{self} from galaxy."
     home_solar_system.detach!
   end
 
@@ -593,8 +604,14 @@ class Player < ActiveRecord::Base
     raise ArgumentError.new("Cannot attach #{self} which is not detached!") \
       unless detached?
 
-    zone = Galaxy.find_zone_by_points(points)
-    SolarSystem.attach_player(id, zone)
+    zone = Galaxy::Zone.for_reattachment(galaxy_id, points)
+    x, y = zone.free_spot_coords(galaxy_id)
+    LOGGER.info "Reattaching #{self} to #{x},#{y}."
+    home_solar_system.attach!(x, y)
+
+    register_check_activity!
+
+    true
   end
 
   def self.on_callback(id, event)
@@ -604,29 +621,6 @@ class Player < ActiveRecord::Base
         player.check_activity!
       else
         raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
-  end
-
-  # Checks if player is active.
-  def self.check_activity!(id)
-    player_ids = SsObject.connection.select_values(
-      "SELECT DISTINCT(player_id) FROM `#{SsObject.table_name
-      }` WHERE `solar_system_id`=#{id.to_i} AND `player_id` IS NOT NULL"
-    )
-    raise GameLogicError.new(
-            "Cannot check player activity if more than one player exists in SS #{
-            id}! Player IDs: #{player_ids.inspect}#") if player_ids.size > 1
-    return if player_ids.size > 1
-
-    player = Player.find(player_ids[0])
-    if player.last_seen.nil? || ! (
-    player.points >= CONFIG['galaxy.player.inactivity_check.points'] ||
-      player.last_seen >= Cfg.player_last_seen_in.ago)
-      # This player is inactive. Destroy him.
-      player.destroy!
-
-      # Change solar system into a dead one.
-      find(id).die!
     end
   end
 end

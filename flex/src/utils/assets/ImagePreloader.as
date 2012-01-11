@@ -9,11 +9,14 @@ package utils.assets
 
    import flash.display.BitmapData;
    import flash.display.Loader;
+   import flash.display.LoaderInfo;
    import flash.display.MovieClip;
    import flash.errors.IOError;
    import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.events.IOErrorEvent;
+   import flash.utils.ByteArray;
+   import flash.utils.Dictionary;
    import flash.utils.getQualifiedClassName;
 
    import mx.events.ModuleEvent;
@@ -29,7 +32,6 @@ package utils.assets
    import utils.Objects;
    import utils.PropertiesTransformer;
    import utils.SingletonFactory;
-   import utils.assets.events.ImagePreloaderEvent;
 
 
    /**
@@ -45,13 +47,7 @@ package utils.assets
     * @eventType flash.events.Event.COMPLETE
     */
    [Event(name="complete", type="flash.events.Event")]
-   
-   /**
-    * @see utils.assets.events.ImagePreloaderEvent#UNPACK_PROGRESS
-    * 
-    * @eventType utils.assets.events.ImagePreloaderEvent.UNPACK_PROGRESS
-    */
-   [Event(name="unpackProgress", type="utils.assets.events.ImagePreloaderEvent")]
+
    
    /**
     * Once created this class downloads all images that need to be retrieved
@@ -88,44 +84,52 @@ package utils.assets
       private var _movieClips:Object = {};
       
       
-      /**
-       * Constructor.
-       */ 
-      public function ImagePreloader()
-      {
-         _swfLoader = new Loader();
-         _swfLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, swfLoaded);
-         _swfLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-      }
-      
-      
-      /**
-       * Progress (precentage value) of unpacking of downloaded module.
-       */
-      public var currentUnpackingProgress:Number;
-      
-      
       [Bindable]
       /**
-       * Label of a module currently beeing downloaded.
+       * Label of a module currently being downloaded.
        */
       public var currentModuleLabel:String = "";
-      
+      [Bindable]
+      /**
+       * Progress of a module currently being downloaded.
+       */
+      public var currentModuleProgress:String = "";
+
+      private function ensureSwfLoadersCount(assetsCount: int): void
+      {
+         if (_swfLoaders.length >= assetsCount)
+         {
+            return;
+         }
+         var missingCount: int = assetsCount - _swfLoaders.length;
+         for (var i: int = 0; i < missingCount; i++)
+         {
+            var _swfLoader: Loader;
+            _swfLoader = new Loader();
+            _swfLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, swfLoaded);
+            _swfLoader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+            var mLoader: LoaderObject = new LoaderObject(_swfLoader);
+            _swfLoaders.push(mLoader);
+            loadersHash[_swfLoader] = mLoader;
+         }
+      }
       
       private function setCurrentModuleLabel(event:ModuleEvent = null) : void
       {
          if (!event)
          {
-            currentModuleLabel = _currentModule + " (0 %)" 
+            currentModuleLabel = _currentModule;
+            currentModuleProgress = "0 %";
          }
          else {
             var percentage:int = event.bytesLoaded * 100 / event.bytesTotal;
             var formatter:NumberFormatter = new NumberFormatter();
             formatter.precision = 1;
             
-            currentModuleLabel = _currentModule + " (" + percentage.toString() + " % - " +
+            currentModuleLabel = _currentModule;
+            currentModuleProgress = percentage.toString() + " % - " +
                formatter.format(event.bytesLoaded / 1024) + "k/" +
-               formatter.format(event.bytesTotal / 1024) + "k)" 
+               formatter.format(event.bytesTotal / 1024) + "k";
          }
       }
       
@@ -236,8 +240,6 @@ package utils.assets
       }
       private function downloadNextModule() : void
       {
-         currentUnpackingProgress = 0;
-         dispatchUnpackProgressEvent();
          
          if (_moduleInfo != null)
          {
@@ -279,20 +281,25 @@ package utils.assets
        */
       private function finalizeDownload() : void
       {
-         _swfLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, swfLoaded);
-         _swfLoader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-         _swfLoader = null;
+         for each (var mLoader: LoaderObject in _swfLoaders)
+         {
+            loadersHash[mLoader.loader] = null;
+            mLoader.loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, swfLoaded);
+            mLoader.loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+            mLoader.loader = null;
+            mLoader = null;
+         }
          _swfHash = null;
          _swfNames = null;
          dispatchCompleteEvent();
       }
       
       
-      private var _swfLoader:Loader = null;
+      //private var _swfLoader:Loader = null;
+      private var _swfLoaders: Array = [];
       private var _swfHash:Object = null;
       private var _swfHashLength:int = 0;
       private var _swfNames:Vector.<String> = null;
-      private var _currentSwfName:String = null;
       /**
        * Unpacks a module: loads all embeded SWFs but does not unpack them. This will be done
        * lazily.
@@ -306,27 +313,47 @@ package utils.assets
             _swfNames.push(name);
          }
          _swfHashLength = _swfNames.length;
-         loadNextSWF();
+         ensureSwfLoadersCount(_swfHashLength);
+         for (var i: int = 0; i < Math.min(_swfLoaders.length, _swfHashLength); i++)
+         {
+            activeLoaders++;
+            loadNextSWF(_swfLoaders[i]);
+         }
       }
-      private function loadNextSWF() : void
+
+      private var activeLoaders: int = 0;
+      /*
+      * Hash of {LoaderObject.loader => LoaderObject} pairs.
+      */
+      private var loadersHash: Dictionary = new Dictionary();
+
+      private function loadNextSWF(mLoader: LoaderObject) : void
       {
          if (_swfNames.length == 0)
          {
-            _swfHash = null;
-            _swfNames = null;
-            downloadNextModule();
+            activeLoaders--;
+            if (activeLoaders == 0)
+            {
+               _swfHash = null;
+               _swfNames = null;
+               downloadNextModule();
+            }
             return;
          }
-         _currentSwfName = _swfNames.pop();
-         _swfLoader.loadBytes(new (_swfHash[_currentSwfName])());
+         mLoader.currentName = _swfNames.pop();
+         var movieClipData: ByteArray = new (_swfHash[mLoader.currentName])();
+         mLoader.loader.loadBytes(movieClipData);
       }
       private function swfLoaded(event:Event) : void
       {
-         var instance:* = _swfLoader.content;
+         var mLoader: LoaderObject = LoaderObject(
+            loadersHash[event.target.loader]);
+         var instance:* = mLoader.loader.content;
          if (instance is MovieClip)
          {
             MovieClip(instance).stop();
-            _movieClips[_currentSwfName.substring(0, _currentSwfName.length - 4)] = instance;
+            _movieClips[mLoader.currentName.substring(0,
+               mLoader.currentName.length - 4)] = instance;
             /**
              * @since Flash Player 10.3
              * 
@@ -337,25 +364,21 @@ package utils.assets
              * animations do not seem to work anymore. All this does not happen if I unpack the frames
              * right after the SWF has been loaded.
              */
-            getVisualAsset(_currentSwfName.substring(0, _currentSwfName.length - 4));
+            getVisualAsset(mLoader.currentName.substring(0,
+               mLoader.currentName.length - 4));
          }
          else
          {
             throw new Error("Unexpected asset type: " + getQualifiedClassName(instance));
          }
-         currentUnpackingProgress = 1 - _swfNames.length / _swfHashLength;
-         if (_swfNames.length % 5 == 0)
-         {
-            dispatchUnpackProgressEvent();
-         }
-         loadNextSWF();
+         loadNextSWF(mLoader);
       }
       private function ioErrorHandler(event:IOErrorEvent) : void
       {
          
          throw new IOError(
             event.text + "\nLoaded module: " + _currentModule + "\nContent type: " + 
-            _swfLoader.contentLoaderInfo.contentType
+            Loader(event.target).contentLoaderInfo.contentType
          );
       }
       
@@ -430,11 +453,17 @@ package utils.assets
          event.bytesLoaded = currentProgress * 100;
          dispatchEvent(event);
       }
-      
-      
-      private function dispatchUnpackProgressEvent() : void
-      {
-         Events.dispatchSimpleEvent(this, ImagePreloaderEvent, ImagePreloaderEvent.UNPACK_PROGRESS);
-      }
    }
+}
+
+import flash.display.Loader;
+
+class LoaderObject
+{
+   public function LoaderObject(_loader: Loader)
+   {
+      loader = _loader;
+   }
+   public var loader: Loader;
+   public var currentName: String;
 }

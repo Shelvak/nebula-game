@@ -57,6 +57,15 @@ package models.notification.parts
       {
          return getString("message."  + KEY_PART, [allianceName]);
       }
+
+
+       public function get innerMessage() : String
+       {
+           return getString("message."  + KEY_PART + (ML.player.canJoinAlliance
+                     ? '.long'
+                     : '.denied'),
+                   [allianceName]);
+       }
       
       
       public var allianceId:int;
