@@ -1,33 +1,31 @@
 package utils
 {
+   import flashx.textLayout.conversion.TextConverter;
+   import flashx.textLayout.elements.Configuration;
    import flashx.textLayout.elements.TextFlow;
-
-   import spark.utils.TextFlowUtil;
+   import flashx.textLayout.formats.TextLayoutFormat;
 
    import styles.LinkState;
    import styles.LinkStyle;
+   import styles.ParagraphStyle;
 
 
    public class TextFlowUtil
    {
-      private static const EVENT_HREF:RegExp = /<a(.+?)(href=["']event:[^>]+?)>([^<]+?)<\/a>/;
-      private static const LINK_HREF:RegExp = /<a(.+?)(href=["'].+?:\/\/[^>]+?)>([^<]+?)<\/a>/;
+      private static const REGEXP_EVENT_HREF:RegExp =
+                              /<a(.+?)(href=["']event:[^>]+?)>([^<]+?)<\/a>/g;
+      private static const REGEXP_LINK_HREF:RegExp =
+                              /<a(.+?)(href=["'].+?:\/\/[^>]+?)>([^<]+?)<\/a>/g;
       
       private static function addLinkStyles(html:String): String {
-         var match:Array = null;
-         var substitute:String = null;
-         while (match = EVENT_HREF.exec(html)) {
-            substitute = "<a" + match[1] + match[2] + ">"
-                            + createLinkFormats(LinkStyle.APP_URL)
-                            + match[3] + "</a>";
-            html = html.replace(match[0], substitute);
-         }
-         while (match = LINK_HREF.exec(html)) {
-            substitute = "<a" + match[1] + match[2] + ">"
-                            + createLinkFormats(LinkStyle.EXTERNAL_URL)
-                            + match[3] + "</a>";
-            html = html.replace(match[0], substitute);
-         }
+         html = html.replace(
+            REGEXP_EVENT_HREF,
+            "<a$1$2>" + createLinkFormats(LinkStyle.APP_URL) + "$3</a>"
+         );
+         html = html.replace(
+            REGEXP_LINK_HREF,
+            "<a$1$2>" + createLinkFormats(LinkStyle.EXTERNAL_URL) + "$3</a>"
+         );
          return html;
       }
 
@@ -51,8 +49,28 @@ package utils
          );
       }
 
+      private static const REGEXP_NEWLINE:RegExp = /\n/g;
+      private static const REGEXP_SPACE_BEGIN_END:RegExp = /^\s+|\s+$/g;
+      private static const REGEXP_SPACE_PARAS:RegExp = /<\/p>\s+<p>/g;
+
       public static function importFromString(value: String): TextFlow {
-         return spark.utils.TextFlowUtil.importFromString(addLinkStyles(value));
+         value =
+            "<TextFlow xmlns='http://ns.adobe.com/textLayout/2008'>" +
+               addLinkStyles(
+                  value.replace(REGEXP_NEWLINE, "")
+                       .replace(REGEXP_SPACE_BEGIN_END, "")
+                       .replace(REGEXP_SPACE_PARAS, "</p><p>")
+               ) +
+            "</TextFlow>";
+
+         const config:Configuration = new Configuration(false);
+         const layoutFormat:TextLayoutFormat = new TextLayoutFormat();
+         layoutFormat.paragraphSpaceBefore = ParagraphStyle.SPACE_BEFORE;
+         layoutFormat.paragraphSpaceAfter = ParagraphStyle.SPACE_AFTER;
+         config.textFlowInitialFormat = layoutFormat;
+         return TextConverter.importToFlow(
+            value, TextConverter.TEXT_LAYOUT_FORMAT, config
+         );
       }
    }
 }
