@@ -1,6 +1,7 @@
 require 'timeout'
 require 'digest'
 require 'pp'
+require 'yaml'
 
 ARCHIVE_EXTENSION = ".tar.gz"
 ARCHIVE_RE = /#{ARCHIVE_EXTENSION}$/i
@@ -115,21 +116,25 @@ class AssetBase
   }
 
   def initialize
-    template = ERB.new(File.read(File.join(
-          Assets::PROJECT_BASE_DIR, 'assets', 'assets.yml')))
+    template = ERB.new(
+      File.read(File.join(Assets::PROJECT_BASE_DIR, 'assets', 'assets.yml'))
+    )
     processed = template.result(binding)
     @data = YAML.load(processed)
     process_file_options
     build_lists
-  rescue Psych::SyntaxError => e
+  rescue ArgumentError => e
     around = 10
-    line = e.message.match(/at line (\d+)/)[1].to_i - 1
-    lines = processed.split("\n")
+    match = e.message.match(/syntax error on line (\d+)/)
+    if match
+      line = match[1].to_i - 1
+      lines = processed.split("\n")
 
-    puts "Error at:"
-    puts lines[(line - around)..(line - 1)].join("\n")
-    puts "#{lines[line]} <--------"
-    puts lines[(line + 1)..(line + around)].join("\n")
+      puts "YAML syntax error at:"
+      puts lines[(line - around)..(line - 1)].join("\n")
+      puts "#{lines[line]} <--------"
+      puts lines[(line + 1)..(line + around)].join("\n")
+    end
     raise e
   end
 

@@ -60,7 +60,9 @@ namespace :flex do
           bundle_data = {}
           bundle_updated = false
 
-          Dir["#{target_dir}/#{bundle.dir}/**/*.#{SUPPORTED_EXTENSIONS}"].each do |filename|
+          Dir[
+            "#{target_dir}/#{bundle.dir}/**/*.#{SUPPORTED_EXTENSIONS}"
+          ].each do |filename|
             unless File.directory?(filename)
               filename.sub!("#{target_dir}/", '')
 
@@ -79,11 +81,14 @@ namespace :flex do
             end
           end
 
-          # Only commit bundle for recompiling if something was updated
-          updated_bundles.add(bundle) if bundle_updated
+          # Don't compile empty bundles.
+          unless bundle_data.blank?
+            # Only commit bundle for recompiling if something was updated
+            updated_bundles.add(bundle) if bundle_updated
 
-          # Assign data to bundle
-          bundles[bundle] = bundle_data
+            # Assign data to bundle
+            bundles[bundle] = bundle_data
+          end
         end
       end
 

@@ -17,6 +17,7 @@ boss_light boss_heavy
   2 => 'mud',
   #3 => 'twilight'
 } %>
+<% languages = %w{lt} %>
 # Options can be defined in:
 #
 # 1. This global options block
@@ -68,19 +69,19 @@ options:
   # swf:quality (i.e. swf:75 would make a SWF with 75 percent quality).
   save_as: ""
 targets:
-  flex:
+  flex: &flex
     # Disable me
     # disabled: true
     path: flex/assets
     # Options can be defined here
     combine: swf:75
     save_as: swf:75
-  iphone:
-    # Disable me
-    disabled: true
-    path: iphone/assets
-    # Options can be defined here
-    path_change: {from: "/", to: "_"}
+  flex_unbundled:
+    # Override path for unbundled assets.
+    <<:
+      path: flex/src/assets
+      save_as: ""
+    <<: *flex
 # Optimize files by remote names. Match them with regexp and override global
 # and target options with given options. One file can be matched by multiple
 # rules.
@@ -96,7 +97,7 @@ file_options:
       save_as: ""
 assets:
   "images/buildings":
-    "*":
+    flex:
       ".":
         <% each_model('building') do |base| %>
         "<%= base %>.png":
@@ -114,7 +115,7 @@ assets:
     opts:
       flex:
         pp_opts: "-resize 200x200"
-    "*":
+    flex:
       ".":
         <% each_model('unit') do |base| %>
         <%= "#{base}.jpg: #{base}Unit.jpg" %>
@@ -124,14 +125,14 @@ assets:
     opts:
       flex:
         pp_opts: "-resize 200x200"
-    "*":
+    flex:
       ".":
         <% each_model('technology') do |base| %>
         <%= "#{base}.jpg: #{base}Technology.jpg" %>
         <% end %>
         background.jpg:
           wiki_name: Technology_background.jpg
-          "*": {pp_opts: "-resize 1050x"}
+          flex: {pp_opts: "-resize 1050x"}
 
   "images/achievements":
     opts:
@@ -139,7 +140,7 @@ assets:
         pp_opts: "-resize 64x64"
         quantize_speed: 0
         save_as: swf:png
-    "*":
+    flex:
       ".":
         <%
         [
@@ -166,7 +167,7 @@ assets:
         <% end %>
 
   "images/solar_system":
-    "*":
+    flex:
       ".":
         shield.png: 
           wiki_name: EnergyShield.png
@@ -189,12 +190,11 @@ assets:
         <% %w{Planets Ships}.each do |item| %>
           <%= "#{type}#{item}.png" %>:
             wiki_name: <%= "#{type.camelcase}#{item}.png" %>
-            iphone: {pp_opts: ""}
         <% end %>
         <% end %>
 
   "images/folliage":
-    "*":
+    flex:
       "0/blocking":
         # 6x6
         12.png:
@@ -365,7 +365,7 @@ assets:
 #        13.tar.gz: TwilightTerrainNonblockingFolliage14.tar.gz
 
   "images/solar_system_object":
-    "*":
+    flex:
       # SS Object variations
       jumpgate:
         <% CONFIG["ui.ss_object.jumpgate.variations"].times do |i| %>
@@ -395,7 +395,7 @@ assets:
 #      <# end #>
 
   "images/tile":
-    "*":
+    flex:
       ".":
         0.png:
           flex: {save_as: "swf:png"}
@@ -436,7 +436,7 @@ assets:
 
 
   "images/battlefield":
-    "*":
+    flex:
       ".":
         space.jpg:
           wiki_name: Bf_galaxy.jpg
@@ -444,7 +444,7 @@ assets:
 
       "border":
         "opts":
-          "*":
+          flex:
             quantize_speed: 0
           "flex":
             # We need best quality we can get for these
@@ -468,7 +468,7 @@ assets:
 
       "controls":
         "opts":
-          "*":
+          flex:
             quantize_speed: 0
           "flex":
             # We need best quality we can get for these
@@ -512,14 +512,64 @@ assets:
 
   "images/ui":
     opts:
-      "*":
+      flex:
         quantize_speed: 0
-      "flex":
         # We need best quality we can get for these
         save_as: swf:png
 
     # Common UI assets
-    "*":
+    flex:
+      ".":
+        bottom_line.png:               Ui_bottom_line.png
+        logo.jpg:                      Login_logo.jpg
+        main_background.png:           Background_plus6.png
+        navigator_arrow.png:           Arrow.png
+        sidebar_bottom_shadow.png:     Ui_sidebar_bottom_shadow.png
+        sidebar_left_image.png:        Ui_sidebar_left_image.png
+        sidebar_line.png:              Ui_sidebar_line.png
+        sidebar_top_shadow.png:        Ui_sidebar_top_shadow.png
+        top_line.png:                  Ui_top_line.png
+        scrollbar_up_button_down.png:    Scrollbar_top_button_selected.png
+        scrollbar_up_button_up.png:      Scrollbar_top_button.png
+        scrollbar_down_button_down.png:  Scrollbar_bottom_button_selected.png
+        scrollbar_down_button_up.png:    Scrollbar_bottom_button.png
+        scrollbar_line.png:              Scrollbar_line.png
+        scrollbar_thumb_down.png:        Scrollbar_scroll_selected.png
+        scrollbar_thumb_up.png:          Scrollbar_scroll_unselected.png
+        scrollbar_left_button_up.png:    Scrollbar_left_up.png
+        scrollbar_left_button_down.png:  Scrollbar_left_down.png
+        scrollbar_right_button_up.png:   Scrollbar_right_up.png
+        scrollbar_right_button_down.png: Scrollbar_right_down.png
+        scrollbar_line_h.png:            Scrollbar_line_h.png
+        scrollbar_thumb_down_h.png:      Scrollbar_scroll_down.png
+        scrollbar_thumb_up_h.png:        Scrollbar_scroll_up.png
+        slider_up.png:                   Slider_up.png
+        slider_down.png:                 Slider_down.png
+        resources_bar.png:               Resource_bar.png
+        raiders_bar.png:                 Incoming_bar.png
+        fow_line.png:                    Galaxy_hidden_zone_line200x200.png
+        spinner.tar.gz:                  Spinner.tar.gz
+        credit.tar.gz:                   CreditsIcon.tar.gz
+        popup_title_left.png:            Popup_left.png
+        popup_title_center.png:          Popup_center.png
+        popup_title_right.png:           Popup_right.png
+        popup_bug.png:                   Bug.png
+        quest_advisor.png:               QuestAdvisor.png
+        warning_line.png:                Y_topline.png
+        warning_corner.png:              Y_corner.png
+        warning_sign.png:                Y_warning.png
+        exploration_clock.png:           Exploration_clock.png
+        first_login_background.png:      Start_quest.png
+        small_arrow.png:                 RatesArrow.png
+        daily_bonus_panel.png:           Dailybonus_panel.png
+        metal_large.png:                 300x300_metal.png
+        energy_large.png:                300x300_energy.png
+        zetium_large.png:                300x300_zetium.png
+        creds_large.png:                 300x300_creds.png
+        heading_line.png:                Line.png
+        heading_line_end.png:            Line_end.png
+        apocalypse.png:                  Endofdays0.png
+
       "icons":
         star_red.png:      Star_red.png
         star_black.png:    Star_black.png
@@ -741,8 +791,6 @@ assets:
 
       "main_quest":
         presentation_background.png:   Quest_window.png
-        slide_background0.jpg:         Quest_content0.jpg
-        slide_background1.jpg:         Quest_content1.jpg
         previous_slide_btn_up.png:     Button_back_up.png
         previous_slide_btn_over.png:   Button_back_over.png
         previous_slide_btn_down.png:   Button_back_down.png
@@ -887,59 +935,6 @@ assets:
         level_full.png: Level_full.png
         level_space.png: Level_space.png
         npc.png: Level_npc.png
-
-    # Flex UI assets
-    "flex":
-      ".":
-        bottom_line.png:               Ui_bottom_line.png
-        logo.jpg:                      Login_logo.jpg
-        main_background.png:           Background_plus6.png
-        navigator_arrow.png:           Arrow.png
-        sidebar_bottom_shadow.png:     Ui_sidebar_bottom_shadow.png
-        sidebar_left_image.png:        Ui_sidebar_left_image.png
-        sidebar_line.png:              Ui_sidebar_line.png
-        sidebar_top_shadow.png:        Ui_sidebar_top_shadow.png
-        top_line.png:                  Ui_top_line.png
-        scrollbar_up_button_down.png:    Scrollbar_top_button_selected.png
-        scrollbar_up_button_up.png:      Scrollbar_top_button.png
-        scrollbar_down_button_down.png:  Scrollbar_bottom_button_selected.png
-        scrollbar_down_button_up.png:    Scrollbar_bottom_button.png
-        scrollbar_line.png:              Scrollbar_line.png
-        scrollbar_thumb_down.png:        Scrollbar_scroll_selected.png
-        scrollbar_thumb_up.png:          Scrollbar_scroll_unselected.png
-        scrollbar_left_button_up.png:    Scrollbar_left_up.png
-        scrollbar_left_button_down.png:  Scrollbar_left_down.png
-        scrollbar_right_button_up.png:   Scrollbar_right_up.png
-        scrollbar_right_button_down.png: Scrollbar_right_down.png
-        scrollbar_line_h.png:            Scrollbar_line_h.png
-        scrollbar_thumb_down_h.png:      Scrollbar_scroll_down.png
-        scrollbar_thumb_up_h.png:        Scrollbar_scroll_up.png
-        slider_up.png:                   Slider_up.png
-        slider_down.png:                 Slider_down.png
-        resources_bar.png:               Resource_bar.png
-        raiders_bar.png:                 Incoming_bar.png
-        fow_line.png:                    Galaxy_hidden_zone_line200x200.png
-        spinner.tar.gz:                  Spinner.tar.gz
-        credit.tar.gz:                   CreditsIcon.tar.gz
-        popup_title_left.png:            Popup_left.png
-        popup_title_center.png:          Popup_center.png
-        popup_title_right.png:           Popup_right.png
-        popup_bug.png:                   Bug.png
-        quest_advisor.png:               QuestAdvisor.png
-        warning_line.png:                Y_topline.png
-        warning_corner.png:              Y_corner.png
-        warning_sign.png:                Y_warning.png
-        exploration_clock.png:           Exploration_clock.png
-        first_login_background.png:      Start_quest.png
-        small_arrow.png:                 RatesArrow.png
-        daily_bonus_panel.png:           Dailybonus_panel.png
-        metal_large.png:                 300x300_metal.png
-        energy_large.png:                300x300_energy.png
-        zetium_large.png:                300x300_zetium.png
-        creds_large.png:                 300x300_creds.png
-        heading_line.png:                Line.png
-        heading_line_end.png:            Line_end.png
-        apocalypse.png:                  Endofdays0.png
 
       "info_screen":
         line.png: Info_name.png
@@ -1116,5 +1111,14 @@ assets:
         popup_bottom_right.png:        Sp_bottom_right.png
         cooldown_indicator.tar.gz:     Cooldown.tar.gz
 
-    # iPhone UI assets
-    "iphone": {}
+  # Unbundled assets.
+
+  "unbundled":
+    flex_unbundled:
+      "images/tips":
+        <% languages.each do |language| %><% 0.upto(9) do |tip_no| %>
+        "<%= language %>_<%= tip_no %>.png": "Tip<%= tip_no %>.png"
+        <% end %><% end %>
+      "images/quest_screens/backgrounds":
+        Quest.jpg:                  Quest_content0.jpg
+        QuestWithImage.jpg:         Quest_content1.jpg
