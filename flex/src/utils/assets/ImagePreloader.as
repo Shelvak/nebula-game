@@ -32,7 +32,6 @@ package utils.assets
    import utils.Objects;
    import utils.PropertiesTransformer;
    import utils.SingletonFactory;
-   import utils.assets.events.ImagePreloaderEvent;
 
 
    /**
@@ -48,13 +47,7 @@ package utils.assets
     * @eventType flash.events.Event.COMPLETE
     */
    [Event(name="complete", type="flash.events.Event")]
-   
-   /**
-    * @see utils.assets.events.ImagePreloaderEvent#UNPACK_PROGRESS
-    * 
-    * @eventType utils.assets.events.ImagePreloaderEvent.UNPACK_PROGRESS
-    */
-   [Event(name="unpackProgress", type="utils.assets.events.ImagePreloaderEvent")]
+
    
    /**
     * Once created this class downloads all images that need to be retrieved
@@ -89,11 +82,6 @@ package utils.assets
       
       
       private var _movieClips:Object = {};
-
-      /**
-       * Progress (percentage value) of unpacking of downloaded module.
-       */
-      public var currentUnpackingProgress:Number;
       
       
       [Bindable]
@@ -101,6 +89,11 @@ package utils.assets
        * Label of a module currently being downloaded.
        */
       public var currentModuleLabel:String = "";
+      [Bindable]
+      /**
+       * Progress of a module currently being downloaded.
+       */
+      public var currentModuleProgress:String = "";
 
       private function ensureSwfLoadersCount(assetsCount: int): void
       {
@@ -125,16 +118,18 @@ package utils.assets
       {
          if (!event)
          {
-            currentModuleLabel = _currentModule + " (0 %)" 
+            currentModuleLabel = _currentModule;
+            currentModuleProgress = "0 %";
          }
          else {
             var percentage:int = event.bytesLoaded * 100 / event.bytesTotal;
             var formatter:NumberFormatter = new NumberFormatter();
             formatter.precision = 1;
             
-            currentModuleLabel = _currentModule + " (" + percentage.toString() + " % - " +
+            currentModuleLabel = _currentModule;
+            currentModuleProgress = percentage.toString() + " % - " +
                formatter.format(event.bytesLoaded / 1024) + "k/" +
-               formatter.format(event.bytesTotal / 1024) + "k)" 
+               formatter.format(event.bytesTotal / 1024) + "k";
          }
       }
       
@@ -245,8 +240,6 @@ package utils.assets
       }
       private function downloadNextModule() : void
       {
-         currentUnpackingProgress = 0;
-         dispatchUnpackProgressEvent();
          
          if (_moduleInfo != null)
          {
@@ -378,11 +371,6 @@ package utils.assets
          {
             throw new Error("Unexpected asset type: " + getQualifiedClassName(instance));
          }
-         currentUnpackingProgress = 1 - _swfNames.length / _swfHashLength;
-         if (_swfNames.length % 5 == 0)
-         {
-            dispatchUnpackProgressEvent();
-         }
          loadNextSWF(mLoader);
       }
       private function ioErrorHandler(event:IOErrorEvent) : void
@@ -425,8 +413,6 @@ package utils.assets
             }
             var clip:MovieClip = _movieClips[name]
             var frames:Vector.<BitmapData> = new Vector.<BitmapData>(clip.totalFrames, true);
-            if (clip.totalFrames > 1)
-               trace(name + " => " + clip.totalFrames + " frames");
             for (var i:int = 1; i <= clip.totalFrames; i++)
             {
                frames[i - 1] = getFrame(clip, i);
@@ -466,12 +452,6 @@ package utils.assets
          event.bytesTotal = 100;
          event.bytesLoaded = currentProgress * 100;
          dispatchEvent(event);
-      }
-      
-      
-      private function dispatchUnpackProgressEvent() : void
-      {
-         Events.dispatchSimpleEvent(this, ImagePreloaderEvent, ImagePreloaderEvent.UNPACK_PROGRESS);
       }
    }
 }
