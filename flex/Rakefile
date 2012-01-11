@@ -101,15 +101,18 @@ namespace :build do
 
   # Copies all files matched by glob, and writes their new names into
   # destination/checksums
-  def copy_and_checksum(glob, destination)
+  def copy_and_checksum(base_dir, glob, destination)
     checksums = ""
     FileUtils.mkdir_p destination
-    Dir[glob].each do |path|
+    Dir[File.join(base_dir, glob)].each do |path|
       info "Checksumming and copying #{path}"
       checksum = checksum(path)
-      basename = File.basename(path)
+      basename = path.sub(/^#{base_dir}#{File::SEPARATOR}?/, '')
       checksummed_name = append_checksum(basename, checksum)
-      FileUtils.cp path, "#{destination}/#{checksummed_name}"
+
+      target = "#{destination}/#{checksummed_name}"
+      FileUtils.mkdir_p File.dirname(target)
+      FileUtils.cp path, target
       checksums += "#{basename} #{checksummed_name}\n"
     end
     File.open("#{destination}/checksums", "w") { |f| f.write checksums }
@@ -146,7 +149,6 @@ namespace :build do
       end
 
       info "Compiling SpaceGame..." do
-        # -show-binding-warnings << Mykolas says it's OK.
         compiler_flags = %w{
           as3 strict incremental optimize
           verbose-stacktraces
@@ -196,7 +198,10 @@ namespace :build do
             bin_swf,
             :libraries => Dir["#{lib_dir}/*.swc"],
             :keep_metadata => %w{Required Optional ArrayElementType SkipProperty},
-            :flags => %w{-static-link-runtime-shared-libraries},
+            :flags => %w{
+              -static-link-runtime-shared-libraries
+              -compiler.show-binding-warnings=false
+            },
             # Each one is translated into -compiler.item_name
             :compiler_flags => compiler_flags
           )
@@ -261,12 +266,16 @@ namespace :build do
       info "Checking locale syntax and validity" do
         Rake::Task["flex:locales:check"].invoke
       end
-      copy_and_checksum("#{locale_dir}/*.xml", dist_locale_dir)
+      copy_and_checksum(locale_dir, "*.xml", dist_locale_dir)
     end
 
     desc "Copy and checksum assets from src/assets to #{dist_locale_dir}"
     task :assets do
-      copy_and_checksum("#{assets_dir}/*.swf", dist_assets_dir)
+      copy_and_checksum(assets_dir, "*.swf", dist_assets_dir)
+      copy_and_checksum(
+        "#{assets_dir}/unbundled", "**/*.*",
+        File.join(dist_assets_dir, 'unbundled')
+      )
     end
   end
 
