@@ -1845,10 +1845,10 @@
     
     <title.allianceJoined value="Naujas žaidėjas (-a) prisijungė prie sąjungos" />
     <message.allianceJoined>
-      Žaidėjas (-a) "{0}" prisijungė prie "{1}"
+      Žaidėjas (-a) „{0}“ prisijungė prie „{1}“
     </message.allianceJoined>
     <content.allianceJoined>
-      <p>Žaidėjas (-a) "{0}" prisijungė prie tavo sąjungos "{1}".</p>
+      <p>Žaidėjas (-a) „{0}“ prisijungė prie tavo sąjungos „{1}“.</p>
       <p>Prašome jį ar ją šiltai sutikti!</p>
     </content.allianceJoined>
 
@@ -1861,7 +1861,7 @@
     </content.allianceOwnerChanged.forOldOwner>
     <content.allianceOwnerChanged.forNewOwner>
        <![CDATA[ Tu perėmei sąjungos „<a href="event:alliance">{0}</a>“ vadovavimą iš
-       senojo vado „<a href="event:oldOwner">{1}</a>“. "" ]]>
+       senojo vado „<a href="event:oldOwner">{1}</a>“. ]]>
     </content.allianceOwnerChanged.forNewOwner>
     <content.allianceOwnerChanged.forOthers>
        <![CDATA[
