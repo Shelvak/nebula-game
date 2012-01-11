@@ -15,6 +15,10 @@ describe PlayersController do
         # LoginController scope...
         @test_player = Factory.create(:player)
 
+        # Create home solar system for reattachment detection.
+        Factory.create(:solar_system, :galaxy => @test_player.galaxy,
+          :player => @test_player)
+
         @action = "players|login"
         @params = {'server_player_id' => @test_player.id, 'web_player_id' => 3,
           'version' => Cfg.required_client_version}
@@ -67,6 +71,25 @@ describe PlayersController do
         it "should allow players to login" do
           invoke @action, @params
           response_should_include :success => true
+        end
+
+        describe "reattachment" do
+          before(:each) do
+            Player.stub(:find).with(@params['server_player_id']).
+              and_return(@test_player)
+          end
+
+          it "should not attach player if he is not detached" do
+            @test_player.should_receive(:detached?).and_return(false)
+            @test_player.should_not_receive(:attach!)
+            invoke @action, @params
+          end
+
+          it "should attach player if he was detached" do
+            @test_player.should_receive(:detached?).and_return(true)
+            @test_player.should_receive(:attach!)
+            invoke @action, @params
+          end
         end
 
         it "should push actions" do

@@ -96,8 +96,6 @@ class Galaxy::Zone
     end
   end
 
-  private
-
   def absolute(x, y)
     [@x * @diameter + x, @y * @diameter + y]
   end
@@ -112,6 +110,15 @@ class Galaxy::Zone
     # Compensate for .ceil.
     slot = diag_no + (y + 1) * -1
     new(slot, quarter)
+  end
+
+  # Looks up zone by absolute solar system coordinates.
+  def self.lookup_by_coords(x, y)
+    diameter = Cfg.galaxy_zone_diameter
+    lookup(
+      (x.to_f / diameter).floor,
+      (y.to_f / diameter).floor
+    )
   end
 
   # Looks up diagonal number for coordinates. Starts from 1.
@@ -224,10 +231,11 @@ ORDER BY points_diff, quarter, slot
 
   # Return +Galaxy::Zone+ to which we can reattach one player. Creates empty
   # zone if no zones are free.
-  def self.zone_for_reattachment(galaxy_id, target_points)
+  def self.for_reattachment(galaxy_id, target_points)
     rows = list_for(galaxy_id, target_points)
+    max_players = Cfg.galaxy_zone_max_player_count
     rows.each do |row|
-      next if row['player_count'] >= Cfg.galaxy_zone_max_player_count
+      next if row['player_count'] >= max_players
       return new(row['slot'], row['quarter'])
     end
 

@@ -1586,6 +1586,7 @@ describe Player do
   describe "#check_activity!" do
     let(:player) do
       player = Factory.create(:player)
+      player.stub!(:detached?).and_return(false)
       player.stub!(:detach!)
       player
     end
@@ -1597,11 +1598,8 @@ describe Player do
       end
 
       it "should register new callback" do
+        player.should_receive(:register_check_activity!)
         player.check_activity!
-        player.should have_callback(
-                        CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
-                        Cfg.player_inactivity_time(player.points).from_now
-                      )
       end
     end
 
@@ -1620,11 +1618,28 @@ describe Player do
           player.check_activity!
         end
 
+        it "should not detach player if he is already detached" do
+          player.stub!(:detached?).and_return(true)
+          player.should_not_receive(:detach!)
+          player.check_activity!
+        end
+
         it "should not register new callback" do
           player.check_activity!
           player.should_not have_callback(
-                              CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
-                            )
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
+          )
+        end
+
+        it "should unregister old callback if it exists" do
+          CallbackManager.register_or_update(
+            player, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+            10.minutes.from_now
+          )
+          player.check_activity!
+          player.should_not have_callback(
+            CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
+          )
         end
       end
 
@@ -1646,26 +1661,63 @@ describe Player do
     end
   end
 
-  describe "#deatch!" do
-    let(:player) { Factory.build(:player) }
+  describe "#register_check_activity!" do
+    let(:player) { Factory.create(:player) }
 
-    it "should fail if player is already detached" do
-      player.detached = true
+    it "should register a callback" do
+      player.should have_callback(
+        CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+        Cfg.player_inactivity_time(player.points).from_now
+      )
+    end
+  end
+
+  describe "#attach!" do
+    let(:player) { Factory.create(:player) }
+    let(:home_solar_system) do
+      home_ss = Factory.create(:solar_system, :player => player,
+                               :galaxy => player.galaxy)
+      Factory.create(:fse_player, :solar_system => home_ss, :player => player)
+      home_ss
+    end
+    let(:normal_solar_system) do
+      Factory.create(:solar_system, :galaxy => player.galaxy, :x => 10)
+    end
+
+    before(:each) { home_solar_system(); normal_solar_system() }
+
+    it "should fail if player is already attached" do
       lambda do
-        player.detach!
+        player.attach!
       end.should raise_error(ArgumentError)
     end
 
-    it "should detach player solar systems" do
-      SolarSystem.should_receive(:detach_player).with(player.id)
-      player.detach!
-    end
+    describe "when detached" do
+      before(:each) { player.detach! }
 
-    it "should mark player as detached" do
-      lambda do
-        player.detach!
-        player.reload
-      end.should change(player, :detached?).from(false).to(true)
+      it "should reattach home solar system to free zone" do
+        zone = Galaxy::Zone.new(5, 1)
+        Galaxy::Zone.should_receive(:for_reattachment).
+          with(player.galaxy_id, player.points).and_return(zone)
+
+        x, y = zone.absolute(0, 0)
+        zone.should_receive(:free_spot_coords).with(player.galaxy_id).
+          and_return([x, y])
+
+        player.home_solar_system.should_receive(:attach!).with(x, y)
+
+        player.attach!
+      end
+
+      it "should register player check activity" do
+        player.should_receive(:register_check_activity!)
+        player.attach!
+      end
+
+      it "should work" do
+        player.attach!
+        player.should_not be_detached
+      end
     end
   end
 
