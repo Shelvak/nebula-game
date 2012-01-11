@@ -425,8 +425,6 @@ package utils.assets
             }
             var clip:MovieClip = _movieClips[name]
             var frames:Vector.<BitmapData> = new Vector.<BitmapData>(clip.totalFrames, true);
-            if (clip.totalFrames > 1)
-               trace(name + " => " + clip.totalFrames + " frames");
             for (var i:int = 1; i <= clip.totalFrames; i++)
             {
                frames[i - 1] = getFrame(clip, i);
