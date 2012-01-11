@@ -49,6 +49,7 @@ package models.technology
       
       include "../mixins/upgradableProxyProps.as";
 
+      public static const ALLIANCE:String = "Alliances";
       public static const BUILDING_REPAIR: String = 'BuildingRepair';
       
       [Required]

@@ -26,7 +26,7 @@ package components.notifications
       
       /**
        * Indicates if <code>notificationPart</code> has been changed set this to <code>false</code>
-       * in <code>commitProperies()</code> if you use this property.
+       * in <code>commitProperties()</code> if you use this property.
        */
       protected var f_NotificationPartChange:Boolean = false;
       

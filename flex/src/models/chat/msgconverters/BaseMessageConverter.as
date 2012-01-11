@@ -12,7 +12,9 @@ package models.chat.msgconverters
    import models.chat.MChatMessage;
    
    import mx.formatters.DateFormatter;
-   
+
+   import styles.LinkStyle;
+
    import utils.Objects;
    import utils.locale.Localizer;
    
@@ -109,7 +111,7 @@ package models.chat.msgconverters
          var link:LinkElement = new LinkElement();
          link.href = url;
          link.target = "_blank";
-         addSpan(link, url, ChatTextStyles.URL_COLOR);
+         addSpan(link, url, LinkStyle.CHAT_URL.normalState.color);
          parent.addChild(link);
       }
       
