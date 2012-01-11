@@ -4,7 +4,7 @@ def path(description)
   Path.new(description)
 end
 
-shared_examples_for "adding new solar systems" do
+shared_examples_for "adding new solar systems (create player)" do
   it "should add homeworld solar system" do
     FowSsEntry.where(@conditions).map do |fse|
       {
@@ -21,6 +21,10 @@ shared_examples_for "adding new solar systems" do
     )
   end
 
+  it_should_behave_like "adding new solar systems"
+end
+
+shared_examples_for "adding new solar systems" do
   it "should add regular solar systems" do
     FowSsEntry.where(@conditions).map do |fse|
       {
@@ -116,6 +120,127 @@ describe SpaceMule do
         seconds_range = Cfg.market_bot_resource_cooldown_range
         range = (seconds_range.first.from_now..seconds_range.last.from_now)
         @galaxy.should have_callback(event, range)
+      end
+    end
+  end
+
+  shared_examples_for "creating galaxy zone" do
+    describe "wormholes" do
+      before(:all) do
+        @wormholes = SolarSystem.where(
+          :galaxy_id => @galaxy.id,
+          :kind => SolarSystem::KIND_WORMHOLE
+        )
+      end
+
+      it "should create wormholes in area" do
+        @wormholes.
+          should have_correct_relative_coordinates('galaxy.wormholes.positions')
+      end
+
+      it "should not register spawn callback" do
+        @wormholes.each do |wormhole|
+          wormhole.should_not have_callback(CallbackManager::EVENT_SPAWN)
+        end
+      end
+    end
+
+    describe "mini battlegrounds" do
+      before(:all) do
+        @pulsars = SolarSystem.
+          where("x IS NOT NULL AND y IS NOT NULL").
+          where(
+            :galaxy_id => @galaxy.id,
+            :kind => SolarSystem::KIND_BATTLEGROUND
+          )
+      end
+
+      it "should create them in area" do
+        @pulsars.should have_correct_relative_coordinates(
+                          'galaxy.mini_battlegrounds.positions'
+                        )
+      end
+
+      it "should have spawn callbacks registered" do
+        @pulsars.each do |pulsar|
+          pulsar.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        end
+      end
+
+      it "should be created from static configuration" do
+        @pulsars.each do |pulsar|
+          pulsar.should be_created_from_static_ss_configuration(
+                       CONFIG['solar_system.map.pulsar'][0]['map']
+                     )
+        end
+      end
+    end
+
+    describe "free solar systems" do
+      before(:all) do
+        @solar_systems = SolarSystem.where(
+          :galaxy_id => @galaxy.id, :kind => SolarSystem::KIND_NORMAL
+        ).where("player_id IS NULL").all
+      end
+
+      it "should create them in area" do
+        @solar_systems.should have_correct_relative_coordinates(
+                          'galaxy.free_systems.positions'
+                        )
+      end
+
+      it "should register callback for spawn" do
+        @solar_systems.each do |ss|
+          ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        end
+      end
+
+      it "should be created from static configuration" do
+        @solar_systems.each do |ss|
+          ss.should be_created_from_static_ss_configuration(
+                      CONFIG['solar_system.map.free'][0]['map']
+                    )
+        end
+      end
+    end
+
+    describe "in planets" do
+      before(:all) do
+        ss_ids = SolarSystem.where(:galaxy_id => @galaxy.id).map(&:id)
+        @planets = @models =
+          SsObject::Planet.where(:solar_system_id => ss_ids).all
+      end
+
+      it "should not place any tiles offmap" do
+        @planets.each { |planet| planet.should_not have_offmap(Tile) }
+      end
+
+      it "should not place any folliages offmap" do
+        @planets.each { |planet| planet.should_not have_offmap(Folliage) }
+      end
+
+      it "should not place any buildings offmap" do
+        @planets.each { |planet| planet.should_not have_offmap(Building) }
+      end
+
+      it "should not place any folliages on buildings" do
+        @planets.each do |planet|
+          planet.should_not have_folliages_on(Building)
+        end
+      end
+
+      it "should have all player buildings activated" do
+        @planets.each do |planet|
+          planet.buildings.each do |building|
+            building.should be_active unless building.npc?
+          end
+        end
+      end
+
+      it "should not have any empty npc buildings" do
+        @planets.each do |planet|
+          planet.should_not have_blank_npc_buildings
+        end
       end
     end
   end
@@ -241,117 +366,6 @@ describe SpaceMule do
       Player.count.should == player_count
     end
 
-    describe "wormholes" do
-      before(:all) do
-        @wormholes = SolarSystem.where(
-          :galaxy_id => @galaxy.id,
-          :kind => SolarSystem::KIND_WORMHOLE
-        )
-      end
-
-      it "should create wormholes in area" do
-        @wormholes.count.should == CONFIG['galaxy.wormholes.positions'].count
-      end
-
-      it "should not register spawn callback" do
-        @wormholes.each do |wormhole|
-          wormhole.should_not have_callback(CallbackManager::EVENT_SPAWN)
-        end
-      end
-    end
-
-    describe "mini battlegrounds" do
-      before(:all) do
-        @pulsars = SolarSystem.
-          where("x IS NOT NULL AND y IS NOT NULL").
-          where(
-            :galaxy_id => @galaxy.id,
-            :kind => SolarSystem::KIND_BATTLEGROUND
-          )
-      end
-
-      it "should create them in area" do
-        @pulsars.count.should ==
-          CONFIG['galaxy.mini_battlegrounds.positions'].count
-      end
-
-      it "should have spawn callbacks registered" do
-        @pulsars.each do |pulsar|
-          pulsar.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
-        end
-      end
-
-      it "should be created from static configuration" do
-        @pulsars.each do |pulsar|
-          pulsar.should be_created_from_static_ss_configuration(
-                       CONFIG['solar_system.map.pulsar'][0]['map']
-                     )
-        end
-      end
-    end
-
-    describe "free solar systems" do
-      before(:all) do
-        @solar_systems = SolarSystem.where(
-          :galaxy_id => @galaxy.id, :kind => SolarSystem::KIND_NORMAL
-        ).where("player_id IS NULL").all
-      end
-
-      it "should register callback for spawn" do
-        @solar_systems.each do |ss|
-          ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
-        end
-      end
-
-      it "should be created from static configuration" do
-        @solar_systems.each do |ss|
-          ss.should be_created_from_static_ss_configuration(
-                      CONFIG['solar_system.map.free'][0]['map']
-                    )
-        end
-      end
-    end
-
-    describe "in planets" do
-      before(:all) do
-        ss_ids = SolarSystem.where(:galaxy_id => @galaxy.id).map(&:id)
-        @planets = @models =
-          SsObject::Planet.where(:solar_system_id => ss_ids).all
-      end
-
-      it "should not place any tiles offmap" do
-        @planets.each { |planet| planet.should_not have_offmap(Tile) }
-      end
-
-      it "should not place any folliages offmap" do
-        @planets.each { |planet| planet.should_not have_offmap(Folliage) }
-      end
-
-      it "should not place any buildings offmap" do
-        @planets.each { |planet| planet.should_not have_offmap(Building) }
-      end
-
-      it "should not place any folliages on buildings" do
-        @planets.each do |planet|
-          planet.should_not have_folliages_on(Building)
-        end
-      end
-
-      it "should have all player buildings activated" do
-        @planets.each do |planet|
-          planet.buildings.each do |building|
-            building.should be_active unless building.npc?
-          end
-        end
-      end
-
-      it "should not have any empty npc buildings" do
-        @planets.each do |planet|
-          planet.should_not have_blank_npc_buildings
-        end
-      end
-    end
-    
     it "should create fow ss entry for player" do
       fse = FowSsEntry.where(:player_id => @player.id).first
       {
@@ -377,6 +391,71 @@ describe SpaceMule do
           @conditions = {:player_id => @player_fge.player_id}
         end
 
+        it_behaves_like "adding new solar systems (create player)"
+      end
+
+      describe "alliance" do
+        before(:each) do
+          @conditions = {:alliance_id => @alliance_fge.alliance_id}
+        end
+
+        it_behaves_like "adding new solar systems (create player)"
+      end
+    end
+
+    it_should_behave_like "creating galaxy zone"
+
+    it "should not fail if galaxy zone is created first" do
+      # We need to make this non-transactional because Scala and Ruby use
+      # different database connections and deadlock occurs if trying to add to
+      # galaxy which creation is still in uncommited transaction.
+      break_transaction
+
+      galaxy = Factory.create(:galaxy)
+      start_slot = Cfg.galaxy_zone_start_slot
+      # Ensure all the starting points are covered.
+      1.upto(4) do |quarter|
+        @mule.create_zone(galaxy.id, galaxy.ruleset, start_slot, quarter)
+      end
+
+      players = {
+        (Player.maximum(:web_user_id) || 0) + 1 => "Dude 3000"
+      }
+      @mule.create_players(galaxy.id, galaxy.ruleset, players)
+    end
+  end
+
+  describe "#create_zone" do
+    before(:all) do
+      @galaxy = Factory.create(:galaxy)
+
+      # Ensure we see them, because the center is not filled, so need to take
+      # a bit bigger rectangle...
+      diameter = CONFIG['galaxy.zone.diameter'] * 10
+      rectangle = Rectangle.new(
+        -diameter, -diameter, diameter, diameter
+      )
+      @player_fge = Factory.create(:fge_player, :rectangle => rectangle,
+        :galaxy => @galaxy)
+      @alliance_fge = Factory.create(:fge_alliance, :rectangle => rectangle,
+        :galaxy => @galaxy)
+      # Create a player for alliance.
+      Factory.create(:player, :alliance_id => @alliance_fge.alliance_id)
+
+      @mule.create_zone(@galaxy.id, @galaxy.ruleset, 10, 3)
+    end
+
+    it "should not create any player solar systems" do
+      SolarSystem.where("player_id IS NOT NULL").
+        where(:galaxy_id => @galaxy.id).should_not exist
+    end
+
+    describe "visibility for existing ss where radar covers it" do
+      describe "player" do
+        before(:each) do
+          @conditions = {:player_id => @player_fge.player_id}
+        end
+
         it_behaves_like "adding new solar systems"
       end
 
@@ -388,6 +467,26 @@ describe SpaceMule do
         it_behaves_like "adding new solar systems"
       end
     end
+
+    describe "visibility for existing ss where radar covers it" do
+      describe "player" do
+        before(:each) do
+          @conditions = {:player_id => @player_fge.player_id}
+        end
+
+        it_behaves_like "adding new solar systems"
+      end
+
+      describe "alliance" do
+        before(:each) do
+          @conditions = {:alliance_id => @alliance_fge.alliance_id}
+        end
+
+        it_behaves_like "adding new solar systems"
+      end
+    end
+
+    it_should_behave_like "creating galaxy zone"
   end
 
   describe "#find_path" do

@@ -1,3 +1,3 @@
 class BulkSql::Building < BulkSql
-  def self.klass; ::Building; end
+  def self.save(objects); super(objects, ::Building); end
 end

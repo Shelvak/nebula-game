@@ -4,6 +4,7 @@ import solar_systems.{Homeworld}
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.WithCoords
+import spacemule.modules.pmg.objects
 import util.Random
 import collection.mutable.HashMap
 import java.lang.IllegalStateException
@@ -16,22 +17,60 @@ import java.lang.IllegalStateException
  * To change this template use File | Settings | File Templates.
  */
 
-class Zone(_x: Int, _y: Int, val diameter: Int)
-        extends WithCoords {
+object Zone {
+  /**
+   * Zone quarters.
+   */
+  val Quarters = IndexedSeq(
+    Coords(1, 1), Coords(-1, 1), Coords(-1, -1), Coords(1, -1)
+  )
+  
+  object SolarSystem {
+    sealed abstract class Entry
+    case object Existing extends Entry
+    case class New(solarSystem: objects.SolarSystem) extends Entry
+  }
+
+  def apply(slot: Int, quarter: Int, diameter: Int) = {
+    require(quarter >= 1 && quarter <= 4,
+      "Quarter must be [1, 4], but was %d".format(quarter))
+    require(slot >= 1, "Slot must be [1, inf) but was %d".format(slot))
+
+    // Calculate diagonal number.
+    val diagonal = ((math.sqrt(1 + 8 * slot) - 1) / 2).ceil
+
+    // Calculate coordinates in Ist quarter.
+    val x = (diagonal / 2 * (1 + diagonal) - slot).toInt
+    val y = (x - diagonal).toInt
+
+    // Transform to appropriate quarter.
+    val transformation = Zone.Quarters(quarter - 1)
+    new Zone(
+      if (transformation.x == -1) x * -1 - 1 else x,
+      if (transformation.y == -1) y * -1 - 1 else y,
+      diameter
+    )
+  }
+}
+
+class Zone(_x: Int, _y: Int, val diameter: Int) extends WithCoords {
   /**
    * Does this zone have mature player solar systems? Mature player is one with
    * age greater than some value.
    */
   private[this] var hasMaturePlayers = false
+  /**
+   * Does this zone have new systems that are needed to create?
+   */
+  private[this] var hasNewSystems = false
+  /**
+   * How much players we have in this zone?
+   */
+  private[this] var playerCount = 0
 
   x = _x
   y = _y
-  val solarSystems = new HashMap[Coords, Option[SolarSystem]]()
-
-  /**
-   * Does this Zone have solar systems with new players?
-   */
-  private var _hasNewPlayers = false
+  val solarSystems = new HashMap[Coords, Zone.SolarSystem.Entry]()
 
   def coords = Coords(x, y)
 
@@ -66,10 +105,13 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
   /**
    * Adds new solar system to given coords. Also initializes it.
    */
-  def addSolarSystem(solarSystem: SolarSystem, coords: Coords) {
-    solarSystems(coords) = Some(solarSystem)
+  def addSolarSystem(solarSystem: SolarSystem, coords: Coords,
+                     playerSystem: Boolean) {
+    solarSystems(coords) = Zone.SolarSystem.New(solarSystem)
     solarSystem.createObjects()
-    _hasNewPlayers = true
+
+    hasNewSystems = true
+    if (playerSystem) playerCount += 1
   }
 
   /**
@@ -77,13 +119,16 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
    */
   def addSolarSystem(homeworld: Homeworld) {
     var spot = findFreeSpot()
-    addSolarSystem(homeworld, spot)
+    addSolarSystem(homeworld, spot, true)
   }
 
   /**
    * Marks spot as taken.
    */
-  def markAsTaken(coords: Coords) = solarSystems(coords) = None
+  def markAsTaken(coords: Coords, playerSystem: Boolean) {
+    solarSystems(coords) = Zone.SolarSystem.Existing
+    if (playerSystem) playerCount += 1
+  }
 
   /**
    * Marks zone as having mature players. That makes it off limits for new
@@ -94,16 +139,9 @@ class Zone(_x: Int, _y: Int, val diameter: Int)
   def isFull = hasMaturePlayers || playerCount >= Config.playersPerZone
 
   /**
-   * How much players are in this zone?
-   */
-  def playerCount =
-    if (solarSystems.size == 0) 0
-    else
-      solarSystems.size - Config.freeSolarSystems.size - Config.wormholes.size -
-        Config.miniBattlegrounds.size
-
-  /**
    * Does this zone have new players we need to create?
    */
-  def hasNewPlayers = _hasNewPlayers
+  def needsCreation = hasNewSystems
+
+  def hasPlayers = playerCount > 0
 }

@@ -154,6 +154,7 @@ object Config {
   // Reader methods 
   //////////////////////////////////////////////////////////////////////////////
 
+  def zoneStartSlot = int("galaxy.zone.start_slot")
   def zoneDiameter = int("galaxy.zone.diameter")
   def zoneMaturityAge = int("galaxy.zone.maturity_age")
   def playersPerZone = int("galaxy.zone.players")

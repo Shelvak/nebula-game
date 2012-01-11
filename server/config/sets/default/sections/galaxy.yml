@@ -3,10 +3,12 @@
 # Galaxy configuration
 ######
 
+# From which slot start spawning? Bigger number mea
+zone.start_slot: 2 # Start from 2, leave 4 center zones empty
 # Diameter of starting zone
 zone.diameter: 8
 # Players per zone.
-zone.players: 10
+zone.players: 20
 # Don't spawn users into zones which have home solar systems with players older
 # than this time.
 zone.maturity_age: <%= 1.week %>

@@ -12,6 +12,8 @@ object Coords {
   def apply(x: Int, y: Int): Coords = {
     return new Coords(x, y)
   }
+
+  def unapply(coords: Coords) = Some((coords.x, coords.y))
 }
 
 class Coords(initialX: Int, initialY: Int) extends WithCoords {

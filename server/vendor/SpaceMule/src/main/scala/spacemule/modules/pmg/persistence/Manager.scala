@@ -80,6 +80,7 @@ object Manager {
 SELECT
   ss.`x`,
   ss.`y`,
+  ss.`player_id`,
   IF(p.`created_at`, TO_SECONDS('%s') - TO_SECONDS(p.`created_at`), 0) AS age
 FROM
   `%s` AS ss
@@ -95,9 +96,10 @@ WHERE
     while (rs.next) {
       val x = rs.getInt(1)
       val y = rs.getInt(2)
-      val age = rs.getInt(3)
+      val playerId = rs.getInt(3)
+      val age = rs.getInt(4)
 
-      galaxy.addExistingSS(x, y, age)
+      galaxy.addExistingSS(x, y, playerId, age)
     }
   }
 
@@ -264,18 +266,17 @@ WHERE
 
   private def readZone(galaxy: Galaxy, zone: Zone) {
     // Don't read zones without any defined players.
-    if (! zone.hasNewPlayers) return
+    if (! zone.needsCreation) return
 
     zone.solarSystems.foreach { 
-      case (coords, solarSystem) => {
-          solarSystem match {
-            case Some(ss) => {
-              val absoluteCoords = zone.absolute(coords)
-              readSolarSystem(galaxy, Some(absoluteCoords), ss)
-            }
-            case None => ()
+      case (coords, entry) =>
+        entry match {
+          case Zone.SolarSystem.New(solarSystem) => {
+            val absoluteCoords = zone.absolute(coords)
+            readSolarSystem(galaxy, Some(absoluteCoords), solarSystem)
           }
-      }
+          case Zone.SolarSystem.Existing => ()
+        }
     }
   }
 

@@ -10,8 +10,9 @@ import java.sql.{Connection, DriverManager, ResultSet}
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import org.apache.commons.io.IOUtils
 import scala.collection.mutable.ListBuffer
+import org.apache.commons.io.{FileUtils, IOUtils}
+import java.io.File
 
 object DB {
   /**
@@ -64,7 +65,7 @@ object DB {
   def exec(sql: String): Int = {
     reconnecting { () =>
       val statement = connection.createStatement
-      return statement.executeUpdate(sql)
+      statement.executeUpdate(sql)
     }
   }
 
@@ -80,6 +81,13 @@ object DB {
       "LOAD DATA LOCAL INFILE 'file.txt' INTO TABLE `%s` (%s)"
     ).format(tableName, columns)
 
+    if (values.isEmpty)
+      throw new IllegalArgumentException(
+        "Cannot save empty values list to table '%s' with columns '%s'!".format(
+          tableName, columns
+        )
+      )
+
     // Create StringBuilder to String that will become stream
     val builder = new StringBuilder()
 
@@ -88,10 +96,15 @@ object DB {
       builder.append(entry)
       builder.append('\n')
     }
-
+    
     // Debugging material
+//    def fileName(table: String, counter: Int=0): File = {
+//      val file = new File("%s-%03d.tabFile".format(table, counter))
+//      if (file.exists()) fileName(table, counter + 1) else file
+//    }
 //    FileUtils.writeStringToFile(
-//      new File("%s.tabFile".format(tableName)), builder.toString
+//      fileName(tableName),
+//      "%s\n\n%s".format(columns.replace(',', '\t'), builder.toString)
 //    )
 
     // Create stream from String Builder
@@ -146,13 +159,15 @@ object DB {
       code()
     }
     catch {
-      case e: CommunicationsException => {
-          if (reconnect == MaxReconnects) throw e
-          else {
-            this.reconnect
-            reconnecting(code, reconnect + 1)
-          }
-      }
+      case e: CommunicationsException =>
+        System.err.println(
+          "Error @ reconnect %d:\n%s".format(reconnect, e.getMessage)
+        )
+        if (reconnect == MaxReconnects) throw e
+        else {
+          this.reconnect
+          reconnecting(code, reconnect + 1)
+        }
     }
   }
 }
