@@ -114,9 +114,9 @@
       <!--- All the content goes here -->
       <s:Group id="contentGroup" left="20" right="1" top="13" height="100%">
          <s:Group width="100%" height="{
-                     hostComponent.flankModel.flankUnits.length &lt;= 6
+                     !hostComponent.flankModel.showCachedUnits
                         ? flankLayout.rowCount * 79 : 0}"
-                  visible="{hostComponent.flankModel.flankUnits.length &lt;= 6}">
+                  visible="{!hostComponent.flankModel.showCachedUnits}">
             <s:DataGroup id="unitsList" dataProvider="{hostComponent.flankModel.flankUnits}" 
                          left="0" right="0"
                          itemRenderer="components.unitsscreen.IRSimpleUnit">
@@ -127,9 +127,9 @@
             </s:DataGroup>
          </s:Group>
          <s:Group width="100%" height="{
-                     hostComponent.flankModel.flankUnits.length > 6
+                     hostComponent.flankModel.showCachedUnits
                         ? cFlankLayout.rowCount * 79 : 0}"
-                  visible="{hostComponent.flankModel.flankUnits.length > 6}">
+                  visible="{hostComponent.flankModel.showCachedUnits}">
             <s:DataGroup id="cUnitsList" dataProvider="{hostComponent.flankModel.cachedUnits}"
                          left="0" right="0"
                          itemRenderer="components.unit.IRUnitBuildingEntrySmall">

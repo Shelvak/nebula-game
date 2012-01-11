@@ -108,6 +108,9 @@ package models.unit
       }
 
       public var cachedUnits: ArrayCollection;
+
+       /* Only for NPC flanks in building selected sidebar */
+      public var showCachedUnits: Boolean = false;
       
       public function removeUnits(models: Array, dispatchEvnt: Boolean = true): void
       {

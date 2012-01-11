@@ -20,8 +20,10 @@
          import mx.collections.ArrayCollection;
          import mx.collections.Sort;
          import mx.collections.SortField;
+      import mx.events.CollectionEvent;
+      import mx.events.CollectionEventKind;
 
-         import utils.locale.Localizer;
+      import utils.locale.Localizer;
 
          [Bindable]
          private var flanks: ArrayCollection = new ArrayCollection();
@@ -35,6 +37,31 @@
             _building = value as Npc;
             rebuildFlanks();
          }
+      
+         private function refreshUnitsDisplayType(e: CollectionEvent): void
+         {
+           if (e.kind == CollectionEventKind.ADD ||
+             e.kind == CollectionEventKind.REMOVE ||
+             e.kind == CollectionEventKind.RESET)
+           {
+             displayAsCached = false;
+             for (var flankKey: String in flanksHash)
+             {
+               if ((flanksHash[flankKey] as Array).length > 6)
+               {
+                 displayAsCached = true;
+               }
+             }
+           
+             for each (var flnk: UnitsFlank in flanks)
+             {
+               flnk.showCachedUnits = displayAsCached;
+             }
+           }
+         }
+
+         [Bindable]
+         private var displayAsCached: Boolean = false;
          
          private function rebuildFlanks(): void
          {
@@ -46,13 +73,26 @@
                      flanksHash[unit.flank] = new Array();
                   (flanksHash[unit.flank] as Array).push(unit);
                }
-               
+
+               displayAsCached = false;
                for (var flankKey: String in flanksHash)
+               {
+                 if ((flanksHash[flankKey] as Array).length > 6)
+                 {
+                    displayAsCached = true;
+                 }
+               }
+               
+               for (flankKey in flanksHash)
                {
                   var flnk: UnitsFlank = new UnitsFlank(int(flankKey), Owner.ENEMY);
                   flnk.flankUnits = new ArrayCollection(flanksHash[flankKey] as Array);
+                  flnk.showCachedUnits = displayAsCached;
                   flanks.addItem(flnk);
                }
+              
+               _building.units.addEventListener(CollectionEvent.COLLECTION_CHANGE, 
+                        refreshUnitsDisplayType);
                
                flanks.sort = new Sort();
                flanks.sort.fields = [new SortField('nr', false, false, true)];
@@ -77,7 +117,8 @@
    <s:Button label="{Localizer.string('Units', 'label.showNpc')}"
              skinClass="{YellowButtonSkin}"
              click="NavigationController.getInstance().showUnits(_building.units,
-               _building, null, UnitKind.GROUND, Owner.ENEMY)"/>
+               _building, null, UnitKind.GROUND, Owner.ENEMY)"
+             visible="{displayAsCached}" includeInLayout="{displayAsCached}"/>
 
    <s:layout><s:VerticalLayout horizontalAlign="center"/></s:layout>
 </s:Group>
