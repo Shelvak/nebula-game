@@ -4,7 +4,6 @@
 // Binding to these variables won't cause any warnings.
 
 import models.ModelLocator;
-import utils.assets.Cursors;
 import utils.assets.ImagePreloader;
 
 
