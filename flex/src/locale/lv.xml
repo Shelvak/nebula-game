@@ -60,19 +60,19 @@
     ****** Objects ******
 
     Objects use this syntax:
-      [obj:10:Cyrix:what] (Fetches Objects/Cyrix-what and pluralizes it
+      [obj:10:Unit_Cyrix:what] (Fetches Objects/Unit_Cyrix-what and pluralizes it
                            against number 10)
     or
-      [obj:10:Cyrix:what:dc] (Same as above, but returned string is downcased)
+      [obj:10:Unit_Cyrix:what:dc] (Same as above, but returned string is downcased)
 
     You can use parameters if you want, e.g.:
       <Objects>
-        <Trooper-what value="{0 one[Trooper] many[Troopers]}" />
+        <Unit_Trooper-what value="{0 one[Trooper] many[Troopers]}" />
       </Objects>
 
       {0} = "Hello"
       {1} = 15
-      {2} = Trooper
+      {2} = Unit_Trooper
 
       {0}. I need {1} [obj:{1}:{2}:what:dc].
 
@@ -80,26 +80,26 @@
 
       Hello. I need 15 troopers.
 
-    If you don't need any specific noun, just use [obj:10:Cyrix] or
-    [obj:10:Cyrix::dc] to select Objects/Cyrix.
+    If you don't need any specific noun, just use [obj:10:Unit_Cyrix] or
+    [obj:10:Unit_Cyrix::dc] to select Objects/Unit_Cyrix.
 
     Currently used nouns are:
 
-    <Trooper value="Kareivis" />
-    <Trooper-what value="{0 1sts[? Kareivis] many[? Kareivji]}" />
-    <Trooper-whos value="{0 1sts[? Kareivis] many[? Kareivji]}" />
+    <Unit_Trooper value="Kareivis" />
+    <Unit_Trooper-what value="{0 1sts[? Kareivis] many[? Kareivji]}" />
+    <Unit_Trooper-whos value="{0 1sts[? Kareivis] many[? Kareivji]}" />
 
-    <Trooper> is used when sentence sounds like this:
+    <Unit_Trooper> is used when sentence sounds like this:
     English: You are a trooper.
     Latvian: Tu esi kareivis.
     Context: What it is.
 
-    <Trooper-what> is used when sentence sounds like this:
+    <Unit_Trooper-what> is used when sentence sounds like this:
     English: You have to build 27 troopers to attack this building.
     Latvian: Tev ir vajadzīgi 27 kareivji, lai uzbruktu šai ēkai.
     Context: What you have to build.
 
-    <Trooper-whos> is used when sentence sounds like this:
+    <Unit_Trooper-whos> is used when sentence sounds like this:
     English: You need 1 trooper to attack this building.
     Latvian: Tev ir vajadzīgs 1 kareivis, lai uzbruktu šai ēkai.
     Context: What you need to attack.
@@ -107,10 +107,10 @@
     ### !!! IMPORTANT !!! ###
 
     Nouns are not hardcoded into code, so you can create as many of them as you
-    like. E.g. you are free to use [obj:10:Cyrix:LOLCAT] if you have
+    like. E.g. you are free to use [obj:10:Unit_Cyrix:LOLCAT] if you have
 
       <Objects>
-        <Cyrix-LOLCAT value="{0 one[LOLCYRIX] many[LOLCYRIXES]}" />
+        <Unit_Cyrix-LOLCAT value="{0 one[LOLCYRIX] many[LOLCYRIXES]}" />
       </Objects>
 
     defined.
@@ -129,13 +129,13 @@
     package where this reference is defined.
 
     If whole value is the same you can use ref="" shorthand:
-      <Trooper-what value="{0 1sts[? kareivis] many[? kareivji]}" />
-      <Trooper-whos ref="Trooper-what" />
+      <Unit_Trooper-what value="{0 1sts[? kareivis] many[? kareivji]}" />
+      <Unit_Trooper-whos ref="Unit_Trooper-what" />
 
     instead of
 
-      <Trooper-what value="{0 1sts[? kareivis] many[? kareivji]}" />
-      <Trooper-whos value="[reference:Trooper-what]" />
+      <Unit_Trooper-what value="{0 1sts[? kareivis] many[? kareivji]}" />
+      <Unit_Trooper-whos value="[reference:Unit_Trooper-what]" />
 
   -->
 
