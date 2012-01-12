@@ -14,8 +14,11 @@ package controllers.startup
    
    public class ChecksumsLoader extends EventDispatcher
    {
+      private static const FILES_TO_LOAD:int = 3;
+
       private var _startupInfo:StartupInfo;
       private var _assetsLoader:ChecksumsFileLoader;
+      private var _unbundledAssetsLoader:ChecksumsFileLoader;
       private var _localesLoader:ChecksumsFileLoader;
       private var _filesLoaded:int;
       
@@ -25,8 +28,15 @@ package controllers.startup
       }
       
       public function load() : void {
-         _assetsLoader = new ChecksumsFileLoader("assets", assetsChecksumsLoaded);
-         _localesLoader = new ChecksumsFileLoader("locale", localesChecksumsLoaded);         
+         _unbundledAssetsLoader = new ChecksumsFileLoader(
+            "assets/unbundled", unbundledAssetsChecksumsLoader
+         );
+         _assetsLoader = new ChecksumsFileLoader(
+            "assets", assetsChecksumsLoaded
+         );
+         _localesLoader = new ChecksumsFileLoader(
+            "locale", localesChecksumsLoaded
+         );
       }
       
       private function localesChecksumsLoaded(data:Object) : void {
@@ -40,10 +50,16 @@ package controllers.startup
          _startupInfo.assetsSums = data;
          fileLoadComplete();
       }
+
+      private function unbundledAssetsChecksumsLoader(data:Object) : void {
+         _unbundledAssetsLoader = null;
+         _startupInfo.unbundledAssetsSums = data;
+         fileLoadComplete();
+      }
       
       private function fileLoadComplete() : void {
          _filesLoaded++;
-         if (_filesLoaded == 2) {
+         if (_filesLoaded == FILES_TO_LOAD) {
             Events.dispatchSimpleEvent(this, Event, Event.COMPLETE);
          }
       }

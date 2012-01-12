@@ -7,9 +7,6 @@ package utils
     */
    [Event(name="lockChange", type="utils.ApplicationLockerEvent")]
 
-   /**
-    * Defines static flags that alter actions of a few controllers in a row.
-    */
    public final class ApplicationLocker extends EventDispatcher
    {
       /**
@@ -19,9 +16,6 @@ package utils
          return SingletonFactory.getSingletonInstance(ApplicationLocker);
       }
 
-      /**
-      * Sets all flags to their default values.
-      */
       public static function reset(): void {
          getInstance().resetLockCounter();
       }

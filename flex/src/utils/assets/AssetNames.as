@@ -1,19 +1,21 @@
 package utils.assets
 {
    import components.battle.BattlefieldBackgroundPart;
-   
+   import components.skins.SliderSkin;
+
    import controllers.objects.ObjectClass;
-   
+
+   import models.quest.slides.SlidesConfiguration;
+
    import models.tile.FolliageTileKind;
    import models.tile.TerrainType;
    import models.tile.TileKind;
-   
+
    import utils.ModelUtil;
    import utils.StringUtil;
-   
-   
-   
-   
+   import utils.UrlNavigate;
+
+
    /**
     * Defines constants that hold path values to image, cursor forders (and so
     * on) as well as file extentions. Also has methods for building full
@@ -619,6 +621,31 @@ package utils.assets
       public static function getBlockingBattlefieldFolliagesFramesFolder(terrainType:int, variation:int) : String
       {
          return BATTLEFIELD_FOLLIAGE_IMAGE_FOLDER + "blocking/" + terrainType + "/" + variation;
+      }
+
+      /* ######################## */
+      /* ### UNBUNDLED IMAGES ### */
+      /* ######################## */
+
+      public static const EXT_PNG:String = ".png";
+      public static const EXT_JGP:String = ".jpg";
+
+      private static function getUnbundledImageUrl(relativePath:String,
+                                                   includeLocale:Boolean): String {
+         return UrlNavigate.getInstance().getUnbundledImageUrl(
+            relativePath, includeLocale
+         );
+      }
+
+      public static function getTipImageUrl(id:int): String {
+         return getUnbundledImageUrl("tips/" + id + EXT_PNG, true);
+      }
+
+      public static function getQuestSlideBackgroundImageURL(slideKey:String): String {
+         return getUnbundledImageUrl(
+            "quest_screens/backgrounds/" + slideKey + EXT_JGP,
+            SlidesConfiguration.backgroundNeedsLocalization(slideKey)
+         );
       }
    }
 }

@@ -53,8 +53,8 @@ package controllers.startup
       public var serverPlayerId:int = 0;
       
       public var assetsSums:Object;
-      
       public var localeSums:Object;
+      public var unbundledAssetsSums:Object;
       
       
       /* ########################### */
