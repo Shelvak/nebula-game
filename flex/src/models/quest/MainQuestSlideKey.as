@@ -1,19 +1,18 @@
 package models.quest
 {
+   import models.quest.slides.SlidesConfiguration;
+
    import utils.ModelUtil;
 
 
    public final class MainQuestSlideKey
    {
-      public static const BASE_KEY_QUEST:String = "Quest";
-      public static const BASE_KEY_QUEST_WITH_IMAGE:String = "QuestWithImage";
-
       public static function isQuestBaseKey(key:String): Boolean {
-         return key == BASE_KEY_QUEST;
+         return key == SlidesConfiguration.KEY_QUEST;
       }
 
       public static function isQuestWithImageBaseKey(key:String): Boolean {
-         return key.indexOf(BASE_KEY_QUEST_WITH_IMAGE) == 0;
+         return key.indexOf(SlidesConfiguration.KEY_QUEST_WITH_IMAGE) == 0;
       }
 
       public static function getImageClass(baseKey:String): String {
@@ -29,7 +28,9 @@ package models.quest
       }
 
       private static function getImageType(baseKey:String): String {
-         return baseKey.replace(BASE_KEY_QUEST_WITH_IMAGE + ":", "");
+         return baseKey.replace(
+            SlidesConfiguration.KEY_QUEST_WITH_IMAGE + ":", ""
+         );
       }
    }
 }
