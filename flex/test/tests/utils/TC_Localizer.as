@@ -25,7 +25,7 @@ package tests.utils
          bundle.content['params'] = 'simple {0} string';
          bundle.content['referenced'] = 'simple [reference:ref.notString] string';
          bundle.content['ref.notString'] = 'not';
-         bundle.content['ref.real'] = 'realy';
+         bundle.content['ref.real'] = 'real';
          bundle.content['chained'] = 'simple [reference:Test2/ref.notString] string';
          bundle.content['failed'] = 'simple [reference:Test2:ref.notString] string';
          bundle.content['emptyRef'] = 'simple [reference:Test2/ref.notStrukkk] string';
@@ -72,13 +72,13 @@ package tests.utils
       [Test]
       public function findChainedStringWithReference() : void
       {
-         assertThat(Localizer.string('Test', 'chained'), equalTo("simple not realy string"));
+         assertThat(Localizer.string('Test', 'chained'), equalTo("simple not real string"));
       }
       
       [Test]
       public function findChainedStringWithReferenceAndParams() : void
       {
-         assertThat(Localizer.string('Test', 'chainedParams', [12]), equalTo("simple not realy 12 string"));
+         assertThat(Localizer.string('Test', 'chainedParams', [12]), equalTo("simple not real 12 string"));
       }
       
       

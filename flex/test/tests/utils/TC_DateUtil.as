@@ -3,7 +3,9 @@ package tests.utils
    import mx.resources.ResourceBundle;
    
    import org.flexunit.asserts.assertEquals;
-   
+
+   import testsutils.LocalizerUtl;
+
    import utils.DateUtil;
    import utils.locale.Locale;
    import utils.locale.Localizer;
@@ -17,12 +19,13 @@ package tests.utils
       [Before]
       public function setUp():void
       {
-         var bundle: ResourceBundle = new ResourceBundle(Locale.EN, 'General');
-         bundle.content['day.short'] = 'd';
-         bundle.content['hour.short'] = 'h';
-         bundle.content['minute.short'] = 'm';
-         bundle.content['second.short'] = 's';
-         Localizer.addBundle(bundle);
+         LocalizerUtl.setUp();
+         LocalizerUtl.addBundle("General", {
+            'day.short': 'd',
+            'hour.short': 'h',
+            'minute.short': 'm',
+            'second.short': 's'
+         });
       }
       
       [Test]
