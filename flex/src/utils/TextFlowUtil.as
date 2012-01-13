@@ -1,6 +1,6 @@
 package utils
 {
-   import flashx.textLayout.conversion.TextConverter;
+   import flashx.textLayout.conversion.TextLayoutImporter;
    import flashx.textLayout.elements.Configuration;
    import flashx.textLayout.elements.TextFlow;
    import flashx.textLayout.formats.TextLayoutFormat;
@@ -68,9 +68,13 @@ package utils
          layoutFormat.paragraphSpaceBefore = ParagraphStyle.SPACE_BEFORE;
          layoutFormat.paragraphSpaceAfter = ParagraphStyle.SPACE_AFTER;
          config.textFlowInitialFormat = layoutFormat;
-         return TextConverter.importToFlow(
-            value, TextConverter.TEXT_LAYOUT_FORMAT, config
-         );
+         return getImporter(config).importToFlow(value);
+      }
+
+      private static function getImporter(config:Configuration): TextLayoutImporter {
+         const importer:TextLayoutImporter = new TextLayoutImporter(config);
+         importer.throwOnError = true;
+         return importer;
       }
    }
 }
