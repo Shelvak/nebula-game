@@ -21,21 +21,24 @@
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
 
+
       [Bindable]
       private var _constructableModel: *;
 
       public function set constructableModel(value: *): void {
-         if (_constructableModel != null && _constructableModel.upgradePart != null) {
+         if (_constructableModel != null
+                && _constructableModel.upgradePart != null) {
             _constructableModel.upgradePart.removeEventListener(
-                    UpgradeEvent.UPGRADE_PROGRESS,
-                    model_upgradeProgressHandler
+               UpgradeEvent.UPGRADE_PROGRESS,
+               model_upgradeProgressHandler
             );
          }
          _constructableModel = value;
-         if (_constructableModel != null && _constructableModel.upgradePart != null) {
+         if (_constructableModel != null
+                && _constructableModel.upgradePart != null) {
             _constructableModel.upgradePart.addEventListener(
-                    UpgradeEvent.UPGRADE_PROGRESS,
-                    model_upgradeProgressHandler
+               UpgradeEvent.UPGRADE_PROGRESS,
+               model_upgradeProgressHandler
             );
          }
       }
@@ -47,12 +50,15 @@
       private static const imageHeight: int = 28;
       private static const imageWidth: int = 37;
 
-      override protected function updateDisplayList(uw: Number, uh: Number): void {
+      override protected function updateDisplayList(uw: Number,
+                                                    uh: Number): void {
          super.updateDisplayList(uw, uh);
-         if (_constructableModel != null &&
-                 _constructableModel.upgradePart != null &&
-                 _constructableModel.upgradePart.upgradeEndsAt != null) {
-            buildingProgressBar.setProgress(_constructableModel.upgradePart.upgradeProgress, 1);
+         if (_constructableModel != null
+                && _constructableModel.upgradePart != null
+                && _constructableModel.upgradePart.upgradeEndsAt != null) {
+            buildingProgressBar.setProgress(
+               _constructableModel.upgradePart.upgradeProgress, 1
+            );
          }
       }
 
@@ -71,12 +77,12 @@
             function doAccelerate(): void {
                new BuildingsCommand(
                   BuildingsCommand.ACCELERATE_CONSTRUCTOR, {
-                          'id': ML.latestPlanet.getBuildingByConstructable(
-                                  _constructableModel.id,
-                                  _constructableModel is Building
-                                          ? ObjectClass.BUILDING
-                                          : ObjectClass.UNIT).id,
-                          'index': accelerator.selectedAccelerateType}
+                     'id': ML.latestPlanet.getBuildingByConstructable(
+                        _constructableModel.id,
+                        _constructableModel is Building
+                           ? ObjectClass.BUILDING
+                           : ObjectClass.UNIT).id,
+                     'index': accelerator.selectedAccelerateType}
                ).dispatch();
             }
 
@@ -84,7 +90,9 @@
                doAccelerate();
             }
             else {
-               WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
+               WaitingCredsPopup.showPopup(
+                  accelerator.selectedCost, doAccelerate
+               );
             }
          };
          speedPopUp.addElement(accelerator);
@@ -96,11 +104,12 @@
 
       protected function btnDelete_clickHandler(event: MouseEvent): void {
          if (_constructableModel is Building) {
-            ML.latestPlanet.selectObject(_constructableModel);
+            ML.latestPlanet.selectLocation(_constructableModel, false);
          }
          else {
-            var fac: Building = ML.latestPlanet.getBuildingByConstructable(_constructableModel.id,
-                    ObjectClass.UNIT);
+            var fac: Building = ML.latestPlanet.getBuildingByConstructable(
+               _constructableModel.id, ObjectClass.UNIT
+            );
             if (fac != null) {
                NavigationController.getInstance().showFacilities(fac.id, true);
             }
