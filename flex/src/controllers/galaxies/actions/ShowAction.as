@@ -147,7 +147,7 @@ package controllers.galaxies.actions
                         var ss: MSolarSystem = MSolarSystem(
                            solarSystems.getItemAt(0)
                         );
-                        galaxy.moveTo(ss.currentLocation, true);
+                        galaxy.moveToLocation(ss.currentLocation, true);
                      }
                   }
                );

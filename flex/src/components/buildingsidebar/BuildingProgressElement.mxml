@@ -16,6 +16,8 @@
       import controllers.ui.NavigationController;
 
       import models.building.Building;
+      import models.location.LocationMinimal;
+      import models.location.LocationType;
       import models.parts.events.UpgradeEvent;
 
       import utils.assets.AssetNames;
@@ -104,7 +106,16 @@
 
       protected function btnDelete_clickHandler(event: MouseEvent): void {
          if (_constructableModel is Building) {
-            ML.latestPlanet.selectLocation(_constructableModel, false);
+            const building:Building = Building(_constructableModel);
+            ML.latestPlanet.selectLocation(
+               new LocationMinimal(
+                  LocationType.SS_OBJECT,
+                  building.planetId,
+                  building.x,
+                  building.y
+               ),
+               false
+            );
          }
          else {
             var fac: Building = ML.latestPlanet.getBuildingByConstructable(

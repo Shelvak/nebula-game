@@ -1,8 +1,7 @@
 package components.map.space
 {
    import controllers.Messenger;
-   
-   import models.BaseModel;
+
    import models.ModelLocator;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
@@ -10,17 +9,16 @@ package components.map.space
    import models.map.MMapSolarSystem;
    import models.map.MMapSpace;
    import models.solarsystem.MSSObject;
-   
+
    import mx.graphics.SolidColorStroke;
-   
+
    import spark.components.Group;
    import spark.primitives.BitmapImage;
    import spark.primitives.Ellipse;
-   
-   import utils.assets.AssetNames;
+
    import utils.locale.Localizer;
-   
-   
+
+
    /**
     * Solar system map. There is a sun in the middle and a few planets around
     * it in different orbits. 
@@ -43,7 +41,7 @@ package components.map.space
       public static const ORBIT_SUN_GAP: Number = MSSObject.IMAGE_WIDTH * 3.5;
       
       /**
-       * Ratio of map height and widh ratio (excluding padding).
+       * Ratio of map height and width ratio (excluding padding).
        */
       public static const HEIGHT_WIDTH_RATIO: Number = 0.35;
       
@@ -53,16 +51,15 @@ package components.map.space
       public static const PERSPECTIVE_RATIO: Number = ORBIT_GAP * 0.05;      
       
       
-      private var _locWrapper:LocationMinimalSolarSystem = new LocationMinimalSolarSystem();
+      private var _locWrapper:LocationMinimalSolarSystem =
+                     new LocationMinimalSolarSystem();
       
       
       /* ###################### */
       /* ### INITIALIZATION ### */
       /* ###################### */
       
-      
-      public function CMapSolarSystem(model:MMapSolarSystem)
-      {
+      public function CMapSolarSystem(model: MMapSolarSystem) {
          super(model);
       }
       
@@ -78,34 +75,34 @@ package components.map.space
             );
          }
       }
-      
-      
+
       /**
        * Called by <code>NavigationController</code> when galaxy map screen is hidden.
        */
-      public static function screenHideHandler() : void
-      {
+      public static function screenHideHandler(): void {
          Messenger.hide();
       }
-      
-      protected override function createGrid() : Grid
-      {
+
+      protected override function createGrid(): Grid {
          return new GridSolarSystem(this);
       }
-      
-      
-      protected override function createCustomComponentClasses() : StaticObjectComponentClasses
-      {
-         var classes:StaticObjectComponentClasses = new StaticObjectComponentClasses();
-         classes.addComponents(MMapSpace.STATIC_OBJECT_COOLDOWN, CCooldown, CCooldownInfo);
-         classes.addComponents(MMapSpace.STATIC_OBJECT_NATURAL,  CSSObject, CSSObjectInfo);
-         classes.addComponents(MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage, CWreckageInfo);
+
+      protected override function createCustomComponentClasses(): StaticObjectComponentClasses {
+         const classes: StaticObjectComponentClasses =
+                new StaticObjectComponentClasses();
+         classes.addComponents(
+            MMapSpace.STATIC_OBJECT_COOLDOWN, CCooldown, CCooldownInfo
+         );
+         classes.addComponents(
+            MMapSpace.STATIC_OBJECT_NATURAL, CSSObject, CSSObjectInfo
+         );
+         classes.addComponents(
+            MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage, CWreckageInfo
+         );
          return classes;
       }
       
-      
-      protected override function createBackgroundObjects(objectsContainer:Group) : void
-      {
+      protected override function createBackgroundObjects(objectsContainer: Group): void {
          // Star
          var star:BitmapImage = new BitmapImage();
          star.verticalCenter = 0;
@@ -127,11 +124,10 @@ package components.map.space
          _locWrapper.location = bottom;
          _locWrapper.angle = 90;
          left.id = top.id = right.id = bottom.id = getMapModel().id;
-         left.type = top.type = right.type = bottom.type = LocationType.SOLAR_SYSTEM;
-         for (var position:int = 0; position < getMapModel().orbitsTotal; position++)
-         {
-            for each (var location:LocationMinimal in [left, right, top, bottom])
-            {
+         left.type = top.type = right.type = bottom.type =
+                                                LocationType.SOLAR_SYSTEM;
+         for (var position:int = 0; position < getMapModel().orbitsTotal; position++) {
+            for each (var location:LocationMinimal in [left, right, top, bottom]) {
                _locWrapper.location = location;
                _locWrapper.position = position;
             }
@@ -150,30 +146,10 @@ package components.map.space
       /* ### INTERFACE METHODS ### */
       /* ######################### */
       
-      
-      protected override function selectModel(model:BaseModel):void
-      {
-         if (model is MSSObject)
-         {
-            super.selectModel(model);
-         }
-      }
-      
-      
-      protected override function zoomObjectImpl(object:*, operationCompleteHandler:Function=null):void
-      {
-         if (object is MSSObject)
-         {
-            super.zoomObjectImpl(object, operationCompleteHandler);
-         }
-      }
-      
-      
       /**
        * Typed getter for <code>model</code> property.
        */
-      public function getMapModel() : MMapSolarSystem
-      {
+      public function getMapModel(): MMapSolarSystem {
          return MMapSolarSystem(model);
       }
    }

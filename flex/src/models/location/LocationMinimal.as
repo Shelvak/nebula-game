@@ -19,8 +19,13 @@ package models.location
       }
       
       
-      public function LocationMinimal() {
+      public function LocationMinimal(type:int = LocationType.GALAXY,
+                                      id:int = 0, x:int = 0, y:int = 0) {
          super();
+         this.id = id;
+         _type = type;
+         _x = x;
+         _y = y;
       }
       
       
@@ -171,7 +176,7 @@ package models.location
        */
       public override function equals(o:Object) : Boolean {
          if (o is LocationMinimal) {
-            var loc:LocationMinimal = LocationMinimal(o);
+            const loc:LocationMinimal = LocationMinimal(o);
             return loc == this || loc.type == type && loc.id == id && loc.x == x && loc.y == y;
          }
          return false;

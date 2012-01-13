@@ -123,10 +123,10 @@ package tests.maps
                objects.itemSelected(new Sector(location, new SectorShips(true)));
             },
             allOf (
-               not (causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_SELECT_OBJECT)),
-               causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_DESELECT_SELECTED_OBJECT),
+               not (causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_SELECT_LOCATION)),
+               causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_DESELECT_SELECTED_LOCATION),
                causes(galaxy) .toDispatchEvent (
-                  MMapEvent.UICMD_MOVE_TO,
+                  MMapEvent.UICMD_MOVE_TO_LOCATION,
                   function(event: MMapEvent): void {
                      assertThat(
                         "map moved to correct location",
@@ -151,10 +151,10 @@ package tests.maps
                objects.itemSelected(new Sector(location, null, solarSystem));
             },
             allOf(
-               not (causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_MOVE_TO)),
-               causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_DESELECT_SELECTED_OBJECT),
+               not (causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_MOVE_TO_LOCATION)),
+               causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_DESELECT_SELECTED_LOCATION),
                causes(galaxy) .toDispatchEvent(
-                  MMapEvent.UICMD_SELECT_OBJECT,
+                  MMapEvent.UICMD_SELECT_LOCATION,
                   function(event: MMapEvent): void {
                      assertThat(
                         "event.object holds selected object instance",
