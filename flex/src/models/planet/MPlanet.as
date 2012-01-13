@@ -999,7 +999,7 @@ package models.planet
          for each (var building: Building in buildings)
          {
             if (building.hasGuns && !building.isGhost &&
-                    building.upgradePart.upgradeEndsAt == null)
+                    building.state == Building.ACTIVE)
             {
                return true;
             }
