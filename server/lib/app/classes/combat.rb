@@ -24,7 +24,8 @@ class Combat
   OUTCOME_TIE = 2
 
   # Attributes used in statistics
-  
+
+  STATS_PLR_DMG_DEALT_ATTR = "damage_dealt_player"
   STATS_WAR_PTS_ATTR = "points_earned"
   STATS_VPS_ATTR = "victory_points_earned"
   STATS_CREDS_ATTR = "creds_earned"

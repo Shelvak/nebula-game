@@ -614,6 +614,19 @@ class Player < ActiveRecord::Base
     true
   end
 
+  # Returns multiplier for victory points earned by encounter between two
+  # players. Different formula is used depending on if aggressor is stronger
+  # than defender or weaker.
+  def self.battle_vps_multiplier(aggressor_id, defender_id)
+    condition = select("economy_points + science_points + army_points").limit(1)
+    aggressor_points = condition.where(:id => aggressor_id).c_select_value.to_f
+    defender_points = condition.where(:id => defender_id).c_select_value.to_f
+
+    Java::spacemule.modules.combat.post_combat.Statistics.fairnessMultiplier(
+      aggressor_points, defender_points
+    )
+  end
+
   def self.on_callback(id, event)
     case event
       when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER

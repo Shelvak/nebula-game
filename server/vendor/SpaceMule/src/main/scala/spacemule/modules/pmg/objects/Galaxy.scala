@@ -34,12 +34,11 @@ class Galaxy(val id: Int, val ruleset: String) {
     val coords = Coords(zoneX, zoneY)
     
     val zone = zones.get(coords) match {
-        case Some(zone) => zone
-        case None => {
-            val zone = new Zone(zoneX, zoneY, zoneDiameter)
-            zones(zone.coords) = zone
-            zone
-        }
+      case Some(z) => z
+      case None =>
+        val zone = new Zone(zoneX, zoneY, zoneDiameter)
+        zones(zone.coords) = zone
+        zone
     }
 
     if (age >= Config.zoneMaturityAge) {

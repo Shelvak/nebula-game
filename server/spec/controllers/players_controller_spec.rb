@@ -316,5 +316,24 @@ describe PlayersController do
         player.should be_saved
       end
     end
+
+    describe "players|battle_vps_multiplier" do
+      before(:each) do
+        @target_id = 123
+
+        @action = "players|battle_vps_multiplier"
+        @params = {'target_id' => @target_id}
+      end
+
+      it_should_behave_like "with param options", %w{target_id}
+
+      it "should return battle vps multiplier" do
+        multiplier = 1.2
+        Player.should_receive(:battle_vps_multiplier).
+          with(player.id, @target_id).and_return(multiplier)
+        invoke @action, @params
+        response_should_include(:multiplier => multiplier)
+      end
+    end
   end
 end

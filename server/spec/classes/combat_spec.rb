@@ -632,153 +632,183 @@ describe Combat do
     end
   end
 
-  describe "victory points" do
-    describe "when in battleground" do
-      [
-        [:planet, lambda { {:solar_system => Factory.create(:battleground)} }],
-        [:solar_system, lambda { Factory.attributes_for(:battleground) }],
-      ].each do |type, options|
-        describe type do
-          it "should calculate victory points for doing damage to other units" do
-            player1 = player2 = nil
-            assets = CombatDsl.new do
-              location(type, options.call)
-              player1 = player { units { rhyno } }.player
-              player2 = player { units { rhyno } }.player
-            end.run
+  describe "victory points & creds for combat" do
+    player1_opts = {:economy_points => 1500, :science_points => 2142,
+      :army_points => 4234, :war_points => 3423}
+    player2_opts = {:economy_points => 1532, :science_points => 1231,
+      :army_points => 7234, :war_points => 2423}
 
-            [player1, player2].each do |player|
-              notification_id = assets.notification_ids[player.id]
-              notification = Notification.find(notification_id)
-              notification.params['statistics'][Combat::STATS_VPS_ATTR].
-                should > 0
+    ground_dmg = 'damage_dealt_to_ground'
+    space_dmg = 'damage_dealt_to_space'
 
-              player.victory_points.should == notification.params['statistics'][
-                Combat::STATS_VPS_ATTR
-              ]
-            end
-          end
+    ground_units = lambda { scorpion :count => 20 }
+    space_units = lambda { avenger :count => 20 }
 
-          it "should not calculate VPs for doing damage to NPC units" do
-            player = nil
-            assets = CombatDsl.new do
-              location(type, options.call)
-              player = player { units { rhyno } }.player
-              player(:npc => true) { units { rhyno } }
-            end.run
+    gives_vps = lambda do |given_kind|
+      Cfg::Java.combat_vp_zones.find { |kind| kind.id == given_kind }.defined? \
+        ? "combat" : nil
+    end
 
-            notification_id = assets.notification_ids[player.id]
-            notification = Notification.find(notification_id)
-            notification.params['statistics'][Combat::STATS_VPS_ATTR].
-              should == 0
+    [
+      ["battleground planet with ground", "battleground", :planet,
+        lambda { {:solar_system => Factory.create(:battleground)} },
+        ground_units, ground_dmg],
+      ["battleground planet with space", "battleground", :planet,
+        lambda { {:solar_system => Factory.create(:battleground)} },
+        space_units, space_dmg],
+      ["battleground ss", "battleground", :solar_system,
+        lambda { Factory.attributes_for(:battleground) },
+        space_units, space_dmg ],
+      ["galaxy", gives_vps[Location::GALAXY], :galaxy,
+        lambda { {} }, space_units, space_dmg],
+      ["regular ss", gives_vps[Location::SOLAR_SYSTEM], :solar_system,
+        lambda { {} }, space_units, space_dmg],
+      ["pulsar ss", gives_vps[Location::SOLAR_SYSTEM], :solar_system,
+        lambda { Factory.attributes_for(:mini_battleground) },
+        space_units, space_dmg],
+      ["regular planet with ground", gives_vps[Location::SS_OBJECT], :planet,
+        lambda { {:solar_system => Factory.create(:solar_system)} },
+        ground_units, ground_dmg],
+      ["regular planet with space", gives_vps[Location::SS_OBJECT], :planet,
+        lambda { {:solar_system => Factory.create(:solar_system)} },
+        space_units, space_dmg],
+      ["pulsar planet with ground", gives_vps[Location::SS_OBJECT], :planet,
+        lambda { {:solar_system => Factory.create(:mini_battleground)} },
+        ground_units, ground_dmg],
+      ["pulsar planet with space", gives_vps[Location::SS_OBJECT], :planet,
+        lambda { {:solar_system => Factory.create(:mini_battleground)} },
+        space_units, space_dmg],
+    ].each do
+    |description, config_key, location_type, location_opts, unit_opts, dmg_type|
+      give_vps = config_key.nil? \
+        ? "not give VPs & creds" : "give VPs & creds by #{config_key}"
+      it "should #{give_vps} on #{description} for damaging other units" do
+        player1 = player2 = nil
+        assets = CombatDsl.new do
+          location(location_type, location_opts.call)
+          player1 = player(player1_opts) { units(&unit_opts) }.player
+          player2 = player(player2_opts) { units(&unit_opts) }.player
+        end.run
+
+        multipliers = [
+          Player.battle_vps_multiplier(player1.id, player2.id),
+          Player.battle_vps_multiplier(player2.id, player1.id)
+        ]
+
+        [player1, player2].each_with_index do |player, index|
+          player.reload
+          notification_id = assets.notification_ids[player.id]
+          notification = Notification.find(notification_id)
+
+          actual = {
+            :notification_vps =>
+              notification.params['statistics'][Combat::STATS_VPS_ATTR],
+            :player_vps => player.victory_points,
+            :notification_creds =>
+              notification.params['statistics'][Combat::STATS_CREDS_ATTR],
+            :player_creds => player.creds,
+          }
+          if config_key.nil?
+            actual.should equal_to_hash(
+              :notification_vps => 0,
+              :player_vps => 0,
+              :notification_creds => 0,
+              :player_creds => 0
+            )
+          else
+            damage_dealt = notification.params['statistics'][
+              Combat::STATS_PLR_DMG_DEALT_ATTR
+            ]
+            vps_earned = CONFIG.evalproperty(
+              "#{config_key}.battle.victory_points",
+              {ground_dmg => 0, space_dmg => 0}.merge(
+                dmg_type => damage_dealt,
+                'fairness_multiplier' => multipliers[index]
+              )
+            )
+
+            creds_earned = CONFIG.evalproperty(
+              "#{config_key}.battle.creds",
+              {'victory_points' => vps_earned}
+            )
+
+            # Rounding errors or smth. I'm not sure but we are randomly not
+            # getting precise numbers here.
+            actual[:notification_vps].should be_within(2).of(vps_earned)
+            actual[:player_vps].should be_within(2).of(vps_earned)
+            actual[:notification_creds].should be_within(5).of(creds_earned)
+            actual[:player_creds].should be_within(5).of(creds_earned)
           end
         end
       end
-    end
 
-    describe "when not in battleground" do
-      [
-        [:planet, {:solar_system => Factory.create(:mini_battleground)},
-          " @ mini battleground"],
-        [:solar_system, Factory.attributes_for(:mini_battleground),
-          " @ mini battleground"],
-        [:planet, {:solar_system => Factory.create(:solar_system)},
-          " @ regular solar system"],
-        [:solar_system, Factory.attributes_for(:solar_system),
-          " @ regular solar system"],
-        [:galaxy, {}, ""],
-      ].each do |type, options, info|
-        describe "#{type}#{info}" do
-          it "should not calculate VPs for doing damage to other units" do
-            player1 = player2 = nil
-            assets = CombatDsl.new do
-              location(type, options)
-              player1 = player { units { rhyno } }.player
-              player2 = player { units { rhyno } }.player
-            end.run
+      it "should not calculate VPs on #{description} for doing damage to NPC" do
+        player = nil
+        assets = CombatDsl.new do
+          location(location_type, location_opts.call)
+          player = player(player1_opts) { units(&unit_opts) }.player
+          player(:npc => true) { units(&unit_opts) }
+        end.run
 
-            [player1, player2].each do |player|
-              notification_id = assets.notification_ids[player.id]
-              notification = Notification.find(notification_id)
-              notification.params['statistics'][Combat::STATS_VPS_ATTR].
-                should == 0
-
-              player.victory_points.should == 0
-            end
-          end
-        end
+        notification_id = assets.notification_ids[player.id]
+        notification = Notification.find(notification_id)
+        [
+          notification.params['statistics'][Combat::STATS_VPS_ATTR],
+          player.reload.victory_points
+        ].should == [0, 0]
       end
     end
 
     it "should give victory points for units who give VPs on received damage" do
-      player1 = player2 = nil
+      player = nil
       assets = CombatDsl.new do
-        location(:solar_system)
-        player1 = player { units { rhyno } }.player
-        player2 = player { units { boss_ship } }.player
+        location(:galaxy)
+        player = player { units { rhyno } }.player
+        player(:npc => true) { units { boss_ship } }
       end.run
 
-      (nvps1, vps1), (nvps2, vps2) = [player1, player2].map do |player|
-        notification_id = assets.notification_ids[player.id]
-        notification = Notification.find(notification_id)
-
-        [
-          notification.params['statistics'][Combat::STATS_VPS_ATTR],
-          player.victory_points
-        ]
-      end
-      nvps1.should > 0
-      vps1.should > 0
-      nvps2.should == 0
-      vps2.should == 0
+      notification_id = assets.notification_ids[player.id]
+      notification = Notification.find(notification_id)
+      [
+        notification.params['statistics'][Combat::STATS_VPS_ATTR],
+        player.victory_points
+      ].should_not == [0, 0]
     end
   end
 
   describe "creds for killing" do
     it "should give them for killing the unit" do
-      player1 = player2 = nil
+      player = nil
       assets = CombatDsl.new do
         location(:solar_system)
-        player1 = player { units { rhyno } }.player
-        player2 = player { units { boss_ship :hp => 0.001 } }.player
+        player = player { units { rhyno } }.player
+        player(:npc => true) { units { boss_ship :hp => 0.001 } }
       end.run
 
-      (ncreds1, creds1), (ncreds2, creds2) = [player1, player2].map do |player|
-        notification_id = assets.notification_ids[player.id]
-        notification = Notification.find(notification_id)
+      notification_id = assets.notification_ids[player.id]
+      notification = Notification.find(notification_id)
 
-        [
-          notification.params['statistics'][Combat::STATS_CREDS_ATTR],
-          player.creds
-        ]
-      end
-      ncreds1.should > 0
-      creds1.should > 0
-      ncreds2.should == 0
-      creds2.should == 0
+      [
+        notification.params['statistics'][Combat::STATS_CREDS_ATTR],
+        player.creds
+      ].should_not == [0, 0]
     end
 
     it "should not give them for harming the unit" do
-      player1 = player2 = nil
+      player = nil
       assets = CombatDsl.new do
         location(:solar_system)
-        player1 = player { units { rhyno } }.player
-        player2 = player { units { boss_ship } }.player
+        player = player { units { rhyno } }.player
+        player(:npc => true) { units { boss_ship } }
       end.run
 
-      (ncreds1, creds1), (ncreds2, creds2) = [player1, player2].map do |player|
-        notification_id = assets.notification_ids[player.id]
-        notification = Notification.find(notification_id)
+      notification_id = assets.notification_ids[player.id]
+      notification = Notification.find(notification_id)
 
-        [
-          notification.params['statistics'][Combat::STATS_CREDS_ATTR],
-          player.creds
-        ]
-      end
-      ncreds1.should == 0
-      creds1.should == 0
-      ncreds2.should == 0
-      creds2.should == 0
+      [
+        notification.params['statistics'][Combat::STATS_CREDS_ATTR],
+        player.creds
+      ].should == [0, 0]
     end
   end
 

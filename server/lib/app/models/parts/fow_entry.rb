@@ -32,7 +32,8 @@ module Parts::FowEntry
       # Return player ids that see this spot.
       connection.select_values(
         "
-        SELECT `player_id` FROM `#{table_name}` #{join} WHERE #{conditions}
+        SELECT `#{table_name}`.`player_id` FROM `#{table_name}` #{join}
+          WHERE #{conditions}
         UNION
         SELECT `id` FROM `#{Player.table_name}` WHERE #{
           Player.sanitize_sql_hash_for_conditions(

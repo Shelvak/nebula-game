@@ -33,6 +33,7 @@ object Runner extends BenchmarkableMock {
    **/
   def run(
     location: Location,
+    isBattleground: Boolean,
     planetOwner: Option[Player],
     players: Set[Option[Player]],
     allianceNames: Combat.AllianceNames,
@@ -40,14 +41,14 @@ object Runner extends BenchmarkableMock {
     troops: Set[Troop],
     loadedTroops: Map[Long, Set[Troop]],
     unloadedTroopIds: Set[Long],
-    buildings: Set[Building],
-    calculateVictoryPoints: Boolean
+    buildings: Set[Building]
   ): Option[Response] = {
 //    StdErrLog.level = StdErrLog.Debug
     val combat = benchmark("Combat simulation") { () =>
       StdErrLog.debug("Combat simulation", () =>
         Combat(
           location,
+          isBattleground,
           planetOwner,
           players,
           allianceNames,
@@ -55,8 +56,7 @@ object Runner extends BenchmarkableMock {
           troops,
           loadedTroops,
           unloadedTroopIds,
-          buildings,
-          calculateVictoryPoints
+          buildings
         )
       )
     }
