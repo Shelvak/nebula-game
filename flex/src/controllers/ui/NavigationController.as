@@ -41,6 +41,7 @@ package controllers.ui
    import models.galaxy.Galaxy;
    import models.healing.MCHealingScreen;
    import models.infoscreen.MCInfoScreen;
+   import models.location.LocationMinimal;
    import models.map.MMap;
    import models.map.MMapSolarSystem;
    import models.map.MapType;
@@ -399,7 +400,7 @@ package controllers.ui
             callAfterMapLoaded(
                function(map:MMap) : void
                {
-                  map.zoomObject(ML.latestSSMap);
+                  map.zoomLocation(ML.latestSSMap.currentLocation);
                   if (completeHandler != null)
                   {
                      completeHandler.call();
@@ -426,7 +427,7 @@ package controllers.ui
          callAfterMapLoaded(
             function(map:MMap) : void
             {
-               map.selectObject(building);
+               map.selectLocation(map.getLocation(building.x, building.y), true);
             },
             true
          );

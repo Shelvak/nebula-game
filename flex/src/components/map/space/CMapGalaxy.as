@@ -2,13 +2,11 @@ package components.map.space
 {
    import controllers.Messenger;
 
-   import models.BaseModel;
    import models.ModelLocator;
    import models.galaxy.Galaxy;
    import models.galaxy.IVisibleGalaxyAreaClient;
    import models.location.LocationMinimal;
    import models.location.LocationType;
-   import models.map.IMStaticMapObject;
    import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
    import models.map.MStaticSpaceObjectsAggregator;
@@ -20,7 +18,6 @@ package components.map.space
    import spark.components.Group;
 
    import utils.Objects;
-
    import utils.locale.Localizer;
 
 
@@ -114,9 +111,9 @@ package components.map.space
       public function sectorHidden(x:int, y:int) : void {
          var sector:SectorsHashItem = _staticObjectsHash.remove(getTmpSector(x, y));
          if (sector.hasObject) {
-            if (selectedStaticObject == sector.object) {
+            if (sector.object.currentLocation.equals(selectedLocation)) {
                f_retainSelectedLocation = true;
-               deselectSelectedObject();
+               deselectSelectedLocation();
             }
             _staticObjectsPool.returnObject(sector.object);
          }
@@ -151,9 +148,8 @@ package components.map.space
             grid.positionStaticObjectInSector(aggrModel.currentLocation);
             squadronsController.repositionAllSquadronsIn(aggrModel.currentLocation);
             var model:IMStaticSpaceObject = IMStaticSpaceObject(aggrModel.getItemAt(0)); 
-            if (_selectedLocation != null
-                && _selectedLocation.equals(model.currentLocation)) {
-               selectModel(BaseModel(model));
+            if (model.currentLocation.equals(selectedLocation)) {
+               selectLocation(selectedLocation);
             }
          }
       }
@@ -222,8 +218,8 @@ package components.map.space
                var aggrModel:MStaticSpaceObjectsAggregator = aggrComponent.model;
                aggrModel.removeItemAt(aggrModel.getItemIndex(object));
                if (aggrModel.length == 0) {
-                  if (object.currentLocation.equals(_selectedLocation)) {
-                     deselectSelectedObject();
+                  if (object.currentLocation.equals(selectedLocation)) {
+                     deselectSelectedLocation();
                   }
                   _staticObjectsPool.returnObject(aggrComponent);
                   squadronsController.repositionAllSquadronsIn(object.currentLocation);
@@ -261,51 +257,10 @@ package components.map.space
       /* ############################## */
       
       private var f_retainSelectedLocation:Boolean = false;
-      private var _selectedLocation:LocationMinimal = null;
       
-      protected override function selectModel(model:BaseModel) : void {
-         if (model is IMStaticSpaceObject || model is LocationMinimal) {
-            var loc: LocationMinimal =
-                   model is IMStaticMapObject
-                      ? IMStaticSpaceObject(model).currentLocation
-                      : LocationMinimal(model);
-            if (!getGalaxy().definesLocation(loc)) {
-               return;
-            }
-            if (_selectedLocation == null || !_selectedLocation.equals(loc)) {
-               deselectSelectedObject();
-               _selectedLocation = loc;
-               viewport.moveContentTo(
-                  grid.getSectorRealCoordinates(_selectedLocation),
-                  true
-               );
-            }
-            var sectorObjects: SectorsHashItem =
-               _staticObjectsHash.getItem(getTmpSector(
-                  _selectedLocation.x,
-                  _selectedLocation.y
-               ));
-            if (sectorObjects != null && sectorObjects.hasObject) {
-               selectComponent(sectorObjects.object, false, true);
-            }
-         }
-      }
-      
-      public override function selectComponent(component:Object,
-                                               center:Boolean = false,
-                                               openOnSecondCall:Boolean = false) : void {
-         super.selectComponent(component, center, openOnSecondCall);
-         if (selectedStaticObject != null) {
-            _selectedLocation = selectedStaticObject.currentLocation;
-         }
-      }
-      
-      public override function deselectSelectedObject() : void {
-         if (_selectedLocation != null) {
-            if (!f_retainSelectedLocation) {
-               _selectedLocation = null;
-            }
-            super.deselectSelectedObject();
+      public override function deselectSelectedLocation() : void {
+         if (!f_retainSelectedLocation) {
+            super.deselectSelectedLocation();
          }
          f_retainSelectedLocation = false;
       }

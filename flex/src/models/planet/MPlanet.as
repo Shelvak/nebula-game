@@ -13,7 +13,6 @@ package models.planet
    import models.Owner;
    import models.building.Building;
    import models.building.BuildingBonuses;
-   import models.building.Npc;
    import models.factories.BuildingFactory;
    import models.folliage.BlockingFolliage;
    import models.folliage.Folliage;
@@ -37,7 +36,6 @@ package models.planet
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
-   import mx.controls.Alert;
 
    import utils.Objects;
    import utils.StringUtil;
@@ -644,13 +642,6 @@ package models.planet
       {
          return object.isBlocking;
       }
-      /**
-       * List of all blocking objects on this planet (bound to <code>objects</code> list).
-       */
-      public function get blockingObjects() : ListCollectionView
-      {
-         return _blockingObjects;
-      }
       
       
       private var _buildings:ListCollectionView;
@@ -912,25 +903,6 @@ package models.planet
             new SortField('id', false, false, true)];
          facilities.refresh();
          return facilities;
-      }
-      
-      
-      /**
-       * Returns npc building in which this unit belongs
-       */
-      public function findUnitBuilding(unit: Unit): Npc
-      {
-         for each (var building: Building in buildings)
-         {
-            if (building is Npc)
-            {
-               if (Npc(building).units.find(unit.id) != null)
-               {
-                  return Npc(building);
-               }
-            }
-         }
-         return null;
       }
       
       
@@ -1290,19 +1262,16 @@ package models.planet
        * otherwise.
        */
       public function canBeBuilt(building: Building): Boolean {
-         if (isBuildingOnMap(building)
-                && !restrTilesUnderBuildingExist(building)
-                && !restrTilesAroundBuildingExist(building)
-                && !buildingsAroundExist(building)
-                && !blockingFolliagesUnderExist(building)) {
-            return true;
-         }
-         return false;
+         return isBuildingOnMap(building)
+                   && !restrTilesUnderBuildingExist(building)
+                   && !restrTilesAroundBuildingExist(building)
+                   && !buildingsAroundExist(building)
+                   && !blockingFolliagesUnderExist(building);
       }
 
 
       /**
-       * Builds a building on this planet: removes folliages that are in the
+       * Builds a building on this planet: removes foliage that are in the
        * basement area of the building and adds this building to objects list.
        * 
        * @param b A building that needs to be built.

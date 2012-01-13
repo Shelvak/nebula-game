@@ -1,16 +1,16 @@
 package models.map
 {
    import flash.errors.IllegalOperationError;
-   
+
    import interfaces.ICleanable;
-   
+
    import models.BaseModel;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.map.events.MMapEvent;
    import models.movement.MSquadron;
    import models.unit.Unit;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
@@ -18,10 +18,11 @@ package models.map
    import mx.events.CollectionEventKind;
    import mx.logging.ILogger;
    import mx.logging.Log;
-   
+
    import utils.Objects;
    import utils.datastructures.Collections;
-   
+
+
    /**
     * Signals component to zoom a given object in.
     * 
@@ -160,15 +161,17 @@ package models.map
       /* ################## */
       
       /**
-       * Returns <code>true</code> if this instance has a valid cached map instance in
-       * <code>ModelLocator</code>. However this <b>does not</b> necessary mean that <code>this</code>
-       * is actually a cached map itsef nor does it mean that a property that holds a cached map object
-       * is empty.
+       * Returns <code>true</code> if this instance has a valid cached map
+       * instance in <code>ModelLocator</code>. However this <b>does not</b>
+       * necessary mean that <code>this</code> is actually a cached map itself
+       * nor does it mean that a property that holds a cached map object is
+       * empty.
        *  
-       * <p>Getter in <code>MMap</code> throws <code>IllegalOperationError</code> if not overriden.</p>
+       * <p>Getter in <code>MMap</code> throws
+       * <code>IllegalOperationError</code> if not overriden.</p>
        */
       public function get cached() : Boolean {
-         throw new IllegalOperationError("Getter is abstract!");
+         Objects.throwAbstractPropertyError();
          return false;  // unreachable
       }
       
@@ -185,7 +188,7 @@ package models.map
        * Type of locations this map defines inside itself.
        */
       protected function get definedLocationType() : int {
-         throwAbstractMethodError();
+         Objects.throwAbstractPropertyError();
          return 0;   // unreachable
       }
       
@@ -248,8 +251,7 @@ package models.map
        * Adds given object to objects list.
        */
       public function addObject(object:BaseModel) : void {
-         Objects.paramNotNull("object", object);
-         _objects.addItem(object);
+         _objects.addItem(Objects.paramNotNull("object", object));
       }
       
       /**
@@ -272,11 +274,15 @@ package models.map
        */
       public function removeObject(object:BaseModel, silent:Boolean = false) : * {
          var objectIdx:int = Collections.findFirstIndexEqualTo(_objects, object);
-         if (objectIdx >= 0)
+         if (objectIdx >= 0) {
             return _objects.removeItemAt(objectIdx);
-         else if (!silent)
-            throw new IllegalOperationError("Can't remove object " + object + ": the equal object " +
-                                            "could not be found");
+         }
+         else if (!silent) {
+            throw new IllegalOperationError(
+               "Can't remove object " + object + ": the equal object "
+                  + "could not be found"
+            );
+         }
       }
       
       /**
@@ -292,15 +298,18 @@ package models.map
       /**
        * Creates and returns location in this map with given coordinates.
        */
-      public function getLocation(x:int, y:int) : Location {
+      public function getLocation(x:int, y:int): Location {
          var loc:Location = new Location();
          loc.type = definedLocationType;
          loc.id = id;
          loc.x = x;
          loc.y = y;
-         if (!definesLocation(loc))
-            throw new IllegalOperationError("Map " + this + " does not define location with " +
-                                            "coordinates [x: " + x + ", y: " + y + "]");
+         if (!definesLocation(loc)) {
+            throw new IllegalOperationError(
+               "Map " + this + " does not define location with coordinates "
+                  + "[x: " + x + ", y: " + y + "]"
+            );
+         }
          setCustomLocationFields(loc);
          return loc;
       }
@@ -309,8 +318,8 @@ package models.map
        * Called by <code>getLocation()</code>. You should set fields of given <code>Location</code>
        * relevant to concrete type of <code>Map</code>.
        */
-      protected function setCustomLocationFields(location:Location) : void {
-         throwAbstractMethodError();
+      protected function setCustomLocationFields(location: Location) : void {
+         Objects.throwAbstractMethodError();
       }
       
       /**
@@ -319,9 +328,10 @@ package models.map
        * <p>Override <code>definesLocationImpl()</code> rather than this method: it will only be
        * called if <code>location</code> is not <code>null</code>.</p>
        */
-      public function definesLocation(location:LocationMinimal) : Boolean {
-         if (location == null)
+      public function definesLocation(location: LocationMinimal) : Boolean {
+         if (location == null) {
             return false;
+         }
          return definesLocationImpl(location);
       }
       
@@ -330,8 +340,8 @@ package models.map
        * 
        * @see #definesLocation()
        */
-      protected function definesLocationImpl(location:LocationMinimal) : Boolean {
-         throwAbstractMethodError();
+      protected function definesLocationImpl(location: LocationMinimal) : Boolean {
+         Objects.throwAbstractMethodError();
          return false;   // unreachable
       }
       
@@ -339,40 +349,53 @@ package models.map
       /* ################### */
       /* ### UI COMMANDS ### */
       /* ################### */
-      
-      public function zoomObject(object:*, instant:Boolean = false, operationCompleteHandler:Function = null) : void {
+
+      public function zoomLocation(location: LocationMinimal,
+                                   instant: Boolean = false,
+                                   operationCompleteHandler: Function = null): void {
          dispatchUiCommand(
-            MMapEvent.UICMD_ZOOM_OBJECT,
-            object, instant, operationCompleteHandler
-         );
-      }
-      
-      public function selectObject(object:*, instant:Boolean = false, operationCompleteHandler:Function = null) : void{
-         dispatchUiCommand(
-            MMapEvent.UICMD_SELECT_OBJECT,
-            object, instant, operationCompleteHandler
+            MMapEvent.UICMD_ZOOM_LOCATION,
+            location, instant, false, operationCompleteHandler
          );
       }
 
-      public function deselectSelectedObject(instant:Boolean = false, operationCompleteHandler:Function = null): void {
+      public function selectLocation(location: LocationMinimal,
+                                     openOnSecondCall:Boolean,
+                                     instant: Boolean = false,
+                                     operationCompleteHandler: Function = null): void {
          dispatchUiCommand(
-            MMapEvent.UICMD_DESELECT_SELECTED_OBJECT,
-            null, instant, operationCompleteHandler
+            MMapEvent.UICMD_SELECT_LOCATION,
+            location, instant, openOnSecondCall, operationCompleteHandler
          );
       }
-      
-      public function moveTo(location:LocationMinimal, instant:Boolean = false, operationCompleteHandler:Function = null) : void {
+
+      public function deselectSelectedLocation(instant: Boolean = false,
+                                               operationCompleteHandler: Function = null): void {
          dispatchUiCommand(
-            MMapEvent.UICMD_MOVE_TO,
-            location, instant, operationCompleteHandler
+            MMapEvent.UICMD_DESELECT_SELECTED_LOCATION,
+            null, instant, false, operationCompleteHandler
          );
       }
-      
-      protected function dispatchUiCommand(type:String, object:*, instant:Boolean, operationCompleteHandler:Function) : void {
+
+      public function moveToLocation(location: LocationMinimal,
+                                     instant: Boolean = false,
+                                     operationCompleteHandler: Function = null): void {
+         dispatchUiCommand(
+            MMapEvent.UICMD_MOVE_TO_LOCATION,
+            location, instant, false, operationCompleteHandler
+         );
+      }
+
+      protected function dispatchUiCommand(type: String,
+                                           location: LocationMinimal,
+                                           instant: Boolean,
+                                           openOnSecondCall: Boolean,
+                                           operationCompleteHandler: Function): void {
          if (hasEventListener(type)) {
-            var event:MMapEvent = new MMapEvent(type);
-            event.object = object;
+            var event: MMapEvent = new MMapEvent(type);
+            event.object = location;
             event.instant = instant;
+            event.openOnSecondCall = openOnSecondCall;
             event.operationCompleteHandler = operationCompleteHandler;
             dispatchEvent(event);
          }
@@ -382,19 +405,21 @@ package models.map
       /* ########################################### */
       /* ### SQUADRONS COLLECTION EVENT HANDLERS ### */
       /* ########################################### */
-      
-      private function addSquadronsCollectionEventHandlers(squadrons:ListCollectionView) : void {
+
+      private function addSquadronsCollectionEventHandlers(squadrons: ListCollectionView): void {
          squadrons.addEventListener(
-            CollectionEvent.COLLECTION_CHANGE, squadrons_collectionChangeHandler,
+            CollectionEvent.COLLECTION_CHANGE,
+            squadrons_collectionChangeHandler,
             false, int.MIN_VALUE, true
          );
       }
-      
-      private function squadrons_collectionChangeHandler(event:CollectionEvent) : void {
-         if (event.kind != CollectionEventKind.ADD &&
-             event.kind != CollectionEventKind.REMOVE)
+
+      private function squadrons_collectionChangeHandler(event: CollectionEvent): void {
+         if (event.kind != CollectionEventKind.ADD
+                && event.kind != CollectionEventKind.REMOVE) {
             return;
-         for each (var squad:MSquadron in event.items) {
+         }
+         for each (var squad: MSquadron in event.items) {
             switch (event.kind) {
                case CollectionEventKind.ADD:
                   dispatchSquadronEnterEvent(squad);
@@ -472,15 +497,6 @@ package models.map
             event.squadron = squadron;
             dispatchEvent(event);
          }
-      }
-      
-      
-      /* ############### */
-      /* ### HELPERS ### */
-      /* ############### */
-      
-      private function throwAbstractMethodError() : void {
-         throw new IllegalOperationError("This method is abstract");
       }
    }
 }

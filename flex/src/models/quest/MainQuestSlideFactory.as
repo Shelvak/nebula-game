@@ -3,9 +3,12 @@ package models.quest
    import components.quests.slides.CSlide;
    import components.quests.slides.CSlideQuestTextAndImage;
    import components.quests.slides.CSlideQuestTextOnly;
+   import components.quests.slides.CSlideSimple;
 
    import models.quest.slides.MSlide;
    import models.quest.slides.MSlideQuestWithImage;
+   import models.quest.slides.MSlideSimple;
+   import models.quest.slides.SlidesConfiguration;
 
    import utils.SingletonFactory;
 
@@ -22,9 +25,9 @@ package models.quest
       private const _keyToTypeMap:Object = new Object();
 
       public function MainQuestSlideFactory() {
-         _keyToTypeMap[MainQuestSlideKey.BASE_KEY_QUEST]
+         _keyToTypeMap[SlidesConfiguration.KEY_QUEST]
             = MainQuestSlideType.QUEST;
-         _keyToTypeMap[MainQuestSlideKey.BASE_KEY_QUEST_WITH_IMAGE]
+         _keyToTypeMap[SlidesConfiguration.KEY_QUEST_WITH_IMAGE]
             = MainQuestSlideType.QUEST_WITH_IMAGE;
 
          _ffPairs[MainQuestSlideType.SIMPLE] =
@@ -41,11 +44,11 @@ package models.quest
       }
 
       private function SIMPLE_model(key:String, quest:Quest): MSlide {
-         return new MSlide(key, quest);
+         return new MSlideSimple(key, quest);
       }
 
       private function SIMPLE_comp(): CSlide {
-         return new CSlide();
+         return new CSlideSimple();
       }
 
       private function QUEST_model(key:String, quest:Quest): MSlide {
@@ -67,8 +70,8 @@ package models.quest
       private function getSlideType(key:String, keyIsSpecial:Boolean): int {
          if (keyIsSpecial) {
             key = MainQuestSlideKey.isQuestBaseKey(key)
-                      ? MainQuestSlideKey.BASE_KEY_QUEST
-                      : MainQuestSlideKey.BASE_KEY_QUEST_WITH_IMAGE;
+                      ? SlidesConfiguration.KEY_QUEST
+                      : SlidesConfiguration.KEY_QUEST_WITH_IMAGE;
          }
          if (_keyToTypeMap[key] === undefined) {
             return MainQuestSlideType.SIMPLE;

@@ -3,14 +3,15 @@
                xmlns:s="library://ns.adobe.com/flex/spark"
                xmlns:slides="components.quests.slides.*"
                xmlns:components="utils.components.*"
-               xmlns:quests="components.quests.*"
-               creationComplete="this_creationCompleteHandler(event)"
-               modelChange="this_modelChangeHandler(event)">
+               xmlns:quests="components.quests.*">
    <fx:Script>
       <![CDATA[
       import models.quest.slides.MSlideQuestWithImage;
+      import models.quest.slides.SlidesConfiguration;
 
       import mx.events.FlexEvent;
+
+      import utils.assets.AssetNames;
 
 
       [Bindable(event="modelChange")]
@@ -18,19 +19,14 @@
          return MSlideQuestWithImage(model);
       }
 
-      protected override function getBackgroundImageId(): int {
-         return 1;
+      protected override function getBackgroundImageUrl(): String {
+         return AssetNames.getQuestSlideBackgroundImageURL(
+            SlidesConfiguration.KEY_QUEST_WITH_IMAGE
+         );
       }
 
-      private function this_creationCompleteHandler(event: FlexEvent): void {
-         updateImageAndMask();
-      }
-
-      private function this_modelChangeHandler(event: CSlideEvent): void {
-         updateImageAndMask();
-      }
-
-      private function updateImageAndMask(): void {
+      protected override function modelCommit(): void {
+         super.modelCommit();
          if (myModel == null) {
             return;
          }

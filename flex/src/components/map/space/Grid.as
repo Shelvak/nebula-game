@@ -293,7 +293,7 @@ package components.map.space
       private function OrdersController_issuingOrdersChangeHandler(event:OrdersControllerEvent) : void
       {
          doSectorProximitySearch();
-         _map.deselectSelectedObject();
+         _map.deselectSelectedLocation();
       }
       
       
@@ -324,12 +324,13 @@ package components.map.space
                // we don't have sector close enough to the mouse pointer
                return;
             }
-            var staticObject: * = getStaticObjectInSector(locationUnderMouse);
-            if (staticObject) {
-               _map.selectComponent(staticObject);
+            const staticObject: CStaticSpaceObjectsAggregator =
+                     getStaticObjectInSector(locationUnderMouse);
+            if (staticObject != null) {
+               _map.selectLocation(staticObject.currentLocation);
             }
             else {
-               _map.deselectSelectedObject();
+               _map.deselectSelectedLocation();
             }
             issueOrderToLocationUnderMouse();
          }

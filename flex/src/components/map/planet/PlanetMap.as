@@ -1,24 +1,18 @@
 package components.map.planet
 {
    import animation.AnimationTimer;
-   
+
    import components.map.CMap;
-   
+   import components.map.planet.objects.IInteractivePlanetMapObject;
+
    import flash.display.BitmapData;
    import flash.geom.Point;
    import flash.geom.Rectangle;
-   
+
    import models.location.LocationMinimal;
-   import models.map.MapDimensionType;
    import models.planet.MPlanet;
-   import models.tile.Tile;
-   
-   import utils.assets.AssetNames;
-   import components.map.planet.objects.IInteractivePlanetMapObject;
-   
-   
-   
-   
+
+
    /**
     * Map of a planet. Probably the most difficult of all.
     */
@@ -27,20 +21,16 @@ package components.map.planet
       /**
        * Called by <code>NavigationController</code> when planet map screen is shown.
        */
-      public static function screenShowHandler() : void
-      {
+      public static function screenShowHandler(): void {
          AnimationTimer.forPlanet.start();
       }
-      
-      
+
       /**
        * Called by <code>NavigationController</code> when planet map screen is hidden.
        */
-      public static function screenHideHandler() : void
-      {
+      public static function screenHideHandler(): void {
          AnimationTimer.forPlanet.stop();
       }
-      
       
       /**
        * Size of a border made up from tiles around the actual map.
@@ -51,63 +41,49 @@ package components.map.planet
       /* ###################### */
       /* ### INITIALIZATION ### */
       /* ###################### */
-      
-      
-      private var _backgroundRenderer:BackgroundRenderer = null;
-      
-      
+
+      private var _backgroundRenderer: BackgroundRenderer = null;
+
       /**
        * Constructor.
-       * 
+       *
        * @param model a planet to create map for
        */
-      public function PlanetMap(model:MPlanet)
-      {         
+      public function PlanetMap(model: MPlanet) {
          super(model);
-         _coordsTransform = new PlanetMapCoordsTransform(model.width, model.height, BORDER_SIZE);
+         _coordsTransform = new PlanetMapCoordsTransform(
+            model.width, model.height, BORDER_SIZE
+         );
       }
-      
-      
-      public override function cleanup() : void
-      {
-         if (_objectsLayer != null)
-         {
+
+      public override function cleanup(): void {
+         if (_objectsLayer != null) {
             removeElement(_objectsLayer);
             _objectsLayer.cleanup();
             _objectsLayer = null;
          }
-         if (_backgroundRenderer != null)
-         {
+         if (_backgroundRenderer != null) {
             _backgroundRenderer.cleanup();
             _backgroundRenderer = null;
          }
          super.cleanup();
       }
-      
-      
-      public override function getBackground() : BitmapData
-      {
-         if (_backgroundRenderer == null)
-         {
+
+      public override function getBackground(): BitmapData {
+         if (_backgroundRenderer == null) {
             _backgroundRenderer = new BackgroundRenderer(this);
          }
          return _backgroundRenderer.renderBackground();
       }
-      
-      
-      protected override function createObjects() : void
-      {
+
+      protected override function createObjects(): void {
          super.createObjects();
-         
          _objectsLayer = new PlanetObjectsLayer(this, getPlanet());
          addElement(_objectsLayer);
       }
-      
-      
-      protected override function reset() : void
-      {
-         if (_objectsLayer != null)
-         {
+
+      protected override function reset(): void {
+         if (_objectsLayer != null) {
             _objectsLayer.reset();
          }
       }
@@ -117,56 +93,52 @@ package components.map.planet
       /* ### INTERNAL CONTAINERS ### */
       /* ########################### */
       
-      
       /**
        * Container that holds all planet objects.
-       */       
-      private var _objectsLayer:PlanetObjectsLayer = null;
-      
-      
-//      /**
-//       * Clouds layer. Thy dont need fancy depth sorting support found in <code>_objectsLayer</code>
-//       * so they are held in another container.
-//       */
-//      private var _cloudsLayer:CloudsLayer = null;
-      
-      
+       */
+      private var _objectsLayer: PlanetObjectsLayer = null;
+
       /**
        * Typed getter for property <code>model</code>.
        */      
-      public function getPlanet() : MPlanet
-      {
+      public function getPlanet() : MPlanet {
          return MPlanet(model);
       }
-      
-      
-      protected override function selectObjectImpl(object:*, operationCompleteHandler:Function = null) : void
-      {
-         var obj:IInteractivePlanetMapObject = IInteractivePlanetMapObject(_objectsLayer.getObjectByModel(object));
+
+      protected override function selectLocationImpl(location: LocationMinimal,
+                                                     instant: Boolean,
+                                                     openOnSecondCall: Boolean,
+                                                     operationCompleteHandler: Function = null): void {
+         const obj: IInteractivePlanetMapObject =
+                IInteractivePlanetMapObject(
+                   _objectsLayer.getObjectOnTile(location.x, location.y)
+                );
          _objectsLayer.selectObject(obj);
-         viewport.zoomArea(new Rectangle(obj.x, obj.y, obj.width, obj.height), true, operationCompleteHandler);
+         viewport.zoomArea(
+            new Rectangle(obj.x, obj.y, obj.width, obj.height),
+            !instant, operationCompleteHandler
+         );
       }
-      
-      
-      protected override function centerLocation(location:LocationMinimal,
-                                                 operationCompleteHandler:Function) : void
-      {
-         viewport.moveContentTo(_coordsTransform.logicalToReal(new Point(location.x, location.y)),
-                                true, operationCompleteHandler);
+
+      protected override function centerLocation(location: LocationMinimal,
+                                                 instant: Boolean,
+                                                 operationCompleteHandler: Function): void {
+         viewport.moveContentTo(
+            _coordsTransform.logicalToReal(new Point(location.x, location.y)),
+            !instant, operationCompleteHandler
+         );
       }
-      
-      
+
+
       /* #################################################### */
       /* ### LOGICAL <-> REAL COORDINATES TRANSFORMATION  ### */
       /* #################################################### */
-      
-      
-      private var _coordsTransform:PlanetMapCoordsTransform = null;
+
+      private var _coordsTransform: PlanetMapCoordsTransform = null;
       /**
        * Implementation of <code>IMapCoordsTransform</code> used by this planet map.
        */
-      public function get coordsTransform() : PlanetMapCoordsTransform
-      {
+      public function get coordsTransform(): PlanetMapCoordsTransform {
          return _coordsTransform;
       }
    }
