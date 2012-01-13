@@ -50,6 +50,14 @@ package controllers.players
        * @eventType players|show_profile
        */ 
       public static const SHOW_PROFILE:String = "players|show_profile";
+
+
+      /**
+       * Requests player vps multiplier to the given player
+       *
+       * @eventType players|battle_vps_multiplier
+       */
+      public static const BATTLE_VPS_MULTIPLIER:String = "players|battle_vps_multiplier";
       
       
       /**

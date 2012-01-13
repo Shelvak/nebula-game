@@ -369,6 +369,7 @@ package controllers.startup
          bindPair(PlayersCommand.RATINGS, new controllers.players.actions.RatingsAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
          bindPair(PlayersCommand.SHOW_PROFILE, new ShowProfileAction());
+         bindPair(PlayersCommand.BATTLE_VPS_MULTIPLIER, new BattleVpsMultiplierAction());
          bindPair(PlayersCommand.CONVERT_CREDS, new ConvertCredsAction());
          bindPair(PlayersCommand.EDIT, new controllers.players.actions.EditAction());
          bindPair(PlayersCommand.VIP, new VipAction());

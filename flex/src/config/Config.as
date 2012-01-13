@@ -172,6 +172,11 @@ package config
       /* ############################ */
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
+
+      public static function getVPZones(): Array
+      {
+         return getValue("combat.battle.vpZones");
+      }
       
       public static function getMaxPopulation(): int
       {
@@ -425,7 +430,19 @@ package config
       /* ############################ */
       /* ### UNITS CONFIG GETTERS ### */
       /* ############################ */
-      
+
+
+      /* For 1 dmg point to this type of unit */
+      public static function getUnitVictoryPointsBonus(type: String): Number
+      {
+         return getUnitProperty(type, 'vpsOnDamage');
+      }
+
+      /* Const of creds for killing one unit */
+      public static function getUnitCredsBonus(type: String): Number
+      {
+         return getUnitProperty(type, 'credsForKilling');
+      }
       
       public static function getResourceVolume(type: String) : Number
       {
