@@ -26,8 +26,8 @@
     <Unit_Zeus value="Zeus" />
     <Unit_Zeus-p8d value="{0 one[Zeus] many[? Zeuses]}" />
         
-    <Unit_MDH value="MDH" />
-    <Unit_MDH-p8d value="{0 one[MDH] many[? MDH's]}" />
+    <Unit_Mdh value="MDH" />
+    <Unit_Mdh-p8d value="{0 one[MDH] many[? MDH's]}" />
 
     <Unit_MobileVulcan value="Vulcan-M" />
     <Unit_MobileVulcan-p8d value="{0 one[Vulcan-M] many[? Vulcan-M's]}" />
@@ -250,6 +250,7 @@
     <Technology_BuildingRepair value="Repair Drones" />
     <Technology_TurretArmor value="Structural Linking" />
     <Technology_TurretDamage value="Particle Chargers" />
+    <Technology_Mdh value="Mobile Deployable Headquarters" />
 
     <!-- Other stuff -->
 
@@ -2192,7 +2193,7 @@
       <p>Welcome, Commander.</p>
       
       <p>
-        We have landed in this planet in our 
+        We have landed in this planet with our
         [reference:Buildings/Mothership.name] and it seems we are not alone. We 
         have set up our defenses but they are draining more energy than our 
         generators can produce. This cannot continue for long!
@@ -2209,7 +2210,7 @@
       <p>I see you did well, Commander.</p>
       
       <p>
-        Our energy levels are now normal. However it seems we are stuck here. 
+        Our energy levels are now normal. However, it seems we are stuck here.
         At least for now. 
       </p>
       
@@ -2226,7 +2227,7 @@
     <about.30>
       <p>Commander,</p>
       <p>
-        It seems that our extractors are working properly. However we need more 
+        It seems that our extractors are working properly. However, we need more
         resources to keep our growth steady. Upgrade extractors so that they
         fulfill our needs. 
       </p>
@@ -2236,8 +2237,9 @@
     <about.40>
       <p>Commander,</p>
       <p>
-         Resource extraction is our top priority! Build even more MEX'es so that
-         extraction rates become steady for sure.
+         Resource extraction is our top priority! Build even more
+         [obj:2:Building_MetalExtractor] so that extraction rates become
+         steady for sure.
       </p>
     </about.40>
     
@@ -2262,8 +2264,8 @@
       <p>Commander.</p>
       <p>
         Construction of your [reference:Buildings/Barracks.name] has been complete as
-        ordered. We now must train more troops to defend ourselves. Go to the barracks
-        and order training of troopers.
+        ordered. We now must train more troops to defend ourselves. Go to the
+        [obj:1:Building_Barracks::dc] and order training of [obj:2:Unit_Trooper::dc].
       </p>
     </about.60>
     
@@ -2276,9 +2278,10 @@
         kind of exercise. Even better, alien wreckages will replenish our supplies.
       </p>
       <p>
-        Intelligence estimates that an alien Gnat is of the same strength as our
-        Trooper. I suggest sending a few extra troops to the battle so that we
-        would gain an advantage over the alien forces.
+        Intelligence estimates that an alien [obj:1:Unit_Gnat] is of the same
+        strength as our [obj:1:Unit_Trooper]. I suggest sending a few extra
+        troops to the battle so that we would gain an advantage over the alien
+        forces.
       </p>
     </about.70>
     
@@ -2299,7 +2302,8 @@
       <p>
         My recommendation? You should order construction of a
         [reference:Buildings/ResearchCenter.name] in this planet at once.
-        After all, one or two tricks from the science fun bag won't hurt us, will it? 
+        After all, one or two tricks from the science fun bag won't hurt us,
+        will it?
       </p>
     </about.80>
 
@@ -2308,8 +2312,9 @@
       <p>Good day, Commander!</p>
       <p>
         Our scouts located interesting object nearby. It seems to be remains of 
-        some giant creature. Unfortunately they do no have the knowledge for making
-        a fair assessment of the finding and only reported that they had found "some bones".
+        some giant creature. Unfortunately, they do no have the knowledge for
+        making a fair assessment of the finding and only reported that they had
+        found "some bones".
       </p>
       <p>
         Still it would be best if you would send team of explorers to check it 
@@ -2326,7 +2331,7 @@
         our researchers were working on the samples for quite some time.
       </p>
       <p>
-        It seems that those building are full of zetium, a new crystal material. 
+        It seems that those buildings are full of zetium, a new crystal material.
         Looks like it is very useful and can be used in many ways, even 
         interstellar space travel. We need those crystals! 
       </p>
@@ -2347,7 +2352,8 @@
       </p>
       <p>
         Of course we must get rid of those aliens occupying zetium fields.
-        Assemble a strong army and attack the alien buildings.
+        Assemble a strong army and attack the alien buildings if you haven't
+        done it yet.
       </p>
     </about.110>
     
@@ -2392,8 +2398,8 @@
     <about.150>
       <p>Hello, Commander.</p>
       <p>In different times we need different things and it's not always
-      easy to plan ahead. Research a market so that we could trade with
-      other inhabitants of this galaxy.</p>
+      easy to plan ahead. Research a [obj:1:Technology_Market] technology so
+      that we could trade with other inhabitants of this galaxy.</p>
       <p>After all they might be in need of something we have surplus and
       vice versa. Why shouldn't we help each other? We could even make
       a friend or two in this way.</p>
@@ -2404,7 +2410,7 @@
       <p>Commander.</p>
       <p>We need more space for our people. Soon enough we won't have any
       rooms left.</p>
-      <p>Commence building of living pods immediately!</p>
+      <p>Commence building of [obj:2:Building_Housing::dc] immediately!</p>
     </about.160>
     
     <title.170 value="Reaching To The Stars" />
@@ -2425,10 +2431,10 @@
         Space factory project and specifications of technologies to be used
         have already been handed over to builders. Our hard-working colonists
         are eager to grab their tools and begin the work. Order construction of
-        a space factory in this planet.
+        a [obj:1:Building_SpaceFactory::dc] in this planet.
       </p>
       <p>
-        Pay attention to those grey and level fields. Tey seem to be a perfect
+        Pay attention to those grey and level fields. They seem to be a perfect
         place for construction. If we build the factory there, work will be
         completed much sooner.
       </p>
@@ -2448,7 +2454,7 @@
       <p>
         We need combat ships to counter them. Go to your 
         [reference:Buildings/SpaceFactory.name] and order construction of your first
-        Crow class ship. 
+        [obj:1:Unit_Crow] class ship.
       </p>
     </about.190>
     
@@ -2468,7 +2474,7 @@
     <about.210>
       <p>Commander.</p>
       <p>
-        Now that we have mastered space travel we should start expanding to 
+        Now that we have mastered space travel we should start expanding to the
         other planets. Our sensors indicate there is a nearby planet that can
         sustain life. However it is guarded by alien ships. 
       </p>
@@ -2480,7 +2486,7 @@
     
     <title.220 value="Economy of the Words" />
     <about.220>
-      <p>Greetings, Commander,</p>
+      <p>Greetings, Commander.</p>
       <p>
         Let me congratulate you on taking ownership of the second planet.
         We are now officially a multi-planetary civilization!
@@ -2509,7 +2515,8 @@
       <p>Hello, Commander.</p>
       <p>
         As we have built our [reference:Buildings/SpaceFactory.name] we should 
-        train our pilots a bit! As an easy first task go pick on some Diracs.
+        train our pilots a bit! As an easy first task go pick on some
+        [obj:2:Unit_Dirac].
       </p>
     </about.240>
     
@@ -2558,13 +2565,15 @@
     <about.280>
       <p>Greetings, Commander.</p>
       <p>
-         Our radar have been completed and we now see that other solar systems
-         with unoccupied planets exist. Our strategists say that one more planet
-         would be of a great use for us. However, to colonise it we need some
-         special equipment that can only be produced in a ground factory.
+         Our [obj:1:Building_Radar::dc] have been completed and we now see that
+         other solar systems with unoccupied planets exist. Our strategists say
+         that one more planet would be of a great use for us. However, to
+         colonise it we need some special equipment that can only be produced
+         in a [obj:1:Building_GroundFactory::dc].
       </p>
       <p>
-        So do not hesitate. Begin researching Ground Factory immediately.
+        So do not hesitate. Begin researching [obj:1:Technology_GroundFactory]
+        technology immediately.
       </p>
     </about.280>
     
@@ -2572,15 +2581,16 @@
     <about.290>
       <p>Commander.</p>
       <p>
-        We already have a ground factory. We now require Mobile Deployable
-        Headquarters technology, or MDH for short. The MDH had already
-        been deployed in our second planet once we arrived there. However that
-        probably is only a fortunate coincidence.
+        We already have a ground factory. We now require [obj:1:Technology_Mdh]
+        technology, or [obj:1:Unit_Mdh] for short. The [obj:1:Unit_Mdh] had
+        already been deployed in our second planet once we arrived there.
+        However that probably is only a fortunate coincidence.
       </p>
       <p>
         Since the travel will take a great deal of time it would be
-        unpleasant if and MDH wasn't already on the planet. So our own unit will
-        come in handy since we want to colonise that third planet.
+        unpleasant if and [obj:1:Unit_Mdh] wasn't already on the planet.
+        So our own unit will come in handy since we want to colonise that
+        third planet.
       </p>
     </about.290>
     
@@ -2588,14 +2598,15 @@
     <about.300>
       <p>Commander.</p>
       <p>
-        The MDH technology is now at our disposal. The only thing left for us to do
-        is fly to another solar systems and take control of a third planet.
+        The [obj:1:Technology_Mdh] technology is now at our disposal. The only
+        thing left for us to do is fly to another solar system and take control
+        of a third planet.
       </p>
       <p>
-        Use your ground factory to build an MDH unit. Load that unit to a mule class
-        ship and send it to a third planet along with an escort. Do not forget to
-        bring along some ground troops - the planet will probably be guarded by
-        alien forces.
+        Use your [obj:1:Building_GroundFactory::dc] to build an [obj:1:Unit_Mdh]
+        unit. Load that unit to a [obj:1:Unit_Mule] class ship and send it to a
+        third planet along with an escort. Do not forget to bring along some
+        ground troops - the planet will probably be guarded by alien forces.
       </p>
       <p>Good luck!</p>
     </about.300>
@@ -2638,8 +2649,8 @@
       </p>
       <p>
         Contact other commanders and become a member of an alliance. You can research
-        Alliance technology and create your own alliance or you can expect someone to
-        invite you to an already existing alliance.
+        [obj:1:Technology_Alliances] technology and create your own alliance or
+        you can expect someone to invite you to an already existing alliance.
       </p>
     </about.330>
     
@@ -2876,8 +2887,8 @@
       <p>Commander.</p>
       <p>
         People who have not been lucky enough to thrive and prosper under your 
-        ruling do not understand the meaning of those words. But do. We are
-         grateful for that, Commander.
+        ruling do not understand the meaning of those words. But we do. We are
+        grateful for that, Commander.
       </p>
       <p>I am speaking on behalf of all the people of our colonies.</p>
     </about.10190>
@@ -2905,7 +2916,7 @@
     <ScienceSideQuest.about>
       <p>Commander.</p>
       <p>
-        Inventions! Progress! Science is the key for our advancement. Eenemies
+        Inventions! Progress! Science is the key for our advancement. Enemies
         may build more fleets but we will build better ones! Invest into
         research and you'll see that it is worth its price.
       </p>
@@ -3056,8 +3067,7 @@
       <p>
         We need to upgrade our [reference:Buildings/ResearchCenter.name]. 
         Beware that while upgrading you won't be able to research any 
-        technologies. However you will still be able to send exploration 
-        missions. 
+        technologies.
       </p>
       <p>It is up to you, Commander.</p>
     </about.10420>
@@ -3861,7 +3871,7 @@
       <p>[reference:UnitUpgrade]</p>
     </Zeus.about>
 
-    <Mdh.name ref="Units/Mdh.name" />
+    <Mdh.name ref="Objects/Technology_Mdh" />
     <Mdh.about ref="Units/Mdh.common" />
 
     <Crow.name ref="Units/Crow.name" />
@@ -4446,7 +4456,7 @@
       and cannot target ground units.</p>
     </Zeus.about>
 
-    <Mdh.name ref="Objects/Unit_MDH" />
+    <Mdh.name ref="Objects/Unit_Mdh" />
     <Mdh.common>
       <p>
         Mobile Deployable Headquarters (MDH) is used as first and primary base 

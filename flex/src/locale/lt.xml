@@ -6,6 +6,7 @@
     <Unit_Trooper value="Desantininkas" />
     <Unit_Trooper-what value="{0 one[desantininką] 1sts[? desantininką] tens[? desantininkų] many[? desantininkus]}" />
     <Unit_Trooper-whos value="{0 one[desantininko] 1sts[? desantininko] tens[? desantininkų] many[? desantininkų]}" />
+    <Unit_Trooper-whom value="{0 one[desantininku] 1sts[? desantininku] tens[? desantininkų] many[? desantininkais]}" />
 
     <Unit_Shocker value="Mechas" />
     <Unit_Shocker-what value="{0 one[mechą] 1sts[? mechą] tens[? mechų] many[? mechus]}" />
@@ -31,9 +32,9 @@
     <Unit_Zeus-what value="{0 one[dzeusą] 1sts[? dzeusą] tens[? dzeusų] many[? dzeusus]}" />
     <Unit_Zeus-whos value="{0 one[dzeuso] 1sts[? dzeuso] tens[? dzeusų] many[? dzeusų]}" />
         
-    <Unit_MDH value="Mobilus štabas" />
-    <Unit_MDH-what value="{0 one[mobilų štabą] 1sts[? mobilų štabą] tens[? mobilių štabų] many[? mobilius štabus]}" />
-    <Unit_MDH-whos value="{0 one[mobilaus štabo] 1sts[? mobilaus štabo] tens[? mobilių štabų] many[? mobilių štabų]}" />
+    <Unit_Mdh value="Mobilus štabas" />
+    <Unit_Mdh-what value="{0 one[mobilų štabą] 1sts[? mobilų štabą] tens[? mobilių štabų] many[? mobilius štabus]}" />
+    <Unit_Mdh-whos value="{0 one[mobilaus štabo] 1sts[? mobilaus štabo] tens[? mobilių štabų] many[? mobilių štabų]}" />
 
     <Unit_MobileVulcan value="Vulkanas-M" />
     <Unit_MobileVulcan-what value="{0 one[vulkaną-M] 1sts[? vulkaną-M] tens[? vulkanų-M] many[? vulkanus-M]}" />
@@ -79,7 +80,7 @@
     
     <!-- NPC žemės unitai -->
         
-    <Unit_Gnat value="Gnatas" />
+    <Unit_Gnat value="{0 one[Gnatas] 1sts[Gnatas] tens[Gnatų] many[Gnatai]}" />
     <Unit_Gnat-what value="{0 one[gnatą] 1sts[? gnatą] tens[? gnatų] many[? gnatus]}" />
     <Unit_Gnat-whos value="{0 one[gnato] 1sts[? gnato] tens[? gnatų] many[? gnatų]}" />
 
@@ -260,6 +261,7 @@
     <Building_GroundFactory value="Tankų gamykla" />
     <Building_GroundFactory-what value="{0 one[tankų gamyklą] 1sts[? tankų gamyklą] tens[? tankų gamyklų] many[? tankų gamyklas]}" />
     <Building_GroundFactory-whos value="{0 one[tankų gamyklos] 1sts[? tankų gamyklos] tens[? tankų gamyklų] many[? tankų gamyklų]}" />
+    <Building_GroundFactory-where value="{0 one[tankų gamykloje] 1sts[? tankų gamykloje] tens[? tankų gamyklų] many[? tankų gamyklose]}" />
     
     <Building_SpaceFactory value="Laivų gamykla" />
     <Building_SpaceFactory-what value="{0 one[laivų gamyklą] 1sts[? laivų gamyklą] tens[? laivų gamyklų] many[? laivų gamyklas]}" />
@@ -282,6 +284,7 @@
     <Building_ResearchCenter value="Tyrimų centras" />
     <Building_ResearchCenter-what value="{0 one[tyrimų centrą] 1sts[? tyrimų centrą] tens[? tyrimų centrų] many[? tyrimų centrus]}" />
     <Building_ResearchCenter-whos value="{0 one[tyrimų centro] 1sts[? tyrimų centro] tens[? tyrimų centrų] many[? tyrimų centrų]}" />
+    <Building_ResearchCenter-where value="{0 one[tyrimų centre] 1sts[? tyrimų centre] tens[? tyrimų centrų] many[? tyrimų centruose]}" />
     
     <Building_Housing value="Gyv. bokštai" />
     <Building_Housing-what value="{0 one[gyv. bokštą] 1sts[? gyv. bokštą] tens[? gyv. bokštų] many[? gyv. bokštus]}" />
@@ -337,6 +340,10 @@
     <Technology_TurretArmor-whos value="Struktūrinio surišimo" />
     <Technology_TurretDamage value="Dalelių greitintuvai" />
     <Technology_TurretDamage-whos value="Dalelių greitintuvų" />
+    <Technology_HealingCenter value="Techninė ligoninė" />
+    <Technology_HealingCenter-whos value="Techninės ligoninės" />
+    <Technology_Mdh value="Mobilus štabas" />
+    <Technology_Mdh-whos value="Mobilaus štabo" />
 
     <!-- Kita -->
     
@@ -1022,11 +1029,11 @@
     <Headquarters.name ref="Objects/Building_Headquarters" />
     <Headquarters.about>
       <p>
-        Šis pastatas transformuojasi ir pasistato iš Mobilaus Štabo. Tai 
+        Šis pastatas transformuojasi ir pasistato iš [obj:1:Unit_Mdh:whos]. Tai
         pirmasis naujakurių prieglobstis naujoje kolonijoje. Jis turi šiokias 
         tokias metalo ir energijos saugyklas, bei nedidelius generatorius, kurie
-        aprūpina šiais dviem resursais. Štabas - tai sėkla, iš kurios užauga
-        gyvuojanti kolonija.
+        aprūpina šiais dviem resursais. [reference:Objects/Building_Headquarters]
+        - tai sėkla, iš kurios užauga gyvuojanti kolonija.
       </p>
       <p>Štabas stato kitus pastatus.</p>
     </Headquarters.about>
@@ -1092,7 +1099,7 @@
     <GroundFactory.about>
       <p>Tai pastatas, leidžiantis statyti tankus ir kitus aukšto lygio žemės
       karius. Taip pat tau prireiks šio pastato norint pasistatyti 
-      mobilųjį štabą, kuris leidžia kolonizuoti kitas planetas.</p>
+      [obj:1:Unit_Mdh:what:dc], kuris leidžia kolonizuoti kitas planetas.</p>
     </GroundFactory.about>
 
     <SpaceFactory.name ref="Objects/Building_SpaceFactory" />
@@ -2297,11 +2304,10 @@
       <p>Sveiki atvykę, Komandore.</p>
 
       <p>
-        Mes sėkmingai nutupdėme motininį laivą šioje planetoje ir remiantis
-        pirminiais žvalgybos duomenimis, čia esame ne vieni. Jau įsikūrėme,
-        tačiau mums reikia gerokai daugiau energijos, nei
-        jos pagamina mūsų generatoriai. Tokiomis sąlygomis ilgai čia
-        netversime!
+        Mes sėkmingai nutupdėme [obj:1:Building_Mothership:what:dc] šioje
+        planetoje ir remiantis pirminiais žvalgybos duomenimis, čia esame ne
+        vieni. Jau įsikūrėme, tačiau mums reikia gerokai daugiau energijos, nei
+        jos pagamina mūsų generatoriai. Tokiomis sąlygomis ilgai čia netversime!
       </p>
 
       <p>Privalome pastatyti vėjo jėgainę, kad patenkintume savo energetinius
@@ -2316,9 +2322,9 @@
       <p>Mūsų energijos tiekimas normalizavosi, bet panašu, kad šioje 
       planetoje įstrigome ilgam.</p>
 
-      <p>Yra ir gerų naujienų. Netoliese aptikome metalų rūdos sankaupas. 
-      Įsakykite įrengti MEX'ą kurio dėka išgausime mums taip reikalingo 
-      metalo.</p>
+      <p>Yra ir gerų naujienų. Netoliese aptikome metalo rūdos sankaupas.
+      Įsakykite įrengti [obj:1:Building_MetalExtractor:what], kurio dėka
+      išgausime mums taip reikalingo metalo.</p>
 
       <p>Mūsų ateitis jūsų rankose, Komandore.</p>
     </about.20>
@@ -2356,7 +2362,7 @@
         tik sienų tvirtumu.
       </p>
 
-      <p>Mums reikia karių! Įsakykite įrengti kareivines!</p>
+      <p>Mums reikia karių! Įsakykite įrengti [obj:1:Building_Barracks:what:dc]!</p>
 
       <p>Mes privalome užtikrinti savo žmonių saugumą.</p>
     </about.50>
@@ -2366,8 +2372,9 @@
     <p>Komandore.</p>
 
     <p>
-      Jūsų įsakymu įrengėme kareivines. Dabar privalome parengti daugiau karių.
-      Užsukite į kareivines ir įsakykite pradėti desantininkų mokymus.
+      Jūsų įsakymu įrengėme [obj:1:Building_Barracks:what:dc]. Dabar privalome
+      parengti daugiau karių. Užsukite į [obj:1:Building_Barracks:what:dc] ir
+      įsakykite pradėti [obj:2:Unit_Trooper:whos:dc] mokymus.
     </p>
     </about.60>
 
@@ -2380,8 +2387,9 @@
       sunaikintų ateivių nuolaužų papildysime savo resursų saugyklas.
     </p>
     <p>
-      Mūsų žvalgyba sako, kad ateivių gnatai stiprumu yra apylygiai su mūsų
-      desantininkais. Siūlau prieš puolant turėti kelių karių persvarą.
+      Mūsų žvalgyba sako, kad ateivių [obj:2:Unit_Gnat::dc] stiprumu yra
+      apylygiai su mūsų [obj:2:Unit_Trooper:whom:dc]. Siūlau prieš puolant
+      turėti kelių karių persvarą.
     </p>
     </about.70>
 
@@ -2396,15 +2404,15 @@
       Komandore?
     </p>
     <p>
-      Tokios nuostabios dienos proga, būtų puiku pakloti pamatus tolimesniai
-      mūsų raidai. Tyrimų centras būtų puiki pradžia. Mes net radome grupę
-      savanorių, kurie mielai taptų tyrėjais, o reikalui esant ir tyrimų
-      objektais. Neverskime jų laukti.
+      Tokios nuostabios dienos proga, būtų puiku pakloti pamatus tolimesnei
+      mūsų raidai. [obj:1:Building_ResearchCenter] būtų puiki pradžia. Mes net
+      radome grupę savanorių, kurie mielai taptų tyrėjais, o reikalui esant ir
+      tyrimų objektais. Neverskime jų laukti.
     </p>
     <p>
-      Mano rekomendacija — tyrimų centrą šioje planetoje turime įrengti
-      nedelsiant. Galų gale vienas kitas mokslinis triukas rankovėje mums
-      tikrai nepakenks!
+      Mano rekomendacija — [obj:1:Building_ResearchCenter:what:dc] šioje
+      planetoje turime įrengti nedelsiant. Galų gale, vienas kitas mokslinis
+      triukas rankovėje mums tikrai nepakenks!
     </p>
     </about.80>
 
@@ -2434,7 +2442,7 @@
       mėginius, jau kuris laikas analizuoja proto bokštai iš tyrimų centro.
     </p>
     <p>
-      Jų atąskaitose teigiama, kad mislinguose ateivių pastatuose išgaunama
+      Jų atąskaitose teigiama, kad mįslinguose ateivių pastatuose išgaunama
       nauja, kristalizuota medžiaga — zetiumas. Panašu, kad ateiviai rado
       gausybę praktiškų šios medžiagos panaudojimo būdų. Atrasime ir mes.
       Mums būtina pradėti šių kristalų gavybą!
@@ -2454,7 +2462,7 @@
     </p>
     <p>
       Žinoma prieš tai mums teks atsiimti zetiumo klodus iš ateivių. Suburkite
-      kariuomenę ir pulkite ateiviškuosius pastatus!
+      kariuomenę ir pulkite ateiviškuosius pastatus, jeigu to dar nepadarėte!
     </p>
     </about.110>
 
@@ -2463,8 +2471,8 @@
       <p>Komandore!</p>
       <p>
         Mūsų kariai sužeisti. Mums labai praverstų būdas juos gydyti! Liepkite
-        mokslininkams išrasti [obj:1:HealingCenter:what:dc] technologiją, o ją
-        turint - nedelsiant pradėkite jo statybas!
+        mokslininkams išrasti [obj:1:Technology_HealingCenter:whos:dc]
+        technologiją, o ją turint - nedelsiant pradėkite jo statybas!
       </p>
     </about.120>
 
@@ -2497,9 +2505,10 @@
     <title.150 value="Poreikių patenkinimas" />
     <about.150>
     <p>Sveiki, Komandore.</p>
-    <p>Skirtingais laikais mums reikia skirtingų dalykų, ir deja nei vienas
-      iš mūsų negali tobulai numatyti ateities. Išraskite ir pastatykite turgų
-      jog galėtume vykdyti mainus su kitais šios galaktikos gyventojais.</p>
+    <p>Skirtingais laikais mums reikia skirtingų dalykų. Deja, bet nei vienas
+      iš mūsų negali tobulai numatyti ateities. Išraskite ir pastatykite
+      [obj:1:Building_Market:what:dc], jog galėtume vykdyti mainus su kitais
+      šios galaktikos gyventojais.</p>
     <p>Juk jiems gali reikėti to, ko mes turime, ir atvirkščiai. Kodėl mes
       neturėtume padėti vieni kitiems? Galbūt besimainydami netgi susirasim
       ir vieną kitą draugą? Kas žino...</p>
@@ -2510,7 +2519,7 @@
       <p>Komandore,</p>
       <p>Mūsų žmonėms reikia daugiau vietos! Dar truputis ir nebus kur
         kojos padėti!</p>
-      <p>Nedelsiant pradėkite gyvenamųjų bokštų statybas.</p>
+      <p>Nedelsiant pradėkite [obj:2:Building_Housing:whos:dc] statybas.</p>
     </about.160>
 
     <title.170 value="Kelias į žvaigždes" />
@@ -2519,19 +2528,20 @@
     <p>
       Mokslininkai sugalvojo kaip panaudoti zetiumą kosminių kelionių metu.
       Šią nuostabią dieną mes vėl trauksime žvaigždžių link! Įsakykite pradėti
-      laivų statyklos projektą.
+      [obj:1:Technology_SpaceFactory:whos:dc] projektą.
     </p>
-    <p>Kad pastatyti statyklą, mums būtini brėžiniai, tad nedelskite!</p>
+    <p>Kad pastatyti gamyklą, mums būtini brėžiniai, tad nedelskite!</p>
     </about.170>
 
     <title.180 value="Kad kelias nedulkėtų..." />
     <about.180>
     <p>Komandore!</p>
     <p>
-      Laivų statyklos projektas ir technologijų aprašai jau perduoti
-      statybininkų brigadoms. Ne patys iškiliausi, bet tikrai darbštūs
-      kolonistai nekantrauja griebti suvirinimo aparatus ir pradėti darbą!
-      Įsakykite pradėti laivų statyklos statybas šioje planetoje.
+      [obj:1:Technology_SpaceFactory:whos] projektas ir technologijų aprašai
+      jau perduoti statybininkų brigadoms. Ne patys iškiliausi, bet tikrai
+      darbštūs kolonistai nekantrauja griebti suvirinimo aparatus ir pradėti
+      darbą! Įsakykite pradėti [obj:1:Building_SpaceFactory:whos:dc] statybas
+      šioje planetoje.
     </p>
     <p>
       Atkeipkite dėmesį į tuos pilkus, lygius plotus. Panašu, kad tai
@@ -2543,21 +2553,23 @@
     <title.190 value="Kosmoso grėsmės" />
     <about.190>
     <p>Sveiki, Komandore.</p>
-    <p>Štai, mūsų laivų gamykla jau stovi. Galėtume kilti į kosmosą, tačiau
-      mums reikia laivų! Žinome mes galėtume naudotis mulo klasės laivais,
-      tačiau jų pagrindinė paskirtis - gabenti krovinius. Nors jie ir turi
-      stiprius šarvus, tačiau beveik neturi puolamosios galios.</p>
+    <p>Štai, mūsų [reference:Objects/Building_SpaceFactory] jau stovi. Galėtume
+      kilti į kosmosą, tačiau mums reikia laivų! Žinoma, mes galėtume naudotis
+      [obj:1:Unit_Mule:whos:dc] klasės laivais, tačiau jų pagrindinė paskirtis -
+      gabenti krovinius. Nors jie ir turi stiprius šarvus, tačiau beveik neturi
+      puolamosios galios.</p>
     <p>Ne, tam, kad įveiktumėme ateivių laivus, stovinčius prie asteroidų ir
       planetų, mums prireiks kovinių laivų! Keliaukite į savo laivų gamyklą ir
-      liepkite pradėti savo pirmojo varno klasės laivo gamybą!</p>
+      liepkite pradėti savo pirmojo [obj:1:Unit_Crow:whos:dc] klasės laivo
+      gamybą!</p>
     </about.190>
 
     <title.200 value="Atskleistas šnipas" />
     <about.200>
       <p>Komandore!</p>
       <p>
-        Skaneris parodė, jog virš mūsų planetos visą šį laiką kybojo ateivių
-        laivas! Jis ko gero mus intensyviai šnipinėja!
+        Skeneris parodė, jog virš mūsų planetos visą šį laiką kybojo ateivių
+        laivas! Jis, ko gero, mus intensyviai šnipinėja!
       </p>
       <p>
         Surinkite flotilę ir pakilkite į planetos orbitą - numuškite ateivių
@@ -2587,15 +2599,15 @@
     <about.220>
       <p>Sveiki, Komandore,</p>
       <p>
-        Sveikinu užėmus antrają planetą. Mes ką tik oficialiai tapome
+        Sveikinu užėmus antrąją planetą. Mes ką tik oficialiai tapome
         daugiaplanetine civilizacija! Žinoma antrąją planetą dar reikia įrengti
-        ir mūsų čia laukia dar daug darbų.
+        ir mūsų čia laukia daug darbų.
       </p>
       <p>
         Vienas iš pirmųjų - įkurti antrosios planetos ekonominę bazę. Turime
         pastatyti resursų kasyklas, jog galėtume toliau plėtoti savo koloniją.
       </p>
-      <p>Tad negaiškime ir kibkime į darbą.</p>
+      <p>Tad negaiškime laiko ir kibkime į darbą.</p>
     </about.220>
 
     <title.230 value="Mineralų skraidinimas" />
@@ -2610,33 +2622,35 @@
       nuolaužas mūsų planetoje galėsime panaudoti kaip resursus!
     </p>
     <p>
-      O tam, kad galėtume juos persigabenti, mums reikės mulo klasės laivo.
-      Taigi, pirmyn, susirinkime tas nuolaužas! Pasistatykime mūsų pirmajį
-      mulo klasės laiva!
+      O tam, kad galėtume juos persigabenti, mums reikės
+      [obj:1:Unit_Mule:whos:dc] klasės laivo. Taigi, pirmyn, susirinkime tas
+      nuolaužas! Pasistatykime mūsų pirmajį [obj:1:Unit_Mule:whos:dc] klasės
+      laiva!
     </p>
     </about.230>
 
     <title.240 value="Išvalymas" />
     <about.240>
     <p>Sveiki, Komandore.</p>
-    <p>Kadangi jau turime funkcionuojančia laivų gamyklą, galime truputi
-      patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos dirakų. Tai
-      neturėtų jiems būti sunki užduotis.</p>
+    <p>Kadangi jau turime funkcionuojančią laivų gamyklą, galime truputi
+      patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos
+      [obj:2:Unit_Dirac:what:dc]. Mūsų laivynui tai neturėtų būti sunki
+      užduotis.</p>
     </about.240>
 
     <title.250 value="Verdantys vandenys" />
     <about.250>
     <p>Komandore,</p>
-    <p>jūsų aktyvumas šiame regione privertė ateivius būti atsargesniais.
-      Sklinda gandai, kad jie netgi planuoja atsakomajį smūgį! Sunaikinkite jų
-      galinguosius toro klasės laivus, parodykite jiems kas valdo šią
-      galaktiką!</p>
+    <p>Jūsų aktyvumas šiame regione privertė ateivius būti atsargesniais.
+      Sklinda gandai, kad jie netgi planuoja atsakomąjį smūgį! Sunaikinkite jų
+      galinguosius [obj:1:Unit_Thor:whos:dc] klasės laivus, parodykite jiems
+      kas valdo šią galaktiką!</p>
     </about.250>
 
     <title.260 value="Ugnimi prieš ugnį" />
     <about.260>
     <p>Komandore,</p>
-    <p>panašu kad tie ateiviai yra beatodariški fanatikai. Jūs privalote
+    <p>panašu, kad tie ateiviai yra beatodairiški fanatikai. Jūs privalote
       smogti triuškinantį smūgį į jų stipriausius laivus, jog parodytumėte savo
       galia! Tai vienintėlis būdas juos sustabdyti!</p>
     </about.260>
@@ -2646,39 +2660,43 @@
     <p>Komandore!</p>
     <p>Naujoje mūsų planetoje turime nemažai laisvos vietos. Manau, kad po to,
       kai joje saugiai įsikursime, reikėtų pradėti tyrinėti mūsų galaktiką.</p>
-    <p>Pastatykite radarą, kuris atvers mums dalelę galaktikos žemėlapio. Jūs
-      matysite kitų žaidėjų saulės sistemas, planetas ir jų laivus.</p>
-    <p>Beje, atminkite, kad radaras reikalauja nemažai energijos. Jeigu
-      neužtikrinsite pakankamos jos gavybos, jūsų energijos ištekliai bus kaip
-      mat ištuštinti. O jeigu jam pasibaigs energija - jis paprasčiausiai
-      nebeveiks.</p>
+    <p>Pastatykite [obj:1:Building_Radar:what:dc], kuris atvers mums dalelę
+      galaktikos žemėlapio. Jūs matysite kitų žaidėjų saulės sistemas, planetas
+      ir jų laivus.</p>
+    <p>Beje, atminkite, kad [reference:Objects/Building_Radar] reikalauja
+      nemažai energijos. Jeigu neužtikrinsite pakankamos jos gavybos, jūsų
+      energijos ištekliai bus kaip mat ištuštinti. O jeigu jam pasibaigs
+      energija - jis paprasčiausiai nebeveiks.</p>
     </about.270>
 
     <title.280 value="Techninis progresas" />
     <about.280>
       <p>Sveiki, Komandore.</p>
       <p>
-        Pastačius radarą pamatėme, jog už mūsų saulės sistemos ribų egzistuoja
-        kitos saulės sistemos su laisvomis planetomis. Mūsų analitikai sako, jog
-        mums labai praverstų dar viena planeta. O tam, jog ją kolonizuotume,
-        mums reikia tam tikrų įrenginių, kuriuos galime pagaminti tik tankų
-        gamykloje.
+        Pastačius [obj:1:Building_Radar:what:dc] pamatėme, jog už mūsų saulės
+        sistemos ribų egzistuoja kitos saulės sistemos su laisvomis planetomis.
+        Mūsų analitikai sako, jog mums labai praverstų dar viena planeta. O tam,
+        jog ją kolonizuotume, mums reikia tam tikrų įrenginių, kuriuos galime
+        pagaminti tik [obj:1:Building_GroundFactory:where:dc].
       </p>
       <p>
-        Tad nedelskite, pradėkite išradinėti ir statyti tankų gamyklą!
+        Tad nedelskite, pradėkite išradinėti ir statyti
+        [obj:1:Building_GroundFactory:what:dc]!
       </p>
     </about.280>
 
-    <title.290 value="Mobilusis štabas" />
+    <title.290 value="Mobilus štabas" />
     <about.290>
       <p>Komandore.</p>
       <p>
-        Mes jau turime tankų gamyklą, dabar mums reikia mobiliojo štabo
-        technologijos. Antroje planetoje mes jau radome kažkieno išskleistą ir
-        pastatytą štabą, bet tai, ko gero, buvo tik laimingas atsitiktinumas.
+        Mes jau turime [obj:1:Building_GroundFactory:what:dc], dabar mums reikia 
+        [obj:1:Technology_Mdh:whos] technologijos. Antroje planetoje mes jau
+        radome kažkieno išskleistą ir pastatytą
+        [obj:1:Building_Headquarters:what:dc], bet tai, ko gero, buvo tik
+        laimingas atsitiktinumas.
       </p>
       <p>
-        Mobilusis štabas mums pravers norint kolonizuoti trečiają planetą. Vis
+        [obj:1:Unit_Mdh] mums pravers norint kolonizuoti trečiąją planetą. Vis
         gi kelias ilgas ir nesinorėtų ten nuskridus likti it musę kandus.
       </p>
     </about.290>
@@ -2687,13 +2705,14 @@
     <about.300>
       <p>Komandore.</p>
       <p>
-        Išradome mobiliojo štabo technologiją - beliko tik nuskristi ir užimti
-        tą trečiają planetą.
+        Išradome [obj:1:Technology_Mdh:whos] technologiją - beliko tik nuskristi
+        ir užimti tą trečiąją planetą.
       </p>
       <p>
-        Tankų gamykloje pastatykime savo mobilųjį štabą, įkraukime jį į mulą ir
-        su palyda nusiųskime jį į trečiają planetą. Nepamirškite nusivežti ir
-        žemės karių - greičiausiai planeta bus saugoma ateivių.
+        Tankų gamykloje pastatykime savo [obj:1:Unit_Mdh:what:dc], įkraukime jį
+        į [obj:1:Unit_Mule:what:dc] ir su palyda nusiųskime jį į trečiąją
+        planetą. Nepamirškite nusivežti ir žemės karių - greičiausiai planeta
+        bus saugoma ateivių.
       </p>
       <p>Sekmės!</p>
     </about.300>
@@ -2737,8 +2756,9 @@
       </p>
       <p>
         Susisiekite su kitais komandorais ir tapkite sąjungos dalimi. Išradę
-        sąjungos technologiją galite įkurti savo sąjungą arba bandykite būti
-        pakviestas į kitą, jau egzistuojančią, sąjungą.
+        [obj:1:Technology_Alliances:whos] technologiją galite įkurti savo
+        sąjungą arba bandykite būti pakviestas į kitą, jau egzistuojančią,
+        sąjungą.
       </p>
     </about.330>
 
@@ -2859,14 +2879,14 @@
       <p>Komandore.</p>
       <p>
         Galaktika — pavojinga ir nerami vieta. Žinoma, mes esame taikūs
-        žmonės, bet mus supantys pavojai mūsų nuosaikumą gali suvokti kaip
+        žmonės, bet mus supantys priešai mūsų nuosaikumą gali suvokti kaip
         baimės ar neryžtingumo požymį. Mes privalome gintis nuo grobikiškas
         mintis puoselėjančių kaimynų, o geriausia gynyba yra... Taip,
         Komandore, puolimas! Suduokime jiems pirmą prevencinį smūgį!
       </p>
       <p>Atminkite, piktų kėslų prevencija yra doras savigynos būdas.
         Nedvejokite, drąsiai ginkitės nuo užpuolimų bei kas kartą pulkite
-        sutikę ateivius, su kuriais ar taip, ar taip nesusikalbėtumėte.</p>
+        sutikę ateivius, su kuriais ar šiaip, ar taip nesusikalbėtumėte.</p>
     </WarSideQuest.about>
 
     <title.10100 ref="WarSideQuest.title" />
@@ -2965,7 +2985,7 @@
        <p>Komandore.</p>
        <p>
          Kaimynystėje visi tik ir šneka apie neprilygstamus jūsų įgūdžius.
-         Jūs to nusipelnote. Neatsipalaiduokite, išlaikykite tą patį ritmą!
+         Jūs to nusipelnėte. Neatsipalaiduokite, išlaikykite tą patį ritmą!
        </p>
     </about.10180>
 
@@ -2973,9 +2993,9 @@
     <about.10190>
        <p>Komandore.</p>
        <p>
-         Žmonės kurių gyvenimas neapdovanojo galimybe tarnauti po jūsų vėliava,
+         Žmonės, kurių gyvenimas neapdovanojo galimybe tarnauti po jūsų vėliava,
          nesupranta tikrosios žodžių „laimingai klęstėti“ prasmės. Mes žinome,
-         ką tai reiškia. Ačiū, jums už tai.
+         ką tai reiškia. Ačiū jums už tai.
        </p>
        <p>Aš kalbu mūsų kolonijos vardu, Komandore.</p>
     </about.10190>
@@ -3103,9 +3123,9 @@
     <title.10400 value="Tai, kas mus supa" />
     <about.10400>
     <p>
-      Tyrimų centre prie paradinių durų būriuojasi mokslininkai
-      trokštantys tuojau pat leistis į ekspedicijas. Žvalgybos pranešimuose
-      minimi įdomūs, dėmesio verti objektai ir tyrėjai tiesiog dega
+      [obj:1:Building_ResearchCenter:where] prie paradinių durų būriuojasi
+      mokslininkai trokštantys tuojau pat leistis į ekspedicijas. Žvalgybos
+      pranešimuose minimi įdomūs, dėmesio verti objektai ir tyrėjai tiesiog dega
       troškimu juos aplankyti.
     </p>
     <p>
@@ -3128,12 +3148,12 @@
     <p>
       Kartu su kalnais šlamšto, mokslininkai atvilko dar keletą ateivių
       robotų. Nedalyvavę ekspedicijoje mokslininkai, dabar lipa laboratorijų
-      sienomis ir reikalauja surengti daugiau iškylų! Jie ketina surinkti
+      sienomis ir reikalauja surengti daugiau išvykų! Jie ketina surinkti
       dar didesnę tyrėjų grupę ir apžiūrėti dar didesnį kalną. Sakyčiau
-      padėtis tampa nekontroliuojama, bet moksliukai savo ataskaitose
-      įrodinėja, kad jų ekspedicijos tikslas „Žvilgčiotojas“. Tai galingas
-      robotas, kuris tikrai būtų naudingesnis šioje bazėje, nei kažkur, kur
-      jis mėtosi dabar.
+      padėtis tampa nebekontroliuojama, bet moksliukai savo ataskaitose
+      įrodinėja, kad jų ekspedicijos tikslas „[reference:Objects/Unit_Seeker]“.
+      Tai galingas robotas, kuris tikrai būtų naudingesnis šioje bazėje, nei
+      kažkur, kur jis mėtosi dabar.
     </p>
     <p>Leiskime jiems keliauti! Įsakykime rengti mega-ekspediciją!</p>
     </about.10410>
@@ -3148,20 +3168,19 @@
 
     <title.10420 value="Nepasotinami" />
     <about.10420>
-    <p>Jie paprasčiausiai išsikraustė iš proto!</p>
-    <p>
-      Mokslininkai ir laborantai vėl kraunasi kuprines. Šį kartą jie ketina
-      apžiūrėti dar vieną milžinišką kalną! Sumauti geografai...
-      Atleiskit už išsireiškimą. Bėda tame, kad šiai ekspedicijai mūsų
-      personalas per mažas.
-    </p>
-    <p>
-      Mūsų tyrimų centras turi būti išplėstas ir patobulintas. Komandore,
-      privalau jus įspėti, kad kol bus vykdomi centro išplėtimo darbai,
-      jame negalėsime vykdyti jokių tyrimų. Tiesa... Trumpam be darbo
-      likusius mokslininkus vis tiek galėsime siųsti į ekspedicijas.
-    </p>
-    <p>Sprendimą ir tolimesnių darbų planavimą palieku jums, Komandore.</p>
+      <p>Jie paprasčiausiai išsikraustė iš proto!</p>
+      <p>
+        Mokslininkai ir laborantai vėl kraunasi kuprines. Šį kartą jie ketina
+        apžiūrėti dar vieną milžinišką kalną! Sumauti geografai...
+        Atleiskit už išsireiškimą. Bėda tame, kad šiai ekspedicijai mūsų
+        personalas per mažas.
+      </p>
+      <p>
+        Mūsų [obj:1:Building_ResearchCenter::dc] turi būti išplėstas ir
+        patobulintas. Komandore, privalau jus įspėti, kad kol bus vykdomi centro
+        išplėtimo darbai, jame negalėsime vykdyti jokių tyrimų.
+      </p>
+      <p>Sprendimą ir tolimesnių darbų planavimą palieku jums, Komandore.</p>
     </about.10420>
 
     <title.10425 value="Smalsiųjų laimikis" />
@@ -3197,33 +3216,33 @@
     <about.10460>
     <p>Komandore!</p>
     <p>Už prieš tai buvusią užduotį jūs buvote apdovanoti
-      simboline kreditų suma. Būtinai atsiimkite šį apdovanojimą, jei to
+      simboline kredų suma. Būtinai atsiimkite šį apdovanojimą, jei to
       nepadarėte iki šiol.</p>
-    <p>Kreditai — naudingas ir galingas įrankis. Juos galite išleisti
+    <p>Kredai — naudingas ir galingas įrankis. Juos galite išleisti
       įvairiausioms užduotims — paspartinti statybas, tyrimus ir karių
       parengimą. Tiesą sakant juos galėsite išleisti net pastatų perkėlimui į
       kitą vietą ar norėdami paspartinti savo erdvėlaivius!</p>
-    <p>Matau ketinate klausti, kaip gauti daugiau kreditų. Tam yra keli
-      metodai. Galite tiesiog įsigyti jų parduotuvėje į kurią galite nueiti
-      per N44 meniu apatiniame kairiajame žaidimo kampe. Taip pat kreditais
-      apdovanojami Komandorai gebantys užimti ir išlaikyti tam tikras, karo
-      niokojamas planetas, apie kurias sužinosite vėliau.</p>
+    <p>Matau ketinate klausti, kaip gauti daugiau kredų. Tam yra keli
+      metodai. Galite tiesiog įsigyti jų parduotuvėje, į kurią galite nueiti
+      per N44 meniu apatiniame kairiajame žaidimo kampe. Taip pat kredais
+      apdovanojami Komandorai, gebantys užimti ir išlaikyti tam tikras, karo
+      niokojamas, planetas, apie kurias sužinosite vėliau.</p>
     <p>Yra ir dar vienas būdas. Galite prisijungti prie VIP Komandorų. Tapdami
-      vienu iš galaktikos VIP‘ų, jūs gausite daugiau kreditų, nei pačios
-      narystės kaina. Kartu su VIP naryste gautus kreditus galėsite išleisti
+      vienu iš galaktikos VIP‘ų, jūs gausite daugiau kredų, nei pačios
+      narystės kaina. Kartu su VIP naryste gautus kredus galėsite išleisti
       savo nuožiūra.</p>
-    <p>Išmėginkite VIP paslaugą dabar ir mėgaukitės apdovanojimais ir jų
+    <p>Išmėginkite VIP paslaugą dabar ir mėgaukitės apdovanojimais bei jų
       suteikiama galia!</p>
     </about.10460>
 
     <title.10470 value="Skubos darbas!" />
     <about.10470>
     <p>Sveikinimai tapus VIP, Komandore.</p>
-    <p>Nuo šiol jūs kasdien gausite kreditų įvairioms išlaidoms, tad kodėl gi
+    <p>Nuo šiol jūs kasdien gausite kredų įvairioms išlaidoms, tad kodėl gi
       jų neišeikvojus naudingai veiklai?</p>
     <p>Aš rekomenduočiau paspartinti statybas. Yra tikrai nemažai pastatų, kurie
       mums praverstų anksčiau, nei vėliau. Paspartinkite jų statybą išleisdami
-      dalį kreditų.</p>
+      dalį kredų.</p>
     </about.10470>
 
     <title.10500 value="Teritorijos plėtimas" />
@@ -3924,7 +3943,7 @@
       <p>[reference:UnitUpgrade]</p>
     </Zeus.about>
 
-    <Mdh.name ref="Units/Mdh.name" />
+    <Mdh.name ref="Objects/Technology_Mdh" />
     <Mdh.about ref="Units/Mdh.common" />
 
     <Crow.name ref="Units/Crow.name" />
@@ -3978,7 +3997,7 @@
       <p>[reference:Units/Jumper.about]</p>
     </Jumper.about>
 
-    <HealingCenter.name ref="Buildings/HealingCenter.name" />
+    <HealingCenter.name ref="Objects/Technology_HealingCenter" />
     <HealingCenter.about>
       <p>Leidžia statyti techninę ligoninę.</p>
       <p>[reference:Buildings/HealingCenter.common]</p>
