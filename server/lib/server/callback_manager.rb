@@ -118,10 +118,11 @@ class CallbackManager
         "ends_at='#{time.to_s(:db)}'"
       end
 
-      ActiveRecord::Base.connection.select_value(
-        "SELECT COUNT(*) FROM callbacks WHERE class='#{get_class(object)
-         }' AND object_id=#{object.id} AND event=#{event} AND #{time_condition}"
-      ).to_i > 0
+      ! ActiveRecord::Base.connection.select_value(
+        "SELECT 1 FROM callbacks WHERE class='#{get_class(object)
+         }' AND object_id=#{object.id} AND event=#{event} AND #{time_condition
+        } LIMIT 1"
+      ).nil?
     end
 
     def unregister(object, event=EVENT_UPGRADE_FINISHED)
@@ -131,6 +132,13 @@ class CallbackManager
       ActiveRecord::Base.connection.execute(
         "DELETE FROM callbacks WHERE class='#{get_class(object)
           }' AND object_id=#{object.id} AND event=#{event}"
+      )
+    end
+
+    def get(sql)
+      ActiveRecord::Base.connection.select_one(
+        "SELECT class, ruleset, object_id, event, ends_at FROM callbacks
+          #{sql} LIMIT 1"
       )
     end
 
@@ -155,27 +163,7 @@ class CallbackManager
       ) if include_failed
 
       get_row = lambda do
-        LOGGER.suppress(:debug) do
-          conn.select_one(
-            "SELECT class, ruleset, object_id, event, ends_at FROM callbacks
-              #{sql} LIMIT 1"
-          )
-        end
-      end
-
-      delete_row = lambda do
-        LOGGER.suppress(:debug) do
-          conn.execute(
-            "DELETE FROM callbacks #{sql} LIMIT 1"
-          )
-        end
-      end
-
-      mark_row_as_failed = lambda do
-        LOGGER.info "Marking row as failed."
-        conn.execute(
-          "UPDATE callbacks SET failed=failed+1 #{sql} LIMIT 1"
-        )
+        LOGGER.suppress(:debug) { get(sql) }
       end
 
       # Request unprocessed entries that have hit
@@ -183,7 +171,7 @@ class CallbackManager
 
       until row.nil?
         begin
-          process_callback(row, delete_row)
+          process_callback(row)
         rescue Exception => error
           if App.in_production?
             LOGGER.error(
@@ -191,7 +179,8 @@ class CallbackManager
                 row.inspect, error.to_log_str
               ]
             )
-            mark_row_as_failed.call
+            LOGGER.info "Marking row as failed."
+            conn.execute("UPDATE callbacks SET failed=failed+1 #{sql} LIMIT 1")
           else
             fail
           end
@@ -203,7 +192,7 @@ class CallbackManager
 
     private
 
-    def process_callback(row, delete_row)
+    def process_callback(row)
       title = "Callback @ #{row['ends_at']} for #{row['class']} (evt: '#{
         STRING_NAMES[row['event'].to_i]}', obj id: #{
         row['object_id']}, ruleset: #{row['ruleset']})"
@@ -216,7 +205,18 @@ class CallbackManager
             #
             # We're still protected of callback silently disappearing
             # because this won't be executed if the transaction fails.
-            delete_row.call
+            #
+            # Use this instead of just using same SQL used for querying, because
+            # this is more specific and using same SQL fails when starting
+            # server.
+
+            ActiveRecord::Base.connection.execute(
+              # Ugly formatting to fit SQL query to one line.
+              %Q{DELETE FROM callbacks WHERE ends_at='#{
+                row['ends_at'].gsub("'", "")}' AND class='#{
+                row['class'].gsub("'", "")}' AND object_id=#{
+                row['object_id'].to_i} AND event=#{row['event']} LIMIT 1}
+            )
 
             begin
               CONFIG.with_set_scope(row['ruleset']) do
