@@ -152,13 +152,13 @@ package tests.maps
             },
             allOf(
                not (causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_MOVE_TO_LOCATION)),
-               causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_DESELECT_SELECTED_LOCATION),
+               not (causes(galaxy) .toDispatchEvent (MMapEvent.UICMD_DESELECT_SELECTED_LOCATION)),
                causes(galaxy) .toDispatchEvent(
                   MMapEvent.UICMD_SELECT_LOCATION,
                   function(event: MMapEvent): void {
                      assertThat(
-                        "event.object holds selected object instance",
-                        event.object, equals (solarSystem)
+                        "event.object holds selected location instance",
+                        event.object, equals (location)
                      );
                      assertThat(
                         "event.instant", event.instant, isFalse()
