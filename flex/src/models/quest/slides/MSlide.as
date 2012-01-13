@@ -46,5 +46,8 @@ package models.quest.slides
       public function get visible(): Boolean {
          return _visible;
       }
+
+      [Bindable]
+      public var loading:Boolean = false;
    }
 }

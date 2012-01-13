@@ -28,7 +28,7 @@
 
       import utils.Events;
       import utils.MathUtil;
-      import utils.UrlNavigate;
+      import utils.assets.AssetNames;
       import utils.locale.Localizer;
       import utils.locale.XMLBundlesLoader;
 
@@ -108,7 +108,7 @@
             var randomTip: int = Math.round(MathUtil.randomBetween(0,
                                                                    tipsTotal - 1));
             lblTipText.text = Localizer.string("Tips", "tip." + randomTip);
-            imgTip.source = UrlNavigate.getInstance().getTipImageUrl(randomTip);
+            imgTip.source = AssetNames.getTipImageUrl(randomTip);
 
             loadImages();
          }

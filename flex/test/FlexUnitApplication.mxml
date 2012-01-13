@@ -66,8 +66,8 @@
          {
             core = new FlexUnitCore();
             core.addListener(runner);
-            core.run(currentRunTestSuites());
-//            core.run(allTestSuites());
+//            core.run(currentRunTestSuites());
+            core.run(allTestSuites());
          }
       ]]>
    </fx:Script>

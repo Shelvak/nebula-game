@@ -821,7 +821,7 @@
         Greatest minds of each planet work here to bring technological 
         advancements to our civilization. Do notice that even if these 
         researches often require much resources and manpower to bring visions 
-        alive they are well proven to be worth the cost. 
+        alive they are well proven to be worth the cost.
       </p>
       <p>
         It is essential that you have at least one of these research centers or 
@@ -3173,6 +3173,88 @@
     <about.10575 ref="DestroyingEnemies.about" />
 
   </Quests>
+
+  <QuestScreens>
+    <BuildingSidebar>
+      <![CDATA[
+      <p>Buildings available for construction are at the sidebar on the right.</p>
+      <p>Once you select a building, at the bottom of the sidebar its
+      construction time and pros and cons provided by terrain under the building
+      become visible.
+      <p>If another building is already being constructed the next is added
+      to construction que.</p>
+      ]]>
+    </BuildingSidebar>
+
+    <ClaimReward>
+      <![CDATA[
+      <p>Each completion of a quest earns you a reward. You can take it if you
+      navigate to the quests screen: click on a N44 logo at the bottom right corner
+      of the screen and click "[reference:Quests/label.title]" button.</p>
+      [reference:Buildings/Mothership.name]
+      <p>Then you have to find a completed quest - they are yellow - and click on
+      a '[reference:Quests/label.claimReward]' button</p>
+      ]]>
+    </ClaimReward>
+
+    <OreTile>
+      <![CDATA[
+      <p>You can build [obj:2:Building_MetalExtractor:what] only on top of metal
+      deposits. Most of the time you will find alien structures already standing
+      on them. Those structures need to be destroyed first and only then you will
+      be able to build your own extractor. However you may come across a few
+      free deposits as well.</p>
+      ]]>
+    </OreTile>
+
+    <BuildingUpgrade>
+      <![CDATA[
+      <p>Buildings can be upgraded. To do that select a building by clicking on
+      it in a map. Then click "[reference:BuildingSelectedSidebar/upgrade]"
+      button in the menu at the right.</p>
+      <p>Upgraded buildings improves their characteristics: extractors produce
+      more resources, factories take less time to build units, more scientists
+      are able to work in research centers and so on.</p>
+      ]]>
+    </BuildingUpgrade>
+
+    <EnergyTiles>
+      <![CDATA[
+      <p>Although you are free to build power plants anywhere it is recommended
+      to place them on a special terrain to boost power.</p>
+      <p>Terrain bonus can visible at the bottom of the right sidebar while
+      looking for a place to build a power plant.</p>
+      ]]>
+    </EnergyTiles>
+
+    <ConstructionTiles>
+      <![CDATA[
+      <p>
+        Buildings will be erected more quickly on this terrain. By the way,
+        if a building is able to construct other buildings, train troops or
+        manufacture tanks or ships, it will take less time to complete
+        its task. So this type of terrain is best for all kinds of factories.
+      </p>
+      ]]>
+    </ConstructionTiles>
+
+    <SpeedupConstruction>
+       <!-- TODO: replace button names with references -->
+      <![CDATA[
+      <p>You may speed up long taking constructions using special game resource
+      called <span fontWidth="bold">creds</span>. To do that, select a building.
+      Then click "Speed up" button and choose the speed up level.</p>
+      <p>
+        You can buy creds by clicking "Buy creds" button in the N44 menu.
+      </p>
+      <p>
+        Completion of some quests gives you creds also. You have been rewarded
+        with creds after completing your last quest. Claim that reward and
+        speed up construction of a building!
+      </p>
+      ]]>
+    </SpeedupConstruction>
+  </QuestScreens>
 
   <Ratings>
     <label.ratings value="Ratings" />

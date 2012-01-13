@@ -14,7 +14,11 @@ package testsutils
       private static function get RM() : IResourceManager {
          return ResourceManager.getInstance();
       }
-      
+
+      /**
+       * This should be called before all other LocalizerUtl methods
+       * in the test set up.
+       */
       public static function setUp() : void {
          StartupInfo.getInstance().locale = Locale.TEST;
       }

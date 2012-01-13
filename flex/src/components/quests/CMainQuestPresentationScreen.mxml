@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:base="components.base.*"
          visible="{mainQuestLine.isOpen}">
+   <fx:Binding source="mainQuestLine.currentPresentation.currentSlide.loading"
+               destination="loading"/>
    <fx:Script>
       <![CDATA[
       import models.quest.MMainQuestLine;
@@ -13,7 +16,9 @@
       import utils.assets.AssetNames;
 
       import utils.assets.ImagePreloader;
-
+      
+      [Bindable]
+      private var loading:Boolean = false;
 
       private function getImage(name: String): BitmapData {
          return ImagePreloader.getInstance().getImage(
@@ -55,16 +60,22 @@
    </fx:Script>
    <s:BitmapImage left="0" right="0" top="0" bottom="0"
                   source="{getImage('presentation_background')}"/>
-   <s:Group id="grpContent" verticalCenter="0" horizontalCenter="0"/>
+   <s:Group id="grpContent" verticalCenter="0" horizontalCenter="0"
+            visible="{!loading}"/>
+   <base:SpinnerContainer verticalCenter="0" horizontalCenter="0"
+                          timeoutEnabled="false"
+                          busy="{loading}"
+                          visible="{loading}"/>
    <s:Button id="btnPreviousSlide" left="35" bottom="35"
-             enabled="{mainQuestLine.currentPresentation.hasPreviousSlide}"
+             visible="{mainQuestLine.currentPresentation.hasPreviousSlide}"
              click="mainQuestLine.currentPresentation.previousSlide()"
              skinClass="components.quests.skins.CPreviousSlideButtonSkin"/>
    <s:Button id="btnNextSlide" right="35" bottom="35"
-             enabled="{mainQuestLine.currentPresentation.hasNextSlide}"
+             visible="{mainQuestLine.currentPresentation.hasNextSlide}"
              click="mainQuestLine.currentPresentation.nextSlide()"
              skinClass="components.quests.skins.CNextSlideButtonSkin"/>
    <s:Button id="btnClose" label="Close"
-             bottom="15" horizontalCenter="0"
+             right="35" bottom="35"
+             visible="{!mainQuestLine.currentPresentation.hasNextSlide}"
              click="mainQuestLine.close()"/>
 </s:Group>

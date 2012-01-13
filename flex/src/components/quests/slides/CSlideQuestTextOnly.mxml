@@ -4,8 +4,15 @@
                xmlns:quests="components.quests.*">
    <fx:Script>
       <![CDATA[
-      protected override function getBackgroundImageId(): int {
-         return 0;
+      import models.quest.slides.SlidesConfiguration;
+
+      import utils.assets.AssetNames;
+
+
+      protected override function getBackgroundImageUrl(): String {
+         return AssetNames.getQuestSlideBackgroundImageURL(
+            SlidesConfiguration.KEY_QUEST
+         );
       }
       ]]>
    </fx:Script>

@@ -3290,49 +3290,62 @@
 
   <QuestScreens>
     <BuildingSidebar>
+      <![CDATA[
       <p>Pastatus gali statyti iš dešinėje pusėje esančio meniu.</p>
       <p>Pasirinkus pastatą meniu apačioje bus rodoma pastato kaina, statymo
       laikas, bei žemės, ant kurios statoma, pliusai ir minusai.</p>
       <p>Jeigu vienas pastatas jau yra statomas, kitas bus įdėtas į eilę.</p>
+      ]]>
     </BuildingSidebar>
 
     <ClaimReward>
+      <![CDATA[
       <p>Kiekviena įvykdyta užduotis duoda atlygį. Jį pasiimti gali nuėjęs į
       užduočių langą: paspausk N44 logotipą apatiniame kairiame kampe ir
       pasirink užduočių mygtuką.</p>
       <p>Tada susirask įvykdytą užduotį (jos žymimos gelsvai) ir spausk pasiimti
       atlygį.</p>
+      ]]>
     </ClaimReward>
 
     <OreTile>
+      <![CDATA[
       <p>MEX-us gali statyti tik ant metalo rūdos klodų. Dažniausiai ant jų
       stovi ateivių pastatai, kuriuos reikia nugriauti, bet kartais randama ir
       laisvų klodų.</p>
+      ]]>
     </OreTile>
-    
+
     <BuildingUpgrade>
+      <![CDATA[
       <p>Pastatai gali būti tobulinami. Kad patobulintum pastatą pasirink jį
       žemėlapyje, ir dešinėje esančiame meniu paspausk mygtuką „Tobulinti“.</p>
       <p>Patobulinti pastatai pagerina savo savybes - greičiau išgauna resursus,
       stato karius, teikia daugiau mokslininkų ir t.t.</p>
+      ]]>
     </BuildingUpgrade>
 
     <EnergyTiles>
+      <![CDATA[
       <p>Nors elektros jėgaines gali statyti bet kur, jas rekomenduotina
       statyti ant papildomos energijos suteikiančios žemės.</p>
       <p>Žemės suteikiamą pliusą gali pamatyti dešinės juostos apačioje,
       rinkdamas statymo vietą naujai elektrinei.</p>
+      ]]>
     </EnergyTiles>
 
     <ConstructionTiles>
+      <![CDATA[
       <p>
         Pastatus ant šios žemės pastatys greičiau. Be to - jeigu pastatas
         stato kitus pastatus arba gamina karius - jis taip pat tai darys
         greičiau, todėl šią žemę geriausia išnaudoti įvairioms gamykloms.
       </p>
+      ]]>
     </ConstructionTiles>
 
     <SpeedupConstruction>
+      <![CDATA[
       <p>
         Ilgai trunkančias statybas gali pagreitinti pasinaudodamas kredais -
         specialiu žaidimo resursu. Tam tau reikia pasirinkti statomą pastatą ir
@@ -3348,6 +3361,7 @@
         įvykdyta užduotis - nueik atsiimk apdovanojimą ir paspartink pastato
         statybą!
       </p>
+      ]]>
     </SpeedupConstruction>
   </QuestScreens>
 
