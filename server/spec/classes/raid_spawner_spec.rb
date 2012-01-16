@@ -137,6 +137,12 @@ describe RaidSpawner do
       RaidSpawner.new(apocalyptic_planet).generate_arg.should == 0
     end
 
+    it "should return 0 if planet is in player owned solar system" do
+      solar_system = Factory.create(:home_ss)
+      planet = Factory.create(:planet, :solar_system => solar_system)
+      RaidSpawner.new(planet).generate_arg.should == 0
+    end
+
     describe "if it's a battleground planet" do
       it "should return player bg planet count" do
         RaidSpawner.new(battleground_planet).generate_arg.

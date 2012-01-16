@@ -4,6 +4,10 @@ Factory.define :solar_system do |m|
   m.y { (SolarSystem.maximum(:y) || 0) + 1 }
 end
 
+Factory.define :home_ss, :parent => :solar_system do |m|
+  m.association :player
+end
+
 Factory.define :mini_battleground, :parent => :solar_system do |m|
   m.kind SolarSystem::KIND_BATTLEGROUND
 end
