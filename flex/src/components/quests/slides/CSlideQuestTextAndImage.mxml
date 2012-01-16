@@ -40,14 +40,16 @@
       }
       ]]>
    </fx:Script>
-   <s:Group x="138" y="248" width="150" height="150">
+   <s:Group x="130" y="278" width="111" height="111">
       <s:Group id="imageMask" left="0" right="0" top="0" bottom="0">
          <s:Ellipse left="0" right="0" top="0" bottom="0">
             <s:fill><s:SolidColor/></s:fill>
          </s:Ellipse>
       </s:Group>
       <components:CenteredBitmapImage
-         id="image" verticalCenter="0" horizontalCenter="0"
+         id="image"
+         width="130" height="130"
+         verticalCenter="0" horizontalCenter="0"
          smooth="true" source="{myModel.image}"/>
    </s:Group>
    <quests:CQuestInfo top="10" bottom="10" right="10" width="400"
