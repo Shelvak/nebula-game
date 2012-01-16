@@ -175,6 +175,27 @@ package tests.quests
          );
       }
 
+      [Test]
+      public function slideNumbers(): void {
+         const quest:Quest = getQuest();
+         presentation = new MMainQuestPresentation(quest);
+
+         assertThat(
+            "number of slides",
+            presentation.numSlides, equals (3)
+         );
+         assertThat(
+            "numbering starts with 1",
+            presentation.currentSlideNum, equals (1)
+         );
+
+         presentation.nextSlide();
+         assertThat(
+            "slide number changes when switching slides",
+            presentation.currentSlideNum, equals (2)
+         );
+      }
+
       private function getQuest(slides:String = "A,B,C"): Quest {
          const quest:Quest = new Quest();
          quest.status = Quest.STATUS_STARTED;

@@ -3,7 +3,9 @@
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:base="components.base.*"
          visible="{mainQuestLine.isOpen}">
-   <fx:Binding source="mainQuestLine.currentPresentation.currentSlide.loading"
+   <fx:Binding source="mainQuestLine.currentPresentation"
+               destination="presentation"/>
+   <fx:Binding source="presentation.currentSlide.loading"
                destination="loading"/>
    <fx:Script>
       <![CDATA[
@@ -16,7 +18,10 @@
       import utils.assets.AssetNames;
 
       import utils.assets.ImagePreloader;
-      
+
+      [Bindable]
+      private var presentation:MMainQuestPresentation;
+
       [Bindable]
       private var loading:Boolean = false;
 
@@ -66,17 +71,25 @@
                           timeoutEnabled="false"
                           busy="{loading}"
                           visible="{loading}"/>
-   <s:Button id="btnPreviousSlide" left="35" bottom="35"
-             visible="{mainQuestLine.currentPresentation.hasPreviousSlide}"
-             click="mainQuestLine.currentPresentation.previousSlide()"
-             skinClass="components.quests.skins.CPreviousSlideButtonSkin"/>
-   <s:Button id="btnNextSlide" right="35" bottom="35"
-             visible="{mainQuestLine.currentPresentation.hasNextSlide}"
-             click="mainQuestLine.currentPresentation.nextSlide()"
-             skinClass="components.quests.skins.CNextSlideButtonSkin"/>
-   <s:Button id="btnClose" label="Close"
-             right="35" bottom="35"
-             skinClass="components.quests.skins.CCloseButtonSkin"
-             visible="{!mainQuestLine.currentPresentation.hasNextSlide}"
-             click="mainQuestLine.close()"/>
+   <s:Group left="25" right="25" top="371">
+      <s:Button
+         id="btnPreviousSlide" left="0"
+         visible="{presentation.hasPreviousSlide}"
+         click="presentation.previousSlide()"
+         skinClass="components.quests.skins.CPreviousSlideButtonSkin"/>
+      <s:Label
+         id="lblSlideNumber" fontSize="22" fontWeight="bold"
+         horizontalCenter="0" verticalCenter="0"
+         text="{presentation.currentSlideNum} / {presentation.numSlides}"/>
+      <s:Button
+         id="btnNextSlide" right="0"
+         visible="{presentation.hasNextSlide}"
+         click="presentation.nextSlide()"
+         skinClass="components.quests.skins.CNextSlideButtonSkin"/>
+      <s:Button
+         id="btnClose" right="0"
+         skinClass="components.quests.skins.CCloseButtonSkin"
+         visible="{!presentation.hasNextSlide}"
+         click="mainQuestLine.close()"/>
+   </s:Group>
 </s:Group>
