@@ -79,7 +79,6 @@ package components.base.viewport
       /* ###################### */
       
       private var _contentScrollAnimator:Animate;
-      private var _underlayScrollAnimator:Animate;
       
       
       /**
@@ -137,7 +136,7 @@ package components.base.viewport
          _contentContainer = null;
          _viewport = null;
          
-         f_cleanupCalled;
+         f_cleanupCalled = true;
       }
       
       /* ############################ */
