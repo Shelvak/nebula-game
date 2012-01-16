@@ -50,10 +50,9 @@ s_tech_tree = "TechTree"
 s_tech_research = "TechResearch"
 # Explains about war points importance in technologies.
 s_wp_in_techs = "WPInTechs"
-# Explains about zetium tile.
+# Explains about zetium tile and NPC zetium extractor (if you haven't destroyed
+# it yet).
 s_zetium_tile = "ZetiumTile"
-# Explains about NPC zetium extractor (if you haven't destroyed it yet).
-s_npc_zex = "NPCZex"
 # Explains about planet resources & storage types.
 s_resources = "Resources"
 # Explains about resource bar at the bottom of the screen.
@@ -88,14 +87,14 @@ s_radar = "Radar"
 s_load_units = "LoadUnits"
 # Explains how to unload units.
 s_unload_units = "UnloadUnits"
-# Explains how to deploy units.
-s_deploy_units = "DeployUnits"
+# Explains how to deploy MDH.
+s_deploy_mdh = "DeployMdh"
+# Explains how to deploy turrets.
+s_deploy_turrets = "DeployTurrets"
 # Explains about third planet.
-s_3rd_planet = "3rdPlanet"
+s_3rd_planet = "ThirdPlanet"
 # Explains about armor tiles.
 s_armor_tiles = "ArmorTiles"
-# Explains about raiders.
-s_raiders = "Raiders"
 # Explains about economy tier 2: required technologies, how to destroy old
 # extractors and build new ones in their places.
 s_eco_tier2 = "EcoTier2"
@@ -105,6 +104,8 @@ s_join_alliance = "JoinAlliance"
 s_create_alliance = "CreateAlliance"
 # Explains how to invite to alliance.
 s_invite_to_alliance = "InviteToAlliance"
+# Explains about battleground battles.
+s_bg_battles = "BgBattles"
 # Explains about battleground planets.
 s_bg_planets = "BgPlanets"
 # Explains about boss ship in battleground.
@@ -304,8 +305,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
     have_upgraded_to Technology::ZetiumExtraction
 
     reward_cost Building::ZetiumExtractor, :count => 0.9
-  end.define(110, [s_quest_with_image[Building::ZetiumExtractor], s_zetium_tile,
-                  s_npc_zex]) do
+  end.define(110, [s_quest_with_image[Building::ZetiumExtractor],
+                   s_zetium_tile]) do
     have_upgraded_to Building::ZetiumExtractor
 
     reward_cost Technology::HealingCenter, :count => 0.85
@@ -450,7 +451,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
     reward_unit Unit::Scorpion, :count => 2, :level => 6
     reward_unit Unit::Azure, :count => 2, :level => 6
   end.define(300, [s_quest_with_image[Unit::Mdh], s_load_units,
-                  s_unload_units, s_deploy_units]) do
+                  s_unload_units, s_deploy_mdh]) do
     # Have third planet and build Headquarters.
     have_upgraded_to Unit::Mdh
     have_planets :count => 3
@@ -474,8 +475,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
       reward_unit Unit::MobileScreamer, :count => 4
       reward_unit Unit::MobileThunder,  :count => 4
     end
-  end.define(310, [s_quest, s_deploy_units, s_3rd_planet, s_armor_tiles,
-                  s_raiders]) do
+  end.define(310, [s_quest, s_deploy_turrets, s_3rd_planet, s_armor_tiles]) do
     # Have fortifications.
     have_upgraded_to Building::MobileVulcan
     have_upgraded_to Building::MobileScreamer
@@ -515,8 +515,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
         reward_unit unit, :level => 10, :count => reward_count
       end
     end
-  end.define(340, [s_quest, s_bg_planets, s_boss_ship, s_pulsars, s_convoys,
-                  s_galaxy_battles]) do
+  end.define(340, [s_quest, s_bg_battles, s_bg_planets, s_boss_ship, s_pulsars,
+                   s_convoys, s_galaxy_battles]) do
     # Explains about arena.
     have_victory_points :count => 500
 
