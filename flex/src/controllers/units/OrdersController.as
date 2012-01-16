@@ -253,7 +253,7 @@ package controllers.units
                NAV_CTRL.toSolarSystem(
                   ML.latestPlanet.solarSystemId,
                   function() : void {
-                     ML.latestSSMap.moveTo(ML.latestPlanet.currentLocation);
+                     ML.latestSSMap.moveToLocation(ML.latestPlanet.currentLocation);
                   }
                );
                break;

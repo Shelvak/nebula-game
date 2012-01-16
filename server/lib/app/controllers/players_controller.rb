@@ -174,4 +174,25 @@ class PlayersController < GenericController
     player.vip_convert(params['amount'])
     player.save!
   end
+
+  # Returns multiplier for battle victory points when fighting against
+  # targeted player.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - target_id (Fixnum): player id that you are targeting.
+  #
+  # Response:
+  # - multiplier (Float): multiplier between [0, inf) for victory points. This
+  # multiplier can be inserted into 'battleground.battle.victory_points' or
+  # 'combat.battle.victory_points' config formulas as 'fairness_multiplier'
+  # parameter.
+  #
+  def action_battle_vps_multiplier
+    param_options :required => {:target_id => Fixnum}
+
+    respond :multiplier =>
+      Player.battle_vps_multiplier(player.id, params['target_id'])
+  end
 end

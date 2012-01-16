@@ -14,3 +14,5 @@ planet.bonus:
 # Battles which happen in battleground against other players give
 # VPs to players.
 battle.victory_points: (damage_dealt_to_space * 0.25 + damage_dealt_to_ground) * 0.006
+# They also give out creds.
+battle.creds: 0 #victory_points * 3

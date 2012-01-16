@@ -1,6 +1,12 @@
 package spacemule.modules.combat.objects
 
 object Player {
+  object Points {
+    def empty = Points(0, 0, 0, 0)
+  }
+
+  case class Points(economy: Int, science: Int, army: Int, war: Int)
+  
   object Technologies {
     /**
      * Map of combatant full name (Building::Thunder, Unit::Trooper, etc.) to
@@ -40,7 +46,8 @@ class Player(
   val id: Long,
   val name: String,
   val allianceId: Option[Long],
-  val technologies: Player.Technologies=Player.Technologies.empty,
+  val points: Player.Points,
+  val technologies: Player.Technologies,
   // Returns value (0..1] for combat mods. If player is overpopulated this
   // value will be < 1, else it will be 1.0.
   val overpopulation: Double = Player.DefaultOverpopulation
@@ -50,5 +57,5 @@ class Player(
     case _ => false
   }
 
-  override def toString = "Player(%d)".format(id)
+  override def toString = "Player(%s, id %d)".format(name, id)
 }

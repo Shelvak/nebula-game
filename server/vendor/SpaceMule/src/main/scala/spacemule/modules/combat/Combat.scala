@@ -52,18 +52,17 @@ object Combat {
 
   def apply(
     location: Location,
+    isBattleground: Boolean,
     planetOwner: Option[Player],
     players: Set[Option[Player]],
     allianceNames: Combat.AllianceNames,
     napRules: NapRules, troops: Set[Troop],
     loadedTroops: Combat.LoadedTroops,
     unloadedTroopIds: Set[Long],
-    buildings: Set[Building],
-    vpsForPlayerDamage: Boolean
+    buildings: Set[Building]
   ) =
-    new Combat(location, planetOwner, players, allianceNames, napRules,
-               troops, loadedTroops, unloadedTroopIds, buildings,
-               vpsForPlayerDamage)
+    new Combat(location, isBattleground, planetOwner, players, allianceNames,
+      napRules, troops, loadedTroops, unloadedTroopIds, buildings)
 }
 
 /**
@@ -71,6 +70,7 @@ object Combat {
  */
 class Combat(
   location: Location,
+  isBattleground: Boolean,
   planetOwner: Option[Player],
   players: Set[Option[Player]],
   allianceNames: Combat.AllianceNames,
@@ -78,8 +78,7 @@ class Combat(
   troops: Set[Troop],
   loadedTroops: Combat.LoadedTroops,
   unloadedTroopIds: Set[Long],
-  buildings: Set[Building],
-  vpsForPlayerDamage: Boolean
+  buildings: Set[Building]
 ) {
   // Units unloaded to ground, and those who are still kept in their
   // transporters.
@@ -128,7 +127,15 @@ class Combat(
   // HP properties will be changed.
   alliances.toMap
 
-  val statistics = new Statistics(alliances, vpsForPlayerDamage)
+  private val (vpsFunction, credsFunction) = if (isBattleground) {
+    (Config.battlegroundCombatVpsFormula, Config.battlegroundCombatCredsFormula)
+  } else if (Config.combatVpZones.contains(location.kind)) {
+    (Config.regularCombatVpsFormula, Config.regularCombatCredsFormula)
+  } else {
+    (Config.blankCombatVpsFormula, Config.blankCombatCredsFormula)
+  }
+
+  val statistics = new Statistics(alliances, vpsFunction, credsFunction)
 
   /**
    * XP gained by units that are maximally leveled up. This XP will be

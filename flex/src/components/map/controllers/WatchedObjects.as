@@ -35,12 +35,12 @@ package components.map.controllers
       }
 
       public function itemSelected(sector: Sector): void {
-         _map.deselectSelectedObject();
          if (sector.hasObject) {
-            _map.selectObject(sector.object);
+            _map.selectLocation(sector.location, true);
          }
          else {
-            _map.moveTo(sector.location);
+            _map.deselectSelectedLocation();
+            _map.moveToLocation(sector.location);
          }
       }
 

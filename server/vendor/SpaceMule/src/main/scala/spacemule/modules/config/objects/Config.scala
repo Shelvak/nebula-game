@@ -205,12 +205,56 @@ object Config {
   lazy val energyVolume = double("units.transportation.volume.energy")
   lazy val zetiumVolume = double("units.transportation.volume.zetium")
 
-  def battlegroundCombatVps(groundDamage: Int, spaceDamage: Int): Double =
-    formulaEval("battleground.battle.victory_points", Map(
-      "damage_dealt_to_ground" -> groundDamage.toDouble,
-      "damage_dealt_to_space" -> spaceDamage.toDouble
-    ))
+  lazy val battleVpsMaxWeakness = double("combat.battle.max_weakness")
 
+  // Seq of location kinds where combat gives victory points
+  lazy val combatVpZones = seq[Long]("combat.battle.vp_zones").
+    map(kind => Location(kind.toInt))
+  
+  // Function that transforms groundDamage, spaceDamage & fairness_multiplier
+  // to victory points.
+  type CombatVpsFormula = (Int, Int, Double) => Double
+  // Function that transforms victory points to creds.
+  type CombatCredsFormula = (Double) => Double
+
+  private def getCombatVpsFormula(kind: String): CombatVpsFormula = {
+    val key = "%s.battle.victory_points".format(kind)
+    (groundDamage: Int, spaceDamage: Int, fairnessMultiplier: Double) => {
+      get[Any](key) match {
+        case formula: String => FormulaEval.eval(formula, Map(
+          "damage_dealt_to_ground" -> groundDamage.toDouble,
+          "damage_dealt_to_space" -> spaceDamage.toDouble,
+          "fairness_multiplier" -> fairnessMultiplier
+        ))
+        case l: Long => l.toDouble
+        case d: Double => d
+      }
+    }
+  }
+  
+  private def getCombatCredsFormula(kind: String): CombatCredsFormula = {
+    val key = "%s.battle.creds".format(kind)
+    (victoryPoints: Double) => {
+      get[Any](key) match {
+        case formula: String => FormulaEval.eval(formula, Map(
+          "victory_points" -> victoryPoints
+        ))
+        case l: Long => l.toDouble
+        case d: Double => d
+      }
+    }
+  }
+  
+  val regularCombatVpsFormula = getCombatVpsFormula("combat")
+  val battlegroundCombatVpsFormula = getCombatVpsFormula("battleground")
+  val blankCombatVpsFormula: CombatVpsFormula =
+    (_: Int, _: Int, _: Double) => 0.0
+
+  val regularCombatCredsFormula = getCombatCredsFormula("combat")
+  val battlegroundCombatCredsFormula = getCombatCredsFormula("battleground")
+  val blankCombatCredsFormula: CombatCredsFormula = (_: Double) => 0.0
+
+  // Returns VPs given out for receiving number of damage points.
   def vpsForReceivedDamage(combatant: Combatant, damage: Int): Double = {
     val key = "%s.vps_on_damage".format(resolveCombatantKey(combatant))
     val multiplier = getOpt[Double](key) match {

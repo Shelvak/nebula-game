@@ -55,10 +55,11 @@ module SpaceMule::Combat
         buildings.map { |building| convert_building(sm_planet_owner, building) }
       ).to_scala
 
-      calculate_victory_points = calculate_victory_points(location)
+      battleground = battleground?(location)
 
       Combat.Runner.run(
         sm_location,
+        battleground,
         sm_planet_owner,
         sm_players,
         sm_alliance_names,
@@ -66,8 +67,7 @@ module SpaceMule::Combat
         sm_troops,
         sm_loaded_units,
         unloaded_unit_ids.to_scala,
-        sm_buildings,
-        calculate_victory_points
+        sm_buildings
       )
     end
   end
@@ -91,7 +91,7 @@ module SpaceMule::Combat
   end
 
   # Only calculate victory points in main battleground planets and solar system
-  def self.calculate_victory_points(location)
+  def self.battleground?(location)
     if location.is_a?(SsObject::Planet)
       location.solar_system.main_battleground?
     elsif location.type == ::Location::SOLAR_SYSTEM
@@ -112,6 +112,7 @@ module SpaceMule::Combat
           player.id,
           player.name,
           player.alliance_id.nil? ? None : Some(player.alliance_id),
+          points_for(player),
           technologies_for(player),
           player.overpopulation_mod
         ))
@@ -119,6 +120,14 @@ module SpaceMule::Combat
     end
     
     sm_players
+  end
+
+  # Returns Scala Points object.
+  def self.points_for(player)
+    CO.Player::Points.new(
+      player.economy_points, player.science_points, player.army_points,
+      player.war_points
+    )
   end
 
   # Returns Scala Technologies object.

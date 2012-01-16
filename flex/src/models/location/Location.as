@@ -253,7 +253,7 @@ package models.location
                NAV_CTRL.toGalaxy(null,
                   function() : void
                   {
-                     ML.latestGalaxy.moveTo(thisLoc);
+                     ML.latestGalaxy.moveToLocation(thisLoc);
                   }
                );
                break;
@@ -262,7 +262,7 @@ package models.location
                NAV_CTRL.toSolarSystem(id, 
                   function() : void
                   {
-                     ML.latestSSMap.moveTo(thisLoc);
+                     ML.latestSSMap.moveToLocation(thisLoc);
                   }
                );
                break;
@@ -352,7 +352,7 @@ package models.location
       private function navigateToSolarSystem(ssId:int) : void {
          NAV_CTRL.toSolarSystem(ssId,
             function() : void {
-               ML.latestSSMap.moveTo(ML.latestSSMap.getSSObjectById(id).currentLocation);
+               ML.latestSSMap.moveToLocation(ML.latestSSMap.getSSObjectById(id).currentLocation);
             }
          );
       }

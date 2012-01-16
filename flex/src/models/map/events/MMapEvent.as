@@ -11,22 +11,22 @@ package models.map.events
       /**
        * @see MMap
        */
-      public static const UICMD_ZOOM_OBJECT: String = "uicmdZoomObject";
+      public static const UICMD_ZOOM_LOCATION: String = "uicmdZoomLocation";
 
       /**
        * @see MMap
        */
-      public static const UICMD_SELECT_OBJECT: String = "uicmdSelectObject";
+      public static const UICMD_SELECT_LOCATION: String = "uicmdSelectLocation";
 
       /**
        * @see MMap
        */
-      public static const UICMD_DESELECT_SELECTED_OBJECT: String = "uicmdDeselectSelectedObject";
+      public static const UICMD_DESELECT_SELECTED_LOCATION: String = "uicmdDeselectSelectedLocation";
 
       /**
        * @see MMap
        */
-      public static const UICMD_MOVE_TO: String = "uicmdMoveTo";
+      public static const UICMD_MOVE_TO_LOCATION: String = "uicmdMoveToLocation";
 
       /**
        * @see MMap
@@ -54,7 +54,7 @@ package models.map.events
       public static const OBJECT_REMOVE: String = "objectRemove";
 
       public function MMapEvent(type: String) {
-         super(type, false, false);
+         super(type);
       }
 
       /**
@@ -66,7 +66,7 @@ package models.map.events
 
       /**
        * Relevant only for <code>UICMD_*</code> and <code>OBJECT_*</code> events.
-       * for <code>UICMD_DESELECT_SELECTED_OBJECT</code> this will be
+       * for <code>UICMD_DESELECT_SELECTED_LOCATION</code> this will be
        * <code>null</code>.
        */
       public var object: *;
@@ -77,6 +77,15 @@ package models.map.events
        * @default false
        */
       public var instant: Boolean = false;
+
+      /**
+       * Relevant only for <code>UICMD_SELECT_LOCATION</code>. If
+       * <code>true</code> will open a navigable static object in the location
+       * defined by <code>object</code> if such objects is in this location.
+       *
+       * @default false
+       */
+      public var openOnSecondCall: Boolean = false;
 
       /**
        * Relevant only for <code>UICMD_*</code> events. Optional. Must not have any arguments.

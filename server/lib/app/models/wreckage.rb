@@ -15,11 +15,6 @@ class Wreckage < ActiveRecord::Base
     :mapping => LocationPoint.attributes_mapping_for(:location),
     :converter => LocationPoint::CONVERTER
 
-  # How much tolerance we should have when considering wreckage as depleted?
-  #
-  # If there is less or equal resource than this, then consider it depleted.
-  REMOVAL_TOLERANCE = 1
-
   def to_s
     "<Wreckage(#{id})@#{location} m:#{metal} e:#{energy} z:#{zetium}"
   end
@@ -29,9 +24,9 @@ class Wreckage < ActiveRecord::Base
   # Object with:
   # * id (Fixnum)
   # * location (LocationPoint#as_json)
-  # * metal (Float)
-  # * energy (Float)
-  # * zetium (Float)
+  # * metal (Fixnum)
+  # * energy (Fixnum)
+  # * zetium (Fixnum)
   #
   def as_json(options=nil)
     {"id" => id, "location" => location.as_json(options),
@@ -88,9 +83,9 @@ class Wreckage < ActiveRecord::Base
     else
       wreckage = in_location(location).first || new(:location => location)
 
-      wreckage.metal += metal
-      wreckage.energy += energy
-      wreckage.zetium += zetium
+      wreckage.metal += metal.floor
+      wreckage.energy += energy.floor
+      wreckage.zetium += zetium.floor
       wreckage.save!
 
       wreckage
@@ -98,11 +93,9 @@ class Wreckage < ActiveRecord::Base
   end
 
   # Override #update to destroy +Wreckage+ instead of saving it if it
-  # crosses REMOVAL_TOLERANCE.
+  # is empty.
   def update(*)
-    if metal < REMOVAL_TOLERANCE &&
-        energy < REMOVAL_TOLERANCE &&
-        zetium < REMOVAL_TOLERANCE
+    if metal == 0 && energy == 0 && zetium == 0
       destroy!
       true
     else

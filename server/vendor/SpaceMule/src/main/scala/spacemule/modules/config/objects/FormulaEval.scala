@@ -27,7 +27,7 @@ object FormulaEval {
 
   private[this] def calculateValue(
     expression: ExpressionBuilder, variables: Option[sc.Map[String, Double]]
-  ): Double = {
+  ): Double = { 
     (variables match {
       case Some(vars) => vars.foldLeft(expression) { case(exp, (name, value)) =>
         exp.withVariable(name, value)
@@ -37,8 +37,28 @@ object FormulaEval {
   }
 
   def eval(formula: String): Double =
-    calculateValue(resolveExpression(formula), None)
+    try {
+      calculateValue(resolveExpression(formula), None)
+    }
+    catch {
+      case e: Exception =>
+        System.err.println(
+          "Error while calculating formula '%s'".format(formula)
+        )
+      throw e
+    }
   
   def eval(formula: String, vars: sc.Map[String, Double]): Double =
-    calculateValue(resolveExpression(formula), Some(vars))
+    try {
+      calculateValue(resolveExpression(formula), Some(vars))
+    }
+    catch {
+      case e: Exception =>
+        System.err.println(
+          "Error while calculating formula '%s' with variables %s".format(
+            formula, vars
+          )
+        )
+      throw e
+    }
 }

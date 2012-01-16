@@ -33,6 +33,13 @@ describe Wreckage do
       Wreckage.in_location(location).first.should be_nil
     end
 
+    it "should floor wreckage resources" do
+      ss = Factory.create(:solar_system)
+      location = LocationPoint.new(ss.id, Location::SOLAR_SYSTEM, 0, 0)
+      wreckage = Wreckage.add(location, 1.5, 1.5, 1.5)
+      [wreckage.metal, wreckage.energy, wreckage.zetium].should == [1, 1, 1]
+    end
+
     it "should create new Wreckage if one does not exist in galaxy" do
       galaxy = Factory.create(:galaxy)
       location = LocationPoint.new(galaxy.id, Location::GALAXY, 0, 0)
@@ -48,8 +55,7 @@ describe Wreckage do
     end
 
     it "should add to planets resources if location is planet" do
-      planet = Factory.create(:planet, :metal => 0, :energy => 0,
-        :zetium => 0)
+      planet = Factory.create(:planet, :metal => 0, :energy => 0, :zetium => 0)
       Wreckage.add(planet, 10, 11, 12)
       planet.reload
       planet.metal.should == 10
@@ -58,8 +64,7 @@ describe Wreckage do
     end
 
     it "should fire changed with planet" do
-      planet = Factory.create(:planet, :metal => 0, :energy => 0,
-        :zetium => 0)
+      planet = Factory.create(:planet, :metal => 0, :energy => 0, :zetium => 0)
       should_fire_event(planet, EventBroker::CHANGED, 
           EventBroker::REASON_OWNER_PROP_CHANGE) do
         Wreckage.add(planet, 10, 11, 12)
@@ -93,16 +98,6 @@ describe Wreckage do
     it "should remove wreckage if it is depleted" do
       wreckage = Factory.create(:wreckage)
       wreckage.metal = wreckage.energy = wreckage.zetium = 0
-      wreckage.save!
-      lambda do
-        wreckage.reload
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should remove wreckage if it is depleted (with tolerance)" do
-      wreckage = Factory.create(:wreckage)
-      wreckage.metal = wreckage.energy = wreckage.zetium = \
-        Wreckage::REMOVAL_TOLERANCE - 0.1
       wreckage.save!
       lambda do
         wreckage.reload

@@ -10,13 +10,11 @@ package components.map
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
    import flash.geom.Point;
-   import flash.geom.Rectangle;
 
    import globalevents.GlobalEvent;
 
    import interfaces.ICleanable;
 
-   import models.BaseModel;
    import models.events.ScreensSwitchEvent;
    import models.location.LocationMinimal;
    import models.map.MMap;
@@ -28,18 +26,20 @@ package components.map
 
 
    /**
-    * Base class for all maps. A map is not ordinary Flex component and therefore does not follow
-    * Flex components lifecycle. Map is drawn, measured and all objects are created when instance is
-    * created. Three protected methods must be overriden in order this works properly:
-    * <code>getBackground()</code>, <code>getSize()</code> and <code>createObjects()</code> (read
-    * documentation of these methods for more information). The mehods are called in the order
-    * they have been mentioned here.
-    * <p>
-    * When you no longer need the map, you <b>must</b> call <code>cleanup()</code> method to remove
-    * all event listeners, references to other objects. Not doing so will <b>definitely</b>
-    * result in memory leaks and performance loss. You also should override this method to release
-    * any additional resources used by the deriving class.
-    * </p>
+    * Base class for all maps. A map is not ordinary Flex component and
+    * therefore does not follow Flex components lifecycle. Map is drawn,
+    * measured and all objects are created when instance is created. Three
+    * protected methods must be overriden in order this works properly:
+    * <code>getBackground()</code>, <code>getSize()</code> and
+    * <code>createObjects()</code> (read documentation of these methods for more
+    * information). The methods are called in the order they have been
+    * mentioned here.
+    * 
+    * <p> When you no longer need the map, you <b>must</b> call
+    * <code>cleanup()</code> method to remove all event listeners, references
+    * to other objects. Not doing so will <b>definitely</b> result in memory
+    * leaks and performance loss. You also should override this method to
+    * release any additional resources used by the deriving class.</p>
     */
    public class CMap extends BaseContainer implements ICleanable
    {
@@ -47,13 +47,10 @@ package components.map
       /* ### INITIALIZATION ### */
       /* ###################### */
       
-      
       private var _backgroundData:BitmapData = null;
       private var _backgroundComponent:BitmapImage = null;
-      
-      
-      public function CMap(model:MMap) : void
-      {
+
+      public function CMap(model: MMap): void {
          super();
          super.model = model;
          addGlobalEventHandlers();
@@ -69,11 +66,9 @@ package components.map
        * 
        * @return background image of the map. Default implementation returns <code>null</code>.
        */
-      public function getBackground() : BitmapData
-      {
+      public function getBackground(): BitmapData {
          return null;
       }
-      
       
       /**
        * Called by constructor to set size of the map. You can leave default implementation of this
@@ -84,38 +79,33 @@ package components.map
        * <code>y</code> is height. Default implemetation returns <code>width</code> and
        * <code>height</code> properties values of <code>getBackground()</code>.
        */
-      public function getSize() : Point
-      {
+      public function getSize(): Point {
          return new Point(
             getBackground().width,
             getBackground().height
          );
       }
-      
-      
+
       /**
-       * Called in <code>createChildren()</code> to create any objects on the map. You don'thave to override this
-       * method and can create and remove objects from the map at any time. Default implementation of this method
+       * Called in <code>createChildren()</code> to create any objects on the
+       * map. You don't have to override this method and can create and remove
+       * objects from the map at any time. Default implementation of this method
        * is empty.
        */
-      protected function createObjects() : void
-      {
+      protected function createObjects(): void {
       }
       
-      
       private var f_childrenCreated:Boolean = false;
-      protected override function createChildren() : void
-      {
+
+      protected override function createChildren(): void {
          super.createChildren();
-         if (f_childrenCreated)
-         {
+         if (f_childrenCreated) {
             return;
          }
-         
+
          _backgroundData = getBackground();
          // Create background image component if we got background
-         if (_backgroundData != null)
-         {
+         if (_backgroundData != null) {
             _backgroundComponent = new BitmapImage();
             _backgroundComponent.smooth = true;
             _backgroundComponent.fillMode = BitmapFillMode.REPEAT;
@@ -125,18 +115,14 @@ package components.map
          createObjects();
          f_childrenCreated = true;
       }
-      
-      
-      public function cleanup() : void
-      {
+
+      public function cleanup(): void {
          removeGlobalEventHandlers();
-         if (model)
-         {
+         if (model) {
             removeModelEventHandlers(getModel());
             model = null;
          }
-         if (_backgroundComponent)
-         {
+         if (_backgroundComponent) {
             removeElement(_backgroundComponent);
             _backgroundComponent.source = null;
             _backgroundComponent = null;
@@ -144,35 +130,30 @@ package components.map
          }
          _viewport = null;
       }
-      
-      
+
+
       /* ######################## */
       /* ### SIZE AND VISUALS ### */
       /* ######################## */
       
-      
-      protected override function measure() : void
-      {
+      protected override function measure() : void {
          var size:Point = getSize();
          measuredWidth = size.x;
          measuredHeight = size.y;
       }
       
-      
-      protected override function updateDisplayList(uw:Number, uh:Number) : void
-      {
+      protected override function updateDisplayList(uw:Number, uh:Number) : void {
          super.updateDisplayList(uw, uh);
-         if (_backgroundComponent)
-         {
+         if (_backgroundComponent) {
             _backgroundComponent.width = uw;
             _backgroundComponent.height = uh;
          }
       }      
+
       
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
-      
       
       private var f_viewportSet:Boolean = false;
       private var _viewport:ViewportZoomable = null;
@@ -180,14 +161,11 @@ package components.map
        * A viewport that is responsible for moving and zooming this map. This is a
        * write-once-read-many property.
        */
-      public function set viewport(value:ViewportZoomable) : void
-      {
-         if (f_viewportSet)
-         {
+      public function set viewport(value: ViewportZoomable): void {
+         if (f_viewportSet) {
             throwWriteOncePropertyError();
          }
-         if (_viewport != value)
-         {
+         if (_viewport != value) {
             _viewport = value;
             f_viewportSet = true;
          }
@@ -195,8 +173,7 @@ package components.map
       /**
        * @private
        */
-      public function get viewport() : ViewportZoomable
-      {
+      public function get viewport() : ViewportZoomable {
          return _viewport;
       }
       
@@ -207,77 +184,66 @@ package components.map
       
       
       /**
-       * When this method is invoked the map should select given model if that model is of correct
-       * type. In <code>CMap</code> this method is empty. Second call to this method should open
-       * the object
+       * When this method is invoked the map should select given location if
+       * that location is defined in the map and if there is a static object in
+       * that location In <code>CMap</code> this method is empty. Second call to
+       * this method should open the navigable static object in that location.
        * 
-       * @param object an object that must be selected or opened.
+       * @param location a location that should be selected
+       * @param center indicates if the component should be moved to the center
+       *        of the viewport
+       * @param openOnSecondCall if <code>true</code> and <code>location</code>
+       *        is the location already selected, the navigable object in this
+       *        location will be opened.
        */
-      protected function selectModel(object:BaseModel) : void
-      {
+      public function selectLocation(location: LocationMinimal,
+                                     center: Boolean = false,
+                                     openOnSecondCall: Boolean = false): void {
       }
-      
       
       /**
-       * Similar to <code>selectModel()</code>. Only the parameter passed is not a model, but
-       * a component. The component passed is guaranteed to be of correct type.
+       * Opens (navigates to) a static navigable object in the given location.
+       * In <code>CMap</code> this method is empty
        * 
-       * @param component a component that represents model of an object that needs to be selected
-       * @param center idicates if the component should be moved to the center of the viewport
-       * @param openOnSecondCall if <code>true</code> and <code>component</code> is the object already
-       * selected, the object will be opened rather than selected.
+       * @param location a location defined by the map
        */
-      public function selectComponent(component:Object,
-                                      center:Boolean = false,
-                                      openOnSecondCall:Boolean = false) : void
-      {
+      public function openLocation(location: LocationMinimal): void {
       }
-      
       
       /**
-       * Opens (navigates to) a model assosiated with the given component. The component passed is
-       * guaranteed to be of correct type.
-       * 
-       * @param component a component that represents model of an object that need to be opened
+       * When this method is invoked the map should deselect selected location.
+       * In <code>CMap</code> this method is empty.
        */
-      public function openComponent(component:Object) : void
-      {
+      public function deselectSelectedLocation(): void {
       }
-      
-      
-      /**
-       * When this method is invoked the map should deselect selected object. In
-       * <code>CMap</code> this method is empty.
-       */
-      public function deselectSelectedObject() : void
-      {
-      }
-      
       
       /**
        * When invoked, map should reset itself to initial state. This is an empty method in
        * <code>CMap</code>: override if needed.
        */
-      protected function reset() : void {
+      protected function reset(): void {
       }
       
-      protected function zoomArea(area:Rectangle, operationCompleteHandler:Function = null) : void {
-         _viewport.zoomArea(area, true, operationCompleteHandler);
+      protected function centerLocation(location: LocationMinimal,
+                                        instant: Boolean,
+                                        operationCompleteHandler: Function) : void {
       }
       
-      protected function centerLocation(location:LocationMinimal, operationCompleteHandler:Function) : void {
+      protected function zoomLocationImpl(location: LocationMinimal,
+                                          instant: Boolean,
+                                          operationCompleteHandler: Function = null) : void {
       }
       
-      protected function zoomObjectImpl(object:*, operationCompleteHandler:Function = null) : void {
-      }
-      
-      protected function selectObjectImpl(object:*, operationCompleteHandler:Function = null) : void {
-         selectModel(BaseModel(object));
+      protected function selectLocationImpl(location: LocationMinimal,
+                                            instant: Boolean,
+                                            openOnSecondCall: Boolean,
+                                            operationCompleteHandler: Function = null) : void {
+         selectLocation(location, !instant, openOnSecondCall);
          callOperationCompleteHandler(operationCompleteHandler);
       }
 
-      protected function deselectSelectedObjectImpl(operationCompleteHandler:Function = null) : void {
-         deselectSelectedObject();
+      protected function deselectSelectedLocationImpl(operationCompleteHandler:Function = null) : void {
+         deselectSelectedLocation();
          callOperationCompleteHandler(operationCompleteHandler);
       }
       
@@ -285,95 +251,99 @@ package components.map
       /* ###################### */
       /* ### EVENT HANDLERS ### */
       /* ###################### */
-      
-      private var MA: MCMainArea = MCMainArea.getInstance();
-      
-      protected function addGlobalEventHandlers() : void
-      {
-         MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGING, mainAreaChangingHandler);
+
+      private function get MA(): MCMainArea {
+         return MCMainArea.getInstance();
+      }
+
+      protected function addGlobalEventHandlers(): void {
+         MA.addEventListener(
+            ScreensSwitchEvent.SCREEN_CHANGING, mainAreaChangingHandler
+         );
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
-      
-      
-      protected function removeGlobalEventHandlers() : void
-      {
-         MA.removeEventListener(ScreensSwitchEvent.SCREEN_CHANGING, mainAreaChangingHandler);
+
+      protected function removeGlobalEventHandlers(): void {
+         MA.removeEventListener(
+            ScreensSwitchEvent.SCREEN_CHANGING, mainAreaChangingHandler
+         );
          EventBroker.unsubscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
-      
-      
-      private function mainAreaChangingHandler(event: ScreensSwitchEvent) : void
-      {
+
+      private function mainAreaChangingHandler(event: ScreensSwitchEvent): void {
          reset();
       }
-      
-      
-      private function global_appResetHandler(event:GlobalEvent) : void
-      {
+
+      private function global_appResetHandler(event: GlobalEvent): void {
          cleanup();
       }
       
-      
-      protected function addModelEventHandlers(model:MMap) : void
-      {
+      protected function addModelEventHandlers(model:MMap) : void {
          model.addEventListener(
-            MMapEvent.UICMD_ZOOM_OBJECT,
-            model_uicmdZoomObjectHandler, false, 0, true
+            MMapEvent.UICMD_ZOOM_LOCATION,
+            model_uicmdZoomLocationHandler, false, 0, true
          );
          model.addEventListener(
-            MMapEvent.UICMD_SELECT_OBJECT,
-            model_uicmdSelectObjectHandler, false, 0, true
+            MMapEvent.UICMD_SELECT_LOCATION,
+            model_uicmdSelectLocationHandler, false, 0, true
          );
          model.addEventListener(
-            MMapEvent.UICMD_DESELECT_SELECTED_OBJECT,
-            model_uicmdDeselectSelectedObjectHandler, false, 0, true
+            MMapEvent.UICMD_DESELECT_SELECTED_LOCATION,
+            model_uicmdDeselectSelectedLocationHandler, false, 0, true
          );
          model.addEventListener(
-            MMapEvent.UICMD_MOVE_TO,
-            model_uicmdMoveToHandler, false, 0, true
+            MMapEvent.UICMD_MOVE_TO_LOCATION,
+            model_uicmdMoveToLocationHandler, false, 0, true
          );
       }
       
-      
-      protected function removeModelEventHandlers(model:MMap) : void
-      {
+      protected function removeModelEventHandlers(model:MMap) : void {
          model.removeEventListener(
-            MMapEvent.UICMD_ZOOM_OBJECT, model_uicmdZoomObjectHandler, false
+            MMapEvent.UICMD_ZOOM_LOCATION,
+            model_uicmdZoomLocationHandler, false
          );
          model.removeEventListener(
-            MMapEvent.UICMD_SELECT_OBJECT, model_uicmdSelectObjectHandler, false
+            MMapEvent.UICMD_SELECT_LOCATION,
+            model_uicmdSelectLocationHandler, false
          );
          model.removeEventListener(
-            MMapEvent.UICMD_DESELECT_SELECTED_OBJECT,
-            model_uicmdDeselectSelectedObjectHandler, false
+            MMapEvent.UICMD_DESELECT_SELECTED_LOCATION,
+            model_uicmdDeselectSelectedLocationHandler, false
          );
          model.removeEventListener(
-            MMapEvent.UICMD_MOVE_TO, model_uicmdMoveToHandler, false
+            MMapEvent.UICMD_MOVE_TO_LOCATION,
+            model_uicmdMoveToLocationHandler, false
          );
       }
 
-
-      private function model_uicmdZoomObjectHandler(event: MMapEvent): void {
-         if (viewport) {
-            zoomObjectImpl(event.object, event.operationCompleteHandler);
+      private function model_uicmdZoomLocationHandler(event: MMapEvent): void {
+         if (viewport != null) {
+            zoomLocationImpl(
+               event.object, event.instant, event.operationCompleteHandler
+            );
          }
       }
 
-      private function model_uicmdSelectObjectHandler(event: MMapEvent): void {
-         if (viewport) {
-            selectObjectImpl(event.object, event.operationCompleteHandler);
+      private function model_uicmdSelectLocationHandler(event: MMapEvent): void {
+         if (viewport != null) {
+            selectLocationImpl(
+               event.object, event.instant, event.openOnSecondCall,
+               event.operationCompleteHandler
+            );
          }
       }
 
-      private function model_uicmdDeselectSelectedObjectHandler(event: MMapEvent): void {
-         if (viewport) {
-            deselectSelectedObjectImpl(event.operationCompleteHandler);
+      private function model_uicmdDeselectSelectedLocationHandler(event: MMapEvent): void {
+         if (viewport != null) {
+            deselectSelectedLocationImpl(event.operationCompleteHandler);
          }
       }
 
-      private function model_uicmdMoveToHandler(event: MMapEvent): void {
-         if (viewport) {
-            centerLocation(event.object, event.operationCompleteHandler);
+      private function model_uicmdMoveToLocationHandler(event: MMapEvent): void {
+         if (viewport != null) {
+            centerLocation(
+               event.object, event.instant, event.operationCompleteHandler
+            );
          }
       }
       
@@ -381,25 +351,21 @@ package components.map
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
-      
-      public function getModel() : MMap
-      {
+
+      public function getModel(): MMap {
          return MMap(model);
       }
 
-      private function callOperationCompleteHandler(handler:Function): void {
+      private function callOperationCompleteHandler(handler: Function): void {
          if (handler != null) {
             handler.call();
          }
       }
-      
-      
+
       /**
        * @throws IllegalOperationError
        */
-      private function throwWriteOncePropertyError() : void
-      {
+      private function throwWriteOncePropertyError(): void {
          throw new IllegalOperationError("This property is of write-once type: it can be set only once");
       }
    }

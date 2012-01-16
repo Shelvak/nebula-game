@@ -3,6 +3,7 @@ package spacemule.modules.combat.post_combat
 import scala.collection.mutable.HashMap
 import spacemule.modules.config.objects.Config
 import spacemule.modules.combat.objects._
+import spacemule.helpers.MathFormulas
 
 object Statistics {
   case class PlayerData(
@@ -41,11 +42,26 @@ object Statistics {
     val percentage = damage.toDouble / target.hitPoints
     Resources.totalVolume(target, percentage)
   }
+
+  private[this] lazy val fairnessMultiplierFunction = 
+    MathFormulas.line(Config.battleVpsMaxWeakness, 0.0, 1.0, 1.0)
+  
+  def fairnessMultiplier(aggressorPoints: Int, defenderPoints: Int): Double = {
+    // To avoid NaNs
+    if (aggressorPoints == 0) return 1.0
+
+    val multiplier = defenderPoints.toDouble / aggressorPoints.toDouble
+    if (defenderPoints >= aggressorPoints)
+      multiplier
+    else
+      math.max(fairnessMultiplierFunction(multiplier), 0)
+  }
 }
 
 class Statistics(
   alliances: Alliances,
-  vpsForPlayerDamage: Boolean = false
+  vpsFunction: Config.CombatVpsFormula,
+  credsFunction: Config.CombatCredsFormula
 ) {
   private val damageDealtPlayer = HashMap[Option[Player], Int]()
   private val damageTakenPlayer = HashMap[Option[Player], Int]()
@@ -54,7 +70,7 @@ class Statistics(
   private val xpEarned = HashMap[Option[Player], Int]()
   private val pointsEarned = HashMap[Option[Player], Int]()
   private val victoryPointsEarned = HashMap[Option[Player], Double]()
-  private val credsEarned = HashMap[Option[Player], Int]()
+  private val credsEarned = HashMap[Option[Player], Double]()
 
   private val players = alliances.players.map { case (player, allianceId) =>
     damageDealtAlliance(allianceId) = 0
@@ -69,6 +85,20 @@ class Statistics(
 
     (player, allianceId)
   }
+  
+  private val pointsCache = HashMap.empty[Player, Int]
+  
+  private def pointsForFairnessMultiplier(player: Player) = {
+    if (pointsCache.contains(player)) {
+      pointsCache(player)
+    }
+    else {
+      val points = player.points.economy + player.points.science +
+        player.points.army
+      pointsCache(player) = points
+      points
+    }
+  }
 
   def damage(source: Combatant, target: Combatant, damage: Int, sourceXp: Int,
              targetXp: Int) = {
@@ -82,12 +112,25 @@ class Statistics(
     xpEarned(target.player) += targetXp
     pointsEarned(source.player) += Statistics.points(target, damage)
 
-    // You do not get victory points for damage to NPC players.
-    if (vpsForPlayerDamage && ! target.player.isEmpty) {
-      val (groundDamage, spaceDamage) =
-        if (target.isGround) (damage, 0) else (0, damage)
-      val points = Config.battlegroundCombatVps(groundDamage, spaceDamage)
-      victoryPointsEarned(source.player) += points
+    (source.player, target.player) match {
+      // You only get victory points for non-npc player -> non-npc player
+      // damage.
+      case (Some(sourcePlayer), Some(targetPlayer)) =>
+        val (groundDamage, spaceDamage) =
+          if (target.isGround) (damage, 0) else (0, damage)
+    
+        val multiplier = Statistics.fairnessMultiplier(
+          pointsForFairnessMultiplier(sourcePlayer),
+          pointsForFairnessMultiplier(targetPlayer)
+        )
+        val vps = vpsFunction(groundDamage, spaceDamage, multiplier)
+        if (vps != 0) {
+          victoryPointsEarned(source.player) += vps
+    
+          val creds = credsFunction(vps)
+          if (creds != 0) credsEarned(source.player) += creds
+        }
+      case _ => ()
     }
 
     val points = target.vpsForReceivedDamage(damage)
@@ -113,7 +156,7 @@ class Statistics(
         xpEarned(player),
         pointsEarned(player),
         victoryPointsEarned(player).round.toInt,
-        credsEarned(player)
+        credsEarned(player).round.toInt
       )
 
       (player -> playerData)

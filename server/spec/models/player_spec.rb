@@ -1721,6 +1721,62 @@ describe Player do
     end
   end
 
+  describe ".battle_vps_multiplier" do
+    def player(economy_points=10, science_points=15, army_points=20,
+        war_points=25)
+      Factory.create(:player, :economy_points => economy_points,
+        :science_points => science_points, :army_points => army_points,
+        :war_points => war_points)
+    end
+    
+    def points(player)
+      (player.economy_points + player.science_points + player.army_points).to_f
+    end
+
+    def multiplier(aggressor, defender)
+      points(defender) / points(aggressor)
+    end
+
+    it "should ignore war points" do
+      Player.battle_vps_multiplier(
+        player(10, 15, 20, 25).id, player(10, 15, 20, 250).id
+      ).should == 1
+    end
+
+    it "should return 1 if aggressor has no points" do
+      Player.battle_vps_multiplier(
+        player(0, 0, 0, 0).id, player(10, 15, 20, 250).id
+      ).should == 1
+    end
+
+    describe "if aggressor is stronger than defender" do
+      it "should use proportional linear formula" do
+        aggressor = player(10, 10, 10, 10)
+        defender = player(9, 9, 9, 9)
+        Player.battle_vps_multiplier(aggressor.id, defender.id).
+          should == MathFormulas.line(
+            Cfg::Java.battleVpsMaxWeakness, 0, 1, 1
+          )[multiplier(aggressor, defender)]
+      end
+
+      it "should return 0 if aggressor is too strong" do
+        aggressor = player(10, 10, 10, 10)
+        d_points = 10 * (Cfg::Java.battleVpsMaxWeakness - 0.1)
+        defender = player(d_points, d_points, d_points, d_points)
+        Player.battle_vps_multiplier(aggressor.id, defender.id).
+          should == 0
+      end
+    end
+
+    describe "if aggressor is weaker than defender" do
+      it "should use linear formula" do
+        aggressor = player(10, 10, 10, 10)
+        defender = player(20, 20, 20, 20)
+        Player.battle_vps_multiplier(aggressor.id, defender.id).should == 2
+      end
+    end
+  end
+
   describe "on callback" do
     describe "inactivity check" do
       let(:player) { Factory.create(:player) }
