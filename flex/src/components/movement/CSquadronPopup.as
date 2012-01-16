@@ -1,7 +1,9 @@
 package components.movement
 {
    import com.developmentarc.core.utils.EventBroker;
-   
+
+   import components.buildingselectedsidebar.NpcUnitsList;
+
    import components.map.space.CSpaceMapPopup;
    import components.movement.skins.CSquadronPopupSkin;
    import components.ui.PlayerProfileButton;
@@ -209,9 +211,8 @@ package components.movement
             if (_squadron.owner == Owner.PLAYER
                || _squadron.owner == Owner.ALLY
                || _squadron.owner == Owner.NAP
-               || _squadron.owner == Owner.NPC
-               || (!isVpZone && !hasShipsWithBonus
-               && !_squadron.currentHop.location.isBattleground))
+               || (!((isVpZone || _squadron.currentHop.location.isBattleground)
+               && _squadron.owner != Owner.NPC) && !hasShipsWithBonus))
             {
                btnRewardInfo.visible = false;
             }
@@ -219,69 +220,72 @@ package components.movement
             {
                btnRewardInfo.visible = true;
             }
+            killRewardContainer.visible = false;
          }
       }
 
-      private function setReward(e: MSquadronEvent): void
+      private function setReward(e: MSquadronEvent = null): void
       {
-         /*If this is a main battleground, use CONFIG['battleground.battle.victory_points'] formula.
-          If this is a vps zone, use CONFIG['combat.battle.victory_points'] formula*/
-         var formula: String = _squadron.currentHop.location.isBattleground
-            ? Config.getBattlegroundVictoryPoints()
-            : Config.getCombatVictoryPoints();
-         MKR.removeEventListener(MSquadronEvent.MULTIPLIER_CHANGE, setReward);
          var totalVps: Number = 0;
          var totalCreds: Number = 0;
          totalVps += bonusVictoryPoints;
          totalCreds += bonusCreds;
-         var unitsHp: Object = {ground: 0, space: 0};
-         for each (var unit: Unit in _squadron.units)
+         /* If owner is npc we don't calculate damage bonus as it does not count*/
+         if (e != null)
          {
-            if (unit.kind == UnitKind.SPACE)
+            /*If this is a main battleground, use CONFIG['battleground.battle.victory_points'] formula.
+             If this is a vps zone, use CONFIG['combat.battle.victory_points'] formula*/
+            var formula: String = _squadron.currentHop.location.isBattleground
+               ? Config.getBattlegroundVictoryPoints()
+               : Config.getCombatVictoryPoints();
+            MKR.removeEventListener(MSquadronEvent.MULTIPLIER_CHANGE, setReward);
+            var unitsHp: Object = {ground: 0, space: 0};
+            for each (var unit: Unit in _squadron.units)
             {
-               unitsHp.space += unit.hp;
+               if (unit.kind == UnitKind.SPACE)
+               {
+                  unitsHp.space += unit.hp;
+               }
+               else
+               {
+                  unitsHp.ground += unit.hp;
+               }
             }
-            else
-            {
-               unitsHp.ground += unit.hp;
-            }
+            var tempVps: Number = StringUtil.evalFormula(formula, {
+               damage_dealt_to_space: unitsHp.space,
+               damage_dealt_to_ground: unitsHp.ground,
+               fairness_multiplier: MKR.multiplier
+            });
+
+            totalVps += tempVps;
+
+            /* If this is a main battleground, use CONFIG['battleground.battle.creds'] formula.
+             If this is a vps zone, use CONFIG['combat.battle.creds'] formula.*/
+            formula = _squadron.currentHop.location.isBattleground
+               ? Config.getBattlegroundCreds()
+               : Config.getCombatCreds();
+
+            totalCreds += StringUtil.evalFormula(formula, {
+               victory_points: tempVps
+            });
+
+            totalCreds = Math.round(totalCreds);
+            totalVps = Math.round(totalVps);
          }
-         var tempVps: Number = StringUtil.evalFormula(formula, {
-            damage_dealt_to_space: unitsHp.space,
-            damage_dealt_to_ground: unitsHp.ground
-         });
-
-         totalVps += tempVps;
-         
-         /* If this is a main battleground, use CONFIG['battleground.battle.creds'] formula.
-          If this is a vps zone, use CONFIG['combat.battle.creds'] formula.*/
-         formula = _squadron.currentHop.location.isBattleground
-            ? Config.getBattlegroundCreds()
-            : Config.getCombatCreds();
-         
-         totalCreds += StringUtil.evalFormula(formula, {
-            victory_points: tempVps
-         });
-         
-         totalCreds = Math.round(totalCreds);
-         totalVps = Math.round(totalVps);
-
          if (totalCreds > 0 || totalVps > 0)
          {
             killRewardContainer.visible = true;
             lblKillCreds.text = totalCreds.toFixed();
             lblKillVps.text = totalVps.toFixed();
+            lblHonorCoef.text = (MKR.multiplier * 100).toFixed(2) + '%';
+            credsGroup.visible = credsGroup.includeInLayout = totalCreds > 0;
+            vpsGroup.visible = vpsGroup.includeInLayout = totalVps > 0;
+            honorGroup.visible = honorGroup.includeInLayout = (e != null);
+
          }
          else
          {
             killRewardContainer.visible = false;
-         }
-      }
-
-      private function setRewardButtonsLabel(): void
-      {
-         if (btnRewardInfo != null && _squadron != null) {
-            btnRewardInfo.label = getString("label.showKillReward");
          }
       }
       
@@ -289,11 +293,19 @@ package components.movement
 
       private function showKillReward(e: MouseEvent): void
       {
-          MKR.addEventListener(MSquadronEvent.MULTIPLIER_CHANGE, setReward);
-          new PlayersCommand(PlayersCommand.BATTLE_VPS_MULTIPLIER,
-             {
-                'targetId': _squadron.player.id
-             }).dispatch();
+         if (_squadron.owner != Owner.NPC)
+         {
+             MKR.addEventListener(MSquadronEvent.MULTIPLIER_CHANGE, setReward);
+             new PlayersCommand(PlayersCommand.BATTLE_VPS_MULTIPLIER,
+                {
+                   'targetId': _squadron.player.id
+                }).dispatch();
+         }
+         else
+         {
+            MKR.multiplier = 0;
+            setReward();
+         }
       }
 
       [SkinPart(required="true")]
@@ -303,7 +315,16 @@ package components.movement
       public var lblKillVps:Label;
 
       [SkinPart(required="true")]
+      public var lblHonorCoef:Label;
+
+      [SkinPart(required="true")]
       public var killRewardContainer:Group;
+      [SkinPart(required="true")]
+      public var credsGroup:Group;
+      [SkinPart(required="true")]
+      public var vpsGroup:Group;
+      [SkinPart(required="true")]
+      public var honorGroup:Group;
 
       
       [SkinPart(required="true")]
@@ -436,7 +457,6 @@ package components.movement
             updateUnitsOrdersButtonsVisibility();
          }
          else if (instance == btnRewardInfo) {
-            setRewardButtonsLabel();
             addRewardButtonEventHandlers(btnRewardInfo);
             updateRewardButtonsVisibility();
          }

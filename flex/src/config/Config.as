@@ -459,7 +459,9 @@ package config
       /* For 1 dmg point to this type of unit */
       public static function getUnitVictoryPointsBonus(type: String): Number
       {
-         return getUnitProperty(type, 'vpsOnDamage');
+         return getUnitProperty(type, 'vpsOnDamage') != null
+            ? getUnitProperty(type, 'vpsOnDamage')
+            : 0;
       }
 
       /* Const of creds for killing one unit */

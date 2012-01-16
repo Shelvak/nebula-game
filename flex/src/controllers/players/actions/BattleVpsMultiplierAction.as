@@ -4,6 +4,8 @@ package controllers.players.actions
    import controllers.CommunicationCommand;
    import controllers.Messenger;
 
+   import models.movement.MSquadKillReward;
+
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
 
@@ -31,7 +33,7 @@ package controllers.players.actions
    {
 
       public override function applyServerAction(cmd: CommunicationCommand): void {
-
+         MSquadKillReward.getInstance().multiplier = cmd.parameters.multiplier;
       }
    }
 }

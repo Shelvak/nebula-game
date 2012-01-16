@@ -1548,6 +1548,18 @@
     <title.killBonus value="If you destroy this fleet you will get:"/>
     <label.credsKillBonus value="Creds "/>
     <label.vpsKillBonus value="Victory points "/>
+    <label.honorCoef value="Honor coef."/>
+    <tooltip.honorCoef>
+      <p>
+        Honor coefficient is calculated by relative strength between you and
+        your target.
+      </p>
+      <p>
+        You will gain more rewards if you are weaker than your target and less
+        rewards if stronger than him.
+      </p>
+    </tooltip.honorCoef>
+    <label.showKillReward value="Rewards"/>
     <message.combatCooldownInfo 
       value="Upon arrival there will be {0} cooldown before combat will ensue."/>
     <message.speedUpCost 
