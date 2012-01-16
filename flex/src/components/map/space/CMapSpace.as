@@ -565,7 +565,11 @@ package components.map.space
             staticObjectsPopup.model = null;
             staticObjectsPopup.visible = false;
             staticObjectsPopup.includeInLayout = false;
-            grid.getStaticObjectInSector(selectedLocation).selected = false;
+            const selectedObject:CStaticSpaceObjectsAggregator =
+               grid.getStaticObjectInSector(selectedLocation);
+            if (selectedObject != null) {
+               selectedObject.selected = false;
+            }
             selectedLocation = null;
             VerticalLayout(sectorPopups.layout).paddingTop = 0;
          }
