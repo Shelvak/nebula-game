@@ -17,7 +17,7 @@ class AlliancesController < GenericController
 
     raise GameLogicError.new(
       "Cannot create alliance if cooldown hasn't expired yet!") \
-      unless player.alliance_cooldown_expired?
+      unless player.alliance_cooldown_expired?(nil)
     raise GameLogicError.new("Cannot create alliance without technology!") \
       unless Technology::Alliances.exists?([
         "player_id=? AND level > 0", player.id])
@@ -78,13 +78,14 @@ class AlliancesController < GenericController
   def action_join
     param_options :required => %w{notification_id}
 
-    raise GameLogicError.new(
-      "Cannot join alliance if cooldown hasn't expired yet!") \
-      unless player.alliance_cooldown_expired?
-
     notification = Notification.where(:player_id => player.id).find(
       params['notification_id'])
     alliance = Alliance.find(notification.params[:alliance]['id'])
+
+    raise GameLogicError.new(
+      "Cannot join alliance if cooldown hasn't expired yet!") \
+      unless player.alliance_cooldown_expired?(alliance.id)
+
     if alliance.full?
       respond :success => false
     else
@@ -117,7 +118,8 @@ class AlliancesController < GenericController
   # Kicks player out of alliance.
   #
   # You must be an alliance owner to do this. Kicked player is free to join
-  # other alliance immediately after kick.
+  # other alliance immediately after kick but cannot rejoin this one for
+  # same cooldown as if he left.
   #
   # Invocation: by client
   #
@@ -127,18 +129,15 @@ class AlliancesController < GenericController
   # Response: None
   #
   def action_kick
-    param_options :required => %{player_id}
+    param_options :required => {:player_id => Fixnum}
 
     alliance = get_owned_alliance
     raise GameLogicError.new("Current player is not in alliance!") \
       if alliance.nil?
 
-    member = Player.where(:alliance_id => alliance.id).find(
-      params['player_id'])
-    raise GameLogicError.new("Cannot kick yourself!") \
-      if member.id == player.id
-    alliance.throw_out(member)
-    Notification.create_for_kicked_from_alliance(alliance, member)
+    member = Player.where(:alliance_id => alliance.id).find(params['player_id'])
+    raise GameLogicError.new("Cannot kick yourself!") if member.id == player.id
+    alliance.kick(member)
   end
 
   ACTION_SHOW = 'alliances|show'

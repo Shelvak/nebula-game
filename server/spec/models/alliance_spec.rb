@@ -487,6 +487,34 @@ describe Alliance do
     end
   end
 
+  describe "#kick" do
+    let(:alliance) { create_alliance }
+    let(:player) { Factory.create(:player, :alliance => alliance) }
+
+    it "should throw player out from alliance" do
+      alliance.should_receive(:throw_out).with(player)
+      alliance.kick(player)
+    end
+
+    it "should set alliance cooldown" do
+      alliance.kick(player)
+      player.reload.alliance_cooldown_ends_at.
+        should be_within(SPEC_TIME_PRECISION).
+                 of(Cfg.alliance_leave_cooldown.from_now)
+    end
+
+    it "should set alliance cooldown id" do
+      alliance.kick(player)
+      player.reload.alliance_cooldown_id.should == alliance.id
+    end
+
+    it "should create notification" do
+      Notification.should_receive(:create_for_kicked_from_alliance).
+        with(alliance, player)
+      alliance.kick(player)
+    end
+  end
+
   describe "#transfer_ownership!" do
     let(:alliance) do
       alliance = create_alliance

@@ -48,9 +48,8 @@ describe AlliancesController do
       end.should raise_error(GameLogicError)
     end
 
-    it "should fail if player has unexpired alliance cooldown" do
-      player.alliance_cooldown_ends_at = 10.minutes.from_now
-      player.save!
+    it "should check for player alliance cooldown (global check)" do
+      player.should_receive(:alliance_cooldown_expired?).with(nil)
 
       lambda do
         invoke @action, @params
@@ -176,9 +175,8 @@ describe AlliancesController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should fail if cooldown hasn't expired yet" do
-      player.alliance_cooldown_ends_at = 10.minutes.from_now
-      player.save!
+    it "should check if player alliance cooldown has expired (alliance wise)" do
+      player.should_receive(:alliance_cooldown_expired?).with(@alliance.id)
 
       lambda do
         invoke @action, @params
@@ -280,21 +278,8 @@ describe AlliancesController do
       end.should raise_error(GameLogicError)
     end
 
-    it "should not change player alliance cooldown" do
-      lambda do
-        invoke @action, @params
-        @member.reload
-      end.should_not change(@member, :alliance_cooldown_ends_at)
-    end
-
-    it "should throw out player" do
-      player.alliance.should_receive(:throw_out).with(@member)
-      invoke @action, @params
-    end
-    
-    it "should create notification" do
-      Notification.should_receive(:create_for_kicked_from_alliance).with(
-        @alliance, @member)
+    it "should kick player" do
+      player.alliance.should_receive(:kick).with(@member)
       invoke @action, @params
     end
 

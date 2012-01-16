@@ -235,6 +235,18 @@ class Alliance < ActiveRecord::Base
     true
   end
 
+  # Kicks _player_ out of +Alliance+. Does not allow him to rejoin for specified
+  # period of time.
+  def kick(player)
+    throw_out(player)
+
+    player.alliance_cooldown_ends_at = Cfg.alliance_leave_cooldown.from_now
+    player.alliance_cooldown_id = id
+    player.save!
+
+    Notification.create_for_kicked_from_alliance(self, player)
+  end
+
   # Changes alliance ownership and makes _player_ new owner.
   #
   # He must:
