@@ -797,6 +797,9 @@ assets:
         next_slide_btn_up.png:         Button_next_up.png
         next_slide_btn_over.png:       Button_next_over.png
         next_slide_btn_down.png:       Button_next_down.png
+        close_btn_up.png:              Button_close_up.png
+        close_btn_over.png:            Button_close_over.png
+        close_btn_down.png:            Button_close_down.png
         quest_button_over.png:  Quest_icon_over.png
         quest_button_up.png:  Quest_icon_up.png
         quest_button_blink.png:  Quest_icon_up2.png

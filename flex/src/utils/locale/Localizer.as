@@ -109,7 +109,7 @@ package utils.locale
       
       /**
        * Resolves names of objects in a string. Resolves each sequence of the form:
-       * <code>[obj:{amount}:{name}(:{form})]</code> (parantheses indicate optional parts). Here:
+       * <code>[obj:{amount}:{name}(:{form})]</code> (parentheses indicate optional parts). Here:
        * <ul>
        *    <li><code>{amount}</code> - number of objects (to determine correct form)</li>
        *    <li><code>{name}</code> - name of an object (must match locale entries)</li>
