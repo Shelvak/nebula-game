@@ -400,9 +400,12 @@ package models.player
       public function belongsTo(allianceId:int) : Boolean {
          return this.allianceId == allianceId;
       }
-      
-      public function ownsAlliance(allianceId:int) : Boolean {
-         return belongsTo(allianceId) && allianceOwner;
+
+      [Bindable(event="allianceIdChange")]
+      [Bindable(event="alliancePlayerCountChange")]
+      [Bindable(event="maxAlliancePlayerCountChange")]
+      public function get canInviteToAlliance(): Boolean {
+         return hasAllianceTechnology && allianceOwner && !allianceFull;
       }
       
       

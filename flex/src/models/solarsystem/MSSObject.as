@@ -575,9 +575,7 @@ package models.solarsystem
                !inBattleground &&
                !ownerIsAlly &&
                !ownerIsPlayer &&
-                ML.player.hasAllianceTechnology &&
-                ML.player.allianceOwner &&
-               !ML.player.allianceFull;
+                ML.player.canInviteToAlliance;
       }
       
       
