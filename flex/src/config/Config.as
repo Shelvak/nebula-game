@@ -172,6 +172,35 @@ package config
       /* ############################ */
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
+
+      /* returns a formula */
+      public static function getBattlegroundCreds(): String
+      {
+         return getValue('battleground.battle.creds');
+      }
+
+      /* returns a formula */
+      public static function getCombatCreds(): String
+      {
+         return getValue('combat.battle.creds');
+      }
+
+      /* returns a formula */
+      public static function getBattlegroundVictoryPoints(): String
+      {
+         return getValue('battleground.battle.victoryPoints');
+      }
+
+      /* returns a formula */
+      public static function getCombatVictoryPoints(): String
+      {
+         return getValue('combat.battle.victoryPoints');
+      }
+
+      public static function getVPZones(): Array
+      {
+         return getValue("combat.battle.vpZones");
+      }
       
       public static function getMaxPopulation(): int
       {
@@ -425,7 +454,21 @@ package config
       /* ############################ */
       /* ### UNITS CONFIG GETTERS ### */
       /* ############################ */
-      
+
+
+      /* For 1 dmg point to this type of unit */
+      public static function getUnitVictoryPointsBonus(type: String): Number
+      {
+         return getUnitProperty(type, 'vpsOnDamage') != null
+            ? getUnitProperty(type, 'vpsOnDamage')
+            : 0;
+      }
+
+      /* Const of creds for killing one unit */
+      public static function getUnitCredsBonus(type: String): Number
+      {
+         return getUnitProperty(type, 'credsForKilling');
+      }
       
       public static function getResourceVolume(type: String) : Number
       {

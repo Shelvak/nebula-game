@@ -22,8 +22,9 @@
          
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
-         
-         
+         import utils.locale.Localizer;
+
+
          private function getImg(key:String) : BitmapData
          {
             return ImagePreloader.getInstance().getImage(AssetNames.MOVEMENT_IMAGES_FOLDER + "squad_popup_" + key);
@@ -58,8 +59,60 @@
                imgLocButtons.height = 47;
             }
          }
+
+         private function getText(resourceName:String, parameters:Array = null) : String {
+           return Localizer.string("Movement", resourceName, parameters);
+         }
       ]]>
    </fx:Script>
+
+  <s:Group id="killRewardContainer" left="150" right="18" top="-117"
+           height="90" mouseEnabled="false" visible="false">
+    <base:BorderedGroupBackground left="0" right="0" top="0" bottom="0"
+                                  mouseEnabled="false"/>
+    <s:Rect top="4" bottom="4" right="2" left="2">
+      <s:fill>
+        <s:SolidColor color="#0f0f0f"/>
+      </s:fill>
+    </s:Rect>
+    <s:Button right="8" top="8" skinClass="components.skins.DeleteButtonSkin"
+              click="killRewardContainer.visible = false"/>
+    <s:Group left="6" right="2" bottom="4" top="8" mouseEnabled="false">
+      <s:Label id="lblKillBonusTitle" fontWeight="bold"
+               text="{getText('title.killBonus')}" left="3" right="3"
+               mouseEnabled="false"/>
+      <s:Group top="{lblKillBonusTitle.height + 6}" left="6" right="6"
+               mouseEnabled="false" >
+        <s:Group id="credsGroup">
+          <s:Label text="{getText('label.credsKillBonus')}" width="100"/>
+          <s:Label id="lblKillCreds"/>
+          <s:layout><s:HorizontalLayout/></s:layout>
+        </s:Group>
+        <s:Group id="vpsGroup">
+          <s:Label text="{getText('label.vpsKillBonus')}" width="100"/>
+          <s:Label id="lblKillVps"/>
+          <s:layout><s:HorizontalLayout/></s:layout>
+        </s:Group>
+        <s:Group width="100%" id="honorGroup">
+          <s:Line width="100%" id="honorLine">
+            <s:stroke>
+              <s:SolidColorStroke color="#afafaf"/>
+            </s:stroke>
+          </s:Line>
+          <s:Group top="{honorLine.height + 6}"
+                   toolTip="{getText('tooltip.honorCoef')}">
+            <s:Label text="{getText('label.honorCoef')}" width="100"
+                     color="#afafaf"/>
+            <s:Label id="lblHonorCoef" color="#afafaf"/>
+            <s:layout>
+              <s:HorizontalLayout/>
+            </s:layout>
+          </s:Group>
+        </s:Group>
+        <s:layout><s:VerticalLayout/></s:layout>
+      </s:Group>
+    </s:Group>
+  </s:Group>
    
    <base:SpinnerContainer busy="{hostComponent.squadron.pending}" left="-7" right="0" top="-33" bottom="0"
                           mouseEnabled="false">
@@ -79,6 +132,10 @@
             </s:layout>
             <s:Label id="lblOwner" styleName="ownerTitle"/>
             <ui:PlayerProfileButton id="btnOwner"/>
+         </s:Group>
+         <s:Group right="40" top="8" bottom="0">
+           <s:Button id="btnRewardInfo" label="{getText('label.showKillReward')}"
+                     skinClass="components.skins.LinkButtonSkin"/>
          </s:Group>
       </s:Group>
       
@@ -101,7 +158,9 @@
       <s:List id="lstCachedUnits" left="35" top="30" right="25" height="156"
               skinClass="components.movement.skins.CSquadronCachedUnitsListSkin"
               visible="{lstUnits.dataProvider.length > 10}"/>
-      
+
+
+
       <!-- squadron management buttons -->
       <s:Group left="210" right="16" top="193" mouseEnabled="false">
          <s:layout><s:HorizontalLayout horizontalAlign="right"/></s:layout>

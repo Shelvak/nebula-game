@@ -11,9 +11,16 @@ package models.movement.events
       /**
        * Dispatched when a squadron moves to new location.
        * 
-       * @eventType squadronMove
+       * @eventType move
        */
       public static const MOVE:String = "move";
+
+      /**
+       * Dispatched when a selected squadron killing reward multiplier changes.
+       *
+       * @eventType multiplierChange
+       */
+      public static const MULTIPLIER_CHANGE:String = "multiplierChange";
       
       
       /**

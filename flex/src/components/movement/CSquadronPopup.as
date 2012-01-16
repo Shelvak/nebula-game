@@ -1,17 +1,23 @@
 package components.movement
 {
    import com.developmentarc.core.utils.EventBroker;
-   
+
+   import components.buildingselectedsidebar.NpcUnitsList;
+
    import components.map.space.CSpaceMapPopup;
    import components.movement.skins.CSquadronPopupSkin;
    import components.ui.PlayerProfileButton;
-   
+
+   import config.Config;
+
+   import controllers.players.PlayersCommand;
+
    import controllers.routes.RoutesCommand;
    import controllers.ui.NavigationController;
    import controllers.units.OrdersController;
    
    import flash.events.MouseEvent;
-   
+
    import globalevents.GlobalEvent;
    
    import interfaces.ICleanable;
@@ -19,17 +25,23 @@ package components.movement
    import models.Owner;
    import models.events.BaseModelEvent;
    import models.factories.UnitFactory;
+   import models.movement.MSquadKillReward;
    import models.movement.MSquadron;
+   import models.movement.events.MSquadronEvent;
    import models.unit.Unit;
-   
+   import models.unit.UnitKind;
+
    import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    
    import spark.components.Button;
+   import spark.components.Group;
    import spark.components.Label;
    import spark.components.List;
-   
+
+   import utils.StringUtil;
+
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
    
@@ -105,6 +117,7 @@ package components.movement
             showDestLoc = showSourceLoc;
             updateUnitsOrdersButtonsVisibility();
             updateUnitsManagementButtonLabel();
+            updateRewardButtonsVisibility();
             updateSourceAndDestLabels();
             updateArrivesInLabel();
             updateOwnerButton();
@@ -145,6 +158,174 @@ package components.movement
                btnUnitsManagement.label = getString("label.showUnits");
          }
       }
+      
+      private var vpZones: Array = Config.getVPZones();
+
+      private function get isVpZone(): Boolean
+      {
+         return vpZones.indexOf(_squadron.currentHop.location.type) != -1;
+      }
+      
+      private function get hasShipsWithBonus(): Boolean
+      {
+         for each (var unit: Unit in _squadron.units)
+         {
+            if (Config.getUnitVictoryPointsBonus(unit.type) > 0
+               || Config.getUnitCredsBonus(unit.type) > 0)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+      
+      private function get bonusVictoryPoints(): Number
+      {
+         var total: Number = 0;
+         for each (var unit: Unit in _squadron.units)
+         {
+             total += Config.getUnitVictoryPointsBonus(unit.type) * unit.hp;
+         }
+         return total;
+      }
+
+      private function get bonusCreds(): Number
+      {
+         var total: int = 0;
+         for each (var unit: Unit in _squadron.units)
+         {
+            total += Config.getUnitCredsBonus(unit.type);
+         }
+         return total;
+      }
+
+      [SkinPart(required="true")]
+      /**
+       * When clicked, opens up info about victory points and creds for killing
+       * units.
+       */
+      public var btnRewardInfo:Button;
+
+      private function updateRewardButtonsVisibility() : void {
+         if (btnRewardInfo != null && _squadron != null) {
+            if (_squadron.owner == Owner.PLAYER
+               || _squadron.owner == Owner.ALLY
+               || _squadron.owner == Owner.NAP
+               || (!((isVpZone || _squadron.currentHop.location.isBattleground)
+               && _squadron.owner != Owner.NPC) && !hasShipsWithBonus))
+            {
+               btnRewardInfo.visible = false;
+            }
+            else
+            {
+               btnRewardInfo.visible = true;
+            }
+            killRewardContainer.visible = false;
+         }
+      }
+
+      private function setReward(e: MSquadronEvent = null): void
+      {
+         var totalVps: Number = 0;
+         var totalCreds: Number = 0;
+         totalVps += bonusVictoryPoints;
+         totalCreds += bonusCreds;
+         /* If owner is npc we don't calculate damage bonus as it does not count*/
+         if (e != null)
+         {
+            /*If this is a main battleground, use CONFIG['battleground.battle.victory_points'] formula.
+             If this is a vps zone, use CONFIG['combat.battle.victory_points'] formula*/
+            var formula: String = _squadron.currentHop.location.isBattleground
+               ? Config.getBattlegroundVictoryPoints()
+               : Config.getCombatVictoryPoints();
+            MKR.removeEventListener(MSquadronEvent.MULTIPLIER_CHANGE, setReward);
+            var unitsHp: Object = {ground: 0, space: 0};
+            for each (var unit: Unit in _squadron.units)
+            {
+               if (unit.kind == UnitKind.SPACE)
+               {
+                  unitsHp.space += unit.hp;
+               }
+               else
+               {
+                  unitsHp.ground += unit.hp;
+               }
+            }
+            var tempVps: Number = StringUtil.evalFormula(formula, {
+               damage_dealt_to_space: unitsHp.space,
+               damage_dealt_to_ground: unitsHp.ground,
+               fairness_multiplier: MKR.multiplier
+            });
+
+            totalVps += tempVps;
+
+            /* If this is a main battleground, use CONFIG['battleground.battle.creds'] formula.
+             If this is a vps zone, use CONFIG['combat.battle.creds'] formula.*/
+            formula = _squadron.currentHop.location.isBattleground
+               ? Config.getBattlegroundCreds()
+               : Config.getCombatCreds();
+
+            totalCreds += StringUtil.evalFormula(formula, {
+               victory_points: tempVps
+            });
+
+            totalCreds = Math.round(totalCreds);
+            totalVps = Math.round(totalVps);
+         }
+         if (totalCreds > 0 || totalVps > 0)
+         {
+            killRewardContainer.visible = true;
+            lblKillCreds.text = totalCreds.toFixed();
+            lblKillVps.text = totalVps.toFixed();
+            lblHonorCoef.text = (MKR.multiplier * 100).toFixed(2) + '%';
+            credsGroup.visible = credsGroup.includeInLayout = totalCreds > 0;
+            vpsGroup.visible = vpsGroup.includeInLayout = totalVps > 0;
+            honorGroup.visible = honorGroup.includeInLayout = (e != null);
+
+         }
+         else
+         {
+            killRewardContainer.visible = false;
+         }
+      }
+      
+      private var MKR: MSquadKillReward = MSquadKillReward.getInstance();
+
+      private function showKillReward(e: MouseEvent): void
+      {
+         if (_squadron.owner != Owner.NPC)
+         {
+             MKR.addEventListener(MSquadronEvent.MULTIPLIER_CHANGE, setReward);
+             new PlayersCommand(PlayersCommand.BATTLE_VPS_MULTIPLIER,
+                {
+                   'targetId': _squadron.player.id
+                }).dispatch();
+         }
+         else
+         {
+            MKR.multiplier = 0;
+            setReward();
+         }
+      }
+
+      [SkinPart(required="true")]
+      public var lblKillCreds:Label;
+
+      [SkinPart(required="true")]
+      public var lblKillVps:Label;
+
+      [SkinPart(required="true")]
+      public var lblHonorCoef:Label;
+
+      [SkinPart(required="true")]
+      public var killRewardContainer:Group;
+      [SkinPart(required="true")]
+      public var credsGroup:Group;
+      [SkinPart(required="true")]
+      public var vpsGroup:Group;
+      [SkinPart(required="true")]
+      public var honorGroup:Group;
+
       
       [SkinPart(required="true")]
       /**
@@ -275,6 +456,10 @@ package components.movement
             addUnitsManagementButtonEventHandlers(btnUnitsManagement);
             updateUnitsOrdersButtonsVisibility();
          }
+         else if (instance == btnRewardInfo) {
+            addRewardButtonEventHandlers(btnRewardInfo);
+            updateRewardButtonsVisibility();
+         }
          else if (instance == btnStop) {
             btnStop.label = getString("label.stop");
             addStopButtonEventHandlers(btnStop);
@@ -309,6 +494,10 @@ package components.movement
       
       private function addUnitsManagementButtonEventHandlers(button:Button) : void {
          button.addEventListener(MouseEvent.CLICK, unitsManagementButton_clickHandler);
+      }
+
+      private function addRewardButtonEventHandlers(button:Button) : void {
+         button.addEventListener(MouseEvent.CLICK, showKillReward);
       }
       
       private function addStopButtonEventHandlers(button:Button) : void {

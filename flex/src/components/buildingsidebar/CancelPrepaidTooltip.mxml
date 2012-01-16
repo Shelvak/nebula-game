@@ -19,8 +19,6 @@
 
       import utils.ModelUtil;
 
-      import utils.assets.AssetNames;
-      import utils.assets.ImagePreloader;
       import utils.locale.Localizer;
 
       public function set model(value: ConstructionQueueEntry): void
@@ -60,13 +58,6 @@
       public function set text(value:String):void {
       }
 
-
-      private function getImg(name:String) : BitmapData
-      {
-         return ImagePreloader.getInstance().getImage
-            (AssetNames.UNITS_SCREEN_IMAGE_FOLDER + "hint_" + name);
-      }
-
       [Bindable]
       private var ML: ModelLocator = ModelLocator.getInstance();
 		]]>
@@ -76,27 +67,7 @@
          <s:SolidColor color="#000000"/>
       </s:fill>
    </s:Rect>
-   <s:Group left="0" right="0" top="0" bottom="0">
-      <s:layout>
-         <s:VerticalLayout gap="0" horizontalAlign="justify"/>
-      </s:layout>
-      <s:Group>
-         <s:layout><s:HorizontalLayout gap="0" verticalAlign="top"/></s:layout>
-         <s:BitmapImage source="{getImg('top_left')}"/>
-         <s:BitmapImage source="{getImg('top_center')}" width="100%" fillMode="repeat"/>
-         <s:BitmapImage source="{getImg('top_right')}"/>
-      </s:Group>
-      <s:Group height="100%">
-         <s:BitmapImage source="{getImg('center_left')}" top="0" bottom="0" left="0" fillMode="repeat"/>
-         <s:BitmapImage source="{getImg('center_right')}" top="0" bottom="0" right="0" fillMode="repeat"/>
-      </s:Group>
-      <s:Group>
-         <s:layout><s:HorizontalLayout gap="0" verticalAlign="bottom"/></s:layout>
-         <s:BitmapImage source="{getImg('bottom_left')}"/>
-         <s:BitmapImage source="{getImg('bottom_center')}" width="100%" fillMode="repeat"/>
-         <s:BitmapImage source="{getImg('bottom_right')}"/>
-      </s:Group>
-   </s:Group>
+   <base:BorderedGroupBackground left="0" right="0" top="0" bottom="0"/>
    <base:AdvancedContainer left="2" right="2" top="4" bottom="4">
       <s:Label textAlign="center" fontSize="14" paddingLeft="-6"
                paddingBottom="3"
