@@ -1424,6 +1424,7 @@
     <label.over value="Fleet over"/>
     <!-- /TODO -->
     <message.noRadar value="Jums vajadzīgs radars, lai izpētītu galaktiku" />
+    <label.inviteToAlliance value="Ielūgt īpašnieku aliansē"/>
 
     <!-- TODO -->
     <tooltip.apocalypse.common>

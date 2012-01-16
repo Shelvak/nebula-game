@@ -81,6 +81,11 @@
       <s:Label id="lblOwner" text="{getString('label.ssOwner')}"/>
       <ui:PlayerProfileButton player="{ss.player}"/>
    </s:Group>
+   <s:Button id="btnInviteToAlliance"
+             label="{getString('label.inviteToAlliance')}"
+             visible="{ss.canInviteOwnerToAlliance}"
+             includeInLayout="{ss.canInviteOwnerToAlliance}"
+             click="ss.inviteOwnerToAlliance()"/>
    <s:Button id="btnOpen" label="{getBtnOpenLabel(ss)}"
              visible="{ss.isNavigable}"
              includeInLayout="{ss.isNavigable}"

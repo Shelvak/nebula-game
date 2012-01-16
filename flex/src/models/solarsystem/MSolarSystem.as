@@ -2,6 +2,9 @@ package models.solarsystem
 {
    import config.Config;
 
+   import controllers.alliances.AlliancesCommand;
+   import controllers.alliances.actions.InviteActionParams;
+
    import controllers.ui.NavigationController;
 
    import flash.display.BitmapData;
@@ -110,6 +113,10 @@ package models.solarsystem
          return ML.player.galaxyId;
       }
 
+      /* ############# */
+      /* ### OWNER ### */
+      /* ############# */
+
       private var _player:PlayerMinimal;
       [Required]
       /**
@@ -123,7 +130,21 @@ package models.solarsystem
       public function get player(): PlayerMinimal {
          return _player;
       }
-      
+
+      public function get canInviteOwnerToAlliance(): Boolean {
+         return _player != null
+                   && !metadata.alliancePlanets
+                   && !_player.equals(ML.player)
+                   &&  ML.player.canInviteToAlliance;
+      }
+
+      public function inviteOwnerToAlliance(): void {
+         if (canInviteOwnerToAlliance) {
+            new AlliancesCommand(
+               AlliancesCommand.INVITE, new InviteActionParams(_player.id)
+            ).dispatch();
+         }
+      }
       
       /* ######################## */
       /* ### IStaticMAPObject ### */
@@ -152,7 +173,9 @@ package models.solarsystem
        * @inheritDoc
        */
       public function get isNavigable(): Boolean {
-         return ! isShielded || ML.player.equals(_player);
+         return !isShielded
+                   || ML.player.equals(_player)
+                   || metadata.alliancePlanets;
       }
 
       public function navigateTo(): void {

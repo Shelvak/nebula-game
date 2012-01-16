@@ -1263,6 +1263,7 @@
     <label.ssOwner value="Owned by"/>
     <label.over value="Fleet over"/>
     <message.noRadar value="You need a Radar to explore the galaxy" />
+    <label.inviteToAlliance value="Invite to alliance"/>
 
     <tooltip.apocalypse.common>
       <p>Click here for more information.</p>

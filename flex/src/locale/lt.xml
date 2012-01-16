@@ -1366,6 +1366,7 @@
     <label.ssOwner value="Savininkas: "/>
     <label.over value="Laivai virš"/>
     <message.noRadar value="Tau reikia radaro, jog matytum galaktiką" />
+    <label.inviteToAlliance value="Pakviesk žaidėją į sąjungą"/>
 
     <tooltip.apocalypse.common>
       <p>Paspausk, jog sužinotum daugiau.</p>
