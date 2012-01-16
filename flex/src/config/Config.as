@@ -173,6 +173,30 @@ package config
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
 
+      /* returns a formula */
+      public static function getBattlegroundCreds(): String
+      {
+         return getValue('battleground.battle.creds');
+      }
+
+      /* returns a formula */
+      public static function getCombatCreds(): String
+      {
+         return getValue('combat.battle.creds');
+      }
+
+      /* returns a formula */
+      public static function getBattlegroundVictoryPoints(): String
+      {
+         return getValue('battleground.battle.victoryPoints');
+      }
+
+      /* returns a formula */
+      public static function getCombatVictoryPoints(): String
+      {
+         return getValue('combat.battle.victoryPoints');
+      }
+
       public static function getVPZones(): Array
       {
          return getValue("combat.battle.vpZones");

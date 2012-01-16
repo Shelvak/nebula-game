@@ -137,7 +137,7 @@
          <s:layout><s:HorizontalLayout horizontalAlign="right"/></s:layout>
          <s:Button id="btnStop"/>
          <s:Button id="btnMove"/>
-         <s:Button id="btnInfo"/>
+         <s:Button id="btnRewardInfo"/>
          <s:Button id="btnUnitsManagement"/>
       </s:Group>
       

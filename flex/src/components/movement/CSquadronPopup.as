@@ -27,7 +27,8 @@ package components.movement
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
    import models.unit.Unit;
-   
+   import models.unit.UnitKind;
+
    import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
@@ -36,7 +37,9 @@ package components.movement
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.List;
-   
+
+   import utils.StringUtil;
+
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
    
@@ -221,18 +224,58 @@ package components.movement
 
       private function setReward(e: MSquadronEvent): void
       {
+         /*If this is a main battleground, use CONFIG['battleground.battle.victory_points'] formula.
+          If this is a vps zone, use CONFIG['combat.battle.victory_points'] formula*/
+         var formula: String = _squadron.currentHop.location.isBattleground
+            ? Config.getBattlegroundVictoryPoints()
+            : Config.getCombatVictoryPoints();
          MKR.removeEventListener(MSquadronEvent.MULTIPLIER_CHANGE, setReward);
          var totalVps: Number = 0;
          var totalCreds: Number = 0;
          totalVps += bonusVictoryPoints;
          totalCreds += bonusCreds;
+         var unitsHp: Object = {ground: 0, space: 0};
          for each (var unit: Unit in _squadron.units)
          {
-            var tempVps: Number = calculateUnitKillVpsReward(unit);
-            totalVps += tempVps;
-            totalCreds += calculateUnitsKillCredsReward(tempVps);
+            if (unit.kind == UnitKind.SPACE)
+            {
+               unitsHp.space += unit.hp;
+            }
+            else
+            {
+               unitsHp.ground += unit.hp;
+            }
          }
-         //TODO describe methods and set values for skin components.
+         var tempVps: Number = StringUtil.evalFormula(formula, {
+            damage_dealt_to_space: unitsHp.space,
+            damage_dealt_to_ground: unitsHp.ground
+         });
+
+         totalVps += tempVps;
+         
+         /* If this is a main battleground, use CONFIG['battleground.battle.creds'] formula.
+          If this is a vps zone, use CONFIG['combat.battle.creds'] formula.*/
+         formula = _squadron.currentHop.location.isBattleground
+            ? Config.getBattlegroundCreds()
+            : Config.getCombatCreds();
+         
+         totalCreds += StringUtil.evalFormula(formula, {
+            victory_points: tempVps
+         });
+         
+         totalCreds = Math.round(totalCreds);
+         totalVps = Math.round(totalVps);
+
+         if (totalCreds > 0 || totalVps > 0)
+         {
+            killRewardContainer.visible = true;
+            lblKillCreds.text = totalCreds.toFixed();
+            lblKillVps.text = totalVps.toFixed();
+         }
+         else
+         {
+            killRewardContainer.visible = false;
+         }
       }
 
       private function setRewardButtonsLabel(): void
@@ -254,21 +297,12 @@ package components.movement
       }
 
       [SkinPart(required="true")]
-      /**
-       * Owner label.
-       */
       public var lblKillCreds:Label;
 
       [SkinPart(required="true")]
-      /**
-       * Owner label.
-       */
       public var lblKillVps:Label;
 
       [SkinPart(required="true")]
-      /**
-       * Owner label.
-       */
       public var killRewardContainer:Group;
 
       

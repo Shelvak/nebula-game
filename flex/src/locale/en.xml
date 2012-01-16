@@ -1545,6 +1545,9 @@
     <label.hop.arrivesIn value="Arrives in:"/>
     <label.hop.jumpsIn value="Jumps in:"/>
     <label.hop.landsIn value="Lands in:"/>
+    <title.killBonus value="If you destroy this fleet you will get:"/>
+    <label.credsKillBonus value="Creds "/>
+    <label.vpsKillBonus value="Victory points "/>
     <message.combatCooldownInfo 
       value="Upon arrival there will be {0} cooldown before combat will ensue."/>
     <message.speedUpCost 
