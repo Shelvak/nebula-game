@@ -40,7 +40,8 @@ class AlliancesController < GenericController
   # Invocation: by client
   #
   # Parameters:
-  # - player_id (Fixnum): ID of a player with visible planet.
+  # - player_id (Fixnum): ID of a player with visible planet or home solar
+  # system.
   #
   # Response: None
   #

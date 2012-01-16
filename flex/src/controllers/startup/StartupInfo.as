@@ -35,7 +35,7 @@ package controllers.startup
       public var assetsUrl:String = "";
       
       [Optional]
-      public var webHost:String;      
+      public var webHost:String = "localhost";
       
       [Optional]
       public var logId:String = "";

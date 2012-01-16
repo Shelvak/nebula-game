@@ -81,6 +81,11 @@ package models.quest
       }
 
       [Bindable(event="currentSlideChange")]
+      public function get currentSlideNum():int {
+         return _currentSlideIdx + 1;
+      }
+
+      [Bindable(event="currentSlideChange")]
       public function get currentSlide(): MSlide {
          return _slides[_currentSlideIdx];
       }
@@ -88,6 +93,10 @@ package models.quest
       [Bindable(event="currentSlideChange")]
       public function get hasNextSlide(): Boolean {
          return _currentSlideIdx < _numSlides - 1;
+      }
+
+      public function get numSlides(): int {
+         return _slides.length;
       }
 
       public function allSlides(): Vector.<MSlide> {

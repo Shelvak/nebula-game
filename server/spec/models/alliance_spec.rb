@@ -244,6 +244,18 @@ describe Alliance do
         should include(planet.player_id)
     end
 
+    it "should include enemy player ids in home ss" do
+      enemy = Factory.create(:player)
+      home_ss = Factory.create(:home_ss, :galaxy => enemy.galaxy,
+                               :player => enemy)
+      fse = Factory.create(:fse_alliance, :enemy_planets => true,
+                           :enemy_ships => false, :solar_system => home_ss)
+      planet = Factory.create(:planet, :player => enemy,
+                              :solar_system => home_ss)
+      Alliance.visible_enemy_player_ids(fse.alliance_id).
+        should include(planet.player_id)
+    end
+
     it "should not include enemy player ids where they have units" do
       fse = Factory.create(:fse_alliance, :enemy_planets => false,
                            :enemy_ships => true)

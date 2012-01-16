@@ -18,7 +18,7 @@ package utils
          return StartupInfo.getInstance();
       }
 
-      private function get wikiUrlRoot(): String {
+      public function getWikiUrlRoot(): String {
          return 'http://wiki.' + SI.webHost + '/index.php/';
       }
 
@@ -65,11 +65,11 @@ package utils
       }
 
       public function openApocalypseInfo(): void {
-         navigateToURL(new URLRequest(wikiUrlRoot + 'apocalypse'));
+         navigateToURL(new URLRequest(getWikiUrlRoot() + 'apocalypse'));
       }
 
       public function showWikiUrl(path: String): void {
-         navigateToURL(new URLRequest(wikiUrlRoot + path));
+         navigateToURL(new URLRequest(getWikiUrlRoot() + path));
       }
 
       public function showInviteFriendUrl(): void {

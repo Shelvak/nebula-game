@@ -43,7 +43,8 @@ class RaidSpawner
 
   # Returns raid argument that should be stored to database.
   def generate_arg
-    return 0 if @planet.player_id.nil? || apocalypse?
+    return 0 if @planet.player_id.nil? || apocalypse? ||
+      ! @planet.solar_system.player_id.nil?
 
     arg = battleground? \
       ? @planet.player.bg_planets_count : @planet.player.planets_count

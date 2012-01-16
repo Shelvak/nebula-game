@@ -1,7 +1,5 @@
 package models.quest.slides
 {
-   import flash.geom.Rectangle;
-
    import models.quest.Quest;
 
    import utils.locale.Localizer;
@@ -15,10 +13,6 @@ package models.quest.slides
 
       public function get text(): String {
          return Localizer.string("QuestScreens", key);
-      }
-
-      public function get textArea(): Rectangle {
-         return SlidesConfiguration.getSimpleSlideTextPosition(key);
       }
    }
 }

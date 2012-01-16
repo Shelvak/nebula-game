@@ -6,11 +6,17 @@ package tests.utils
    
    import mx.resources.ResourceBundle;
    import mx.resources.ResourceManager;
-   
+
    import org.hamcrest.assertThat;
    import org.hamcrest.core.throws;
    import org.hamcrest.object.equalTo;
-   
+
+   import testsutils.LocalizerUtl;
+
+   import utils.SingletonFactory;
+
+   import utils.UrlNavigate;
+
    import utils.locale.Locale;
    import utils.locale.Localizer;
    
@@ -18,25 +24,29 @@ package tests.utils
    {
       
       [Before]
-      public function setUp() : void
-      {
-         var bundle: ResourceBundle = new ResourceBundle(Locale.EN, 'Test');
-         bundle.content['simple'] = 'simpleString';
-         bundle.content['params'] = 'simple {0} string';
-         bundle.content['referenced'] = 'simple [reference:ref.notString] string';
-         bundle.content['ref.notString'] = 'not';
-         bundle.content['ref.real'] = 'real';
-         bundle.content['chained'] = 'simple [reference:Test2/ref.notString] string';
-         bundle.content['failed'] = 'simple [reference:Test2:ref.notString] string';
-         bundle.content['emptyRef'] = 'simple [reference:Test2/ref.notStrukkk] string';
-         bundle.content['chainedParams'] = 'simple [reference:Test2/ref.notString] {0} string';
-         Localizer.addBundle(bundle);
-         
-         var bundle2: ResourceBundle = new ResourceBundle(Locale.EN, 'Test2');
-         bundle2.content['ref.notString'] = 'not [reference:Test/ref.real]';
-         Localizer.addBundle(bundle2);
-         
+      public function setUp() : void {
+         addBundle(Locale.EN, "Test", {
+            'simple': 'simpleString',
+            'params': 'simple {0} string',
+            'referenced': 'simple [reference:ref.notString] string',
+            'ref.notString': 'not',
+            'ref.real': 'real',
+            'chained': 'simple [reference:Test2/ref.notString] string',
+            'failed': 'simple [reference:Test2:ref.notString] string',
+            'emptyRef': 'simple [reference:Test2/ref.notStrukkk] string',
+            'chainedParams': 'simple [reference:Test2/ref.notString] {0} string',
+            'withWikiLink': 'See wiki://faq/ for more info'
+         });
+         addBundle(Locale.EN, "Test2", {
+            'ref.notString': 'not [reference:Test/ref.real]'
+         });
          setCurrentLocale(Locale.EN);
+      }
+
+      [After]
+      public function tearDown(): void {
+         SingletonFactory.clearAllSingletonInstances();
+         LocalizerUtl.tearDown();
       }
       
       [Test]
@@ -434,6 +444,36 @@ package tests.utils
          );
          assertThat( "amount: 10, name: Shocker, DC",
             string("amountAndObjNameDC", [10, "Shocker"]), equals ("10 mechas")
+         );
+      }
+
+      /* ################################# */
+      /* ### WIKI LINKS TRANSFORMATION ### */
+      /* ################################# */
+
+      [Test]
+      public function resolveWikiLinks(): void {
+         const wikiRoot:String = UrlNavigate.getInstance().getWikiUrlRoot();
+         assertThat(
+            Localizer.resolveWikiLinks("wiki://how-to-build"),
+            equals (wikiRoot + "how-to-build")
+         );
+         assertThat(
+            Localizer.resolveWikiLinks("The link: wiki://how-to-build works"),
+            equals ("The link: " + wikiRoot + "how-to-build works")
+         );
+         assertThat(
+            Localizer.resolveWikiLinks("Slashes wiki://we/are/here/now/. Lots of them."),
+            equals ("Slashes " + wikiRoot + "we/are/here/now/. Lots of them.")
+         );
+      }
+
+      [Test]
+      public function stringResolvesWikiLinksInTheEnd(): void {
+         const wikiRoot:String = UrlNavigate.getInstance().getWikiUrlRoot();
+         assertThat(
+            Localizer.string("Test", "withWikiLink"),
+            equals ("See " + wikiRoot + "faq/ for more info")
          );
       }
       

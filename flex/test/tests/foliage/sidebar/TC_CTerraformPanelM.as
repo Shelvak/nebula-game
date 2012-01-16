@@ -2,6 +2,7 @@ package tests.foliage.sidebar
 {
    import asmock.framework.Expect;
    import asmock.framework.MockRepository;
+   import asmock.framework.SetupResult;
    import asmock.integration.flexunit.IncludeMocksRule;
    
    import components.foliage.CTerraformPanelM;
@@ -14,7 +15,8 @@ package tests.foliage.sidebar
    import ext.hamcrest.events.DispatchesMatcher;
    import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
-   
+   import ext.mocks.Mock;
+
    import models.ModelLocator;
    import models.folliage.BlockingFolliage;
    
@@ -56,7 +58,10 @@ package tests.foliage.sidebar
       [Before]
       public function setUp() : void {
          mockRepository = new MockRepository();
-         SingletonFactory.client_internal::registerSingletonInstance(UrlNavigate, mockRepository.createStrict(UrlNavigate));
+         Mock.singleton(mockRepository, UrlNavigate);
+         SetupResult.forCall(
+            UrlNavigate.getInstance().getWikiUrlRoot()
+         ).returnValue(null);
          
          StartupInfo.getInstance().locale = Locale.EN;
          var rb:ResourceBundle = new ResourceBundle(Locale.EN, "Terraform");
@@ -125,6 +130,7 @@ package tests.foliage.sidebar
       
       [Test]
       public function staticLabels() : void {
+         mockRepository.replayAll();
          assertThat( "panel title", model.panelTitle, equals ("Terraform") );
          assertThat( "btn buy creds label", model.btnBuyCredsLabel, equals ("Buy creds") );
          assertThat( "btn remove foliage label", model.btnRemoveFoliageLabel, equals ("Remove") );
