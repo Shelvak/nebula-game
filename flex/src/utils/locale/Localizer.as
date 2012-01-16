@@ -8,6 +8,7 @@ package utils.locale
    import mx.utils.ObjectUtil;
 
    import utils.Objects;
+   import utils.UrlNavigate;
 
 
    public class Localizer
@@ -75,9 +76,9 @@ package utils.locale
                err.message, bundle, property, resultString, parameters
             );
          }
-            
+
+         // pluralization pass is the last one
          if (parameters != null) {
-            // pluralization pass is the last one
             try {
                resultString = pluralize(resultString, parameters);
                resultString = mx.utils.StringUtil.substitute(resultString, parameters);
@@ -89,7 +90,8 @@ package utils.locale
                );
             }
          }
-         return resultString;
+         
+         return resolveWikiLinks(resultString);
       }
       
       
@@ -150,16 +152,26 @@ package utils.locale
          }
          return resolvedName;
       }
+
+      /* ################## */
+      /* ### WIKI LINKS ### */
+      /* ################## */
+
+      /**
+       * Replaces wiki:// sequences with whatever wiki URL root and returns
+       * resulting string.
+       */
+      public static function resolveWikiLinks(str: String): String {
+         return str.replace("wiki://", UrlNavigate.getInstance().getWikiUrlRoot());
+      }
       
       
       /* ##################### */
       /* ### PLURALIZATION ### */
       /* ##################### */
       
-      
       private static const PARAM_PATTERN:RegExp = /\{(\d+)\s+(\w+\[.*?\])\s*\}/s;
       private static const FORM_PATTERN:RegExp  = /(\w+)\[(.*?)\]/g;
-      
       
       /**
        * Pluralizes a given string according to the rules of current (or provided) locale.
