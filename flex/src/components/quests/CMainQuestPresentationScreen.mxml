@@ -76,6 +76,7 @@
              skinClass="components.quests.skins.CNextSlideButtonSkin"/>
    <s:Button id="btnClose" label="Close"
              right="35" bottom="35"
+             skinClass="components.quests.skins.CCloseButtonSkin"
              visible="{!mainQuestLine.currentPresentation.hasNextSlide}"
              click="mainQuestLine.close()"/>
 </s:Group>
