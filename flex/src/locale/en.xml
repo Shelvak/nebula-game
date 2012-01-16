@@ -3180,7 +3180,7 @@
       <p>Buildings available for construction are at the sidebar on the right.</p>
       <p>Once you select a building, at the bottom of the sidebar its
       construction time and pros and cons provided by terrain under the building
-      become visible.
+      become visible.</p>
       <p>If another building is already being constructed the next is added
       to construction que.</p>
       ]]>
@@ -3191,7 +3191,6 @@
       <p>Each completion of a quest earns you a reward. You can take it if you
       navigate to the quests screen: click on a N44 logo at the bottom right corner
       of the screen and click "[reference:Quests/label.title]" button.</p>
-      [reference:Buildings/Mothership.name]
       <p>Then you have to find a completed quest - they are yellow - and click on
       a '[reference:Quests/label.claimReward]' button</p>
       ]]>
@@ -3199,7 +3198,7 @@
 
     <OreTile>
       <![CDATA[
-      <p>You can build [obj:2:Building_MetalExtractor:what] only on top of metal
+      <p>You can build [obj:2:Building_MetalExtractor:p8d] only on top of metal
       deposits. Most of the time you will find alien structures already standing
       on them. Those structures need to be destroyed first and only then you will
       be able to build your own extractor. However you may come across a few
@@ -3242,7 +3241,7 @@
        <!-- TODO: replace button names with references -->
       <![CDATA[
       <p>You may speed up long taking constructions using special game resource
-      called <span fontWidth="bold">creds</span>. To do that, select a building.
+      called <span fontWeight="bold">creds</span>. To do that, select a building.
       Then click "Speed up" button and choose the speed up level.</p>
       <p>
         You can buy creds by clicking "Buy creds" button in the N44 menu.
