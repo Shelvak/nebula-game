@@ -22,6 +22,7 @@ package models.resource
    [Bindable]
    public class Resource extends BaseModel
    {
+      public var unknown: Boolean = false;
       public var type: String = "";
       private var _currentStock: Number = 0;
       private var _maxStock: Number = 0;
@@ -85,7 +86,6 @@ package models.resource
       {
          var missingStorages: Array = [];
          var missingAmounts: Array = [];
-         var tempStorageString: String = '';
          if (metal + planet.metal.currentStock > planet.metal.maxStock)
          {
             missingStorages.push(ResourceType.METAL);
@@ -107,26 +107,33 @@ package models.resource
          }
          else
          {
-            var i: int = 0;
-            for each (var res: String in missingStorages)
-            {
-               if (i > 0)
-               {
-                  if (i == missingStorages.length - 1)
-                  {
-                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                  }
-                  else
-                  {
-                     tempStorageString += ', ';
-                  }
-               }
-               tempStorageString += MathUtil.round(missingAmounts[i], 2).toString();
-               i++;
-               tempStorageString += ' '+Localizer.string('Resources', 'wontFit.resource', [res]);
-            }
-            return tempStorageString;
+            return getResourceString(missingStorages, missingAmounts);
          }
+      }
+
+      /* returns constructed resource string (for missing storage for now) */
+      public static function getResourceString(missingStorages: Array, missingAmounts: Array): String
+      {
+         var tempStorageString: String = '';
+         var i: int = 0;
+         for each (var res: String in missingStorages)
+         {
+            if (i > 0)
+            {
+               if (i == missingStorages.length - 1)
+               {
+                  tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+               }
+               else
+               {
+                  tempStorageString += ', ';
+               }
+            }
+            tempStorageString += MathUtil.round(missingAmounts[i], 2).toString();
+            i++;
+            tempStorageString += ' '+Localizer.string('Resources', 'wontFit.resource', [res]);
+         }
+         return tempStorageString;
       }
 
       /**

@@ -4035,6 +4035,8 @@
   <Units>
     <title.storageScreen value="Load / Unload"/>
     <label.totalEmptyStorage value="Total free storage: {0}"/>
+    <!-- 0: not fitting string (x metal, y energy and z zetium)-->
+    <message.didNotFit value="Planet had not enough storage for {0}" />
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Ready in {0}" />
