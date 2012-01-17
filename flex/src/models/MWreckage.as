@@ -90,7 +90,7 @@ package models
        * [Bindable]<br/>
        * [Required]</p> 
        */
-      public var metal:Number;
+      public var metal:uint;
       
       
       [Bindable]
@@ -100,7 +100,7 @@ package models
        * [Bindable]<br/>
        * [Required]</p> 
        */
-      public var energy:Number;
+      public var energy:uint;
       
       
       [Bindable]
@@ -110,7 +110,7 @@ package models
        * [Bindable]<br/>
        * [Required]</p> 
        */
-      public var zetium:Number;
+      public var zetium:uint;
       
       
       public override function toString() : String
