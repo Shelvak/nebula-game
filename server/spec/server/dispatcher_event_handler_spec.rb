@@ -375,29 +375,49 @@ describe DispatcherEventHandler do
       @handler.fire(@event, EventBroker::MOVEMENT_PREPARE, nil)
     end
 
+    it "should dispatch to friendly even if they don't see the galaxy area" do
+      DispatcherEventHandler.stub!(:resolve_location).with(@route.source).
+        and_return([[], @filter])
+
+      @friendly_player_ids.each do |player_id|
+        @dispatcher.should_receive(:push_to_player).with(
+          player_id,
+          UnitsController::ACTION_MOVEMENT_PREPARE,
+          {
+            'route' => @route.as_json(:mode => :normal),
+            'unit_ids' => @event.unit_ids,
+            'route_hops' => @route_hops
+          },
+          nil
+        )
+      end
+      @handler.fire(@event, EventBroker::MOVEMENT_PREPARE, nil)
+    end
+
     it "should not crash upon NPC movement" do
       @route.player = nil
       @route.save!
       
       @handler.fire(@event, EventBroker::MOVEMENT_PREPARE, nil)
     end
-    
-    it "should not send null route hops for enemies if there are no hops" +
-    " in this zone" do
-      @route_hops.each(&:destroy)
-      @enemy_player_ids.each do |player_id|
-        @dispatcher.should_receive(:push_to_player).with(
-          player_id,
-          UnitsController::ACTION_MOVEMENT_PREPARE,
-          {
-            'route' => @route.as_json(:mode => :enemy),
-            'unit_ids' => @event.unit_ids,
-            'route_hops' => []
-          },
-          @filter
-        )
+
+    describe "if there are no hops in this zone" do
+      it "should not send null route hops for enemies" do
+        @route_hops.each(&:destroy)
+        @enemy_player_ids.each do |player_id|
+          @dispatcher.should_receive(:push_to_player).with(
+            player_id,
+            UnitsController::ACTION_MOVEMENT_PREPARE,
+            {
+              'route' => @route.as_json(:mode => :enemy),
+              'unit_ids' => @event.unit_ids,
+              'route_hops' => []
+            },
+            @filter
+          )
+        end
+        @handler.fire(@event, EventBroker::MOVEMENT_PREPARE, nil)
       end
-      @handler.fire(@event, EventBroker::MOVEMENT_PREPARE, nil)
     end
   end
 

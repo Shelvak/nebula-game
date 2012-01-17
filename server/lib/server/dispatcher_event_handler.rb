@@ -166,8 +166,13 @@ class DispatcherEventHandler
     unit_ids = movement_prepare_event.unit_ids
 
     player_ids, filter = self.class.resolve_location(route.current)
+
     player = route.player
     friendly_player_ids = player.nil? ? [] : player.friendly_ids
+
+    # Even if location is not visible for them movement prepare should be
+    # dispatched so add player and his alliance to player list.
+    player_ids |= friendly_player_ids
 
     player_ids.each do |player_id|
       friendly = friendly_player_ids.include?(player_id)
