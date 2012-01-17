@@ -1,28 +1,26 @@
 package components.notifications.parts
 {
-import components.alliance.AllianceScreenM;
-import components.notifications.IRNotificationPartBase;
+   import components.alliance.AllianceScreenM;
+   import components.notifications.IRNotificationPartBase;
    import components.notifications.parts.skins.AllianceInvitationSkin;
 
    import flash.events.Event;
    import flash.events.MouseEvent;
 
-import globalevents.GlobalEvent;
+   import globalevents.GlobalEvent;
 
-import models.ModelLocator;
-import models.alliance.events.MAllianceEvent;
-import models.notification.parts.AllianceInvitation;
+   import models.ModelLocator;
+   import models.notification.parts.AllianceInvitation;
    import models.player.events.PlayerEvent;
-   
+
    import spark.components.Button;
    import spark.components.Label;
-import spark.components.RichEditableText;
+   import spark.components.RichEditableText;
 
-import utils.TextFlowUtil;
+   import utils.TextFlowUtil;
+   import utils.locale.Localizer;
 
-import utils.locale.Localizer;
-   
-   
+
    public class IRAllianceInvitation extends IRNotificationPartBase
    {
       private function get ML(): ModelLocator {
@@ -57,7 +55,7 @@ import utils.locale.Localizer;
 
       private function updateRestrictionMessage(e: GlobalEvent = null): void
       {
-          if (ML.player != null && !ML.player.canJoinAlliance)
+          if (ML.player != null && !ML.player.canJoinAlliance(model.allianceId))
           {
               joinRestrictionMessage.text = model.joinRestrictionMessage;
           }
@@ -83,9 +81,11 @@ import utils.locale.Localizer;
              }
              message.textFlow = TextFlowUtil.importFromString(model.innerMessage);
              message.textFlow.addEventListener("openAlliance", openAlliance);
-            joinButton.visible = joinButton.includeInLayout = ML.player.canJoinAlliance;
-            joinRestrictionMessage.visible = joinRestrictionMessage.includeInLayout = !ML.player.canJoinAlliance;
-            if (!ML.player.canJoinAlliance)
+            joinButton.visible = joinButton.includeInLayout =
+                ML.player.canJoinAlliance(model.allianceId);
+            joinRestrictionMessage.visible = joinRestrictionMessage.includeInLayout =
+               !ML.player.canJoinAlliance(model.allianceId);
+            if (!ML.player.canJoinAlliance(model.allianceId))
             {
                 joinRestrictionMessage.text = model.joinRestrictionMessage;
                 if (!ML.player.belongsToAlliance)
