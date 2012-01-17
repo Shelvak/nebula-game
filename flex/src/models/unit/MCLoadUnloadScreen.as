@@ -139,9 +139,12 @@ package models.unit
       public function getMaxStock(resource: String): Number
       {
          var possibleStore: Number = 
-            (location is Unit?
-               (Math.min(transporter[resource], Resource(ML.latestPlanet.ssObject[resource]).maxStock - 
-                  Resource(ML.latestPlanet.ssObject[resource]).currentStock))
+            (location is Unit
+               ? ML.latestPlanet.ssObject.metal.unknown
+                  ? transporter[resource]
+                  : (Math.min(transporter[resource], Resource(
+                     ML.latestPlanet.ssObject[resource]).maxStock -
+                     Resource(ML.latestPlanet.ssObject[resource]).currentStock))
                :(Math.min(
                   Resource.getResourcesForVolume(transporter.transporterStorage - transporter.stored - 
                      getOtherSelected(resource) - unitsSelectedVolume, resource),
@@ -214,7 +217,7 @@ package models.unit
          return selectedTotal;
       }
       
-      private function dispatchRefreshMaxStorageEvent(e: Event = null): void
+      public function dispatchRefreshMaxStorageEvent(e: Event = null): void
       {
          dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
       }

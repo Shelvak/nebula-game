@@ -160,12 +160,63 @@ package models.unit
          return Config.getUnitDeploysTo(type);
       }
       
+      private var _metal: uint = 0;
+      private var _energy: uint = 0;
+      private var _zetium: uint = 0;
+
+      [Bindable (event="metalAmountChange")]
       [Optional]
-      public var metal: uint = 0;
+      public function set metal(value: uint): void
+      {
+         _metal = value;
+         var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
+         if (LS.target == this || LS.location == this)
+         {
+            LS.dispatchRefreshMaxStorageEvent();
+         }
+         dispatchMetalChangeEvent()
+      }
+
+      public function get metal(): uint
+      {
+         return _metal;
+      }
+
+      [Bindable (event="energyAmountChange")]
       [Optional]
-      public var energy: uint = 0;
+      public function set energy(value: uint): void
+      {
+         _energy = value;
+         var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
+         if (LS.target == this || LS.location == this)
+         {
+            LS.dispatchRefreshMaxStorageEvent();
+         }
+         dispatchEnergyChangeEvent();
+      }
+
+      public function get energy(): uint
+      {
+         return _energy;
+      }
+
+      [Bindable (event="zetiumAmountChange")]
       [Optional]
-      public var zetium: uint = 0;
+      public function set zetium(value: uint): void
+      {
+         _zetium = value;
+         var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
+         if (LS.target == this || LS.location == this)
+         {
+            LS.dispatchRefreshMaxStorageEvent();
+         }
+         dispatchZetiumChangeEvent()
+      }
+
+      public function get zetium(): uint
+      {
+         return _zetium;
+      }
       
       public static function getVolume(units: Array): int
       {
@@ -203,6 +254,11 @@ package models.unit
          if (_stored != value)
          {
             _stored = value;
+            var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
+            if (LS.target == this || LS.location == this)
+            {
+               LS.dispatchRefreshMaxStorageEvent();
+            }
             dispatchStoredChangeEvent();
          }
       }
@@ -453,12 +509,36 @@ package models.unit
             dispatchEvent(new UnitEvent(UnitEvent.STANCE_CHANGE));
          }
       }
-      
+
       private function dispatchStoredChangeEvent() : void
       {
          if (hasEventListener(UnitEvent.STORED_CHANGE))
          {
             dispatchEvent(new UnitEvent(UnitEvent.STORED_CHANGE));
+         }
+      }
+
+      private function dispatchMetalChangeEvent() : void
+      {
+         if (hasEventListener(UnitEvent.METAL_CHANGE))
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.METAL_CHANGE));
+         }
+      }
+
+      private function dispatchEnergyChangeEvent() : void
+      {
+         if (hasEventListener(UnitEvent.ENERGY_CHANGE))
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.ENERGY_CHANGE));
+         }
+      }
+
+      private function dispatchZetiumChangeEvent() : void
+      {
+         if (hasEventListener(UnitEvent.ZETIUM_CHANGE))
+         {
+            dispatchEvent(new UnitEvent(UnitEvent.ZETIUM_CHANGE));
          }
       }
       

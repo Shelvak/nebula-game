@@ -8,6 +8,9 @@ package models.unit.events
       public static const SQUADRON_ID_CHANGE:String = "squadronIdChange";
       public static const STANCE_CHANGE:String = "unitStanceChange";
       public static const STORED_CHANGE:String = "storedAmountChange";
+      public static const METAL_CHANGE:String = "metalAmountChange";
+      public static const ENERGY_CHANGE:String = "energyAmountChange";
+      public static const ZETIUM_CHANGE:String = "zetiumAmountChange";
       public static const VALIDATION_CHANGED: String = "validationChanged";
       public static const SELECTED_RESOURCES_CHANGE: String = "selectedResourcesChange";
       public static const PANEL_BUTTON_CLICK: String = "panelButtonClick";

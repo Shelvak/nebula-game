@@ -292,7 +292,7 @@
             <s:Group visible="{!(!model.unit.location.isSSObject
                      || (model.unit.owner != Owner.PLAYER)
                      || (ML.technologies.getUnitStorage(model.unit.type, model.unit.level) == 0)
-                     || (!ML.latestPlanet))}"
+                     || !ML.latestPlanet)}"
                      toolTip="{model.unit.stored == 0? Localizer.string('Units', 'tooltip.nothingToUnload')
                      : Localizer.string('Units', 'label.unload')}">
                <s:Button click="show_inside(false)" 

@@ -4095,6 +4095,7 @@
   <Units>
     <title.storageScreen value="Įkrauti / Iškrauti"/>
     <label.totalEmptyStorage value="Laisvos vietos: {0}"/>
+    <message.didNotFit value="Į planetą netilpo {0}" />
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Bus už {0}" />
