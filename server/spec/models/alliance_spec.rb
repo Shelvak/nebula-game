@@ -232,6 +232,18 @@ describe Alliance do
       alliance = Factory.create(:alliance)
       Alliance.names_for([alliance.id]).should == {alliance.id => alliance.name}
     end
+
+    it "should not mix up names if ids are not ordered" do
+      alliances = [
+        Factory.create(:alliance),
+        Factory.create(:alliance)
+      ]
+      alliance_ids = alliances.map(&:id).reverse
+      expected = alliances.each_with_object({}) do |alliance, hash|
+        hash[alliance.id] = alliance.name
+      end
+      Alliance.names_for(alliance_ids).should equal_to_hash(expected)
+    end
   end
 
   describe ".visible_enemy_player_ids" do

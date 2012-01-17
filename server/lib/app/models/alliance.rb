@@ -74,8 +74,10 @@ class Alliance < ActiveRecord::Base
 
   # Returns +Hash+ of {id => name} pairs.
   def self.names_for(alliance_ids)
-    names = select("name").where(:id => alliance_ids).c_select_values
-    Hash[alliance_ids.zip(names)]
+    select("id, name").where(:id => alliance_ids).c_select_all.
+      each_with_object({}) do |row, hash|
+        hash[row['id']] = row['name']
+      end
   end
 
   # Returns non-ally players which own planets and we can see them for _player_.
