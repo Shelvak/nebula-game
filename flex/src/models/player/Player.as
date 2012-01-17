@@ -22,6 +22,7 @@ package models.player
    import utils.DateUtil;
    import utils.MathUtil;
    import utils.NumberUtil;
+   import utils.Objects;
    import utils.datastructures.Collections;
    
    
@@ -88,7 +89,7 @@ package models.player
          _allianceCooldown = new MTimeEventFixedMoment();
          _allianceCooldown.occuresAt = DateUtil.BEGINNING;
          _allianceCooldown.addEventListener
-            (MTimeEventEvent.HAS_OCCURED_CHANGE, allianceCooldown_hasOccuredChange,  false, 0, true);
+            (MTimeEventEvent.HAS_OCCURED_CHANGE, allianceCooldown_hasOccurredChange,  false, 0, true);
       }
       
       
@@ -393,8 +394,9 @@ package models.player
       
       [Bindable(event="allianceIdChange")]
       [Bindable(event="allianceCooldownChange")]
-      public function get canJoinAlliance() : Boolean {
-         return !belongsToAlliance && !allianceCooldownInEffect;
+      public function canJoinAlliance(allianceId:int) : Boolean {
+         Objects.paramIsId("allianceId", allianceId);
+         return !belongsToAlliance && !allianceCooldownInEffect(allianceId);
       }
       
       public function belongsTo(allianceId:int) : Boolean {
@@ -409,20 +411,37 @@ package models.player
       /* ######################### */
       /* ### ALLIANCE COOLDOWN ### */
       /* ######################### */
-      
+
+      private var _allianceCooldownId: int = 0;
+      public function set allianceCooldownId(value: int): void {
+         if (_allianceCooldownId != value) {
+            _allianceCooldownId = value;
+            dispatchPlayerEvent(PlayerEvent.ALLIANCE_COOLDOWN_CHANGE);
+         }
+      }
+      public function get allianceCooldownId(): int {
+         return _allianceCooldownId;
+      }
+
       private var _allianceCooldown:MTimeEventFixedMoment;
-      [Bindable(event="willNotChange")]
       public function get allianceCooldown() : MTimeEventFixedMoment {
          return _allianceCooldown;
       }
       
-      private function allianceCooldown_hasOccuredChange(event:MTimeEventEvent) : void {
+      private function allianceCooldown_hasOccurredChange(event:MTimeEventEvent) : void {
          dispatchPlayerEvent(PlayerEvent.ALLIANCE_COOLDOWN_CHANGE);
       }
       
       [Bindable(event="allianceCooldownChange")]
-      public function get allianceCooldownInEffect() : Boolean {
-         return !allianceCooldown.hasOccured;
+      public function allianceCooldownInEffect(allianceId: int = 0) : Boolean {
+         Objects.paramPositiveNumber("allianceId", allianceId);
+         if (_allianceCooldownId == 0) {
+            return !_allianceCooldown.hasOccured;
+         }
+         else {
+            return _allianceCooldownId == allianceId
+                      && !_allianceCooldown.hasOccured;
+         }
       }
       
       
