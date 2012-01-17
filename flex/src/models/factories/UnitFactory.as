@@ -1,21 +1,17 @@
 package models.factories
 {
    import models.ModelsCollection;
-   import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   
+
+   import utils.Objects;
    import utils.StringUtil;
-   
-   import utils.Objects;
-   
-   import utils.Objects;
-   
-   
+
+
    /**
     * Lets easily create instances of units.
     */
@@ -47,7 +43,7 @@ package models.factories
          for each (var unitData:Object in units) {
             var unit:Unit = fromObject(unitData);
             // TODO: move assignment of unit.player to afterCreateModel() method like in Location?
-            if (unit.playerId == PlayerId.NO_PLAYER)
+            if (unit.playerId == 0)
                unit.player = PlayerMinimal.NPC_PLAYER;
             else if (!players[unit.playerId])
                errors.push("No player for unit " + unit);

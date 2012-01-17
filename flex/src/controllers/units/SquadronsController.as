@@ -19,7 +19,6 @@ package controllers.units
    import models.movement.MRoute;
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
-   import models.player.PlayerId;
    import models.unit.MCUnitScreen;
    import models.unit.Unit;
    import models.unit.UnitKind;
@@ -36,6 +35,7 @@ package controllers.units
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
+
 
    /**
     * Works with <code>MSquadron</code> objects and <code>ModelLocator.squadrons</code> list.
@@ -540,13 +540,13 @@ package controllers.units
       /* ############### */
       
       private function findSquad(id:int,
-                                 palyerId:int = PlayerId.NO_PLAYER,
+                                 playerId:int = 0,
                                  loc:LocationMinimal = null) : MSquadron {
          if (id != 0) {
             return SQUADS.find(id);
          }
          else {
-            return SQUADS.findStationary(loc, palyerId);
+            return SQUADS.findStationary(loc, playerId);
          }
       }
       

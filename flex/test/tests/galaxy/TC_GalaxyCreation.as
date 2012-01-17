@@ -1,12 +1,12 @@
 package tests.galaxy
 {
    import config.Config;
-   
+
    import controllers.galaxies.actions.ShowAction;
    import controllers.units.SquadronsController;
-   
+
    import ext.hamcrest.object.equals;
-   
+
    import models.MWreckage;
    import models.ModelLocator;
    import models.Owner;
@@ -20,17 +20,16 @@ package tests.galaxy
    import models.movement.MRoute;
    import models.movement.MSquadron;
    import models.planet.MPlanet;
-   import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
+   import models.solarsystem.MSolarSystem;
    import models.solarsystem.SSKind;
    import models.solarsystem.SSObjectType;
-   import models.solarsystem.MSolarSystem;
    import models.unit.Unit;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   
+
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.collection.emptyArray;
@@ -39,9 +38,10 @@ package tests.galaxy
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
    import org.hamcrest.object.sameInstance;
-   
+
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
+
 
    public class TC_GalaxyCreation
    {
@@ -446,7 +446,7 @@ package tests.galaxy
       }
       
       private function makePlayer(id:int, name:String = null) : PlayerMinimal {
-         if (id == PlayerId.NO_PLAYER)
+         if (id == 0)
             return PlayerMinimal.NPC_PLAYER;
          var p:PlayerMinimal = new PlayerMinimal();
          p.id = id;

@@ -19,7 +19,7 @@ package models.player
       public static function get NPC_PLAYER() : PlayerMinimal {
          if (npcPlayer == null) {
             npcPlayer = new PlayerMinimal();
-            npcPlayer.id = PlayerId.NO_PLAYER;
+            npcPlayer.id = 0;
             npcPlayer.name = Localizer.string("Players", "npc");
          }
          return npcPlayer;

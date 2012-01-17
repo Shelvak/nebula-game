@@ -16,7 +16,6 @@ package models.unit
    import models.parts.Requirement;
    import models.parts.UnitUpgradable;
    import models.parts.Upgradable;
-   import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.resource.Resource;
    import models.unit.events.UnitEvent;
@@ -366,7 +365,7 @@ package models.unit
        * 
        * @default 0
        */
-      public var playerId:int = PlayerId.NO_PLAYER;
+      public var playerId:int = 0;
       
       
       [Optional]

@@ -3,18 +3,17 @@ package controllers.objects.actions.customcontrollers
    import controllers.objects.UpdatedReason;
    import controllers.units.OrdersController;
    import controllers.units.SquadronsController;
-   
+
    import models.factories.UnitFactory;
-   import models.player.PlayerId;
    import models.player.PlayerMinimal;
    import models.unit.Unit;
-   
+
    import mx.collections.ArrayCollection;
-   
+
    import utils.SingletonFactory;
    import utils.locale.Localizer;
-   
-   
+
+
    public class UnitController extends BaseObjectController
    {
       public static function getInstance() : UnitController {
@@ -34,7 +33,7 @@ package controllers.objects.actions.customcontrollers
       
       public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
          var unit:Unit = UnitFactory.fromObject(object);
-         if (unit.playerId == PlayerId.NO_PLAYER)
+         if (unit.playerId == 0)
             unit.player = NPC_PLAYER;
          else if (unit.playerId == ML.player.id)
             unit.player = ML.player;
