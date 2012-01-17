@@ -105,14 +105,17 @@ package models.unit
          );
       }
       
-      public static function getStoredResourcesPercent(_storage: int, _metal: Number, 
-                                                       _energy: Number, _zetium: Number): int
+      public static function getStoredResourcesPercent(
+         _storage: uint, _metal: uint, _energy: uint, _zetium: uint
+      ): uint
       {
          return Math.round(100 * Resource.getResourcesVolume(_metal, _energy, _zetium)/_storage);
       }
       
-      public static function getStoredUnitsPercent(_storage: int, _stored: int, _metal: Number, 
-                                                   _energy: Number, _zetium: Number): int
+      public static function getStoredUnitsPercent(
+         _storage: uint, _stored: uint, _metal: uint, _energy: uint,
+         _zetium: uint
+      ): int
       {
          return Math.round(100 * (_stored - Resource.getResourcesVolume(_metal, _energy, _zetium))/_storage);
       }
@@ -158,11 +161,11 @@ package models.unit
       }
       
       [Optional]
-      public var metal: Number = 0;
+      public var metal: uint = 0;
       [Optional]
-      public var energy: Number = 0;
+      public var energy: uint = 0;
       [Optional]
-      public var zetium: Number = 0;
+      public var zetium: uint = 0;
       
       public static function getVolume(units: Array): int
       {
