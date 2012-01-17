@@ -81,7 +81,7 @@ class SsObject::Planet < SsObject
 
   # Attributes which are included when :view => true is passed to
   # #as_json
-  VIEW_ATTRIBUTES = RESOURCE_ATTRIBUTES
+  VIEW_ATTRIBUTES = [] # No extra attributes for now.
 
   # Returns Planet JSON representation. It's basically same as 
   # SsObject#as_json but includes additional fields:
@@ -158,8 +158,7 @@ class SsObject::Planet < SsObject
   #
   Resources::TYPES.each do |resource|
     define_method("#{resource}=") do |value|
-      name = "#{resource}_storage"
-      storage = (read_attribute(name) * resource_modifier(name))
+      storage = send("#{resource}_storage_with_modifier")
 
       if value > storage
         value = storage
@@ -168,6 +167,12 @@ class SsObject::Planet < SsObject
       end
 
       write_attribute(resource, value)
+    end
+
+    # Planet storage increased by owner technologies and other modifiers.
+    define_method("#{resource}_storage_with_modifier") do
+      name = "#{resource}_storage"
+      read_attribute(name) * resource_modifier(name)
     end
   end
 

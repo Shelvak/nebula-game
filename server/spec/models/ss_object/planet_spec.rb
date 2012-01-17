@@ -1104,13 +1104,12 @@ describe SsObject::Planet do
     
     describe "with :view" do
       it_behaves_like "as json", Factory.create(:planet), {:view => true},
-        %w{
+        %w{},
+        %w{next_raid_at raid_arg energy_diminish_registered
           metal metal_generation_rate metal_usage_rate metal_storage
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate zetium_usage_rate zetium_storage
-          last_resources_update
-        },
-        %w{next_raid_at raid_arg energy_diminish_registered}
+          last_resources_update}
     end
 
     describe "with :owner" do
@@ -1461,6 +1460,21 @@ describe SsObject::Planet do
       model.send(
         :resource_modifier_technologies
       ).should include(tech)
+    end
+  end
+
+  describe "resource storage methods" do
+    Resources::TYPES.each do |resource|
+      w_mod = "#{resource}_storage_with_modifier"
+      wo_mod = "#{resource}_storage"
+      describe "##{w_mod}" do
+        it "should return greater value than without modifiers" do
+          planet = Factory.build(:planet)
+          planet.should_receive(:resource_modifier).with(wo_mod).and_return(1.5)
+
+          planet.send(w_mod).should == planet.send(wo_mod) * 1.5
+        end
+      end
     end
   end
 
