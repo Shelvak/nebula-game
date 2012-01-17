@@ -404,6 +404,10 @@ class UnitsController < GenericController
       :metal => Fixnum, :energy => Fixnum, :zetium => Fixnum
     }
 
+    raise GameLogicError.new(
+      "You're not trying to do anything! All resources are 0!") \
+      if params['metal'] == 0 && params['energy'] == 0 && params['zetium'] == 0
+
     transporter = Unit.where(:player_id => player.id).find(
       params['transporter_id'])
 
@@ -437,8 +441,9 @@ class UnitsController < GenericController
       end
     end
 
-    transporter.transfer_resources!(params['metal'], params['energy'],
-      params['zetium'])
+    transporter.transfer_resources!(
+      params['metal'], params['energy'], params['zetium']
+    ) if params['metal'] != 0 || params['energy'] != 0 || params['zetium'] != 0
 
     respond :kept_resources => kept_resources
   end

@@ -740,6 +740,14 @@ describe UnitsController do
         {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
          "nap" => false}
 
+      it "should not fail if planet has no storage" do
+        set_resources(@planet, 100, 100, 100)
+        invoke @action, @params
+        response_should_include(
+          :kept_resources => {:metal => 10, :energy => 10, :zetium => 10}
+        )
+      end
+
       it "should respond with kept resources hash" do
         invoke @action, @params
         response_should_include(
@@ -803,6 +811,13 @@ describe UnitsController do
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should raise error if you're not trying to do anything" do
+      lambda do
+        invoke @action, @params.
+          merge('metal' => 0, 'energy' => 0, 'zetium' => 0)
+      end.should raise_error(GameLogicError)
     end
 
     it "should call #transfer_resources! on transporter" do
