@@ -309,8 +309,10 @@ class SsObject::Planet < SsObject
     # owner.
     units = Unit.in_location(self).
       where(:player_id => old_player ? old_player.id : nil)
+    fse_counter_change = 1 # 1 for the planet.
     units.each do |unit|
       population_count += unit.population
+      fse_counter_change += 1 if unit.space?
       unit.player = new_player
     end
     Unit.save_all_units(units)
@@ -364,7 +366,8 @@ class SsObject::Planet < SsObject
     old_player.save! if old_player && old_player.changed?
     new_player.save! if new_player && new_player.changed?
 
-    FowSsEntry.change_planet_owner(self, old_player, new_player)
+    FowSsEntry.
+      change_planet_owner(self, old_player, new_player, fse_counter_change)
     EventBroker.fire(self, EventBroker::CHANGED,
       EventBroker::REASON_OWNER_CHANGED)
 
