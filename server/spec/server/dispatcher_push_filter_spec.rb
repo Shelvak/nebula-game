@@ -1,7 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
-describe DispatcherPushFilter do
+describe PushFilter do
   before(:each) do
-    @object = DispatcherPushFilter.new
+    @object = PushFilter.new
   end
 end
