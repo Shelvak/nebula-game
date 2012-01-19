@@ -15,7 +15,7 @@ package models.folliage
    {
       private var _kind:int = FolliageTileKind._3X3;
       /**
-       * Kind of blocking folliage. Use constants from
+       * Kind of blocking foliage. Use constants from
        * <code>FolliageTileKind</code> class.
        * 
        * <p>Setting this property will dispatch

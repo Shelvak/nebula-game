@@ -789,7 +789,7 @@ package models.building
       
       
       public static const RESTRICTED_TILES:ArrayCollection =
-         new ArrayCollection([TileKind.WATER].concat(TileKind.RESOURCE_TILES));
+         new ArrayCollection(TileKind.RESOURCE_TILES);
       /**
        * List of tile types that this building can't be built on. Items in the collection
        * are integers from <code>TileKind</code> class. Instances of <code>Building</code>
