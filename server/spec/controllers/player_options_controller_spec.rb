@@ -39,8 +39,6 @@ describe PlayerOptionsController do
       end
     end
 
-    it_should_behave_like "with param options", PlayerOptions::Data.properties
-
     it "should set options" do
       PlayerOptions::Data.properties.each do |property|
         @opts.should_receive(:"#{property}=").with(@params[property.to_s])
@@ -54,6 +52,14 @@ describe PlayerOptionsController do
       it "should convert ArgumentError into GameLogicError" do
         property = PlayerOptions::Data.properties.first
         @opts.stub!(:"#{property}=").and_raise(ArgumentError)
+
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should convert NoMethodError into GameLogicError" do
+        @params['does_not_exist'] = 3
 
         lambda do
           invoke @action, @params

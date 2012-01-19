@@ -22,14 +22,12 @@ class PlayerOptionsController < GenericController
   #
   # Response: None
   def action_set
-    param_options :required => PlayerOptions::Data.properties
-
     opts = player.options.data
 
-    PlayerOptions::Data.properties.each do |property|
+    params.each do |property, value|
       begin
-        opts.send("#{property}=", params[property.to_s])
-      rescue ArgumentError => e
+        opts.send("#{property}=", value)
+      rescue NoMethodError, ArgumentError => e
         raise GameLogicError.new(e.message)
       end
     end
