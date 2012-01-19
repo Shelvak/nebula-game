@@ -36,6 +36,8 @@ package globalevents
        * <code>DateUtil.nowDate</code> or <code>DateUtil.nowTime</code>
        */
       public static const TIMED_UPDATE:String = "timedUpdate";
+
+      public static const INITIALIZE_MAP_EDITOR:String = "initializeMapEditor";
       
       
       /**
