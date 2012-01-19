@@ -23,7 +23,7 @@ class Dispatcher::PushFilter
   end
 
   def to_s
-    "<PushFilter scope=#{@scope} id=#{@id}>"
+    "<Dispatcher::PushFilter scope=#{@scope} id=#{@id}>"
   end
 
   def as_json(options=nil)
