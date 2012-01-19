@@ -3,11 +3,7 @@ require File.expand_path(
 )
 
 describe DispatcherEventHandler::ObjectResolver do
-  def dataset(player_ids, filter, objects)
-    data = DispatcherEventHandler::ObjectResolver::Data.new(player_ids, filter)
-    objects.each { |obj| data << obj }
-    [data]
-  end
+  include DispatcherEventHandlerObjectHelpers
 
   describe ".resolve" do
     let(:player_ids) { [1,2,3] }
@@ -124,6 +120,30 @@ describe DispatcherEventHandler::ObjectResolver do
 
       DispatcherEventHandler::ObjectResolver.resolve([obj], :reason).should ==
         dataset(player_ids, filter, [obj])
+    end
+
+    it "should resolve mixed objects" do
+      player1 = Factory.create(:player)
+      player2 = Factory.create(:player)
+
+      notifications = [
+        Factory.create(:notification, :player => player1),
+        Factory.create(:notification, :player => player2),
+        Factory.create(:notification, :player => player1),
+      ]
+      quest_progresses = [
+        Factory.create(:quest_progress, :player => player2),
+        Factory.create(:quest_progress, :player => player1),
+      ]
+
+      objects = notifications + quest_progresses
+
+      DispatcherEventHandler::ObjectResolver.resolve(objects, :reason).should ==
+        [
+          data([player1.id], nil,
+            [notifications[0], notifications[2], quest_progresses[1]]),
+          data([player2.id], nil, [notifications[1], quest_progresses[0]])
+        ]
     end
   end
 end
