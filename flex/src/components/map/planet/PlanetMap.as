@@ -11,6 +11,7 @@ package components.map.planet
 
    import models.location.LocationMinimal;
    import models.planet.MPlanet;
+   import models.solarsystem.events.MSSObjectEvent;
 
 
    /**
@@ -54,9 +55,19 @@ package components.map.planet
          _coordsTransform = new PlanetMapCoordsTransform(
             model.width, model.height, BORDER_SIZE
          );
+         model.ssObject.addEventListener(
+            MSSObjectEvent.TERRAIN_CHANGE, ssObject_terrainChangeHandler,
+            false, 0, true
+         )
       }
 
       public override function cleanup(): void {
+         if (model != null) {
+            MPlanet(model).ssObject.removeEventListener(
+               MSSObjectEvent.TERRAIN_CHANGE, ssObject_terrainChangeHandler,
+               false
+            )
+         }
          if (_objectsLayer != null) {
             removeElement(_objectsLayer);
             _objectsLayer.cleanup();
@@ -69,11 +80,11 @@ package components.map.planet
          super.cleanup();
       }
 
-      public override function getBackground(): BitmapData {
+      public override function getBackground(useCached:Boolean = true): BitmapData {
          if (_backgroundRenderer == null) {
             _backgroundRenderer = new BackgroundRenderer(this);
          }
-         return _backgroundRenderer.renderBackground();
+         return _backgroundRenderer.renderBackground(useCached);
       }
 
       protected override function createObjects(): void {
@@ -140,6 +151,14 @@ package components.map.planet
        */
       public function get coordsTransform(): PlanetMapCoordsTransform {
          return _coordsTransform;
+      }
+
+      /* #################################### */
+      /* ### RUNTIME BACKGROUND RENDERING ### */
+      /* #################################### */
+
+      private function ssObject_terrainChangeHandler(event:MSSObjectEvent): void {
+         renderBackground(false);
       }
    }
 }

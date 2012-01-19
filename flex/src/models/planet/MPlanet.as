@@ -78,15 +78,15 @@ package models.planet
       private var _zIndexCalculator:ZIndexCalculator = null;
       
       
-      private var _folliagesAnimator:PlanetFolliagesAnimator = null;
-      private var _suppressFolliagesAnimatorUpdate:Boolean = false;
-      private function updateFolliagesAnimator() : void
+      private var _foliageAnimator:PlanetFolliagesAnimator = null;
+      private var _suppressFoliageAnimatorUpdate:Boolean = false;
+      private function updateFoliageAnimator() : void
       {
-         if (_suppressFolliagesAnimatorUpdate)
+         if (_suppressFoliageAnimatorUpdate)
          {
             return;
          }
-         _folliagesAnimator.setFolliages(nonblockingFolliages);
+         _foliageAnimator.setFolliages(nonblockingFolliages);
       }
       
       
@@ -95,7 +95,7 @@ package models.planet
          _ssObject = ssObject;
          super();
          _zIndexCalculator = new ZIndexCalculator(this);
-         _folliagesAnimator = new PlanetFolliagesAnimator();
+         _foliageAnimator = new PlanetFolliagesAnimator();
          initMatrices();
          _nonblockingFolliages = Collections.filter(objects, filterFunction_nonblockingFolliages);
          _blockingFolliages = Collections.filter(objects, filterFunction_blockingFolliages);
@@ -197,7 +197,9 @@ package models.planet
       
       public override function get cached() : Boolean
       {
-         return ML.latestPlanet != null && !ML.latestPlanet.fake && ML.latestPlanet.id == id;
+         return ML.latestPlanet != null
+                   && !ML.latestPlanet.fake
+                   && ML.latestPlanet.id == id;
       }
       
       
@@ -224,10 +226,10 @@ package models.planet
          {
             _zIndexCalculator = null;
          }
-         if (_folliagesAnimator != null)
+         if (_foliageAnimator != null)
          {
-            _folliagesAnimator.cleanup();
-            _folliagesAnimator = null;
+            _foliageAnimator.cleanup();
+            _foliageAnimator = null;
          }
          if (_blockingObjects != null)
          {
@@ -930,7 +932,7 @@ package models.planet
          fillObjectsMatrix(object);
          objects.addItem(object);
          calculateZIndex();
-         updateFolliagesAnimator();
+         updateFoliageAnimator();
          dispatchObjectAddEvent(object);
       }
       
@@ -963,13 +965,13 @@ package models.planet
       {
          _suppressObjectAddEvent = true;
          _suppressZIndexCalculation = true;
-         _suppressFolliagesAnimatorUpdate = true;
+         _suppressFoliageAnimatorUpdate = true;
          super.addAllObjects(list);
          _suppressObjectAddEvent = false;
          _suppressZIndexCalculation = false;
-         _suppressFolliagesAnimatorUpdate = false;
+         _suppressFoliageAnimatorUpdate = false;
          calculateZIndex();
-         updateFolliagesAnimator();
+         updateFoliageAnimator();
       }
       
       
@@ -1125,12 +1127,12 @@ package models.planet
       
       
       /**
-       * Determines if any blocking folliages in given building basment's area exist.
+       * Determines if any blocking foliage in given building basement's area exist.
        * 
-       * @param building Building to be examinded.
+       * @param building Building to be examined.
        * 
        * @return <code>true</code> if there are at least one blocking folliage in the basement
-       * area of the given bulding or <code>false</code> otherwise.
+       * area of the given building or <code>false</code> otherwise.
        */
       public function blockingFolliagesUnderExist(building:Building) : Boolean
       {
@@ -1286,7 +1288,7 @@ package models.planet
          }
          
          checkBlockingObjectsUnder(b);
-         removeNonBlockingFolliagesUnder(b);
+         removeNonBlockingFoliageUnder(b);
          addObject(b);
       }
       
@@ -1328,7 +1330,7 @@ package models.planet
          clearObjectsMatrix(b.x, b.xEnd, b.y, b.yEnd);
          b.moveTo(newX, newY);
          checkBlockingObjectsUnder(b);
-         removeNonBlockingFolliagesUnder(b);
+         removeNonBlockingFoliageUnder(b);
          fillObjectsMatrix(b);
          calculateZIndex();
          if (hasEventListener(MPlanetEvent.BUILDING_MOVE))
@@ -1338,7 +1340,7 @@ package models.planet
       }
       
       
-      private function removeNonBlockingFolliagesUnder(b:Building) : void
+      private function removeNonBlockingFoliageUnder(b:Building) : void
       {
          var removeList:Array = [];
          for each (var object:MPlanetObject in getObjectsInArea(b.x, b.xEnd, b.y, b.yEnd))
@@ -1393,19 +1395,14 @@ package models.planet
       /**
        * Initializes upgrade process of buildings and units that have not been completed yet.
        */
-      public function initUpgradeProcess() : void
-      {
-         for each (var b:Building in buildings)
-         {
-            if (!b.upgradePart.upgradeCompleted)
-            {
+      public function initUpgradeProcess(): void {
+         for each (var b: Building in buildings) {
+            if (!b.upgradePart.upgradeCompleted) {
                b.upgradePart.startUpgrade();
             }
          }
-         for each (var tUnit: Unit in units)
-         {
-            if (tUnit.upgradePart.upgradeEndsAt != null)
-            {
+         for each (var tUnit: Unit in units) {
+            if (tUnit.upgradePart.upgradeEndsAt != null) {
                tUnit.upgradePart.startUpgrade();
             }
          }
@@ -1416,41 +1413,30 @@ package models.planet
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
 
-
-      public function dispatchUnitRefreshEvent() : void
-      {
+      public function dispatchUnitRefreshEvent(): void {
          if (!f_cleanupStarted &&
-            !f_cleanupComplete &&
-            hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED))
-         {
+                !f_cleanupComplete &&
+                hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_REFRESH_NEEDED));
          }
       }
-      
-      
-      public function dispatchBuildingUpgradedEvent() : void
-      {
-         if (hasEventListener(MPlanetEvent.BUILDING_UPGRADED))
-         {
+
+      public function dispatchBuildingUpgradedEvent(): void {
+         if (hasEventListener(MPlanetEvent.BUILDING_UPGRADED)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.BUILDING_UPGRADED));
          }
       }
-      
-      
-      private var _suppressObjectAddEvent:Boolean = false;
-      private function dispatchObjectAddEvent(object:MPlanetObject) : void
-      {
-         if (!_suppressObjectAddEvent && hasEventListener(MPlanetEvent.OBJECT_ADD))
-         {
+
+      private var _suppressObjectAddEvent: Boolean = false;
+      private function dispatchObjectAddEvent(object: MPlanetObject): void {
+         if (!_suppressObjectAddEvent
+                && hasEventListener(MPlanetEvent.OBJECT_ADD)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.OBJECT_ADD, object));
          }
       }
-      
-      
-      private function dispatchObjectRemoveEvent(object:MPlanetObject) : void
-      {
-         if (hasEventListener(MPlanetEvent.OBJECT_REMOVE))
-         {
+
+      private function dispatchObjectRemoveEvent(object: MPlanetObject): void {
+         if (hasEventListener(MPlanetEvent.OBJECT_REMOVE)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.OBJECT_REMOVE, object));
          }
       }

@@ -1,6 +1,7 @@
 package components.planetmapeditor
 {
    import components.base.viewport.Viewport;
+   import components.base.viewport.ViewportZoomable;
    import components.map.planet.PlanetMap;
    import components.planetmapeditor.events.MPlanetMapEditorEvent;
 
@@ -86,6 +87,7 @@ package components.planetmapeditor
             for each (var foliage:BlockingFolliage in FOLIAGE) {
                foliage.terrainType = value;
             }
+            renderBackground();
          }
       }
       public function get terrainType(): int {
@@ -172,18 +174,25 @@ package components.planetmapeditor
       /* ### ACTIONS ### */
       /* ############### */
 
-      public function generateMap(viewport:Viewport): void {
+      private var _planet:MSSObject;
+
+      public function generateMap(viewport:ViewportZoomable): void {
          Objects.paramNotNull("viewport", viewport);
-         const ssObject:MSSObject = new MSSObject();
-         ssObject.terrain = _terrainType;
-         ssObject.type = SSObjectType.PLANET;
-         ssObject.width = _mapWidth;
-         ssObject.height = _mapHeight;
-         viewport.content = new PlanetMap(new MPlanet(ssObject))
+         if (_planet != null) {
+            _planet.cleanup();
+         }
+         _planet = new MSSObject();
+         _planet.terrain = _terrainType;
+         _planet.type = SSObjectType.PLANET;
+         _planet.width = _mapWidth;
+         _planet.height = _mapHeight;
+         viewport.content = new PlanetMap(new MPlanet(_planet));
       }
 
       private function renderBackground(): void {
-         
+         if (_planet != null) {
+            _planet.terrain = _terrainType;
+         }
       }
 
 

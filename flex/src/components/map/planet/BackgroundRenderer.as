@@ -89,6 +89,32 @@ package components.map.planet
          if (f_cleanupCalled) {
             return;
          }
+         _map = null;
+         _coordsTransform = null;
+         _texture.dispose();
+         _texture = null;
+         _tileMask.dispose();
+         _tileMask = null;
+         _sideBottomMask.dispose();
+         _sideBottomMask = null;
+         _sideLeftMask.dispose();
+         _sideLeftMask = null;
+         _sideRightMask.dispose();
+         _sideRightMask = null;
+         _sideTopMask.dispose();
+         _sideTopMask = null;
+         _cornerBottomLeftMask.dispose();
+         _cornerBottomLeftMask = null;
+         _cornerBottomRightMask.dispose();
+         _cornerBottomRightMask = null;
+         _cornerTopLeftMask.dispose();
+         _cornerTopLeftMask = null;
+         _cornerTopRightMask.dispose();
+         _cornerTopRightMask = null;
+         _plane3D_width.dispose();
+         _plane3D_width = null;
+         _plane3D_height.dispose();
+         _plane3D_height = null;
          if (_background) {
             _background.dispose();
             _background = null;
@@ -102,12 +128,12 @@ package components.map.planet
        * 
        * @return rendered background of the given map.
        */
-      public function renderBackground() : BitmapData
+      public function renderBackground(returnCached:Boolean = true) : BitmapData
       {
          if (f_cleanupCalled) {
             return null;
          }
-         if (_background != null) {
+         if (returnCached && _background != null) {
             return _background;
          }
 
@@ -116,7 +142,10 @@ package components.map.planet
          
          _plane3D_width = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.WIDHT)).clone();
          _plane3D_height = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.HEIGHT)).clone();
-         
+
+         if (_background != null) {
+            _background.dispose();
+         }
          _background = new BitmapData(
             _coordsTransform.realWidth,
             _coordsTransform.realHeight + _plane3D_height.height,
@@ -222,33 +251,6 @@ package components.map.planet
                _plane3D_width, srcRect, new Point(realX + 1, realY)
             );
          }
-
-         _map = null;
-         _coordsTransform = null;
-         _texture.dispose();
-         _texture = null;
-         _tileMask.dispose();
-         _tileMask = null;
-         _sideBottomMask.dispose();
-         _sideBottomMask = null;
-         _sideLeftMask.dispose();
-         _sideLeftMask = null;
-         _sideRightMask.dispose();
-         _sideRightMask = null;
-         _sideTopMask.dispose();
-         _sideTopMask = null;
-         _cornerBottomLeftMask.dispose();
-         _cornerBottomLeftMask = null;
-         _cornerBottomRightMask.dispose();
-         _cornerBottomRightMask = null;
-         _cornerTopLeftMask.dispose();
-         _cornerTopLeftMask = null;
-         _cornerTopRightMask.dispose();
-         _cornerTopRightMask = null;
-         _plane3D_width.dispose();
-         _plane3D_width = null;
-         _plane3D_height.dispose();
-         _plane3D_height = null;
 
          return _background;
       }

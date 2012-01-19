@@ -47,7 +47,6 @@ package components.map
       /* ### INITIALIZATION ### */
       /* ###################### */
       
-      private var _backgroundData:BitmapData = null;
       private var _backgroundComponent:BitmapImage = null;
 
       public function CMap(model: MMap): void {
@@ -66,7 +65,7 @@ package components.map
        * 
        * @return background image of the map. Default implementation returns <code>null</code>.
        */
-      public function getBackground(): BitmapData {
+      public function getBackground(useCached:Boolean = true): BitmapData {
          return null;
       }
       
@@ -103,15 +102,8 @@ package components.map
             return;
          }
 
-         _backgroundData = getBackground();
-         // Create background image component if we got background
-         if (_backgroundData != null) {
-            _backgroundComponent = new BitmapImage();
-            _backgroundComponent.smooth = true;
-            _backgroundComponent.fillMode = BitmapFillMode.REPEAT;
-            _backgroundComponent.source = _backgroundData;
-            addElement(_backgroundComponent);
-         }
+         renderBackground();
+         
          createObjects();
          f_childrenCreated = true;
       }
@@ -126,7 +118,6 @@ package components.map
             removeElement(_backgroundComponent);
             _backgroundComponent.source = null;
             _backgroundComponent = null;
-            _backgroundData = null;
          }
          _viewport = null;
       }
@@ -148,7 +139,24 @@ package components.map
             _backgroundComponent.width = uw;
             _backgroundComponent.height = uh;
          }
-      }      
+      }
+
+      public function renderBackground(useCached:Boolean = true): void {
+         const backgroundData:BitmapData = getBackground(useCached);
+         if (backgroundData == null) {
+            return;
+         }
+         if (_backgroundComponent == null) {
+            _backgroundComponent = new BitmapImage();
+            _backgroundComponent.smooth = true;
+            _backgroundComponent.fillMode = BitmapFillMode.REPEAT;
+            _backgroundComponent.source = backgroundData;
+            addElement(_backgroundComponent);
+         }
+         else {
+            _backgroundComponent.source = backgroundData;
+         }
+      }
 
       
       /* ################## */
@@ -366,7 +374,9 @@ package components.map
        * @throws IllegalOperationError
        */
       private function throwWriteOncePropertyError(): void {
-         throw new IllegalOperationError("This property is of write-once type: it can be set only once");
+         throw new IllegalOperationError(
+            "This property is of write-once type: it can be set only once"
+         );
       }
    }
 }
