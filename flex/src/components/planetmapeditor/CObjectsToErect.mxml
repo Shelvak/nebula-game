@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:planetmapeditor="components.planetmapeditor.*">
+   <fx:Binding source="pnlBuildings.selectedBuilding"
+               destination="model.objectToErect"/>
+   <fx:Binding source="pnlNpcBuildings.selectedBuilding"
+               destination="model.objectToErect"/>
+   <fx:Script>
+      <![CDATA[
+      import utils.components.ToggleButtonsGroup;
+      import utils.components.events.ToggleButtonsGroupEvent;
+
+
+      [Bindable]
+      public var model:MPlanetMapEditor;
+
+      private const buttonsGroup:ToggleButtonsGroup = new ToggleButtonsGroup();
+
+      protected override function createChildren(): void {
+         super.createChildren();
+         buttonsGroup.registerButton(btnBuildings);
+         buttonsGroup.registerButton(btnNpcBuildings);
+         buttonsGroup.registerButton(btnFoliage);
+         buttonsGroup.select(btnBuildings);
+         buttonsGroup.addEventListener(
+            ToggleButtonsGroupEvent.SELECTION_CHANGE,
+            buttonsGroup_selectionChangeHandler
+         );
+      }
+
+      private function buttonsGroup_selectionChangeHandler(event: ToggleButtonsGroupEvent): void {
+         pnlBuildings.visible = false;
+         pnlNpcBuildings.visible = false;
+         pnlFoliage.visible = false;
+         switch (event.selectedButton) {
+
+            case btnBuildings:
+               pnlBuildings.visible = true;
+               model.objectToErect = pnlBuildings.selectedBuilding;
+               break;
+
+            case btnNpcBuildings:
+               pnlNpcBuildings.visible = true;
+               model.objectToErect = pnlNpcBuildings.selectedBuilding;
+               break;
+
+            case btnFoliage:
+               pnlFoliage.visible = true;
+               model.objectToErect = pnlFoliage.selectedFoliage;
+               break;
+         }
+      }
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout gap="10" horizontalAlign="justify"/>
+   </s:layout>
+   <s:Group>
+      <s:layout>
+         <s:VerticalLayout gap="2" horizontalAlign="justify"/>
+      </s:layout>
+      <s:ToggleButton id="btnBuildings" label="Buildings"/>
+      <s:ToggleButton id="btnNpcBuildings" label="NPC Buildings"/>
+      <s:ToggleButton id="btnFoliage" label="Foliage"/>
+   </s:Group>
+   <s:Group height="100%">
+      <planetmapeditor:CBuildingsPanel
+         width="100%" height="100%"
+         id="pnlBuildings" title="Buildings"
+         listData="{model.BUILDINGS}"
+         minLevel="{model.MIN_BUILDING_LEVEL}"
+         maxLevel="{model.MAX_BUILDING_LEVEL}"/>
+      <planetmapeditor:CBuildingsPanel
+         width="100%" height="100%"
+         id="pnlNpcBuildings" title="NPC Buildings" visible="false"
+         listData="{model.NPC_BUILDINGS}"
+         minLevel="{model.MIN_NPC_LEVEL}"
+         maxLevel="{model.MAX_NPC_LEVEL}"/>
+      <planetmapeditor:CFoliagePanel
+         width="100%" height="100%"
+         id="pnlFoliage" title="Foliage" visible="false"
+         listData="{model.FOLIAGE}"/>
+   </s:Group>
+</s:Group>

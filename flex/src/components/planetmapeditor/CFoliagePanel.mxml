@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark">
+   <fx:Script>
+      <![CDATA[
+      import models.folliage.BlockingFolliage;
+
+      import mx.collections.IList;
+
+      import spark.events.IndexChangeEvent;
+
+
+      [Bindable]
+      public var title: String;
+      
+      [Bindable]
+      public var listData: IList = null;
+
+      [Bindable]
+      public var selectedFoliage: BlockingFolliage = null;
+
+      private function lstFoliage_changeHandler(event: IndexChangeEvent): void {
+         selectedFoliage = lstFoliage.selectedItem;
+      }
+      ]]>
+   </fx:Script>
+    <s:layout>
+      <s:VerticalLayout gap="10" horizontalAlign="justify"/>
+   </s:layout>
+   <s:Label fontSize="16" fontWeight="bold" text="{title}" textAlign="center"/>
+   <s:List id="lstFoliage" left="0" right="0" height="100%"
+           horizontalCenter="0"
+           requireSelection="true" selectedIndex="0"
+           dataProvider="{listData}" borderVisible="false"
+           itemRenderer="components.planetmapeditor.IRFoliage"
+           change="lstFoliage_changeHandler(event)">
+      <s:layout>
+         <s:TileLayout orientation="rows" columnAlign="justifyUsingGap"/>
+      </s:layout>
+   </s:List>
+</s:Group>
