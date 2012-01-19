@@ -66,7 +66,30 @@ describe Player do
       Player.names_for([player.id]).should == {player.id => player.name}
     end
   end
-  
+
+  describe "#options" do
+    let(:player) { Factory.create(:player) }
+
+    it "should return PlayerOptions object" do
+      PlayerOptions.should_receive(:find).with(player.id).and_return(:opts)
+      player.options.should == :opts
+    end
+
+    it "should cache object between calls" do
+      player.options
+      PlayerOptions.should_not_receive(:find).with(player.id)
+      player.options
+    end
+
+    it "should reload object if asked" do
+      opts = player.options
+      opts.data.chat_show_join_leave = ! opts.data.chat_show_join_leave?
+      opts.save!
+
+      player.options(true).should == opts
+    end
+  end
+
   describe "#victory_points" do
     let(:alliance) { Factory.create(:alliance) }
     let(:player) { Factory.create(:player, :alliance => alliance) }

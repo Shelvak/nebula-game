@@ -130,6 +130,12 @@ class Player < ActiveRecord::Base
     Hash[player_ids.zip(names)]
   end
 
+  # Return +PlayerOptions+ for this player.
+  def options(reload=false)
+    @_options = nil if reload
+    @_options ||= PlayerOptions.find(id)
+  end
+
   # Returns for how much seconds this player has been inactive.
   def inactivity_time
     return 0 if Dispatcher.instance.connected?(id)
