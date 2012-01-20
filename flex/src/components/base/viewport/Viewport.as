@@ -223,7 +223,7 @@ package components.base.viewport
       
       protected override function createChildren() : void
       {
-         if (f_cleanupCalled) {
+         if (f_cleanupCalled || f_childrenCreated) {
             super.createChildren();
             return;
          }
@@ -257,6 +257,8 @@ package components.base.viewport
          _underlaySprite.bottom = 0;
          _underlaySprite.mouseEnabled =
          _underlaySprite.mouseChildren = false;
+
+         f_childrenCreated = true;
          
          super.createChildren();
       }
@@ -628,6 +630,13 @@ package components.base.viewport
       /* ############################# */
       /* ### MOVING CONTENT AROUND ### */
       /* ############################# */
+
+      /**
+       * Is content drag feature enabled?
+       *
+       * @default true
+       */
+      public var contentDragEnabled:Boolean = true;
       
       
       /**
@@ -749,6 +758,7 @@ package components.base.viewport
       {
          if (f_cleanupCalled ||
              !_content ||
+             !contentDragEnabled ||
              DisplayListUtil.isInsideType(event.target, VScrollBar) ||
              DisplayListUtil.isInsideType(event.target, HScrollBar) ||
              _overlay && DisplayListUtil.isInsideInstance(event.target, _overlay))
@@ -785,8 +795,9 @@ package components.base.viewport
       
       private function stopContentDrag() : void
       {
-         if (f_cleanupCalled)
+         if (!contentDragEnabled || f_cleanupCalled) {
             return;
+         }
          
          f_contentOnDrag = false;
          removeEventListener(MouseEvent.MOUSE_MOVE, doContentDrag);
@@ -875,10 +886,10 @@ package components.base.viewport
       }
       
       
-      protected var f_keyboarControlActive:Boolean = false;
+      protected var f_keyboardControlActive:Boolean = false;
       protected function global_keyDownHandler(event:KeyboardEvent) : void
       {
-         if (!f_cleanupCalled && f_keyboarControlActive)
+         if (!f_cleanupCalled && f_keyboardControlActive)
          {
             var delta:Point;
             switch (event.keyCode)
@@ -970,15 +981,14 @@ package components.base.viewport
       
       protected function this_rollOverHandler(event:MouseEvent) : void
       {
-         f_keyboarControlActive = true;
+         f_keyboardControlActive = true;
       }
       
       
-      protected function this_rollOutHandler(event:MouseEvent) : void
-      {
-         if (!DisplayListUtil.isInsideInstance(event.target, _content))
-         {
-            f_keyboarControlActive = false;
+      protected function this_rollOutHandler(event:MouseEvent) : void {
+         if (_content != null
+                && !DisplayListUtil.isInsideInstance(event.target, _content)) {
+            f_keyboardControlActive = false;
             stopContentDrag();
          }
       }

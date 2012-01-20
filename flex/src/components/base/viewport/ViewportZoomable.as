@@ -115,7 +115,9 @@ package components.base.viewport
        */
       public function zoomToDefault() : void
       {
-         changeContentScale(1, centerPointViewport_CCS());
+         if (content != null) {
+            changeContentScale(1, centerPointViewport_CCS());
+         }
       }
       
       
@@ -263,7 +265,7 @@ package components.base.viewport
       protected override function global_keyDownHandler(event:KeyboardEvent) : void
       {
          super.global_keyDownHandler(event);
-         if (f_keyboarControlActive)
+         if (f_keyboardControlActive)
          {
             switch (event.keyCode)
             {
