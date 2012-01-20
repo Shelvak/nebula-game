@@ -235,7 +235,7 @@ package components.base.viewport
             return;
          }
          
-         // 1 will be set if content's both dimentions are smaller than
+         // 1 will be set if content's both dimensions are smaller than
          // of the viewport.
          _minScale = Math.min(
             (width - paddingHorizontal * 2) / content.getExplicitOrMeasuredWidth(),

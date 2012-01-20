@@ -145,10 +145,7 @@ package components.base.viewport
       
       private var f_initializeVisibleAreaTracker:Boolean = false;
       private var _visibleAreaTracker:VisibleAreaTracker;
-      protected function get visibleAreaTracker() : VisibleAreaTracker {
-         return _visibleAreaTracker;
-      }
-      
+
       private function callContentInitialized() : void {
          f_initializeVisibleAreaTracker = false;
          if (_visibleAreaTracker != null && _content != null) {
@@ -205,7 +202,7 @@ package components.base.viewport
       private var _contentContainer:Group;
       private var _viewport:Group;
       private var _scroller:Scroller;
-      private var _underlaySprite:SpriteVisualElement
+      private var _underlaySprite: SpriteVisualElement;
       
       
       private var f_childrenCreated:Boolean = false;
@@ -340,17 +337,8 @@ package components.base.viewport
       {
          return _content ? _content.height * _content.scaleY : 0;
       }
-      
-      
-      /**
-       * Container that holds content and is actually moved around.
-       */
-      protected function get contentContainer() : Group
-      {
-         return _contentContainer;
-      }
-      
-      
+
+
       /**
        * You should register any event listeners with <code>code</code> here and do other
        * modifications for the content before it is added to the display list. Calling
@@ -405,15 +393,7 @@ package components.base.viewport
             invalidateProperties();
          }
       }
-      /**
-       * @private
-       */
-      public function get overlay() : UIComponent
-      {
-         return _overlay;
-      }
-      
-      
+
       private function installOverlay(overlay:UIComponent) : void
       {
          overlay.mouseEnabled = false;
@@ -452,15 +432,7 @@ package components.base.viewport
             invalidateDisplayList();
          }
       }
-      /**
-       * @private
-       */
-      public function get underlayImage() : BitmapData
-      {
-         return _underlayImage;
-      }
-      
-      
+
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
@@ -476,15 +448,7 @@ package components.base.viewport
             _underlayScrollSpeedRatio = value;
          }
       }
-      /**
-       * @private
-       */
-      public function get underlayScrollSpeedRatio() : Number
-      {
-         return _underlayScrollSpeedRatio;
-      }
-      
-      
+
       private var _paddingHorizontal:uint = 0;
       /**
        * Horizontal padding (left and right) for content.
@@ -630,14 +594,6 @@ package components.base.viewport
       /* ############################# */
       /* ### MOVING CONTENT AROUND ### */
       /* ############################# */
-
-      /**
-       * Is content drag feature enabled?
-       *
-       * @default true
-       */
-      public var contentDragEnabled:Boolean = true;
-      
       
       /**
        * Centers content in the viewport. 
@@ -758,7 +714,6 @@ package components.base.viewport
       {
          if (f_cleanupCalled ||
              !_content ||
-             !contentDragEnabled ||
              DisplayListUtil.isInsideType(event.target, VScrollBar) ||
              DisplayListUtil.isInsideType(event.target, HScrollBar) ||
              _overlay && DisplayListUtil.isInsideInstance(event.target, _overlay))
@@ -795,7 +750,7 @@ package components.base.viewport
       
       private function stopContentDrag() : void
       {
-         if (!contentDragEnabled || f_cleanupCalled) {
+         if (f_cleanupCalled) {
             return;
          }
          
