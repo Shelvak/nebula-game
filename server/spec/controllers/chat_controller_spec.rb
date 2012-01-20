@@ -126,4 +126,20 @@ describe ChatController do
       invoke @action, @params
     end
   end
+
+  describe "chat|silence" do
+    before(:each) do
+      @action = "chat|silence"
+      @params = {'until' => 10.minutes.from_now}
+      @method = :push
+    end
+
+    it_should_behave_like "only push"
+    it_should_behave_like "with param options", %w{until}
+
+    it "should respond with 'until'" do
+      push @action, @params
+      response_should_include(:until => @params['until'])
+    end
+  end
 end

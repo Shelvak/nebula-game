@@ -1,0 +1,8 @@
+---
+# How much messages player can write per period.
+antiflood.messages: 3
+# How much seconds that period takes.
+antiflood.period: 10
+# For how long we should silence that player? Each silence increases _counter_
+# by one. It starts at 1.
+antiflood.silence_for: 15 * counter

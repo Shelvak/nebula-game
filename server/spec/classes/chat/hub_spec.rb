@@ -8,6 +8,14 @@ describe Chat::Hub do
     @dispatcher.stub!(:transmit).and_return(true)
     @dispatcher.stub!(:push).and_return(true)
     @hub = Chat::Hub.new(@dispatcher)
+    @antiflood = @hub.instance_variable_get("@antiflood")
+  end
+
+  describe ".new" do
+    it "should create antiflood along with hub" do
+      Chat::AntiFlood.should_receive(:new).with(@dispatcher)
+      Chat::Hub.new(@dispatcher)
+    end
   end
 
   describe "#register" do
@@ -158,13 +166,24 @@ describe Chat::Hub do
       end.should raise_error(ArgumentError)
     end
 
-    it "should send message to channel" do
-      @hub.register(@player)
-      channel = @hub.instance_variable_get("@channels")[
-        Chat::Hub::GLOBAL_CHANNEL]
-      msg = "OMG"
-      channel.should_receive(:message).with(@player, msg)
-      @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, msg)
+    describe "registered to channel" do
+      before(:each) do
+        @hub.register(@player)
+        @channel = @hub.instance_variable_get("@channels")[
+          Chat::Hub::GLOBAL_CHANNEL
+        ]
+      end
+
+      it "should check with antiflood" do
+        @antiflood.should_receive(:message!).with(@player.id)
+        @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, "test")
+      end
+
+      it "should send message to channel" do
+        msg = "OMG"
+        @channel.should_receive(:message).with(@player, msg)
+        @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, msg)
+      end
     end
   end
 
@@ -173,12 +192,23 @@ describe Chat::Hub do
       @source = Factory.create(:player)
       @target = Factory.create(:player)
       @message = "OMG"
+      @dispatcher.stub(:connected?)
     end
 
     describe "target player is connected" do
       before(:each) do
         @dispatcher.should_receive(:connected?).with(@target.id).
           at_least(1).and_return(true)
+      end
+
+      it "should not check with antiflood if stamp is provided" do
+        @antiflood.should_not_receive(:message!).with(@source.id)
+        @hub.private_msg(@source.id, @target.id, @message, Time.now)
+      end
+
+      it "should check with antiflood if timestamp is not provided" do
+        @antiflood.should_receive(:message!).with(@source.id)
+        @hub.private_msg(@source.id, @target.id, @message)
       end
 
       describe "source player is not connected" do
@@ -212,17 +242,22 @@ describe Chat::Hub do
         end
       end
 
-      it "should transmit message to player" do
-        @dispatcher.should_receive(:connected?).with(@source.id).
-          and_return(true)
-        @dispatcher.should_receive(:transmit).with(
-          {
-            'action' => ChatController::PRIVATE_MESSAGE,
-            'params' => {'pid' => @source.id, 'msg' => @message}
-          },
-          @target.id
-        )
-        @hub.private_msg(@source.id, @target.id, @message)
+      describe "source player is connected" do
+        before(:each) do
+          @dispatcher.should_receive(:connected?).with(@source.id).
+            and_return(true)
+        end
+
+        it "should transmit message to player" do
+          @dispatcher.should_receive(:transmit).with(
+            {
+              'action' => ChatController::PRIVATE_MESSAGE,
+              'params' => {'pid' => @source.id, 'msg' => @message}
+            },
+            @target.id
+          )
+          @hub.private_msg(@source.id, @target.id, @message)
+        end
       end
     end
 

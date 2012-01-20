@@ -40,6 +40,16 @@ class Cfg; class << self
     CONFIG['buildings.overdrive.multiplier.energy_usage']
   end
 
+  ### chat.yml ###
+
+  def chat_antiflood_messages; CONFIG['chat.antiflood.messages']; end
+
+  def chat_antiflood_period; CONFIG['chat.antiflood.period']; end
+
+  def chat_antiflood_silence_for(counter)
+    CONFIG.evalproperty('chat.antiflood.silence_for', {'counter' => counter})
+  end
+
   ### market.yml ###
 
   # Minimal amount you can offer in market.
