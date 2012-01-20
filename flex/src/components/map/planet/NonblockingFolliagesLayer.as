@@ -7,8 +7,10 @@ package components.map.planet
    import models.planet.MPlanetObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
    import components.map.planet.objects.PrimitivePlanetMapObject;
-   
-   
+
+   import mx.collections.ListCollectionView;
+
+
    public class NonblockingFolliagesLayer extends PlanetVirtualLayer
    {
       override protected function get componentClass() : Class
@@ -23,9 +25,8 @@ package components.map.planet
       }
       
       
-      override protected function get objectsListName() : String
-      {
-         return "nonblockingFolliages";
+      override protected function get objectsList() : ListCollectionView {
+         return planet.nonblockingFolliages;
       }
       
       

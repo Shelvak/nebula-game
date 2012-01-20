@@ -1,21 +1,23 @@
 package components.map.planet
 {
-   
+
    import components.map.planet.objects.BlockingFolliageMapObject;
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
-   
+
    import controllers.Messenger;
    import controllers.navigation.MCSidebar;
    import controllers.screens.SidebarScreens;
-   
+
    import models.ModelLocator;
    import models.exploration.ExplorationStatus;
    import models.folliage.BlockingFolliage;
-   
+
+   import mx.collections.ListCollectionView;
+
    import utils.locale.Localizer;
-   
-   
+
+
    public class BlockingFolliagesLayer extends PlanetVirtualLayer
    {
       private var ML:ModelLocator = ModelLocator.getInstance();
@@ -33,9 +35,8 @@ package components.map.planet
       }
       
       
-      override protected function get objectsListName() : String
-      {
-         return "blockingFolliages";
+      override protected function get objectsList() : ListCollectionView {
+         return planet.blockingFolliages;
       }
       
       private function get SD(): MCSidebar

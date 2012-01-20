@@ -37,6 +37,7 @@ package components.map.planet
    import models.tile.Tile;
 
    import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
 
    import spark.components.Button;
    import spark.components.Label;
@@ -76,8 +77,8 @@ package components.map.planet
          return Building;
       }
 
-      protected override function get objectsListName(): String {
-         return "buildings";
+      protected override function get objectsList(): ListCollectionView {
+         return planet.buildings;
       }
 
 
@@ -240,8 +241,6 @@ package components.map.planet
       /* ######################## */
       
       private var _buildingPH:BuildingPlaceholder = null;
-      private var _deselectMsg:String =
-                     Localizer.string('BuildingSidebar', 'pressEsc');
       private var _buildingProcessStarted:Boolean = false;
       
       /**
@@ -425,7 +424,7 @@ package components.map.planet
       
       
       private function initBuildingPH(building: Building): void {
-         Messenger.show(_deselectMsg);
+         Messenger.show(Localizer.string('BuildingSidebar', 'pressEsc'));
 
          objectsLayer.passOverMouseEventsTo(this);
 
