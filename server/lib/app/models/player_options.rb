@@ -2,14 +2,6 @@ class PlayerOptions < ActiveRecord::Base
   set_primary_key :player_id
   belongs_to :player
 
-  # Ignored player chat messages are not shown at all.
-  CHAT_IGNORE_COMPLETE = "complete"
-  # Ignored player chat messages are shown with text filtered out, like this:
-  # <ignored_player> [you are ignoring this user]
-  CHAT_IGNORE_FILTERED = "filtered"
-
-  CHAT_IGNORE_TYPES = [CHAT_IGNORE_COMPLETE, CHAT_IGNORE_FILTERED]
-
   custom_serialize :data,
     :serialize => lambda { |data| JSON.generate(data.as_json) },
     :unserialize => lambda { |json| Data.new(JSON.parse(json)) }

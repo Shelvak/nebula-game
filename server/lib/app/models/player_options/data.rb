@@ -4,9 +4,17 @@ class PlayerOptions::Data < OptionsHash
   # Should chat join/leave messages be shown?
   property :chat_show_join_leave, :default => false, :valid => Boolean
 
+  # Ignored player chat messages are not shown at all.
+  CHAT_IGNORE_COMPLETE = "complete"
+  # Ignored player chat messages are shown with text filtered out, like this:
+  # <ignored_player> [you are ignoring this user]
+  CHAT_IGNORE_FILTERED = "filtered"
+
+  CHAT_IGNORE_TYPES = [CHAT_IGNORE_COMPLETE, CHAT_IGNORE_FILTERED]
+
   # What kind of chat ignore player uses.
-  property :chat_ignore_type, :default => PlayerOptions::CHAT_IGNORE_COMPLETE,
-    :valid => lambda { |val| PlayerOptions::CHAT_IGNORE_TYPES.include?(val) }
+  property :chat_ignore_type, :default => CHAT_IGNORE_COMPLETE,
+    :valid => lambda { |val| CHAT_IGNORE_TYPES.include?(val) }
 
   # Array of player names which are ignored by this player.
   property :ignored_chat_players, :default => [], :valid => lambda { |val|
