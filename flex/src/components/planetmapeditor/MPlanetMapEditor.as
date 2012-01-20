@@ -174,19 +174,26 @@ package components.planetmapeditor
       /* ### ACTIONS ### */
       /* ############### */
 
-      private var _planet:MSSObject;
+      private var _planet: MSSObject;
+      private var _objectsEditorLayer: ObjectsEditorLayer;
+      private var _terrainEditorLayer: TerrainEditorLayer;
 
       public function generateMap(viewport:ViewportZoomable): void {
          Objects.paramNotNull("viewport", viewport);
          if (_planet != null) {
             _planet.cleanup();
+            _objectsEditorLayer = null;
          }
          _planet = new MSSObject();
          _planet.terrain = _terrainType;
          _planet.type = SSObjectType.PLANET;
          _planet.width = _mapWidth;
          _planet.height = _mapHeight;
-         viewport.content = new PlanetMap(new MPlanet(_planet));
+         _objectsEditorLayer = new ObjectsEditorLayer();
+         _terrainEditorLayer = new TerrainEditorLayer();
+         viewport.content = new PlanetMap(
+            new MPlanet(_planet), _objectsEditorLayer, _terrainEditorLayer
+         );
       }
 
       private function renderBackground(): void {

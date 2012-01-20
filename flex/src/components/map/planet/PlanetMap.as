@@ -4,6 +4,8 @@ package components.map.planet
 
    import components.map.CMap;
    import components.map.planet.objects.IInteractivePlanetMapObject;
+   import components.planetmapeditor.ObjectsEditorLayer;
+   import components.planetmapeditor.TerrainEditorLayer;
 
    import flash.display.BitmapData;
    import flash.geom.Point;
@@ -43,6 +45,8 @@ package components.map.planet
       /* ### INITIALIZATION ### */
       /* ###################### */
 
+      private var _objectsEditorLayer: ObjectsEditorLayer = null;
+      private var _terrainEditorLayer: TerrainEditorLayer = null;
       private var _backgroundRenderer: BackgroundRenderer = null;
 
       /**
@@ -50,8 +54,12 @@ package components.map.planet
        *
        * @param model a planet to create map for
        */
-      public function PlanetMap(model: MPlanet) {
+      public function PlanetMap(model: MPlanet,
+                                objectsEditorLayer: ObjectsEditorLayer = null,
+                                terrainEditorLayer: TerrainEditorLayer = null) {
          super(model);
+         _objectsEditorLayer = objectsEditorLayer;
+         _terrainEditorLayer = terrainEditorLayer;
          _coordsTransform = new PlanetMapCoordsTransform(
             model.width, model.height, BORDER_SIZE
          );
@@ -89,7 +97,11 @@ package components.map.planet
 
       protected override function createObjects(): void {
          super.createObjects();
-         _objectsLayer = new PlanetObjectsLayer(this, getPlanet());
+         _objectsLayer = new PlanetObjectsLayer(
+            this, getPlanet(), _objectsEditorLayer, _terrainEditorLayer
+         );
+         _objectsEditorLayer = null;
+         _terrainEditorLayer = null;
          addElement(_objectsLayer);
       }
 

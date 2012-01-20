@@ -3,6 +3,8 @@ package components.map.planet
    import components.base.BaseContainer;
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
+   import components.planetmapeditor.ObjectsEditorLayer;
+   import components.planetmapeditor.TerrainEditorLayer;
 
    import flash.events.MouseEvent;
    import flash.geom.Point;
@@ -29,17 +31,20 @@ package components.map.planet
 
       public function PlanetObjectsLayer(map: PlanetMap,
                                          planet: MPlanet,
-                                         editorMode: Boolean = false) {
+                                         objectsEditor: ObjectsEditorLayer = null,
+                                         terrainEditor: TerrainEditorLayer = null) {
          super();
          _map = map;
          _planet = planet;
-         _editorMode = editorMode;
+         _objectsEditor = objectsEditor;
+         _terrainEditor = terrainEditor;
          addPlanetEventHandlers(planet);
          doubleClickEnabled = true;
          addSelfEventHandlers();
       }
 
-      private var _editorMode: Boolean = false;
+      private var _objectsEditor: ObjectsEditorLayer = null;
+      private var _terrainEditor: TerrainEditorLayer = null;
       private var _map: PlanetMap = null;
       private var _planet: MPlanet = null;
 
@@ -48,7 +53,7 @@ package components.map.planet
          createVLs();
       }
 
-      private var f_cleanupCalled:Boolean = false;
+      private var f_cleanupCalled: Boolean = false;
       public function cleanup(): void {
          if (f_cleanupCalled) {
             return;
@@ -98,24 +103,35 @@ package components.map.planet
       /* ### VIRTUAL LAYERS ### */
       /* ###################### */
       
-      private var virtualLayers:Vector.<PlanetVirtualLayer> = new Vector.<PlanetVirtualLayer>();
+      private var _virtualLayers:Vector.<PlanetVirtualLayer> =
+                     new Vector.<PlanetVirtualLayer>();
       /**
        * Invokes given <code>callback</code> function on each virtual layer.
        * <p>Signature of the callback function:
        * <code>function(layer:PlanetVirtualLayer) : void</code>.</p>
        */
       private function forEachVL(callback: Function): void {
-         for each (var layer: PlanetVirtualLayer in virtualLayers) {
+         for each (var layer: PlanetVirtualLayer in _virtualLayers) {
             callback.call(this, layer);
          }
       }
 
       private function createVLs(): void {
-         virtualLayers.push(
-            new BuildingsLayer(),
-            new BlockingFolliagesLayer(),
-            new NonblockingFolliagesLayer()
-         );
+         if (_objectsEditor != null) {
+            _virtualLayers.push(
+               _objectsEditor,
+               _terrainEditor
+            );
+            _objectsEditor = null;
+            _terrainEditor = null;
+         }
+         else {
+            _virtualLayers.push(
+               new BuildingsLayer(),
+               new BlockingFolliagesLayer(),
+               new NonblockingFolliagesLayer()
+            );
+         }
          initializeVLs();
       }
 
@@ -125,7 +141,7 @@ package components.map.planet
                layer.cleanup();
             }
          );
-         virtualLayers.splice(0, virtualLayers.length);
+         _virtualLayers.splice(0, _virtualLayers.length);
       }
 
       private function initializeVLs(): void {
@@ -244,8 +260,7 @@ package components.map.planet
          // to upper layers in order map dragging could work properly.
          // If it has originated form InteractivePlanetMapObject
          // that means this event has been redispatched from that object by
-         // this component and should be passed to upper layers in order cursors
-         // to work properly.
+         // this component and should be passed to upper layers.
          if (event.target == _map
                 || event.target is IInteractivePlanetMapObject) {
             return;
