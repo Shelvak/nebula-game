@@ -15,23 +15,36 @@ object Player {
      * Modifier example: 0.25 would mean 25% more damage.
      */
     type ModsMap = Map[String, Double]
-
-    def empty = new Player.Technologies(Map(), Map())
   }
 
   class Technologies(
     damageMods: Technologies.ModsMap, 
-    armorMods: Technologies.ModsMap
+    armorMods: Technologies.ModsMap,
+    criticalMods: Technologies.ModsMap,
+    absorptionMods: Technologies.ModsMap
   ) {
     /**
      * Returns damage mod from technologies for combatant.
      */
     def damageModFor(combatant: Combatant) = modsFrom(damageMods, combatant)
+
     /**
      * Returns armor mod from technologies for combatant.
      */
     def armorModFor(combatant: Combatant) = modsFrom(armorMods, combatant)
 
+    /**
+     * Returns critical chance from technologies for combatant.
+     */
+    def criticalChanceFor(combatant: Combatant) =
+      modsFrom(criticalMods, combatant)
+
+    /**
+     * Returns absorption chance from technologies for combatant.
+     */
+    def absorptionChanceFor(combatant: Combatant) =
+      modsFrom(absorptionMods, combatant)
+    
     /**
      * Return mod for combatant from given mod map.
      */

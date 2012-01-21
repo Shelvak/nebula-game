@@ -190,6 +190,9 @@ object Config {
   lazy val combatMaxDamageChance = double("combat.max_damage_chance")
   lazy val combatRoundTicks = int("combat.round.ticks")
   lazy val wreckageRange = range("combat.wreckage.range")
+  
+  lazy val criticalMultiplier = double("combat.critical.multiplier")
+  lazy val absorptionDivider = double("combat.absorption.divider")
 
   def damageModifier(damage: Damage.Type, armor: Armor.Type) = double(
     "damages.%s.%s".format(Damage.toString(damage), Armor.toString(armor)))

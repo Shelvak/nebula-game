@@ -5,6 +5,11 @@ class TechTracker
   # Regular expression for matching technologies.
   REGEXP = /^technologies\.\w+\.mod\./
 
+  DAMAGE = 'damage'
+  ARMOR = 'armor'
+  CRITICAL = 'critical'
+  ABSORPTION = 'absorption'
+
   def initialize
     # Hash of {name => Set} pairs.
     @tracker = {}

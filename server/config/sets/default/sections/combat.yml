@@ -10,6 +10,11 @@ parallel.count: 1 + (count / 10)
 # How many flanks may there be?
 flanks.max: 2
 
+# Damage multiplier for critical hits.
+critical.multiplier: 2.5
+# Damage divider for absorbed hits.
+absorption.divider: 2.5
+
 # Experience formulas are hardcoded into SpaceMule now.
 # Check out combat.Statistics class.
 

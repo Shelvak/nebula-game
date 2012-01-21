@@ -132,11 +132,18 @@ module SpaceMule::Combat
 
   # Returns Scala Technologies object.
   def self.technologies_for(player)
-    technologies = TechTracker.query_active(player.id, 'damage', 'armor').all
-    damage_mods = TechModApplier.apply(technologies, 'damage')
-    armor_mods = TechModApplier.apply(technologies, 'armor')
+    technologies = TechTracker.query_active(
+      player.id, TechTracker::DAMAGE, TechTracker::ARMOR, TechTracker::CRITICAL,
+      TechTracker::ABSORPTION
+    ).all
+    damage = TechModApplier.apply(technologies, TechTracker::DAMAGE)
+    armor = TechModApplier.apply(technologies, TechTracker::ARMOR)
+    critical = TechModApplier.apply(technologies, TechTracker::CRITICAL)
+    absorption = TechModApplier.apply(technologies, TechTracker::ABSORPTION)
 
-    CO.Player::Technologies.new(damage_mods.to_scala, armor_mods.to_scala)
+    CO.Player::Technologies.new(
+      damage.to_scala, armor.to_scala, critical.to_scala, absorption.to_scala
+    )
   end
 
   # Converts Ruby +Unit+ to Scala +Troop+.
