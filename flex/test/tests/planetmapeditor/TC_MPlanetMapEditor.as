@@ -1,28 +1,20 @@
 package tests.planetmapeditor
 {
+   import components.base.viewport.ViewportZoomable;
    import components.planetmapeditor.IRTileKindM;
    import components.planetmapeditor.MPlanetMapEditor;
    import components.planetmapeditor.events.MPlanetMapEditorEvent;
-
-   import config.Config;
 
    import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
 
    import models.building.Building;
-
-   import models.building.Building;
    import models.building.BuildingType;
    import models.folliage.BlockingFolliage;
-   import models.tile.FolliageTileKind;
-
    import models.tile.TerrainType;
    import models.tile.TileKind;
 
    import org.flexunit.assertThat;
-   import org.hamcrest.object.hasProperties;
-   import org.hamcrest.object.instanceOf;
-   import org.hamcrest.object.nullValue;
    import org.hamcrest.object.strictlyEqualTo;
 
 
@@ -109,52 +101,13 @@ package tests.planetmapeditor
             editor.objectToErect, strictlyEqualTo (editor.BUILDINGS[0])
          );
 
-         var b:Building = newBuilding(BuildingType.HEALING_CENTER);
-         editor.objectToErect = b;
+         const building:Building = newBuilding(BuildingType.HEALING_CENTER);
+         editor.generateMap(new ViewportZoomable());
+         editor.objectToErect = building;
          assertThat(
             "setting to new value should change the property",
-            editor.objectToErect, strictlyEqualTo (b)
+            editor.objectToErect, strictlyEqualTo (building)
          );
-
-         Config.setConfig({
-            "buildings.healingCenter.npc": false,
-            "buildings.npcSpaceFactory.npc": true
-         });
-
-         assertThat(
-            "when objectToErect is building, erectBuilding returns objectToErect",
-            editor, hasProperties({
-               "erectBuilding": strictlyEqualTo (editor.objectToErect),
-               "erectNpcBuilding": nullValue(),
-               "erectFoliage": nullValue()
-            })
-         );
-
-         editor.objectToErect = newBuilding(BuildingType.NPC_SPACE_FACTORY)
-         assertThat(
-            "when objectToErect is npc building, erectNpcBuilding returns objectToErect",
-            editor, hasProperties({
-               "erectBuilding": nullValue(),
-               "erectNpcBuilding": strictlyEqualTo (editor.objectToErect),
-               "erectFoliage": nullValue()
-            })
-         );
-
-         editor.objectToErect = newFoliage(FolliageTileKind._3X3);
-         assertThat(
-            "when objectToErect is foliage, erectFoliage returns objectToErect",
-            editor, hasProperties({
-               "erectBuilding": nullValue(),
-               "erectNpcBuilding": nullValue(),
-               "erectFoliage": strictlyEqualTo (editor.objectToErect)
-            })
-         );
-      }
-
-      private function newFoliage(kind:int): BlockingFolliage {
-         var foliage:BlockingFolliage = new BlockingFolliage();
-         foliage.kind = kind;
-         return foliage;
       }
 
       private function newBuilding(type:String): Building {
