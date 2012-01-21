@@ -112,3 +112,9 @@ Factory.define :u_mobile_thunder, :parent => :unit_built,
 
 Factory.define :u_boss_ship, :parent => :unit_built,
 :class => Unit::BossShip do |m|; end
+
+Factory.define :u_mantis, :parent => :unit_built,
+:class => Unit::Mantis do |m|; end
+
+Factory.define :u_convoy_ship, :parent => :unit_built,
+:class => Unit::ConvoyShip do |m|; end
