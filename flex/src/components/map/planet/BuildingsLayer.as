@@ -48,7 +48,7 @@ package components.map.planet
    /**
     * Dispatched from <code>EventBroker</code> while user is moving new building
     * around the map and as a result tiles under the building are changing.
-    * <p><code>building</code> property is set to the new building that is beeing
+    * <p><code>building</code> property is set to the new building that is being
     * moved.</p> 
     * 
     * @eventType globalevents.GBuildingMoveEvent.MOVE 

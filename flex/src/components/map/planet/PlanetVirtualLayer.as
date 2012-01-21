@@ -123,9 +123,6 @@ package components.map.planet
          planet = null;
       }
 
-      /**
-       * @see components.map.BaseMap#reset()
-       */
       public function reset(): void {
       }
 
@@ -257,28 +254,19 @@ package components.map.planet
       public function handleMouseEvent(event: MouseEvent): void {
       }
 
+      
       /* ################################### */
       /* ### EVENT HANDLERS REGISTRATION ### */
       /* ################################### */
 
-      /**
-       * Override this to register add event listeners to
-       * <code>EventBroker</code>.
-       */
       protected function addGlobalEventHandlers(): void {
       }
 
-      /**
-       * Override this to remove any event listeners from
-       * <code>EventBroker</code> that were added by
-       * <code>addGlobalEventHandlers()</code>.
-       */
       protected function removeGlobalEventHandlers(): void {
       }
 
       protected function addObjectsLayerEventHandlers(objectsLayer: PlanetObjectsLayer): void {
       }
-
 
       protected function removeObjectsLayerEventHandlers(objectsLayer: PlanetObjectsLayer): void {
       }

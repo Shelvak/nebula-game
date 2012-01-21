@@ -1,8 +1,14 @@
 package components.planetmapeditor
 {
+   import com.developmentarc.core.utils.EventBroker;
+
    import components.map.planet.PlanetVirtualLayer;
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
+
+   import flash.events.KeyboardEvent;
+
+   import flash.ui.Keyboard;
 
    import models.planet.MPlanetObject;
 
@@ -13,7 +19,41 @@ package components.planetmapeditor
 
    public class TerrainEditorLayer extends PlanetVirtualLayer
    {
-      
+      internal static const ACTIVATION_KEY_CODE:int = Keyboard.CONTROL;
+
+      private function activate(): void {
+         objectsLayer.passOverMouseEventsTo(this);
+      }
+
+      private function deactivate(): void {
+
+      }
+
+      /* ################################ */
+      /* ### KEYBOARD EVENTS HANDLERS ### */
+      /* ################################ */
+
+      override protected function addGlobalEventHandlers(): void {
+         EventBroker.subscribe(KeyboardEvent.KEY_DOWN, keyboard_keyDownHandler);
+         EventBroker.subscribe(KeyboardEvent.KEY_UP, keyboard_keyUpHandler);
+      }
+
+      override protected function removeGlobalEventHandlers(): void {
+         EventBroker.unsubscribe(KeyboardEvent.KEY_DOWN, keyboard_keyDownHandler);
+         EventBroker.unsubscribe(KeyboardEvent.KEY_UP, keyboard_keyUpHandler);
+      }
+
+      private function keyboard_keyDownHandler(event:KeyboardEvent): void {
+         if (event.keyCode == ACTIVATION_KEY_CODE) {
+            activate();
+         }
+      }
+
+      private function keyboard_keyUpHandler(event:KeyboardEvent): void {
+         if (event.keyCode == ACTIVATION_KEY_CODE) {
+            deactivate();
+         }
+      }
 
       /* ############## */
       /* ### NO-OPS ### */

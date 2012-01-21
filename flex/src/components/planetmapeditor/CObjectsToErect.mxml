@@ -6,6 +6,8 @@
                destination="model.objectToErect"/>
    <fx:Binding source="pnlNpcBuildings.selectedBuilding"
                destination="model.objectToErect"/>
+   <fx:Binding source="pnlFoliage.selectedFoliage"
+               destination="model.objectToErect"/>
    <fx:Script>
       <![CDATA[
       import utils.components.ToggleButtonsGroup;
