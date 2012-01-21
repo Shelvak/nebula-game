@@ -448,6 +448,35 @@ package models.planet
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
+
+      /**
+       * Changes objects position: <code>x</code> and <code>y</code> properties
+       * are set to new values provided and <code>xEnd</code> and <code>yEnd</code>
+       * properties are modified accordingly. This method allows you to pass
+       * negative values. However this will result <code>positionLegal</code>
+       * property change it's value to <code>false</code>.
+       *
+       * @param x
+       * @param y
+       *
+       * @return <code>true</code> if the object was actually moved or
+       * <code>false</code> otherwise.
+       */
+      public function moveTo(x: Number, y: Number): Boolean {
+         if (x == this.x && y == this.y) {
+            return false;
+         }
+         var w: Number = width;
+         var h: Number = height;
+         suppressDimensionChangeEvent = true;
+         this.x = x;
+         this.y = y;
+         this.xEnd = x + w - 1;
+         this.yEnd = y + h - 1;
+         suppressDimensionChangeEvent = false;
+         dispatchDimensionChangeEvent();
+         return true;
+      }
       
       
       /**
