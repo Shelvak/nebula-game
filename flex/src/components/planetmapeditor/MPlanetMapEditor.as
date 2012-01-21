@@ -1,6 +1,5 @@
 package components.planetmapeditor
 {
-   import components.base.viewport.Viewport;
    import components.base.viewport.ViewportZoomable;
    import components.map.planet.PlanetMap;
    import components.planetmapeditor.events.MPlanetMapEditorEvent;
@@ -96,8 +95,7 @@ package components.planetmapeditor
 
       private var _selectedTileKind:IRTileKindM = TILE_KINDS[0];
       public function set selectedTileKind(value: IRTileKindM): void {
-         Objects.paramNotNull("value", value);
-         if (_selectedTileKind != value) {
+         if (value != null && _selectedTileKind != value) {
             _selectedTileKind = value;
          }
       }
@@ -143,30 +141,17 @@ package components.planetmapeditor
       public function set objectToErect(value: MPlanetObject): void {
          if (_objectToErect != value) {
             _objectToErect = value;
+            if (_objectToErect != null) {
+               value.x = 0; value.xEnd = 2;
+               value.y = 0; value.yEnd = 2;
+               if (_objectsEditorLayer != null) {
+                  _objectsEditorLayer.setObject(value);
+               }
+            }
          }
       }
       public function get objectToErect(): MPlanetObject {
          return _objectToErect;
-      }
-
-      public function get erectBuilding(): Building {
-         const building:Building = _objectToErect as Building;
-         if (building != null && !building.npc) {
-            return building;
-         }
-         return null;
-      }
-
-      public function get erectNpcBuilding(): Building {
-         const building:Building = _objectToErect as Building;
-         if (building != null && building.npc) {
-            return building;
-         }
-         return null;
-      }
-
-      public function get erectFoliage(): BlockingFolliage {
-         return _objectToErect as BlockingFolliage;
       }
 
 
@@ -189,7 +174,7 @@ package components.planetmapeditor
          _planet.type = SSObjectType.PLANET;
          _planet.width = _mapWidth;
          _planet.height = _mapHeight;
-         _objectsEditorLayer = new ObjectsEditorLayer();
+         _objectsEditorLayer = new ObjectsEditorLayer(_objectToErect);
          _terrainEditorLayer = new TerrainEditorLayer();
          viewport.content = new PlanetMap(
             new MPlanet(_planet), _objectsEditorLayer, _terrainEditorLayer
