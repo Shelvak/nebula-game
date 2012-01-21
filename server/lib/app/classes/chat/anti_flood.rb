@@ -17,12 +17,7 @@ class Chat::AntiFlood
   #
   # Checks if user has been silenced. If so - raises +GameLogicError+.
   def message!(player_id, timestamp=nil)
-    silenced_until = @silence_until[player_id]
-    raise GameLogicError.new(
-      "Cannot send message, because player #{player_id} is silenced until #{
-      silenced_until}!"
-    ) unless silenced_until.nil? || silenced_until < Time.now
-
+    check_if_silenced!(player_id)
     message(player_id, timestamp || Time.now)
   end
 
@@ -50,5 +45,13 @@ class Chat::AntiFlood
     @dispatcher.push_to_player(
       player_id, ChatController::ACTION_SILENCE, {'until' => silence_until}
     )
+  end
+
+  def check_if_silenced!(player_id)
+    silenced_until = @silence_until[player_id]
+    raise GameLogicError.new(
+      "Cannot send message, because player #{player_id} is silenced until #{
+      silenced_until}!"
+    ) unless silenced_until.nil? || silenced_until < Time.now
   end
 end

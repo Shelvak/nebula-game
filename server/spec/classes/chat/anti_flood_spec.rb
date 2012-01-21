@@ -14,7 +14,7 @@ describe Chat::AntiFlood do
   let(:player_id) { 10 }
 
   describe "#message!" do
-    it "should not silence player if he is not spamming" do
+    it "should not silence player if he is not flooding" do
       dispatcher.should_not_receive(:push_to_player)
 
       msg_count.times do |i|
@@ -23,7 +23,7 @@ describe Chat::AntiFlood do
       antiflood.message!(player_id, Time.now + period * (msg_count + 1))
     end
 
-    it "should silence player if he is spamming" do
+    it "should silence player if he is flooding" do
       silence_until = Cfg.chat_antiflood_silence_for(1).from_now
       dispatcher.should_receive(:push_to_player).with(
         player_id, ChatController::ACTION_SILENCE, {'until' => silence_until}
