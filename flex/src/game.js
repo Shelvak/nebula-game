@@ -22,7 +22,7 @@ var locales = { // {{{
     if (locale == "lt") return "Per sena žaidimo versija!\n\n" +
        "Serveris reikalauja bent jau \"" + requiredVersion + "\" versijos, " +
        "tačiau pas tave yra versija \"" + currentVersion + "\".\n\n" +
-       "Žaidimas bus perkrautas tam kad jį atnaujintį."
+       "Žaidimas bus perkrautas tam kad jį atnaujinti."
     if (locale == "lv") return "LOCALE: fixme";
     return "Game version too old!\n\n" +
        "Server requires at least version \"" + requiredVersion + "\" but you " +
