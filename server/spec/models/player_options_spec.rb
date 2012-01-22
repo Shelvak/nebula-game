@@ -21,7 +21,7 @@ describe PlayerOptions do
     it "should return new record with default values if not found" do
       player = Factory.create(:player)
       po = PlayerOptions.find(player.id)
-      {:player_id => po.player_id, :options => po.options}.should equal_to_hash(
+      {:player_id => po.player_id, :options => po.data}.should equal_to_hash(
         :player_id => player.id, :options => PlayerOptions::Data.new
       )
     end
@@ -29,12 +29,12 @@ describe PlayerOptions do
     it "should return existing record if it exists" do
       player = Factory.create(:player)
       po = PlayerOptions.find(player.id)
-      po.options.warn_before_unload = ! po.options.warn_before_unload?
-      new_options = po.options
+      po.data.warn_before_unload = ! po.data.warn_before_unload?
+      new_options = po.data
       po.save!
 
       po = PlayerOptions.find(player.id)
-      po.options.should == new_options
+      po.data.should == new_options
     end
   end
 end

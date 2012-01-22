@@ -175,10 +175,12 @@ describe RaidSpawner do
     before(:all) do
       @planet = Factory.create(:planet)
       spawner = RaidSpawner.new(@planet)
-      spawner.stubs(:unit_counts).returns([
-        ["gnat", 2, 0],
-        ["glancer", 1, 1],
-      ])
+      def spawner.unit_counts
+        [
+          ["gnat", 2, 0],
+          ["glancer", 1, 1],
+        ]
+      end
       @units = spawner.units
     end
 
