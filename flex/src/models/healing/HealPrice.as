@@ -30,7 +30,7 @@ package models.healing
          var priceMod : Number = tech.repairPriceMod;
          var cooldownMod: Number = tech.repairCooldownMod;
          
-         var calcRes: Function = function(resource: String) {
+         var calcRes: Function = function(resource: String): Number {
             return Math.round(Upgradable.calculateCost(
                UpgradableType.BUILDINGS, building.type, resource, {'level': 1}
             ) * priceMod * building.damagePercentage);
