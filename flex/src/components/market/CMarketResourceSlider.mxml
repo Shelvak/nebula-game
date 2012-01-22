@@ -12,109 +12,88 @@
    </fx:Metadata>
    <fx:Script>
       <![CDATA[
-         import models.unit.events.UnitEvent;
-         
-         import mx.events.FlexEvent;
-         import spark.events.TextOperationEvent;
-         
-         import utils.locale.Localizer;
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         
-         public function get minAmmount(): Number
-         {
-            return _maxAmmount;
-         }
-         
-         public function set minAmmount(value: Number): void
-         {
-            if (value != _minAmmount)
-            {
-               if (selectedVal < value)
-               {
-                  setValue(value);
-               }
-               _minAmmount = value;
-               
+      import models.unit.events.UnitEvent;
+
+      public function get minAmount():Number {
+         return _maxAmount;
+      }
+
+      public function set minAmount(value:Number):void {
+         if (value != _minAmount) {
+            if (selectedVal < value) {
+               setValue(value);
             }
+            _minAmount = value;
+
          }
-         
-         public function get maxAmmount(): Number
-         {
-            return _maxAmmount;
-         }
-         
-         public function set maxAmmount(value: Number): void
-         {
-            if (value != _maxAmmount)
-            {
-               if (selectedVal > value)
-               {
-                  setValue(value);
-               }
-               _maxAmmount = value;
-               
+      }
+
+      public function get maxAmount():Number {
+         return _maxAmount;
+      }
+
+      public function set maxAmount(value:Number):void {
+         if (value != _maxAmount) {
+            if (selectedVal > value) {
+               setValue(value);
             }
+            _maxAmount = value;
+
          }
-         
-         [Bindable]
-         private var _maxAmmount: Number;
-         [Bindable]
-         private var _minAmmount: Number = 0;
-         
-         [Bindable]
-         public var selectedVal: Number = 0;
-         
-         public function setValue(value: Number): void
-         {
+      }
+
+      [Bindable]
+      private var _maxAmount:Number;
+      [Bindable]
+      private var _minAmount:Number = 0;
+
+      [Bindable]
+      public var selectedVal:Number = 0;
+
+      public function setValue(value:Number):void {
 //            input.value = value;
-            slider.value = value;
-            hslider1_changeHandler();
+         slider.value = value;
+         hslider1_changeHandler();
+      }
+
+      protected function hslider1_changeHandler(event:Event = null):void {
+         if (slider.value) {
+            selectedVal = slider.value;
          }
-         
-         protected function hslider1_changeHandler(event:Event = null):void
-         {
-            if (slider.value)
-            {
-               selectedVal = slider.value;
-            }
-            else
-            {
-               selectedVal = 0;
-            }
+         else {
+            selectedVal = 0;
+         }
 //            input.value = selectedVal;
-            dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
-         }
-         
-//         protected function input_changeHandler(event:Event):void
-//         {
-//            if (slider.value != input.value)
-//            {
-//               slider.value = input.value;
-//               hslider1_changeHandler();
-//            }
-//         }
-         
-         public function reset(): void
-         {
+         dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+      }
+
+      //         protected function input_changeHandler(event:Event):void
+      //         {
+      //            if (slider.value != input.value)
+      //            {
+      //               slider.value = input.value;
+      //               hslider1_changeHandler();
+      //            }
+      //         }
+
+      public function reset():void {
 //            input.value = 0;
-            slider.value = 0;
-            hslider1_changeHandler();
-         }
-         
-//         protected function input_creationCompleteHandler(event:FlexEvent):void
-//         {
-//            input.textDisplay.editable = false;
-//            input.textDisplay.selectable = false;
-//         }
-         
+         slider.value = 0;
+         hslider1_changeHandler();
+      }
+
+      //         protected function input_creationCompleteHandler(event:FlexEvent):void
+      //         {
+      //            input.textDisplay.editable = false;
+      //            input.textDisplay.selectable = false;
+      //         }
       ]]>
    </fx:Script>
    <s:Group left="0" right="0">
-      <s:Label text="{_minAmmount}"/>
-      <s:HSlider id="slider" minimum="{_minAmmount}" width="100%" maximum="{_maxAmmount}" value="0"
+      <s:Label text="{_minAmount}"/>
+      <s:HSlider id="slider" minimum="{_minAmount}" width="100%" maximum="{_maxAmount}" value="0"
                  changeEnd="hslider1_changeHandler(event)" stepSize="1"/>
-      <s:Label text="{_maxAmmount}"/>
+      <s:Label text="{_maxAmount}"/>
       <!--s:NumericStepper stepSize="1" minimum="0" maximum="{_maxAmmount}" id="input" snapInterval="1"
       change="input_changeHandler(event)" width="100" focusEnabled="false"
       creationComplete="input_creationCompleteHandler(event)"/-->

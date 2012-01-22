@@ -62,6 +62,10 @@ class Cfg; class << self
   # from MarketOffer#average.
   def market_rate_offset; CONFIG['market.avg_rate.offset']; end
 
+  def market_rate_min_price_offset
+    CONFIG['market.avg_rate.min_price.offset']
+  end
+
   # Returns [seed_amount, seed_rate] for resource pair.
   def market_seed(from_kind, to_kind)
     pair = CONFIG[

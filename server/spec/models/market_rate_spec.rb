@@ -38,6 +38,45 @@ describe MarketRate do
     end
   end
 
+  describe ".lowest" do
+    let(:galaxy) { Factory.create(:galaxy) }
+    let(:from_kind) { MarketOffer::KIND_METAL }
+    let(:to_kind) { MarketOffer::KIND_CREDS }
+    let(:avg_rate) { MarketRate.average(galaxy.id, from_kind, to_kind) }
+
+    it "should filter by galaxy_id, from_kind and to_kind" do
+      # Wrong galaxy
+      Factory.create(:market_offer, :to_rate => avg_rate + 0.001,
+        :from_kind => from_kind, :to_kind => to_kind)
+      # Wrong from_kind
+      Factory.create(:market_offer, :to_rate => avg_rate + 0.002,
+        :galaxy => galaxy,
+        :from_kind => MarketOffer::KIND_ENERGY, :to_kind => to_kind)
+      # Wrong to_kind
+      Factory.create(:market_offer, :to_rate => avg_rate + 0.003,
+        :galaxy => galaxy,
+        :from_kind => from_kind, :to_kind => MarketOffer::KIND_ENERGY)
+      # Good record
+      offer = Factory.create(:market_offer, :to_rate => avg_rate + 0.004,
+        :galaxy => galaxy, :from_kind => from_kind, :to_kind => to_kind)
+      MarketRate.lowest(galaxy.id, from_kind, to_kind).
+        should be_within(SPEC_FLOAT_PRECISION).of(offer.to_rate)
+    end
+
+    it "should return lowest to_rate" do
+      Factory.create(:market_offer, :to_rate => avg_rate + 0.1,
+        :galaxy => galaxy, :from_kind => from_kind, :to_kind => to_kind)
+      offer = Factory.create(:market_offer, :to_rate => avg_rate - 0.1,
+        :galaxy => galaxy, :from_kind => from_kind, :to_kind => to_kind)
+      MarketRate.lowest(galaxy.id, from_kind, to_kind).
+        should be_within(SPEC_FLOAT_PRECISION).of(offer.to_rate)
+    end
+
+    it "should return nil if no offers are found" do
+      MarketRate.lowest(galaxy.id, from_kind, to_kind).should be_nil
+    end
+  end
+
   describe ".add" do
     let(:added_amount) { 1231 }
     let(:added_rate) { 10 }
