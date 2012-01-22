@@ -9,6 +9,9 @@ offer.min_amount: 500
 # Float percentage that we allow user submitted rate to vary from average market
 # value.
 avg_rate.offset: 0.30
+# If avg_rate - offset% is X, but market has entries with to_rate <= X, then
+# allow player to add value that is X - this_offset.
+avg_rate.min_price.offset: 0.001
 
 # How much of the offer person should buy so that seller would get notified?
 buy.notification.threshold: 0.03

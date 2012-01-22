@@ -76,6 +76,15 @@ class MarketRate < ActiveRecord::Base
       get(galaxy_id, from_kind, to_kind).to_rate
     end
 
+    # Return lowest rate for resource pair for galaxy with ID _galaxy_id_.
+    # Returns nil if no offers exist.
+    def lowest(galaxy_id, from_kind, to_kind)
+      rate = MarketOffer.select(:to_rate).where(
+        :galaxy_id => galaxy_id, :from_kind => from_kind, :to_kind => to_kind
+      ).order(:to_rate).c_select_value
+      rate.is_a?(String) ? rate.to_f : rate
+    end
+
     protected
     def subtracted_model(galaxy_id, from_kind, to_kind, from_amount)
       model = get(galaxy_id, from_kind, to_kind)

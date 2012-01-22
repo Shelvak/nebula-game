@@ -38,7 +38,7 @@ describe MarketOffer do
       end
     end
     
-    describe "to_rate adjustment to fit avg. market rate" do
+    describe "#to_rate adjustment to fit avg. market rate" do
       it "should adjust it if it's too low" do
         offer = Factory.build(:market_offer, :to_rate => 1)
         MarketRate.stub!(:average).
@@ -47,7 +47,7 @@ describe MarketOffer do
         offer.save!
         offer.to_rate.should == 7 * (1 - Cfg.market_rate_offset)
       end
-      
+
       it "should adjust it if it's too big" do
         offer = Factory.build(:market_offer, :to_rate => 10)
         MarketRate.stub!(:average).
@@ -55,6 +55,42 @@ describe MarketOffer do
           and_return(7)
         offer.save!
         offer.to_rate.should == 7 * (1 + Cfg.market_rate_offset)
+      end
+    end
+
+    describe "#to_rate adjustment to fit lowest offer #to_rate" do
+      let(:galaxy) { Factory.create(:galaxy) }
+      let(:from_kind) { MarketOffer::KIND_METAL }
+      let(:to_kind) { MarketOffer::KIND_ENERGY }
+
+      it "should do it if avg. rate bound is higher than lowest price" do
+        MarketRate.stub!(:average).with(galaxy.id, from_kind, to_kind).
+          and_return(2)
+        Factory.create(:market_offer, :galaxy => galaxy,
+          :from_kind => from_kind, :to_kind => to_kind, :to_rate => 2)
+
+        MarketRate.stub!(:average).with(galaxy.id, from_kind, to_kind).
+          and_return(7)
+        low_avg_bound = 7 * (1 - Cfg.market_rate_offset)
+
+        offer = Factory.create(:market_offer, :galaxy => galaxy,
+          :from_kind => from_kind, :to_kind => to_kind, :to_rate => 1)
+        offer.to_rate.should == 2 - Cfg.market_rate_min_price_offset
+      end
+
+      it "should not do it if avg. rate bound is lower than lowest price" do
+        MarketRate.stub!(:average).with(galaxy.id, from_kind, to_kind).
+          and_return(10)
+        Factory.create(:market_offer, :galaxy => galaxy,
+          :from_kind => from_kind, :to_kind => to_kind, :to_rate => 10)
+
+        MarketRate.stub!(:average).with(galaxy.id, from_kind, to_kind).
+          and_return(2)
+        low_avg_bound = 2 * (1 - Cfg.market_rate_offset)
+
+        offer = Factory.create(:market_offer, :galaxy => galaxy,
+          :from_kind => from_kind, :to_kind => to_kind, :to_rate => 1)
+        offer.to_rate.should == low_avg_bound
       end
     end
   end
