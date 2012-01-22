@@ -19,15 +19,17 @@ describe Building::HealingTest do
   end
 
   describe "#resources_for_healing" do
-    it "should return resources" do
-      unit = Factory.build(:u_crow, :level => 1, :hp_percentage => 0.35)
-      percentage = (1 - unit.hp.to_f / unit.hit_points)
-      mod = building.cost_modifier
-      building.resources_for_healing(unit).should == [
-        (unit.metal_cost * percentage * mod).round,
-        (unit.energy_cost * percentage * mod).round,
-        (unit.zetium_cost * percentage * mod).round
-      ]
+    [:unit_built, :building_built].each do |kind|
+      it "should return resources for level 1 for #{kind}" do
+        healable = Factory.build!(kind, :level => 3, :hp_percentage => 0.35)
+        percentage = (1 - healable.hp.to_f / healable.hit_points)
+        mod = building.cost_modifier
+        building.resources_for_healing(healable).should == [
+          (healable.metal_cost(1) * percentage * mod).round,
+          (healable.energy_cost(1) * percentage * mod).round,
+          (healable.zetium_cost(1) * percentage * mod).round
+        ]
+      end
     end
   end
 

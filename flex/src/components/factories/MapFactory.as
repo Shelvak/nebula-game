@@ -76,8 +76,8 @@ package components.factories
          );
          viewport.underlayImage = getImage(AssetNames.getSpaceBackgroundImageName());
          viewport.underlayScrollSpeedRatio = 0.07;
-         viewport.paddingHorizontal = 200;
-         viewport.paddingVertical   = 50;
+         viewport.paddingHorizontal = 600;
+         viewport.paddingVertical = 200;
          return viewport;
       };
       VIEWPORT_FACTORY_METHODS[MapType.SOLAR_SYSTEM] = function(map:CMapSolarSystem) : ViewportZoomable {

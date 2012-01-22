@@ -47,7 +47,7 @@ class ChatController < GenericController
   # - pid (Fixnum): player ID that has sent the message
   #
   def action_c
-    param_options :required => %w{chan msg}
+    param_options :required => {:chan => String, :msg => String}
 
     hub = Chat::Pool.instance.hub_for(player)
     hub.channel_msg(params['chan'], player, params['msg'])
@@ -74,7 +74,7 @@ class ChatController < GenericController
   # - stamp (Time): time when the message was created. (only sent if message was stored in DB)
   #
   def action_m
-    param_options :required => %w{pid msg}
+    param_options :required => {:pid => Fixnum, :msg => String}
 
     hub = Chat::Pool.instance.hub_for(player)
     hub.private_msg(player.id, params['pid'], params['msg'])
@@ -97,7 +97,7 @@ class ChatController < GenericController
   #
   def action_join
     only_push!
-    param_options :required => %w{channel player}
+    param_options :required => {:channel => String, :player => Player}
 
     respond :chan => params['channel'], :pid => params['player'].id,
       :name => params['player'].name
@@ -117,8 +117,23 @@ class ChatController < GenericController
   #
   def action_leave
     only_push!
-    param_options :required => %w{channel player}
+    param_options :required => {:channel => String, :player => Player}
 
     respond :chan => params['channel'], :pid => params['player'].id
+  end
+
+  ACTION_SILENCE = 'chat|silence'
+  # Notifies client that player was silenced.
+  #
+  # Invocation: by server
+  #
+  # Response:
+  # - until (Time): time when silence expires
+  #
+  def action_silence
+    only_push!
+    param_options :required => {:until => Time}
+
+    respond :until => params['until']
   end
 end

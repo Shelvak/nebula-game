@@ -52,6 +52,10 @@ class LocationPoint
     @id, @type, @x, @y = id, type, x, y
   end
 
+  def self.planet(id)
+    new(id, Location::SS_OBJECT, nil, nil)
+  end
+
   # Return +Zone+ object for this +LocationPoint+.
   def zone
     raise NotImplementedError.new(

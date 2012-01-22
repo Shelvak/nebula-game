@@ -250,7 +250,7 @@ describe SsObject::Planet do
     
     it "should call FowSsEntry.change_planet_owner after save" do
       FowSsEntry.should_receive(:change_planet_owner).with(
-        @planet, @old, @new
+        @planet, @old, @new, 1
       ).and_return do |planet, old_player, new_player|
         planet.should be_saved
         true
@@ -310,7 +310,18 @@ describe SsObject::Planet do
           @new.reload
         end.should change(@new, :population).by(@unit.population)        
       end
-      
+
+      it "should call transfer fow ss entries for space units" do
+        Factory.create!(:u_crow, :player => @old, :location => @planet)
+        Factory.create!(:u_crow, :player => @old, :location => @planet)
+        Factory.create!(:u_scorpion, :player => @old, :location => @planet)
+
+        FowSsEntry.should_receive(:change_planet_owner).with(
+          @planet, @old, @new, 3 # 2 crows + 1 for planet
+        )
+        @planet.save!
+      end
+
       it "should dispatch changed event" do
         should_fire_event([@unit], EventBroker::CHANGED) do
           @planet.save!
@@ -1104,13 +1115,12 @@ describe SsObject::Planet do
     
     describe "with :view" do
       it_behaves_like "as json", Factory.create(:planet), {:view => true},
-        %w{
+        %w{},
+        %w{next_raid_at raid_arg energy_diminish_registered
           metal metal_generation_rate metal_usage_rate metal_storage
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate zetium_usage_rate zetium_storage
-          last_resources_update
-        },
-        %w{next_raid_at raid_arg energy_diminish_registered}
+          last_resources_update}
     end
 
     describe "with :owner" do
@@ -1461,6 +1471,21 @@ describe SsObject::Planet do
       model.send(
         :resource_modifier_technologies
       ).should include(tech)
+    end
+  end
+
+  describe "resource storage methods" do
+    Resources::TYPES.each do |resource|
+      w_mod = "#{resource}_storage_with_modifier"
+      wo_mod = "#{resource}_storage"
+      describe "##{w_mod}" do
+        it "should return greater value than without modifiers" do
+          planet = Factory.build(:planet)
+          planet.should_receive(:resource_modifier).with(wo_mod).and_return(1.5)
+
+          planet.send(w_mod).should == planet.send(wo_mod) * 1.5
+        end
+      end
     end
   end
 

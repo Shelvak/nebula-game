@@ -4277,6 +4277,7 @@
     <title.storageScreen value="Ielādēt / Izlādēt"/>
     <!-- TODO -->
     <label.totalEmptyStorage value="Total empty storage: {0}"/>
+    <message.didNotFit value="Planet did not have enough storage for {0}" />
     <!-- /TODO -->
   
     <property.timeToFinish.short value="{0}" />

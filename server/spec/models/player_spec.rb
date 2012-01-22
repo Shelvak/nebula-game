@@ -66,7 +66,30 @@ describe Player do
       Player.names_for([player.id]).should == {player.id => player.name}
     end
   end
-  
+
+  describe "#options" do
+    let(:player) { Factory.create(:player) }
+
+    it "should return PlayerOptions object" do
+      PlayerOptions.should_receive(:find).with(player.id).and_return(:opts)
+      player.options.should == :opts
+    end
+
+    it "should cache object between calls" do
+      player.options
+      PlayerOptions.should_not_receive(:find).with(player.id)
+      player.options
+    end
+
+    it "should reload object if asked" do
+      opts = player.options
+      opts.data.chat_show_join_leave = ! opts.data.chat_show_join_leave?
+      opts.save!
+
+      player.options(true).should == opts
+    end
+  end
+
   describe "#victory_points" do
     let(:alliance) { Factory.create(:alliance) }
     let(:player) { Factory.create(:player, :alliance => alliance) }
@@ -848,7 +871,7 @@ describe Player do
       required_fields = %w{id name scientists scientists_total xp
         first_time economy_points army_points science_points war_points
         victory_points creds population population_cap
-        alliance_id alliance_cooldown_ends_at
+        alliance_id alliance_cooldown_ends_at alliance_cooldown_id
         free_creds vip_level vip_creds vip_until vip_creds_until
         portal_without_allies
       }
@@ -1147,6 +1170,85 @@ describe Player do
 
       it "should work properly" do
         player.leave_alliance!
+      end
+    end
+  end
+
+  describe "#alliance_cooldown_expired?" do
+    let(:alliance) { create_alliance }
+
+    describe "when alliance_cooldown_id is set" do
+      def create_player(cooldown_ended)
+        Factory.create(
+          :player, :alliance_cooldown_id => alliance.id,
+          :alliance_cooldown_ends_at => cooldown_ended \
+            ? 10.minutes.ago : 10.minutes.from_now
+        )
+      end
+
+      describe "cooldown has not ended" do
+        let(:player) { create_player(false) }
+
+        it "should return true if it is other alliance" do
+          player.alliance_cooldown_expired?(alliance.id + 1).should be_true
+        end
+
+        it "should return true if alliance_id is not given" do
+          player.alliance_cooldown_expired?(nil).should be_true
+        end
+
+        it "should return false if it is same alliance" do
+          player.alliance_cooldown_expired?(alliance.id).should be_false
+        end
+      end
+
+      describe "cooldown has ended" do
+        let(:player) { create_player(true) }
+
+        it "should return true if it is other alliance" do
+          player.alliance_cooldown_expired?(alliance.id + 1).should be_true
+        end
+
+        it "should return true if alliance_id is not given" do
+          player.alliance_cooldown_expired?(nil).should be_true
+        end
+
+        it "should return true if it is same alliance" do
+          player.alliance_cooldown_expired?(alliance.id).should be_true
+        end
+      end
+    end
+
+    describe "when alliance_cooldown_id is nil" do
+      def create_player(cooldown_ended)
+        Factory.create(:player,
+          :alliance_cooldown_ends_at => cooldown_ended \
+            ? 10.minutes.ago : 10.minutes.from_now
+        )
+      end
+
+      describe "cooldown has not ended" do
+        let(:player) { create_player(false) }
+
+        it "should return false if alliance id is given" do
+          player.alliance_cooldown_expired?(10).should be_false
+        end
+
+        it "should return false if alliance_id is not given" do
+          player.alliance_cooldown_expired?(nil).should be_false
+        end
+      end
+
+      describe "cooldown has ended" do
+        let(:player) { create_player(true) }
+
+        it "should return true if alliance id is given" do
+          player.alliance_cooldown_expired?(10).should be_true
+        end
+
+        it "should return true if alliance_id is not given" do
+          player.alliance_cooldown_expired?(nil).should be_true
+        end
       end
     end
   end

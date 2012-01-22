@@ -4648,6 +4648,7 @@
   <Units>
     <title.storageScreen value="Įkrauti / Iškrauti"/>
     <label.totalEmptyStorage value="Laisvos vietos: {0}"/>
+    <message.didNotFit value="Į planetą netilpo {0}" />
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Bus už {0}" />
@@ -5142,7 +5143,7 @@
     </Jumper.about>
 
     <MobileTurret>
-      <p>Gali būti gabėnamas kroviniais laivais. Neišskleistas nešaudo.
+      <p>Gali būti gabenamas kroviniais laivais. Neišskleistas nešaudo.
       Po išskleidimo nebesuskleidžiamas.</p>
     </MobileTurret>
 

@@ -29,6 +29,7 @@ class PlayersController < GenericController
           "technologies|index", "quests|index", "notifications|index",
           RoutesController::ACTION_INDEX,
           ChatController::ACTION_INDEX,
+          PlayerOptionsController::ACTION_SHOW,
           GalaxiesController::ACTION_SHOW
         ].each { |action| push action }
 

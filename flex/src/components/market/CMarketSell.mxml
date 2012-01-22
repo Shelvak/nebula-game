@@ -105,6 +105,7 @@
    <fx:Script>
       <![CDATA[
       import models.market.MCMarketScreen;
+      import models.market.MarketOffer;
       import models.market.OfferResourceKind;
 
       import controllers.market.MarketCommand;
@@ -204,8 +205,8 @@
                            >= Config.getMinMarketOffer()}">
       <s:Label text="{getText('label.selected',[sellSelector.selectedVal.toString()])}"
                paddingTop="6" textAlign="center"/>
-      <market:CMarketResourceSlider maxAmmount="{getResourceWithoutTaxes(what.selectedItem, taxRate)}"
-                                    minAmmount="{Config.getMinMarketOffer()}" id="sellSelector"/>
+      <market:CMarketResourceSlider maxAmount="{getResourceWithoutTaxes(what.selectedItem, taxRate)}"
+                                    minAmount="{Config.getMinMarketOffer()}" id="sellSelector"/>
       <market:CMarketFee type="{what.selectedItem}" taxRate="{taxRate}"
                          selectedAmmount="{sellSelector.selectedVal}"/>
       <s:Label text="{getText('label.sellFor')}" styleName="h3" paddingBottom="3" paddingTop="12"
@@ -222,8 +223,8 @@
       <s:Label text="{getText('label.selected',[forSelector.selectedVal.toString()])}"
                visible="{forWhat.selectedItem != null}" paddingTop="6"
                textAlign="center"/>
-      <market:CMarketResourceSlider maxAmmount="{getMaxOffer(sellSelector.selectedVal)}" 
-                                    minAmmount="{getMinOffer(sellSelector.selectedVal)}"
+      <market:CMarketResourceSlider maxAmount="{getMaxOffer(sellSelector.selectedVal)}"
+                                    minAmount="{getMinOffer(sellSelector.selectedVal)}"
                                     visible="{forWhat.selectedItem != null}" id="forSelector"/>
       <s:Label text="{getText('label.marketValue', 
                [getMarketRate(forSelector.selectedVal/sellSelector.selectedVal),

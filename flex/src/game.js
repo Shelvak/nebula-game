@@ -283,7 +283,7 @@ $(document).ready(function() {
   swfobject.createCSS("#flashContent", "display:block;text-align:left;");
 
   // Ensure player does not close the game accidentally.
-  if (! (inLocalComputer() || inDeveloperMode())) {
+  if (! inLocalComputer() && ! inDeveloperMode()) {
     window.onbeforeunload = function() {
       return locales.navigateAwayMessage(locale);
     }

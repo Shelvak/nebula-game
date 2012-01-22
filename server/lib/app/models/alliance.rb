@@ -74,8 +74,10 @@ class Alliance < ActiveRecord::Base
 
   # Returns +Hash+ of {id => name} pairs.
   def self.names_for(alliance_ids)
-    names = select("name").where(:id => alliance_ids).c_select_values
-    Hash[alliance_ids.zip(names)]
+    select("id, name").where(:id => alliance_ids).c_select_all.
+      each_with_object({}) do |row, hash|
+        hash[row['id']] = row['name']
+      end
   end
 
   # Returns non-ally players which own planets and we can see them for _player_.
@@ -233,6 +235,18 @@ class Alliance < ActiveRecord::Base
     EventBroker.fire(event, EventBroker::CHANGED)
 
     true
+  end
+
+  # Kicks _player_ out of +Alliance+. Does not allow him to rejoin for specified
+  # period of time.
+  def kick(player)
+    throw_out(player)
+
+    player.alliance_cooldown_ends_at = Cfg.alliance_leave_cooldown.from_now
+    player.alliance_cooldown_id = id
+    player.save!
+
+    Notification.create_for_kicked_from_alliance(self, player)
   end
 
   # Changes alliance ownership and makes _player_ new owner.

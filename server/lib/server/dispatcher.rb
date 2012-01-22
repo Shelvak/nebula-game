@@ -170,7 +170,7 @@ class Dispatcher
   #
   # Filters can be:
   # - nil: no filter
-  # - DispatcherPushFilter[]: if one of them matches, message is passed
+  # - Dispatcher::PushFilter[]: if one of them matches, message is passed
   # through.
   #
   def push_to_player(client_id, action_or_message, params={}, filters=nil)
@@ -237,12 +237,12 @@ class Dispatcher
       return true if filter.nil?
 
       case filter.scope
-      when DispatcherPushFilter::SOLAR_SYSTEM
+      when PushFilter::SOLAR_SYSTEM
         current = current_ss_id(client_id)
         return true if current == filter.id
         LOGGER.debug("Push filtered: wanted SS #{filter.id}, had #{
           current.inspect}")
-      when DispatcherPushFilter::SS_OBJECT
+      when PushFilter::SS_OBJECT
         current = current_planet_id(client_id)
         return true if current == filter.id
         LOGGER.debug("Push filtered: wanted SSO #{filter.id}, had #{

@@ -100,6 +100,7 @@ describe PlayersController do
             "technologies|index", "quests|index", "notifications|index",
             RoutesController::ACTION_INDEX,
             ChatController::ACTION_INDEX,
+            PlayerOptionsController::ACTION_SHOW,
             GalaxiesController::ACTION_SHOW
           ].each_with_index do |action, index|
             message = {'action' => action, 'params' => {}}

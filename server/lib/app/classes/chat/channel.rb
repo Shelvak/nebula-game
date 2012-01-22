@@ -4,6 +4,7 @@ class Chat::Channel
 
   def initialize(name, dispatcher)
     @name = name
+    # Hash of {player_id => Player} values.
     @players = {}
     @dispatcher = dispatcher
   end
@@ -20,11 +21,22 @@ class Chat::Channel
   def join(player, dispatch_to_self=true)
     @players[player.id] = player
     
-    message = {'action' => ChatController::ACTION_JOIN, 'params' => {
+    player_join_msg = {'action' => ChatController::ACTION_JOIN, 'params' => {
       'channel' => @name, 'player' => player}}
     @players.each do |target_id, target|
+      # Dispatch other players which are already joined to the channel to the
+      # player which is joining.
+      if dispatch_to_self && target_id != player.id
+        existing_player_msg = {
+          'action' => ChatController::ACTION_JOIN,
+          'params' => {'channel' => @name, 'player' => target}
+        }
+        @dispatcher.push(existing_player_msg, player.id)
+      end
+
+      # Dispatch joining player to other players who are already in the channel.
       unless ! dispatch_to_self && player.id == target_id
-        @dispatcher.push(message, target_id)
+        @dispatcher.push(player_join_msg, target_id)
       end
     end
   end

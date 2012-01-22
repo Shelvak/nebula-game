@@ -12,5 +12,6 @@ package tests.models
       public var tc_Location:TC_Location;
       public var tc_HealPrice:TC_HealPrice;
       public var tc_BaseModel:TC_BaseModel;
+      public var tc_Player:TC_Player;
    }
 }
