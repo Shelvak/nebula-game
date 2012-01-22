@@ -127,12 +127,26 @@ assets:
         pp_opts: "-resize 200x200"
     flex:
       ".":
-        <% each_model('technology') do |base| %>
+        <%
+        image_set = Set.new
+        each_model('technology') do |base|
+          puts "technologies.#{base.underscore}.image"
+          image = CONFIG["technologies.#{base.underscore}.image"]
+          if image.nil?
+        %>
         <%= "#{base}.jpg: #{base}Technology.jpg" %>
+        <%
+          else
+            image_set.add image
+          end
+        end
+        image_set.each do |image| %>
+        <%= "#{image}.jpg: #{image}TechImage.jpg" %>
         <% end %>
         background.jpg:
           wiki_name: Technology_background.jpg
           flex: {pp_opts: "-resize 1050x"}
+
 
   "images/achievements":
     opts:
