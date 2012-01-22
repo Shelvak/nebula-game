@@ -3,7 +3,9 @@ package utils
    import com.adobe.utils.DateUtil;
    
    import mx.formatters.DateFormatter;
-   
+
+   import utils.StringUtil;
+
    import utils.locale.Localizer;
    
    
@@ -113,7 +115,7 @@ package utils
             timeString = '0' + Localizer.string('General', 'second.short') + ' ';
          }
          if (parts == 0) {
-            return timeString.substring(0, timeString.length - 1);
+            return StringUtil.trim(timeString);
          }
          else {
             var stringParts: Array = timeString.split(' ');
@@ -122,7 +124,7 @@ package utils
             for (var i: int = 1; i < actualParts; i++) {
                timeString += ' ' + stringParts[i];
             }
-            return timeString;
+            return StringUtil.trim(timeString);
          }
       }
       

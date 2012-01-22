@@ -180,6 +180,7 @@ package components.chat
             updatePnlMembers();
             updateGrpJoinLeaveMsgsCheckBoxContainer();
             updateChkJoinLeaveMsgs();
+            updateMessageSendingAvailability();
             enableAutoScroll();
             _forceAutoScrollAfterModelChange = true;
          }
@@ -349,9 +350,9 @@ package components.chat
          }
       }
       
-      /* ############################ */
-      /* ### AUTOSCROLL HANNDLING ### */
-      /* ############################ */
+      /* ########################### */
+      /* ### AUTOSCROLL HANDLING ### */
+      /* ########################### */
       
       private static const AUTO_SCROLL_TOLERANCE:int = 50;
       private var _autoScrollOn:Boolean = true;
