@@ -115,6 +115,22 @@ trait Combatant extends Trackable {
   def isDead = hp == 0
 
   /**
+   * Chance for critical hit.
+   */
+  def criticalChance = player match {
+    case Some(p) => p.technologies.criticalChanceFor(this)
+    case None => 0.0
+  }
+
+  /**
+   * Chance for damage absorption.
+   */
+  def absorptionChance = player match {
+    case Some(p) => p.technologies.absorptionChanceFor(this)
+    case None => 0.0
+  }
+  
+  /**
    * Damage modifier gained from technologies.
    */
   def technologiesDamageMod = player match {

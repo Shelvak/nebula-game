@@ -14,17 +14,16 @@ object Random extends util.Random {
    */
   def boolean(chance: Int): Boolean = {
     // < because <= adds 1%
-    return (nextInt(100) < chance)
+    nextInt(100) < chance
   }
 
   /**
    * Return Boolean based on chance. Chance is a number between 0 and 1.
    */
   def boolean(chance: Double): Boolean = {
-    if (chance > 1)
-      throw new IllegalArgumentException(
-        "chance cannot be > 1, but %3.4f was given!".format(chance))
+    require(chance >= 0 && chance <= 1,
+      "chance must be 0 >= x <= 1, but %3.4f was given!".format(chance))
 
-    boolean((chance * 100).round.toInt)
+    nextDouble() < chance
   }
 }

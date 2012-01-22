@@ -123,7 +123,8 @@ class GenericController
       return true
     else
       case @action
-      when 'players|login', 'combat_logs|show'
+      when PlayersController::ACTION_LOGIN, CombatLogsController::ACTION_SHOW,
+          GameController::ACTION_CONFIG
         return true
       else
         disconnect "Not logged in."

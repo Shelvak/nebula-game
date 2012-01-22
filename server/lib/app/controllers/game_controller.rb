@@ -44,10 +44,14 @@ class GameController < GenericController
     @ruleset_configs = {}
   end
 
+  ACTION_CONFIG = 'game|config'
   def action_config
-    # Configuration tend to be huge - no need to litter logs with it.
+    # Planet map editor requires configuration but does not login to server.
+    ruleset = player.nil? ? 'default' : session[:ruleset]
+
+    # Configuration tends to be huge - no need to litter logs with it.
     LOGGER.suppress(:traffic_debug) do
-      respond :config => get_config(session[:ruleset])
+      respond :config => get_config(ruleset)
     end
   end
 
@@ -55,11 +59,11 @@ class GameController < GenericController
   def get_config(ruleset)
     # Config will be scoped to ruleset right here, so no harm done
     # by not passing ruleset to it.
-    @ruleset_configs[ruleset] ||= cache_config
+    @ruleset_configs[ruleset] ||= cache_config(ruleset)
   end
 
   # Cache current configuration replacing speed with constant.
-  def cache_config
-    CONFIG.constantize_speed(CONFIG.filter(SENDABLE_RE))
+  def cache_config(ruleset)
+    CONFIG.constantize_speed(CONFIG.filter(SENDABLE_RE, ruleset))
   end
 end

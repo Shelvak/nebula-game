@@ -1,4 +1,5 @@
 class PlayersController < GenericController
+  ACTION_LOGIN = 'players|login'
   # Log player in.
   #
   # Parameters:
