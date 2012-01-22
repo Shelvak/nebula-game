@@ -9,9 +9,9 @@ module Parts::Healing
     def resources_for_healing(object)
       percentage_to_heal = object.damaged_percentage
       mod = cost_modifier
-      metal = (object.metal_cost * percentage_to_heal * mod).round
-      energy = (object.energy_cost * percentage_to_heal * mod).round
-      zetium = (object.zetium_cost * percentage_to_heal * mod).round
+      metal = (object.metal_cost(1) * percentage_to_heal * mod).round
+      energy = (object.energy_cost(1) * percentage_to_heal * mod).round
+      zetium = (object.zetium_cost(1) * percentage_to_heal * mod).round
 
       [metal, energy, zetium]
     end
