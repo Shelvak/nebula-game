@@ -450,6 +450,10 @@ package components.chat
          }
          if (inpMessage != null) {
             inpMessage.enabled = _model.silenced.hasOccured;
+            if (!_model.silenced.hasOccured
+                   && focusManager.findFocusManagerComponent(inpMessage) != null) {
+               focusManager.setFocus(txtContent);
+            }
             updateInpMessageText();
          }
       }
