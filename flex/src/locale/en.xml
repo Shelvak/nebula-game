@@ -4612,6 +4612,10 @@
      <message.channelJoin  value="[ {0} joined ]"/>
      <message.channelLeave value="[ {0} left ]"/>
      <message.friendOffline value="This player is currently offline."/>
+     <message.silence>
+        You have been silenced for flooding until {0}.
+        You will be able to chat in {1}.
+     </message.silence>
      <label.send value="Send"/>
      <label.mainChannel value="#galaxy"/>
      <label.allianceChannel value="#alliance"/>

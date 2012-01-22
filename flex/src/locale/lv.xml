@@ -4862,6 +4862,12 @@
      <message.channelJoin  value="[ {0} pievienojušies ]"/>
      <message.channelLeave value="[ {0} atstājuši ]"/>
      <message.friendOffline value="Šis spēlētājs pašlaik nav tiešsaitē."/>
+     <!-- TODO -->
+     <message.silence>
+        You have been silenced for flooding until {0}.
+        You will be able to chat in {1}.
+     </message.silence>
+     <!-- /TODO -->
      <label.send value="Sūtīt"/>
      <label.mainChannel value="#galaktika"/>
      <label.allianceChannel value="#alianse"/>

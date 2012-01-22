@@ -261,6 +261,7 @@ package controllers.startup
          bindPair(ChatCommand.CHANNEL_LEAVE, new ChannelLeaveAction());
          bindPair(ChatCommand.MESSAGE_PUBLIC, new MessagePublicAction());
          bindPair(ChatCommand.MESSAGE_PRIVATE, new MessagePrivateAction());
+         bindPair(ChatCommand.SILENCE, new SilenceAction());
       }
       private static function bindMarketCommands() : void
       {

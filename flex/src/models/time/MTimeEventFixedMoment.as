@@ -1,17 +1,13 @@
 package models.time
 {
-   import flash.events.EventDispatcher;
-   import flash.events.IEventDispatcher;
-
    import models.time.events.MTimeEventEvent;
-
-   import namespaces.change_flag;
 
    import namespaces.change_flag;
 
    import utils.DateUtil;
    import utils.Objects;
-   
+
+
    [Event(name="occuredBefore", type="models.time.events.MTimeEventEvent")]
 
    /**
@@ -119,10 +115,13 @@ package models.time
       
       public override function update() : void
       {
-         occuresInUpdated();
-         if (!_hasOccuredDispatched && _occuresAt.time <= DateUtil.now) {
+         if (!hasOccured) {
+            occuresInUpdated();
+         }
+         if (!_hasOccuredDispatched && hasOccured) {
             _hasOccuredDispatched = true;
             hasOccuredUpdated();
+            occuresInUpdated();
          }
          if (_occuresAt.time <= DateUtil.now) {
             occuredBeforeUpdated();

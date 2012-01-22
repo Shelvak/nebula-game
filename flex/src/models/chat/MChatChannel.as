@@ -10,7 +10,8 @@ package models.chat
    import models.chat.msgconverters.IChatMessageConverter;
    import models.chat.msgconverters.MemberMessageConverter;
    import models.chat.msgconverters.PlayerMessageConverter;
-   
+   import models.time.MTimeEventFixedMoment;
+
    import mx.core.ClassFactory;
    import mx.core.IFactory;
    
@@ -56,18 +57,19 @@ package models.chat
       
       
       /**
-       * Cosntructs <code>MChatChannel</code>.
-       * 
        * @param name name of the channel. Each channel must have a unique name.
        *        <b>Not null. Not empty string.</b>
        */
-      public function MChatChannel(name:String) {
+      public function MChatChannel(name: String) {
          super();
-         _name = Objects.paramNotEquals("name", name, [null, ""]);;
+         _name = Objects.paramNotEquals("name", name, [null, ""]);
          _content = new MChatChannelContent();
          _members = new MChatMembersList(this);
       }
-      
+
+      public function get silenced(): MTimeEventFixedMoment {
+         return MCHAT.silenced;
+      }
       
       private var _name:String = null;
       /**
@@ -155,7 +157,7 @@ package models.chat
       
       private var _content:MChatChannelContent;
       /**
-       * Content (messsages) of this channel. Never null.
+       * Content (messages) of this channel. Never null.
        */
       public function get content() : MChatChannelContent {
          return _content;

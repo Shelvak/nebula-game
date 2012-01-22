@@ -4630,6 +4630,10 @@
      <message.channelJoin  value="[ {0} prisijungė ]"/>
      <message.channelLeave value="[ {0} išėjo ]"/>
      <message.friendOffline value="Šis žaidėjas šiuo metu neprisijungęs"/>
+     <message.silence>
+        Tu buvai nutildytas iki {0}, nes siuntei per daug žinučių.
+        Tu vėl galėsi šnekėtis už {1}."
+     </message.silence>
      <label.send value="Siųsti" />
      <label.mainChannel value="#galaktika"/>
      <label.allianceChannel value="#sąjunga"/>
