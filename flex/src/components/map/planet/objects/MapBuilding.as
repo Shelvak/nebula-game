@@ -507,12 +507,6 @@ package components.map.planet.objects
       /* ############################### */
       
       
-      private function addLevelIndicatorEventHandlers(indicator:LevelDisplay) : void
-      {
-         indicator.addEventListener(ResizeEvent.RESIZE, levelIndicator_resizeHandler, false, 0, true);
-      }
-      
-      
       private function levelIndicator_resizeHandler(event:ResizeEvent) : void
       {
          f_levelIdicatorResized = true;

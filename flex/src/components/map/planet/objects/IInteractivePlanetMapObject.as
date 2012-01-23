@@ -2,6 +2,7 @@ package components.map.planet.objects
 {
    import components.markers.IActiveCursorUser;
 
+
    /**
     * Interface of planet map object that responds to user interaction.
     */
@@ -10,41 +11,31 @@ package components.map.planet.objects
       /**
        * Indicates if the object is selected.
        */
-      function set selected(v:Boolean) : void;
+      function set selected(v: Boolean): void;
       /**
        * @private
        */
-      function get selected() : Boolean;
-      
-      
+      function get selected(): Boolean;
+
       /**
        * Indicates if this object is faded (alpha is lower that 1).
        * Set <code>alphaNormal</code> and <code>alphaFaded</code>
        * style properties to values you prefer.
        */
-      function set faded(v:Boolean) : void;
+      function set faded(v: Boolean): void;
       /**
-       * @private 
+       * @private
        */
       function get faded(): Boolean;
-      
-      
+
       /**
        * Selects the object.
        */
-      function select() : void;
-      
-      
+      function select(): void;
+
       /**
        * Deselects the object.
        */
-      function deselect() : void;
-      
-      
-      /**
-       * Selects the object if it is not selected or deselects it
-       * if it is selected.
-       */
-      function toggleSelection() : void;
+      function deselect(): void;
    }
 }

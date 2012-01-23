@@ -13,6 +13,7 @@ package components.map.planet
 
    import models.location.LocationMinimal;
    import models.planet.MPlanet;
+   import models.planet.events.MPlanetEvent;
    import models.solarsystem.events.MSSObjectEvent;
 
 
@@ -66,7 +67,7 @@ package components.map.planet
          model.ssObject.addEventListener(
             MSSObjectEvent.TERRAIN_CHANGE, ssObject_terrainChangeHandler,
             false, 0, true
-         )
+         );
       }
 
       public override function cleanup(): void {
@@ -74,7 +75,7 @@ package components.map.planet
             MPlanet(model).ssObject.removeEventListener(
                MSSObjectEvent.TERRAIN_CHANGE, ssObject_terrainChangeHandler,
                false
-            )
+            );
          }
          if (_objectsLayer != null) {
             removeElement(_objectsLayer);

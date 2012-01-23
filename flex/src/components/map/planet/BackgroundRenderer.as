@@ -3,20 +3,17 @@ package components.map.planet
    import flash.display.BitmapData;
    import flash.geom.Point;
    import flash.geom.Rectangle;
-   
+
    import interfaces.ICleanable;
-   
+
    import models.map.MapDimensionType;
-   import models.tile.TerrainType;
    import models.tile.Tile;
-   
+
    import utils.BitmapUtil;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
-   
-   
-   
-   
+
+
    /**
     * Does the rendering of a planet map background.
     */
@@ -465,9 +462,9 @@ package components.map.planet
 }
 
 
-
-
 import models.tile.Tile;
+
+
 class DFSRecord
 {
    public var tile: Tile = null;
