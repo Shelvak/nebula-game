@@ -596,6 +596,13 @@ package components.base.viewport
       /* ############################# */
       
       /**
+       * Is content drag feature enabled?
+       *
+       * @default true
+       */
+      public var contentDragEnabled:Boolean = true;
+      
+      /**
        * Centers content in the viewport. 
        */      
       public function centerContent() : void
@@ -713,6 +720,7 @@ package components.base.viewport
       private function startContentDrag(event:MouseEvent) : void
       {
          if (f_cleanupCalled ||
+             !contentDragEnabled ||
              !_content ||
              DisplayListUtil.isInsideType(event.target, VScrollBar) ||
              DisplayListUtil.isInsideType(event.target, HScrollBar) ||
@@ -750,7 +758,7 @@ package components.base.viewport
       
       private function stopContentDrag() : void
       {
-         if (f_cleanupCalled) {
+         if (!contentDragEnabled || f_cleanupCalled) {
             return;
          }
          
@@ -787,7 +795,7 @@ package components.base.viewport
       
       
       /* ############################################################# */
-      /* ### COORDINATES IN VIEWPORT AND CONTENT CORRDINATE SPACES ### */
+      /* ### COORDINATES IN VIEWPORT AND CONTENT COORDINATE SPACES ### */
       /* ############################################################# */
       
       
