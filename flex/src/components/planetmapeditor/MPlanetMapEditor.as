@@ -199,9 +199,11 @@ package components.planetmapeditor
          _objectsEditorLayer = new ObjectsEditorLayer(_objectToErect);
          _terrainEditorLayer = new TerrainEditorLayer(_selectedTileKind);
          _planet = new MPlanet(ssObject);
-         viewport.content = new PlanetMap(
+         const map:PlanetMap = new PlanetMap(
             _planet, _objectsEditorLayer, _terrainEditorLayer
          );
+         map.viewport = viewport;
+         viewport.content = map;
       }
 
       private function renderBackground(): void {

@@ -87,7 +87,7 @@ package components.planetmapeditor
             case MouseEvent.MOUSE_MOVE:
                this_mouseMoveHandler(event);
                // For map drag to work
-               objectsLayer.redispatchEventFromMap(event);
+//               objectsLayer.redispatchEventFromMap(event);
                break;
 
             case MouseEvent.CLICK:
@@ -97,7 +97,7 @@ package components.planetmapeditor
             case MouseEvent.MOUSE_DOWN:
             case MouseEvent.MOUSE_UP:
                // For map drag to work
-               objectsLayer.redispatchEventFromMap(event);
+//               objectsLayer.redispatchEventFromMap(event);
                break;
          }
       }
@@ -136,7 +136,8 @@ package components.planetmapeditor
                if (objectUnder != null) {
                   planet.removeObject(objectUnder);
                }
-               if (object is BlockingFolliage) {
+               if (object is BlockingFolliage
+                      || building.isTileRestricted(planet.getTileKind(x, y))) {
                   planet.removeTile(x, y);
                }
             }
@@ -151,9 +152,7 @@ package components.planetmapeditor
                   if (objectUnder is Building) {
                      planet.removeObject(objectUnder);
                   }
-                  const tileKind:int = planet.getTileKind(x, y);
-                  if (building.isTileRestricted(tileKind)
-                         || TileKind.isResourceKind(tileKind)) {
+                  if (TileKind.isResourceKind(planet.getTileKind(x, y))) {
                      planet.removeTile(x, y);
                   }
                }

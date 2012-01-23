@@ -15,6 +15,7 @@ package components.planetmapeditor
 
    import models.planet.MPlanet;
    import models.planet.MPlanetObject;
+   import models.tile.Tile;
    import models.tile.TileKind;
 
    import mx.collections.ArrayCollection;
@@ -46,12 +47,14 @@ package components.planetmapeditor
 
       private function activate(): void {
          objectsLayer.passOverMouseEventsTo(this);
+         map.viewport.contentDragEnabled = false;
          _tilePlaceholder.visible = true;
          repositionTilePlaceholder();
       }
 
       private function deactivate(): void {
          _tilePlaceholder.visible = false;
+         map.viewport.contentDragEnabled = true;
       }
 
       private var _tilePlaceholder: CTilePlaceholder = new CTilePlaceholder();
@@ -101,11 +104,28 @@ package components.planetmapeditor
 
       private function this_mouseMoveHandler(event: MouseEvent): void {
          repositionTilePlaceholder();
-         if (event.buttonDown) {
-            // if not resource tile
-            // add tile at current position
-            // remove at current position if tile is regular
+         const tile: IRTileKindM = _tilePlaceholder.tile;
+         const object: MPlanetObject = _tilePlaceholder.tileObject;
+         if (!event.buttonDown
+                || !planet.isObjectOnMap(object)
+                || TileKind.isResourceKind(tile.tileKind)
+                || planet.getTileKind(object.x, object.y) == tile.tileKind) {
+            return;
          }
+         planet.removeTile(object.x, object.y);
+         const objectUnder: MPlanetObject =
+                  planet.getObject(object.x, object.y);
+         if (objectUnder != null) {
+            planet.removeObject(objectUnder);
+         }
+         if (tile.tileKind != TileKind.REGULAR) {
+            const newTile: Tile = new Tile();
+            newTile.x = object.x;
+            newTile.y = object.y;
+            newTile.kind = tile.tileKind;
+            planet.addTile(newTile);
+         }
+         map.renderBackground(false);
       }
 
       private function repositionTilePlaceholder(): void {
