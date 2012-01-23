@@ -1,11 +1,14 @@
 package models.chat
 {
    import controllers.ui.NavigationController;
-   
+
+   import interfaces.IUpdatable;
+
    import models.BaseModel;
    import models.ModelLocator;
    import models.chat.events.MChatEvent;
-   
+   import models.time.MTimeEventFixedMoment;
+
    import mx.logging.Log;
    import mx.utils.ObjectUtil;
    
@@ -56,7 +59,7 @@ package models.chat
     * 
     * <p>Aggregates all channels and members of the chat.</p>
     */
-   public class MChat extends BaseModel
+   public class MChat extends BaseModel implements IUpdatable
    {
       /**
        * Name of a main public channel (galaxy).
@@ -107,6 +110,25 @@ package models.chat
        */
       public function get messagePool() : IObjectPool {
          return _messagePool;
+      }
+
+      private const _silenced: MTimeEventFixedMoment =
+                       new MTimeEventFixedMoment();
+      public function get silenced(): MTimeEventFixedMoment {
+         return _silenced;
+      }
+
+      
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+
+      public function update(): void {
+         _silenced.update();
+      }
+
+      public function resetChangeFlags(): void {
+         _silenced.resetChangeFlags();
       }
       
       

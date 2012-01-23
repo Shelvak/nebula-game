@@ -16,7 +16,8 @@ package components.chat
    import models.chat.MChatChannelPrivate;
    import models.chat.events.MChatChannelContentEvent;
    import models.chat.events.MChatChannelEvent;
-   
+   import models.time.events.MTimeEventEvent;
+
    import mx.events.PropertyChangeEvent;
    
    import spark.components.Button;
@@ -27,7 +28,9 @@ package components.chat
    import spark.components.TextArea;
    import spark.components.TextInput;
    import spark.components.supportClasses.SkinnableComponent;
-   
+
+   import utils.DateUtil;
+
    import utils.locale.Localizer;
    
    
@@ -58,8 +61,9 @@ package components.chat
       // TODO temp fix for urls to work in chat
       public function urlBugWorkaround(e: MChatChannelEvent): void
       {
-         e.target.removeEventListener(MChatChannelEvent.GOT_SOME_MESSAGE,
-                 urlBugWorkaround);
+         e.target.removeEventListener(
+            MChatChannelEvent.GOT_SOME_MESSAGE, urlBugWorkaround
+         );
          var oldOne: MChatChannel = _model;
          model = null;
          model = oldOne;
@@ -70,22 +74,23 @@ package components.chat
       
       private var _modelOld:MChatChannel;
       private var _model:MChatChannel;
-      public function set model(value:MChatChannel) : void {
+      public function set model(value: MChatChannel): void {
          if (_model != value) {
-            if (_model != null)
-            {
-               _model.removeEventListener(MChatChannelEvent.GOT_SOME_MESSAGE,
-                       urlBugWorkaround);
+            if (_model != null) {
+               _model.removeEventListener(
+                  MChatChannelEvent.GOT_SOME_MESSAGE, urlBugWorkaround
+               );
             }
-            if (_modelOld == null)
+            if (_modelOld == null) {
                _modelOld = _model;
+            }
             _model = value;
             f_modelChanged = true;
             invalidateProperties();
-            if (value != null && !urlFixed)
-            {
-               value.addEventListener(MChatChannelEvent.GOT_SOME_MESSAGE,
-                       urlBugWorkaround);
+            if (_model != null && !urlFixed) {
+               _model.addEventListener(
+                  MChatChannelEvent.GOT_SOME_MESSAGE, urlBugWorkaround
+               );
             }
          }
       }
@@ -105,31 +110,65 @@ package components.chat
          super.commitProperties();
          if (f_modelChanged) {
             if (_modelOld != null) {
-               _modelOld.removeEventListener
-                  (MChatChannelEvent.NUM_MEMBERS_CHANGE, model_numMembersChangeHandler, false);
-               _modelOld.content.removeEventListener
-                  (MChatChannelContentEvent.MESSAGE_REMOVE, modelContent_messageRemoveHandler, false);
-               _modelOld.content.text.removeEventListener
-                  (CompositionCompleteEvent.COMPOSITION_COMPLETE, textFlow_compositionCompleteHandler, false);
+               _modelOld.removeEventListener(
+                  MChatChannelEvent.NUM_MEMBERS_CHANGE,
+                  model_numMembersChangeHandler, false
+               );
+               _modelOld.content.removeEventListener(
+                  MChatChannelContentEvent.MESSAGE_REMOVE,
+                  modelContent_messageRemoveHandler, false
+               );
+               _modelOld.content.text.removeEventListener(
+                  CompositionCompleteEvent.COMPOSITION_COMPLETE,
+                  textFlow_compositionCompleteHandler, false
+               );
+               _modelOld.silenced.removeEventListener(
+                  MTimeEventEvent.HAS_OCCURED_CHANGE,
+                  silenced_hasOccurredChangeHandler, false
+               );
+               _modelOld.silenced.removeEventListener(
+                  MTimeEventEvent.OCCURES_IN_CHANGE,
+                  silenced_occursInChangeHandler, false
+               );
                txtContent.textFlow = null;
-               if (!_modelOld.isPublic)
-                  MChatChannelPrivate(_modelOld).removeEventListener
-                     (MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false);
+               if (!_modelOld.isPublic) {
+                  MChatChannelPrivate(_modelOld).removeEventListener(
+                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE,
+                     model_isFriendOnlineChangeHandler, false
+                  );
+               }
                _modelOld = null;
             }
             if (_model != null) {
-               _model.addEventListener
-                  (MChatChannelEvent.NUM_MEMBERS_CHANGE, model_numMembersChangeHandler, false, 0, true);
-               _model.content.addEventListener
-                  (MChatChannelContentEvent.MESSAGE_REMOVE, modelContent_messageRemoveHandler, false, 0, true);
-               _model.content.text.addEventListener
-                  (CompositionCompleteEvent.COMPOSITION_COMPLETE, textFlow_compositionCompleteHandler, false, 0, true);
+               _model.addEventListener(
+                  MChatChannelEvent.NUM_MEMBERS_CHANGE,
+                  model_numMembersChangeHandler, false, 0, true
+               );
+               _model.content.addEventListener(
+                  MChatChannelContentEvent.MESSAGE_REMOVE,
+                  modelContent_messageRemoveHandler, false, 0, true
+               );
+               _model.content.text.addEventListener(
+                  CompositionCompleteEvent.COMPOSITION_COMPLETE,
+                  textFlow_compositionCompleteHandler, false, 0, true
+               );
+               _model.silenced.addEventListener(
+                  MTimeEventEvent.HAS_OCCURED_CHANGE,
+                  silenced_hasOccurredChangeHandler, false, 0, true
+               );
+               _model.silenced.addEventListener(
+                  MTimeEventEvent.OCCURES_IN_CHANGE,
+                  silenced_occursInChangeHandler, false, 0, true
+               );
                txtContent.textFlow = _model.content.text;
                lstMembers.model = _model.members;
                lstMembers.itemRendererFunction = _model.membersListIRFactory;
-               if (!_model.isPublic)
-                  MChatChannelPrivate(_model).addEventListener
-                     (MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE, model_isFriendOnlineChangeHandler, false, 0, true);
+               if (!_model.isPublic) {
+                  MChatChannelPrivate(_model).addEventListener(
+                     MChatChannelEvent.IS_FRIEND_ONLINE_CHANGE,
+                     model_isFriendOnlineChangeHandler, false, 0, true
+                  );
+               }
             }
             else {
                lstMembers.model = null;
@@ -141,6 +180,7 @@ package components.chat
             updatePnlMembers();
             updateGrpJoinLeaveMsgsCheckBoxContainer();
             updateChkJoinLeaveMsgs();
+            updateMessageSendingAvailability();
             enableAutoScroll();
             _forceAutoScrollAfterModelChange = true;
          }
@@ -238,18 +278,26 @@ package components.chat
                txtContent.setStyle("lineHeight", _lineHeight);
                txtContent.editable = false;
                txtContent.selectable = true;
-               txtContent.textDisplay.addEventListener
-                  (PropertyChangeEvent.PROPERTY_CHANGE, textDisplay_propertyChangeHandler, false, 0, true);
+               txtContent.textDisplay.addEventListener(
+                  PropertyChangeEvent.PROPERTY_CHANGE,
+                  textDisplay_propertyChangeHandler, false, 0, true
+               );
                break;
             
             case inpMessage:
                inpMessage.maxChars = ChatConstants.MAX_CHARS_IN_MESSAGE;
-               inpMessage.addEventListener(KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false, 0, true);
+               inpMessage.addEventListener(
+                  KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false, 0, true
+               );
+               updateMessageSendingAvailability();
                break;
             
             case btnSend:
                btnSend.label = getString("label.send");
-               btnSend.addEventListener(MouseEvent.CLICK, btnSend_clickHandler, false, 0, true);
+               btnSend.addEventListener(
+                  MouseEvent.CLICK, btnSend_clickHandler, false, 0, true
+               );
+               updateMessageSendingAvailability();
                break;
             
             case lblFriendOfflineWarning:
@@ -265,7 +313,9 @@ package components.chat
                break;
             
             case chkJoinLeaveMsgs:
-               chkJoinLeaveMsgs.addEventListener(Event.CHANGE, chkJoinLeaveMsgs_changeHandler, false, 0, true);
+               chkJoinLeaveMsgs.addEventListener(
+                  Event.CHANGE, chkJoinLeaveMsgs_changeHandler, false, 0, true
+               );
                chkJoinLeaveMsgs.label = getString("label.generateJoinLeaveMsgs");
                updateChkJoinLeaveMsgs();
                break;
@@ -281,22 +331,28 @@ package components.chat
          switch (instance)
          {
             case inpMessage:
-               inpMessage.removeEventListener(KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false);
+               inpMessage.removeEventListener(
+                  KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false
+               );
                break;
             
             case btnSend:
-               btnSend.removeEventListener(MouseEvent.CLICK, btnSend_clickHandler, false);
+               btnSend.removeEventListener(
+                  MouseEvent.CLICK, btnSend_clickHandler, false
+               );
                break;
             
             case chkJoinLeaveMsgs:
-               chkJoinLeaveMsgs.removeEventListener(Event.CHANGE, chkJoinLeaveMsgs_changeHandler, false);
+               chkJoinLeaveMsgs.removeEventListener(
+                  Event.CHANGE, chkJoinLeaveMsgs_changeHandler, false
+               );
                break;
          }
       }
       
-      /* ############################ */
-      /* ### AUTOSCROLL HANNDLING ### */
-      /* ############################ */
+      /* ########################### */
+      /* ### AUTOSCROLL HANDLING ### */
+      /* ########################### */
       
       private static const AUTO_SCROLL_TOLERANCE:int = 50;
       private var _autoScrollOn:Boolean = true;
@@ -316,9 +372,11 @@ package components.chat
             return;
          
          var textDisplay:RichEditableText = RichEditableText(event.target);
-         _autoScrollOn = _forceAutoScrollAfterModelChange ||
-            Math.abs(textDisplay.contentHeight - textDisplay.verticalScrollPosition - textDisplay.height) <
-            AUTO_SCROLL_TOLERANCE;
+         _autoScrollOn = _forceAutoScrollAfterModelChange
+                            || Math.abs(textDisplay.contentHeight
+                                           - textDisplay.verticalScrollPosition
+                                           - textDisplay.height)
+                                  < AUTO_SCROLL_TOLERANCE;
          if (_autoScrollOn) {
             _anchoredScrollPosition = 0;
             _messagesRemoved = 0;
@@ -367,17 +425,53 @@ package components.chat
       /* ############################ */
       /* ### MODEL EVENT HANDLERS ### */
       /* ############################ */
-      
-      private function model_isFriendOnlineChangeHandler(event:MChatChannelEvent) : void {
+
+      private function model_isFriendOnlineChangeHandler(event: MChatChannelEvent): void {
          updateGrpFriendOfflineWarningContainer();
       }
-      
-      private function model_numMembersChangeHandler(event:MChatChannelEvent) : void {
+
+      private function model_numMembersChangeHandler(event: MChatChannelEvent): void {
          updatePnlMembers();
       }
-      
-      private function model_generateJoinLeaveMsgsChangeHandler(event:MChatChannelEvent) : void {
-         updateChkJoinLeaveMsgs();
+
+      private function silenced_hasOccurredChangeHandler(event: MTimeEventEvent): void {
+         updateMessageSendingAvailability();
+      }
+
+      private function silenced_occursInChangeHandler(event: MTimeEventEvent): void {
+         updateInpMessageText();
+      }
+
+      private function updateMessageSendingAvailability(): void {
+         if (_model == null) {
+            return;
+         }
+         if (btnSend != null) {
+            btnSend.enabled = _model.silenced.hasOccured;
+         }
+         if (inpMessage != null) {
+            inpMessage.enabled = _model.silenced.hasOccured;
+            if (!_model.silenced.hasOccured
+                   && focusManager.findFocusManagerComponent(inpMessage) != null) {
+               focusManager.setFocus(txtContent);
+            }
+            updateInpMessageText();
+         }
+      }
+
+      private function updateInpMessageText(): void {
+         if (inpMessage != null && _model != null) {
+            if (_model.silenced.hasOccured) {
+               inpMessage.text = "";
+            }
+            else {
+               inpMessage.text = getString(
+                  "message.silence",
+                  [DateUtil.formatShortDateTime(_model.silenced.occuresAt),
+                   _model.silenced.occuresInString]
+               );
+            }
+         }
       }
       
       
@@ -386,8 +480,9 @@ package components.chat
       /* ################################# */
       
       private function inpMessage_keyUpHandler(event:KeyboardEvent) : void {
-         if (event.keyCode == Keyboard.ENTER)
+         if (event.keyCode == Keyboard.ENTER) {
             sendMessage();
+         }
       }
       
       private function btnSend_clickHandler(event:MouseEvent) : void {
@@ -395,8 +490,9 @@ package components.chat
       }
       
       private function chkJoinLeaveMsgs_changeHandler(event:Event) : void {
-         if (_model != null)
+         if (_model != null) {
             _model.generateJoinLeaveMsgs = chkJoinLeaveMsgs.selected;
+         }
       }
       
       
@@ -405,9 +501,13 @@ package components.chat
       /* ############# */
       
       private function sendMessage() : void {
+         if (!model.silenced.hasOccured) {
+            return;
+         }
          var message:String = StringUtil.trim(inpMessage.text);
-         if (message.length > 0)
+         if (message.length > 0) {
             _model.sendMessage(message);
+         }
          inpMessage.text = "";
          enableAutoScroll();
       }

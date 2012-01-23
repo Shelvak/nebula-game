@@ -35,6 +35,8 @@ package controllers.chat
        * @see controllers.chat.actions.ChannelLeaveAction
        */
       public static const CHANNEL_LEAVE:String = "chat|leave";
+
+      public static const SILENCE:String = "chat|silence";
       
       
       public function ChatCommand(type:String,

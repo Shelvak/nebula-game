@@ -227,11 +227,17 @@ package utils
       
       /**
        * @copy mx.utils.StringUtil#substitute()
-       * @see mx.utils.StringUtil#substitute()
        */
       public static function substitute(str:String, ...parameters) : String {
          return mx.utils.StringUtil.substitute
                    .apply(null, [str].concat(parameters));
+      }
+
+      /**
+       * @copy mx.utils.StringUtil#substitute()
+       */
+      public static function trim(str: String): String {
+         return mx.utils.StringUtil.trim(str);
       }
       
       /**
