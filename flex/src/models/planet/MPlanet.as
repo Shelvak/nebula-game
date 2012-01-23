@@ -66,7 +66,7 @@ package models.planet
     */
    [Event(name="buildingMove", type="models.planet.events.MPlanetEvent")]
    
-   
+
    [Event(name="unitUpgradeStarted", type="models.planet.events.MPlanetEvent")]
    [Event(name="unitRefreshNeeded", type="models.planet.events.MPlanetEvent")]
    [Event(name="buildingUpgraded", type="models.planet.events.MPlanetEvent")]
@@ -529,23 +529,68 @@ package models.planet
       
       /**
        * Adds a given tile to this planet to appropriate cell in tiles array.
-       * 
-       * @param t A tile that needs to be added to this planet.
        */
-      public function addTile(t:Tile) :void
-      {
-         tilesMatrix[t.x][t.y] = t;
+      public function addTile(tile: Tile): void {
+         tilesMatrix[tile.x][tile.y] = Objects.paramNotNull("tile", tile);
       }
 
+      /**
+       * Adds resource tile of a given kind at given coordinates along with
+       * 3 adjacent fake same resource tiles.
+       */
+      public function addResourceTile(x: int, y: int, kind: int): void {
+         const tile:Tile = new Tile();
+         tile.x = x;
+         tile.y = y;
+         tile.kind = kind;
+         addTile(tile);
+
+         var clone:Tile = tile.cloneFake();
+         clone.x++;
+         addTile(clone);
+
+         clone = tile.cloneFake();
+         clone.y++;
+         addTile(clone);
+
+         clone = tile.cloneFake();
+         clone.x++;
+         clone.y++;
+         addTile(clone);
+      }
+
+      /**
+       * Removes tile in the given coordinates if one exists. In case it is
+       * a resource tile other three related tiles are also removed.
+       */
+      public function removeTile(x: int, y: int): void {
+         if (!isOnMap(x, y)) {
+            return;
+         }
+         var tile: Tile = getTile(x, y);
+         if (tile == null) {
+            return;
+         }
+         tilesMatrix[x][y] = null;
+         if (!tile.isResource()) {
+            return;
+         }
+         const xEnd: int = x + 1;
+         const yEnd: int = y + 1;
+         for (x = x - 1; x <= xEnd; x++) {
+            for (y = y - 1; y <= yEnd; y++) {
+               if (isOnMap(x, y)) {
+                  tile = getTile(x, y);
+                  if (tile != null && tile.isResource()) {
+                     tilesMatrix[x][y] = null;
+                  }
+               }
+            }
+         }
+      }
 
       /**
        * Returns <code>Tile</code> object at the given coordinates.
-       * 
-       * @param x
-       * @param y
-       *
-       * @return instance of <code>Tile</code> or <code>null</code> if there is no tile (regular tile)
-       * in the given coordinates.
        */
       public function getTile(x: int, y: int): Tile {
          return tilesMatrix[x][y];
@@ -1178,18 +1223,12 @@ package models.planet
       
       
       /**
-       * Determines if the given building would be on the map with it's whole ground.
-       * This method lets examine buildings that are not part of this map yet.
-       *  
-       * @param building A building to examine.
-       * 
-       * @return <code>true</code> if the building would be on the map, <code>false</code>
-       * if at least one building tile would not be on the map. 
+       * Determines if the given object would be on the map with it's whole ground.
+       * This method lets examine objects that are not part of this map yet.
        */
-      public function isBuildingOnMap(building:Building) : Boolean
-      {
-         return isOnMap(building.x, building.y) &&
-            isOnMap(building.xEnd, building.yEnd);
+      public function isObjectOnMap(object:MPlanetObject) : Boolean {
+         return isOnMap(object.x, object.y)
+                   && isOnMap(object.xEnd, object.yEnd);
       } 
       
       
@@ -1264,7 +1303,7 @@ package models.planet
        * otherwise.
        */
       public function canBeBuilt(building: Building): Boolean {
-         return isBuildingOnMap(building)
+         return isObjectOnMap(building)
                    && !restrTilesUnderBuildingExist(building)
                    && !restrTilesAroundBuildingExist(building)
                    && !buildingsAroundExist(building)

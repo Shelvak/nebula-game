@@ -4,10 +4,16 @@ package components.planetmapeditor
    import components.map.planet.PlanetMap;
    import components.planetmapeditor.events.MPlanetMapEditorEvent;
 
+   import config.Config;
+
    import flash.events.EventDispatcher;
+   import flash.geom.Point;
 
    import models.building.Building;
    import models.building.BuildingType;
+   import models.building.CollectorT3;
+   import models.building.MetalExtractor;
+   import models.building.ZetiumExtractor;
    import models.folliage.BlockingFolliage;
    import models.planet.MPlanet;
    import models.planet.MPlanetObject;
@@ -15,6 +21,7 @@ package components.planetmapeditor
    import models.solarsystem.SSObjectType;
    import models.tile.FolliageTileKind;
    import models.tile.TerrainType;
+   import models.tile.Tile;
    import models.tile.TileKind;
 
    import mx.collections.ArrayCollection;
@@ -83,7 +90,11 @@ package components.planetmapeditor
             for each (var tile:IRTileKindM in TILE_KINDS) {
                tile.terrainType = value;
             }
-            for each (var foliage:BlockingFolliage in FOLIAGE) {
+            var foliage:BlockingFolliage;
+            for each (foliage in FOLIAGE) {
+               foliage.terrainType = value;
+            }
+            for each (foliage in _planet.blockingFolliages) {
                foliage.terrainType = value;
             }
             renderBackground();
@@ -97,6 +108,9 @@ package components.planetmapeditor
       public function set selectedTileKind(value: IRTileKindM): void {
          if (value != null && _selectedTileKind != value) {
             _selectedTileKind = value;
+            if (_terrainEditorLayer != null) {
+               _terrainEditorLayer.setTile(value);
+            }
          }
       }
       public function get selectedTileKind(): IRTileKindM {
@@ -141,9 +155,21 @@ package components.planetmapeditor
       public function set objectToErect(value: MPlanetObject): void {
          if (_objectToErect != value) {
             _objectToErect = value;
-            if (_objectToErect != null) {
-               value.x = 0; value.xEnd = 2;
-               value.y = 0; value.yEnd = 2;
+            if (value != null) {
+               value.x = 0;
+               value.y = 0;
+               if (value is Building) {
+                  const building: Building = Building(value);
+                  building.setSize(
+                     Config.getBuildingWidth(building.type),
+                     Config.getBuildingHeight(building.type)
+                  );
+               }
+               else {
+                  const foliage: BlockingFolliage = BlockingFolliage(value);
+                  const size: Point = FolliageTileKind.getSize(foliage.kind);
+                  foliage.setSize(size.x, size.y);
+               }
                if (_objectsEditorLayer != null) {
                   _objectsEditorLayer.setObject(value);
                }
@@ -159,31 +185,28 @@ package components.planetmapeditor
       /* ### ACTIONS ### */
       /* ############### */
 
-      private var _planet: MSSObject;
+      private var _planet: MPlanet;
       private var _objectsEditorLayer: ObjectsEditorLayer;
       private var _terrainEditorLayer: TerrainEditorLayer;
 
       public function generateMap(viewport:ViewportZoomable): void {
          Objects.paramNotNull("viewport", viewport);
-         if (_planet != null) {
-            _planet.cleanup();
-            _objectsEditorLayer = null;
-         }
-         _planet = new MSSObject();
-         _planet.terrain = _terrainType;
-         _planet.type = SSObjectType.PLANET;
-         _planet.width = _mapWidth;
-         _planet.height = _mapHeight;
+         const ssObject: MSSObject = new MSSObject();
+         ssObject.terrain = _terrainType;
+         ssObject.type = SSObjectType.PLANET;
+         ssObject.width = _mapWidth;
+         ssObject.height = _mapHeight;
          _objectsEditorLayer = new ObjectsEditorLayer(_objectToErect);
-         _terrainEditorLayer = new TerrainEditorLayer();
+         _terrainEditorLayer = new TerrainEditorLayer(_selectedTileKind);
+         _planet = new MPlanet(ssObject);
          viewport.content = new PlanetMap(
-            new MPlanet(_planet), _objectsEditorLayer, _terrainEditorLayer
+            _planet, _objectsEditorLayer, _terrainEditorLayer
          );
       }
 
       private function renderBackground(): void {
          if (_planet != null) {
-            _planet.terrain = _terrainType;
+            _planet.ssObject.terrain = _terrainType;
          }
       }
 
@@ -203,7 +226,22 @@ package components.planetmapeditor
       }
 
       private function newBuilding(type:String, level:int): Building {
-         var building:Building = new Building();
+         var building:Building;
+         switch (type) {
+            case BuildingType.GEOTHERMAL_PLANT:
+               building = new CollectorT3();
+               break;
+            case BuildingType.METAL_EXTRACTOR:
+            case BuildingType.METAL_EXTRACTOR_T2:
+               building = new MetalExtractor();
+               break;
+            case BuildingType.ZETIUM_EXTRACTOR:
+            case BuildingType.ZETIUM_EXTRACTOR_T2:
+               building = new ZetiumExtractor();
+               break;
+            default:
+               building = new Building();
+         }
          building.type = type;
          building.planetId = PLANET_ID;
          building.level = level;

@@ -3,9 +3,7 @@ package components.planetmapeditor
    import com.developmentarc.core.utils.EventBroker;
 
    import components.map.planet.PlanetMap;
-
    import components.map.planet.PlanetObjectsLayer;
-
    import components.map.planet.PlanetVirtualLayer;
    import components.map.planet.objects.BlockingFolliageMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
@@ -13,16 +11,16 @@ package components.planetmapeditor
    import components.map.planet.objects.MapBuilding;
 
    import flash.events.KeyboardEvent;
-
    import flash.events.MouseEvent;
    import flash.geom.Point;
 
    import models.building.Building;
+   import models.building.Extractor;
    import models.folliage.BlockingFolliage;
-
    import models.planet.MPlanet;
-
    import models.planet.MPlanetObject;
+   import models.tile.Tile;
+   import models.tile.TileKind;
 
    import mx.collections.ListCollectionView;
 
@@ -66,18 +64,14 @@ package components.planetmapeditor
 
       override protected function addObjectImpl(object: MPlanetObject): IPrimitivePlanetMapObject {
          var component:InteractivePlanetMapObject = null;
-         switch (object.CLASS) {
-            
-            case Building:
-               component = new MapBuilding();
-               break;
-            
-            case BlockingFolliage:
-               component = new BlockingFolliageMapObject();
-               break;
-
-            default:
-               throw new Error("Unsupported object type: " + object.CLASS);
+         if (object is Building) {
+            component = new MapBuilding();
+         }
+         else if (object is BlockingFolliage) {
+            component = new BlockingFolliageMapObject();
+         }
+         else {
+            throw new Error("Unsupported object type: " + object.CLASS);
          }
          component.initModel(object);
          objectsLayer.addObject(component);
@@ -127,8 +121,53 @@ package components.planetmapeditor
       }
 
       private function this_clickHandler(event: MouseEvent): void {
-         // remove objects under the object and in the immediate vicinity
-         // add new object at the coordinates
+         const object: MPlanetObject = _objectPlaceholder.model;
+         var objectUnder: MPlanetObject = null;
+         if (!planet.isObjectOnMap(object)) {
+            return;
+         }
+         const building: Building = object as Building;
+         const foliage: BlockingFolliage = object as BlockingFolliage;
+         var x: int;
+         var y: int;
+         for (x = object.x; x <= object.xEnd; x++) {
+            for (y = object.y; y <= object.yEnd; y++) {
+               objectUnder = planet.getObject(x, y);
+               if (objectUnder != null) {
+                  planet.removeObject(objectUnder);
+               }
+               if (object is BlockingFolliage) {
+                  planet.removeTile(x, y);
+               }
+            }
+         }
+         if (object is Building) {
+            const gap: int = Building.GAP_BETWEEN;
+            const xEnd: int = Math.min(object.xEnd + gap, planet.width - 1);
+            const yEnd: int = Math.min(object.yEnd + gap, planet.height - 1);
+            for (x = Math.max(object.x - gap, 0); x <= xEnd; x++) {
+               for (y = Math.max(object.y - gap, 0); y <= yEnd; y++) {
+                  objectUnder = planet.getObject(x, y);
+                  if (objectUnder is Building) {
+                     planet.removeObject(objectUnder);
+                  }
+                  const tileKind:int = planet.getTileKind(x, y);
+                  if (building.isTileRestricted(tileKind)
+                         || TileKind.isResourceKind(tileKind)) {
+                     planet.removeTile(x, y);
+                  }
+               }
+            }
+            if (building.isExtractor) {
+               planet.addResourceTile(
+                  building.x, building.y, Extractor(building).baseResource
+               );
+            }
+         }
+         planet.addObject(
+            object is Building ? cloneBuilding(building) : cloneFoliage(foliage)
+         );
+         map.renderBackground(false);
       }
 
       private function repositionObjectPlaceholder(): void {
@@ -143,6 +182,34 @@ package components.planetmapeditor
          }
 
          objectsLayer.positionObject(_objectPlaceholder);
+      }
+
+      private function cloneFoliage(foliage: BlockingFolliage): BlockingFolliage {
+         const clone:BlockingFolliage = new BlockingFolliage();
+         clone.kind = foliage.kind;
+         clone.terrainType = foliage.terrainType;
+         copyDimensions(foliage, clone);
+         return clone;
+      }
+
+      private function cloneBuilding(building: Building): Building {
+         const clone:Building = new building.CLASS();
+         clone.id = 1;
+         clone.planetId = building.planetId;
+         clone.type = building.type;
+         clone.level = Math.min(building.level, building.maxLevel);
+         clone.hp = clone.hpMax;
+         clone.state = Building.ACTIVE;
+         copyDimensions(building, clone);
+         return clone;
+      }
+
+      private function copyDimensions(source:MPlanetObject,
+                                      destination:MPlanetObject): void {
+         destination.x = source.x;
+         destination.y = source.y;
+         destination.xEnd = source.xEnd;
+         destination.yEnd = source.yEnd;
       }
 
       /* ################################ */
