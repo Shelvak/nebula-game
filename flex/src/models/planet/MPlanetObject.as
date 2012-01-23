@@ -7,8 +7,10 @@ package models.planet
    import models.BaseModel;
    import models.planet.events.MPlanetObjectEvent;
    import models.tile.Tile;
-   
-   
+
+   import utils.Objects;
+
+
    /**
     * Dispatched when any of positioning properties - and as a result dimension
     * (size) properties - have changed.
@@ -131,7 +133,7 @@ package models.planet
             getRealBasementWidth(logicalWidth, logicalHeight) - 1, getRealBasementHeight(logicalWidth, logicalHeight) -
             getBasementLeftCorner(logicalWidth).y - 1
          ); 
-      };
+      }
       
       
       /* ################## */
@@ -155,7 +157,7 @@ package models.planet
          throw new IllegalOperationError(
             "imageData is abstract property and must be overrided by subclasses!"
          );
-      };
+      }
       
       
       [Bindable(event="planetObjectImageChange")]
@@ -171,7 +173,7 @@ package models.planet
       public function get imageWidth() : Number
       {
          return imageData ? imageData.width : 0;
-      };
+      }
       
       
       [Bindable(event="planetObjectImageChange")]
@@ -327,7 +329,7 @@ package models.planet
       public function get yEnd() : Number
       {
          return _yEnd;
-      };
+      }
       
       
       [Bindable(event="planetObjectDimensionChange")]
@@ -345,7 +347,7 @@ package models.planet
       public function get height() : Number
       {
          return yEnd - y + 1;
-      };
+      }
       
       
       [Bindable(event="planetObjectDimensionChange")]
@@ -363,7 +365,7 @@ package models.planet
       public function get width() : Number
       {
          return xEnd - x + 1;
-      };
+      }
       
       
       [Bindable(event="planetObjectDimensionChange")]
@@ -379,7 +381,7 @@ package models.planet
       public function get realBasementHeight() :Number
       {
          return getRealBasementHeight(width, height);
-      };
+      }
       
       
       [Bindable(event="planetObjectDimensionChange")]
@@ -402,7 +404,7 @@ package models.planet
       [SkipProperty]
       [Bindable(event="planetObjectZIndexChange")]
       /**
-       * Objects deapth value: the smaller the result, the further this object
+       * Objects depth value: the smaller the result, the further this object
        * is from the bottom of a map and is overlapped by other objects with higher
        * <code>zIndex</code> value next to this one.
        * 
@@ -453,8 +455,7 @@ package models.planet
        * Changes objects position: <code>x</code> and <code>y</code> properties
        * are set to new values provided and <code>xEnd</code> and <code>yEnd</code>
        * properties are modified accordingly. This method allows you to pass
-       * negative values. However this will result <code>positionLegal</code>
-       * property change it's value to <code>false</code>.
+       * negative values.
        *
        * @param x
        * @param y
@@ -508,14 +509,8 @@ package models.planet
        * @return <code>true</code> if there is at least one tile that is
        * occupied by this building, <code>false</code> - otherwise.
        */      
-      public function fallsIntoArea(xMin:int, xMax:int, yMin:int, yMax:int) : Boolean
-      {
-         if (xEnd < xMin || x > xMax ||
-             yEnd < yMin || y > yMax)
-         {
-            return false;
-         }
-         return true;
+      public function fallsIntoArea(xMin:int, xMax:int, yMin:int, yMax:int) : Boolean {
+         return !(xEnd < xMin || x > xMax || yEnd < yMin || y > yMax);
       }
       
       
@@ -568,7 +563,7 @@ package models.planet
       protected var suppressDimensionChangeEvent:Boolean = false;
       /**
        * Invoked this to dispatch <code>MPlanetObjectEvent.DIMENSION_CHANGE</code>
-       * event. This method is autommaticly invoked by <code>MPlanetObject</code>
+       * event. This method is automatically invoked by <code>MPlanetObject</code>
        * class.
        */
       protected function dispatchDimensionChangeEvent() : void

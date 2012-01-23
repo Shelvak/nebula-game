@@ -795,8 +795,7 @@ package models.building
                 ", y: " + y +
                 ", yEnd: " + yEnd + "]";
       }
-      
-      
+
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
