@@ -363,10 +363,10 @@ package components.map.planet
          else {
             // If there is another tile adjacent to tile being examined and the
             // tile being blended we don't need to blend anything
-            var adjTileY: Tile = adjY >= 0 && adjY < _map.height
+            var adjTileY: Tile = adjY >= 0 && adjY < _map.getPlanet().width
                                     ? DFSRecord(dfsArray[currX][adjY]).tile
                                     : null;
-            var adjTileX: Tile = adjX >= 0 && adjX < _map.width
+            var adjTileX: Tile = adjX >= 0 && adjX < _map.getPlanet().height
                                     ? DFSRecord(dfsArray[adjX][currY]).tile
                                     : null;
             if (adjTileY && adjTileY.kind == kind
