@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:planetmapeditor="components.planetmapeditor.*">
+         xmlns:planetmapeditor="components.planetmapeditor.*"
+         creationComplete="this_creationCompleteHandler(event)">
    <fx:Binding source="pnlBuildings.selectedBuilding"
                destination="model.objectToErect"/>
    <fx:Binding source="pnlNpcBuildings.selectedBuilding"
@@ -10,14 +11,16 @@
                destination="model.objectToErect"/>
    <fx:Script>
       <![CDATA[
+      import mx.events.FlexEvent;
+
       import utils.components.ToggleButtonsGroup;
       import utils.components.events.ToggleButtonsGroupEvent;
 
 
       [Bindable]
-      public var model:MPlanetMapEditor;
+      public var model: MPlanetMapEditor;
 
-      private const buttonsGroup:ToggleButtonsGroup = new ToggleButtonsGroup();
+      private const buttonsGroup: ToggleButtonsGroup = new ToggleButtonsGroup();
 
       protected override function createChildren(): void {
          super.createChildren();
@@ -52,6 +55,10 @@
                model.objectToErect = pnlFoliage.selectedFoliage;
                break;
          }
+      }
+
+      private function this_creationCompleteHandler(event: FlexEvent): void {
+         model.objectToErect = pnlBuildings.selectedBuilding;
       }
       ]]>
    </fx:Script>
