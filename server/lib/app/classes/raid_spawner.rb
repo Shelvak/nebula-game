@@ -93,6 +93,15 @@ class RaidSpawner
     raid_arg = apocalypse? ? apocalypse_raid_arg : @planet.raid_arg
 
     params = {'arg' => raid_arg}
+    calc = lambda do |formula|
+      begin
+        value = CONFIG.safe_eval(formula, params)
+        # If we went to complex numbers, that means we did something strange and
+        # the result is bad.
+        return 0 if value.is_a?(Complex)
+        [0, value.round].max
+      rescue FloatDomainError; 0; end
+    end
 
     Cfg.raiding_config(key).each do
       |type, (from_formula, to_formula, chance_formula)|
@@ -100,26 +109,9 @@ class RaidSpawner
       units[type] = {}
       max_flanks.times { |flank| units[type][flank] = 0 }
 
-      from = begin
-        [
-          0,
-          CONFIG.safe_eval(from_formula, params).round
-        ].max
-      rescue FloatDomainError; 0; end
-
-      to = begin
-        [
-          0,
-          CONFIG.safe_eval(to_formula, params).round
-        ].max
-      rescue FloatDomainError; 0; end
-
-      chance = begin
-        [
-          [0.0, CONFIG.safe_eval(chance_formula, params)].max,
-          1.0
-        ].min
-      rescue FloatDomainError; 0; end
+      from = calc[from_formula]
+      to = calc[to_formula]
+      chance = [calc[chance_formula], 1.0].min
 
       # Add the minimum.
       from.times do
