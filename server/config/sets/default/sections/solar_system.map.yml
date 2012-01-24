@@ -34,65 +34,65 @@ home:
         "owned_by_player": false
         "units": [[2, Dirac, 0, 1.0], [2, Dirac, 1, 1.0]]
       # First asteroids
-      "0,0"  : {"type": "asteroid", "resources": r[1], "units": u[1]}
-      "0,180": {"type": "asteroid", "resources": r[1], "units": u[1]}
-      "1,90" : {"type": "asteroid", "resources": r[2], "units": u[1]}
+      "0,0":   {"type": "asteroid", "resources": "r[1]", "units": "u[1]"}
+      "0,180": {"type": "asteroid", "resources": "r[1]", "units": "u[1]"}
+      "1,90":  {"type": "asteroid", "resources": "r[2]", "units": "u[1]"}
       
       # Resource path
-      "2,150": {"type": "nothing", "units": u[1.25]}
-      "3,134": {"type": "nothing", "units": u[1.75], "wreckage": w[1]}
-      "3,112": {"type": "nothing", "units": u[2.25]}
-      "3,90" : {"type": "nothing", "units": u[2.5], "wreckage": w[2]}
-      "3,66" : {"type": "nothing", "units": u[2.75]}
-      "3,44" : {"type": "nothing", "units": u[3], "wreckage": w[3]}
-      "3,22" : {"type": "nothing", "units": u[4]}
-      "3,0"  : {"type": "nothing", "units": u[5], "wreckage": w[4]}
-      "3,336": {"type": "nothing", "units": u[6]}
-      "3,314": {"type": "nothing", "units": u[7], "wreckage": w[5]}
-      "3,292": {"type": "nothing", "units": u[8]}
-      "2,270": {"type": "nothing", "units": u[9], "wreckage": w[6]}
+      "2,150": {"type": "nothing", "units": "u[1.25]"}
+      "3,134": {"type": "nothing", "units": "u[1.75]", "wreckage": "w[1]"}
+      "3,112": {"type": "nothing", "units": "u[2.25]"}
+      "3,90" : {"type": "nothing", "units": "u[2.5]", "wreckage": "w[2]"}
+      "3,66" : {"type": "nothing", "units": "u[2.75]"}
+      "3,44" : {"type": "nothing", "units": "u[3]", "wreckage": "w[3]"}
+      "3,22" : {"type": "nothing", "units": "u[4]"}
+      "3,0"  : {"type": "nothing", "units": "u[5]", "wreckage": "w[4]"}
+      "3,336": {"type": "nothing", "units": "u[6]"}
+      "3,314": {"type": "nothing", "units": "u[7]", "wreckage": "w[5]"}
+      "3,292": {"type": "nothing", "units": "u[8]"}
+      "2,270": {"type": "nothing", "units": "u[9]", "wreckage": "w[6]"}
       
       # Protective ring near the path
-      "1,180": {"type": "nothing", "units": u[1.25]}
-      "1,0"  : {"type": "nothing", "units": u[1.5]}
-      "1,45" : {"type": "nothing", "units": u[1.5]}
-      "3,156": {"type": "nothing", "units": u[1.5]}
-      "2,120": {"type": "asteroid", "resources": r[3], "units": u[3]}
-      "2,90" : {"type": "nothing", "units": u[4]}
-      "2,60" : {"type": "asteroid", "resources": r[3], "units": u[5]}
-      "2,30" : {"type": "asteroid", "resources": r[3], "units": u[6]}
-      "2,0"  : {"type": "nothing", "units": u[7]}
-      "2,330": {"type": "asteroid", "resources": r[3], "units": u[8]}
+      "1,180": {"type": "nothing", "units": "u[1.25]"}
+      "1,0"  : {"type": "nothing", "units": "u[1.5]"}
+      "1,45" : {"type": "nothing", "units": "u[1.5]"}
+      "3,156": {"type": "nothing", "units": "u[1.5]"}
+      "2,120": {"type": "asteroid", "resources": "r[3]", "units": "u[3]"}
+      "2,90" : {"type": "nothing", "units": "u[4]"}
+      "2,60" : {"type": "asteroid", "resources": "r[3]", "units": "u[5]"}
+      "2,30" : {"type": "asteroid", "resources": "r[3]", "units": "u[6]"}
+      "2,0"  : {"type": "nothing", "units": "u[7]"}
+      "2,330": {"type": "asteroid", "resources": "r[3]", "units": "u[8]"}
       # Lesser biggest stash protection
-      "0,270": {"type": "asteroid", "resources": r[1], "units": u[8]}
-      "1,225": {"type": "asteroid", "resources": r[2], "units": u[8]}
-      "1,315": {"type": "asteroid", "resources": r[2], "units": u[8]}
+      "0,270": {"type": "asteroid", "resources": "r[1]", "units": "u[8]"}
+      "1,225": {"type": "asteroid", "resources": "r[2]", "units": "u[8]"}
+      "1,315": {"type": "asteroid", "resources": "r[2]", "units": "u[8]"}
       # Greater biggest stash protection
-      "1,270": {"type": "nothing", "units": u[10]}
-      "2,240": {"type": "asteroid", "resources": r[3], "units": u[10]}
-      "2,300": {"type": "nothing", "units": u[10]}
-      "3,246": {"type": "nothing", "units": u[10]}
-      "3,270": {"type": "nothing", "units": u[10]}
+      "1,270": {"type": "nothing", "units": "u[10]"}
+      "2,240": {"type": "asteroid", "resources": "r[3]", "units": "u[10]"}
+      "2,300": {"type": "nothing", "units": "u[10]"}
+      "3,246": {"type": "nothing", "units": "u[10]"}
+      "3,270": {"type": "nothing", "units": "u[10]"}
       
       # Jumpgate and its premises
       "3,202":
         "type": "jumpgate"
         "units":
-          - u[11]
+          - "u[11]"
           - [1, BossShip, 0, 0.05]
-      "2,180": {"type": "asteroid", "resources": r[3], "units": u[10]}
-      "2,210": {"type": "asteroid", "resources": r[3], "units": u[10]}
-      "3,180": {"type": "nothing", "units": u[10]}
+      "2,180": {"type": "asteroid", "resources": "r[3]", "units": "u[10]"}
+      "2,210": {"type": "asteroid", "resources": "r[3]", "units": "u[10]"}
+      "3,180": {"type": "nothing", "units": "u[10]"}
       
       # Mega-stash of resources
-      "3,224": {"type": "nothing", "units": u[45], "wreckage": w[8]}
+      "3,224": {"type": "nothing", "units": "u[45]", "wreckage": "w[8]"}
 
 battleground:
   - weight: 1000
     map:
       # 3 jumpgates
       <% %w{3,22 3,134 3,270}.each do |position| %>
-      "<%= position %>": {"type": "jumpgate", "units": u[20]}
+      "<%= position %>": {"type": "jumpgate", "units": "u[20]"}
       <% end %>
 
       # 3 arena planets
@@ -118,7 +118,7 @@ battleground:
           3,246 2,270 1,270 3,292 1,315 0,0 1,0 2,0 3,0 0,90 1,90 2,60 3,44 2,30
         }.each do |position|
       %>
-      "<%= position %>": {"type": "nothing", "units": u[25]}
+      "<%= position %>": {"type": "nothing", "units": "u[25]"}
       <% end %>
 
       # Resource stashes
@@ -130,7 +130,7 @@ battleground:
       "<%= position %>":
         "type": "nothing"
         "units":
-          - u[35]
+          - "u[35]"
           - [2, BossShip, 0, 1]
           - [1, BossShip, 1, 1]
         "wreckage": [500000.0, 1000000.0, 150000.0]
@@ -150,16 +150,16 @@ pulsar:
     map:
       # 2-4 jumpgates
       <% fourth_ring.random_elements(rand(2, 5)).each do |position| %>
-      "<%= position %>": {"type": "jumpgate", "units": u[22]}
+      "<%= position %>": {"type": "jumpgate", "units": "u[22]"}
       <% end %>
 
       # Defensive ring
       <% third_ring.each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": u[15]}
+      "<%= position %>": {"type": "nothing", "units": "u[15]"}
       <% end %>
       # Stronger defensive ring
       <% second_ring.each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": u[20]}
+      "<%= position %>": {"type": "nothing", "units": "u[20]"}
       <% end %>
 
       # Inner ring with planet
@@ -169,10 +169,10 @@ pulsar:
         "map": "pulsar"
         "owned_by_player": false
         "units":
-          - u[25]
+          - "u[25]"
           - [1, BossShip, 0, 1]
       <% (first_ring - [planet_position]).each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": u[25]}
+      "<%= position %>": {"type": "nothing", "units": "u[25]"}
       <% end %>
   <% end %>
 
@@ -183,16 +183,16 @@ free:
     map:
       # 2-4 jumpgates
       <% fourth_ring.random_elements(rand(2, 5)).each do |position| %>
-      "<%= position %>": {"type": "jumpgate", "units": u[22]}
+      "<%= position %>": {"type": "jumpgate", "units": "u[22]"}
       <% end %>
 
       # Defensive ring
       <% third_ring.each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": u[15]}
+      "<%= position %>": {"type": "nothing", "units": "u[15]"}
       <% end %>
       # Stronger defensive ring
       <% second_ring.each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": u[20]}
+      "<%= position %>": {"type": "nothing", "units": "u[20]"}
       <% end %>
 
       # Inner ring with planet
@@ -202,9 +202,9 @@ free:
         "map": "pulsar"
         "owned_by_player": false
         "units":
-          - u[25]
+          - "u[25]"
           - [1, BossShip, 0, 1]
       <% (first_ring - [planet_position]).each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": u[25]}
+      "<%= position %>": {"type": "nothing", "units": "u[25]"}
       <% end %>
   <% end %>
