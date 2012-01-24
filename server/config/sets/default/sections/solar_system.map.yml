@@ -1,4 +1,14 @@
 ---
+<%
+dirac = Unit::Dirac.to_s.demodulize
+convoy_ship = Unit::ConvoyShip.to_s.demodulize
+first_ring = %w{0,0 0,90 0,180 0,270}
+second_ring = %w{1,0 1,45 1,90 1,135 1,180 1,225 1,270 1,315}
+third_ring = %w{2,0 2,30 2,60 2,90 2,120 2,150 2,180 2,210 2,240 2,270 2,300
+  2,330}
+fourth_ring = %w{3,0 3,22 3,44 3,66 3,90 3,112 3,134 3,156 3,180 3,202 3,224
+  3,246 3,270 3,292 3,314 3,336}
+%>
 # Home solar system configuration.
 #
 # Common configuration
@@ -26,13 +36,13 @@ home:
         "type": "planet"
         "map": "homeworld"
         "owned_by_player": true
-        "units": [[1, Dirac, 0, 1.0]]
+        "units": [[1, <%= dirac %>, 0, 1.0]]
       # Expansion planet
       "1,135":
         "type": "planet"
         "map": "expansion"
         "owned_by_player": false
-        "units": [[2, Dirac, 0, 1.0], [2, Dirac, 1, 1.0]]
+        "units": [[2, <%= dirac %>, 0, 1.0], [2, <%= dirac %>, 1, 1.0]]
       # First asteroids
       "0,0":   {"type": "asteroid", "resources": "r[1]", "units": "u[1]"}
       "0,180": {"type": "asteroid", "resources": "r[1]", "units": "u[1]"}
@@ -79,7 +89,7 @@ home:
         "type": "jumpgate"
         "units":
           - "u[11]"
-          - [1, BossShip, 0, 0.05]
+          - [1, <%= convoy_ship %>, 0, 0.05]
       "2,180": {"type": "asteroid", "resources": "r[3]", "units": "u[10]"}
       "2,210": {"type": "asteroid", "resources": "r[3]", "units": "u[10]"}
       "3,180": {"type": "nothing", "units": "u[10]"}
@@ -106,9 +116,9 @@ battleground:
         "map": "battleground.<%= map_set_name %>"
         "owned_by_player": false
         "units":
-          - u[<%= units_level %>]
-          - [1, BossShip, 0, 1]
-          - [1, BossShip, 1, 1]
+          - "u[<%= units_level %>]"
+          - [1, <%= convoy_ship %>, 0, 1]
+          - [1, <%= convoy_ship %>, 1, 1]
       <% end %>
 
       # Spots with defensive aliens
@@ -131,19 +141,12 @@ battleground:
         "type": "nothing"
         "units":
           - "u[35]"
-          - [2, BossShip, 0, 1]
-          - [1, BossShip, 1, 1]
+          - [2, <%= convoy_ship %>, 0, 1]
+          - [1, <%= convoy_ship %>, 1, 1]
         "wreckage": [500000.0, 1000000.0, 150000.0]
       <% end %>
 
-<%
-  first_ring = %w{0,0 0,90 0,180 0,270}
-  second_ring = %w{1,0 1,45 1,90 1,135 1,180 1,225 1,270 1,315}
-  third_ring = %w{2,0 2,30 2,60 2,90 2,120 2,150 2,180 2,210 2,240 2,270 2,300
-    2,330}
-  fourth_ring = %w{3,0 3,22 3,44 3,66 3,90 3,112 3,134 3,156 3,180 3,202 3,224
-    3,246 3,270 3,292 3,314 3,336}
-%>
+
 pulsar:
   <% 15.times do %>
   - weight: 1000
@@ -170,7 +173,7 @@ pulsar:
         "owned_by_player": false
         "units":
           - "u[25]"
-          - [1, BossShip, 0, 1]
+          - [1, <%= convoy_ship %>, 0, 1]
       <% (first_ring - [planet_position]).each do |position| %>
       "<%= position %>": {"type": "nothing", "units": "u[25]"}
       <% end %>

@@ -15,4 +15,4 @@ planet.bonus:
 # VPs to players.
 battle.victory_points: (damage_dealt_to_space * 0.25 + damage_dealt_to_ground) * 0.006
 # They also give out creds.
-battle.creds: 0 #victory_points * 3
+battle.creds: victory_points / 2.0

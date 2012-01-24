@@ -21,12 +21,12 @@ empty_row = (tuple(),)
 
 ### unit/base technology multipliers ###
 
-unit_tech_start_multiplier = lambda npc: 8 if npc else 4
-unit_tech_end_multiplier = lambda npc: 120 if npc else 60
+unit_tech_start_multiplier = lambda npc: 12 if npc else 4
+unit_tech_end_multiplier = lambda npc: 180 if npc else 60
 
 ### Attack modifier division ###
 
-kind_proprtion = lambda mod: 0.35 * mod # For space/ground technologies
+kind_proportion = lambda mod: 0.35 * mod # For space/ground technologies
 base_proportion = lambda mod: 0.2 * mod # For unit base technologies
 specialized_proportion = lambda mod: 0.45 * mod # For unit specialization
 
@@ -361,7 +361,7 @@ def kind_tech_group(name, build_time, metal, energy, zetium, volume_coefs,
 
   list = tuple()
 
-  proportion = kind_proprtion(attack_mod)
+  proportion = kind_proportion(attack_mod)
 
   for spec_name, func in specs:
     tech_name = name + " " + spec_name
@@ -389,7 +389,7 @@ def speed_group(base_name, build_time, metal, energy, zetium,
 
   list = tuple()
 
-  proportion = kind_proprtion(attack_mod)
+  proportion = kind_proportion(attack_mod)
 
   spec_name, func = spec_speed
   for name in ("Heavy", "Light"):

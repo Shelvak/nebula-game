@@ -44,8 +44,15 @@ apocalypse.survival_bonus: days * 2000
 
 # Positions of free solar systems.
 free_systems.positions:
+  - [0, 1]
+  - [0, 4]
+  - [0, 7]
+  - [3, 3]
+  - [3, 6]
+  - [4, 0]
   - [4, 5]
   - [5, 1]
+  - [7, 2]
 # Positions of wormholes to battleground.
 wormholes.positions:
   - [1, 6]
@@ -55,6 +62,7 @@ wormholes.positions:
 # Positions of mini battlegrounds.
 mini_battlegrounds.positions:
   - [1, 2]
+  - [2, 5]
   - [6, 5]
   - [7, 0]
   
@@ -71,3 +79,4 @@ convoy.units:
   - [0, 10, Thor, 1]
   - [0, 4, Demosis, 0]
   - [0, 2, Demosis, 1]
+  - [1, 2, ConvoyShip, 0]
