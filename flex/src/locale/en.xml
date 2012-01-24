@@ -3160,6 +3160,13 @@
         it fall to the might of our empire! 
       </p>
     </about.10510>
+
+    <title.10520 value="Reaching for infinity" />
+    <about.10520>
+      <p>Commander!</p>
+      <p>With such area under your influence, only further reach is to
+        infinity and beyond! Our empire is unstoppable!</p>
+    </about.10520>
     
     <DestroyingEnemies.title value="Destroying Enemy Will" />
     <DestroyingEnemies.about>

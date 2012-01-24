@@ -474,6 +474,12 @@ QUESTS = QuestDefinition.define(:debug => false) do
       reward_unit Unit::MobileVulcan,   :count => 6
       reward_unit Unit::MobileScreamer, :count => 4
       reward_unit Unit::MobileThunder,  :count => 4
+    end.define(10520) do
+      have_planets :count => 6
+
+      reward_unit Unit::MobileVulcan,   :count => 8
+      reward_unit Unit::MobileScreamer, :count => 6
+      reward_unit Unit::MobileThunder,  :count => 6
     end
   end.define(310, [s_quest, s_deploy_turrets, s_3rd_planet, s_armor_tiles]) do
     # Have fortifications.

@@ -26,24 +26,57 @@ unit_tech_end_multiplier = lambda npc: 120 if npc else 60
 
 ### Attack modifier division ###
 
-kind_attack_mod = lambda mod: 0.2 * mod # For space/ground technologies
-base_attack_mod = lambda mod: 0.3 * mod # For unit base technologies
-specialized_attack_mod = lambda mod: 0.5 * mod # For unit specialization
+kind_proprtion = lambda mod: 0.35 * mod # For space/ground technologies
+base_proportion = lambda mod: 0.2 * mod # For unit base technologies
+specialized_proportion = lambda mod: 0.45 * mod # For unit specialization
 
 ### Specialization formulas ###
 
 # base is full attack modifier
 # coef is critical/absorption damage multiplier
-ground_specs = (
-  ("Damage", lambda base, coef: base),
-  ("Armor", lambda base, coef: 1 - 1 / (1 + base)),
-  ("Critical", lambda base, coef: base / (coef - 1)),
-  ("Absorption", lambda base, coef: (1 / (1 + base) - 1) / (1 / coef - 1))
+spec_damage = ("Damage", lambda base, coef: base)
+spec_armor = ("Armor", lambda base, coef: 1 - 1 / (1 + base))
+spec_critical = ("Critical", lambda base, coef: base / (coef - 1))
+spec_absorption = (
+  "Absorption", lambda base, coef: (1 / (1 + base) - 1) / (1 / coef - 1)
 )
-space_specs = ground_specs + (("Speed", lambda base, coef: base),)
+# 140% attack maps to 400% speed.
+spec_speed = ("Speed", lambda base, coef: base / 0.35)
+# 140% attack maps to 119% storage
+spec_storage = ("Storage", lambda base, coef: base * 0.85)
 
-def get_specs(is_space):
-  return space_specs if is_space else ground_specs
+ground_specs = (spec_damage, spec_armor, spec_critical, spec_absorption)
+space_specs = ground_specs + (spec_speed,)
+# Technologies that don't contain any specializations.
+no_spec_names = (
+  "T Jumper", "T MDH",
+  "T Mobile Vulcan", "T Mobile Screamer", "T Mobile Screamer"
+)
+
+def contains(list, value):
+  try:
+      list.index(value)
+      return True
+  except ValueError:
+      return False
+
+def get_specs(name, is_space):
+  if name == "T Mule":
+    return (spec_armor, spec_absorption, spec_speed, spec_storage)
+  elif contains(no_spec_names, name):
+    return tuple()
+  elif is_space:
+    return space_specs
+  else:
+    return ground_specs
+
+def max_lvl_for_unit_tech(name, unlocker):
+  if contains(no_spec_names, name):
+    return 1
+  elif unlocker:
+    return 10
+  else:
+    return 9
 
 ### Time modifiers ###
 
@@ -228,7 +261,7 @@ def dmg2armor(data, dmg_type, armor_type, dmg_per_gun, guns):
 
 def unit_tech_base(name, build_time, start_mult, end_mult, max_lvl,
                    metal, energy, zetium, volume_coefs, points_mult,
-                   max_planets_required):
+                   max_planets_required, npc):
   """
   Returns tuple with base rows for unit technology.
 
@@ -250,7 +283,10 @@ def unit_tech_base(name, build_time, start_mult, end_mult, max_lvl,
     list[1][2:], list[2][2:], list[3][2:],
     volume_coefs, points_mult, max_lvl
   ))
-  gen_row("required planets", lin_dep_raw(1, max_planets_required, max_lvl))
+  gen_row(
+    "required pulsars" if npc else "required planets",
+    lin_dep_raw(1, max_planets_required, max_lvl)
+  )
 
   return tuple(list)
 
@@ -266,20 +302,23 @@ def unit_techs(name, build_time, metal, energy, zetium, volume_coefs,
   and each level has its impact on abilities.
   """
   build_time = mins2sec(build_time)
-  start_mult = unit_tech_start_multiplier(npc)
-  end_mult = unit_tech_end_multiplier(npc)
 
-  specs = get_specs(is_space)
+  specs = get_specs(name, is_space)
 
   ### Base technology
 
-  num_of_base_levels = 10 if unlocker else 9
-  base_mod = base_attack_mod(attack_mod)
+  num_of_base_levels = max_lvl_for_unit_tech(name, unlocker)
+  base_mod = base_proportion(attack_mod)
+
+  start_mult = unit_tech_start_multiplier(npc)
+  end_mult = start_mult if num_of_base_levels == 1 \
+    else unit_tech_end_multiplier(npc)
+
 
   list = tuple()
   list += unit_tech_base(
     name, build_time, start_mult, end_mult, num_of_base_levels,
-    metal, energy, zetium, volume_coefs, points_mult, max_planets_required
+    metal, energy, zetium, volume_coefs, points_mult, max_planets_required, npc
   )
 
   for spec_name, func in specs:
@@ -292,13 +331,14 @@ def unit_techs(name, build_time, metal, energy, zetium, volume_coefs,
 
   ### Specialization technologies
 
-  spec_mod = specialized_attack_mod(attack_mod)
+  spec_mod = specialized_proportion(attack_mod)
 
   for spec_name, func in specs:
     tech_name = name + " " + spec_name
     list += unit_tech_base(
       tech_name, build_time, start_mult, end_mult, 10,
-      metal, energy, zetium, volume_coefs, points_mult, max_planets_required
+      metal, energy, zetium, volume_coefs, points_mult, max_planets_required,
+      npc
     )
 
     coefs = lin_dep_raw_with_first_lvl(func(spec_mod, crit_abs_coef) * 100, 10)
@@ -317,25 +357,52 @@ def kind_tech_group(name, build_time, metal, energy, zetium, volume_coefs,
   start_mult = unit_tech_start_multiplier(npc)
   end_mult = unit_tech_end_multiplier(npc)
 
-  specs = get_specs(False)
+  specs = get_specs(name, False)
 
   list = tuple()
 
-  kind_mod = kind_attack_mod(attack_mod)
+  proportion = kind_proprtion(attack_mod)
 
   for spec_name, func in specs:
     tech_name = name + " " + spec_name
     list += unit_tech_base(
       tech_name, build_time, start_mult, end_mult, 10,
-      metal, energy, zetium, volume_coefs, points_mult, max_planets_required
+      metal, energy, zetium, volume_coefs, points_mult, max_planets_required,
+      npc
     )
 
-    coefs = lin_dep_raw_with_first_lvl(func(kind_mod, crit_abs_coef) * 100, 10)
+    coefs = lin_dep_raw_with_first_lvl(func(proportion, crit_abs_coef) * 100, 10)
     list += (tech_name, spec_name.lower() + " mod") + coefs + (0, 1),
     list += empty_row
 
   return list
 
-def speed_group(name):
-  pass
+def speed_group(base_name, build_time, metal, energy, zetium,
+                volume_coefs, points_mult,
+                max_planets_required, attack_mod, npc):
+  """
+  Returns technologies for speed group (heavy/light flight)
+  """
+  build_time = mins2sec(build_time)
+  start_mult = unit_tech_start_multiplier(npc)
+  end_mult = unit_tech_end_multiplier(npc)
+
+  list = tuple()
+
+  proportion = kind_proprtion(attack_mod)
+
+  spec_name, func = spec_speed
+  for name in ("Heavy", "Light"):
+    tech_name = "T " + base_name + name + " Flight"
+    list += unit_tech_base(
+      tech_name, build_time, start_mult, end_mult, 10,
+      metal, energy, zetium, volume_coefs, points_mult, max_planets_required,
+      npc
+    )
+
+    coefs = lin_dep_raw_with_first_lvl(func(proportion, 0) * 100, 10)
+    list += (tech_name, spec_name.lower() + " mod") + coefs + (0, 1),
+    list += empty_row
+
+  return list
 

@@ -3276,6 +3276,12 @@
       dar vieną! Tegul ji dreba prieš mūsų galią!</p>
     <!-- old id: 39 --> </about.10510>
 
+    <title.10520 value="Siekiant begalybės" />
+    <about.10520>
+    <p>Komandore!</p>
+    <p>Turint tokias valdas, toliau - tik begalybė! Mūsų imperija - nesustabdoma!</p>
+    </about.10520>
+
     <DestroyingEnemies.title value="Naikintant priešo galią" />
     <DestroyingEnemies.about>
       <p>Komandore!</p>
