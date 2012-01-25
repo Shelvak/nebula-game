@@ -37,6 +37,7 @@ package controllers.market.actions
          mScreen.privateOffers.remove(offerId);
          mScreen.publicOffers.remove(offerId);
          mScreen.offerCount--;
+         mScreen.dispatchRateUpdateNeededEvent();
       }
    }
 }

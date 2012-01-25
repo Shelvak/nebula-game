@@ -8,6 +8,7 @@ package components.market.events
       public static const OFFER_OWNER_CHANGE: String = 'offerOwnerChange';
       public static const OFFER_RATE_CHANGE: String = 'offerRateChange';
       public static const AVG_RATE_CHANGE: String = 'avgRateChange';
+      public static const RATE_UPDATE_NEEDED: String = 'rateUpdateNeeded';
       public static const DESELECT_OFFER: String = 'deselectOffer';
       public static const FROM_AMOUNT_CHANGE: String = 'fromAmountChange';
       public static const OFFER_COUNT_CHANGE: String = 'offerCountChange';

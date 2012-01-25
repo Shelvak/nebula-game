@@ -194,6 +194,11 @@ package config
       {
          return getValue("market.avgRate.offset");
       }
+
+      public static function getMinOfferOffset(): Number
+      {
+         return getValue("market.avgRate.minPrice.offset");
+      }
       
       public static function getMinMarketOffer(): int
       {
