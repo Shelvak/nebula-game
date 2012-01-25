@@ -100,9 +100,11 @@
             <squadscr:CLocationWithButton location="{model.currentLocation}"
                                           visible="{!_currentLocIsPlanet}" includeInLayout="{!_currentLocIsPlanet}"/>
             <squadscr:CLocationWithButton location="{model.targetLocation}"/>
-            <s:Label paddingTop="9" text="{model.jumpsAtEvent.occuresAtString} ({model.jumpsAtEvent.occuresInString})"
+            <s:Label paddingTop="9" paddingLeft="26"
+                     text="{model.jumpsAtEvent.occuresAtString} ({model.jumpsAtEvent.occuresInString})"
                      visible="{_currentLocIsPlanet}" includeInLayout="{_currentLocIsPlanet}"/>
-            <s:Label paddingTop="9" text="{model.arrivalEvent != null
+            <s:Label paddingTop="9" paddingLeft="26"
+                     text="{model.arrivalEvent != null
                      ? model.arrivalEvent.occuresAtString + ' (' + model.arrivalEvent.occuresInString + ')'
                      : getString('label.unknown')}"/>
          </s:Group>
@@ -122,7 +124,8 @@
             </s:Group>
             <!-- stop and manage button -->
             <s:Group left="17" right="5" bottom="5">
-               <s:layout><s:HorizontalLayout gap="5" horizontalAlign="right"/></s:layout>
+               <s:layout><s:HorizontalLayout gap="5" horizontalAlign="right"
+                 verticalAlign="middle"/></s:layout>
                <s:Button id="btnManage" label="{getString('label.manage')}" click="btnManage_clickHandler(event)"/>
                <s:Button id="btnStop" label="{getString('label.stop')}" click="btnStop_clickHandler(event)"
                          visible="{model.owner == Owner.PLAYER}"
