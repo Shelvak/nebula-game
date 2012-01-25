@@ -8,6 +8,10 @@ class TechTracker
   def initialize
     # Hash of {name => Set} pairs.
     @tracker = {}
+  end
+
+  def scan(force_rescan=false)
+    return if @scanned && ! force_rescan
 
     # Initialize technologies which have mods.
     CONFIG.each_matching(REGEXP) do |key, value|
@@ -16,6 +20,8 @@ class TechTracker
         register(name, klass) if klass.send(:"#{name}_mod?")
       end
     end
+
+    @scanned = true
   end
 
   def register(name, klass)
@@ -25,6 +31,7 @@ class TechTracker
 
   # Returns technology classes for mod with _name_.
   def get(name)
+    scan
     @tracker[name] || Set.new
   end
 
