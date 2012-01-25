@@ -1,25 +1,19 @@
 package components.planetmapeditor
 {
-   import com.developmentarc.core.utils.EventBroker;
-
    import components.map.planet.PlanetMap;
    import components.map.planet.PlanetObjectsLayer;
-   import components.map.planet.PlanetVirtualLayer;
    import components.map.planet.objects.BlockingFolliageMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
    import components.map.planet.objects.InteractivePlanetMapObject;
    import components.map.planet.objects.MapBuilding;
 
-   import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
-   import flash.geom.Point;
 
    import models.building.Building;
    import models.building.Extractor;
    import models.folliage.BlockingFolliage;
    import models.planet.MPlanet;
    import models.planet.MPlanetObject;
-   import models.tile.Tile;
    import models.tile.TileKind;
 
    import mx.collections.ListCollectionView;
@@ -27,7 +21,7 @@ package components.planetmapeditor
    import utils.Objects;
 
 
-   public class ObjectsEditorLayer extends PlanetVirtualLayer
+   public class ObjectsEditorLayer extends MapEditorLayer
    {
       override protected function get componentClass(): Class {
          return InteractivePlanetMapObject;
@@ -58,7 +52,7 @@ package components.planetmapeditor
          _objectPlaceholder.visible = false;
          _objectPlaceholder.depth = Number.MAX_VALUE;
          objectsLayer.addObject(_objectPlaceholder);
-         activate();
+         activationKeyUp();
          _initialObject = null;
       }
 
@@ -78,49 +72,26 @@ package components.planetmapeditor
          return component;
       }
 
-      override public function handleMouseEvent(event: MouseEvent): void {
-         switch (event.type) {
-            case MouseEvent.MOUSE_OVER:
-               this_mouseOverHandler(event);
-               break;
 
-            case MouseEvent.MOUSE_MOVE:
-               this_mouseMoveHandler(event);
-               // For map drag to work
-//               objectsLayer.redispatchEventFromMap(event);
-               break;
-
-            case MouseEvent.CLICK:
-               this_clickHandler(event);
-               break;
-
-            case MouseEvent.MOUSE_DOWN:
-            case MouseEvent.MOUSE_UP:
-               // For map drag to work
-//               objectsLayer.redispatchEventFromMap(event);
-               break;
-         }
-      }
-
-      private function activate(): void {
+      override protected function activationKeyUp(): void {
          objectsLayer.passOverMouseEventsTo(this);
          _objectPlaceholder.visible = true;
          moveObjectToMouse(_objectPlaceholder);
       }
 
-      private function deactivate(): void {
+      override protected function activationKeyDown(): void {
          _objectPlaceholder.visible = false;
       }
 
-      private function this_mouseOverHandler(event: MouseEvent): void {
+      override protected function mouseOverHandler(event: MouseEvent): void {
          moveObjectToMouse(_objectPlaceholder);
       }
 
-      private function this_mouseMoveHandler(event: MouseEvent): void {
+      override protected function mouseMoveHandler(event: MouseEvent): void {
          moveObjectToMouse(_objectPlaceholder);
       }
 
-      private function this_clickHandler(event: MouseEvent): void {
+      override protected function clickHandler(event: MouseEvent): void {
          const object: MPlanetObject = _objectPlaceholder.model;
          var objectUnder: MPlanetObject = null;
          if (!planet.isObjectOnMap(object)) {
@@ -203,33 +174,6 @@ package components.planetmapeditor
 
       public function setObject(object:MPlanetObject): void {
          _objectPlaceholder.initModel(object);
-      }
-
-
-      /* ################################ */
-      /* ### KEYBOARD EVENTS HANDLERS ### */
-      /* ################################ */
-
-      override protected function addGlobalEventHandlers(): void {
-         EventBroker.subscribe(KeyboardEvent.KEY_DOWN, keyboard_keyDownHandler);
-         EventBroker.subscribe(KeyboardEvent.KEY_UP, keyboard_keyUpHandler);
-      }
-
-      override protected function removeGlobalEventHandlers(): void {
-         EventBroker.unsubscribe(KeyboardEvent.KEY_DOWN, keyboard_keyDownHandler);
-         EventBroker.unsubscribe(KeyboardEvent.KEY_UP, keyboard_keyUpHandler);
-      }
-
-      private function keyboard_keyDownHandler(event:KeyboardEvent): void {
-         if (event.keyCode == TerrainEditorLayer.ACTIVATION_KEY_CODE) {
-            deactivate();
-         }
-      }
-
-      private function keyboard_keyUpHandler(event:KeyboardEvent): void {
-         if (event.keyCode == TerrainEditorLayer.ACTIVATION_KEY_CODE) {
-            activate();
-         }
       }
    }
 }

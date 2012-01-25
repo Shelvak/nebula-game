@@ -1,17 +1,11 @@
 package components.planetmapeditor
 {
-   import com.developmentarc.core.utils.EventBroker;
-
    import components.map.planet.PlanetMap;
    import components.map.planet.PlanetObjectsLayer;
-   import components.map.planet.PlanetVirtualLayer;
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
 
-   import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
-   import flash.geom.Point;
-   import flash.ui.Keyboard;
 
    import models.planet.MPlanet;
    import models.planet.MPlanetObject;
@@ -24,10 +18,8 @@ package components.planetmapeditor
    import utils.Objects;
 
 
-   public class TerrainEditorLayer extends PlanetVirtualLayer
+   public class TerrainEditorLayer extends MapEditorLayer
    {
-      internal static const ACTIVATION_KEY_CODE: int = Keyboard.CONTROL;
-
       public function TerrainEditorLayer(initialTile: IRTileKindM) {
          _initialTile = Objects.paramNotNull("initialTile", initialTile);
       }
@@ -45,33 +37,23 @@ package components.planetmapeditor
          _initialTile = null;
       }
 
-      private function activate(): void {
+
+      override protected function activationKeyDown(): void {
          objectsLayer.passOverMouseEventsTo(this);
          map.viewport.contentDragEnabled = false;
          _tilePlaceholder.visible = true;
          moveObjectToMouse(_tilePlaceholder);
       }
 
-      private function deactivate(): void {
+
+      override protected function activationKeyUp(): void {
          _tilePlaceholder.visible = false;
          map.viewport.contentDragEnabled = true;
       }
 
       private var _tilePlaceholder: CTilePlaceholder = new CTilePlaceholder();
 
-      override public function handleMouseEvent(event: MouseEvent): void {
-         switch (event.type) {
-            case MouseEvent.CLICK:
-               this_clickHandler(event);
-               break;
-
-            case MouseEvent.MOUSE_MOVE:
-               this_mouseMoveHandler(event);
-               break;
-         }
-      }
-
-      private function this_clickHandler(event: MouseEvent): void {
+      override protected function clickHandler(event: MouseEvent): void {
          const tile: IRTileKindM = _tilePlaceholder.tile;
          const object: MPlanetObject = _tilePlaceholder.tileObject;
          if (!planet.isObjectOnMap(object)
@@ -102,7 +84,7 @@ package components.planetmapeditor
          map.renderBackground(false);
       }
 
-      private function this_mouseMoveHandler(event: MouseEvent): void {
+      override protected function mouseMoveHandler(event: MouseEvent): void {
          moveObjectToMouse(_tilePlaceholder);
          const tile: IRTileKindM = _tilePlaceholder.tile;
          const object: MPlanetObject = _tilePlaceholder.tileObject;
@@ -137,33 +119,7 @@ package components.planetmapeditor
          _tilePlaceholder.tile = tile;
       }
 
-
-      /* ################################ */
-      /* ### KEYBOARD EVENTS HANDLERS ### */
-      /* ################################ */
-
-      override protected function addGlobalEventHandlers(): void {
-         EventBroker.subscribe(KeyboardEvent.KEY_DOWN, keyboard_keyDownHandler);
-         EventBroker.subscribe(KeyboardEvent.KEY_UP, keyboard_keyUpHandler);
-      }
-
-      override protected function removeGlobalEventHandlers(): void {
-         EventBroker.unsubscribe(KeyboardEvent.KEY_DOWN, keyboard_keyDownHandler);
-         EventBroker.unsubscribe(KeyboardEvent.KEY_UP, keyboard_keyUpHandler);
-      }
-
-      private function keyboard_keyDownHandler(event:KeyboardEvent): void {
-         if (event.keyCode == ACTIVATION_KEY_CODE) {
-            activate();
-         }
-      }
-
-      private function keyboard_keyUpHandler(event:KeyboardEvent): void {
-         if (event.keyCode == ACTIVATION_KEY_CODE) {
-            deactivate();
-         }
-      }
-
+      
       /* ############## */
       /* ### NO-OPS ### */
       /* ############## */
