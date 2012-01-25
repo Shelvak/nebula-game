@@ -259,8 +259,7 @@ describe UnitMover do
       with_tech, _ = UnitMover.move_meta(
         @player.id, @units_slow.map(&:id), @source, @target)
 
-      decreasement = (without_tech - Time.now) *
-        tech.movement_time_decrease_mod.to_f / 100
+      decreasement = (without_tech - Time.now) * tech.speed_mod.to_f / 100
 
       (without_tech - decreasement).should be_within(SPEC_TIME_PRECISION).
         of(with_tech)

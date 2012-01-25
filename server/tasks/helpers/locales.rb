@@ -12,7 +12,7 @@ class LocaleChecker
   end
 
   def locale_files
-    Dir[File.join(@source_dir, "*.xml")]
+    Dir[File.join(@source_dir, "*.xml")].reject { |n| n.include?(".ignored.") }
   end
 
   def check
