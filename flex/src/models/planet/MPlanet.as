@@ -173,15 +173,19 @@ package models.planet
          for (var unitType: String in data)
          {
             var countFrom: int = Math.round(StringUtil.evalFormula(
-                    data[unitType][0], {'arg': arg}));
+                    data[unitType][0], {'arg': arg})
+            );
             var countTo: int = Math.round(StringUtil.evalFormula(
-                    data[unitType][1], {'arg': arg}));
+                    data[unitType][1], {'arg': arg})
+            );
             var prob: Number = StringUtil.evalFormula(
-                    data[unitType][2], {'arg': arg});
+                    data[unitType][2], {'arg': arg}
+            );
             if (countTo > 0)
             {
-               hashedUnits[unitType] = new RaidingUnitEntry(unitType, countFrom,
-                  countTo, prob);
+               hashedUnits[unitType] = new RaidingUnitEntry(
+                  unitType, countFrom, countTo, prob
+               );
             }
          }
          var resultCollection: ArrayCollection = new ArrayCollection();
@@ -459,6 +463,47 @@ package models.planet
       public function get inMiniBattleground() : Boolean {
          return _ssObject.inMiniBattleground;
       }
+
+      /* ############################ */
+      /* ### AREA LOOPING HELPERS ### */
+      /* ############################ */
+
+      public function forEachPoint(x: int, xEnd: int,
+                                   y: int, yEnd: int,
+                                   boundaryCheck: Boolean,
+                                   callback: Function): void {
+         Objects.paramNotNull("callback", callback);
+         function from(value: int): int {
+            return boundaryCheck ? Math.max(value, 0) : value;
+         }
+         function to(value: int, max:int): int {
+            return boundaryCheck ? Math.min(value, max - 1) : value;
+         }
+         const xFrom: int = from(x);
+         const xTo: int = to(xEnd, width);
+         const yFrom: int = from(y);
+         const yTo: int = to(yEnd, height);
+
+         for (x = xFrom; x <= xTo; x++) {
+            for (y = yFrom; y <= yTo; y++) {
+               callback.call(null, x,  y);
+            }
+         }
+      }
+
+      public function forEachPointUnder(object: MPlanetObject,
+                                        includeBuildingGap: Boolean,
+                                        boundaryCheck: Boolean,
+                                        callback: Function): void {
+         Objects.paramNotNull("object", object);
+         Objects.paramNotNull("callback", callback);
+         const gap: int = includeBuildingGap ? Building.GAP_BETWEEN : 0;
+         forEachPoint(
+            object.x - gap, object.xEnd + gap,
+            object.y - gap, object.yEnd + gap,
+            boundaryCheck, callback
+         );
+      }
       
       
       /* ################ */
@@ -493,31 +538,27 @@ package models.planet
       
       
       /**
-       * Two-dimentional array containing tiles of this planet. Regular tiles are represented
-       * with null values.
+       * Two-dimensional array containing tiles of this planet. Regular tiles
+       * are represented with null values.
        * 
        * @default <code>null</code>
        */
       protected var tilesMatrix:Array = null;
       
-      
       /**
-       * Two-dimenstional array containing objects on this planet. One object may occupy more than
-       * one tile so all tiles under such object will refrerence the same instance.
+       * Two-dimensional array containing objects on this planet. One object
+       * may occupy more than one tile so all tiles under such object will
+       * reference the same instance.
        */
       protected var objectsMatrix:Array = null;
-      
-      
-      private function initMatrices() :void
-      {
+
+      private function initMatrices(): void {
          tilesMatrix = [];
          objectsMatrix = [];
-         for (var i:int = 0; i < width; i++)
-         {
-            var objsCol:Array = [];
-            var tilesCol:Array = [];
-            for (var j:int = 0; j < height; j++)
-            {
+         for (var i: int = 0; i < width; i++) {
+            var objsCol: Array = [];
+            var tilesCol: Array = [];
+            for (var j: int = 0; j < height; j++) {
                objsCol.push(null);
                tilesCol.push(null);
             }
@@ -525,7 +566,6 @@ package models.planet
             tilesMatrix.push(tilesCol);
          }
       }
-      
       
       /**
        * Adds a given tile to this planet to appropriate cell in tiles array.
@@ -625,8 +665,7 @@ package models.planet
        */
       public function get resourceTiles() : ArrayCollection
       {
-         if (!_resourceTiles)
-         {
+         if (!_resourceTiles) {
             _resourceTiles = new ArrayCollection();
             for (var x:int = 0; x < width; x++)
             {
@@ -711,7 +750,7 @@ package models.planet
          return object is Folliage;
       }
       /**
-       * Lis of all folliages on the planet (bound to <code>objects</code> list).
+       * Lis of all foliage on the planet (bound to <code>objects</code> list).
        */
       public function get folliages() : ListCollectionView
       {

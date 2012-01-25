@@ -93,17 +93,15 @@ package components.planetmapeditor
 
       override protected function clickHandler(event: MouseEvent): void {
          const object: MPlanetObject = _objectPlaceholder.model;
-         var objectUnder: MPlanetObject = null;
          if (!planet.isObjectOnMap(object)) {
             return;
          }
          const building: Building = object as Building;
          const foliage: BlockingFolliage = object as BlockingFolliage;
-         var x: int;
-         var y: int;
-         for (x = object.x; x <= object.xEnd; x++) {
-            for (y = object.y; y <= object.yEnd; y++) {
-               objectUnder = planet.getObject(x, y);
+         planet.forEachPointUnder(
+            object, false, true,
+            function(x: int, y: int): void {
+               const objectUnder:MPlanetObject = planet.getObject(x, y);
                if (objectUnder != null) {
                   planet.removeObject(objectUnder);
                }
@@ -112,14 +110,12 @@ package components.planetmapeditor
                   planet.removeTile(x, y);
                }
             }
-         }
+         );
          if (object is Building) {
-            const gap: int = Building.GAP_BETWEEN;
-            const xEnd: int = Math.min(object.xEnd + gap, planet.width - 1);
-            const yEnd: int = Math.min(object.yEnd + gap, planet.height - 1);
-            for (x = Math.max(object.x - gap, 0); x <= xEnd; x++) {
-               for (y = Math.max(object.y - gap, 0); y <= yEnd; y++) {
-                  objectUnder = planet.getObject(x, y);
+            planet.forEachPointUnder(
+               object, true, true,
+               function(x: int, y: int): void {
+                  const objectUnder:MPlanetObject = planet.getObject(x, y);
                   if (objectUnder is Building) {
                      planet.removeObject(objectUnder);
                   }
@@ -127,7 +123,7 @@ package components.planetmapeditor
                      planet.removeTile(x, y);
                   }
                }
-            }
+            );
             if (building.isExtractor) {
                planet.addResourceTile(
                   building.x, building.y, Extractor(building).baseResource

@@ -556,10 +556,11 @@ package components.map.planet
       /* ######################## */
 
       protected override function openObjectImpl(object: IPrimitivePlanetMapObject): void {
-         var buildingC: MapBuilding = MapBuilding(object);
-         if (!buildingC.getBuilding().isGhost) {
+         const building: MapBuilding = MapBuilding(object);
+         if (!building.getBuilding().isGhost) {
             MCBuildingSelectedSidebar.getInstance().openBuilding(
-               Building(buildingC.model));
+               Building(building.model)
+            );
          }
       }
    }
