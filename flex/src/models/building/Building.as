@@ -503,7 +503,7 @@ package models.building
       public var constructableId: int = 0;
       
       /**
-       * Id of the constructor which is curently constructing this building 
+       * Id of the constructor which is currently constructing this building
        */      
       public var constructorId: int = 0;
       

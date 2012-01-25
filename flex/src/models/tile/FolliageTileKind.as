@@ -4,21 +4,27 @@ package models.tile
 
    public final class FolliageTileKind
    {
-	   public static const _3X4:int = 14;
-      public static const _3X3:int = 8;
-      public static const _4X3:int = 9;
-      public static const _4X4:int = 10;
-      public static const _4X6:int = 11;
-      public static const _6X6:int = 12;
-      public static const _6X2:int = 13;
-      
+      public static const _2X3: int = 15;
+      public static const _2X4: int = 16;
+      public static const _3X2: int = 17;
+      public static const _3X4: int = 14;
+      public static const _3X3: int = 8;
+      public static const _4X3: int = 9;
+      public static const _4X4: int = 10;
+      public static const _4X6: int = 11;
+      public static const _6X6: int = 12;
+      public static const _6X2: int = 13;
+
       
       /**
        * @return true if the given tile kind is a folliage tile kind,
        * false - otherwise.
        */
       public static function isFolliageKind(kind:int) : Boolean {
-         return kind == _3X3 ||
+         return kind == _2X3 ||
+                kind == _2X4 ||
+                kind == _3X2 ||
+                kind == _3X3 ||
                 kind == _3X4 ||
                 kind == _4X3 ||
                 kind == _4X4 ||
@@ -28,17 +34,20 @@ package models.tile
       }
 
       /**
-       * Returns the string that is equivalent to given folliage tile kind.
+       * Returns the string that is equivalent to given foliage tile kind.
        * 
-       * @param kind Kind of the folliage tile.
+       * @param kind Kind of the foliage tile.
        * 
-       * @return String that represents given folliage tile kind. 
+       * @return String that represents given foliage tile kind.
        */
       public static function getName(kind:int) : String {
          return String(kind);
       }
       
       private static const SIZE_MAPPINGS:Object = new Object();
+      SIZE_MAPPINGS[_2X3] = new Point(2, 3);
+      SIZE_MAPPINGS[_2X4] = new Point(2, 4);
+      SIZE_MAPPINGS[_3X2] = new Point(3, 2);
       SIZE_MAPPINGS[_3X3] = new Point(3, 3);
       SIZE_MAPPINGS[_3X4] = new Point(3, 4);
       SIZE_MAPPINGS[_4X3] = new Point(4, 3);
