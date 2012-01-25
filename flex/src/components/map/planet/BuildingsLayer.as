@@ -20,7 +20,6 @@ package components.map.planet
 
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
-   import flash.geom.Point;
    import flash.ui.Keyboard;
 
    import flashx.textLayout.formats.LineBreak;
@@ -209,11 +208,11 @@ package components.map.planet
       }
 
       private function this_mouseOverHandler(e: MouseEvent): void {
-         positionBuildingPH();
+         moveObjectToMouse(_buildingPH);
       }
 
       private function this_mouseMoveHandler(e: MouseEvent): void {
-         positionBuildingPH();
+         moveObjectToMouse(_buildingPH);
       }
 
       private function this_clickHandler(e: MouseEvent): void {
@@ -443,7 +442,7 @@ package components.map.planet
             objectsLayer.deselectSelectedObject();
          }
          objectsLayer.resetAllInteractiveObjectsState();
-         positionBuildingPH();
+         moveObjectToMouse(_buildingPH);
       }
 
       private function destroyBuildingPH(): void {
@@ -461,28 +460,9 @@ package components.map.planet
          }
       }
 
-      /**
-       * Moves building placeholder to a tile under the mouse and updates associated building model
-       * accordingly.
-       *
-       * <p>Calls <code>updateBuildingPHState()</code> and
-       * <code>makeOverlappingBuildingsTransp()</code> if position has actually been
-       * changed.</p>
-       */
-      private function positionBuildingPH(): void {
-         var b: Building = _buildingPH.getBuilding();
-         var lc: Point = map.coordsTransform.realToLogical(
-            new Point(objectsLayer.mouseX,objectsLayer.mouseY)
-         );
-
-         // Don't do anything if building has not been moved.
-         if (!b.moveTo(lc.x, lc.y)) {
-            return;
-         }
-
+      override protected function afterObjectMoveToMouse(object: IPrimitivePlanetMapObject): void {
          _buildingPH.visible = true;
-         objectsLayer.positionObject(_buildingPH);
-         dispatchBuildingMoveEvent(b);
+         dispatchBuildingMoveEvent(_buildingPH.getBuilding());
          updateBuildingPHState();
          makeOverlappingObjectsTransp();
       }

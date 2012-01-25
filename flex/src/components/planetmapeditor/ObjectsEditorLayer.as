@@ -105,7 +105,7 @@ package components.planetmapeditor
       private function activate(): void {
          objectsLayer.passOverMouseEventsTo(this);
          _objectPlaceholder.visible = true;
-         repositionObjectPlaceholder();
+         moveObjectToMouse(_objectPlaceholder);
       }
 
       private function deactivate(): void {
@@ -113,11 +113,11 @@ package components.planetmapeditor
       }
 
       private function this_mouseOverHandler(event: MouseEvent): void {
-         repositionObjectPlaceholder();
+         moveObjectToMouse(_objectPlaceholder);
       }
 
       private function this_mouseMoveHandler(event: MouseEvent): void {
-         repositionObjectPlaceholder();
+         moveObjectToMouse(_objectPlaceholder);
       }
 
       private function this_clickHandler(event: MouseEvent): void {
@@ -167,20 +167,6 @@ package components.planetmapeditor
             object is Building ? cloneBuilding(building) : cloneFoliage(foliage)
          );
          map.renderBackground(false);
-      }
-
-      private function repositionObjectPlaceholder(): void {
-         const logicalCoords: Point = map.coordsTransform.realToLogical(
-            new Point(objectsLayer.mouseX, objectsLayer.mouseY)
-         );
-
-         // Don't do anything if object has not been moved.
-         const object: MPlanetObject = _objectPlaceholder.model;
-         if (!object.moveTo(logicalCoords.x, logicalCoords.y)) {
-            return;
-         }
-
-         objectsLayer.positionObject(_objectPlaceholder);
       }
 
       private function cloneFoliage(foliage: BlockingFolliage): BlockingFolliage {

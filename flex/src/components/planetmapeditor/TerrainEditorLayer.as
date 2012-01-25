@@ -49,7 +49,7 @@ package components.planetmapeditor
          objectsLayer.passOverMouseEventsTo(this);
          map.viewport.contentDragEnabled = false;
          _tilePlaceholder.visible = true;
-         repositionTilePlaceholder();
+         moveObjectToMouse(_tilePlaceholder);
       }
 
       private function deactivate(): void {
@@ -103,7 +103,7 @@ package components.planetmapeditor
       }
 
       private function this_mouseMoveHandler(event: MouseEvent): void {
-         repositionTilePlaceholder();
+         moveObjectToMouse(_tilePlaceholder);
          const tile: IRTileKindM = _tilePlaceholder.tile;
          const object: MPlanetObject = _tilePlaceholder.tileObject;
          if (!event.buttonDown
@@ -126,20 +126,6 @@ package components.planetmapeditor
             planet.addTile(newTile);
          }
          map.renderBackground(false);
-      }
-
-      private function repositionTilePlaceholder(): void {
-         const logicalCoords: Point = map.coordsTransform.realToLogical(
-            new Point(objectsLayer.mouseX, objectsLayer.mouseY)
-         );
-
-         // Don't do anything if object has not been moved.
-         const object: MPlanetObject = _tilePlaceholder.tileObject;
-         if (!object.moveTo(logicalCoords.x, logicalCoords.y)) {
-            return;
-         }
-
-         objectsLayer.positionObject(_tilePlaceholder);
       }
 
 

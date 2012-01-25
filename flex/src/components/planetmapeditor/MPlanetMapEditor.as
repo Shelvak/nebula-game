@@ -21,7 +21,6 @@ package components.planetmapeditor
    import models.solarsystem.SSObjectType;
    import models.tile.FolliageTileKind;
    import models.tile.TerrainType;
-   import models.tile.Tile;
    import models.tile.TileKind;
 
    import mx.collections.ArrayCollection;

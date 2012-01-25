@@ -5,6 +5,7 @@ package components.map.planet
    import components.map.planet.objects.IPrimitivePlanetMapObject;
 
    import flash.events.MouseEvent;
+   import flash.geom.Point;
 
    import interfaces.ICleanable;
 
@@ -239,6 +240,28 @@ package components.map.planet
        * safely cast <code>object</code> to the type returned by <code>objectComponentClass</code>.
        */
       protected function openObjectImpl(object: IPrimitivePlanetMapObject): void {
+      }
+
+      protected function moveObjectToMouse(object: IPrimitivePlanetMapObject): void {
+         const objectModel: MPlanetObject = object.model;
+         const logicalCoords: Point = map.coordsTransform.realToLogical(
+            new Point(objectsLayer.mouseX, objectsLayer.mouseY)
+         );
+
+         // Don't do anything if building has not been moved.
+         if (!objectModel.moveTo(logicalCoords.x, logicalCoords.y)) {
+            return;
+         }
+
+         objectsLayer.positionObject(object);
+         afterObjectMoveToMouse(object);
+      }
+
+      /**
+       * Invoked after an object has been moved by
+       * <code>moveObjectToMouse()</code> method.
+       */
+      protected function afterObjectMoveToMouse(object: IPrimitivePlanetMapObject): void {
       }
 
 
