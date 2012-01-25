@@ -321,7 +321,6 @@ package components.battle
          
          overallHp.right = 4;
          overallHp.top = 4;
-         overallHp.width = 330;
          function zoomOut(e: MouseEvent): void
          {
             viewport.zoomOut();

@@ -21,24 +21,33 @@
          public var proportional: Boolean = false;
       ]]>
    </fx:Script>
-   <s:Label text="{Localizer.string('BattleMap','status'+hpModel.playerStatus)}" width="70" textAlign="right"
+   <s:Label text="{Localizer.string('BattleMap','status'+hpModel.playerStatus)}" textAlign="right"
             toolTip="{hpModel.playerStatus==2?Localizer.string('BattleMap', 'status2.tooltip'):''}"
-            verticalCenter="0"/>
-   <base:AdvancedContainer left="73" right="0">
-      <s:Group visible="{hpModel.spaceMax != 0}" width="100%">
-         <s:Label text="{Localizer.string('BattleMap','space')}" width="80" textAlign="center"/>
-         <battle:HpBar right="0" left="83" verticalCenter="0" playerStatus="{hpModel.playerStatus}"
-                       currentStock="{hpModel.spaceCurrent}" 
+            verticalCenter="0" paddingRight="6"/>
+   <base:AdvancedContainer right="0">
+      <s:Group visible="{hpModel.spaceMax != 0}">
+         <s:Label text="{Localizer.string('BattleMap','space')}" textAlign="center"/>
+         <battle:HpBar right="0" verticalCenter="0" playerStatus="{hpModel.playerStatus}"
+                       currentStock="{hpModel.spaceCurrent}" width="150"
                        maxStock="{proportional?spaceMaxTotal:hpModel.spaceMax}"/>
+        <s:layout>
+          <s:HorizontalLayout horizontalAlign="right"/>
+        </s:layout>
       </s:Group>
-      <s:Group visible="{hpModel.groundMax != 0}" width="100%">
-         <s:Label text="{Localizer.string('BattleMap','ground')}" width="80" textAlign="center"/>
-         <battle:HpBar right="0" left="83" verticalCenter="0" playerStatus="{hpModel.playerStatus}"
-                       currentStock="{hpModel.groundCurrent}" 
+      <s:Group visible="{hpModel.groundMax != 0}">
+         <s:Label text="{Localizer.string('BattleMap','ground')}" textAlign="center"/>
+         <battle:HpBar right="0" verticalCenter="0" playerStatus="{hpModel.playerStatus}"
+                       currentStock="{hpModel.groundCurrent}" width="150"
                        maxStock="{proportional?groundMaxTotal:hpModel.groundMax}"/>
+        <s:layout>
+          <s:HorizontalLayout horizontalAlign="right"/>
+        </s:layout>
       </s:Group>
       <base:layout>
-         <s:VerticalLayout gap="1"/>
+         <s:VerticalLayout gap="1" horizontalAlign="justify"/>
       </base:layout>
    </base:AdvancedContainer>
+  <base:layout>
+    <s:HorizontalLayout horizontalAlign="right" verticalAlign="middle"/>
+  </base:layout>
 </base:BaseContainer>

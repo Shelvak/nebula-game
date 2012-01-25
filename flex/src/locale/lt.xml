@@ -464,11 +464,11 @@
   </Alliances>
 
   <BattleMap>    
-    <status0 value="Tu" />
-    <status1 value="Sąjungininkai" />
+    <status0 value="Tavo" />
+    <status1 value="Sąjungininkų" />
     <status2 value="NS" />
     <status2.tooltip value="Nepuolimo Sutartis" />
-    <status3 value="Priešai" />
+    <status3 value="Priešų" />
     
     <space value="Kosmosas" />
     <ground value="Žemė" />
