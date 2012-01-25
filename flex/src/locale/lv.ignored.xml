@@ -228,6 +228,9 @@
     <Unit_BossShip value="Morpehus" />
     <Unit_BossShip-p8d value="{0 one[Morpehus] many[? Morpehuses]}" />
 
+    <Unit_ConvoyShip value="Nexar" />
+    <Unit_ConvoyShip-p8d value="{0 one[Nexar] many[? Nexars]}" />
+
     <!-- Turrets -->
 
     <Building_Vulcan value="Vulcan" />
@@ -389,6 +392,7 @@
     <Technology_BuildingRepair value="Repair Drones" />
     <Technology_TurretArmor value="Structural Linking" />
     <Technology_TurretDamage value="Particle Chargers" />
+    <Technology_Mantis ref="Unit_Mantis" />
 
     <!-- Other stuff -->
 
@@ -4644,6 +4648,11 @@
     </Demosis.about>
 
     <!-- TODO -->
+    <VpsAndCreds>
+      Dealing damage to this ship gains you victory points. Also landing
+      last killing shot to this ship awards player who dealt it with creds.
+    </VpsAndCreds>
+
     <BossShip.name ref="Objects/Unit_BossShip" />
     <BossShip.about>
       <p>
@@ -4661,11 +4670,19 @@
         obtaining secrets hidden well within this ship is a key to galactic
         domination.
       </p>
-      <p>
-        Dealing damage to this ship gains you victory points. Also landing
-        last killing shot to this ship awards player who dealt it with creds.
-      </p>
+      <p>[reference:VpsAndCreds]</p>
     </BossShip.about>
+
+    <ConvoyShip.name ref="Objects/Unit_ConvoyShip" />
+    <ConvoyShip.about>
+      <p>
+        These alien ships float across the galaxy in their slow pace. However
+        they have nowhere to rush, because their wide array of weaponry and
+        extremely thick armor allows them to fence off any attacker that dares
+        to oppose them.
+      </p>
+      <p>[reference:VpsAndCreds]</p>
+    </ConvoyShip.about>
     <!-- /TODO -->
 
     <Trooper.name ref="Objects/Unit_Trooper" />
@@ -4726,6 +4743,17 @@
         tādēļ viņi jāaizsargā ar citām karaspēka vienībām. 
       </p>
     </Azure.about>
+
+    <Mantis.name ref="Objects/Unit_Mantis" />
+    <Mantis.about>
+      <p>
+        Mantis is a great anti-sniper measure as well as being capable of
+        wiping other lighly armored units out of existence. However you should
+        take notice that it itself does not have heavy armor and cannot
+        withstand heavy fire. Cover them with your more armored units for best
+        results.
+      </p>
+    </Mantis.about>
 
     <Zeus.name ref="Objects/Unit_Zeus" />
     <Zeus.about>
