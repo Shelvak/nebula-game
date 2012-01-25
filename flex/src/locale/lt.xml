@@ -4260,8 +4260,10 @@
     <property.mod.energy.store value="Energijos talpos priedas" />
     <property.mod.armor value="Šarvų priedas" />
     <property.mod.damage value="Žalos priedas" />
-    <property.mod.movementTimeDecrease value="Judėjimo trukmės sumažinimas" />
+    <property.mod.speed value="Judėjimo trukmės sumažinimas" />
     <property.mod.storage value="Talpumo priedas" />
+    <property.planets.required value="Reikiamas planetų kiekis" />
+    <property.pulsars.required value="Reikiamas pulsarų kiekis" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
     <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
     <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
