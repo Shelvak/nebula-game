@@ -334,6 +334,7 @@ lambda do
 
   # Scala <-> Ruby interoperability.
   class Object
+    # TODO: upon upgrade to 1.6.6 replace $plus and $plus$eq to + and +=
     def to_scala
       case self
       when Hash
