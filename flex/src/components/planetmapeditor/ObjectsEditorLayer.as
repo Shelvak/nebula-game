@@ -72,7 +72,6 @@ package components.planetmapeditor
          return component;
       }
 
-
       override protected function activationKeyUp(): void {
          objectsLayer.passOverMouseEventsTo(this);
          _objectPlaceholder.visible = true;
@@ -125,8 +124,8 @@ package components.planetmapeditor
                }
             );
             if (building.isExtractor) {
-               planet.addResourceTile(
-                  building.x, building.y, Extractor(building).baseResource
+               planet.addTile(
+                  Extractor(building).baseResource, building.x, building.y
                );
             }
          }
@@ -137,7 +136,7 @@ package components.planetmapeditor
       }
 
       private function cloneFoliage(foliage: BlockingFolliage): BlockingFolliage {
-         const clone:BlockingFolliage = new BlockingFolliage();
+         const clone: BlockingFolliage = new BlockingFolliage();
          clone.kind = foliage.kind;
          clone.terrainType = foliage.terrainType;
          copyDimensions(foliage, clone);
@@ -145,7 +144,7 @@ package components.planetmapeditor
       }
 
       private function cloneBuilding(building: Building): Building {
-         const clone:Building = new building.CLASS();
+         const clone: Building = new building.CLASS();
          clone.id = 1;
          clone.planetId = building.planetId;
          clone.type = building.type;

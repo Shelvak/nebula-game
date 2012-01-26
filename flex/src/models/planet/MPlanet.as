@@ -468,10 +468,10 @@ package models.planet
       /* ### AREA LOOPING HELPERS ### */
       /* ############################ */
 
-      public function forEachPoint(x: int, xEnd: int,
-                                   y: int, yEnd: int,
-                                   boundaryCheck: Boolean,
-                                   callback: Function): void {
+      public function forEachPointIn(ranges: Array,
+                                     boundaryCheck: Boolean,
+                                     callback: Function): void {
+         Objects.paramNotNull("ranges", ranges);
          Objects.paramNotNull("callback", callback);
          function from(value: int): int {
             return boundaryCheck ? Math.max(value, 0) : value;
@@ -479,14 +479,15 @@ package models.planet
          function to(value: int, max:int): int {
             return boundaryCheck ? Math.min(value, max - 1) : value;
          }
-         const xFrom: int = from(x);
-         const xTo: int = to(xEnd, width);
-         const yFrom: int = from(y);
-         const yTo: int = to(yEnd, height);
-
-         for (x = xFrom; x <= xTo; x++) {
-            for (y = yFrom; y <= yTo; y++) {
-               callback.call(null, x,  y);
+         for each (var range: Range2D in ranges) {
+            const xFrom: int = from(range.x);
+            const xTo: int = to(range.xEnd, width);
+            const yFrom: int = from(range.y);
+            const yTo: int = to(range.yEnd, height);
+            for (var x: int = xFrom; x <= xTo; x++) {
+               for (var y: int = yFrom; y <= yTo; y++) {
+                  callback.call(null, x,  y);
+               }
             }
          }
       }
@@ -498,9 +499,11 @@ package models.planet
          Objects.paramNotNull("object", object);
          Objects.paramNotNull("callback", callback);
          const gap: int = includeBuildingGap ? Building.GAP_BETWEEN : 0;
-         forEachPoint(
-            object.x - gap, object.xEnd + gap,
-            object.y - gap, object.yEnd + gap,
+         forEachPointIn(
+            [new Range2D(
+               object.x - gap, object.xEnd + gap,
+               object.y - gap, object.yEnd + gap
+            )],
             boundaryCheck, callback
          );
       }
@@ -570,33 +573,33 @@ package models.planet
       /**
        * Adds a given tile to this planet to appropriate cell in tiles array.
        */
-      public function addTile(tile: Tile): void {
-         tilesMatrix[tile.x][tile.y] = Objects.paramNotNull("tile", tile);
-      }
-
-      /**
-       * Adds resource tile of a given kind at given coordinates along with
-       * 3 adjacent fake same resource tiles.
-       */
-      public function addResourceTile(x: int, y: int, kind: int): void {
-         const tile:Tile = new Tile();
+      public function addTile(kind: int, x: int, y: int): void {
+         Objects.notEquals(
+            kind, [TileKind.REGULAR],
+            "Adding regular tiles to the map is not allowed"
+         );
+         const tile: Tile = new Tile(kind);
          tile.x = x;
          tile.y = y;
-         tile.kind = kind;
-         addTile(tile);
+         addTileToMatrix(tile);
+         if (tile.isResource()) {
+            var clone:Tile = tile.cloneFake();
+            clone.x++;
+            addTileToMatrix(clone);
 
-         var clone:Tile = tile.cloneFake();
-         clone.x++;
-         addTile(clone);
+            clone = tile.cloneFake();
+            clone.y++;
+            addTileToMatrix(clone);
 
-         clone = tile.cloneFake();
-         clone.y++;
-         addTile(clone);
+            clone = tile.cloneFake();
+            clone.x++;
+            clone.y++;
+            addTileToMatrix(clone);
+         }
+      }
 
-         clone = tile.cloneFake();
-         clone.x++;
-         clone.y++;
-         addTile(clone);
+      private function addTileToMatrix(tile:Tile): void {
+         tilesMatrix[tile.x][tile.y] = tile;
       }
 
       /**
@@ -653,8 +656,7 @@ package models.planet
       /**
        * Determines if given coordinates are defined on this map.
        */
-      public function isOnMap(x:int, y:int) : Boolean
-      {
+      public function isOnMap(x: int, y: int): Boolean {
          return x >= 0 && x < width && y >= 0 && y < height;
       }
       

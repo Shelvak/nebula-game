@@ -9,7 +9,6 @@ package components.planetmapeditor
 
    import models.planet.MPlanet;
    import models.planet.MPlanetObject;
-   import models.tile.Tile;
    import models.tile.TileKind;
 
    import mx.collections.ArrayCollection;
@@ -76,7 +75,7 @@ package components.planetmapeditor
                }
             }
          );
-         planet.addResourceTile(object.x, object.y, tile.tileKind);
+         planet.addTile(tile.tileKind, object.x, object.y);
          map.renderBackground(false);
       }
 
@@ -97,11 +96,7 @@ package components.planetmapeditor
             planet.removeObject(objectUnder);
          }
          if (tile.tileKind != TileKind.REGULAR) {
-            const newTile: Tile = new Tile();
-            newTile.x = object.x;
-            newTile.y = object.y;
-            newTile.kind = tile.tileKind;
-            planet.addTile(newTile);
+            planet.addTile(tile.tileKind, object.x, object.y);
          }
          map.renderBackground(false);
       }
