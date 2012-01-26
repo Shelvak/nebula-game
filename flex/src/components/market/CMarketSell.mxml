@@ -4,7 +4,8 @@
                         xmlns:mx="library://ns.adobe.com/flex/mx" 
                         xmlns:market="components.market.*" 
                         xmlns:base="components.base.*"
-                        creationComplete="advancedcontainer1_creationCompleteHandler(event)" xmlns:credits="components.credits.*">
+                        creationComplete="advancedcontainer1_creationCompleteHandler(event)"
+                        xmlns:credits="components.credits.*">
    <fx:Script>
       <![CDATA[
       import components.market.events.MarketEvent;
@@ -63,6 +64,7 @@
 
       protected function advancedcontainer1_creationCompleteHandler(event: FlexEvent): void {
          mScreen.addEventListener(MarketEvent.AVG_RATE_CHANGE, dispatchAvgRateChangeEvent);
+         mScreen.addEventListener(MarketEvent.RATE_UPDATE_NEEDED, updateRate);
       }
 
       private function dispatchAvgRateChangeEvent(e: MarketEvent): void {
@@ -129,7 +131,7 @@
          return Resource(ML.latestPlanet.ssObject[res]);
       }
 
-      private function updateRate(): void {
+      private function updateRate(e: MarketEvent = null): void {
          if (what.selectedItem != null && forWhat.selectedItem != null) {
             new MarketCommand(MarketCommand.AVG_RATE, {
                'fromKind': int(OfferResourceKind[what.selectedItem]),
@@ -155,10 +157,32 @@
       private function getMaxOffer(amount: int): int {
          return Math.round((mScreen.avgRate * (1 + Config.getMarketRange())) * amount);
       }
+      
+      private function get lowestMarketRate(): Number
+      {
+        var minRate: Number = -1;
+        for each (var offer: MarketOffer in mScreen.publicOffers.source)
+        {
+           if (offer.fromResource == what.selectedItem &&
+             offer.toResource == forWhat.selectedItem &&
+             (minRate == -1 || offer.toRate < minRate))
+           {
+              minRate = offer.toRate;
+           }
+        }
+        return minRate;
+      }
 
       [Bindable (event="avgRateChange")]
       private function getMinOffer(amount: int): int {
-         return Math.round((mScreen.avgRate * (1 - Config.getMarketRange())) * amount);
+        var lowestRate: Number = lowestMarketRate;
+        var lowestOffset: Number = Config.getMinOfferOffset();
+        var normalOffset: Number = Config.getMarketRange();
+
+        var avgRateLowBound: Number = mScreen.avgRate * (1 - normalOffset);
+        return Math.floor((lowestRate == -1
+          ? avgRateLowBound
+          : Math.min(avgRateLowBound, lowestRate - lowestOffset)) * amount);
       }
 
       private function getResourceWithoutTaxes(resource: String, taxes: Number): Number {

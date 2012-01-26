@@ -14,7 +14,9 @@
          import components.infoscreen.table.InfoTableLevel;
          import components.skins.LargePanelSkin;
          import components.skins.ListNonScrollableSkin;
-         
+
+         import controllers.objects.ObjectClass;
+
          import models.infoscreen.ArmorTypes;
          import models.infoscreen.Gun;
          import models.infoscreen.MCInfoScreen;
@@ -463,8 +465,10 @@
                         </base:Panel>
                         
                         <s:Group width="100%" visible="{INFO.weakAgainst.length > 0}">
-                           <base:Panel id="weakPanel" title="{Localizer.string('InfoScreen', 'weakAgainst')}" 
-                                       left="0" right="0">
+                           <base:Panel id="weakPanel" title="{Localizer.string('InfoScreen',
+                              INFO.model.objectType == ObjectClass.TECHNOLOGY
+                              ? 'appliesTo'
+                              : 'weakAgainst')}" left="0" right="0">
                               <s:DataGroup left="6" right="6" top="6" maxWidth="{weakPanel.width - 12}" 
                                            dataProvider="{INFO.weakAgainst}"
                                            height="{bestAttackersLayout.rowCount * 54}"

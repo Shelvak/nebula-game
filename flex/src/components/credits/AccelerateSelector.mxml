@@ -3,7 +3,8 @@
                         xmlns:s="library://ns.adobe.com/flex/spark" 
                         xmlns:mx="library://ns.adobe.com/flex/mx" 
                         xmlns:base="components.base.*"
-                        creationComplete="group1_creationCompleteHandler(event)">
+                        creationComplete="group1_creationCompleteHandler(event)"
+                        horizontalCenter="0">
    <fx:Declarations>
       <s:RadioButtonGroup id="grAccelerate" change="grAccelerate_changeHandler(event)"/>
    </fx:Declarations>

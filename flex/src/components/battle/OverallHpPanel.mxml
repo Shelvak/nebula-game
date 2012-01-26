@@ -39,22 +39,21 @@
    </fx:Script>
    <battle:DarkBackground left="0" right="0" top="0" bottom="0"/>
    <base:AdvancedContainer left="6" right="6">
-      <s:Group width="100%">
-         <s:Label text="{Localizer.string('BattleMap','title.overallHp')}" horizontalCenter="0"/>
-      </s:Group>
-      <battle:BOverallHpBar proportional="{proportional}" width="100%" 
+      <s:Label text="{Localizer.string('BattleMap','title.overallHp')}"
+        textAlign="center"/>
+      <battle:BOverallHpBar proportional="{proportional}"
                             hpModel="{selfHp}" 
                             groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
                             spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
-      <battle:BOverallHpBar proportional="{proportional}" width="100%" 
+      <battle:BOverallHpBar proportional="{proportional}"
                             hpModel="{allyHp}" 
                             groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
                             spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
-      <battle:BOverallHpBar proportional="{proportional}" width="100%" 
+      <battle:BOverallHpBar proportional="{proportional}"
                             hpModel="{enemyHp}" 
                             groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
                             spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
-      <battle:BOverallHpBar proportional="{proportional}" width="100%" 
+      <battle:BOverallHpBar proportional="{proportional}"
                             hpModel="{napHp}" 
                             groundMaxTotal="{Math.max(selfHp.groundMax, allyHp.groundMax, enemyHp.groundMax, napHp.groundMax)}"
                             spaceMaxTotal="{Math.max(selfHp.spaceMax, allyHp.spaceMax, enemyHp.spaceMax, napHp.spaceMax)}"/>
@@ -63,7 +62,7 @@
       click="button1_clickHandler(event)"/>
       </s:Group-->
       <base:layout>
-         <s:VerticalLayout paddingBottom="6" paddingTop="6"/>
+         <s:VerticalLayout paddingBottom="6" paddingTop="6" horizontalAlign="justify"/>
       </base:layout>
    </base:AdvancedContainer>
    

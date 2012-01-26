@@ -1541,6 +1541,9 @@
     <cooldown value="Cooldown time" />
     <bestAgainst value="Spēcīgi pret" />
     <weakAgainst value="Vāji pret" />
+    <!--TODO-->
+    <appliesTo value="Technology applies to" />
+    <!--/TODO-->
     <specialDamage value="Bojājumi: {0} x {1} = {2}" />
     <damageCoef value="Bojājumu koificients: {0}" />
     <armorFromTechs value="Aizsardzība no tehnoloģijām:" />
