@@ -47,8 +47,7 @@ battle.vp_zones: [<%= Location::GALAXY %>, <%= Location::SOLAR_SYSTEM %>, <%=
 # Values below this for defender_points / attacker_points map to 0.
 battle.max_weakness: 0.7
 # How much victory points does these battles give?
-battle.victory_points: \
-  (damage_dealt_to_space * 0.25 + damage_dealt_to_ground) * 0.0012 * \
-  fairness_multiplier
+battle.victory_points: (damage_dealt_to_space * 0.25 + damage_dealt_to_ground)
+  * 0.0012 * fairness_multiplier
 # And how much creds does these battles give?
 battle.creds: victory_points / 2.0

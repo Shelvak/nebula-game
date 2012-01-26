@@ -44,12 +44,6 @@ Factory.define :u_shocker, :parent => :unit_built,
 Factory.define :u_seeker, :parent => :unit_built,
 :class => Unit::Seeker do |m|; end
 
-Factory.define :u_spy, :parent => :unit_built,
-:class => Unit::Spy do |m|; end
-
-Factory.define :u_saboteur, :parent => :unit_built,
-:class => Unit::Saboteur do |m|; end
-
 Factory.define :u_gnat, :parent => :unit_built,
 :class => Unit::Gnat do |m|; end
 

@@ -79,33 +79,6 @@ Factory.define :t_seeker, :parent => :technology,
 Factory.define :t_space_factory, :parent => :technology,
 :class => Technology::SpaceFactory do |m|; end
 
-Factory.define :t_spy, :parent => :technology,
-:class => Technology::Spy do |m|; end
-
-Factory.define :t_saboteur, :parent => :technology,
-:class => Technology::Saboteur do |m|; end
-
-Factory.define :t_tactical_reconnaissance, :parent => :technology,
-:class => Technology::TacticalReconnaissance do |m|; end
-
-Factory.define :t_sattelite_hacking, :parent => :technology,
-:class => Technology::SatteliteHacking do |m|; end
-
-Factory.define :t_camouflage_suits, :parent => :technology,
-:class => Technology::CamouflageSuits do |m|; end
-
-Factory.define :t_r14_charges, :parent => :technology,
-:class => Technology::R14Charges do |m|; end
-
-Factory.define :t_spaceport, :parent => :technology,
-:class => Technology::Spaceport do |m|; end
-
-Factory.define :t_metabolic_chargers, :parent => :technology,
-:class => Technology::MetabolicChargers do |m|; end
-
-Factory.define :t_high_velocity_charges, :parent => :technology,
-:class => Technology::HighVelocityCharges do |m|; end
-
 Factory.define :t_radar, :parent => :technology,
 :class => Technology::Radar do |m|; end
 
@@ -159,18 +132,6 @@ Factory.define :t_zetium_extractor_t2, :parent => :technology,
 
 Factory.define :t_trooper, :parent => :technology,
 :class => Technology::Trooper do |m|; end
-
-Factory.define :t_ships_armor, :parent => :technology,
-:class => Technology::ShipsArmor do |m|; end
-
-Factory.define :t_ships_damage, :parent => :technology,
-:class => Technology::ShipsDamage do |m|; end
-
-Factory.define :t_tanks_damage, :parent => :technology,
-:class => Technology::TanksDamage do |m|; end
-
-Factory.define :t_tanks_armor, :parent => :technology,
-:class => Technology::TanksArmor do |m|; end
 
 Factory.define :t_scorpion, :parent => :technology,
 :class => Technology::Scorpion do |m|; end
