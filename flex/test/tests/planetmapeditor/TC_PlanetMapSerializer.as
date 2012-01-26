@@ -6,14 +6,13 @@ package tests.planetmapeditor
 
    import ext.hamcrest.object.equals;
 
-   import flash.geom.Point;
-
    import models.building.Building;
    import models.building.BuildingType;
+   import models.building.Extractor;
+   import models.building.ZetiumExtractor;
    import models.folliage.BlockingFolliage;
-   import models.folliage.BlockingFolliage;
-
    import models.planet.MPlanet;
+   import models.planet.Range2D;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
    import models.tile.FolliageTileKind;
@@ -21,6 +20,9 @@ package tests.planetmapeditor
    import models.tile.TileKind;
 
    import org.flexunit.assertThat;
+   import org.hamcrest.collection.*;
+   import org.hamcrest.core.not;
+   import org.hamcrest.object.*;
 
 
    public class TC_PlanetMapSerializer
@@ -34,6 +36,9 @@ package tests.planetmapeditor
             "buildings.metalExtractorT2.width": 2,
             "buildings.metalExtractorT2.height": 2,
             "buildings.metalExtractorT2.npc": false,
+            "buildings.zetiumExtractorT2.width": 2,
+            "buildings.zetiumExtractorT2.height": 2,
+            "buildings.zetiumExtractorT2.npc": false,
             "buildings.npcHall.width": 2,
             "buildings.npcHall.height": 2,
             "buildings.npcHall.npc": true,
@@ -47,6 +52,11 @@ package tests.planetmapeditor
       public function tearDown(): void {
          Config.setConfig(new Object());
       }
+
+      
+      /* ##################### */
+      /* ### SERIALIZATION ### */
+      /* ##################### */
 
       [Test]
       public function serialize_emptyMap(): void {
@@ -94,10 +104,10 @@ package tests.planetmapeditor
       [Test]
       public function serialize_mapWithTitanField(): void {
          const planet: MPlanet = newPlanet(4, 4);
-         planet.addTile(newTile(TileKind.TITAN, 1, 1));
-         planet.addTile(newTile(TileKind.TITAN, 1, 2));
-         planet.addTile(newTile(TileKind.TITAN, 2, 1));
-         planet.addTile(newTile(TileKind.TITAN, 2, 2));
+         planet.addTile(TileKind.TITAN, 1, 1);
+         planet.addTile(TileKind.TITAN, 1, 2);
+         planet.addTile(TileKind.TITAN, 2, 1);
+         planet.addTile(TileKind.TITAN, 2, 2);
          assertThat(
             "4x4 map with 2x2 TITAN field at (1; 1)",
             serialize(planet), equals (
@@ -112,9 +122,9 @@ package tests.planetmapeditor
       [Test]
       public function serialize_mapWithNpcBuildingAndNonResourceTilesUnder(): void {
          const planet: MPlanet = newPlanet(4, 4);
-         planet.addTile(newTile(TileKind.NOXRIUM, 1, 1));
-         planet.addTile(newTile(TileKind.NOXRIUM, 2, 1));
-         planet.addTile(newTile(TileKind.NOXRIUM, 2, 2));
+         planet.addTile(TileKind.NOXRIUM, 1, 1);
+         planet.addTile(TileKind.NOXRIUM, 2, 1);
+         planet.addTile(TileKind.NOXRIUM, 2, 2);
          planet.addObject(newBuilding(BuildingType.NPC_HALL, 0, 1, 1));
          assertThat(
             "4x4 map with 2x2 npc building of level 0 at (1; 1) and " +
@@ -133,8 +143,8 @@ package tests.planetmapeditor
          const planet: MPlanet = newPlanet(7, 4);
          planet.addObject(newBuilding(BuildingType.NPC_ZETIUM_EXTRACTOR, 1, 1, 1));
          planet.addObject(newBuilding(BuildingType.METAL_EXTRACTOR_T2, 1, 4, 1));
-         planet.addResourceTile(1, 1, TileKind.ZETIUM);
-         planet.addResourceTile(4, 1, TileKind.ORE);
+         planet.addTile(TileKind.ZETIUM, 1, 1);
+         planet.addTile(TileKind.ORE, 4, 1);
          assertThat(
             "4x7 map with NPC extractor at (1; 1) and player extractor at (1; 4)",
             serialize(planet), equals (
@@ -149,7 +159,7 @@ package tests.planetmapeditor
       [Test]
       public function serialize_mapWithGeothermalSpot(): void {
          const planet: MPlanet = newPlanet(4, 4);
-         planet.addResourceTile(1, 1, TileKind.GEOTHERMAL);
+         planet.addTile(TileKind.GEOTHERMAL, 1, 1);
          assertThat(
             "4x4 map with GEOTHERMAL spot at (1; 1)",
             serialize(planet), equals (
@@ -178,15 +188,206 @@ package tests.planetmapeditor
       }
 
 
+      /* ####################### */
+      /* ### DESERIALIZATION ### */
+      /* ####################### */
+
+      [Test]
+      public function deserialize_emptyMap(): void {
+         const planet: MPlanet = deserialize(
+            ". . . . \n" +
+            ". . . . \n" +
+            ". . . . \n" +
+            ". . . . "
+         );
+         assertThat( "width", planet.width, equals (4) );
+         assertThat( "height", planet.height, equals (4));
+         assertThat( "no objects", planet.objects, emptyArray() );
+         planet.forEachPointIn(
+            [new Range2D(0, 3, 0, 3)], false,
+            function(x: int, y: int): void {
+               assertThat(
+                  "only regular tiles",
+                  planet.getTileKind(x, y), equals (TileKind.REGULAR)
+               );
+            }
+         );
+      }
+
+      [Test]
+      public function deserialize_mapWithOneResourceTile(): void {
+         const planet: MPlanet = deserialize(
+            ". . . . \n" +
+            ". ----. \n" +
+            ". O---. \n" +
+            ". . . . "
+         );
+         assertRegularTile(planet, [
+            new Range2D(0, 3, 0, 0),
+            new Range2D(0, 3, 3, 3),
+            new Range2D(0, 0, 1, 2),
+            new Range2D(3, 3, 1, 2)
+         ]);
+         planet.forEachPointIn(
+            [new Range2D(1, 2, 1, 2)], false,
+            function(x: int, y: int): void {
+               const tile: Tile = planet.getTile(x, y);
+               const message: String = "ORE tile at (" + x + "; " + y + ") ";
+               assertThat( message, tile.kind, equals (TileKind.ORE) );
+               if (x == 1 && y == 1) {
+                  assertThat( message + "is not fake", tile.fake, isFalse() );
+               }
+               else {
+                  assertThat( message + "is fake", tile.fake, isTrue() );
+               }
+            }
+         )
+      }
+
+      [Test]
+      public function deserialize_mapWithNoxriumField(): void {
+         const planet: MPlanet = deserialize(
+            ". . . . \n" +
+            ". . . . \n" +
+            ". . / / \n" +
+            ". . / / "
+         );
+         assertRegularTile(planet, [
+            new Range2D(0, 1, 0, 3),
+            new Range2D(2, 3, 2, 3)
+         ]);
+         planet.forEachPointIn(
+            [new Range2D(2, 3, 0, 1)], false,
+            function(x: int, y: int): void {
+               const tile: Tile = planet.getTile(x, y);
+               const message: String = "NOXRIUM tile at (" + x + "; " + y + ") ";
+               assertThat( message, tile.kind, equals (TileKind.NOXRIUM) );
+               assertThat( message + " is not fake", tile.fake, isFalse() );
+            }
+         );
+      }
+
+      [Test]
+      public function deserialize_mapWithFoliage(): void {
+         const planet: MPlanet = deserialize(
+            ". . . . \n" +
+            ". ----. \n" +
+            ". ----. \n" +
+            ". 1---. \n" +
+            ". . . . "
+         );
+         assertRegularTile(planet, [new Range2D(0, 4, 0, 4)]);
+         assertThat( "only one object", planet.objects, arrayWithSize (1) );
+         const foliage: BlockingFolliage =
+                  planet.getObject(1, 1) as BlockingFolliage;
+         assertThat( "foliage at (1; 1)", foliage, notNullValue() );
+         assertThat(
+            "foliage is of 2x3 kind",
+            foliage.kind, equals (FolliageTileKind._2X3)
+         );
+      }
+
+      [Test]
+      public function deserialize_mapWithBuilding(): void {
+         const planet: MPlanet = deserialize(
+            ". . . . \n" +
+            ". ----. \n" +
+            ". -b-2. \n" +
+            ". . . . "
+         );
+         assertThat( "only one object", planet.objects, arrayWithSize (1) );
+         const building: Building = planet.getObject(1, 1) as Building;
+         assertThat( "building at (1; 1)", building, notNullValue() );
+         assertThat( "building level", building.level, equals (2) );
+         assertThat(
+            "building is not an extractor",
+            building, not (instanceOf (Extractor))
+         );
+      }
+
+      [Test]
+      public function deserialize_mapWithExtractor(): void {
+         const planet: MPlanet = deserialize(
+            ". . . . \n" +
+            ". ----. \n" +
+            ". $z-1. \n" +
+            ". . . . "
+         );
+         assertRegularTile(planet, [
+            new Range2D(0, 3, 0, 0),
+            new Range2D(0, 3, 3, 3),
+            new Range2D(0, 0, 1, 2),
+            new Range2D(3, 3, 1, 2)
+         ]);
+         planet.forEachPointIn(
+            [new Range2D(1, 2, 1, 2)], false,
+            function(x: int, y: int): void {
+               assertThat(
+                  "ZETIUM tile at (" + x + "; " + y + ")",
+                  planet.getTileKind(x, y), equals (TileKind.ZETIUM)
+               );
+            }
+         );
+         const building: Building = planet.getObject(1, 1) as Building;
+         assertThat( "building at (1; 1)", building, notNullValue() );
+         assertThat( "building level", building.level, equals (1) );
+         assertThat(
+            "building is ZetiumExtractor",
+            building, instanceOf (ZetiumExtractor)
+         );
+      }
+
+      [Test]
+      public function deserialize_mapWithBuildingAndNonRegularTilesUnderIt(): void {
+         const planet: MPlanet = deserialize(
+            ". # # # . . \n" +
+            ". # # # . . \n" +
+            ". #-.-. . . \n" +
+            ". #a.3. . ."
+         );
+         assertRegularTile(planet,  [
+            new Range2D(0, 0, 0, 3),
+            new Range2D(2, 5, 0, 1),
+            new Range2D(4, 5, 2, 3)
+         ]);
+         planet.forEachPointIn(
+            [
+               new Range2D(1, 1, 0, 1),
+               new Range2D(1, 3, 2, 3)
+            ],
+            false,
+            function(x: int, y: int): void {
+               assertThat(
+                  "JUNKYARD tile at (" + x + "; " + y + ")",
+                  planet.getTileKind(x, y), equals (TileKind.JUNKYARD)
+               );
+            }
+         );
+         assertThat( "only one object", planet.objects, arrayWithSize (1) );
+         const building: Building = planet.getObject(1, 0) as Building;
+         assertThat( "building at (0; 1)", building, notNullValue() );
+         assertThat( "building level", building.level, equals (3) );
+         assertThat(
+            "building is not Extractor",
+            building, not (instanceOf (Extractor))
+         );
+      }
+
+
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
 
-      private function newTile(kind: int, x: int, y: int): Tile {
-         const tile: Tile = new Tile(kind);
-         tile.x = x;
-         tile.y = y;
-         return tile;
+      private function assertRegularTile(planet: MPlanet, ranges: Array): void {
+         planet.forEachPointIn(
+            ranges, true,
+            function(x: int, y: int): void {
+               assertThat(
+                  "regular tile at (" + x + "; " + y + ")",
+                  planet.getTileKind(x, y), equals (TileKind.REGULAR)
+               );
+            }
+         );
       }
 
       private function newPlanet(width: int, height: int): MPlanet {
@@ -202,27 +403,25 @@ package tests.planetmapeditor
          const building: Building = new Building();
          building.type = type;
          building.level = level;
-         building.x = x;
-         building.y = y;
-         building.setSize(
-            Config.getBuildingWidth(type),
-            Config.getBuildingHeight(type)
-         );
+         building.moveTo(x, y);
+         Building.setSize(building);
          return building;
       }
 
       private function newFoliage(kind:int, x:int, y:int): BlockingFolliage {
          const foliage: BlockingFolliage = new BlockingFolliage();
          foliage.kind = kind;
-         foliage.x = x;
-         foliage.y = y;
-         const size: Point = FolliageTileKind.getSize(kind);
-         foliage.setSize(size.x, size.y);
+         foliage.moveTo(x, y);
+         BlockingFolliage.setSize(foliage);
          return foliage;
       }
 
       private function serialize(planet: MPlanet): String {
          return new PlanetMapSerializer().serialize(planet);
+      }
+
+      private function deserialize(data: String): MPlanet {
+         return new PlanetMapSerializer().deserialize(data);
       }
    }
 }

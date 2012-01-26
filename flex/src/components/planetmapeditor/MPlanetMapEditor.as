@@ -4,10 +4,7 @@ package components.planetmapeditor
    import components.map.planet.PlanetMap;
    import components.planetmapeditor.events.MPlanetMapEditorEvent;
 
-   import config.Config;
-
    import flash.events.EventDispatcher;
-   import flash.geom.Point;
 
    import models.building.Building;
    import models.building.BuildingType;
@@ -31,8 +28,6 @@ package components.planetmapeditor
 
    public class MPlanetMapEditor extends EventDispatcher
    {
-      private const PLANET_ID:int = 1;
-
       public const MAX_WIDTH:int = 30;
       public const MIN_WIDTH:int = 4;
       public const MAX_HEIGHT:int = 30;
@@ -158,16 +153,10 @@ package components.planetmapeditor
                value.x = 0;
                value.y = 0;
                if (value is Building) {
-                  const building: Building = Building(value);
-                  building.setSize(
-                     Config.getBuildingWidth(building.type),
-                     Config.getBuildingHeight(building.type)
-                  );
+                  Building.setSize(Building(value));
                }
                else {
-                  const foliage: BlockingFolliage = BlockingFolliage(value);
-                  const size: Point = FolliageTileKind.getSize(foliage.kind);
-                  foliage.setSize(size.x, size.y);
+                  BlockingFolliage.setSize(BlockingFolliage(value));
                }
                if (_objectsEditorLayer != null) {
                   _objectsEditorLayer.setObject(value);
@@ -226,26 +215,30 @@ package components.planetmapeditor
          return foliage;
       }
 
-      private function newBuilding(type:String, level:int): Building {
+      public static function newBuilding(type:String, level:int): Building {
          var building:Building;
          switch (type) {
             case BuildingType.GEOTHERMAL_PLANT:
+            case BuildingType.NPC_GEOTHERMAL_PLANT:
                building = new CollectorT3();
                break;
             case BuildingType.METAL_EXTRACTOR:
             case BuildingType.METAL_EXTRACTOR_T2:
+            case BuildingType.NPC_METAL_EXTRACTOR:
                building = new MetalExtractor();
                break;
             case BuildingType.ZETIUM_EXTRACTOR:
             case BuildingType.ZETIUM_EXTRACTOR_T2:
+            case BuildingType.NPC_ZETIUM_EXTRACTOR:
                building = new ZetiumExtractor();
                break;
             default:
                building = new Building();
          }
          building.type = type;
-         building.planetId = PLANET_ID;
+         building.planetId = 1;
          building.level = level;
+         Building.setSize(building);
          return building;
       }
    }

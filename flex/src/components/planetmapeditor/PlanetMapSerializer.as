@@ -5,6 +5,8 @@ package components.planetmapeditor
    import models.folliage.BlockingFolliage;
    import models.planet.MPlanet;
    import models.planet.MPlanetObject;
+   import models.solarsystem.MSSObject;
+   import models.tile.FolliageTileKind;
    import models.tile.FolliageTileKind;
    import models.tile.Tile;
    import models.tile.TileKind;
@@ -17,6 +19,12 @@ package components.planetmapeditor
       private const SYM_SPACE: String = " ";
       private const SYM_DASH: String = "-";
       private const SYM_POINT: String = ".";
+
+      private function isRegularTileSymbol(symbol: String): Boolean {
+         return symbol == SYM_DASH
+                   || symbol == SYM_POINT
+                   || symbol == SYM_SPACE;
+      }
 
       private const TILE_SYMBOL: Object = new Object();
       private const SYMBOL_TILE: Object = {
@@ -148,7 +156,48 @@ package components.planetmapeditor
 
       public function deserialize(data: String): MPlanet {
          Objects.paramNotEmpty("data", data);
-         return null;
+         const rows: Array = data.split("\n").reverse();
+         const ssObject: MSSObject = new MSSObject();
+         ssObject.id = 1;
+         ssObject.width = String(rows[0]).length / 2;
+         ssObject.height = rows.length;
+         const planet: MPlanet = new MPlanet(ssObject);
+         for (var y: int = 0; y < planet.height; y++) {
+            for (var x: int = 0; x < planet.width; x++) {
+               const row: String = rows[y];
+               const tileSym: String = row.charAt(2 * x);
+               const objectSym: String = row.charAt(2 * x + 1);
+
+               if (!isRegularTileSymbol(tileSym)) {
+                  const tileKind: int = getTileKind(tileSym);
+                  if (FolliageTileKind.isFolliageKind(tileKind)) {
+                     const foliage: BlockingFolliage = new BlockingFolliage();
+                     foliage.kind = tileKind;
+                     foliage.moveTo(x, y);
+                     BlockingFolliage.setSize(foliage);
+                     planet.addObject(foliage);
+                  }
+                  else {
+                     planet.addTile(tileKind, x, y);
+                  }
+               }
+
+               if (!isRegularTileSymbol(objectSym)) {
+                  const levelSym: String = (x < planet.width - 1)
+                                              ? row.charAt(2 * x + 3)
+                                              : SYM_SPACE;
+                  if (!isRegularTileSymbol(levelSym)) {
+                     const building: Building = MPlanetMapEditor.newBuilding(
+                        getBuildingType(objectSym),
+                        int(levelSym)
+                     );
+                     building.moveTo(x, y);
+                     planet.addObject(building);
+                  }
+               }
+            }
+         }
+         return planet;
       }
    }
 }
