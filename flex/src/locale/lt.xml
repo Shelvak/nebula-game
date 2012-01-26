@@ -1468,6 +1468,7 @@
     <cooldown value="Ataušimo laikas" />
     <bestAgainst value="Geriausias prieš" />
     <weakAgainst value="Silpniausias prieš" />
+    <appliesTo value="Technologija taikoma" />
     <specialDamage value="Žala: {0} x {1} = {2}" />
     <damageCoef value="Žalos koeficientas: {0}" />
     <armorFromTechs value="Šarvai iš technologijų:" />

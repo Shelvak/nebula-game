@@ -1376,6 +1376,7 @@
     <cooldown value="Cooldown time" />
     <bestAgainst value="Best against" />
     <weakAgainst value="Weak against" />
+    <appliesTo value="Technology applies to" />
     <specialDamage value="Damage: {0} x {1} = {2}" />
     <damageCoef value="Damage coef: {0}" />
     <armorFromTechs value="Armor from technologies:" />

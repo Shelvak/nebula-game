@@ -47,6 +47,7 @@ package models.infoscreen
    import utils.NumberUtil;
    import utils.SingletonFactory;
    import utils.StringUtil;
+   import utils.StringUtil;
    import utils.locale.Localizer;
    
    public class MCInfoScreen extends EventDispatcher
@@ -261,7 +262,7 @@ package models.infoscreen
                      createGuns(model.infoData[element]);
                   }
                }
-               else 
+               else
                {
                   var useRounding: Boolean = false;
                   if ((element.indexOf(ResourceType.METAL) != -1 ||
@@ -448,7 +449,7 @@ package models.infoscreen
          }
          if (!sliderMoved)
          {
-            refreshWeakAgainst();
+            refreshBottomUnits(model.infoData['appliesTo']);
          }
          sliderMoved = false;
          dataForTable.sort = new Sort();
@@ -636,13 +637,13 @@ package models.infoscreen
          return Localizer.string(modelClass + 's', modelSubclass + '.name');
       }
       
-      protected function refreshWeakAgainst(): void
+      protected function refreshBottomUnits(appliesTo: Array): void
       {
-         var coefObjects: ArrayCollection = new ArrayCollection();
-         var buildingTypes: Array = Config.getBuildingWithGunsTypes();
-         if ((model.objectType == ObjectClass.BUILDING && Config.getBuildingGuns(model.type).length > 0) 
+         if ((model.objectType == ObjectClass.BUILDING && Config.getBuildingGuns(model.type).length > 0)
             || (model.objectType == ObjectClass.UNIT && Config.getUnitGuns(model.type).length > 0))
          {
+            var coefObjects: ArrayCollection = new ArrayCollection();
+            var buildingTypes: Array = Config.getBuildingWithGunsTypes();
             function addCoefObject(type: String, guns: Array): void
             {
                var coef: Number = 0;
@@ -681,8 +682,25 @@ package models.infoscreen
             weakAgainst = new ArrayCollection();
             for (var i: int = 0; i < Math.min(MAX_WEAK_LENGTH, coefObjects.length); i++)
             {
-               weakAgainst.addItem(new UnitBuildingInfoEntry(coefObjects.getItemAt(i).type, getObjectTitle(coefObjects.getItemAt(i).type), 
+               weakAgainst.addItem(new UnitBuildingInfoEntry(
+                  coefObjects.getItemAt(i).type,
+                  getObjectTitle(coefObjects.getItemAt(i).type),
                   coefObjects.getItemAt(i).coef));
+            }
+         }
+         else if(model.objectType == ObjectClass.TECHNOLOGY
+            && appliesTo != null
+            && appliesTo.length > 0)
+         {
+            weakAgainst = new ArrayCollection();
+            for each (var objectEntry: String in appliesTo)
+            {
+               var parts: Array = objectEntry.split('/');
+               var objectType: String = parts[0];
+               var objectSubtype: String = StringUtil.underscoreToCamelCase(parts[1]);
+               var objectSType: String = ModelUtil.getModelType(objectType,  objectSubtype);
+               weakAgainst.addItem(new UnitBuildingInfoEntry(
+                  objectSType, getObjectTitle(objectSType)));
             }
          }
          else
