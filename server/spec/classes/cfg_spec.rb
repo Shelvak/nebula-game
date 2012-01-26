@@ -63,6 +63,23 @@ describe Cfg do
     end
   end
 
+  describe ".player_inactivity_time" do
+    let(:key) { 'galaxy.player.inactivity_check' }
+    let(:value) { [[1, 1.minute], [100, 5.minutes], [1000, 10.minutes]] }
+
+    it "should return found seconds" do
+      with_config_values(key => value) do
+        Cfg.player_inactivity_time(50).should == 5.minutes
+      end
+    end
+
+    it "should return last value if points are too large" do
+      with_config_values(key => value) do
+        Cfg.player_inactivity_time(1500).should == 10.minutes
+      end
+    end
+  end
+
   describe ".market_bot_resource_multiplier" do
     let(:divider) { Cfg.market_bot_resource_day_divider }
 

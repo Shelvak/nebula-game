@@ -196,9 +196,12 @@ class Cfg
     # Returns number of seconds player is required to be last seen ago to be
     # considered active.
     def player_inactivity_time(points)
-      CONFIG['galaxy.player.inactivity_check'].each do |points_required, seconds|
+      data = CONFIG['galaxy.player.inactivity_check']
+      data.each do |points_required, seconds|
         return seconds if points <= points_required
       end
+
+      data.last[1]
     end
 
     def player_referral_points_needed
