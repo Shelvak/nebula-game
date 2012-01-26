@@ -7,8 +7,8 @@ package models.tile
       public static const _2X3: int = 15;
       public static const _2X4: int = 16;
       public static const _3X2: int = 17;
-      public static const _3X4: int = 14;
       public static const _3X3: int = 8;
+      public static const _3X4: int = 14;
       public static const _4X3: int = 9;
       public static const _4X4: int = 10;
       public static const _4X6: int = 11;
@@ -17,7 +17,7 @@ package models.tile
 
       
       /**
-       * @return true if the given tile kind is a folliage tile kind,
+       * @return true if the given tile kind is a foliage tile kind,
        * false - otherwise.
        */
       public static function isFolliageKind(kind:int) : Boolean {

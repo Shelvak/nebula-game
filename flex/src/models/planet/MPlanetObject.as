@@ -3,12 +3,10 @@ package models.planet
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
    import flash.geom.Point;
-   
+
    import models.BaseModel;
    import models.planet.events.MPlanetObjectEvent;
    import models.tile.Tile;
-
-   import utils.Objects;
 
 
    /**

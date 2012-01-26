@@ -30,6 +30,7 @@ package models.building
 
    import utils.MathUtil;
    import utils.ModelUtil;
+   import utils.Objects;
    import utils.StringUtil;
    import utils.assets.AssetNames;
    import utils.locale.Localizer;
@@ -138,6 +139,20 @@ package models.building
             BuildingType.DEFENSIVE_PORTAL,
             BuildingType.MARKET,
          ].indexOf(type) != -1;
+      }
+
+      /**
+       * Sets the size of for the given building. Loads size values from config.
+       * 
+       * @return the building given
+       */
+      public static function setSize(building:Building): Building {
+         Objects.paramNotNull("building", building);
+         building.setSize(
+            Config.getBuildingWidth(building.type),
+            Config.getBuildingHeight(building.type)
+         );
+         return building;
       }
       
       [Bindable (event="typeChange")]
