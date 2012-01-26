@@ -7,7 +7,7 @@ Factory.define :building, :class => Building::TestBuilding do |m|
 end
 
 Factory.define :building_in_construction, :parent => :building do |m|
-  opts_upgrading.factory m
+  opts_upgrading_building.factory m
 end
 
 Factory.define :building_just_constructed,
@@ -50,8 +50,9 @@ Factory.define :b_constructor_test, :parent => :b_trait_mock,
 :class => Building::ConstructorTest do |m|
   opts_active.factory m
   m.level 1
-  m.constructable { |r| Factory.create(:unit, opts_upgrading +
-    {:player => r.planet.player}) }
+  m.constructable do |r|
+    Factory.create(:unit, opts_upgrading + {:player => r.planet.player})
+  end
 end
 
 Factory.define :b_constructor_with_constructable, :parent => :b_trait_mock,
