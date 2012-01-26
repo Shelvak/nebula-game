@@ -15,7 +15,7 @@ class Reducer::ScientistsReducer < Reducer
         ].min
         @resource_needed -= reduce_by
 
-        @states[target] = [:changed, target_resource - reduce_by]
+        @states[target] = [CHANGED, target_resource - reduce_by]
         @downsized_targets.push [target, reduce_by]
       end
 

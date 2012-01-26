@@ -245,7 +245,7 @@ class SsObject::Planet < SsObject
   end
 
   private
-  # Set #next_raid_at & #owner_changed.
+  # Set #owner_changed.
   before_update :if => Proc.new { |r| r.player_id_changed? } do
     self.owner_changed = Time.now
     
@@ -363,7 +363,24 @@ class SsObject::Planet < SsObject
       new_player.planets_count += 1 if new_player
     end
 
-    old_player.save! if old_player && old_player.changed?
+    if old_player
+      paused_technologies = old_player.technologies.upgrading.compact_map do
+        |technology|
+
+        if technology.planets_requirement_met?
+          nil
+        else
+          technology.pause!
+          [technology, Reducer::RELEASED]
+        end
+      end
+
+      Notification.create_for_technologies_changed(
+        old_player.id, paused_technologies
+      ) unless paused_technologies.blank?
+
+      old_player.save! if old_player.changed?
+    end
     new_player.save! if new_player && new_player.changed?
 
     FowSsEntry.

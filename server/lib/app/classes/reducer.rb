@@ -73,7 +73,8 @@ class Reducer
         changes.push [target, state]
         release_resource(target)
       when CHANGED
-        changes.push [target, state, target_resource]
+        current = get_resource(target)
+        changes.push [target, state, current, target_resource]
         change_resource(target, target_resource)
       end
     end
