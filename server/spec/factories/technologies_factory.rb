@@ -537,3 +537,63 @@ Factory.define :t_thor_speed, :parent => :technology,
 
 Factory.define :t_demosis_speed, :parent => :technology,
 :class => Technology::DemosisSpeed do |m|; end
+
+Factory.define :t_vulcan_damage, :parent => :technology,
+:class => Technology::VulcanDamage do |m|; end
+
+Factory.define :t_vulcan_armor, :parent => :technology,
+:class => Technology::VulcanArmor do |m|; end
+
+Factory.define :t_vulcan_critical, :parent => :technology,
+:class => Technology::VulcanCritical do |m|; end
+
+Factory.define :t_vulcan_absorption, :parent => :technology,
+:class => Technology::VulcanAbsorption do |m|; end
+
+Factory.define :t_screamer_damage, :parent => :technology,
+:class => Technology::ScreamerDamage do |m|; end
+
+Factory.define :t_screamer_armor, :parent => :technology,
+:class => Technology::ScreamerArmor do |m|; end
+
+Factory.define :t_screamer_critical, :parent => :technology,
+:class => Technology::ScreamerCritical do |m|; end
+
+Factory.define :t_screamer_absorption, :parent => :technology,
+:class => Technology::ScreamerAbsorption do |m|; end
+
+Factory.define :t_thunder_damage, :parent => :technology,
+:class => Technology::ThunderDamage do |m|; end
+
+Factory.define :t_thunder_armor, :parent => :technology,
+:class => Technology::ThunderArmor do |m|; end
+
+Factory.define :t_thunder_critical, :parent => :technology,
+:class => Technology::ThunderCritical do |m|; end
+
+Factory.define :t_thunder_absorption, :parent => :technology,
+:class => Technology::ThunderAbsorption do |m|; end
+
+Factory.define :t_light_flight, :parent => :technology,
+:class => Technology::LightFlight do |m|; end
+
+Factory.define :t_npc_light_flight, :parent => :technology,
+:class => Technology::NpcLightFlight do |m|; end
+
+Factory.define :t_npc_heavy_flight, :parent => :technology,
+:class => Technology::NpcHeavyFlight do |m|; end
+
+Factory.define :t_mule, :parent => :technology,
+:class => Technology::Mule do |m|; end
+
+Factory.define :t_mule_armor, :parent => :technology,
+:class => Technology::MuleArmor do |m|; end
+
+Factory.define :t_mule_absorption, :parent => :technology,
+:class => Technology::MuleAbsorption do |m|; end
+
+Factory.define :t_mule_speed, :parent => :technology,
+:class => Technology::MuleSpeed do |m|; end
+
+Factory.define :t_mule_storage, :parent => :technology,
+:class => Technology::MuleStorage do |m|; end

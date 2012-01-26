@@ -1,14 +1,14 @@
 ---
 <%
 def apl_to(*units)
-  "[%s]" % units.flat_map do |unit|
+  "[%s]" % units.deep_flat_map do |unit|
     %Q{"#{unit.to_s.underscore}"}
   end.join(", ")
 end
 
 # Ground units
 trooper = Unit::Trooper
-seekeer = Unit::Seeker
+seeker = Unit::Seeker
 shocker = Unit::Shocker
 scorpion = Unit::Scorpion
 mantis = Unit::Mantis
@@ -23,7 +23,7 @@ gnawer = Unit::Gnawer
 
 # Space units
 mule = Unit::Mule
-crow = Unit::Corw
+crow = Unit::Crow
 cyrix = Unit::Cyrix
 dart = Unit::Dart
 avenger = Unit::Avenger
@@ -43,9 +43,9 @@ light_space = [crow, cyrix, dart, avenger]
 heavy_space = [mule, rhyno]
 space = light_space + heavy_space
 
-light_npc_space = [dirac, thor]
-heavy_npc_space = [demosis, convoy_ship]
-npc_space = light_npc_space + heavy_npc_space
+npc_light_space = [dirac, thor]
+npc_heavy_space = [demosis, convoy_ship]
+npc_space = npc_light_space + npc_heavy_space
 
 vulcan = [Building::Vulcan, Building::MobileVulcan]
 screamer = [Building::Screamer, Building::MobileScreamer]

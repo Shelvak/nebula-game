@@ -1,18 +1,3 @@
-require 'benchmark'
-$load_times = {}
-def benchmark(what, &block)
-  exception = nil
-  #$load_times[what] = Benchmark.realtime do
-    begin
-      block.call
-    rescue Exception => e
-      exception = e
-    end
-  #end
-
-  raise exception unless exception.nil?
-end
-
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
   unless defined?(ROOT_DIR)
 
@@ -56,9 +41,38 @@ class Exception
   end
 end
 
+def rake?; File.basename($0) == 'rake'; end
+
+require 'rubygems'
+require 'bundler'
+
+require "timeout"
+require "socket"
+require "erb"
+require "pp"
+
+setup_groups = [:default, :setup, :"#{App.env}_setup"]
+setup_groups.push :run_setup unless App.in_test?
+require_groups = [:default, :require, :"#{App.env}_require"]
+require_groups.push :run_require unless App.in_test?
+
+# We need to setup both groups, because bundler only does setup one time.
+Bundler.setup(*(setup_groups | require_groups))
+Bundler.require(*require_groups)
+
+require 'active_support/dependencies'
+
+# We don't need our #destroy, #save and #save! automatically wrapped under
+# transaction because we wrap whole request in one and can't use nested
+# transactions due to BulkSql.
+module ActiveRecord::Transactions
+  def destroy; super; end
+  def save(*); super; end
+  def save!(*); super; end
+end
+
 if RUBY_VERSION.to_f < 1.9
   $KCODE = 'u'
-
   Range.send(:alias_method, :cover?, :include?)
   class Integer
     alias :precisionless_round :round
@@ -80,107 +94,71 @@ if RUBY_VERSION.to_f < 1.9
       end
     end
   end
+
+  class Complex
+    def initialize
+      raise "I'm not a real class! I just pretend to exist to give " +
+              "an illusion of 1.9 compat!"
+    end
+  end
 else
   # Unshift current directory for factory girl (ruby 1.9)
-  $LOAD_PATH.unshift File.expand_path(ROOT_DIR)
-end
-
-def rake?; File.basename($0) == 'rake'; end
-
-benchmark :gems do
-  require 'rubygems'
-  require 'bundler'
-
-  require "timeout"
-  require "socket"
-  require "erb"
-  require "pp"
-
-  setup_groups = [:default, :"#{App.env}_setup"]
-  setup_groups.push :run_setup unless App.in_test?
-  require_groups = [:default, :"#{App.env}_require"]
-  require_groups.push :run_require unless App.in_test?
-
-  # We need to setup both groups, because bundler only does setup one time.
-  Bundler.setup(*(setup_groups | require_groups))
-  Bundler.require(*require_groups)
-
-  require 'active_support/dependencies'
-
-  # We don't need our #destroy, #save and #save! automatically wrapped under
-  # transaction because we wrap whole request in one and can't use nested
-  # transactions due to BulkSql.
-  module ActiveRecord::Transactions
-    def destroy; super; end
-    def save(*); super; end
-    def save!(*); super; end
-  end
+  $LOAD_PATH.unshift File.expand_path(ROOT_DIR) if App.in_test?
 end
 
 # Require plugins so all their functionality is present during
 # initialization
-benchmark :plugins do
-  Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*')].each do |plugin_dir|
-    plugin = File.join(plugin_dir, 'init.rb')
-    raise "Cannot find plugin initializer #{plugin.inspect}!" \
-      unless File.exists?(plugin)
-    require plugin
-  end
+Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*')].each do |plugin_dir|
+  plugin = File.join(plugin_dir, 'init.rb')
+  raise "Cannot find plugin initializer #{plugin.inspect}!" \
+    unless File.exists?(plugin)
+  require plugin
 end
 
 ENV['db_environment'] ||= App.env
 ENV['configuration'] ||= App.env
 
 # Set up Rails autoloader
-benchmark :autoloader do
-  (
-    ["#{ROOT_DIR}/lib/server"] + Dir["#{ROOT_DIR}/lib/app/**"]
-  ).each do |file_name|
-    if File.directory?(file_name)
-      ActiveSupport::Dependencies.autoload_paths <<
-        File.expand_path(file_name)
+(
+  ["#{ROOT_DIR}/lib/server"] + Dir["#{ROOT_DIR}/lib/app/**"]
+).each do |file_name|
+  if File.directory?(file_name)
+    ActiveSupport::Dependencies.autoload_paths <<
+      File.expand_path(file_name)
+  end
+end
+
+email_from = "server-#{Socket.gethostname}@nebula44.com"
+email_to = 'arturas@nebula44.com'
+
+MAILER = lambda do |short, long|
+  lambda do |error|
+    Mail.deliver do
+      from email_from
+      to email_to
+      subject "[#{short}] #{error.split("\n")[0]}"
+      body "#{long}\n\n#{error}"
     end
   end
 end
 
-benchmark :mailer do
-  email_from = "server-#{Socket.gethostname}@nebula44.com"
-  email_to = 'arturas@nebula44.com'
-
-  MAILER = lambda do |short, long|
-    lambda do |error|
-      Mail.deliver do
-        from email_from
-        to email_to
-        subject "[#{short}] #{error.split("\n")[0]}"
-        body "#{long}\n\n#{error}"
-      end
-    end
-  end
-end
-
-benchmark :logger do
-  LOGGER = GameLogger.new(
-    File.expand_path(
-      File.join(ROOT_DIR, 'log', "#{App.env}.log")
-    )
+LOGGER = GameLogger.new(
+  File.expand_path(
+    File.join(ROOT_DIR, 'log', "#{App.env}.log")
   )
-  LOGGER.level = GameLogger::LEVEL_INFO
+)
+LOGGER.level = GameLogger::LEVEL_INFO
 
-  # Error reporting by mail.
-  if App.in_production?
-    Mail.defaults do
-      # -i means ".\n" does not terminate mail.
-      # -t is skipped because it fucks up delivery on some MTAs
-      delivery_method :sendmail, :arguments => "-i"
-    end
-    LOGGER.on_fatal = MAILER.call("FATAL",
-      "Server has encountered an FATAL error!")
-    LOGGER.on_error = MAILER.call("ERROR",
-      "Server has encountered an error!")
-    LOGGER.on_warn = MAILER.call("WARN",
-      "Server has issued a warning!")
+# Error reporting by mail.
+if App.in_production?
+  Mail.defaults do
+    # -i means ".\n" does not terminate mail.
+    # -t is skipped because it fucks up delivery on some MTAs
+    delivery_method :sendmail, :arguments => "-i"
   end
+  LOGGER.on_fatal = MAILER["FATAL", "Server has encountered an FATAL error!"]
+  LOGGER.on_error = MAILER["ERROR", "Server has encountered an error!"]
+  LOGGER.on_warn = MAILER["WARN", "Server has issued a warning!"]
 end
 
 def read_config(*path)
@@ -239,28 +217,24 @@ def load_config
   end
 end
 
-benchmark :game_config do
-  # Set up config object
-  CONFIG_DIR = File.expand_path(File.join(ROOT_DIR, 'config'))
-  CONFIG = GameConfig.new
-  load_config
-end
+# Set up config object
+CONFIG_DIR = File.expand_path(File.join(ROOT_DIR, 'config'))
+CONFIG = GameConfig.new
+load_config
 
-benchmark :db do
-  # Establish database connection
-  DB_CONFIG = read_config(CONFIG_DIR, 'database.yml')
-  DB_CONFIG.each { |env, config| config["adapter"] = "jdbcmysql" }
-  USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
-  DB_MIGRATIONS_DIR = File.expand_path(
-    File.dirname(__FILE__) + '/../db/migrate'
-  )
+# Establish database connection
+DB_CONFIG = read_config(CONFIG_DIR, 'database.yml')
+DB_CONFIG.each { |env, config| config["adapter"] = "jdbcmysql" }
+USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
+DB_MIGRATIONS_DIR = File.expand_path(
+  File.dirname(__FILE__) + '/../db/migrate'
+)
 
-  if USED_DB_CONFIG.nil?
-    puts "Unable to retrieve db configuration!"
-    puts "  DB environment: #{ENV['db_environment'].inspect}"
-    puts "  Config: #{DB_CONFIG.inspect}"
-    exit
-  end
+if USED_DB_CONFIG.nil?
+  puts "Unable to retrieve db configuration!"
+  puts "  DB environment: #{ENV['db_environment'].inspect}"
+  puts "  Config: #{DB_CONFIG.inspect}"
+  exit
 end
 
 # Establish connection before setting up autoloader, because some plugins depend
@@ -291,71 +265,63 @@ end
 # This fixes scenarios when there is Alliance and Combat::Alliance and
 # referencing Combat::Alliance actually loads ::Alliance.
 #
-benchmark :autoloader_files do
-  [
-    "#{ROOT_DIR}/lib/server",
-    "#{ROOT_DIR}/lib/app/classes",
-    "#{ROOT_DIR}/lib/app/models",
-    "#{ROOT_DIR}/lib/app/controllers",
-  ].each do |dir|
-    Dir["#{dir}/**/*.rb"].each do |filename|
-      class_name = filename.sub(File.join(dir, ''), '').sub(
-        '.rb', '').camelcase
+[
+  "#{ROOT_DIR}/lib/server",
+  "#{ROOT_DIR}/lib/app/classes",
+  "#{ROOT_DIR}/lib/app/models",
+  "#{ROOT_DIR}/lib/app/controllers",
+].each do |dir|
+  Dir["#{dir}/**/*.rb"].each do |filename|
+    class_name = filename.sub(File.join(dir, ''), '').sub(
+      '.rb', '').camelcase
 
-      parts = class_name.split("::")
-      base_module = parts[0..-2]
+    parts = class_name.split("::")
+    base_module = parts[0..-2]
 
-      # Don't register on Kernel, Rails autoloader handles those fine.
-      unless base_module.blank?
-        # Determine base module to register autoload on.
-        base_module = base_module.join("::").constantize
-        mod = parts[-1].to_sym
+    # Don't register on Kernel, Rails autoloader handles those fine.
+    unless base_module.blank?
+      # Determine base module to register autoload on.
+      base_module = base_module.join("::").constantize
+      mod = parts[-1].to_sym
 
-        base_module.autoload mod, filename
-      end
+      base_module.autoload mod, filename
     end
   end
 end
 
-benchmark :activerecord_config do
-  ActiveRecord::Base.include_root_in_json = false
-  ActiveRecord::Base.store_full_sti_class = false
-  ActiveRecord::Base.logger = LOGGER
+ActiveRecord::Base.include_root_in_json = false
+ActiveRecord::Base.store_full_sti_class = false
+ActiveRecord::Base.logger = LOGGER
 
-  class ActiveRecord::Relation
-    # Add c_select_* methods.
-    #
-    # Usage:
-    #   planet_ids = SsObject::Planet.where(:player_id => player).
-    #     select("id").c_select_values
-    %w{all one rows value values}.each do |method|
-      define_method(:"c_select_#{method}") do
-        connection.send(:"select_#{method}", to_sql)
-      end
+class ActiveRecord::Relation
+  # Add c_select_* methods.
+  #
+  # Usage:
+  #   planet_ids = SsObject::Planet.where(:player_id => player).
+  #     select("id").c_select_values
+  %w{all one rows value values}.each do |method|
+    define_method(:"c_select_#{method}") do
+      connection.send(:"select_#{method}", to_sql)
     end
   end
-
-  ActiveSupport::JSON.backend = 'JSONGem'
-  ActiveSupport.use_standard_json_time_format = true
-  ActiveSupport::LogSubscriber.colorize_logging = false
 end
+
+ActiveSupport::JSON.backend = 'JSONGem'
+ActiveSupport.use_standard_json_time_format = true
+ActiveSupport::LogSubscriber.colorize_logging = false
 
 # Extract some constants
 ROUNDING_PRECISION = CONFIG['buildings.resources.rounding_precision']
 
 # Finally load config generation initializers.
-benchmark :config_initializers do
-  initializers_dir = File.join(ROOT_DIR, 'config', 'initializers')
-  raise "#{initializers_dir} must be a directory!" \
-    unless File.directory?(initializers_dir)
+initializers_dir = File.join(ROOT_DIR, 'config', 'initializers')
+raise "#{initializers_dir} must be a directory!" \
+  unless File.directory?(initializers_dir)
 
-  Dir[File.join(initializers_dir, '*.rb')].each { |file| require file }
-end
+Dir[File.join(initializers_dir, '*.rb')].each { |file| require file }
 
 # Initialize event handlers
-benchmark :event_handlers do
-  QUEST_EVENT_HANDLER = QuestEventHandler.new
-end
+QUEST_EVENT_HANDLER = QuestEventHandler.new
 
 # Load SpaceMule.
 lambda do
@@ -429,8 +395,3 @@ lambda do
 
   SpaceMule.instance
 end.call
-
-LOGGER.debug "Initializer load times:"
-$load_times.each do |stage, time|
-  LOGGER.debug "  %30s: %dms" % [stage, time * 1000]
-end
