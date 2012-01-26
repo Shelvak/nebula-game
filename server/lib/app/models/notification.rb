@@ -14,6 +14,7 @@
 # * Notification#create_for_market_offer_bought
 # * Notification#create_for_vps_to_creds_conversion
 # * Notification#create_for_alliance_owner_changed
+# * Notification#create_for_technologies_changed
 #
 class Notification < ActiveRecord::Base
   # These methods must be defined before the include.
@@ -51,6 +52,8 @@ class Notification < ActiveRecord::Base
   EVENT_VPS_CONVERTED_TO_CREDS = 12
   # Alliance owner has changed.
   EVENT_ALLIANCE_OWNER_CHANGED = 13
+  # Technologies had their scientists modified or were paused.
+  EVENT_TECHNOLOGIES_CHANGED = 14
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
@@ -128,10 +131,6 @@ class Notification < ActiveRecord::Base
     model
   end
 
-  def self.group_building_change_counts(changes)
-    changes.map { |i| i[0] }.grouped_counts { |building| building.type }
-  end
-
   # * Buildings deactivated due to insufficient energy
   # (EVENT_BUILDINGS_DEACTIVATED = 1)
   #  {
@@ -147,9 +146,13 @@ class Notification < ActiveRecord::Base
     model.event = EVENT_BUILDINGS_DEACTIVATED
     model.player_id = planet.player_id
 
+    buildings = changes.map do |building, state, old_value, new_value|
+      building
+    end.grouped_counts(&:type)
+
     model.params = {
       :location => planet.client_location.as_json,
-      :buildings => group_building_change_counts(changes)
+      :buildings => buildings
     }
     model.save!
 
@@ -489,6 +492,47 @@ class Notification < ActiveRecord::Base
         :alliance => alliance,
         :old_owner => old_owner,
         :new_owner => new_owner
+      }
+    )
+    model.save!
+
+    model
+  end
+
+  # EVENT_TECHNOLOGIES_CHANGED = 14
+  #
+  # params = {
+  #   :changed => [
+  #     [technology_name (String), old_scientists (Fixnum),
+  #       new_scientists (Fixnum)],
+  #     ["GroundDamage", 100, 80],
+  #     ...
+  #   ],
+  #   :paused => [technology_name (String), ..., ...]
+  # }
+  #
+  # _changes_ must be a result from +Reducer+.
+  #
+  # [
+  #   [technology, Reducer::RELEASED] |
+  #   [technology, Reducer::CHANGED, old_scientists, new_scientists]
+  # ]
+  #
+  def self.create_for_technologies_changed(player_id, changes)
+    changed, paused = changes.each_with_object([[], []]) do
+      |(technology, state, old_scientists, new_scientists), (c, p)|
+
+      c << [technology[:type], old_scientists, new_scientists] \
+        if state == Reducer::CHANGED
+      p << technology[:type] if state == Reducer::RELEASED
+    end
+
+    model = new(
+      :event => EVENT_TECHNOLOGIES_CHANGED,
+      :player_id => player_id,
+      :params => {
+        :changed => changed,
+        :paused => paused
       }
     )
     model.save!

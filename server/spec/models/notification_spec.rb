@@ -618,4 +618,46 @@ describe Notification do
       ).params[:new_owner].should == @new_owner
     end
   end
+
+  describe ".create_for_technologies_changed" do
+    before(:all) do
+      @player_id = Factory.create(:player).id
+      @changed_techs = [
+        Factory.create!(:t_crow),
+        Factory.create!(:t_cyrix)
+      ]
+      @paused_techs = [
+        Factory.create!(:t_trooper),
+        Factory.create!(:t_shocker)
+      ]
+
+      @changes = [
+        [@changed_techs[0], Reducer::CHANGED, 100, 50],
+        [@paused_techs[0], Reducer::RELEASED],
+        [@changed_techs[1], Reducer::CHANGED, 200, 10],
+        [@paused_techs[1], Reducer::RELEASED],
+      ]
+
+      @event = Notification::EVENT_TECHNOLOGIES_CHANGED
+      @method = :create_for_technologies_changed
+      @args = [@player_id, @changes]
+    end
+
+    it_behaves_like "create for"
+
+    it "should have :changed" do
+      Notification.send(
+        @method, *@args
+      ).params[:changed].should == [
+        [@changed_techs[0][:type], 100, 50],
+        [@changed_techs[1][:type], 200, 10]
+      ]
+    end
+
+    it "should have :paused" do
+      Notification.send(
+        @method, *@args
+      ).params[:paused].should == @paused_techs.map { |t| t[:type] }
+    end
+  end
 end
