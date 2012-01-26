@@ -130,8 +130,7 @@ assets:
         <%
         image_set = Set.new
         each_model('technology') do |base|
-          puts "technologies.#{base.underscore}.image"
-          image = CONFIG["technologies.#{base.underscore}.image"]
+          image = CONFIG["technologies.#{base.underscore}.name"]
           if image.nil?
         %>
         <%= "#{base}.jpg: #{base}Technology.jpg" %>
@@ -141,7 +140,7 @@ assets:
           end
         end
         image_set.each do |image| %>
-        <%= "#{image}.jpg: #{image}TechImage.jpg" %>
+        <%= "#{image}.jpg: #{image}Technology.jpg" %>
         <% end %>
         background.jpg:
           wiki_name: Technology_background.jpg
