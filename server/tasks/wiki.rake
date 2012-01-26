@@ -233,4 +233,15 @@ EOF
       end
     end
   end
+
+  desc %Q{rake wiki:upload files="a.jpg,b.jpg" src=source.jpg}
+  task :upload => "wiki:load" do
+    agent = WikiMechanize.instance
+    source = ENV['src']
+    ENV['files'].split(",").each do |name|
+      puts "Uploading #{source} -> #{name}"
+      agent.upload_wiki_file(name, source)
+    end
+    puts "Done."
+  end
 end
