@@ -114,7 +114,7 @@ describe DispatcherEventHandler::ObjectResolver do
 
     it "should resolve SolarSystemMetadata" do
       ss = Factory.create(:solar_system)
-      obj = SolarSystemMetadata.new(:id => ss.id)
+      obj = SolarSystemMetadata.destroyed(ss.id)
 
       DispatcherEventHandler::LocationResolver.should_receive(:resolve).
         with(ss.galaxy_point).and_return([player_ids, filter])

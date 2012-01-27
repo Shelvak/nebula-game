@@ -367,7 +367,9 @@ class SsObject::Planet < SsObject
       paused_technologies = old_player.technologies.upgrading.compact_map do
         |technology|
 
-        if technology.planets_requirement_met?
+        # We need to pass old player, because it hasn't been saved to database
+        # yet.
+        if technology.planets_requirement_met?(old_player)
           nil
         else
           technology.pause!

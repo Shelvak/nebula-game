@@ -52,8 +52,8 @@ class Technology < ActiveRecord::Base
   end
 
   # Check if player has enough planets for this technology.
-  def check_planets!(level=nil)
-    player = self.player
+  def check_planets!(level=nil, player=nil)
+    player ||= self.player
 
     req_planets = planets_required(level)
     has_planets = player.planets_count
@@ -67,8 +67,9 @@ class Technology < ActiveRecord::Base
     ) if has_planets < req_planets || has_pulsars < req_pulsars
   end
 
-  def planets_requirement_met?(level=nil)
-    check_planets!(level)
+  # Check if player has met planets requirements for this technology.
+  def planets_requirement_met?(player)
+    check_planets!(level, player)
     true
   rescue GameLogicError
     false
