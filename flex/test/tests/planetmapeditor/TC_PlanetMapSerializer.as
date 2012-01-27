@@ -33,18 +33,23 @@ package tests.planetmapeditor
          Config.setConfig({
             "buildings.barracks.width": 2,
             "buildings.barracks.height": 2,
+            "buildings.barracks.hp": 100,
             "buildings.barracks.npc": false,
             "buildings.metalExtractorT2.width": 2,
             "buildings.metalExtractorT2.height": 2,
+            "buildings.metalExtractorT2.hp": 100,
             "buildings.metalExtractorT2.npc": false,
             "buildings.zetiumExtractorT2.width": 2,
             "buildings.zetiumExtractorT2.height": 2,
+            "buildings.zetiumExtractorT2.hp": 100,
             "buildings.zetiumExtractorT2.npc": false,
             "buildings.npcHall.width": 2,
             "buildings.npcHall.height": 2,
+            "buildings.npcHall.hp": 100,
             "buildings.npcHall.npc": true,
             "buildings.npcZetiumExtractor.width": 2,
             "buildings.npcZetiumExtractor.height": 2,
+            "buildings.npcZetiumExtractor.hp": 100,
             "buildings.npcZetiumExtractor.npc": true
          });
       }
@@ -341,6 +346,9 @@ package tests.planetmapeditor
          const building: Building = planet.getObject(1, 1) as Building;
          assertThat( "building at (1; 1)", building, notNullValue() );
          assertThat( "building level", building.level, equals (2) );
+         assertThat( "building is not ghost", building.isGhost, isFalse() );
+         assertThat( "building hp", building.hp, equals (building.hpMax) );
+         assertThat( "building active", building.state, equals (Building.ACTIVE) );
          assertThat(
             "building is not an extractor",
             building, not (instanceOf (Extractor))
@@ -450,14 +458,16 @@ package tests.planetmapeditor
       private function newBuilding(type: String, level: int,
                                    x: int, y: int): Building {
          const building: Building = new Building();
+         building.id = 1;
          building.type = type;
          building.level = level;
          building.moveTo(x, y);
+         building.hp = building.hpMax;
          Building.setSize(building);
          return building;
       }
 
-      private function newFoliage(kind:int, x:int, y:int): BlockingFolliage {
+      private function newFoliage(kind: int, x: int, y: int): BlockingFolliage {
          const foliage: BlockingFolliage = new BlockingFolliage();
          foliage.kind = kind;
          foliage.moveTo(x, y);
