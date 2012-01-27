@@ -78,14 +78,14 @@
          width="100%" height="100%"
          id="pnlBuildings" title="Buildings"
          listData="{model.BUILDINGS}"
-         minLevel="{model.MIN_BUILDING_LEVEL}"
-         maxLevel="{model.MAX_BUILDING_LEVEL}"/>
+         minLevel="{MPlanetMapEditor.MIN_BUILDING_LEVEL}"
+         maxLevel="{MPlanetMapEditor.MAX_BUILDING_LEVEL}"/>
       <planetmapeditor:CBuildingsPanel
          width="100%" height="100%"
          id="pnlNpcBuildings" title="NPC Buildings" visible="false"
          listData="{model.NPC_BUILDINGS}"
-         minLevel="{model.MIN_NPC_LEVEL}"
-         maxLevel="{model.MAX_NPC_LEVEL}"/>
+         minLevel="{MPlanetMapEditor.MIN_NPC_LEVEL}"
+         maxLevel="{MPlanetMapEditor.MAX_NPC_LEVEL}"/>
       <planetmapeditor:CFoliagePanel
          width="100%" height="100%"
          id="pnlFoliage" title="Foliage" visible="false"

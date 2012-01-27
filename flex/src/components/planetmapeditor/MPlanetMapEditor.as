@@ -33,10 +33,10 @@ package components.planetmapeditor
       public const MAX_HEIGHT:int = 30;
       public const MIN_HEIGHT:int = 4;
 
-      public const MIN_BUILDING_LEVEL:int = 1;
-      public const MAX_BUILDING_LEVEL:int = 10;
-      public const MIN_NPC_LEVEL:int = 0;
-      public const MAX_NPC_LEVEL:int = 9;
+      public static const MIN_BUILDING_LEVEL:int = 1;
+      public static const MAX_BUILDING_LEVEL:int = 10;
+      public static const MIN_NPC_LEVEL:int = 0;
+      public static const MAX_NPC_LEVEL:int = 9;
 
       public const TERRAIN_TYPES: ArrayCollection = new ArrayCollection([
          TerrainType.GRASS,
@@ -56,18 +56,34 @@ package components.planetmapeditor
       ]);
 
       public const BUILDINGS: ArrayCollection = new ArrayCollection([
-         newBuilding(BuildingType.METAL_EXTRACTOR_T2, MIN_BUILDING_LEVEL),
-         newBuilding(BuildingType.GEOTHERMAL_PLANT, MIN_BUILDING_LEVEL),
-         newBuilding(BuildingType.HQ, MIN_BUILDING_LEVEL)
+         newBuilding(BuildingType.MOTHERSHIP),
+         newBuilding(BuildingType.HQ),
+         newBuilding(BuildingType.BARRACKS),
+         newBuilding(BuildingType.METAL_EXTRACTOR_T2),
+         newBuilding(BuildingType.COLLECTOR_T2),
+         newBuilding(BuildingType.ZETIUM_EXTRACTOR_T2)
       ]);
       
       public const NPC_BUILDINGS: ArrayCollection = new ArrayCollection([
-         newBuilding(BuildingType.NPC_GROUND_FACTORY, MIN_NPC_LEVEL),
-         newBuilding(BuildingType.NPC_HALL, MIN_NPC_LEVEL),
-         newBuilding(BuildingType.NPC_SPACE_FACTORY, MIN_NPC_LEVEL)
+         newNpcBuilding(BuildingType.NPC_HALL),
+         newNpcBuilding(BuildingType.NPC_INFANTRY_FACTORY),
+         newNpcBuilding(BuildingType.NPC_GROUND_FACTORY),
+         newNpcBuilding(BuildingType.NPC_SPACE_FACTORY),
+         newNpcBuilding(BuildingType.NPC_SOLAR_PLANT),
+         newNpcBuilding(BuildingType.NPC_METAL_EXTRACTOR),
+         newNpcBuilding(BuildingType.NPC_ZETIUM_EXTRACTOR),
+         newNpcBuilding(BuildingType.NPC_GEOTHERMAL_PLANT),
+         newNpcBuilding(BuildingType.NPC_COMMUNICATIONS_HUB),
+         newNpcBuilding(BuildingType.NPC_TEMPLE),
+         newNpcBuilding(BuildingType.NPC_RESEARCH_CENTER),
+         newNpcBuilding(BuildingType.NPC_EXCAVATION_SITE),
+         newNpcBuilding(BuildingType.NPC_JUMPGATE)
       ]);
 
       public const FOLIAGE: ArrayCollection = new ArrayCollection([
+         newFoliage(FolliageTileKind._2X3),
+         newFoliage(FolliageTileKind._2X4),
+//         newFoliage(FolliageTileKind._3X2),
          newFoliage(FolliageTileKind._3X3),
          newFoliage(FolliageTileKind._3X4),
          newFoliage(FolliageTileKind._4X3),
@@ -141,6 +157,9 @@ package components.planetmapeditor
          return _mapHeight;
       }
 
+      public var viewport: ViewportZoomable = null;
+
+      
       /* ####################### */
       /* ### OBJECT TO ERECT ### */
       /* ####################### */
@@ -177,16 +196,33 @@ package components.planetmapeditor
       private var _objectsEditorLayer: ObjectsEditorLayer;
       private var _terrainEditorLayer: TerrainEditorLayer;
 
-      public function generateMap(viewport:ViewportZoomable): void {
-         Objects.paramNotNull("viewport", viewport);
+      public function serializeMap(): String {
+         return new PlanetMapSerializer().serialize(_planet);
+      }
+
+      public function loadMap(data: String): void {
+         createMap(new PlanetMapSerializer().deserialize(data));
+         mapWidth = _planet.width;
+         mapHeight = _planet.height;
+      }
+
+      public function generateMap(): void {
+         Objects.notNull(
+            viewport,
+            "[prop viewport] must be set before map can be generated."
+         );
          const ssObject: MSSObject = new MSSObject();
          ssObject.terrain = _terrainType;
          ssObject.type = SSObjectType.PLANET;
          ssObject.width = _mapWidth;
          ssObject.height = _mapHeight;
+         createMap(new MPlanet(ssObject));
+      }
+
+      private function createMap(planet: MPlanet): void {
+         _planet = planet;
          _objectsEditorLayer = new ObjectsEditorLayer(_objectToErect);
          _terrainEditorLayer = new TerrainEditorLayer(_selectedTileKind);
-         _planet = new MPlanet(ssObject);
          const map:PlanetMap = new PlanetMap(
             _planet, _objectsEditorLayer, _terrainEditorLayer
          );
@@ -209,13 +245,18 @@ package components.planetmapeditor
          Events.dispatchSimpleEvent(this, MPlanetMapEditorEvent, type);
       }
 
-      private function newFoliage(kind:int): BlockingFolliage {
-         const foliage:BlockingFolliage = new BlockingFolliage();
+      private function newFoliage(kind: int): BlockingFolliage {
+         const foliage: BlockingFolliage = new BlockingFolliage();
          foliage.kind = kind;
          return foliage;
       }
 
-      public static function newBuilding(type:String, level:int): Building {
+      private function newNpcBuilding(type:String): Building {
+         return newBuilding(type, MIN_NPC_LEVEL);
+      }
+
+      public static function newBuilding(type: String,
+                                         level: int = MIN_BUILDING_LEVEL): Building {
          var building:Building;
          switch (type) {
             case BuildingType.GEOTHERMAL_PLANT:

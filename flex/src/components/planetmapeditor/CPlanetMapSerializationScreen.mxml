@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<s:BorderContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                   xmlns:s="library://ns.adobe.com/flex/spark"
+                   currentState="{MODE_HIDDEN}"
+                   borderVisible="false"
+                   backgroundColor="0x000000"
+                   backgroundAlpha="1.0"
+                   width="100%"
+                   height="100%"
+                   visible="true"
+                   visible.hidden="false">
+   <s:states>
+      <s:State name="hidden"/>
+      <s:State name="import"/>
+      <s:State name="export"/>
+   </s:states>
+   <fx:Script>
+      <![CDATA[
+      public static const MODE_HIDDEN: String = "hidden";
+      public static const MODE_IMPORT: String = "import";
+      public static const MODE_EXPORT: String = "export";
+
+      public function showForImport(): void {
+         currentState = MODE_IMPORT;
+         txtData.text = "";
+      }
+
+      public function showForExport(): void {
+         currentState = MODE_EXPORT;
+         txtData.text = model.serializeMap();
+      }
+
+      public function hide(): void {
+         currentState = MODE_HIDDEN;
+      }
+
+      private function btnLoad_clickHandler(event: MouseEvent): void {
+         model.loadMap(txtData.text);
+         hide();
+      }
+      
+      public var model: MPlanetMapEditor;
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout
+         gap="10" horizontalAlign="justify"
+         paddingLeft="10" paddingRight="10"
+         paddingTop="10" paddingBottom="10"/>
+   </s:layout>
+   <s:TextArea id="txtData" lineBreak="explicit" height="100%"
+               fontFamily="courier-new"/>
+   <s:Group>
+      <s:layout>
+         <s:HorizontalLayout gap="10" horizontalAlign="right"/>
+      </s:layout>
+      <s:Button id="btnLoad" label="Load" visible="false" visible.import="true"
+                click="btnLoad_clickHandler(event)"/>
+      <s:Button id="btnCancel" label="Cancel" click="hide()"/>
+   </s:Group>
+</s:BorderContainer>
