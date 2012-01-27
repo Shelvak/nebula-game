@@ -233,6 +233,10 @@ package utils
          return mx.utils.StringUtil.substitute
                    .apply(null, [str].concat(parameters));
       }
+
+      public static function trim(str: String): String {
+         return mx.utils.StringUtil.trim(str);
+      }
       
       /**
        *Used to get checksum object from file downloaded by startup 
