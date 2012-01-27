@@ -24,12 +24,8 @@ package tests.planetmapeditor
    import testsutils.ImageUtl;
 
    import utils.ObjectPropertyType;
-
    import utils.Objects;
-
    import utils.assets.AssetNames;
-
-   import utils.assets.ImagePreloader;
 
 
    public class TC_MPlanetMapEditor
@@ -90,6 +86,13 @@ package tests.planetmapeditor
          );
 
          editor.generateMap();
+
+         assertThat(
+            "changing terrain type dispatches event",
+            function():void{ editor.terrainType = TerrainType.DESERT },
+            causes (editor) .toDispatchEvent (MPlanetMapEditorEvent.TERRAIN_CHANGE)
+         );
+
          editor.terrainType = TerrainType.MUD;
          for each (var foliage: BlockingFolliage in editor.FOLIAGE) {
             assertThat(
@@ -149,6 +152,21 @@ package tests.planetmapeditor
             "setting to new value should change the property",
             editor.objectToErect, strictlyEqualTo (building)
          );
+      }
+
+      [Test]
+      public function mapName(): void {
+         assertThat(
+            "default map name",
+            editor.mapName, equals (editor.DEFAULT_MAP_NAME)
+         );
+
+         assertThat(
+            "changing name dispatches event",
+            function():void{ editor.mapName = "Name" },
+            causes (editor) .toDispatchEvent (MPlanetMapEditorEvent.NAME_CHANGE)
+         );
+         assertThat( "name changed", editor.mapName, equals ("Name") );
       }
 
       private function newBuilding(type:String): Building {

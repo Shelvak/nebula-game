@@ -7,8 +7,6 @@
          creationComplete="creationCompleteHandler(event)">
    <fx:Binding
       source="lstTileTypes.selectedItem" destination="MODEL.selectedTileKind"/>
-   <fx:Binding
-      source="ddlTerrainTypes.selectedItem" destination="MODEL.terrainType"/>
    <fx:Script>
       <![CDATA[
       import models.tile.TerrainType;
@@ -66,6 +64,9 @@
                               minimum="{MODEL.MIN_HEIGHT}"
                               maximum="{MODEL.MAX_HEIGHT}"
                               value="@{MODEL.mapHeight}"/>
+            <s:Label text="Name:"/>
+            <s:TextInput id="txtName" maxChars="{MODEL.MAX_NAME_CHARS}"
+                         text="@{MODEL.mapName}"/>
          </s:Group>
          <s:Button id="btnGenerate" label="Generate"
                    click="btnGenerate_clickHandler(event)"/>
@@ -92,7 +93,8 @@
                                 verticalAlign="middle" horizontalAlign="left"/>
          </s:layout>
          <s:DropDownList id="ddlTerrainTypes"
-                         requireSelection="true" selectedIndex="0"
+                         requireSelection="true"
+                         selectedItem="@{MODEL.terrainType}"
                          dataProvider="{MODEL.TERRAIN_TYPES}"
                          labelFunction="getTerrainName">
             <s:layout>

@@ -26,8 +26,11 @@
       }
 
       public function showForExport(): void {
-         currentState = MODE_EXPORT;
-         txtData.text = model.serializeMap();
+         const data: String = model.serializeMap();
+         if (data != null) {
+            currentState = MODE_EXPORT;
+            txtData.text = data;
+         }
       }
 
       public function hide(): void {
@@ -35,10 +38,16 @@
       }
 
       private function btnLoad_clickHandler(event: MouseEvent): void {
-         model.loadMap(txtData.text);
-         hide();
+         if (txtData.text != null && txtData.text.length > 0) {
+            model.loadMap(txtData.text);
+            hide();
+         }
       }
-      
+
+      private function btnCopyToClipboard_clickHandler(event: MouseEvent): void {
+         System.setClipboard(txtData.text);
+      }
+
       public var model: MPlanetMapEditor;
       ]]>
    </fx:Script>
@@ -48,14 +57,23 @@
          paddingLeft="10" paddingRight="10"
          paddingTop="10" paddingBottom="10"/>
    </s:layout>
-   <s:TextArea id="txtData" lineBreak="explicit" height="100%"
-               fontFamily="courier-new"/>
+   <s:BorderContainer height="100%" borderColor="0xDDDDDD" backgroundAlpha="0">
+      <s:RichEditableText id="txtData" lineBreak="explicit"
+                          left="4" right="4" top="4" bottom="4"
+                          fontFamily="Courier New"
+                          editable="true"
+                          editable.export="false"/>
+   </s:BorderContainer>
    <s:Group>
       <s:layout>
          <s:HorizontalLayout gap="10" horizontalAlign="right"/>
       </s:layout>
       <s:Button id="btnLoad" label="Load" visible="false" visible.import="true"
                 click="btnLoad_clickHandler(event)"/>
+      <s:Button id="btnCopyToClipboard" label="Copy to clipboard"
+                visible="false" visible.export="true"
+                includeInLayout="false" includeInLayout.export="true"
+                click="btnCopyToClipboard_clickHandler(event)"/>
       <s:Button id="btnCancel" label="Cancel" click="hide()"/>
    </s:Group>
 </s:BorderContainer>

@@ -24,19 +24,23 @@ package components.planetmapeditor
 
    import utils.Events;
    import utils.Objects;
+   import utils.StringUtil;
 
 
    public class MPlanetMapEditor extends EventDispatcher
    {
-      public const MAX_WIDTH:int = 30;
-      public const MIN_WIDTH:int = 4;
-      public const MAX_HEIGHT:int = 30;
-      public const MIN_HEIGHT:int = 4;
+      public const DEFAULT_MAP_NAME: String = "P";
+      public const MAX_NAME_CHARS: int = 8;
 
-      public static const MIN_BUILDING_LEVEL:int = 1;
-      public static const MAX_BUILDING_LEVEL:int = 10;
-      public static const MIN_NPC_LEVEL:int = 0;
-      public static const MAX_NPC_LEVEL:int = 9;
+      public const MAX_WIDTH: int = 30;
+      public const MIN_WIDTH: int = 4;
+      public const MAX_HEIGHT: int = 30;
+      public const MIN_HEIGHT: int = 4;
+
+      public static const MIN_BUILDING_LEVEL: int = 1;
+      public static const MAX_BUILDING_LEVEL: int = 10;
+      public static const MIN_NPC_LEVEL: int = 0;
+      public static const MAX_NPC_LEVEL: int = 9;
 
       public const TERRAIN_TYPES: ArrayCollection = new ArrayCollection([
          TerrainType.GRASS,
@@ -94,6 +98,7 @@ package components.planetmapeditor
       ]);
 
       private var _terrainType:int = TerrainType.GRASS;
+      [Bindable(event="terrainChange")]
       public function set terrainType(value:int): void {
          if (value != _terrainType) {
             _terrainType = value;
@@ -108,6 +113,7 @@ package components.planetmapeditor
                foliage.terrainType = value;
             }
             renderBackground();
+            dispatchEditorEvent(MPlanetMapEditorEvent.TERRAIN_CHANGE);
          }
       }
       public function get terrainType(): int {
@@ -157,6 +163,25 @@ package components.planetmapeditor
          return _mapHeight;
       }
 
+      private var _mapName:String = DEFAULT_MAP_NAME;
+      [Bindable(event="nameChange")]
+      public function set mapName(value: String): void {
+         if (value == null) {
+            return;
+         }
+         if (_mapName != value) {
+            value = StringUtil.trim(value);
+            if (value.length == 0) {
+               value = DEFAULT_MAP_NAME;
+            }
+            dispatchEditorEvent(MPlanetMapEditorEvent.NAME_CHANGE);
+            _mapName = value;
+         }
+      }
+      public function get mapName(): String {
+         return _mapName;
+      }
+
       public var viewport: ViewportZoomable = null;
 
       
@@ -164,7 +189,7 @@ package components.planetmapeditor
       /* ### OBJECT TO ERECT ### */
       /* ####################### */
 
-      private var _objectToErect:MPlanetObject = BUILDINGS[0];
+      private var _objectToErect: MPlanetObject = BUILDINGS[0];
       public function set objectToErect(value: MPlanetObject): void {
          if (_objectToErect != value) {
             _objectToErect = value;
@@ -197,19 +222,25 @@ package components.planetmapeditor
       private var _terrainEditorLayer: TerrainEditorLayer;
 
       public function serializeMap(): String {
-         return new PlanetMapSerializer().serialize(_planet);
+         if (_planet != null) {
+            _planet.ssObject.name = _mapName;
+            return new PlanetMapSerializer().serialize(_planet);
+         }
+         return null;
       }
 
       public function loadMap(data: String): void {
          createMap(new PlanetMapSerializer().deserialize(data));
          mapWidth = _planet.width;
          mapHeight = _planet.height;
+         terrainType = _planet.ssObject.terrain;
+         mapName = _planet.ssObject.name;
       }
 
       public function generateMap(): void {
          Objects.notNull(
             viewport,
-            "[prop viewport] must be set before map can be generated."
+            "[prop viewport] must be set before map can be generated"
          );
          const ssObject: MSSObject = new MSSObject();
          ssObject.terrain = _terrainType;
@@ -223,7 +254,7 @@ package components.planetmapeditor
          _planet = planet;
          _objectsEditorLayer = new ObjectsEditorLayer(_objectToErect);
          _terrainEditorLayer = new TerrainEditorLayer(_selectedTileKind);
-         const map:PlanetMap = new PlanetMap(
+         const map: PlanetMap = new PlanetMap(
             _planet, _objectsEditorLayer, _terrainEditorLayer
          );
          map.viewport = viewport;
