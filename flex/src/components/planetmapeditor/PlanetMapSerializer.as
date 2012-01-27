@@ -6,6 +6,7 @@ package components.planetmapeditor
    import models.planet.MPlanet;
    import models.planet.MPlanetObject;
    import models.solarsystem.MSSObject;
+   import models.solarsystem.SSObjectType;
    import models.tile.FolliageTileKind;
    import models.tile.Tile;
    import models.tile.TileKind;
@@ -148,22 +149,33 @@ package components.planetmapeditor
                }
                row += symPair;
             }
-            row = '- "' + row + '"';
+            row = '  - "' + row + '"';
             rows.push(row);
          }
-         return rows.reverse().join("\n");
+         return 'terrain: ' + planet.ssObject.terrain + '\n' +
+                'name: "' + planet.ssObject.name + '-%d"\n' +
+                'map:\n' + rows.reverse().join('\n');
       }
 
       public function deserialize(data: String): MPlanet {
          Objects.paramNotEmpty("data", data);
-         const rows: Array = data.split("\n").reverse().map(
+         const dataRows:Array = data.split("\n");
+         const ssObject: MSSObject = new MSSObject();
+         ssObject.id = 1;
+         ssObject.type = SSObjectType.PLANET;
+         ssObject.terrain = int(String(dataRows[0])
+                                   .replace(/terrain:\s+/, "")
+                                   .replace(" ", ""));
+         ssObject.name = String(dataRows[1])
+                            .replace(/name:\s+"/, "")
+                            .replace(/-%d"\s*/, "");
+
+         const rows: Array = dataRows.slice(3).reverse().map(
             function(row: String, index: int, array: Array): String {
                return row.replace(/^\s*-\s"/, "").replace(/"\s*$/, "");
             }
          );
 
-         const ssObject: MSSObject = new MSSObject();
-         ssObject.id = 1;
          ssObject.width = String(rows[0]).length / 2;
          ssObject.height = rows.length;
          const planet: MPlanet = new MPlanet(ssObject);

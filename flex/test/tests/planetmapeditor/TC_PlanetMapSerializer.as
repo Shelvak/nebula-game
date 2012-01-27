@@ -16,6 +16,7 @@ package tests.planetmapeditor
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
    import models.tile.FolliageTileKind;
+   import models.tile.TerrainType;
    import models.tile.Tile;
    import models.tile.TileKind;
 
@@ -63,10 +64,13 @@ package tests.planetmapeditor
          assertThat(
             "empty map of 4x4 size",
             serialize(newPlanet(4, 4)), equals (
-               ". . . . \n" +
-               ". . . . \n" +
-               ". . . . \n" +
-               ". . . . "
+               'terrain: 0\n' +
+               'name: "P-%d"\n' +
+               'map:\n' +
+               '  - ". . . . "\n' +
+               '  - ". . . . "\n' +
+               '  - ". . . . "\n' +
+               '  - ". . . . "'
             )
          );
       }
@@ -78,10 +82,13 @@ package tests.planetmapeditor
          assertThat(
             "4x4 map with 2x2 building of level 2 at (1; 1)",
             serialize(planet), equals (
-               ". . . . \n" +
-               ". ----. \n" +
-               ". -b-2. \n" +
-               ". . . . "
+               'terrain: 0\n' +
+               'name: "P-%d"\n' +
+               'map:\n' +
+               '  - ". . . . "\n' +
+               '  - ". ----. "\n' +
+               '  - ". -b-2. "\n' +
+               '  - ". . . . "'
             )
          );
       }
@@ -93,10 +100,13 @@ package tests.planetmapeditor
          assertThat(
             "4x4 map with 2x2 building of level 10 at (1; 1)",
             serialize(planet), equals (
-               ". . . . \n" +
-               ". ----. \n" +
-               ". -b-0. \n" +
-               ". . . . "
+               'terrain: 0\n' +
+               'name: "P-%d"\n' +
+               'map:\n' +
+               '  - ". . . . "\n' +
+               '  - ". ----. "\n' +
+               '  - ". -b-0. "\n' +
+               '  - ". . . . "'
             )
          );
       }
@@ -111,10 +121,13 @@ package tests.planetmapeditor
          assertThat(
             "4x4 map with 2x2 TITAN field at (1; 1)",
             serialize(planet), equals (
-               ". . . . \n" +
-               ". ^ ^ . \n" +
-               ". ^ ^ . \n" +
-               ". . . . "
+               'terrain: 0\n' +
+               'name: "P-%d"\n' +
+               'map:\n' +
+               '  - ". . . . "\n' +
+               '  - ". ^ ^ . "\n' +
+               '  - ". ^ ^ . "\n' +
+               '  - ". . . . "'
             )
          );
       }
@@ -130,10 +143,13 @@ package tests.planetmapeditor
             "4x4 map with 2x2 npc building of level 0 at (1; 1) and " +
                "NOXRIUM at (1; 1), (2; 1), (2; 2)",
             serialize(planet), equals (
-               ". . . . \n" +
-               ". .-/-. \n" +
-               ". /a/0. \n" +
-               ". . . . "
+               'terrain: 0\n' +
+               'name: "P-%d"\n' +
+               'map:\n' +
+               '  - ". . . . "\n' +
+               '  - ". .-/-. "\n' +
+               '  - ". /a/0. "\n' +
+               '  - ". . . . "'
             )
          );
       }
@@ -148,10 +164,13 @@ package tests.planetmapeditor
          assertThat(
             "4x7 map with NPC extractor at (1; 1) and player extractor at (1; 4)",
             serialize(planet), equals (
-               ". . . . . . . \n" +
-               ". ----. ----. \n" +
-               ". $Z-1. Ox-1. \n" +
-               ". . . . . . . "
+               'terrain: 0\n' +
+               'name: "P-%d"\n' +
+               'map:\n' +
+               '  - ". . . . . . . "\n' +
+               '  - ". ----. ----. "\n' +
+               '  - ". $Z-1. Ox-1. "\n' +
+               '  - ". . . . . . . "'
             )
          );
       }
@@ -163,10 +182,13 @@ package tests.planetmapeditor
          assertThat(
             "4x4 map with GEOTHERMAL spot at (1; 1)",
             serialize(planet), equals (
-               ". . . . \n" +
-               ". - - . \n" +
-               ". % - . \n" +
-               ". . . . "
+               'terrain: 0\n' +
+               'name: "P-%d"\n' +
+               'map:\n' +
+               '  - ". . . . "\n' +
+               '  - ". - - . "\n' +
+               '  - ". % - . "\n' +
+               '  - ". . . . "'
             )
          );
       }
@@ -178,11 +200,14 @@ package tests.planetmapeditor
          assertThat(
             "4x5 map with 2x3 foliage at (1; 1)",
             serialize(planet), equals (
-               ". . . . \n" +
-               ". ----. \n" +
-               ". ----. \n" +
-               ". 1---. \n" +
-               ". . . . "
+               'terrain: 0\n' +
+               'name: "P-%d"\n' +
+               'map:\n' +
+               '  - ". . . . "\n' +
+               '  - ". ----. "\n' +
+               '  - ". ----. "\n' +
+               '  - ". 1---. "\n' +
+               '  - ". . . . "'
             )
          );
       }
@@ -195,11 +220,16 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_emptyMap(): void {
          const planet: MPlanet = deserialize(
-            ". . . . \n" +
-            ". . . . \n" +
-            ". . . . \n" +
-            ". . . . "
+            'terrain: 1\n' +
+            'name: "Test-%d"\n' +
+            'map:\n' +
+            '  - ". . . . "\n' +
+            '  - ". . . . "\n' +
+            '  - ". . . . "\n' +
+            '  - ". . . . "'
          );
+         assertThat( "terrain", planet.ssObject.terrain, equals (TerrainType.DESERT) );
+         assertThat( "name", planet.ssObject.name, equals ("Test") );
          assertThat( "width", planet.width, equals (4) );
          assertThat( "height", planet.height, equals (4));
          assertThat( "no objects", planet.objects, emptyArray() );
@@ -217,10 +247,13 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithOneResourceTile(): void {
          const planet: MPlanet = deserialize(
-            ". . . . \n" +
-            ". ----. \n" +
-            ". O---. \n" +
-            ". . . . "
+            'terrain: 0\n' +
+            'name: "P-%d"\n' +
+            'map:\n' +
+            '  - ". . . . "\n' +
+            '  - ". ----. "\n' +
+            '  - ". O---. "\n' +
+            '  - ". . . . "'
          );
          assertRegularTile(planet, [
             new Range2D(0, 3, 0, 0),
@@ -247,10 +280,13 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithNoxriumField(): void {
          const planet: MPlanet = deserialize(
-            ". . . . \n" +
-            ". . . . \n" +
-            ". . / / \n" +
-            ". . / / "
+            'terrain: 0\n' +
+            'name: "P-%d"\n' +
+            'map:\n' +
+            '  - ". . . . "\n' +
+            '  - ". . . . "\n' +
+            '  - ". . / / "\n' +
+            '  - ". . / / "'
          );
          assertRegularTile(planet, [
             new Range2D(0, 1, 0, 3),
@@ -270,11 +306,14 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithFoliage(): void {
          const planet: MPlanet = deserialize(
-            ". . . . \n" +
-            ". ----. \n" +
-            ". ----. \n" +
-            ". 1---. \n" +
-            ". . . . "
+            'terrain: 0\n' +
+            'name: "P-%d"\n' +
+            'map:\n' +
+            '  - ". . . . "\n' +
+            '  - ". ----. "\n' +
+            '  - ". ----. "\n' +
+            '  - ". 1---. "\n' +
+            '  - ". . . . "'
          );
          assertRegularTile(planet, [new Range2D(0, 4, 0, 4)]);
          assertThat( "only one object", planet.objects, arrayWithSize (1) );
@@ -290,10 +329,13 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithBuilding(): void {
          const planet: MPlanet = deserialize(
-            ". . . . \n" +
-            ". ----. \n" +
-            ". -b-2. \n" +
-            ". . . . "
+            'terrain: 0\n' +
+            'name: "P-%d"\n' +
+            'map:\n' +
+            '  - ". . . . "\n' +
+            '  - ". ----. "\n' +
+            '  - ". -b-2. "\n' +
+            '  - ". . . . "'
          );
          assertThat( "only one object", planet.objects, arrayWithSize (1) );
          const building: Building = planet.getObject(1, 1) as Building;
@@ -308,10 +350,13 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithExtractor(): void {
          const planet: MPlanet = deserialize(
-            ". . . . \n" +
-            ". ----. \n" +
-            ". $z-1. \n" +
-            ". . . . "
+            'terrain: 0\n' +
+            'name: "P-%d"\n' +
+            'map:\n' +
+            '  - ". . . . "\n' +
+            '  - ". ----. "\n' +
+            '  - ". $z-1. "\n' +
+            '  - ". . . . "'
          );
          assertRegularTile(planet, [
             new Range2D(0, 3, 0, 0),
@@ -340,10 +385,13 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithBuildingAndNonRegularTilesUnderIt(): void {
          const planet: MPlanet = deserialize(
-            ". # # # . . \n" +
-            ". # # # . . \n" +
-            ". #-.-. . . \n" +
-            ". #a.3. . ."
+            'terrain: 0\n' +
+            'name: "P-%d"\n' +
+            'map:\n' +
+            '  - ". # # # . . "\n' +
+            '  - ". # # # . . "\n' +
+            '  - ". #-.-. . . "\n' +
+            '  - ". #a.3. . . "'
          );
          assertRegularTile(planet,  [
             new Range2D(0, 0, 0, 3),
@@ -393,6 +441,7 @@ package tests.planetmapeditor
       private function newPlanet(width: int, height: int): MPlanet {
          const ssObject: MSSObject = new MSSObject();
          ssObject.type = SSObjectType.PLANET;
+         ssObject.name = "P";
          ssObject.width = width;
          ssObject.height = height;
          return new MPlanet(ssObject);
