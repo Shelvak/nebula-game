@@ -363,10 +363,10 @@ package components.map.planet
          else {
             // If there is another tile adjacent to tile being examined and the
             // tile being blended we don't need to blend anything
-            var adjTileY: Tile = adjY >= 0 && adjY < _map.getPlanet().width
+            var adjTileY: Tile = adjY >= 0 && adjY < _map.getPlanet().height
                                     ? DFSRecord(dfsArray[currX][adjY]).tile
                                     : null;
-            var adjTileX: Tile = adjX >= 0 && adjX < _map.getPlanet().height
+            var adjTileX: Tile = adjX >= 0 && adjX < _map.getPlanet().width
                                     ? DFSRecord(dfsArray[adjX][currY]).tile
                                     : null;
             if (adjTileY && adjTileY.kind == kind
@@ -444,7 +444,7 @@ package components.map.planet
        * 
        * @param tileKind kind of a tile (values are from <code>TileKind</code>)
        * @param sampleTexture sample image of a texture. If this one if provided <code>tileKind</code>
-       * is ingnored.
+       * is ignored.
        */
       private function buildTexture(tileKind: int,
                                     sampleTexture: BitmapData = null): void {
