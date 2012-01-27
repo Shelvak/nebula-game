@@ -7,59 +7,64 @@ class TechnologiesController < GenericController
 
   # Starts researching new technology (from level 0)
   #
-  # Params:
-  #   type: String, i.e. ZetiumExtraction
-  #   planet_id: Fixnum, planet where to take resources from
-  #   scientists: Fixnum, how many scientists should we assign
-  #   speed_up: Boolean, should we speed up the research?
+  # Invocation: by client
+  #
+  # Parameters:
+  # - type (String): e.g. ZetiumExtraction
+  # - planet_id (Fixnum): planet id from which resources are taken
+  # - scientists (Fixnum): how many scientists should we assign
+  # - speed_up (Boolean): should we speed up the research?
+  #
+  # Response: None.
   #
   def action_new
-    param_options :required => %w{type planet_id scientists speed_up}
+    param_options :required => {:type => String, :planet_id => Fixnum,
+      :scientists => Fixnum, :speed_up => Boolean}
 
-    technology = Technology.new_by_type(params['type'],
+    technology = Technology.new_by_type(
+      params['type'],
       :player => player, :planet_id => params['planet_id'], :level => 0,
       :scientists => params['scientists'],
-      :speed_up => params['speed_up'])
+      :speed_up => params['speed_up']
+    )
     technology.upgrade!
-
-    respond :technology => technology.as_json
   end
 
-  # Upgrades existing technology
+  # Upgrades existing technology.
   #
   # Params:
-  #   id: Fixnum, id of technology to upgrade
-  #   planet_id: Fixnum, planet where to take resources from
-  #   scientists: Fixnum, how many scientists should we assign
-  #   speed_up: Boolean, should we speed up the research?
+  # - id (Fixnum): id of technology to upgrade
+  # - planet_id (Fixnum): planet where to take resources from
+  # - scientists (Fixnum): how many scientists should we assign
+  # - speed_up (Boolean): should we speed up the research?
+  #
+  # Response: None.
   #
   def action_upgrade
     param_options :required => {:id => Fixnum, :planet_id => Fixnum,
-      :scientists => Fixnum, :speed_up => [TrueClass, FalseClass]}
+      :scientists => Fixnum, :speed_up => Boolean}
 
     technology = player.technologies.find(params['id'])
     technology.scientists = params['scientists']
     technology.speed_up = params['speed_up']
     technology.planet_id = params['planet_id']
     technology.upgrade!
-
-    respond :technology => technology.as_json
   end
 
-  # Change scientist count in curently upgrading technology.
+  # Change scientist count in currently upgrading technology.
   #
   # Params:
-  #   id: Fixnum, id of technology to upgrade
-  #   scientists: Fixnum, how many scientists should we assign
+  # - id (Fixnum): id of technology to upgrade
+  # - scientists (Fixnum): how many scientists should we assign
+  #
+  # Response: None.
   #
   def action_update
-    param_options :required => %w{id}
+    param_options :required => {:id => Fixnum, :scientists => Fixnum}
 
     technology = player.technologies.find(params['id'])
     technology.scientists = params['scientists']
     technology.save!
-
-    respond :technology => technology.as_json
   end
 
   # Pauses upgrading technology
@@ -72,8 +77,6 @@ class TechnologiesController < GenericController
 
     technology = player.technologies.find(params['id'])
     technology.pause!
-
-    respond :technology => technology.as_json
   end
 
   # Resumes paused technology
@@ -88,8 +91,6 @@ class TechnologiesController < GenericController
     technology = player.technologies.find(params['id'])
     technology.scientists = params['scientists']
     technology.resume!
-
-    respond :technology => technology.as_json
   end
 
   # Accelerates technology research.
@@ -103,8 +104,6 @@ class TechnologiesController < GenericController
 
     technology = player.technologies.find(params['id'])
     Creds.accelerate!(technology, params['index'])
-	
-    respond :technology => technology.as_json
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)

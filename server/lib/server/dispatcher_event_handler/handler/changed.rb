@@ -51,9 +51,6 @@ class DispatcherEventHandler::Handler::Changed < DispatcherEventHandler::Handler
         end
       end
     end],
-    [Technology, lambda do |dispatcher, events, reason|
-      # Just silently ignore it, we pass stuff manually with this one.
-    end]
   ]
 
   class << self

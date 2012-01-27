@@ -1511,15 +1511,15 @@ describe Player do
         @technologies[4].should be_paused
       end
 
-      it "should dispatch changed technologies" do
-        Reducer::ScientistsReducer.stub!(:reduce).and_return([
+      it "should create notification with changes" do
+        changes = [
           [@technologies[0], Reducer::CHANGED, 20],
           [@technologies[3], Reducer::CHANGED, 30],
-        ])
-        should_fire_event([@technologies[0], @technologies[3]],
-            EventBroker::CHANGED) do
-          @player.ensure_free_scientists! 20
-        end
+        ]
+        Reducer::ScientistsReducer.stub!(:reduce).and_return(changes)
+        Notification.should_receive(:create_for_technologies_changed).
+          with(@player.id, changes)
+        @player.ensure_free_scientists! 20
       end
 
       it "should not crash if there are no changes" do

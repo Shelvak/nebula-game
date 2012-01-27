@@ -518,15 +518,8 @@ class Player < ActiveRecord::Base
       scientists - self.scientists
     )
 
-    unless changes.blank?
-      changed_technologies = changes.map do
-        |technology, state, old_scientists, new_scientists|
-        technology
-      end
-
-      Notification.create_for_technologies_changed(self.id, changes)
-      EventBroker.fire(changed_technologies, EventBroker::CHANGED)
-    end
+    Notification.create_for_technologies_changed(self.id, changes) \
+      unless changes.blank?
 
     # Reload updated player
     reload

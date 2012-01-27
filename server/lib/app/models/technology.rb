@@ -3,6 +3,8 @@ class Technology < ActiveRecord::Base
   include Parts::Upgradable
   include Parts::NeedsTechnology
   include Parts::SciencePoints
+  include Parts::Object
+  include Parts::Notifier
 
   def planet(reload=false)
     @_planet = nil if reload

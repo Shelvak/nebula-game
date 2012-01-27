@@ -66,7 +66,8 @@ class DispatcherEventHandler::ObjectResolver
           end
         when ConstructionQueueEntry
           planet_owner_only(object.constructor.planet)
-        when Notification, ClientQuest, QuestProgress, ObjectiveProgress
+        when Notification, ClientQuest, QuestProgress, ObjectiveProgress,
+             Technology
           player(object.player_id)
         when SolarSystem, SolarSystemMetadata
           ss = object.is_a?(SolarSystem) ? object : SolarSystem.find(object.id)

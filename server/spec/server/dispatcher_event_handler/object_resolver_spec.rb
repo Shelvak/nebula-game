@@ -93,6 +93,7 @@ describe DispatcherEventHandler::ObjectResolver do
       ["ClientQuest", lambda { ClientQuest.new(1, 2) }],
       ["QuestProgress", lambda { Factory.create(:quest_progress) }],
       ["ObjectiveProgress", lambda { Factory.create(:objective_progress) }],
+      ["Technology", lambda { Factory.create(:technology) }],
     ].each do |kind, obj_creator|
       it "should resolve #{kind}" do
         obj = obj_creator.call
