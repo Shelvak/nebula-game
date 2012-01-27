@@ -7,7 +7,6 @@ package components.planetmapeditor
    import models.planet.MPlanetObject;
    import models.solarsystem.MSSObject;
    import models.tile.FolliageTileKind;
-   import models.tile.FolliageTileKind;
    import models.tile.Tile;
    import models.tile.TileKind;
 
@@ -71,7 +70,7 @@ package components.planetmapeditor
           "H": BuildingType.NPC_COMMUNICATIONS_HUB,
           "X": BuildingType.NPC_METAL_EXTRACTOR,
           "Z": BuildingType.NPC_ZETIUM_EXTRACTOR,
-          "E": BuildingType.NPC_TEMPLATE,
+          "E": BuildingType.NPC_TEMPLE,
           "G": BuildingType.NPC_GEOTHERMAL_PLANT,
           "R": BuildingType.NPC_RESEARCH_CENTER,
           "C": BuildingType.NPC_EXCAVATION_SITE,
@@ -149,6 +148,7 @@ package components.planetmapeditor
                }
                row += symPair;
             }
+            row = '- "' + row + '"';
             rows.push(row);
          }
          return rows.reverse().join("\n");
@@ -156,7 +156,12 @@ package components.planetmapeditor
 
       public function deserialize(data: String): MPlanet {
          Objects.paramNotEmpty("data", data);
-         const rows: Array = data.split("\n").reverse();
+         const rows: Array = data.split("\n").reverse().map(
+            function(row: String, index: int, array: Array): String {
+               return row.replace(/^\s*-\s"/, "").replace(/"\s*$/, "");
+            }
+         );
+
          const ssObject: MSSObject = new MSSObject();
          ssObject.id = 1;
          ssObject.width = String(rows[0]).length / 2;

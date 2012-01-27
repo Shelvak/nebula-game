@@ -23,7 +23,7 @@ package models.building
       public static const NPC_COMMUNICATIONS_HUB: String = "NpcCommunicationsHub";
       public static const NPC_METAL_EXTRACTOR: String = "NpcMetalExtractor";
       public static const NPC_ZETIUM_EXTRACTOR: String = "NpcZetiumExtractor";
-      public static const NPC_TEMPLATE: String = "NpcTemplate";
+      public static const NPC_TEMPLE: String = "NpcTemple";
       public static const NPC_GEOTHERMAL_PLANT: String = "NpcGeothermalPlant";
       public static const NPC_RESEARCH_CENTER: String = "NpcResearchCenter";
       public static const NPC_EXCAVATION_SITE: String = "NpcExcavationSite";
