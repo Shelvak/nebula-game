@@ -208,6 +208,9 @@ package components.planetmapeditor
                         getBuildingType(objectSym),
                         int(levelSym)
                      );
+                     building.id = 1;
+                     building.state = Building.ACTIVE;
+                     building.hp = building.hpMax;
                      building.moveTo(x, y);
                      planet.addObject(building);
                   }
