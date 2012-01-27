@@ -38,7 +38,8 @@ package tests.planetmapeditor
 
       [Before]
       public function setUp(): void {
-          editor = new MPlanetMapEditor()
+         editor = new MPlanetMapEditor();
+         editor.viewport = new ViewportZoomable();
       }
 
       [After]
@@ -88,7 +89,7 @@ package tests.planetmapeditor
             editor.terrainType, equals (TerrainType.GRASS)
          );
 
-         editor.generateMap(new ViewportZoomable());
+         editor.generateMap();
          editor.terrainType = TerrainType.MUD;
          for each (var foliage: BlockingFolliage in editor.FOLIAGE) {
             assertThat(
@@ -142,7 +143,7 @@ package tests.planetmapeditor
             "buildings.healingCenter.height": 2
          });
          const building:Building = newBuilding(BuildingType.HEALING_CENTER);
-         editor.generateMap(new ViewportZoomable());
+         editor.generateMap();
          editor.objectToErect = building;
          assertThat(
             "setting to new value should change the property",

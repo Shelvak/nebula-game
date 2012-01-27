@@ -45,7 +45,7 @@
    <s:Label fontSize="16" fontWeight="bold" text="{title}" textAlign="center"/>
    <s:Group>
       <s:layout>
-         <s:HorizontalLayout gap="10" verticalAlign="middle"/>
+         <s:HorizontalLayout paddingLeft="10" gap="10" verticalAlign="middle"/>
       </s:layout>
       <s:Label fontWeight="bold" text="Level:"/>
       <s:NumericStepper id="stepLevel"

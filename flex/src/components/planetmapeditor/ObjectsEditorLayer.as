@@ -105,6 +105,7 @@ package components.planetmapeditor
                   planet.removeObject(objectUnder);
                }
                if (object is BlockingFolliage
+                      || !building.npc
                       || building.isTileRestricted(planet.getTileKind(x, y))) {
                   planet.removeTile(x, y);
                }
