@@ -188,12 +188,14 @@ class Player < ActiveRecord::Base
         raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
       end
     else
-      json = attributes.only(*%w{id name scientists scientists_total xp
+      json = attributes.only(*%w{
+        id name scientists scientists_total xp
         economy_points army_points science_points war_points
         victory_points population population_cap
         alliance_id alliance_cooldown_ends_at alliance_cooldown_id
-        free_creds vip_creds vip_level vip_until vip_creds_until}
-      )
+        free_creds vip_creds vip_level vip_until vip_creds_until
+        planets_count bg_planets_count
+      })
       json['creds'] = creds
       json['first_time'] = first_time
       json['portal_without_allies'] = portal_without_allies

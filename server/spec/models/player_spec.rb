@@ -874,6 +874,7 @@ describe Player do
         alliance_id alliance_cooldown_ends_at alliance_cooldown_id
         free_creds vip_level vip_creds vip_until vip_creds_until
         portal_without_allies
+        planets_count bg_planets_count
       }
       ommited_fields = fields - required_fields
       it_behaves_like "as json", Factory.create(:player), nil,
