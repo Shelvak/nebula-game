@@ -1,7 +1,9 @@
 package models.technology
 {
    import com.developmentarc.core.utils.EventBroker;
-   
+
+   import config.Config;
+
    import config.Config;
    
    import flash.events.Event;
@@ -23,6 +25,7 @@ package models.technology
    
    import utils.DateUtil;
    import utils.Objects;
+   import utils.StringUtil;
    import utils.StringUtil;
    import utils.StringUtil;
    import utils.locale.Localizer;
@@ -63,6 +66,35 @@ package models.technology
       
       [Required]
       public var pauseRemainder: int = 0;
+
+      [Bindable(event="technologyCreated")]
+      /* returns assets and locale name for technology (type or name if specified) */
+      public function get configName(): String
+      {
+         var _name: String = Config.getTechnologyName(type);
+         return _name == null ? type : _name;
+      }
+      /* returns group tech name or null if not in group */
+      public function get groupTo(): String
+      {
+         return Config.getTechnologyGroupTo(type);
+      }
+      /* returns tech position in group or 0 if not in group */
+      public function get groupPosition(): int
+      {
+         return Config.getTechnologyGroupPosition(type);
+      }
+      
+      private var _groupElements: Array = null;
+      
+      public function get groupElements(): Array
+      {
+         if (_groupElements == null)
+         {
+            _groupElements = Config.getTechnologyGroupElements(type);
+         }
+         return _groupElements.length > 0 ? _groupElements : null;
+      }
       
       
       public function Technology()
@@ -114,7 +146,7 @@ package models.technology
       [Bindable(event="technologyCreated")]
       public function get title(): String
       {
-         return getTechnologyTitle(type);
+         return getTechnologyTitle(configName);
       }
       
       public function get coords(): Object
@@ -173,9 +205,14 @@ package models.technology
          var requirements: Object = Config.getTechnologyRequirements(type);
          for (var requirement: String in requirements)
          {
+            var realName: String = Config.getTechnologyName(requirement);
+            if (realName == null)
+            {
+               realName = requirement;
+            }
             if (!requirements[requirement].invert)        
             {
-               tempText += '   \u2022 ' + getTechnologyTitle(requirement)+ " " + 
+               tempText += '   \u2022 ' + getTechnologyTitle(realName)+ " " +
                   Localizer.string('Technologies', 'level', 
                      [requirements[requirement].level.toString()]) + "\n";
             }
@@ -183,7 +220,7 @@ package models.technology
             {
                if (groupText == "")
                   groupText += Localizer.string('Technologies', 'isGroup') + "\n\n";
-               groupText +=  '   \u2022 ' + getTechnologyTitle(requirement) + "\n";
+               groupText +=  '   \u2022 ' + getTechnologyTitle(realName) + "\n";
             }
             
          }
@@ -249,13 +286,29 @@ package models.technology
       
       public function get description(): String
       {
-         return Localizer.string('Technologies', type + '.about');
+         return Localizer.string('Technologies', configName + '.about');
       };
       
       [Bindable(event="selectedTechnologyChanged")]
       public function get maxLevel(): int
       {
          return Config.getTechnologyMaxLevel(type);
+      }
+
+      [Bindable (event="levelChange")]
+      public function get planetsRequired(): int
+      {
+         return Math.round(StringUtil.evalFormula(
+            Config.getTechnologyPlanetsRequired(type),
+            {'level': level}));
+      }
+
+      [Bindable (event="levelChange")]
+      public function get pulsarsRequired(): int
+      {
+         return Math.round(StringUtil.evalFormula(
+            Config.getTechnologyPulsarsRequired(type),
+            {'level': level}));
       }
       
       [Bindable (event="levelChange")]

@@ -25,9 +25,10 @@
          
          import models.player.events.PlayerEvent;
          import models.solarsystem.MSSObject;
+         import models.technology.MCTechnologySelectedSidebar;
          import models.technology.Technology;
-         import models.technology.events.TechnologyEvent;
-         
+         import models.technology.events.TechnologySidebarEvent;
+
          import mx.collections.SortField;
          import mx.events.FlexEvent;
          
@@ -44,17 +45,20 @@
          private var drawedGroupElements: Array = new Array();
          
          private var treeCompsList: Array;
+         private var groupCompsList: Object;
          
          protected function drawTree(e: Event = null): void
          {
-            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
             treeCompsList = [];
+            groupCompsList = {};
             drawedGroupElements = [];
             treeContainer.removeAllElements();
             findPoints();
             for each (var tech: Technology in ML.technologies.technologies)
             {
                drawTechnology(tech);
+              if (tech.groupTo == null)
+              {
                var requirements: Object = Config.getTechnologyRequirements(tech.type);
                for (var requirement: String in requirements)
                {
@@ -70,24 +74,43 @@
                      drawConnection(ML.technologies.getTechnologyByType(requirement), tech);
                   }
                }
+              }
             }
             
             drawObjects();
-            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
-            ML.player.removeEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
-            ML.player.addEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
-            EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+            if (!eventsSubscribed)
+            {
+               EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
+               EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+               ML.player.addEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
+               ML.player.addEventListener(PlayerEvent.PLANET_COUNT_CHANGE, refreshPurchasableState);
+               tSidebar.addEventListener(TechnologySidebarEvent.SELECTED_CHANGE,
+                 selectedTechChangeHandler
+               );
+               eventsSubscribed = true;
+            }
             refreshPurchasableState();
          }
+
+         private var tSidebar: MCTechnologySelectedSidebar = MCTechnologySelectedSidebar.getInstance();
+
+         /* Just to make sure events are not subscribed twice */
+         private var eventsSubscribed: Boolean = false;
          
          private function reset(e: GlobalEvent): void
          {
             if (ML.player)
             {
                ML.player.removeEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
+               ML.player.removeEventListener(PlayerEvent.PLANET_COUNT_CHANGE, refreshPurchasableState);
             }
             EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
+            EventBroker.unsubscribe(GlobalEvent.APP_RESET, reset);
+            tSidebar.removeEventListener(TechnologySidebarEvent.SELECTED_CHANGE,
+             selectedTechChangeHandler);
+            eventsSubscribed = false;
             treeCompsList = [];
+            groupCompsList = {};
             treeContainer.removeAllElements();
          }
          
@@ -119,6 +142,8 @@
          {
             for each (var tech: Technology in ML.technologies.technologies)
             {
+              if (tech.groupTo == null)
+              {
                var requirements: Object = Config.getTechnologyRequirements(tech.type);
                for (var requirement: String in requirements)
                {
@@ -127,6 +152,7 @@
                      addPoints(ML.technologies.getTechnologyByType(requirement), tech);
                   }
                }
+              }
             }
          }
          
@@ -163,21 +189,66 @@
             
             (horizontalHash[y] as PointSet).addItem(point);
          }
+
+         private var oldMetal: Number = -1;
+         private var oldEnergy: Number = -1;
+         private var oldZetium: Number = -1;
          
          private function refreshPurchasableState(e: Event= null):void
          {
             if (ML.latestPlanet)
             {
+               var increased: Boolean = false;
+               var decreased: Boolean = false;
+               var same: Boolean = true;
+               var rChanged: Boolean = (e != null &&
+                 e.type == GResourcesEvent.RESOURCES_CHANGE);
                var planet:MSSObject = ML.latestPlanet.ssObject;
+               if (rChanged)
+               {
+                  if (oldMetal > planet.metal.currentStock
+                    || oldEnergy > planet.energy.currentStock
+                    || oldZetium > planet.zetium.currentStock)
+                  {
+                    increased = true;
+                    same = false;
+                  }
+                  if (oldMetal < planet.metal.currentStock
+                   || oldEnergy < planet.energy.currentStock
+                   || oldZetium < planet.zetium.currentStock)
+                  {
+                    decreased = true;
+                    same = false;
+                  }
+                  if (same)
+                  {
+                    return;
+                  }
+                  oldMetal = planet.metal.currentStock;
+                  oldEnergy = planet.energy.currentStock;
+                  oldZetium = planet.zetium.currentStock;
+               }
+               else
+               {
+                 oldMetal = -1;
+                 oldEnergy = -1;
+                 oldZetium = -1;
+               }
+               function meetsRequirements(tComp: TechnologyComponent): Boolean
+               {
+                 return comp.modelObj.minScientists <= ML.player.scientists &&
+                        comp.modelObj.planetsRequired <= ML.player.planetsCount &&
+                        comp.modelObj.pulsarsRequired <= ML.player.bgPlanetsCount;
+               }
                for each(var comp: TechnologyComponent in treeCompsList)
                {
-                  if (comp != null && comp.modelObj != null)
+                  if (comp != null && comp.modelObj != null &&
+                    (!rChanged || (comp.canBeUpgraded && decreased)
+                        || (!comp.canBeUpgraded && increased)))
                   {
-                     comp.canBeUpgraded =
-                        (comp.modelObj.upgradePart.enoughResourcesForNextLevel(planet) &&
-                           comp.modelObj.minScientists <= ML.player.scientists) ||
-                        (comp.modelObj.pauseRemainder != 0 &&
-                           comp.modelObj.minScientists <= ML.player.scientists);
+                     comp.canBeUpgraded = meetsRequirements(comp) &&
+                        (comp.modelObj.upgradePart.enoughResourcesForNextLevel(planet)
+                        || comp.modelObj.pauseRemainder != 0);
                   }
                }
             }
@@ -197,19 +268,25 @@
                   drawedGroupElements.push(requirement);
                }
             }
-            var minX: int = 100;
+            var minX: int = 1000;
             var maxX: int = 0;
+            var minY: int = 1000;
+            var maxY: int = 0;
             for each (var element: Object in groupElements)
             {
                if (element[0] < minX)
                   minX = element[0];
                if (element[0] > maxX)
                   maxX = element[0];
+               if (element[1] < minY)
+                  minY = element[1];
+               if (element[1] > maxY)
+                  maxY = element[1];
             }
-            var topSide: Number = containing.coords[1] * cellSize + int(cellPadding/2) - 3;
+            var topSide: Number = minY * cellSize + int(cellPadding/2) - 3;
             var leftSide: Number = minX * cellSize + int(cellPadding/2) - 3;
             var rightSide: Number = (maxX + 1) * cellSize - int(cellPadding/2) + 3;
-            var bottomSide: Number = (containing.coords[1] + 1) * cellSize - int(cellPadding/2) + 3;
+            var bottomSide: Number = (maxY + 1) * cellSize - int(cellPadding/2) + 3;
             
             
             drawHLine(topSide, leftSide, rightSide, null);
@@ -405,12 +482,46 @@
             }
             return true;
          }
+
+         private function selectedTechChangeHandler(e: TechnologySidebarEvent): void
+         {
+           var selectedTech: Technology = tSidebar.selectedTechnology;
+           if (selectedTech != null && selectedTech.groupElements != null)
+           {
+             if (groupCompsList[selectedTech.type] != null)
+             {
+               return;
+             }
+             var tGroup: TechnologyGroup = new TechnologyGroup();
+             tGroup.belongsTo = selectedTech.type;
+             var coords: Object = selectedTech.coords;
+             tGroup.leftCenter = coords[0] * cellSize + (cellSize/2);
+             tGroup.top = (coords[1] + 1) * cellSize - cellPadding;
+             for each (var techName: String in selectedTech.groupElements)
+             {
+               var tech: Technology = ML.technologies.getTechnologyByType(techName);
+               var temp: TechnologyComponent = new TechnologyComponent();
+               temp.modelName = techName;
+               temp.left = tech.groupPosition * cellSize + cellPadding;
+               tGroup.addTechComp(temp);
+               treeCompsList.push(temp);
+             }
+             treeContainer.addElement(tGroup);
+             groupCompsList[selectedTech.type] = tGroup;
+           }
+         }
          
          protected function drawTechnology(tech: Technology): void
          {
+            if (tech.groupTo != null)
+            {
+              return;
+            }
+            var coords: Object;
             var temp: TechnologyComponent = new TechnologyComponent();
-            var coords: Object = tech.coords;
             temp.modelName = tech.type;
+            coords = tech.coords;
+            temp.hasGroupElements = tech.groupElements != null;
             treeContainer.addElement(temp);
             treeCompsList.push(temp);
             temp.left = coords[0] * cellSize + cellPadding;
@@ -433,6 +544,7 @@
          {
             if (SD.currentName != SidebarScreens.TECH_TREE_BASE)
                SD.replaceCurrentWith(SidebarScreens.TECH_TREE_BASE);
+            MCTechnologySelectedSidebar.getInstance().selectedTechnology = null;
          }
          
       ]]>

@@ -8,6 +8,7 @@ package models.player.events
       public static const CREDS_CHANGE: String = "credsChange";
       public static const POPULATION_CAP_CHANGE: String = "populationCapChange";
       public static const POPULATION_CHANGE: String = "populationChange";
+      public static const PLANET_COUNT_CHANGE: String = "planetCountChange";
       
       /**
        * Dispatched when <code>Player.allianceId</code> property changes.

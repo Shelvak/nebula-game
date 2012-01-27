@@ -58,7 +58,10 @@ package models.technology
       public function createTechnology(type: String):void {
          var temp: Technology = new Technology();
          temp.type = type;
-         coordsHash[getCoordsAsString(temp.coords[0], temp.coords[1])] = true; 
+         if (temp.groupTo == null)
+         {
+            coordsHash[getCoordsAsString(temp.coords[0], temp.coords[1])] = true;
+         }
          temp.dispatchEvent(new Event(TechnologyEvent.TECHNOLOGY_CREATED));
          technologies.addItem(temp);
       }

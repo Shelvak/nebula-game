@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:base="components.base.*"
+         left="{visible ? leftCenter - (width/2) : 0}"
+         depth="5"
+         visible="{shouldBeVisible(belongsTo,
+          MCTechnologySelectedSidebar.getInstance().selectedTechnology)}">
+  <base:BorderedGroupBackground left="0" right="0" top="0" bottom="0"/>
+  <s:Rect left="1" right="1" top="2" bottom="2">
+    <s:fill>
+      <s:SolidColor color="#000000"/>
+    </s:fill>
+  </s:Rect>
+  <s:Group id="content" left="10" right="10" top="10" bottom="10">
+
+  </s:Group>
+  <fx:Script><![CDATA[
+    import models.technology.MCTechnologySelectedSidebar;
+    import models.technology.Technology;
+
+    public var techComps: Array = [];
+    [Bindable]
+    public var belongsTo: String;
+    [Bindable]
+    public var leftCenter: Number;
+    private var groupedTypes: Array = [];
+
+    private function shouldBeVisible(_belongsTo: String, selectedTech: Technology): Boolean
+    {
+       return selectedTech != null &&
+         (groupedTypes.indexOf(selectedTech.type) != -1
+           || belongsTo == selectedTech.type)
+    }
+
+    public function addTechComp(techComp: TechnologyComponent): void
+    {
+      techComps.push(techComp);
+      groupedTypes.push(techComp.modelObj.type);
+      content.addElement(techComp);
+    }
+    ]]></fx:Script>
+</s:Group>

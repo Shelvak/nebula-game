@@ -4,7 +4,7 @@ package models.technology.events
    
    public class TechnologySidebarEvent extends Event
    {
-      public static const SELECTED_CHANGE: String = 'selectedBuildingChange';
+      public static const SELECTED_CHANGE: String = 'selectedTechnologyChange';
       public function TechnologySidebarEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
       {
          super(type, bubbles, cancelable);
