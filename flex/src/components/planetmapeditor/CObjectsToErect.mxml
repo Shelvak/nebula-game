@@ -15,6 +15,7 @@
 
       import utils.components.ToggleButtonsGroup;
       import utils.components.events.ToggleButtonsGroupEvent;
+      import utils.locale.Localizer;
 
 
       [Bindable]
@@ -60,6 +61,13 @@
       private function this_creationCompleteHandler(event: FlexEvent): void {
          model.objectToErect = pnlBuildings.selectedBuilding;
       }
+
+      private const TITLE_BUILDINGS:String = "buildings";
+      private const TITLE_NPC_BUILDINGS:String = "npcBuildings";
+      private const TITLE_FOLIAGE:String = "foliage";
+      private function getTitle(property: String): String {
+         return Localizer.string("PlanetMapEditor", "title." + property);
+      }
       ]]>
    </fx:Script>
    <s:layout>
@@ -69,26 +77,26 @@
       <s:layout>
          <s:VerticalLayout gap="2" horizontalAlign="justify"/>
       </s:layout>
-      <s:ToggleButton id="btnBuildings" label="Buildings"/>
-      <s:ToggleButton id="btnNpcBuildings" label="NPC Buildings"/>
-      <s:ToggleButton id="btnFoliage" label="Foliage"/>
+      <s:ToggleButton id="btnBuildings" label="{getTitle(TITLE_BUILDINGS)}"/>
+      <s:ToggleButton id="btnNpcBuildings" label="{getTitle(TITLE_NPC_BUILDINGS)}"/>
+      <s:ToggleButton id="btnFoliage" label="{getTitle(TITLE_FOLIAGE)}"/>
    </s:Group>
    <s:Group height="100%">
       <planetmapeditor:CBuildingsPanel
          width="100%" height="100%"
-         id="pnlBuildings" title="Buildings"
+         id="pnlBuildings" title="{getTitle(TITLE_BUILDINGS)}"
          listData="{model.BUILDINGS}"
          minLevel="{MPlanetMapEditor.MIN_BUILDING_LEVEL}"
          maxLevel="{MPlanetMapEditor.MAX_BUILDING_LEVEL}"/>
       <planetmapeditor:CBuildingsPanel
          width="100%" height="100%"
-         id="pnlNpcBuildings" title="NPC Buildings" visible="false"
+         id="pnlNpcBuildings" title="{getTitle(TITLE_NPC_BUILDINGS)}" visible="false"
          listData="{model.NPC_BUILDINGS}"
          minLevel="{MPlanetMapEditor.MIN_NPC_LEVEL}"
          maxLevel="{MPlanetMapEditor.MAX_NPC_LEVEL}"/>
       <planetmapeditor:CFoliagePanel
          width="100%" height="100%"
-         id="pnlFoliage" title="Foliage" visible="false"
+         id="pnlFoliage" title="{getTitle(TITLE_FOLIAGE)}" visible="false"
          listData="{model.FOLIAGE}"/>
    </s:Group>
 </s:Group>

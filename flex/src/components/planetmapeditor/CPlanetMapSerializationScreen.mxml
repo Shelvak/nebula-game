@@ -16,9 +16,14 @@
    </s:states>
    <fx:Script>
       <![CDATA[
+      import utils.locale.Localizer;
+
+
       public static const MODE_HIDDEN: String = "hidden";
       public static const MODE_IMPORT: String = "import";
       public static const MODE_EXPORT: String = "export";
+
+      public var model: MPlanetMapEditor;
 
       public function showForImport(): void {
          currentState = MODE_IMPORT;
@@ -48,7 +53,9 @@
          System.setClipboard(txtData.text);
       }
 
-      public var model: MPlanetMapEditor;
+      private function getLabel(property: String): String {
+         return Localizer.string("PlanetMapEditor", "label." + property);
+      }
       ]]>
    </fx:Script>
    <s:layout>
@@ -70,10 +77,10 @@
       </s:layout>
       <s:Button id="btnLoad" label="Load" visible="false" visible.import="true"
                 click="btnLoad_clickHandler(event)"/>
-      <s:Button id="btnCopyToClipboard" label="Copy to clipboard"
+      <s:Button id="btnCopyToClipboard" label="{getLabel('copy')}"
                 visible="false" visible.export="true"
                 includeInLayout="false" includeInLayout.export="true"
                 click="btnCopyToClipboard_clickHandler(event)"/>
-      <s:Button id="btnCancel" label="Cancel" click="hide()"/>
+      <s:Button id="btnCancel" label="{getLabel('cancel')}" click="hide()"/>
    </s:Group>
 </s:BorderContainer>

@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
                 xmlns:s="library://ns.adobe.com/flex/spark"
-                xmlns:utl="utils.components.*">
+                xmlns:utl="utils.components.*"
+                width="96">
    <fx:Binding source="Building(data)" destination="building"/>
    <fx:Script>
       <![CDATA[
@@ -13,9 +14,9 @@
       ]]>
    </fx:Script>
    <s:layout>
-      <s:VerticalLayout gap="5" horizontalAlign="center"/>
+      <s:VerticalLayout gap="5"/>
    </s:layout>
-   <utl:CenteredBitmapImage source="{building.imageData}" width="96" height="96"/>
+   <utl:CenteredBitmapImage source="{building.imageData}" width="100%" height="96"/>
    <s:Group width="100%">
       <s:Label text="{building.name}" left="0" right="0" lineBreak="toFit"
                textAlign="center"/>

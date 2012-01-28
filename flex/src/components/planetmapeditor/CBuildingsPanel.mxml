@@ -11,6 +11,8 @@
 
       import spark.events.IndexChangeEvent;
 
+      import utils.locale.Localizer;
+
 
       [Bindable]
       public var title: String;
@@ -37,6 +39,10 @@
       public function get selectedBuilding(): Building {
          return _selectedBuilding;
       }
+
+      private function get levelLabel(): String {
+         return Localizer.string("PlanetMapEditor", "label.level");
+      }
       ]]>
    </fx:Script>
    <s:layout>
@@ -47,7 +53,7 @@
       <s:layout>
          <s:HorizontalLayout paddingLeft="10" gap="10" verticalAlign="middle"/>
       </s:layout>
-      <s:Label fontWeight="bold" text="Level:"/>
+      <s:Label fontWeight="bold" text="{levelLabel}"/>
       <s:NumericStepper id="stepLevel"
                         minimum="{minLevel}"
                         maximum="{maxLevel}"/>

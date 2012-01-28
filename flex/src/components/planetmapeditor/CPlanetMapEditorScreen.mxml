@@ -14,6 +14,7 @@
       import mx.events.FlexEvent;
 
       import utils.StringUtil;
+      import utils.locale.Localizer;
 
 
       private const MODEL: MPlanetMapEditor = new MPlanetMapEditor();
@@ -37,6 +38,10 @@
       private function btnSave_clickHandler(event: MouseEvent): void {
          scrSerializer.showForExport();
       }
+
+      private function getLabel(property: String): String {
+         return Localizer.string("PlanetMapEditor", "label." + property);
+      }
       ]]>
    </fx:Script>
    <s:Group width="100%" height="100%">
@@ -50,7 +55,7 @@
             <s:HorizontalLayout
                paddingLeft="10" verticalAlign="middle" gap="10"/>
          </s:layout>
-         <s:Label text="Size:"/>
+         <s:Label text="{getLabel('size')}"/>
          <s:Group>
             <s:layout>
                <s:HorizontalLayout verticalAlign="middle" gap="4"/>
@@ -64,14 +69,16 @@
                               minimum="{MODEL.MIN_HEIGHT}"
                               maximum="{MODEL.MAX_HEIGHT}"
                               value="@{MODEL.mapHeight}"/>
-            <s:Label text="Name:"/>
+            <s:Label text="{getLabel('name')}"/>
             <s:TextInput id="txtName" maxChars="{MODEL.MAX_NAME_CHARS}"
                          text="@{MODEL.mapName}"/>
          </s:Group>
-         <s:Button id="btnGenerate" label="Generate"
+         <s:Button id="btnGenerate" label="{getLabel('generate')}"
                    click="btnGenerate_clickHandler(event)"/>
-         <s:Button id="btnLoad" label="Load" click="btnLoad_clickHandler(event)"/>
-         <s:Button id="btnSave" label="Save" click="btnSave_clickHandler(event)"/>
+         <s:Button id="btnLoad" label="{getLabel('load')}"
+                   click="btnLoad_clickHandler(event)"/>
+         <s:Button id="btnSave" label="{getLabel('save')}"
+                   click="btnSave_clickHandler(event)"/>
       </s:SkinnableContainer>
       <s:Group height="100%">
          <s:layout>

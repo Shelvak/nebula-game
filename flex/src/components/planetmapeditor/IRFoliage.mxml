@@ -19,7 +19,7 @@
       ]]>
    </fx:Script>
    <s:layout>
-      <s:VerticalLayout gap="5" horizontalAlign="center"/>
+      <s:VerticalLayout gap="5"/>
    </s:layout>
    <utl:CenteredBitmapImage source="{foliage.imageData}" width="96" height="96"/>
    <s:Group width="100%">

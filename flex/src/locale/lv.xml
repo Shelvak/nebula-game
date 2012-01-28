@@ -4956,4 +4956,20 @@
     <status.login value="Logging into the server..."/>
   </Authorization>
 
+  <PlanetMapEditor>
+     <!-- TODO -->
+     <label.name value="Name:"/>
+     <label.size value="Size:"/>
+     <label.level value="Level:"/>
+     <label.generate value="Generate"/>
+     <label.save value="Save"/>
+     <label.load value="Load"/>
+     <label.copy value="Copy"/>
+     <label.cancel value="Cancel"/>
+     <title.buildings value="Buildings"/>
+     <title.npcBuildings value="NPC Buildings"/>
+     <title.foliage value="Foliage"/>
+     <!-- /TODO -->
+  </PlanetMapEditor>
+
 </locale>
