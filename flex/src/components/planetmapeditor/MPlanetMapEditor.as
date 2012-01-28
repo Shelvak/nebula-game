@@ -339,5 +339,39 @@ package components.planetmapeditor
          Building.setSize(building);
          return building;
       }
+
+      public static function cloneObject(object: MPlanetObject): MPlanetObject {
+         return object is Building
+                   ? cloneBuilding(object as Building)
+                   : cloneFoliage(object as BlockingFolliage);
+      }
+
+      private static function cloneFoliage(foliage: BlockingFolliage): BlockingFolliage {
+         const clone: BlockingFolliage = new BlockingFolliage();
+         clone.kind = foliage.kind;
+         clone.terrainType = foliage.terrainType;
+         copyDimensions(foliage, clone);
+         return clone;
+      }
+
+      private static function cloneBuilding(building: Building): Building {
+         const clone: Building = new building.CLASS();
+         clone.id = 1;
+         clone.planetId = building.planetId;
+         clone.type = building.type;
+         clone.level = Math.min(building.level, building.maxLevel);
+         clone.hp = clone.hpMax;
+         clone.state = Building.ACTIVE;
+         copyDimensions(building, clone);
+         return clone;
+      }
+
+      private static function copyDimensions(source: MPlanetObject,
+                                              destination: MPlanetObject): void {
+         destination.x = source.x;
+         destination.y = source.y;
+         destination.xEnd = source.xEnd;
+         destination.yEnd = source.yEnd;
+      }
    }
 }
