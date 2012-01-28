@@ -605,31 +605,36 @@ package models.planet
       /**
        * Removes tile in the given coordinates if one exists. In case it is
        * a resource tile other three related tiles are also removed.
+       *
+       * @return not fake tile removed or <code>null</code> if such tile has not
+       * been removed
        */
-      public function removeTile(x: int, y: int): void {
+      public function removeTile(x: int, y: int): Tile {
          if (!isOnMap(x, y)) {
-            return;
+            return null;
          }
          var tile: Tile = getTile(x, y);
          if (tile == null) {
-            return;
+            return null;
          }
-         tilesMatrix[x][y] = null;
          if (!tile.isResource()) {
-            return;
+            tilesMatrix[x][y] = null;
+            return tile;
          }
-         const xEnd: int = x + 1;
-         const yEnd: int = y + 1;
-         for (x = x - 1; x <= xEnd; x++) {
-            for (y = y - 1; y <= yEnd; y++) {
-               if (isOnMap(x, y)) {
-                  tile = getTile(x, y);
-                  if (tile != null && tile.isResource()) {
-                     tilesMatrix[x][y] = null;
+         var notFake: Tile = null;
+         forEachPointIn(
+            [new Range2D(x - 1, x + 1, y - 1, y + 1)], true,
+            function(x: int, y: int): void {
+               const tile:Tile = getTile(x, y);
+               if (tile != null && tile.isResource()) {
+                  tilesMatrix[x][y] = null;
+                  if (!tile.fake) {
+                     notFake = tile;
                   }
                }
             }
-         }
+         );
+         return notFake;
       }
 
       /**
@@ -1069,16 +1074,19 @@ package models.planet
        * @param silent not used
        */
       public override function removeObject(obj:BaseModel, silent:Boolean = false) : * {
-         var object:MPlanetObject = Objects.paramNotNull("obj", obj);
-         var x:int = object.x;
-         var y:int = object.y;
+         var object: MPlanetObject = Objects.paramNotNull("obj", obj);
+         var x: int = object.x;
+         var y: int = object.y;
          if (objectsMatrix[x][y] == object) {
             clearObjectsMatrix(x, object.xEnd, y, object.yEnd);
             objects.removeItemAt(objects.getItemIndex(object));
             dispatchObjectRemoveEvent(object);
-            if (object is ICleanable)
+            if (object is ICleanable) {
                ICleanable(object).cleanup();
+            }
+            return object;
          }
+         return null;
       }
       
       [Bindable (event="planetBuildingUpgraded")]
