@@ -42,16 +42,32 @@ package components.planetmapeditor
          _initialTile = null;
       }
 
+      private var _currentCommand: TerrainEditCommand = null;
+      private var f_active:Boolean = false;
+
       override protected function activationKeyDown(): void {
+         if (f_active) {
+            return;
+         }
+         f_active = true;
          objectsLayer.passOverMouseEventsTo(this);
          map.viewport.contentDragEnabled = false;
          _tilePlaceholder.visible = true;
+         _currentCommand = new TerrainEditCommand(map, planet);
          moveObjectToMouse(_tilePlaceholder);
       }
 
       override protected function activationKeyUp(): void {
+         if (!f_active) {
+            return;
+         }
+         f_active = false;
          _tilePlaceholder.visible = false;
          map.viewport.contentDragEnabled = true;
+         if (_currentCommand.valid) {
+            _commandInvoker.addCommand(_currentCommand);
+         }
+         _currentCommand = null;
       }
 
       override protected function clickHandler(event: MouseEvent): void {
@@ -61,25 +77,7 @@ package components.planetmapeditor
                 || !TileKind.isResourceKind(tile.tileKind)) {
             return;
          }
-         planet.forEachPointUnder(
-            object, false, true,
-            function(x: int, y: int): void {
-               planet.removeTile(x, y);
-            }
-         );
-         planet.forEachPointUnder(
-            object, true, true,
-            function(x: int, y: int): void {
-               const objectUnder: MPlanetObject = planet.getObject(x, y);
-               if (objectUnder != null) {
-                  planet.removeObject(objectUnder);
-               }
-               if (TileKind.isResourceKind(planet.getTileKind(x, y))) {
-                  planet.removeTile(x, y);
-               }
-            }
-         );
-         planet.addTile(tile.tileKind, object.x, object.y);
+         _currentCommand.addTile(tile.tileKind, object.x, object.y);
          map.renderBackground(false);
       }
 
@@ -93,15 +91,7 @@ package components.planetmapeditor
                 || planet.getTileKind(object.x, object.y) == tile.tileKind) {
             return;
          }
-         planet.removeTile(object.x, object.y);
-         const objectUnder: MPlanetObject =
-                  planet.getObject(object.x, object.y);
-         if (objectUnder != null) {
-            planet.removeObject(objectUnder);
-         }
-         if (tile.tileKind != TileKind.REGULAR) {
-            planet.addTile(tile.tileKind, object.x, object.y);
-         }
+         _currentCommand.addTile(tile.tileKind, object.x, object.y);
          map.renderBackground(false);
       }
 
@@ -148,5 +138,88 @@ package components.planetmapeditor
 
       override public function openObject(object: IPrimitivePlanetMapObject): void {
       }
+   }
+}
+
+
+import components.map.planet.PlanetMap;
+import components.planetmapeditor.MapEditCommand;
+
+import models.building.Building;
+import models.planet.MPlanet;
+import models.planet.Range2D;
+import models.tile.Tile;
+import models.tile.TileKind;
+
+import utils.undo.ICommand;
+
+
+class TerrainEditCommand extends MapEditCommand implements ICommand
+{
+   private var _tilesToAdd:Array = new Array();
+
+   private function addTileToMap(kind: int, x: int, y: int): void {
+      planet.addTile(kind, x, y);
+      _tilesToAdd.push(planet.getTile(x, y));
+   }
+
+   function TerrainEditCommand(map: PlanetMap, planet: MPlanet) {
+      super(map, planet);
+   }
+
+   private var _valid: Boolean = false;
+   public function get valid(): Boolean {
+      return _valid;
+   }
+
+   public function addTile(kind:int, x: int, y: int): void {
+      _valid = true;
+      TileKind.isResourceKind(kind)
+         ? addResourceTile(kind, x, y)
+         : addSimpleTile(kind, x, y);
+   }
+
+   private function addSimpleTile(kind: int, x: int, y: int): void {
+      removeTileToRestore(x, y);
+      removeObjectToRestore(x, y);
+      if (kind != TileKind.REGULAR) {
+         addTileToMap(kind, x, y);
+      }
+   }
+
+   private function addResourceTile(kind: int, x: int, y: int): void {
+      planet.forEachPointIn(
+         [new Range2D(x, x + 1, y, y + 1)], false,
+         function(x: int, y: int): void {
+            removeTileToRestore(x, y);
+         }
+      );
+      const gap: int = Building.GAP_BETWEEN;
+      planet.forEachPointIn(
+         [new Range2D(x - gap, x + 1 + gap, y - gap, y + 1 + gap)], true,
+         function(x: int, y: int): void {
+            removeObjectToRestore(x, y);
+            if (TileKind.isResourceKind(planet.getTileKind(x, y))) {
+               removeTileToRestore(x, y);
+            }
+         }
+      );
+      addTileToMap(kind, x, y);
+   }
+
+   public function execute(): void {
+      const tiles: Array = _tilesToAdd;
+      _tilesToAdd = new Array();
+      for each (var tile: Tile in tiles) {
+         addTile(tile.kind, tile.x, tile.y);
+      }
+      map.renderBackground(false);
+   }
+
+   public function undo(): void {
+      for each (var tile: Tile in _tilesToAdd) {
+         planet.removeTile(tile.x, tile.y);
+      }
+      restoreRemoved();
    }
 }

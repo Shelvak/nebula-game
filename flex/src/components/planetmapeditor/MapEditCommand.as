@@ -50,6 +50,7 @@ package components.planetmapeditor
             planet.addTile(tileRemoved.kind, tileRemoved.x, tileRemoved.y);
          }
          _tilesRemoved = new Array();
+         map.renderBackground(false);
       }
    }
 }

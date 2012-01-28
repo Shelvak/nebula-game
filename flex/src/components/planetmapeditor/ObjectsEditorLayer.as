@@ -183,6 +183,5 @@ class AddObjectCommand extends MapEditCommand implements ICommand
          planet.removeTile(_tileAdded.x, _tileAdded.y);
       }
       restoreRemoved();
-      map.renderBackground(false);
    }
 }
