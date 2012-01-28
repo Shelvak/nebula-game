@@ -1,10 +1,13 @@
 package components.planetmapeditor
 {
+   import com.developmentarc.core.utils.EventBroker;
+
    import components.base.viewport.ViewportZoomable;
    import components.map.planet.PlanetMap;
    import components.planetmapeditor.events.MPlanetMapEditorEvent;
 
    import flash.events.EventDispatcher;
+   import flash.events.KeyboardEvent;
 
    import models.building.Building;
    import models.building.BuildingType;
@@ -25,6 +28,7 @@ package components.planetmapeditor
    import utils.Events;
    import utils.Objects;
    import utils.StringUtil;
+   import utils.undo.CommandInvoker;
 
 
    public class MPlanetMapEditor extends EventDispatcher
@@ -96,6 +100,25 @@ package components.planetmapeditor
          newFoliage(FolliageTileKind._6X2),
          newFoliage(FolliageTileKind._6X6)
       ]);
+
+      private const COMMAND_INVOKER: CommandInvoker = new CommandInvoker();
+      private function keyDownHandler(event: KeyboardEvent): void {
+         if (event.ctrlKey) {
+            if (event.charCode == charCode("z")) {
+               COMMAND_INVOKER.undo();
+            }
+            else if (event.charCode == charCode("y")) {
+               COMMAND_INVOKER.redo();
+            }
+         }
+      }
+      private function charCode(char:String): Number {
+         return char.charCodeAt(0);
+      }
+
+      public function MPlanetMapEditor() {
+         EventBroker.subscribe(KeyboardEvent.KEY_DOWN, keyDownHandler);
+      }
 
       private var _terrainType:int = TerrainType.GRASS;
       [Bindable(event="terrainChange")]
@@ -251,9 +274,12 @@ package components.planetmapeditor
       }
 
       private function createMap(planet: MPlanet): void {
+         COMMAND_INVOKER.clear();
          _planet = planet;
-         _objectsEditorLayer = new ObjectsEditorLayer(_objectToErect);
-         _terrainEditorLayer = new TerrainEditorLayer(_selectedTileKind);
+         _objectsEditorLayer =
+            new ObjectsEditorLayer(_objectToErect, COMMAND_INVOKER);
+         _terrainEditorLayer =
+            new TerrainEditorLayer(_selectedTileKind, COMMAND_INVOKER);
          const map: PlanetMap = new PlanetMap(
             _planet, _objectsEditorLayer, _terrainEditorLayer
          );

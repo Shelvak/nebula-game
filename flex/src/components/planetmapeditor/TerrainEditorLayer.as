@@ -15,15 +15,19 @@ package components.planetmapeditor
    import mx.collections.ListCollectionView;
 
    import utils.Objects;
+   import utils.undo.CommandInvoker;
 
 
    public class TerrainEditorLayer extends MapEditorLayer
    {
-      public function TerrainEditorLayer(initialTile: IRTileKindM) {
+      public function TerrainEditorLayer(initialTile: IRTileKindM,
+                                         commandInvoker: CommandInvoker) {
          super();
          _initialTile = Objects.paramNotNull("initialTile", initialTile);
+         _commandInvoker = Objects.paramNotNull("commandInvoker", commandInvoker);
       }
 
+      private var _commandInvoker: CommandInvoker = null;
       private var _initialTile: IRTileKindM = null;
       private var _tilePlaceholder: CTilePlaceholder = new CTilePlaceholder();
       
