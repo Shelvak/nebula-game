@@ -18,6 +18,15 @@ BATTLEFIELD_BUNDLES = [
   "ImagesTileBundle"
 ]
 
+# Bundles for map editor
+MAP_EDITOR_BUNDLES = [
+  "ImagesBuildingsBundle",
+  "ImagesFolliageBundle",
+  "ImagesSolarSystemObjectBundle",
+  "ImagesUiBundle",
+  "ImagesTileBundle"
+]
+
 namespace :flex do
   namespace :locales do
     desc "Checks locales for validity"
@@ -108,6 +117,10 @@ namespace :flex do
 
           '%battle_modules%' => bundles.keys.reject do |mod|
             ! BATTLEFIELD_BUNDLES.include?(mod.name)
+          end.sort.map { |mod| '"%s"' % mod.name }.join(",\n"),
+
+          '%map_editor_modules%' => bundles.keys.reject do |mod|
+            ! MAP_EDITOR_BUNDLES.include?(mod.name)
           end.sort.map { |mod| '"%s"' % mod.name }.join(",\n")
         )
 

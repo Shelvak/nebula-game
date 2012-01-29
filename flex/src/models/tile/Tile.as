@@ -10,6 +10,10 @@ package models.tile
    [Bindable]
    public class Tile extends BaseModel
    {
+      public function Tile(kind:int = TileKind.SAND) {
+         this.kind = kind;
+      }
+
       /**
        * Width of the planet tile in map.
        */
@@ -31,7 +35,7 @@ package models.tile
       [Optional]
       /**
        * Variation of a tile. This property makes sense only if a tile
-       * is of folliage kind. For all other tiles this is equal to -1
+       * is of foliage kind. For all other tiles this is equal to -1
        * and should be ignored.
        * 
        * @default -1
@@ -103,7 +107,10 @@ package models.tile
             return false;
          }
          var t:Tile = Tile(o);
-         return t.kind == kind && t.variation == variation && t.x == t.x && t.y == y;
+         return t.kind == kind
+                   && t.variation == variation
+                   && t.x == t.x
+                   && t.y == y;
       }
    }
 }

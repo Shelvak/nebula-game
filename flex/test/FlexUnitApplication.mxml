@@ -17,6 +17,7 @@
          import tests.models.TS_Models;
          import tests.movement.TS_Movement;
          import tests.notifications.TS_Notifications;
+         import tests.planetmapeditor.TS_PlanetMapEditor;
          import tests.quests.TS_Quests;
          import tests.spacemap.TS_SpaceMap;
          import tests.maps.TS_Maps;
@@ -47,6 +48,7 @@
                TS_Galaxy,
                TS_Maps,
                TS_Quests,
+               TS_PlanetMapEditor,
                ModelsTestSuite,
                UtilsTestSuite
             ];
@@ -56,7 +58,7 @@
          public function currentRunTestSuites():Array
          {
             var testsToRun:Array = [
-               TS_Quests
+               TS_PlanetMapEditor
             ];
             return testsToRun;
          }
@@ -66,8 +68,8 @@
          {
             core = new FlexUnitCore();
             core.addListener(runner);
-//            core.run(currentRunTestSuites());
-            core.run(allTestSuites());
+            core.run(currentRunTestSuites());
+//            core.run(allTestSuites());
          }
       ]]>
    </fx:Script>

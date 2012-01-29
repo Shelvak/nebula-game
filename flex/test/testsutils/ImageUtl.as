@@ -1,5 +1,7 @@
 package testsutils
 {
+   import flash.display.BitmapData;
+
    import models.solarsystem.SSMetadataType;
 
    import namespaces.client_internal;
@@ -20,7 +22,9 @@ package testsutils
       }
 
       public static function add(name:String): void {
-         IMG.client_internal::addFrames(name);
+         IMG.client_internal::addFrames(
+            name, Vector.<BitmapData>([new BitmapData(1, 1)])
+         );
       }
 
       public static function addSSMetadataIcons(): void {

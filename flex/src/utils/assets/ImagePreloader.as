@@ -35,14 +35,14 @@ package utils.assets
 
 
    /**
-    * Dispached after each image downloaded.
+    * Dispatched after each image downloaded.
     * 
     * @eventType flash.events.ProgressEvent.PROGRESS
     */
    [Event(name="progress", type="flash.events.ProgressEvent")]
    
    /**
-    * Dispached after all images have been downloaded.
+    * Dispatched after all images have been downloaded.
     * 
     * @eventType flash.events.Event.COMPLETE
     */
@@ -54,33 +54,20 @@ package utils.assets
     * from the server for later use at once (rendering planet map and stuff
     * like that).
     * 
-    * <p>This class should be treaded as a singleton and instance of it should
+    * <p>This class should be treated as a singleton and instance of it should
     * be retrieved either using static method <code>getInstance()</code> or
     * using <code>utils.SingletonFactory</code>.</p>
     */ 
    public class ImagePreloader extends EventDispatcher
    {
-      private function get STARTUP_INFO() : StartupInfo
-      {
-         return StartupInfo.getInstance();
-      }
-      
-      
-      private function get LOG() : ILogger
-      {
-         return Log.getLogger(Objects.getClassName(this, true));
-      }
-      
-      
-      /**
-       * @return instance of <code>ImagePreloader</code> for application wide use.
-       */
-      public static function getInstance() : ImagePreloader
-      {
+      public static function getInstance() : ImagePreloader {
          return SingletonFactory.getSingletonInstance(ImagePreloader);
       }
-      
-      
+
+      private function get STARTUP_INFO() : StartupInfo {
+         return StartupInfo.getInstance();
+      }
+
       private var _movieClips:Object = {};
       
       
@@ -194,14 +181,16 @@ package utils.assets
       
       private function getModules() : Array
       {
-         if (STARTUP_INFO.mode == StartupMode.GAME)
-         {
-            return AssetsBundle.getGameModules();
+         switch (STARTUP_INFO.mode) {
+            case StartupMode.GAME:
+               return AssetsBundle.getGameModules();
+            case StartupMode.BATTLE:
+               return AssetsBundle.getBattleModules();
+            case StartupMode.MAP_EDITOR:
+               return AssetsBundle.getMapEditorModules();
          }
-         else
-         {
-            return AssetsBundle.getBattleModules();
-         }
+         throw new Error("Unsupported game mode: " + STARTUP_INFO.mode);
+         return null;   // unreachable
       }
       
       
@@ -398,7 +387,6 @@ package utils.assets
        * asset from a <code>MovieClip</code>, deletes this <code>MovieClip</code> from memory and
        * returns the asset.
        * 
-       * @param cache cache object to use
        * @param name name of an asset
        * 
        * @return instance of <code>Vector.&lt;BitmapData&gt;</code>
@@ -411,7 +399,7 @@ package utils.assets
             {
                throwAssetNotFoundError(name);
             }
-            var clip:MovieClip = _movieClips[name]
+            var clip:MovieClip = _movieClips[name];
             var frames:Vector.<BitmapData> = new Vector.<BitmapData>(clip.totalFrames, true);
             for (var i:int = 1; i <= clip.totalFrames; i++)
             {

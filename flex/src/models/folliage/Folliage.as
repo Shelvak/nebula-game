@@ -37,7 +37,7 @@ package models.folliage
       private var _terrainType:int = TerrainType.GRASS;
       [Bindable]
       /**
-       * Type of planet terrain this folliage is standing on. Use constants
+       * Type of planet terrain this foliage is standing on. Use constants
        * from <code>TerrainType</code> class.
        * 
        * <p>Setting this property will dispatch

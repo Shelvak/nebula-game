@@ -482,10 +482,56 @@ package utils
          }
          return value;
       }
+
+      /**
+       * Checks if <code>value</code> is greater than (or equal to if
+       * <code>allowLow</code> is <code>true</code>) <code>low</code>.
+       *
+       * @throws Error if assertion fails
+       */
+      public static function greaterThanNumber(value: Number,
+                                               low: Number,
+                                               allowLow: Boolean = false,
+                                               errorMessage: String = null): Number {
+         if (allowLow ? value < low : value <= low) {
+            if (errorMessage == null) {
+               errorMessage = StringUtil.substitute(
+                  "[param value] is required to be greater than {0} but was "
+                     + "equal to {1}",
+                  (allowLow ? "or equal to " : "") + low, value
+               );
+            }
+            throw new Error(errorMessage);
+         }
+         return value;
+      }
+
+      /**
+       * Checks if <code>value</code> is less than (or equal to if
+       * <code>allowHigh</code> is <code>true</code>) <code>high</code>.
+       *
+       * @throws Error if assertion fails
+       */
+      public static function lessThanNumber(value: Number,
+                                            high: Number,
+                                            allowHigh: Boolean = false,
+                                            errorMessage: String = null): Number {
+         if (allowHigh ? value > high : value >= high) {
+            if (errorMessage == null) {
+               errorMessage = StringUtil.substitute(
+                  "[param value] is required to be less than {0} but was "
+                     + "equal to {1}",
+                  (allowHigh ? "or equal to " : "") + high, value
+               );
+            }
+            throw new Error(errorMessage);
+         }
+         return value;
+      }
       
       /**
-       * Checks if <code>paramValue</code> is greater than (or equal to, if <code>allowLow</code> is
-       * <code>true</code>) <code>low</code>.
+       * Checks if <code>paramValue</code> is greater than (or equal to, if
+       * <code>allowLow</code> is <code>true</code>) <code>low</code>.
        * 
        * @return <code>paramValue</code>
        */
