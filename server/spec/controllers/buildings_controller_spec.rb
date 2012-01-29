@@ -26,22 +26,35 @@ describe BuildingsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  shared_examples_for "only for constructors" do |id_key|
+    it "should fail if building is not an constructor" do
+      @building.destroy!
+      @building = Factory.create(:building_built, @constructor_opts)
+      @params[id_key] = @building.id
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+  end
   
   describe "buildings|new" do
     before(:each) do
       @action = "buildings|new"
       @planet = Factory.create :planet_with_player, :player => player
-      @constructor = Factory.create :b_constructor_test, opts_active + {
-        :planet => @planet, :x => 0, :y => 0}
+      @constructor_opts = opts_active + {:planet => @planet, :x => 0, :y => 0}
+      @building = Factory.create :b_constructor_test, @constructor_opts
       set_resources(@planet, 10000, 10000, 10000)
-      @x = @constructor.x_end + 2
-      @y = @constructor.y_end + 2
+      @x = @building.x_end + 2
+      @y = @building.y_end + 2
       @type = 'TestBuilding'
       @params = {'type' => @type, 'prepaid' => true,
-        'x' => @x, 'y' => @y, 'constructor_id' => @constructor.id}
+        'x' => @x, 'y' => @y, 'constructor_id' => @building.id}
     end
 
     it_behaves_like "with param options", %w{constructor_id x y type prepaid}
+    it_should_behave_like "only for constructors", 'constructor_id'
 
     it "should fail if not prepaid and not player is not vip" do
       @params['prepaid'] = false
@@ -71,15 +84,15 @@ describe BuildingsController do
     it "should not allow creating new buildings if there are " +
     "no constructors" do
       lambda do
-        @constructor.destroy
+        @building.destroy
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "should invoke #construct! on constructor" do
       Building.should_receive(:find).
-        with(@constructor.id, an_instance_of(Hash)).and_return(@constructor)
-      @constructor.should_receive(:construct!).with(
+        with(@building.id, an_instance_of(Hash)).and_return(@building)
+      @building.should_receive(:construct!).with(
         "Building::#{@params['type']}", @params['prepaid'],
         :x => @params['x'], :y => @params['y']
       )
@@ -272,8 +285,8 @@ describe BuildingsController do
       player.creds += 100000
       player.save!
       @planet = Factory.create(:planet, :player => player)
-      @building = Factory.create(:b_headquarters, opts_active + 
-          {:planet => @planet})
+      @constructor_opts = opts_active + {:planet => @planet}
+      @building = Factory.create(:b_headquarters, @constructor_opts)
       @constructable = @building.construct!(Building::Barracks.to_s, false,
         :x => 10, :y => 10)
       
@@ -283,6 +296,7 @@ describe BuildingsController do
     end
 
     it_behaves_like "finding building"
+    it_should_behave_like "only for constructors", 'id'
     it_behaves_like "accelerate"
 
     it "should accelerate building" do
@@ -319,8 +333,8 @@ describe BuildingsController do
   describe "buildings|cancel_constructor" do
     before(:each) do
       @planet = Factory.create(:planet, :player => player)
-      @building = Factory.create(:b_headquarters, opts_active + 
-          {:planet => @planet})
+      @constructor_opts =  opts_active + {:planet => @planet}
+      @building = Factory.create(:b_headquarters, @constructor_opts)
       @constructable = @building.construct!("Building::Barracks", false,
         :x => 10, :y => 10)
       
@@ -329,6 +343,7 @@ describe BuildingsController do
     end
     
     it_behaves_like "finding building"
+    it_should_behave_like "only for constructors", 'id'
     
     it "should call #cancel_constructable! on constructor" do
       @controller.should_receive(:find_building).and_return(@building)
@@ -359,13 +374,15 @@ describe BuildingsController do
   describe "buildings|set_build_in_2nd_flank" do
     before(:each) do
       @planet = Factory.create(:planet, :player => player)
-      @building = Factory.create(:building, :planet => @planet)
+      @constructor_opts = {:planet => @planet}
+      @building = Factory.create(:b_constructor_test, @constructor_opts)
 
       @action = "buildings|set_build_in_2nd_flank"
       @params = {'id' => @building.id, 'enabled' => true}
     end
 
     it_behaves_like "finding building"
+    it_should_behave_like "only for constructors", 'id'
 
     it "should set flag on building" do
       lambda do
@@ -378,19 +395,86 @@ describe BuildingsController do
   describe "buildings|set_build_hidden" do
     before(:each) do
       @planet = Factory.create(:planet, :player => player)
-      @building = Factory.create(:building, :planet => @planet)
+      @constructor_opts = {:planet => @planet}
+      @building = Factory.create(:b_constructor_test, @constructor_opts)
 
       @action = "buildings|set_build_hidden"
       @params = {'id' => @building.id, 'enabled' => true}
     end
 
     it_behaves_like "finding building"
+    it_should_behave_like "only for constructors", 'id'
 
     it "should set flag on building" do
       lambda do
         invoke @action, @params
         @building.reload
       end.should change(@building, :build_hidden).to(@params['enabled'])
+    end
+  end
+
+  describe "buildings|transport_resources" do
+    let(:planet) do
+      planet = Factory.create(:planet, :player => player)
+      set_resources(planet, 10000, 10000, 10000)
+      planet
+    end
+    let(:target_planet) do
+      planet = Factory.create(:planet, :player => player)
+      Factory.create!(:b_resource_transporter, :planet => planet)
+      planet
+    end
+    let(:building_opts) { opts_active + {:level => 2, :planet => planet} }
+    let(:building) do
+      Factory.create!(:b_resource_transporter, building_opts)
+    end
+
+    before(:each) do
+      # For "finding building"
+      @planet = planet
+      @building = building
+
+      @action = "buildings|transport_resources"
+      @params = {'id' => building.id, 'target_planet_id' => target_planet.id,
+        'metal' => 10, 'energy' => 15, 'zetium' => 20}
+    end
+
+    it_should_behave_like "with param options",
+      %w{id target_planet_id metal energy zetium}
+
+    it_should_behave_like "finding building"
+
+    def stub_find
+      @controller.should_receive(:find_building).and_return(building)
+      building
+    end
+
+    it "should fail if building is not a resource transporter" do
+      building.destroy!
+      building = Factory.create(:building_built, :planet => planet)
+      @params['id'] = building.id
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should invoke #transport! on building" do
+      stub_find.should_receive(:transport!).with(
+        target_planet, @params['metal'], @params['energy'], @params['zetium']
+      )
+      invoke @action, @params
+    end
+
+    it "should return bad response if target does not have transporter" do
+      stub_find.should_receive(:transport!).
+        and_raise(Building::ResourceTransporter::NoTransporterError)
+      invoke @action, @params
+      response_should_include(:error => "no_transporter")
+    end
+
+    it "should work" do
+      invoke @action, @params
     end
   end
 end

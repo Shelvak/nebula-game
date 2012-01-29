@@ -558,3 +558,6 @@ Factory.define :t_mule_speed, :parent => :technology,
 
 Factory.define :t_mule_storage, :parent => :technology,
 :class => Technology::MuleStorage do |m|; end
+
+Factory.define :t_rhyno_storage, :parent => :technology,
+:class => Technology::RhynoStorage do |m|; end

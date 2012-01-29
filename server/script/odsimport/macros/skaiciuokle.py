@@ -7,7 +7,7 @@
 #
 # While developing, you need to update symlink timestamp for libreoffice to
 # reload the file:
-# $ while true; do sleep 1; touch -h path/to/skaiciuokle.py; echo -n "."; done
+# $ while true; do sleep 1; touch -h skaiciuokle.py; echo -n "."; done
 #
 
 import math
@@ -63,6 +63,8 @@ def contains(list, value):
 def get_specs(name, is_space):
   if name == "T Mule":
     return (spec_armor, spec_absorption, spec_speed, spec_storage)
+  elif name == "T Rhyno":
+    return space_specs + (spec_storage, )
   elif contains(no_spec_names, name):
     return tuple()
   elif is_space:
@@ -108,6 +110,14 @@ def c_int(value):
 def c_float(value):
   return 0 if value == "" else float(value)
 
+def volume_coefs_expand(coefs):
+  if isinstance(coefs, tuple) and len(coefs) == 3 and \
+      isinstance(coefs[0], tuple):
+    # Convert volume_coefs if they come from spreadsheet.
+    return (coefs[0][0], coefs[1][0], coefs[2][0])
+  else:
+    return coefs
+
 ### Superformula ###
 
 def sf_lin(level, b, b1):
@@ -147,6 +157,31 @@ def sf(level, coefficients):
       multiplier
     )
 
+### Resources to time converter ###
+
+def cost2time_ss(costs, volume_coefs, number_of_levels, multiplier):
+  return cost2time(costs[0], costs[1], costs[2], volume_coefs,
+    number_of_levels, multiplier)
+
+def cost2time(metal_costs, energy_costs, zetium_costs, volume_coefs,
+              number_of_levels, multiplier):
+  metal_coef, energy_coef, zetium_coef = volume_coefs_expand(volume_coefs)
+
+  time = lambda m, e, z: (float(m) / metal_coef + float(e) / energy_coef + \
+                         float(z) / zetium_coef) * multiplier
+
+  metal_start = sf(1, metal_costs)
+  metal_end = sf(number_of_levels, metal_costs)
+  energy_start = sf(1, energy_costs)
+  energy_end = sf(number_of_levels, energy_costs)
+  zetium_start = sf(1, zetium_costs)
+  zetium_end = sf(number_of_levels, zetium_costs)
+
+  start = time(metal_start, energy_start, zetium_start)
+  end = time(metal_end, energy_end, zetium_end)
+
+  return lin_dep_raw(start, end, number_of_levels)
+
 ### Dependencies ###
 
 def lin_dep_raw(value1, value2, num_of_levels):
@@ -172,7 +207,7 @@ def lin_dep(level1, coefs1, mult1, level2, coefs2, mult2, num_of_levels):
 
 def lin_dep_raw_with_first_lvl(max, num_of_levels):
   """Given min is 0 and max is passed, return linear dependency where first
-  level also counts."""
+  level also counts. I have no idea what that means"""
   coefs = lin_dep_raw(0, max, num_of_levels + 1)
   first_const = sf(2, coefs + (0, 1)) - 1
   coefs = list(lin_dep_raw(0, max - first_const, num_of_levels))
@@ -214,31 +249,22 @@ def research_time(coefs):
 def tech_war_points(metal_cost_coefs, energy_cost_coefs, zetium_cost_coefs,
                     volume_coefs, points_mult, max_lvl):
   """Returns coefficients for war points required to unlock technology."""
-  if isinstance(volume_coefs, tuple) and len(volume_coefs) == 3 and \
-      isinstance(volume_coefs[0], tuple):
-    # Convert volume_coefs if they come from spreadsheet.
-    return tech_war_points(
-      metal_cost_coefs, energy_cost_coefs, zetium_cost_coefs,
-      (volume_coefs[0][0], volume_coefs[1][0], volume_coefs[2][0]),
-      points_mult, max_lvl
-    )
+  metal_volume, energy_volume, zetium_volume = volume_coefs_expand(volume_coefs)
+
+  metal_start = sf(1, metal_cost_coefs) / metal_volume
+  energy_start = sf(1, energy_cost_coefs) / energy_volume
+  zetium_start = sf(1, zetium_cost_coefs) / zetium_volume
+  points_start = (metal_start + energy_start + zetium_start) * points_mult
+
+  if max_lvl == 1:
+    return (points_start, 0, 0, 0, 0, 0, 0, 0, max_lvl, "level", 1)
   else:
-    metal_volume, energy_volume, zetium_volume = volume_coefs
+    metal_end = sf(max_lvl, metal_cost_coefs) / metal_volume
+    energy_end = sf(max_lvl, energy_cost_coefs) / energy_volume
+    zetium_end = sf(max_lvl, zetium_cost_coefs) / zetium_volume
+    points_end = (metal_end + energy_end + zetium_end) * points_mult
 
-    metal_start = sf(1, metal_cost_coefs) / metal_volume
-    energy_start = sf(1, energy_cost_coefs) / energy_volume
-    zetium_start = sf(1, zetium_cost_coefs) / zetium_volume
-    points_start = (metal_start + energy_start + zetium_start) * points_mult
-
-    if max_lvl == 1:
-      return (points_start, 0, 0, 0, 0, 0, 0, 0, max_lvl, "level", 1)
-    else:
-      metal_end = sf(max_lvl, metal_cost_coefs) / metal_volume
-      energy_end = sf(max_lvl, energy_cost_coefs) / energy_volume
-      zetium_end = sf(max_lvl, zetium_cost_coefs) / zetium_volume
-      points_end = (metal_end + energy_end + zetium_end) * points_mult
-
-      return lin_dep_raw(points_start, points_end, max_lvl) + ("level", 1)
+    return lin_dep_raw(points_start, points_end, max_lvl) + ("level", 1)
 
 def tech_war_points_ss(cost_coefs, volume_coefs, points_mult, max_lvl):
   """Spreadsheet version of tech_war_points."""

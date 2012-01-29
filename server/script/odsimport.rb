@@ -36,6 +36,8 @@ MAIN_TITLE_PROPS = [
   [/required pulsars$/, ".pulsars.required"],
   [/fee$/, ".fee"],
   [/teleported volume$/, ".teleported_volume"],
+  [/max volume$/, ".max_volume"],
+  [/cooldown mod$/, ".mod.cooldown"],
   [/speed mod$/, ".mod.speed"],
   [/armor mod$/, ".mod.armor"],
   [/damage mod$/, ".mod.damage"],

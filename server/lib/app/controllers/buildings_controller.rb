@@ -23,6 +23,7 @@ class BuildingsController < GenericController
 
     constructor = Building.find(params['constructor_id'],
       :include => :planet)
+    check_for_constructor!(constructor)
     raise ActiveRecord::RecordNotFound \
       if constructor.planet.player_id != player.id
 
@@ -86,7 +87,7 @@ class BuildingsController < GenericController
     if building.is_a?(Trait::Overdriveable)
       building.activate_overdrive!
     else
-      raise GameLogicError.new("Targeted building is not overdriveable!")
+      raise GameLogicError.new("#{building} is not overdriveable!")
     end
   end
 
@@ -102,7 +103,7 @@ class BuildingsController < GenericController
     if building.is_a?(Trait::Overdriveable)
       building.deactivate_overdrive!
     else
-      raise GameLogicError.new("Targeted building is not overdriveable!")
+      raise GameLogicError.new("#{building} is not overdriveable!")
     end
   end
 
@@ -127,9 +128,7 @@ class BuildingsController < GenericController
   # - objects|updated with +Player+. (if using creds)
   #
   def action_self_destruct
-    param_options :required => {
-      :id => Fixnum, :with_creds => [TrueClass, FalseClass]
-    }
+    param_options :required => {:id => Fixnum, :with_creds => Boolean}
 
     building = find_building
     building.self_destruct!(params['with_creds'])
@@ -169,6 +168,7 @@ class BuildingsController < GenericController
     param_options :required => {:id => Fixnum, :index => Fixnum}
 
     building = find_building
+    check_for_constructor!(building)
     Creds.accelerate_construction!(building, params['index'])
   rescue ArgumentError => e
     # In case client provides invalid index.
@@ -205,6 +205,7 @@ class BuildingsController < GenericController
   #
   def action_cancel_constructor
     constructor = find_building
+    check_for_constructor!(constructor)
     constructor.cancel_constructable!
   end
     
@@ -232,10 +233,10 @@ class BuildingsController < GenericController
   # - enabled (Boolean):
   #
   def action_set_build_in_2nd_flank
-    param_options :required => {:id => Fixnum,
-                                :enabled => [TrueClass, FalseClass]}
+    param_options :required => {:id => Fixnum, :enabled => Boolean}
 
     building = find_building
+    check_for_constructor!(building)
     building.build_in_2nd_flank = params['enabled']
     building.save!
   end
@@ -249,10 +250,10 @@ class BuildingsController < GenericController
   # - enabled (Boolean):
   #
   def action_set_build_hidden
-    param_options :required => {:id => Fixnum,
-                                :enabled => [TrueClass, FalseClass]}
+    param_options :required => {:id => Fixnum, :enabled => Boolean}
 
     building = find_building
+    check_for_constructor!(building)
     building.build_hidden = params['enabled']
     building.save!
   end
@@ -269,6 +270,43 @@ class BuildingsController < GenericController
     building = find_building
     building.repair!
   end
+
+  # Transports resources via +Building::ResourceTransporter+ from source planet
+  # (where building is standing) to a target planet. Target must be owned by
+  # same player.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the resource transporter
+  # - target_planet_id (Fixnum): ID of the target planet
+  # - metal (Fixnum): amount of metal transported
+  # - energy (Fixnum): amount of energy transported
+  # - zetium (Fixnum): amount of zetium transported
+  #
+  # Response:
+  #   If successful: None
+  #   If something failed:
+  #     - error (String): one of the
+  #       "no_transporter" - if target planet didn't have active transporter
+  #
+  def action_transport_resources
+    param_options :required => {:id => Fixnum, :target_planet_id => Fixnum,
+      :metal => Fixnum, :energy => Fixnum, :zetium => Fixnum}
+
+    building = find_building
+
+    if building.is_a?(Building::ResourceTransporter)
+      target = SsObject::Planet.find(params['target_planet_id'])
+      building.transport!(
+        target, params['metal'], params['energy'], params['zetium']
+      )
+    else
+      raise GameLogicError.new("#{building} is not a resource transporter!")
+    end
+  rescue Building::ResourceTransporter::NoTransporterError
+    respond :error => "no_transporter"
+  end
   
   private
   def find_building
@@ -279,5 +317,10 @@ class BuildingsController < GenericController
       unless building.planet.player_id == player.id
 
     building
+  end
+
+  def check_for_constructor!(building)
+    raise GameLogicError.new("#{building} is not an constructor!") \
+      unless building.constructor?
   end
 end
