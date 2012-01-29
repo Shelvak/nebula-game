@@ -364,7 +364,7 @@ class SsObject::Planet < SsObject
     end
 
     if old_player
-      paused_technologies = old_player.technologies.upgrading.compact_map do
+      paused_technologies = old_player.technologies.upgrading.all.compact_map do
         |technology|
 
         # We need to pass old player, because it hasn't been saved to database
