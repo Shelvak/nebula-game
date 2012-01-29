@@ -43,6 +43,16 @@ class Cfg
       CONFIG['buildings.overdrive.multiplier.energy_usage']
     end
 
+    ### chat.yml ###
+
+    def chat_antiflood_messages; CONFIG['chat.antiflood.messages']; end
+
+    def chat_antiflood_period; CONFIG['chat.antiflood.period']; end
+
+    def chat_antiflood_silence_for(counter)
+      CONFIG.evalproperty('chat.antiflood.silence_for', {'counter' => counter})
+    end
+
     ### market.yml ###
 
     # Minimal amount you can offer in market.
@@ -54,6 +64,10 @@ class Cfg
     # Returns +Float+ offset (like 0.10) for MarketOffer#to_rate deviation
     # from MarketOffer#average.
     def market_rate_offset; CONFIG['market.avg_rate.offset']; end
+
+    def market_rate_min_price_offset
+      CONFIG['market.avg_rate.min_price.offset']
+    end
 
     # Returns [seed_amount, seed_rate] for resource pair.
     def market_seed(from_kind, to_kind)
@@ -182,9 +196,12 @@ class Cfg
     # Returns number of seconds player is required to be last seen ago to be
     # considered active.
     def player_inactivity_time(points)
-      CONFIG['galaxy.player.inactivity_check'].each do |points_required, seconds|
+      data = CONFIG['galaxy.player.inactivity_check']
+      data.each do |points_required, seconds|
         return seconds if points <= points_required
       end
+
+      data.last[1]
     end
 
     def player_referral_points_needed

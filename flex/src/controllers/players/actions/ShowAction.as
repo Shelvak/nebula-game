@@ -15,11 +15,13 @@ package controllers.players.actions
    public class ShowAction extends CommunicationAction
    {
       public override function applyServerAction(cmd:CommunicationCommand) : void {
-         var player:Object = cmd.parameters["player"];
-         var allianceCooldown:String = player["allianceCooldownEndsAt"];
+         const player:Object = cmd.parameters["player"];
+         const allianceCooldown:String = player["allianceCooldownEndsAt"];
          ML.player.copyProperties(Objects.create(Player, player));
-         if (allianceCooldown != null)
+         ML.player.allianceCooldownId = player["allianceCooldownId"];
+         if (allianceCooldown != null) {
             ML.player.allianceCooldown.occuresAt = DateUtil.parseServerDTF(allianceCooldown);
+         }
       }
    }
 }

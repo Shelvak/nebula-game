@@ -3,6 +3,8 @@ class Technology < ActiveRecord::Base
   include Parts::Upgradable
   include Parts::NeedsTechnology
   include Parts::SciencePoints
+  include Parts::Object
+  include Parts::Notifier
 
   def planet(reload=false)
     @_planet = nil if reload
@@ -34,21 +36,48 @@ class Technology < ActiveRecord::Base
   def check_upgrade!
     raise ArgumentError.new("self.planet_id is required for upgrading!") \
       unless planet_id
-    raise GameLogicError.new("Cannot reduce resources from planet " +
-      "that player doesn't own!") \
-      unless planet.player_id == player_id
+    raise GameLogicError.new(
+      "Cannot reduce resources from planet that player doesn't own!"
+    ) unless planet.player_id == player_id
+
     war_points = war_points_required
     raise GameLogicError.new("Player does not have enough war points! #{
       war_points} required, player has #{player.war_points}") \
       if player.war_points < war_points
     raise GameLogicError.new("Cannot upgrade technology in planet which " +
       "does not have any research centers!"
-    ) unless Building::ResearchCenter.where(
-      :planet_id => planet_id).count > 0
+    ) unless Building::ResearchCenter.where(:planet_id => planet_id).count > 0
+
     super
   end
 
+  # Check if player has enough planets for this technology.
+  def check_planets!(level=nil, player=nil)
+    player ||= self.player
+
+    req_planets = planets_required(level)
+    has_planets = player.planets_count
+    req_pulsars = pulsars_required(level)
+    has_pulsars = player.bg_planets_count
+
+    raise GameLogicError.new(
+      "Player does not have enough planets/pulsars! #{req_planets
+      } planets and #{req_pulsars} pulsars are required, but player only has #{
+      has_planets} planets and #{has_pulsars} pulsars!"
+    ) if has_planets < req_planets || has_pulsars < req_pulsars
+  end
+
+  # Check if player has met planets requirements for this technology.
+  def planets_requirement_met?(player)
+    check_planets!(level, player)
+    true
+  rescue GameLogicError
+    false
+  end
+
   def resume
+    check_planets!
+
     super do
       # Recalculate pause remainder if we were paused.
       self.pause_remainder = calculate_new_pause_remainder(
@@ -136,6 +165,22 @@ class Technology < ActiveRecord::Base
     evalproperty('war_points', nil, 'level' => level).round
   end
 
+  def planets_required(level=nil)
+    self.class.planets_required(level || self.level + 1)
+  end
+
+  def self.planets_required(level)
+    evalproperty('planets.required', 0, 'level' => level).round
+  end
+
+  def pulsars_required(level=nil)
+    self.class.pulsars_required(level || self.level + 1)
+  end
+
+  def self.pulsars_required(level)
+    evalproperty('pulsars.required', 0, 'level' => level).round
+  end
+
   def scientists_min(level=nil)
     self.class.scientists_min(level || self.level + 1)
   end
@@ -145,14 +190,9 @@ class Technology < ActiveRecord::Base
   end
 
   # Array of [name, property] pairs for all technology mods.
-  MODS = %w{
-    damage armor
-    metal.generate metal.store
-    energy.generate energy.store
-    zetium.generate zetium.store
-    movement_time_decrease
-    storage
-  }.map { |property| [property.gsub(".", "_"), "mod.#{property}"] }
+  MODS = TechTracker::MODS.map do |property|
+    [property.gsub(".", "_"), "mod.#{property}"]
+  end
   
   MODS.each do |name, property|
     define_method("#{name}_mod") { self.class.send("#{name}_mod", level) }
@@ -182,11 +222,11 @@ class Technology < ActiveRecord::Base
   validate :validate_scientists
   def validate_scientists
     # `just_finished?` accounts for #on_upgrade_finished and #save
-    if not new_record? and scientists_changed? and \
-        not just_finished? \
-        and (paused? or finished?)
+    if ! new_record? && scientists_changed? && \
+        ! just_finished? \
+        && (paused? || finished?)
       errors.add(:base,
-        "Cannot ajust scientist count when paused or finished!"
+        "Cannot adjust scientist count when paused or finished!"
       )
     end
 

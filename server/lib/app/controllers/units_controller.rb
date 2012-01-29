@@ -377,11 +377,19 @@ class UnitsController < GenericController
   #
   # Parameters:
   # - transporter_id (Fixnum): ID of transporter Unit.
-  # - metal (Float): Amount of metal to load. Pass negative to unload.
-  # - energy (Float): Amount of energy to load. Pass negative to unload.
-  # - zetium (Float): Amount of zetium to load. Pass negative to unload.
+  # - metal (Fixnum): Amount of metal to load. Pass negative to unload.
+  # - energy (Fixnum): Amount of energy to load. Pass negative to unload.
+  # - zetium (Fixnum): Amount of zetium to load. Pass negative to unload.
   #
-  # Response: None
+  # Response:
+  #
+  # - kept_resources (Hash): if unloading resources to planet and it does not
+  # have sufficient storage, then some resources are kept in the transporter.
+  # In that case this hash stores how much resources were kept on this
+  # transporter. If all resources were unloaded it will have all zeros there.
+  #   - metal (Fixnum): >= 0
+  #   - energy (Fixnum): >= 0
+  #   - zetium (Fixnum): >= 0
   #
   # Pushes:
   # - objects|updated with transporter
@@ -392,29 +400,52 @@ class UnitsController < GenericController
   #
   def action_transfer_resources
     param_options :required => {
-      :transporter_id => Fixnum, :metal => [Fixnum, Float],
-      :energy => [Fixnum, Float], :zetium => [Fixnum, Float]
+      :transporter_id => Fixnum,
+      :metal => Fixnum, :energy => Fixnum, :zetium => Fixnum
     }
+
+    raise GameLogicError.new(
+      "You're not trying to do anything! All resources are 0!") \
+      if params['metal'] == 0 && params['energy'] == 0 && params['zetium'] == 0
 
     transporter = Unit.where(:player_id => player.id).find(
       params['transporter_id'])
 
-    # Check if we can load/unload things.
+    kept_resources = Resources::TYPES.each_with_object({}) do |res, hash|
+      hash[res] = 0
+    end
+
     if transporter.location.type == Location::SS_OBJECT
       planet = transporter.location.object
+
+      # Check if we can load/unload things.
       raise GameLogicError.new(
         "Cannot load resources from planet: not owner and it's not empty!"
       ) if (
         params['metal'] > 0 || params['energy'] > 0 || params['zetium'] > 0
       ) && ! (planet.player_id == player.id)
-      # This will be enabled when player protection will be implemented.
-      # ! (planet.player_id == player.id || planet.player_id.nil?)
+
+      # Adjust how much we are unloading and in case we are unloading too much
+      # reduce how much we're unloading to prevent resource loss.
+      Resources::TYPES.each do |resource|
+        planet_resource = planet.send(resource)
+        planet_storage = planet.send(:"#{resource}_storage_with_modifier")
+        available = (planet_storage - planet_resource).floor
+
+        # If all requested resources do not fit into planet only unload
+        # resources that fit.
+        if params[resource.to_s] < 0 && -params[resource.to_s] > available
+          kept_resources[resource] = -params[resource.to_s] - available
+          params[resource.to_s] = -available
+        end
+      end
     end
 
-    transporter.transfer_resources!(params['metal'], params['energy'],
-      params['zetium'])
+    transporter.transfer_resources!(
+      params['metal'], params['energy'], params['zetium']
+    ) if params['metal'] != 0 || params['energy'] != 0 || params['zetium'] != 0
 
-    true
+    respond :kept_resources => kept_resources
   end
 
   # Unloads selected units to +SsObject+. Transporter must be in +Planet+ to

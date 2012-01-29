@@ -57,6 +57,7 @@ spawn.mini_battleground.units:
   - [5, 15, Thor, 1]
   - [1, 8, Demosis, 0]
   - [0, 10, Demosis, 1]
+  - [0, 1, ConvoyShip, 0]
 # Spawning strategy to use
 spawn.mini_battleground.strategy: random
 
@@ -69,6 +70,7 @@ spawn.battleground.max_spots: 1
 # count numbers are inclusive.
 spawn.battleground.units:
   - [1, 1, BossShip, 0]
+  - [0, 3, ConvoyShip, 1]
 # Spawning strategy to use
 spawn.battleground.strategy: outer_circle
 

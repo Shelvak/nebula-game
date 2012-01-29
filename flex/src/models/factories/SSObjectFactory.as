@@ -28,6 +28,10 @@ package models.factories
          {
             var resource:Resource = new Resource();
             resource.type = type;
+            if (data[type] == null)
+            {
+               resource.unknown = true;
+            }
             resource.currentStock = data[type];
             resource.maxStock = data[type + "Storage"];
             resource.usageRate = data[type + "UsageRate"];

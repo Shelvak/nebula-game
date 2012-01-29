@@ -79,33 +79,6 @@ Factory.define :t_seeker, :parent => :technology,
 Factory.define :t_space_factory, :parent => :technology,
 :class => Technology::SpaceFactory do |m|; end
 
-Factory.define :t_spy, :parent => :technology,
-:class => Technology::Spy do |m|; end
-
-Factory.define :t_saboteur, :parent => :technology,
-:class => Technology::Saboteur do |m|; end
-
-Factory.define :t_tactical_reconnaissance, :parent => :technology,
-:class => Technology::TacticalReconnaissance do |m|; end
-
-Factory.define :t_sattelite_hacking, :parent => :technology,
-:class => Technology::SatteliteHacking do |m|; end
-
-Factory.define :t_camouflage_suits, :parent => :technology,
-:class => Technology::CamouflageSuits do |m|; end
-
-Factory.define :t_r14_charges, :parent => :technology,
-:class => Technology::R14Charges do |m|; end
-
-Factory.define :t_spaceport, :parent => :technology,
-:class => Technology::Spaceport do |m|; end
-
-Factory.define :t_metabolic_chargers, :parent => :technology,
-:class => Technology::MetabolicChargers do |m|; end
-
-Factory.define :t_high_velocity_charges, :parent => :technology,
-:class => Technology::HighVelocityCharges do |m|; end
-
 Factory.define :t_radar, :parent => :technology,
 :class => Technology::Radar do |m|; end
 
@@ -159,18 +132,6 @@ Factory.define :t_zetium_extractor_t2, :parent => :technology,
 
 Factory.define :t_trooper, :parent => :technology,
 :class => Technology::Trooper do |m|; end
-
-Factory.define :t_ships_armor, :parent => :technology,
-:class => Technology::ShipsArmor do |m|; end
-
-Factory.define :t_ships_damage, :parent => :technology,
-:class => Technology::ShipsDamage do |m|; end
-
-Factory.define :t_tanks_damage, :parent => :technology,
-:class => Technology::TanksDamage do |m|; end
-
-Factory.define :t_tanks_armor, :parent => :technology,
-:class => Technology::TanksArmor do |m|; end
 
 Factory.define :t_scorpion, :parent => :technology,
 :class => Technology::Scorpion do |m|; end
@@ -231,3 +192,372 @@ Factory.define :t_turret_armor, :parent => :technology,
 
 Factory.define :t_turret_damage, :parent => :technology,
 :class => Technology::TurretDamage do |m|; end
+
+Factory.define :t_trooper_damage, :parent => :technology,
+:class => Technology::TrooperDamage do |m|; end
+
+Factory.define :t_shocker_damage, :parent => :technology,
+:class => Technology::ShockerDamage do |m|; end
+
+Factory.define :t_seeker_damage, :parent => :technology,
+:class => Technology::SeekerDamage do |m|; end
+
+Factory.define :t_scorpion_damage, :parent => :technology,
+:class => Technology::ScorpionDamage do |m|; end
+
+Factory.define :t_azure_damage, :parent => :technology,
+:class => Technology::AzureDamage do |m|; end
+
+Factory.define :t_mantis_damage, :parent => :technology,
+:class => Technology::MantisDamage do |m|; end
+
+Factory.define :t_zeus_damage, :parent => :technology,
+:class => Technology::ZeusDamage do |m|; end
+
+Factory.define :t_gnat_damage, :parent => :technology,
+:class => Technology::GnatDamage do |m|; end
+
+Factory.define :t_glancer_damage, :parent => :technology,
+:class => Technology::GlancerDamage do |m|; end
+
+Factory.define :t_spudder_damage, :parent => :technology,
+:class => Technology::SpudderDamage do |m|; end
+
+Factory.define :t_gnawer_damage, :parent => :technology,
+:class => Technology::GnawerDamage do |m|; end
+
+Factory.define :t_ground_damage, :parent => :technology,
+:class => Technology::GroundDamage do |m|; end
+
+Factory.define :t_space_damage, :parent => :technology,
+:class => Technology::SpaceDamage do |m|; end
+
+Factory.define :t_npc_ground_damage, :parent => :technology,
+:class => Technology::NpcGroundDamage do |m|; end
+
+Factory.define :t_npc_space_damage, :parent => :technology,
+:class => Technology::NpcSpaceDamage do |m|; end
+
+Factory.define :t_trooper_armor, :parent => :technology,
+:class => Technology::TrooperArmor do |m|; end
+
+Factory.define :t_shocker_armor, :parent => :technology,
+:class => Technology::ShockerArmor do |m|; end
+
+Factory.define :t_seeker_armor, :parent => :technology,
+:class => Technology::SeekerArmor do |m|; end
+
+Factory.define :t_scorpion_armor, :parent => :technology,
+:class => Technology::ScorpionArmor do |m|; end
+
+Factory.define :t_azure_armor, :parent => :technology,
+:class => Technology::AzureArmor do |m|; end
+
+Factory.define :t_mantis_armor, :parent => :technology,
+:class => Technology::MantisArmor do |m|; end
+
+Factory.define :t_zeus_armor, :parent => :technology,
+:class => Technology::ZeusArmor do |m|; end
+
+Factory.define :t_gnat_armor, :parent => :technology,
+:class => Technology::GnatArmor do |m|; end
+
+Factory.define :t_glancer_armor, :parent => :technology,
+:class => Technology::GlancerArmor do |m|; end
+
+Factory.define :t_spudder_armor, :parent => :technology,
+:class => Technology::SpudderArmor do |m|; end
+
+Factory.define :t_gnawer_armor, :parent => :technology,
+:class => Technology::GnawerArmor do |m|; end
+
+Factory.define :t_ground_armor, :parent => :technology,
+:class => Technology::GroundArmor do |m|; end
+
+Factory.define :t_space_armor, :parent => :technology,
+:class => Technology::SpaceArmor do |m|; end
+
+Factory.define :t_npc_ground_armor, :parent => :technology,
+:class => Technology::NpcGroundArmor do |m|; end
+
+Factory.define :t_npc_space_armor, :parent => :technology,
+:class => Technology::NpcSpaceArmor do |m|; end
+
+Factory.define :t_trooper_critical, :parent => :technology,
+:class => Technology::TrooperCritical do |m|; end
+
+Factory.define :t_shocker_critical, :parent => :technology,
+:class => Technology::ShockerCritical do |m|; end
+
+Factory.define :t_seeker_critical, :parent => :technology,
+:class => Technology::SeekerCritical do |m|; end
+
+Factory.define :t_scorpion_critical, :parent => :technology,
+:class => Technology::ScorpionCritical do |m|; end
+
+Factory.define :t_azure_critical, :parent => :technology,
+:class => Technology::AzureCritical do |m|; end
+
+Factory.define :t_mantis_critical, :parent => :technology,
+:class => Technology::MantisCritical do |m|; end
+
+Factory.define :t_zeus_critical, :parent => :technology,
+:class => Technology::ZeusCritical do |m|; end
+
+Factory.define :t_gnat_critical, :parent => :technology,
+:class => Technology::GnatCritical do |m|; end
+
+Factory.define :t_glancer_critical, :parent => :technology,
+:class => Technology::GlancerCritical do |m|; end
+
+Factory.define :t_spudder_critical, :parent => :technology,
+:class => Technology::SpudderCritical do |m|; end
+
+Factory.define :t_gnawer_critical, :parent => :technology,
+:class => Technology::GnawerCritical do |m|; end
+
+Factory.define :t_ground_critical, :parent => :technology,
+:class => Technology::GroundCritical do |m|; end
+
+Factory.define :t_space_critical, :parent => :technology,
+:class => Technology::SpaceCritical do |m|; end
+
+Factory.define :t_turret_critical, :parent => :technology,
+:class => Technology::TurretCritical do |m|; end
+
+Factory.define :t_npc_ground_critical, :parent => :technology,
+:class => Technology::NpcGroundCritical do |m|; end
+
+Factory.define :t_npc_space_critical, :parent => :technology,
+:class => Technology::NpcSpaceCritical do |m|; end
+
+Factory.define :t_trooper_absorption, :parent => :technology,
+:class => Technology::TrooperAbsorption do |m|; end
+
+Factory.define :t_shocker_absorption, :parent => :technology,
+:class => Technology::ShockerAbsorption do |m|; end
+
+Factory.define :t_seeker_absorption, :parent => :technology,
+:class => Technology::SeekerAbsorption do |m|; end
+
+Factory.define :t_scorpion_absorption, :parent => :technology,
+:class => Technology::ScorpionAbsorption do |m|; end
+
+Factory.define :t_azure_absorption, :parent => :technology,
+:class => Technology::AzureAbsorption do |m|; end
+
+Factory.define :t_mantis_absorption, :parent => :technology,
+:class => Technology::MantisAbsorption do |m|; end
+
+Factory.define :t_zeus_absorption, :parent => :technology,
+:class => Technology::ZeusAbsorption do |m|; end
+
+Factory.define :t_gnat_absorption, :parent => :technology,
+:class => Technology::GnatAbsorption do |m|; end
+
+Factory.define :t_glancer_absorption, :parent => :technology,
+:class => Technology::GlancerAbsorption do |m|; end
+
+Factory.define :t_spudder_absorption, :parent => :technology,
+:class => Technology::SpudderAbsorption do |m|; end
+
+Factory.define :t_gnawer_absorption, :parent => :technology,
+:class => Technology::GnawerAbsorption do |m|; end
+
+Factory.define :t_ground_absorption, :parent => :technology,
+:class => Technology::GroundAbsorption do |m|; end
+
+Factory.define :t_space_absorption, :parent => :technology,
+:class => Technology::SpaceAbsorption do |m|; end
+
+Factory.define :t_turret_absorption, :parent => :technology,
+:class => Technology::TurretAbsorption do |m|; end
+
+Factory.define :t_npc_ground_absorption, :parent => :technology,
+:class => Technology::NpcGroundAbsorption do |m|; end
+
+Factory.define :t_npc_space_absorption, :parent => :technology,
+:class => Technology::NpcSpaceAbsorption do |m|; end
+
+Factory.define :t_crow_damage, :parent => :technology,
+:class => Technology::CrowDamage do |m|; end
+
+Factory.define :t_cyrix_damage, :parent => :technology,
+:class => Technology::CyrixDamage do |m|; end
+
+Factory.define :t_avenger_damage, :parent => :technology,
+:class => Technology::AvengerDamage do |m|; end
+
+Factory.define :t_dart_damage, :parent => :technology,
+:class => Technology::DartDamage do |m|; end
+
+Factory.define :t_rhyno_damage, :parent => :technology,
+:class => Technology::RhynoDamage do |m|; end
+
+Factory.define :t_dirac_damage, :parent => :technology,
+:class => Technology::DiracDamage do |m|; end
+
+Factory.define :t_thor_damage, :parent => :technology,
+:class => Technology::ThorDamage do |m|; end
+
+Factory.define :t_demosis_damage, :parent => :technology,
+:class => Technology::DemosisDamage do |m|; end
+
+Factory.define :t_crow_armor, :parent => :technology,
+:class => Technology::CrowArmor do |m|; end
+
+Factory.define :t_cyrix_armor, :parent => :technology,
+:class => Technology::CyrixArmor do |m|; end
+
+Factory.define :t_avenger_armor, :parent => :technology,
+:class => Technology::AvengerArmor do |m|; end
+
+Factory.define :t_dart_armor, :parent => :technology,
+:class => Technology::DartArmor do |m|; end
+
+Factory.define :t_rhyno_armor, :parent => :technology,
+:class => Technology::RhynoArmor do |m|; end
+
+Factory.define :t_dirac_armor, :parent => :technology,
+:class => Technology::DiracArmor do |m|; end
+
+Factory.define :t_thor_armor, :parent => :technology,
+:class => Technology::ThorArmor do |m|; end
+
+Factory.define :t_demosis_armor, :parent => :technology,
+:class => Technology::DemosisArmor do |m|; end
+
+Factory.define :t_crow_critical, :parent => :technology,
+:class => Technology::CrowCritical do |m|; end
+
+Factory.define :t_cyrix_critical, :parent => :technology,
+:class => Technology::CyrixCritical do |m|; end
+
+Factory.define :t_avenger_critical, :parent => :technology,
+:class => Technology::AvengerCritical do |m|; end
+
+Factory.define :t_dart_critical, :parent => :technology,
+:class => Technology::DartCritical do |m|; end
+
+Factory.define :t_rhyno_critical, :parent => :technology,
+:class => Technology::RhynoCritical do |m|; end
+
+Factory.define :t_dirac_critical, :parent => :technology,
+:class => Technology::DiracCritical do |m|; end
+
+Factory.define :t_thor_critical, :parent => :technology,
+:class => Technology::ThorCritical do |m|; end
+
+Factory.define :t_demosis_critical, :parent => :technology,
+:class => Technology::DemosisCritical do |m|; end
+
+Factory.define :t_crow_absorption, :parent => :technology,
+:class => Technology::CrowAbsorption do |m|; end
+
+Factory.define :t_cyrix_absorption, :parent => :technology,
+:class => Technology::CyrixAbsorption do |m|; end
+
+Factory.define :t_avenger_absorption, :parent => :technology,
+:class => Technology::AvengerAbsorption do |m|; end
+
+Factory.define :t_dart_absorption, :parent => :technology,
+:class => Technology::DartAbsorption do |m|; end
+
+Factory.define :t_rhyno_absorption, :parent => :technology,
+:class => Technology::RhynoAbsorption do |m|; end
+
+Factory.define :t_dirac_absorption, :parent => :technology,
+:class => Technology::DiracAbsorption do |m|; end
+
+Factory.define :t_thor_absorption, :parent => :technology,
+:class => Technology::ThorAbsorption do |m|; end
+
+Factory.define :t_demosis_absorption, :parent => :technology,
+:class => Technology::DemosisAbsorption do |m|; end
+
+Factory.define :t_crow_speed, :parent => :technology,
+:class => Technology::CrowSpeed do |m|; end
+
+Factory.define :t_cyrix_speed, :parent => :technology,
+:class => Technology::CyrixSpeed do |m|; end
+
+Factory.define :t_avenger_speed, :parent => :technology,
+:class => Technology::AvengerSpeed do |m|; end
+
+Factory.define :t_dart_speed, :parent => :technology,
+:class => Technology::DartSpeed do |m|; end
+
+Factory.define :t_rhyno_speed, :parent => :technology,
+:class => Technology::RhynoSpeed do |m|; end
+
+Factory.define :t_dirac_speed, :parent => :technology,
+:class => Technology::DiracSpeed do |m|; end
+
+Factory.define :t_thor_speed, :parent => :technology,
+:class => Technology::ThorSpeed do |m|; end
+
+Factory.define :t_demosis_speed, :parent => :technology,
+:class => Technology::DemosisSpeed do |m|; end
+
+Factory.define :t_vulcan_damage, :parent => :technology,
+:class => Technology::VulcanDamage do |m|; end
+
+Factory.define :t_vulcan_armor, :parent => :technology,
+:class => Technology::VulcanArmor do |m|; end
+
+Factory.define :t_vulcan_critical, :parent => :technology,
+:class => Technology::VulcanCritical do |m|; end
+
+Factory.define :t_vulcan_absorption, :parent => :technology,
+:class => Technology::VulcanAbsorption do |m|; end
+
+Factory.define :t_screamer_damage, :parent => :technology,
+:class => Technology::ScreamerDamage do |m|; end
+
+Factory.define :t_screamer_armor, :parent => :technology,
+:class => Technology::ScreamerArmor do |m|; end
+
+Factory.define :t_screamer_critical, :parent => :technology,
+:class => Technology::ScreamerCritical do |m|; end
+
+Factory.define :t_screamer_absorption, :parent => :technology,
+:class => Technology::ScreamerAbsorption do |m|; end
+
+Factory.define :t_thunder_damage, :parent => :technology,
+:class => Technology::ThunderDamage do |m|; end
+
+Factory.define :t_thunder_armor, :parent => :technology,
+:class => Technology::ThunderArmor do |m|; end
+
+Factory.define :t_thunder_critical, :parent => :technology,
+:class => Technology::ThunderCritical do |m|; end
+
+Factory.define :t_thunder_absorption, :parent => :technology,
+:class => Technology::ThunderAbsorption do |m|; end
+
+Factory.define :t_light_flight, :parent => :technology,
+:class => Technology::LightFlight do |m|; end
+
+Factory.define :t_npc_light_flight, :parent => :technology,
+:class => Technology::NpcLightFlight do |m|; end
+
+Factory.define :t_npc_heavy_flight, :parent => :technology,
+:class => Technology::NpcHeavyFlight do |m|; end
+
+Factory.define :t_mule, :parent => :technology,
+:class => Technology::Mule do |m|; end
+
+Factory.define :t_mule_armor, :parent => :technology,
+:class => Technology::MuleArmor do |m|; end
+
+Factory.define :t_mule_absorption, :parent => :technology,
+:class => Technology::MuleAbsorption do |m|; end
+
+Factory.define :t_mule_speed, :parent => :technology,
+:class => Technology::MuleSpeed do |m|; end
+
+Factory.define :t_mule_storage, :parent => :technology,
+:class => Technology::MuleStorage do |m|; end
+
+Factory.define :t_rhyno_storage, :parent => :technology,
+:class => Technology::RhynoStorage do |m|; end

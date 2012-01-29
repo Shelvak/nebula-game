@@ -19,14 +19,14 @@
     <Unit_Scorpion value="Skorpionas" />
     <Unit_Scorpion-what value="{0 one[skorpioną] 1sts[? skorpioną] tens[? skorpionų] many[? skorpionus]}" />
     <Unit_Scorpion-whos value="{0 one[skorpiono] 1sts[? skorpiono] tens[? skorpionų] many[? skorpionų]}" />
-    
+
     <Unit_Azure value="Azuras" />
     <Unit_Azure-what value="{0 one[azurą] 1sts[? azurą] tens[? azurų] many[? azurus]}" />
     <Unit_Azure-whos value="{0 one[azuro] 1sts[? azuro] tens[? azurų] many[? azurų]}" />
         
-    <Unit_Mantis value="Maldininkas" />
-    <Unit_Mantis-what value="{0 one[maldininką] 1sts[? maldininką] tens[? maldininkų] many[? maldininkus]}" />
-    <Unit_Mantis-whos value="{0 one[maldininko] 1sts[? maldininko] tens[? maldininkų] many[? maldininkų]}" />
+    <Unit_Mantis value="Mantis" />
+    <Unit_Mantis-what value="{0 one[mantį] 1sts[? mantį] tens[? mančių] many[? mančius]}" />
+    <Unit_Mantis-whos value="{0 one[mančio] 1sts[? mančio] tens[? mančių] many[? mančių]}" />
         
     <Unit_Zeus value="Dzeusas" />
     <Unit_Zeus-what value="{0 one[dzeusą] 1sts[? dzeusą] tens[? dzeusų] many[? dzeusus]}" />
@@ -113,6 +113,10 @@
     <Unit_BossShip value="Morfėjus" />
     <Unit_BossShip-what value="{0 one[morfėjaus klasės laivą] 1sts[? morfėjaus klasės laivą] tens[? morfėjaus klasės laivų] many[? morfėjaus klasės laivus]}" />
     <Unit_BossShip-whos value="{0 one[morfėjaus klasės laivo] 1sts[? morfėjaus klasės laivo] tens[? morfėjaus klasės laivų] many[? morfėjaus klasės laivų]}" />
+    
+    <Unit_ConvoyShip value="Neksaras" />
+    <Unit_ConvoyShip-what value="{0 one[neksaro klasės laivą] 1sts[? neksaro klasės laivą] tens[? neksaro klasės laivų] many[? neksaro klasės laivus]}" />
+    <Unit_ConvoyShip-whos value="{0 one[neksaro klasės laivo] 1sts[? neksaro klasės laivo] tens[? neksaro klasės laivų] many[? neksaro klasės laivų]}" />
     
     <!-- Bokšteliai -->
 
@@ -268,6 +272,10 @@
     <Building_SpaceFactory-whos value="{0 one[laivų gamyklos] 1sts[? laivų gamyklos] tens[? laivų gamyklų] many[? laivų gamyklų]}" />
     
     <!-- Kiti pastatai -->
+
+    <Building_ResourceTransporter value="{0 one[Resursų siųstuvas] 1sts[? Resursų siųstuvas] tens[? Resursų siųstuvų] many[? Resursų siųstuvai]}" />
+    <Building_ResourceTransporter-what value="{0 one[resursų siųstuvą] 1sts[? resursų siųstuvą] tens[? resursų siųstuvų] many[? resursų siųstuvus]}" />
+    <Building_ResourceTransporter-whos value="{0 one[resursų siųstuvo] 1sts[? resursų siųstuvo] tens[? resursų siųstuvų] many[? resursų siųstuvų]}" />
     
     <Building_Market value="Turgus" />
     <Building_Market-what value="{0 one[turgų] 1sts[? turgų] tens[? turgų] many[? turgus]}" />
@@ -298,30 +306,16 @@
 
     <Technology_ZetiumExtraction value="Zetiumo gavyba" />
     <Technology_ZetiumExtraction-whos value="zetiumo gavybos" />
-    <Technology_MetabolicChargers value="Sustiprinti šarvai" />
-    <Technology_MetabolicChargers-whos value="sustiprintų šarvų" />
-    <Technology_HighVelocityCharges value="Greituminiai šoviniai" />
-    <Technology_HighVelocityCharges-whos value="greituminių šovinių" />
     <Technology_Market value="Turgus" />
     <Technology_Market-whos value="Turgaus" />
     <Technology_SpaceFactory-whos value="Laivų gamyklos" />
     <Technology_SpaceFactory value="Laivų gamykla" />
-    <Technology_ShipsArmor value="Keliasluoksnės plokštės" />
-    <Technology_ShipsArmor-whos value="keliasluoksnių plokščių" />
-    <Technology_ShipsDamage value="Energizuota plazma" />
-    <Technology_ShipsDamage-whos value="energizuotos plazmos" />
-    <Technology_TanksDamage value="Zetiumo sviediniai" />
-    <Technology_TanksDamage-whos value="zetiumo sviedinių" />
-    <Technology_TanksArmor value="Magnetiniai šarvai" />
-    <Technology_TanksArmor-whos value="magnetinių šarvų" />
     <Technology_FieryMelters value="Aukšto spaudimo lydymas" />
     <Technology_FieryMelters-whos value="aukšto spaudimo lydymo" />
     <Technology_SuperconductorTechnology value="Superlaidininkai" />
     <Technology_SuperconductorTechnology-whos value="superlaidininkų" />
     <Technology_PowderedZetium value="Zetiumo pjaustikliai" />
     <Technology_PowderedZetium-whos value="zetiumo pjaustiklių" />
-    <Technology_HeavyFlight value="Gama varikliai" />
-    <Technology_HeavyFlight-whos value="gama variklių" />
     <Technology_MetalStorage value="Skysčių suspaudimas" />
     <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
     <Technology_EnergyStorage value="Talpesnės baterijos" />
@@ -336,14 +330,79 @@
     <Technology_Alliances-whos value="Sąjungų" />
     <Technology_BuildingRepair value="Taisymo robotai" />
     <Technology_BuildingRepair-whos value="Taisymo robotų" />
-    <Technology_TurretArmor value="Struktūrinis surišimas" />
-    <Technology_TurretArmor-whos value="Struktūrinio surišimo" />
-    <Technology_TurretDamage value="Dalelių greitintuvai" />
-    <Technology_TurretDamage-whos value="Dalelių greitintuvų" />
     <Technology_HealingCenter value="Techninė ligoninė" />
     <Technology_HealingCenter-whos value="Techninės ligoninės" />
     <Technology_Mdh value="Mobilus štabas" />
     <Technology_Mdh-whos value="Mobilaus štabo" />
+    <Technology_Mantis ref="Unit_Mantis" />
+    <Technology_Mantis-whos ref="Unit_Mantis" />
+    <Technology_ResourceTransporter value="Resursų siuntimas" />
+    <Technology_ResourceTransporter-whos value="Resursų siuntimo" />
+
+    <Technology_SpaceDamage value="Laivų ginklai" />
+    <Technology_SpaceDamage-whos value="Laivų ginklų" />
+    <Technology_SpaceArmor value="Laivų šarvai" />
+    <Technology_SpaceArmor-whos value="Laivų šarvų" />
+    <Technology_SpaceCritical value="Laivų kompiuteriai" />
+    <Technology_SpaceCritical-whos value="Laivų kompiuterių" />
+    <Technology_SpaceAbsorption value="Laivų gyn. sistemos" />
+    <Technology_SpaceAbsorption-whos value="Laivų gyn. sistemų" />
+    <Technology_HeavyFlight value="Gama varikliai" />
+    <Technology_HeavyFlight-whos value="gama variklių" />
+    <Technology_LightFlight value="Laivų palengvinimas" />
+    <Technology_LightFlight-whos value="Laivų palengvinimo" />
+    <Technology_GroundDamage value="Karių ginklai" />
+    <Technology_GroundDamage-whos value="Karių ginklų" />
+    <Technology_GroundArmor value="Karių šarvai" />
+    <Technology_GroundArmor-whos value="Karių šarvų" />
+    <Technology_GroundCritical value="Karių kompiuteriai" />
+    <Technology_GroundCritical-whos value="Karių kompiuterių" />
+    <Technology_GroundAbsorption value="Karių gyn. sistemos" />
+    <Technology_GroundAbsorption-whos value="Karių gyn. sistemų" />
+    <Technology_TurretDamage value="Bokštelių ginklai" />
+    <Technology_TurretDamage-whos value="Bokštelių ginklų" />
+    <Technology_TurretArmor value="Bokštelių šarvai" />
+    <Technology_TurretArmor-whos value="Bokštelių šarvų" />
+    <Technology_TurretCritical value="Bokštelių kompiuteriai" />
+    <Technology_TurretCritical-whos value="Bokštelių kompiuterių" />
+    <Technology_TurretAbsorption value="Bokštelių gyn. sistemos" />
+    <Technology_TurretAbsorption-whos value="Bokštelių gyn. sistemų" />
+
+    <Technology_NpcSpaceDamage value="Ateivių laivų ginklai" />
+    <Technology_NpcSpaceDamage-whos value="Ateivių laivų ginklų" />
+    <Technology_NpcSpaceArmor value="Ateivių laivų šarvai" />
+    <Technology_NpcSpaceArmor-whos value="Ateivių laivų šarvų" />
+    <Technology_NpcSpaceCritical value="Ateivių laivų kompiuteriai" />
+    <Technology_NpcSpaceCritical-whos value="Ateivių laivų kompiuterių" />
+    <Technology_NpcSpaceAbsorption value="Ateivių laivų gyn. sistemos" />
+    <Technology_NpcSpaceAbsorption-whos value="Ateivių laivų gyn. sistemų" />
+    <Technology_NpcHeavyFlight value="Ateivių varikliai" />
+    <Technology_NpcHeavyFlight-whos value="Ateivių variklių" />
+    <Technology_NpcLightFlight value="Erdvės iškreipimas" />
+    <Technology_NpcLightFlight-whos value="Erdvės iškreipimo" />
+    <Technology_NpcGroundDamage value="Ateivių karių ginklai" />
+    <Technology_NpcGroundDamage-whos value="Ateivių karių ginklų" />
+    <Technology_NpcGroundArmor value="Ateivių karių šarvai" />
+    <Technology_NpcGroundArmor-whos value="Ateivių karių šarvų" />
+    <Technology_NpcGroundCritical value="Ateivių karių kompiuteriai" />
+    <Technology_NpcGroundCritical-whos value="Ateivių karių kompiuterių" />
+    <Technology_NpcGroundAbsorption value="Ateivių karių gyn. sistemos" />
+    <Technology_NpcGroundAbsorption-whos value="Ateivių karių gyn. sistemų" />
+
+    <Technology_DamageSpecialization value="Žalos specializacija" />
+    <Technology_DamageSpecialization-whos value="Žalos specializacijos" />
+    <Technology_ArmorSpecialization value="Šarvų specializacija" />
+    <Technology_ArmorSpecialization-whos value="Šarvų specializacijos" />
+    <Technology_CriticalSpecialization value="Kritinio šūvio spec." />
+    <Technology_CriticalSpecialization-whos
+      ref="Technology_CriticalSpecialization" />
+    <Technology_AbsorptionSpecialization value="Sugėrimo specializacija" />
+    <Technology_AbsorptionSpecialization-whos
+      value="Sugėrimo specializacijos" />
+    <Technology_SpeedSpecialization value="Greičio specializacija" />
+    <Technology_SpeedSpecialization-whos value="Greičio specializacijos" />
+    <Technology_StorageSpecialization value="Talpos specializacija" />
+    <Technology_StorageSpecialization-whos value="Talpos specializacijos" />
 
     <!-- Kita -->
     
@@ -471,11 +530,11 @@
   </Alliances>
 
   <BattleMap>    
-    <status0 value="Tu" />
-    <status1 value="Sąjungininkai" />
+    <status0 value="Tavo" />
+    <status1 value="Sąjungininkų" />
     <status2 value="NS" />
     <status2.tooltip value="Nepuolimo Sutartis" />
-    <status3 value="Priešai" />
+    <status3 value="Priešų" />
     
     <space value="Kosmosas" />
     <ground value="Žemė" />
@@ -807,6 +866,21 @@
       saulės baterijas generuoti energijai ir talpyklas šiems resursams saugoti.
       To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
     </Mothership.about>
+
+    <ResourceTransporter.name ref="Objects/Building_ResourceTransporter" />
+    <ResourceTransporter.about>
+      <p>
+        [obj:1:Building_ResourceTransporter] gali akimirksniu pergabenti
+        tam tikrą kiekį resursų iš vienos planetos į kitą. Du
+        [obj:2:Building_ResourceTransporter::dc] susijungia tarpusavyje,
+        sukurdami erdvės tunelį tarp dviejų planetų.
+      </p>
+      <p>
+        Nors mokslininkams dar nepavyko pergabenti tuneliu gyvos butybės, ši
+        technologija puikiai tinka greitam resursų pergabenimui, tiesa,
+        transportavimo eigoje prarandant dalį resursų.
+      </p>
+    </ResourceTransporter.about>
 
     <MEX.common>
       <p>
@@ -1470,6 +1544,7 @@
     <cooldown value="Ataušimo laikas" />
     <bestAgainst value="Geriausias prieš" />
     <weakAgainst value="Silpniausias prieš" />
+    <appliesTo value="Technologija taikoma" />
     <specialDamage value="Žala: {0} x {1} = {2}" />
     <damageCoef value="Žalos koeficientas: {0}" />
     <armorFromTechs value="Šarvai iš technologijų:" />
@@ -3276,6 +3351,12 @@
       dar vieną! Tegul ji dreba prieš mūsų galią!</p>
     <!-- old id: 39 --> </about.10510>
 
+    <title.10520 value="Siekiant begalybės" />
+    <about.10520>
+    <p>Komandore!</p>
+    <p>Turint tokias valdas, toliau - tik begalybė! Mūsų imperija - nesustabdoma!</p>
+    </about.10520>
+
     <DestroyingEnemies.title value="Naikintant priešo galią" />
     <DestroyingEnemies.about>
       <p>Komandore!</p>
@@ -3302,6 +3383,34 @@
 
     <title.10575 value="[reference:DestroyingEnemies.title] (VI)" />
     <about.10575 ref="DestroyingEnemies.about" />
+
+    <title.10600 value="Suardant konvojus" />
+    <about.10600>
+      <p>Sveiki, Komandore.</p>
+      <p>
+        Mūsų žvalgai pastebėjo pro mūsų saulės sistemą karts nuo karto
+        praskredančius ateivių konvojus, kurių rikiuotėje skrenda kažkokie
+        neįprasti laivai.
+      </p>
+      <p>
+        Pasitarę mūsų mokslininkai nusprendė, jog sumedžiojus šiuos konvojus,
+        galėtume gerokai pasipelnyti! Gal pabandom?
+      </p>
+    </about.10600>
+
+    <title.10610 value="Didžiausias pavojus" />
+    <about.10610>
+      <p>Sveiki, Komandore.</p>
+      <p>
+        Arenoje pastebėtas karts nuo karto išlendantis Morfėjus - apie šiuos
+        galingus ateivių laivus sklinda legendos!
+      </p>
+      <p>
+        Jeigu mums pavyktų jį nukauti, tikrai išpeštume naudos! Tik atsargiai!
+        Pulti jį vienam - tikra pražūtis, pasitelkite į pagalbą savo
+        sąjungininkus!
+      </p>
+    </about.10610>
   </Quests>
 
   <QuestScreens>
@@ -4136,6 +4245,15 @@
        {1}.</p>
       <p>Gauk karo taškų kariaudamas su ateiviais arba kitais žaidėjais.</p>
     </warPointsNeeded>
+    <planetsNeeded>
+      <p>Turi valdyti {0 1sts[? planetą] tens[? planetų] many[? planetas]},
+         kad galėtum išrasti šią technologiją, tačiau tu teturi {1}.</p>
+    </planetsNeeded>
+    <pulsarsNeeded>
+      <p>Turi valdyti {0} arenos arba pulsaro tipo
+         {0 1sts[planetą] tens[planetų] many[planetas]},
+         kad galėtum išrasti šią technologiją, tačiau tu teturi {1}.</p>
+    </pulsarsNeeded>
     <groupResearched>
       <p>Kita technologija iš šios grupės jau buvo išrasta, todėl tu negali
       išrasti šios technologijos.</p>
@@ -4183,8 +4301,10 @@
     <property.mod.energy.store value="Energijos talpos priedas" />
     <property.mod.armor value="Šarvų priedas" />
     <property.mod.damage value="Žalos priedas" />
-    <property.mod.movementTimeDecrease value="Judėjimo trukmės sumažinimas" />
+    <property.mod.speed value="Judėjimo trukmės sumažinimas" />
     <property.mod.storage value="Talpumo priedas" />
+    <property.planets.required value="Reikiamas planetų kiekis" />
+    <property.pulsars.required value="Reikiamas pulsarų kiekis" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
     <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
     <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
@@ -4193,15 +4313,21 @@
       <p>Pirmas šios technologijos lygis atrakiną šį karį/laivą. Kiti jos
       lygiai jį tobulina.</p>
     </UnitTech>
-    <UnitUpgrade>
-      <p>Kiekvienas patobulinimo lygis didina šarvų atsparumą ir ginklų žalą.</p>
-    </UnitUpgrade>
+    <GroundUpgrade>
+      <p>Kiekvienas patobulinimo lygis didina šarvų atsparumą, ginklų žalą, bei
+        žalos sugėrimo ir kritinio šūvio tikimybes.</p>
+    </GroundUpgrade>
+    <SpaceUpgrade>
+      <p>Kiekvienas patobulinimo lygis didina šarvų atsparumą, ginklų žalą,
+        žalos sugėrimo ir kritinio šūvio tikimybes, bei laivo skraidymo
+        greitį.</p>
+    </SpaceUpgrade>
 
     <BuildingTech>
       <p>Pirmas šios technologijos lygis atrakiną šį pastatą. Kiti jos
       lygiai jį tobulina.</p>
     </BuildingTech>
-    <BuildingUpgrade ref="UnitUpgrade" />
+    <BuildingUpgrade ref="GroundUpgrade" />
 
     <Zetium.common>
       <p>
@@ -4212,115 +4338,242 @@
       </p>
     </Zetium.common>
 
+    <DamageSpecialization.name ref="Objects/Technology_DamageSpecialization" />
+    <DamageSpecialization.about>
+      <p>Ši specializacija didina ginklų daromą žalą.</p>
+    </DamageSpecialization.about>
+
+    <ArmorSpecialization.name ref="Objects/Technology_ArmorSpecialization" />
+    <ArmorSpecialization.about>
+      <p>Ši specializacija didina šarvų atsparumą ir sumažina gaunamą žalą.</p>
+    </ArmorSpecialization.about>
+
+    <CriticalSpecialization.name
+      ref="Objects/Technology_CriticalSpecialization" />
+    <CriticalSpecialization.about>
+      <p>Ši specializacija didina tikimybę iššauti kritinį šūvį.</p>
+    </CriticalSpecialization.about>
+
+    <AbsorptionSpecialization.name
+      ref="Objects/Technology_AbsorptionSpecialization" />
+    <AbsorptionSpecialization.about>
+      <p>Ši specializacija didina tikimybę sugerti dalį pataikymo metu
+        gautos žalos.</p>
+    </AbsorptionSpecialization.about>
+
+    <SpeedSpecialization.name
+      ref="Objects/Technology_SpeedSpecialization" />
+    <SpeedSpecialization.about>
+      <p>Ši specializacija padidina laivo skraidymo greitį.</p>
+    </SpeedSpecialization.about>
+
     <ZetiumExtraction.name ref="Objects/Technology_ZetiumExtraction" />
     <ZetiumExtraction.about>
       <p>Įgalina statyti zetiumo kasyklas ir talpyklas.</p>
       <p>[reference:Zetium.common]</p>
     </ZetiumExtraction.about>
 
-    <!--
-    <Spy.name ref="Objects/Spy" /> <Spy1 value="Spy" />
-    <Spy.about value="Just a simple spy technology" />
-
-    <Saboteur.name ref="Objects/Saboteur" />
-    <Saboteur1 value="Saboteur" />
-    <Saboteur.about value="I think thisone has ability to ruin things" />
-
-    <SatteliteHacking.name ref="Objects/SatteliteHacking" />
-    <SatteliteHacking1 value="Sattelite hacking" />
-    <SatteliteHacking.about>
-      <p>This one will ruin any satelite if sysAdmin is not there</p>
-    </SatteliteHacking.about>
-
-    <CamouflageSuits.name ref="Objects/CamouflageSuits" />
-    <CamouflageSuits1 value="Camouflage suits" />
-    <CamouflageSuits.about>
-      <p>You can dress with this one if you go to picnic</p>
-    </CamouflageSuits.about>
-
-    <TacticalReconnaissance.name ref="Objects/TacticalReconnaissance" />
-    <TacticalReconnaissance1 value="Tactical reconnaissance" />
-    <TacticalReconnaissance.about>
-      <p>
-        This is very strage technology, it is told that ancient scientists are 
-        the ones who invented it first 
-      </p>
-    </TacticalReconnaissance.about>
-
-    <R14Charges.name ref="Objects/R14Charges" />
-    <R14Charges1 value="R14 charges" />
-    <R14Charges.about value="Charge enemies with R14" />
-
-    <Spaceport.name ref="Objects/Spaceport" />
-    <Spaceport1 value="Spaceport" />
-    <Spaceport.about value="Fly to the sky" />
-    -->
-
+    <DamageTech value="Ši technologija padidina ginklų stiprumą" />
     <ArmorTech value="Ši technologija padidina šarvų stiprumą" />
-    <WeaponsTech value="Ši technologija padidina ginklų stiprumą" />
+    <CriticalTech value="Ši technologija padidina kritinio šūvio tikimybę" />
+    <AbsorptionTech value="Ši technologija padidina žalos sugėrimo tikimybę" />
+    <SpeedTech value="Ši technologija padidina laivų skraidymo greitį" />
 
-    <InfantryUpgradeTech>
-      <p>žemės kariams statomiems kareivinėse, tokiems kaip desantininkas
-      ar sėlintojas.</p>
-    </InfantryUpgradeTech>
-
-    <MetabolicChargers.name ref="Objects/Technology_MetabolicChargers" />
-    <MetabolicChargers.about>
-      <p>Neseniai padaryti atradimai leidžia įterpti zetiumo plokšteles į karių
-      šarvus, taip padarant juos atsparesniais.</p>
-      <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
-    </MetabolicChargers.about>
-
-    <HighVelocityCharges.name ref="Objects/Technology_HighVelocityCharges" />
-    <HighVelocityCharges.about>
-      <p>Ši technologija papildo pėstininkų amuniciją zetiumu, taip suteikiant
-      jiems daugiau galios. Šoviniai ir raketos greičiau skrenda ir stipriau
-      sprogsta, padarydami daugiau žalos priešams.</p>
-      <p>[reference:WeaponsTech] [reference:InfantryUpgradeTech]</p>
-    </HighVelocityCharges.about>
-
-    <ShipUpgradeTech>
-      <p>kosminiams laivams statomiems laivų gamykloje, tokiems kaip 
-      varno ar cyrikso klasės laivai.</p>
-      <p>Ji NEPAGERINA raganosio ir mulo klasės laivų.</p>
-    </ShipUpgradeTech>
-
-    <ShipsArmor.name ref="Objects/Technology_ShipsArmor" />
-    <ShipsArmor.about>
-      <p>Ši technologija leidžia panaudojus zetiumą gaminti tvirtus ir lengvus
-      išorinius laivų šarvus, kurie gali būti sluoksniuojami, taip padidinant
-      jų atsparumą.</p>
-      <p>[reference:ArmorTech] [reference:ShipUpgradeTech]</p>
-    </ShipsArmor.about>
-
-    <ShipsDamage.name ref="Objects/Technology_ShipsDamage" />
-    <ShipsDamage.about>
-      <p>Įpurškiant zetiumą į generuojamą plazmos srautą išgaunama daug 
-      karštesnė ir galingesnė plazma, kuri sugeba ištirpdyti net labiausiai
-      pažengusius šarvus.</p>
-      <p>[reference:WeaponsTech] [reference:ShipUpgradeTech]</p>
-    </ShipsDamage.about>
-
-    <TankUpgradeTech>
-      <p>žemės tankams statomiems tankų gamykloje, tokiems kaip skorpionas ar
-      azuras.</p>
-    </TankUpgradeTech>
-
-    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
-    <TanksDamage.about>
-      <p>Pridedant nestabilaus zetiumo į tankų sviedinius ir raketas gaunamas
-      jų galios padidėjimas užtikrina, jog priešo kareiviai nebepasitrauks 
+    <DamageAbout>
+      <p>Sviedinius ir raketas praturtinant zetiumu gaunamas
+      galios padidėjimas užtikrina, jog priešo kareiviai nebepasitrauks
       iš mūšio lauko.</p>
-      <p>[reference:WeaponsTech] [reference:TankUpgradeTech]</p>
-    </TanksDamage.about>
+    </DamageAbout>
 
-    <TanksArmor.name ref="Objects/Technology_TanksArmor" />
-    <TanksArmor.about>
-      <p>Skydo generatoriai įtaisyti tankų šarvuose generuoja jėgą, kuri
-      sumažina atskrendančių šovinių ir sviedinių greitį, taip sumažindami
-      žalą padaromą tankui.</p>
-      <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
-    </TanksArmor.about>
+    <ArmorAbout>
+      <p>Ši technologija leidžia panaudojus zetiumą gaminti tvirtus ir lengvus
+      šarvus, kurie netgi gali būti sluoksniuojami, taip padidinant apsaugą nuo
+      priešo kulkų ir sviedinių.</p>
+    </ArmorAbout>
+
+    <CriticalAbout>
+      <p>Tobulesni taikymosi kompiuteriai ir navigacinė įranga padeda
+      surasti silpnasias priešo gynybos vietas ir smogti į jas su visa
+      jėga.</p>
+    </CriticalAbout>
+    
+    <AbsorptionAbout>
+      <p>Pažengusios gynybinės sistemos leidžia apsiginti nuo kai kurių priešo
+      šūvių, taip ženkliai sumažinant jų daromą žalą.</p>
+    </AbsorptionAbout>
+
+    <SpaceUpgradeTech>
+      <p>kosminiams laivams.</p>
+    </SpaceUpgradeTech>
+
+    <SpaceDamage.name ref="Objects/Technology_SpaceDamage" />
+    <SpaceDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceDamage.about>
+
+    <SpaceArmor.name ref="Objects/Technology_SpaceArmor" />
+    <SpaceArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceArmor.about>
+
+    <SpaceCritical.name ref="Objects/Technology_SpaceCritical" />
+    <SpaceCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceCritical.about>
+
+    <SpaceAbsorption.name ref="Objects/Technology_SpaceAbsorption" />
+    <SpaceAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceAbsorption.about>
+
+    <HeavyFlight.name ref="Objects/Technology_HeavyFlight" />
+    <HeavyFlight.about>
+      <p>Panaudojant gama daleles sunkiųjų variklių procesuose mes galime
+      pasiekti didesnius greičius ir sumažinti skrydžio laiką.</p>
+      <p>Deja ši technologija pritaikoma tik UX-20 varikliuose, kurie
+      naudojami tik didžiausiuose mūsų laivuose. Kita vertus - jie yra ir
+      patys lėčiausi mūsų laivai, tad ši technologija yra labai pravarti.</p>
+      <p>[reference:SpeedTech] mulo ir raganosio klasės laivams.</p>
+    </HeavyFlight.about>
+
+    <LightFlight.name ref="Objects/Technology_LightFlight" />
+    <LightFlight.about>
+      <p>Ši technologija įgalina sumažinti laivų svorį, taip padidinant jų
+        greitį ir sumažinant skrydžio laiką.</p>
+      <p>[reference:SpeedTech] varno, cyrikso, keršytojo ir strelės klasės laivams.</p>
+    </LightFlight.about>
+
+    <GroundUpgradeTech>
+      <p>antžeminiams kariams ir tankams.</p>
+    </GroundUpgradeTech>
+
+    <GroundDamage.name ref="Objects/Technology_GroundDamage" />
+    <GroundDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:GroundUpgradeTech]</p>
+    </GroundDamage.about>
+
+    <GroundArmor.name ref="Objects/Technology_GroundArmor" />
+    <GroundArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:GroundUpgradeTech]</p>
+    </GroundArmor.about>
+
+    <GroundCritical.name ref="Objects/Technology_GroundCritical" />
+    <GroundCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:GroundUpgradeTech]</p>
+    </GroundCritical.about>
+
+    <GroundAbsorption.name ref="Objects/Technology_GroundAbsorption" />
+    <GroundAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:GroundUpgradeTech]</p>
+    </GroundAbsorption.about>
+
+    <NpcSpaceUpgradeTech>
+      <p>ateivių kosminiams laivams (išskyrus neksaro klasės laivus).</p>
+    </NpcSpaceUpgradeTech>
+
+    <NpcSpaceDamage.name ref="Objects/Technology_NpcSpaceDamage" />
+    <NpcSpaceDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceDamage.about>
+
+    <NpcSpaceArmor.name ref="Objects/Technology_NpcSpaceArmor" />
+    <NpcSpaceArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceArmor.about>
+
+    <NpcSpaceCritical.name ref="Objects/Technology_NpcSpaceCritical" />
+    <NpcSpaceCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceCritical.about>
+
+    <NpcSpaceAbsorption.name ref="Objects/Technology_NpcSpaceAbsorption" />
+    <NpcSpaceAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceAbsorption.about>
+
+    <NpcHeavyFlight.name ref="Objects/Technology_NpcHeavyFlight" />
+    <NpcHeavyFlight.about>
+      <p>[reference:SpeedTech] demozio ir neksaro klasės laivams.</p>
+    </NpcHeavyFlight.about>
+
+    <NpcLightFlight.name ref="Objects/Technology_NpcLightFlight" />
+    <NpcLightFlight.about>
+      <p>[reference:SpeedTech] dirako ir toro klasės laivams.</p>
+    </NpcLightFlight.about>
+
+    <NpcGroundUpgradeTech>
+      <p>ateivių antžeminiams kariams.</p>
+    </NpcGroundUpgradeTech>
+
+    <NpcGroundDamage.name ref="Objects/Technology_NpcGroundDamage" />
+    <NpcGroundDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundDamage.about>
+
+    <NpcGroundArmor.name ref="Objects/Technology_NpcGroundArmor" />
+    <NpcGroundArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundArmor.about>
+
+    <NpcGroundCritical.name ref="Objects/Technology_NpcGroundCritical" />
+    <NpcGroundCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundCritical.about>
+
+    <NpcGroundAbsorption.name ref="Objects/Technology_NpcGroundAbsorption" />
+    <NpcGroundAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundAbsorption.about>
+
+    <TurretUpgradeTech>
+      <p>gynybiniams bokšteliams.</p>
+    </TurretUpgradeTech>
+
+    <TurretDamage.name ref="Objects/Technology_TurretDamage" />
+    <TurretDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:TurretUpgradeTech]</p>
+    </TurretDamage.about>
+
+    <TurretArmor.name ref="Objects/Technology_TurretArmor" />
+    <TurretArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:TurretUpgradeTech]</p>
+    </TurretArmor.about>
+
+    <TurretCritical.name ref="Objects/Technology_TurretCritical" />
+    <TurretCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:TurretUpgradeTech]</p>
+    </TurretCritical.about>
+
+    <TurretAbsorption.name ref="Objects/Technology_TurretAbsorption" />
+    <TurretAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:TurretUpgradeTech]</p>
+    </TurretAbsorption.about>
+
+    <ResourceTransporter.name ref="Objects/Technology_ResourceTransporter" />
+    <ResourceTransporter.about>
+      <p>Leidžia statyti [obj:2:Building_ResourceTransporter:what:dc].</p>
+      <p>[reference:Buildings/ResourceTransporter.about]</p>
+    </ResourceTransporter.about>
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
@@ -4448,23 +4701,67 @@
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
 
-    <HeavyFlight.name ref="Objects/Technology_HeavyFlight" />
-    <HeavyFlight.about>
-      <p>Panaudojant gama daleles mūsų sunkiųjų variklių procesuose mes galime
-      pasiekti didesnius greičius ir sumažinti skrydžio laiką.</p>
-      <p>Deja ši technologija pritaikoma tik UX-20 varikliuose, kurie 
-      naudojami tik didžiausiuose mūsų laivuose. Kita vertus - jie yra ir 
-      patys lėčiausi mūsų laivai, tad ši technologija yra labai pravarti.</p>
-      <p>Sutrumpina skrydžio laiką mulo ir raganosio klasės laivams.</p>
-    </HeavyFlight.about>
+    <Gnat.name ref="Units/Gnat.name" />
+    <Gnat.about>
+      <p>[reference:Units/Gnat.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Gnat.about>
+
+    <Glancer.name ref="Units/Glancer.name" />
+    <Glancer.about>
+      <p>[reference:Units/Glancer.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Glancer.about>
+
+    <Spudder.name ref="Units/Spudder.name" />
+    <Spudder.about>
+      <p>[reference:Units/Spudder.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Spudder.about>
+
+    <Gnawer.name ref="Units/Gnawer.name" />
+    <Gnawer.about>
+      <p>[reference:Units/Gnawer.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Gnawer.about>
+
+    <Dirac.name ref="Units/Dirac.name" />
+    <Dirac.about>
+      <p>[reference:Units/Dirac.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Dirac.about>
+
+    <Thor.name ref="Units/Thor.name" />
+    <Thor.about>
+      <p>[reference:Units/Thor.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Thor.about>
+
+    <Demosis.name ref="Units/Demosis.name" />
+    <Demosis.about>
+      <p>[reference:Units/Demosis.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Demosis.about>
+
+    <Mule.name ref="Units/Mule.name" />
+    <Mule.about>
+      <p>[reference:Units/Mule.about]</p>
+      <p>Patobulinimas padidina laivo šarvus, talpą, variklius ir žalos
+         sugėrimo tikimybę</p>
+    </Mule.about>
+
+    <StorageSpecialization.name ref="Objects/Technology_StorageSpecialization"/>
+    <StorageSpecialization.about>
+      <p>Šis patobulinimas padidina [obj:2:Unit_Mule:whos:dc] talpą</p>
+    </StorageSpecialization.about>
 
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
       <p>Nors desantininkai ir neturi ypatingos technikos, būriuose jie yra
-      gana grėsminga jėga. Šis patobulinimas suteikia jiems papildomos kovinės
-      galios ir stipresnius šarvus, jog šie ištikimi vyrai ir moterys galėtų
-      geriau pasitarnauti mūšyje.</p>
-      <p>[reference:UnitUpgrade]</p>
+         gana grėsminga jėga. Šis patobulinimas suteikia jiems papildomos kovinės
+         galios ir stipresnius šarvus, jog šie ištikimi vyrai ir moterys galėtų
+         geriau pasitarnauti mūšyje.</p>
+      <p>[reference:GroundUpgrade]</p>
     </Trooper.about>
 
     <Shocker.name ref="Units/Shocker.name" />
@@ -4474,7 +4771,7 @@
       <p>Pagerina mecho šarvus ir raketas padarydamas jį dar galingesniu mūšyje.
       Papildomi šarvai padeda ilgiau ginti kitus karius, o zetiumu praturtintos
       raketos daro daugiau žalos.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Shocker.about>
 
     <Seeker.name ref="Units/Seeker.name" />
@@ -4485,7 +4782,7 @@
       leisti jam iššauti tą paskutinį šūvį, kurio taip reikėjo. Be šarvų ši
       technologija apginkluoja karį zetiumo lydinio kulkomis, kurios geriau 
       lekia ir daro daugiau žalos.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Seeker.about>
 
     <Scorpion.name ref="Units/Scorpion.name" />
@@ -4493,7 +4790,7 @@
       <p>Į skorpiono klasės tankus galima įmontuoti geresnius skydų generatorius
       ir galingesnius dalelių greitintuvus. Investicijos į šią technologiją
       tau duoda pranašumą prieš tokius pačius priešininko tankus.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Scorpion.about>
 
     <Azure.name ref="Units/Azure.name" />
@@ -4502,8 +4799,17 @@
       <p>[reference:Units/Azure.about]</p>
       <p>Įmaišant zetiumo į azurų raketas išgaunamas didesnis sprogstamasis 
       efektas, o panaudojant zetiumą jų šarvuose, jie sugeria daugiau žalos.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Azure.about>
+
+    <Mantis.name ref="Objects/Technology_Mantis" />
+    <Mantis.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Mantis.about]</p>
+      <p>Įmaišant zetiumo į azurų raketas išgaunamas didesnis sprogstamasis
+      efektas, o panaudojant zetiumą jų šarvuose, jie sugeria daugiau žalos.</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Mantis.about>
     
     <Zeus.name ref="Units/Zeus.name" />
     <Zeus.about>
@@ -4512,7 +4818,7 @@
       <p>Ši technologija padidina tanko šaudmenų greitį, o dėl to didėja ir jų
       daroma žala. Ji taip pat sustiprina tanko šarvus, jog jis galėtų atlaikyti 
       daugiau smūgių.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Zeus.about>
 
     <Mdh.name ref="Objects/Technology_Mdh" />
@@ -4522,7 +4828,7 @@
     <Crow.about>
       <p>Pagerina varno klasės laivų lazerius ir šarvus, taip padarant jį 
       geresniu koviniu laivu, kuris išlieka toks pat greitas.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Crow.about>
 
     <Cyrix.name ref="Units/Cyrix.name" />
@@ -4532,7 +4838,7 @@
       <p>Panaudojant zetiumo kristalus cyrikso klasės laivuose pagerinami jo
       lazeriai ir skydų generatoriai, todėl patobulinti laivai gali dalyvauti
       kovoje ilgiau.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Cyrix.about>
 
     <Rhyno.name ref="Units/Rhyno.name" />
@@ -4542,7 +4848,7 @@
       <p>Ši technologija patobulina ir taip grėsmingus raganosio klasės 
       kovinius laivus. Ji sustiprina jų šarvus zetiumo plokštėmis ir padidina
       laivo daromos žalos kiekį.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Rhyno.about>
 
     <Dart.name ref="Units/Dart.name" />
@@ -4551,7 +4857,7 @@
       <p>[reference:Units/Dart.about]</p>
       <p>Pagerina strėlės klasės laivų šarvus ir ginklus. Taip jie
       tampa dar labiau mirtingesni priešo laivams.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Dart.about>
 
     <Avenger.name ref="Units/Avenger.name" />
@@ -4560,7 +4866,7 @@
       <p>[reference:Units/Avenger.about]</p>
       <p>Pagerina keršytojų šarvus ir sustiprina jų raketas. Tai padaro šiuos
       laivus dar geresniais nuklydusių laivynų medžiotojais.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Avenger.about>
 
     <Jumper.name ref="Units/Jumper.name" />
@@ -4648,6 +4954,7 @@
   <Units>
     <title.storageScreen value="Įkrauti / Iškrauti"/>
     <label.totalEmptyStorage value="Laisvos vietos: {0}"/>
+    <message.didNotFit value="Į planetą netilpo {0}" />
   
     <property.timeToFinish.short value="{0}" />
     <property.timeToFinish.long value="Bus už {0}" />
@@ -4984,6 +5291,12 @@
       šiems laivams milžinams.</p>
     </Demosis.about>
 
+    <VpsAndCreds>
+      Už šiam laivui padarytą žalą tu gauni pergalės taškus. Be to
+      žaidėjas, kuris į šį laivą pataikys paskutinį, lemiamą, šūvį,
+      gaus kredų.
+    </VpsAndCreds>
+
     <BossShip.name ref="Objects/Unit_BossShip" />
     <BossShip.about>
       <p>
@@ -5002,12 +5315,18 @@
         ir komandorai iš visos galaktikos stengiasi jį suplėšyti į gabalus. Nes
         jie žino kokie turtai ir paslaptys laukia šio laivo viduje...
       </p>
-      <p>
-        Už šiam laivui padarytą žalą tu gauni pergalės taškus. Be to
-        žaidėjas, kuris į šį laivą pataikys paskutinį, lemiamą, šūvį,
-        gaus kredų.
-      </p>
+      <p>[reference:VpsAndCreds]</p>
     </BossShip.about>
+
+    <ConvoyShip.name ref="Objects/Unit_ConvoyShip" />
+    <ConvoyShip.about>
+      <p>
+        Tai galingi ateivių laivai, kurie kursuoja per galaktiką. Jie išdidžiai
+        plaukia pro erdvės gelmes, savo įspūdingu tvirtumu ir ginklų arsenalu
+        pasiryžę pasitikti bet kokią jiems iškilusią grėsmę.
+      </p>
+      <p>[reference:VpsAndCreds]</p>
+    </ConvoyShip.about>
 
     <Trooper.name ref="Objects/Unit_Trooper" />
     <Trooper.about>
@@ -5057,6 +5376,16 @@
       bėgti arba mirti. Tačiau azuro tankai yra gana lengvai pamušami, 
       todėl mūšio lauke turi būti saugomi stipriau šarvuotų pajėgų.</p>
     </Azure.about>
+
+    <Mantis.name ref="Objects/Unit_Mantis" />
+    <Mantis.about>
+      <p>
+        Mantis yra puikus pasirinkimas norint nušluoti priešo snaiperius arba
+        kitus lengvuosius karius, tačiau derėtų atsižvelgti į tai, jog jis nėra
+        itin šarvuotas. Geriausiai mūšyje jis pasirodys pridengtas labiau
+        šarvuotų karių.
+      </p>
+    </Mantis.about>
     
     <Zeus.name ref="Objects/Unit_Zeus" />
     <Zeus.about>
@@ -5142,7 +5471,7 @@
     </Jumper.about>
 
     <MobileTurret>
-      <p>Gali būti gabėnamas kroviniais laivais. Neišskleistas nešaudo.
+      <p>Gali būti gabenamas kroviniais laivais. Neišskleistas nešaudo.
       Po išskleidimo nebesuskleidžiamas.</p>
     </MobileTurret>
 
@@ -5182,6 +5511,10 @@
      <message.channelJoin  value="[ {0} prisijungė ]"/>
      <message.channelLeave value="[ {0} išėjo ]"/>
      <message.friendOffline value="Šis žaidėjas šiuo metu neprisijungęs"/>
+     <message.silence>
+        Tu buvai nutildytas iki {0}, nes siuntei per daug žinučių.
+        Tu vėl galėsi šnekėtis už {1}.
+     </message.silence>
      <label.send value="Siųsti" />
      <label.mainChannel value="#galaktika"/>
      <label.allianceChannel value="#sąjunga"/>

@@ -18,17 +18,20 @@ describe Chat::Channel do
   end
 
   describe "#join" do
+    let(:old_players) { [Factory.create(:player), Factory.create(:player)] }
+    let(:player) { Factory.create(:player) }
+    let(:players) { old_players + [player] }
+    before(:each) do
+      old_players.each { |player| @chan.join(player) }
+    end
+
     it "should join player to channel" do
-      player = Factory.create(:player)
       @chan.join(player)
       @chan.has?(player).should be_true
     end
 
     it "should notify everybody (including self) about join" do
-      old_player = Factory.create(:player)
-      @chan.join(old_player)
-      player = Factory.create(:player)
-      [old_player, player].each do |p|
+      players.each do |p|
         @dispatcher.should_receive(:push).with(
           {
             'action' => ChatController::ACTION_JOIN,
@@ -41,9 +44,6 @@ describe Chat::Channel do
     end
 
     it "should not notify self if asked not to" do
-      old_player = Factory.create(:player)
-      @chan.join(old_player)
-      player = Factory.create(:player)
       @dispatcher.should_not_receive(:push).with(
         {
           'action' => ChatController::ACTION_JOIN,
@@ -51,6 +51,32 @@ describe Chat::Channel do
         },
         player.id
       )
+      @chan.join(player, false)
+    end
+
+    it "should notify self about everybody who is in that channel" do
+      old_players.each do |p|
+        @dispatcher.should_receive(:push).with(
+          {
+            'action' => ChatController::ACTION_JOIN,
+            'params' => {'channel' => @chan.name, 'player' => p}
+          },
+          player.id
+        )
+      end
+      @chan.join(player)
+    end
+
+    it "should not notify self about everybody if asked not to" do
+      old_players.each do |p|
+        @dispatcher.should_not_receive(:push).with(
+          {
+            'action' => ChatController::ACTION_JOIN,
+            'params' => {'channel' => @chan.name, 'player' => p}
+          },
+          player.id
+        )
+      end
       @chan.join(player, false)
     end
   end

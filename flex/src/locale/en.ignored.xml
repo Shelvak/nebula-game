@@ -1,0 +1,4753 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<locale>
+  <Objects>
+    <!-- p8d stands for pluralized -->
+
+    <!-- Self ground units -->
+    
+    <Unit_Trooper value="Trooper" />
+    <Unit_Trooper-p8d value="{0 one[Trooper] many[? Troopers]}" />
+
+    <Unit_Shocker value="Shocker" />
+    <Unit_Shocker-p8d value="{0 one[Shocker] many[? Shockers]}" />
+
+    <Unit_Seeker value="Seeker" />
+    <Unit_Seeker-p8d value="{0 one[Seeker] many[? Seekers]}" />
+    
+    <Unit_Scorpion value="Scorpion" />
+    <Unit_Scorpion-p8d value="{0 one[Scorpion] many[? Scorpions]}" />
+    
+    <Unit_Azure value="Azure" />
+    <Unit_Azure-p8d value="{0 one[Azure] many[? Azures]}" />
+        
+    <Unit_Mantis value="Mantis" />
+    <Unit_Mantis-p8d value="{0 one[Mantis] many[? Mantises]}" />
+        
+    <Unit_Zeus value="Zeus" />
+    <Unit_Zeus-p8d value="{0 one[Zeus] many[? Zeuses]}" />
+        
+    <Unit_Mdh value="MDH" />
+    <Unit_Mdh-p8d value="{0 one[MDH] many[? MDH's]}" />
+
+    <Unit_MobileVulcan value="Vulcan-M" />
+    <Unit_MobileVulcan-p8d value="{0 one[Vulcan-M] many[? Vulcan-M's]}" />
+    
+    <Unit_MobileScreamer value="Screamer-M" />
+    <Unit_MobileScreamer-p8d value="{0 one[Screamer-M] many[? Screamer-M's]}" />
+
+    <Unit_MobileThunder value="Thunder-M" />
+    <Unit_MobileThunder-p8d value="{0 one[Thunder-M] many[? Thunder-M's]}" />
+
+    <!-- Self space units -->
+    
+    <Unit_Mule value="Mule" />
+    <Unit_Mule-p8d value="{0 one[Mule] many[? Mules]}" />
+    
+    <Unit_Crow value="Crow" />
+    <Unit_Crow-p8d value="{0 one[Crow] many[? Crows]}" />
+    
+    <Unit_Cyrix value="Cyrix" />
+    <Unit_Cyrix-p8d value="{0 one[Cyrix] many[? Cyrixes]}" />
+    
+    <Unit_Rhyno value="Rhyno" />
+    <Unit_Rhyno-p8d value="{0 one[Rhyno] many[? Rhynos]}" />
+    
+    <Unit_Dart value="Dart" />
+    <Unit_Dart-p8d value="{0 one[Dart] many[? Darts]}" />
+    
+    <Unit_Avenger value="Avenger" />
+    <Unit_Avenger-p8d value="{0 one[Avenger] many[? Avengers]}" />
+    
+    <Unit_Jumper value="Jumper" />
+    <Unit_Jumper-p8d value="{0 one[Jumper] many[? Jumpers]}" />
+    
+    <!-- NPC ground units -->
+        
+    <Unit_Gnat value="Gnat" />
+    <Unit_Gnat-p8d value="{0 one[Gnat] many[? Gnats]}" />
+
+    <Unit_Glancer value="Glancer" />
+    <Unit_Glancer-p8d value="{0 one[Glancer] many[? Glancers]}" />
+ 
+    <Unit_Spudder value="Spudder" />
+    <Unit_Spudder-p8d value="{0 one[Spudder] many[? Spudders]}" />
+
+    <Unit_Gnawer value="Gnawer" />
+    <Unit_Gnawer-p8d value="{0 one[Gnawer] many[? Gnawers]}" />
+
+    <!-- NPC space units -->
+    
+    <Unit_Dirac value="Dirac" />
+    <Unit_Dirac-p8d value="{0 one[Dirac] many[? Diracs]}" />
+
+    <Unit_Thor value="Thor" />
+    <Unit_Thor-p8d value="{0 one[Thor] many[? Thors]}" />
+
+    <Unit_Demosis value="Demosis" />
+    <Unit_Demosis-p8d value="{0 one[Demosis] many[? Demosis]}" />
+
+    <Unit_BossShip value="Morpehus" />
+    <Unit_BossShip-p8d value="{0 one[Morpehus] many[? Morpehuses]}" />
+
+    <Unit_ConvoyShip value="Nexar" />
+    <Unit_ConvoyShip-p8d value="{0 one[Nexar] many[? Nexars]}" />
+    
+    <!-- Turrets -->
+
+    <Building_Vulcan value="Vulcan" />
+    <Building_Vulcan-p8d value="{0 one[vulcan] many[? vulcans]}" />
+
+    <Building_Screamer value="Screamer" />
+    <Building_Screamer-p8d value="{0 one[Screamer] many[? Screamers]}" />
+
+    <Building_Thunder value="Thunder" />
+    <Building_Thunder-p8d value="{0 one[Thunder] many[? Thunders]}" />
+
+    <Building_MobileVulcan value="Vulcan-M" />
+    <Building_MobileVulcan-p8d value="{0 one[Vulcan-M] many[? Vulcan-M's]}" />
+    
+    <Building_MobileScreamer value="Screamer-M" />
+    <Building_MobileScreamer-p8d value="{0 one[Screamer-M] many[? Screamer-M's]}" />
+
+    <Building_MobileThunder value="Thunder-M" />
+    <Building_MobileThunder-p8d value="{0 one[Thunder-M] many[? Thunder-M's]}" />
+    
+    <!-- Extractors -->
+
+    <Building_MetalExtractor value="MEX" />
+    <Building_MetalExtractor-p8d value="{0 one[MEX] many[? MEX's]}" />
+
+    <Building_MetalExtractorT2 value="MEX T-2" />
+    <Building_MetalExtractorT2-p8d value="{0 one[MEX T-2] many[? MEX's T-2]}" />
+
+    <Building_CollectorT1 value="Wind Panel" />
+    <Building_CollectorT1-p8d value="{0 one[Wind Panel] many[? Wind Panels]}" />
+
+    <Building_CollectorT2 value="Collector" />
+    <Building_CollectorT2-p8d value="{0 one[Collector] many[? Collectors]}" />
+
+    <Building_CollectorT3 value="Thermal Hub" />
+    <Building_CollectorT3-p8d value="{0 one[Thermal Hub] many[? Thermal Hubs]}" />
+
+    <Building_ZetiumExtractor value="ZEX" />
+    <Building_ZetiumExtractor-p8d value="{0 one[ZEX] many[? ZEXes]}" />
+
+    <Building_ZetiumExtractorT2 value="ZEX T-2" />
+    <Building_ZetiumExtractorT2-p8d value="{0 one[ZEX T-2] many[? ZEXes T-2]}" />
+    
+    <!-- Storages -->
+
+    <Building_MetalStorage value="Metal Storage" />
+    <Building_MetalStorage-p8d value="{0 one[Metal Storage] many[? Metal Storages]}" />
+    
+    <Building_EnergyStorage value="Energy Batteries" />
+    <Building_EnergyStorage-p8d value="{0 one[Energy Battery] many[? Energy Batteries]}" />
+    
+    <Building_ZetiumStorage value="Zetium Storage" />
+    <Building_ZetiumStorage-p8d value="{0 one[Zetium Storage] many[? Zetium Storages]}" />
+    
+    <!-- NPC buildings -->
+
+    <Building_NpcMetalExtractor value="Foundry" />
+    <Building_NpcMetalExtractor-p8d value="{0 one[Foundry] many[? Foundries]}" />
+        
+    <Building_NpcZetiumExtractor value="Zetium Lab" />
+    <Building_NpcZetiumExtractor-p8d value="{0 one[Zetium Lab] many[? Zetium Labs]}" />
+      
+    <Building_NpcGeothermalPlant value="Heat Collector" />
+    <Building_NpcGeothermalPlant-p8d value="{0 one[Heat Collector] many[? Heat Collectors]}" />
+    
+    <Building_NpcSolarPlant value="Prism" />
+    <Building_NpcSolarPlant-p8d value="{0 one[Prism] many[? Prisms]}" />
+    
+    <Building_NpcCommunicationsHub value="CommHub" />
+    <Building_NpcCommunicationsHub-p8d value="{0 one[CommHub] many[? CommHubs]}" />
+    
+    <Building_NpcTemple value="Temple" />
+    <Building_NpcTemple-p8d value="{0 one[Temple] many[? Temples]}" />
+    
+    <Building_NpcExcavationSite value="Excavation Site" />
+    <Building_NpcExcavationSite-p8d value="{0 one[Excavation Site] many[? Excavation Sites]}" />
+    
+    <Building_NpcResearchCenter value="Lab" />
+    <Building_NpcResearchCenter-p8d value="{0 one[Lab] many[? Labs]}" />
+    
+    <Building_NpcJumpgate value="Jumpgate" />
+    <Building_NpcJumpgate-p8d value="{0 one[Jumpgate] many[? Jumpgates]}" />
+    
+    <Building_NpcInfantryFactory value="Hatchery" />
+    <Building_NpcInfantryFactory-p8d value="{0 one[Hatchery] many[? Hatcheries]}" />
+    
+    <Building_NpcTankFactory value="Heavy Arms Lab" />
+    <Building_NpcTankFactory-p8d value="{0 one[Heavy Arms Lab] many[? Heavy Arms Labs]}" />
+    
+    <Building_NpcSpaceFactory value="Spaceship Pod" />
+    <Building_NpcSpaceFactory-p8d value="{0 one[Spaceship Pod] many[? Spaceship Pods]}" />
+    
+    <Building_NpcHall value="Emitter" />
+    <Building_NpcHall-p8d value="{0 one[Emitter] many[? Emitters]}" />
+    
+    <!-- Building facilities -->
+    
+    <Building_Mothership value="Mothership" />
+    <Building_Mothership-p8d value="{0 one[Mothership] many[? Motherships]}" />
+    
+    <Building_Headquarters value="Headquarters" />
+    <Building_Headquarters-p8d value="{0 one[Headquarters] many[? Headquarters]}" />
+    
+    <Building_Crane value="Crane" />
+    <Building_Crane-p8d value="{0 one[Crane] many[? Cranes]}" />
+    
+    <!-- Unit facilities -->
+
+    <Building_Barracks value="Barracks" />
+    <Building_Barracks-p8d value="{0 one[Barracks] many[? Barracks]}" />
+    
+    <Building_GroundFactory value="Ground Factory" />
+    <Building_GroundFactory-p8d value="{0 one[Ground Factory] many[? Ground Factories]}" />
+    
+    <Building_SpaceFactory value="Space Factory" />
+    <Building_SpaceFactory-p8d value="{0 one[Space Factory] many[? Space Factories]}" />
+    
+    <!-- Other buildings -->
+    
+    <Building_Market value="Market" />
+    <Building_Market-p8d value="{0 one[Market] many[? Markets]}" />
+
+    <Building_Radar value="Radar" />
+    <Building_Radar-p8d value="{0 one[Radar] many[? Radars]}" />
+    
+    <Building_DefensivePortal value="Summoner" />
+    <Building_DefensivePortal-p8d value="{0 one[Summoner] many[? Summoners]}" />
+    
+    <Building_ResearchCenter value="Research Center" />
+    <Building_ResearchCenter-p8d value="{0 one[Research Center] many[? Research Centers]}" />
+    
+    <Building_Housing value="Living Pods" />
+    <Building_Housing-p8d value="{0 one[Living Pods] many[? Living Pods]}" />
+    
+    <Building_HealingCenter value="MedTech" />
+    <Building_HealingCenter-p8d value="{0 one[MedTech] many[? MedTechs]}" />
+
+    <!-- Technologies -->
+
+    <Technology_ZetiumExtraction value="Zetium Extraction" />
+    <Technology_MetabolicChargers value="Metabolic Chargers" />
+    <Technology_HighVelocityCharges value="High Velocity Ammo" />
+    <Technology_Market value="Market" />
+    <Technology_SpaceFactory value="Space Factory" />
+    <Technology_ShipsArmor value="Reinforced Plates" />
+    <Technology_ShipsDamage value="Energized Plasma" />
+    <Technology_TanksDamage value="Zetium Shells" />
+    <Technology_TanksArmor value="Energized Armor" />
+    <Technology_FieryMelters value="Pressurized Melting" />
+    <Technology_SuperconductorTechnology value="Superconductor Technology" />
+    <Technology_PowderedZetium value="Zetium Cutters" />
+    <Technology_HeavyFlight value="Gamma Thrusters" />
+    <Technology_MetalStorage value="Liquid Compression" />
+    <Technology_EnergyStorage value="Extended Batteries" />
+    <Technology_ZetiumStorage value="Zetium Cartridges" />
+    <Technology_ShipStorage value="External Cargo Decks" />
+    <Technology_DefensivePortal ref="Building_DefensivePortal" />
+    <Technology_Alliances value="Alliances" />
+    <Technology_BuildingRepair value="Repair Drones" />
+    <Technology_TurretArmor value="Structural Linking" />
+    <Technology_TurretDamage value="Particle Chargers" />
+    <Technology_Mdh value="Mobile Deployable Headquarters" />
+    <Technology_Mantis ref="Unit_Mantis" />
+
+    <!-- Other stuff -->
+
+    <Unit value="Unit" />
+    <Unit-p8d value="{0 one[Unit] many[? Units]}" />
+    
+    <Building value="Building" />
+    <Building-p8d value="{0 one[Building] many[? Buildings]}" />
+    
+    <Technology value="Technology" />
+    <Technology-p8d value="{0 one[Technology] many[? Technologies]}" />
+    
+    <Planet value="Planet" />
+    <Planet-p8d value="{0 one[Planet] many[? Planets]}" />
+
+    <Point value="Point" />
+    <Point-p8d value="{0 one[Point] many[? Points]}" />
+
+    <Object value="Object" />
+    <Object-p8d value="{0 one[Object] many[? Objects]}" />
+
+    <Scientist value="Scientist" />
+    <Scientist-p8d value="{0 one[Scientist] many[? Scientists]}" />
+
+    <Alliances value="Alliances" />
+    <Alliances-p8d value="{0 one[Alliance] many[? Alliances]}" />
+  </Objects>
+  
+  <Alliances>
+    <title.section.description value="DESCRIPTION"/>
+    <title.section.players value="PLAYERS"/>
+    <title.section.management value="MANAGEMENT"/>
+    <title.section.newAlliance value="ALLIANCE"/>
+    <label.noTech>
+      <p>To create your alliance you need to research alliances technology.</p>
+      <p>If you wish to join an existing alliance you must get an invitation
+      from that alliance.</p>
+    </label.noTech>
+    <label.noAlly>
+      <p>You can create your alliance in this screen.</p>
+      <p>If you wish to join an existing alliance you must get an invitation
+      from that alliance.</p>
+    </label.noAlly>
+    <label.totalAllianceVps value="Alliance victory points:" />
+    <label.allianceOwner value="Alliance owner:" />
+    <label.name value="Alliance name:" />
+    <label.allianceDescription value="Alliance description"/>
+    <label.editDescription value="Edit description" />
+    <label.save value="Save" />
+    <label.cancel value="Cancel" />
+    <label.close value="Close" />
+    <label.cooldown value="You are unable to create alliance for another {0}" />
+    <label.create value="Create alliance" />
+    <label.allyExists value="Alliance with that name already exists" />
+    <label.kick value="Kick" />
+    <label.action value="Action" />
+    <label.refresh value="Refresh" />
+    <label.leave value="Leave" />
+    <label.leaveAlliance value="Leave alliance:" />
+    <label.rename value="Rename" />
+    <label.renameAlliance value="Rename alliance:" />
+    <label.renameCost>
+      <p>Renaming your alliance will cost you 
+      {0 one[one cred] many[? creds]}.</p>
+    </label.renameCost>
+    <label.total>
+      <p>Total ({0 one[one player] many[? players]})</p>
+    </label.total>
+    <label.inAlliance value="In alliance" />
+    <label.notInAlliance value="Not in alliance" />
+    <message.playerInvited value="Player has been invited to alliance" />
+    <message.joinSuccess value="You have successfully joined alliance" />
+    <message.joinFail value="You can't join this alliance because it is already full" />
+    <tooltip.allianceFull>
+      <p>Your alliance is full.</p>
+      <p>Upgrade alliance technology to invite more players.</p>
+    </tooltip.allianceFull>
+    <label.invitablePlayers value="Invite to alliance" />
+    <label.invite value="Invite" />
+    <label.nothingToInvite value="No players to invite" />
+    <label.explanationInvite>
+      <p>You can only invite players whose planets you can see (except for 
+      planets in battleground).</p>
+    </label.explanationInvite>
+
+    <giveAway.label.actionButton value="Give alliance away"/>
+    <giveAway.title.confirmationPopup value="Are you sure?"/>
+    <giveAway.message.confirmationPopup>
+       Are you sure you want to give away your alliance to {0}?
+    </giveAway.message.confirmationPopup>
+    <giveAway.message.techLevelTooLow>
+       Player {0} does not have alliance technology level required to
+       take over your alliance
+    </giveAway.message.techLevelTooLow>
+
+    <takeOver.header value="Take ownership"/>
+    <takeOver.label.takeOwnershipButton value="Take ownership"/>
+    <takeOver.title.confirmationPopup value="Are you sure?"/>
+    <takeOver.message.confirmationPopup>
+       Are you sure you want to gain ownership of this alliance?
+    </takeOver.message.confirmationPopup>
+    <takeOver.message.ownerIsActive>
+       You will be able to take over ownership of this alliance after
+       its current owner is inactive for {0} d.
+    </takeOver.message.ownerIsActive>
+    <takeOver.message.techLevelTooLow>
+       You can't gain ownership of this alliance because you do not have
+       level {0} of alliance technology.
+    </takeOver.message.techLevelTooLow>
+    <takeOver.message.ownerIsInactive>
+       Since current owner of the alliance has been inactive for {0} d., you
+       can now take over the ownership of it.
+    </takeOver.message.ownerIsInactive>
+     
+  </Alliances>
+
+  <BattleMap>
+    <status0 value="Self" />
+    <status1 value="Alliance" />
+    <status2 value="NAP" />
+    <status2.tooltip value="Non-Agression Pact" />
+    <status3 value="Enemy" />
+    <space value="Space" />
+    <ground value="Ground" />
+    <youWon value="You won!" />
+    <youLost value="You lost!" />
+    <tie value="A tie!" />
+    <close value="Close" />
+    <battleOver value="Battle over" />
+    <tick value="Tick {0}/{1}" />
+    <title.overallHp value="Total HP" />
+    <pause value="PAUSED" />
+    <pressPlay value="Press ENTER to resume" />
+    <tooltip.play value="PLAY/PAUSE" />
+    <tooltip.replay value="REPLAY" />
+  </BattleMap>
+  
+  <Messenger>
+    <clickHere value="Click here for more info" />
+  </Messenger>
+
+  <BuildingSelectedSidebar>
+    <currentLevel value="Current level" />
+    <queueInfo value="Queue info" />
+    <hp value="HP" />
+    <selectedUpgradeCost value="Upgrade cost" />
+    <upgrade value="Upgrade building" />
+    <status value="Status" />
+    <constructing value="Constructing" />
+    <upgrading value="Upgrading" />
+    <title.rates value="Rates" />
+    <title.inactiveBuilding value="Inactive building" />
+    <storage value="Storage" />
+    <activate value="Activate" />
+    <deactivate value="Deactivate" />
+    <attack value="Attack" />
+    <label.noUnits value="You don't have available units!" />
+    <deselectAll value="Deselect all" />
+    <selectAll value="Select all" />
+    <open value="Open" />
+    <noUnits value="You have no ground units" />
+    <attackInfo value="Garrisoned units" />
+    <selfDestruct value="Self Destruct" />
+    <destructResources>
+      <p>You will get these resources if you destroy this building:</p>
+    </destructResources>
+    <destructCooldown.total>
+      <p>
+        After you initiate self destruct on this building you won't be able to 
+        start another one for {0}. 
+      </p>
+    </destructCooldown.total>
+    <destructCooldown.remaining>
+      <p>You will be able to initiate self destruct on this building in {0}.</p>
+    </destructCooldown.remaining>
+    <destroy value="Destroy" />
+    <move value="Move building" />
+    <buildingInfo value="Building info" />
+    <buildingDestroyed value="Selected building have been destroyed!" />
+    <renamePlanet value="Rename planet" />
+    <label.changeName value="Change name" />
+    <label.busy>
+      <p>This constructor cannot be upgraded right now because it is busy.</p>
+    </label.busy>
+    <message.changeName>
+      <p>As owner of this planet you may change its name.</p>
+    </message.changeName>
+    <message.pressOnEmpty>
+      <p>Click on empty map space to enter building construction mode</p>
+    </message.pressOnEmpty>
+    <panelTitle.scientists value="Scientists" />
+    <panelTitle.cancelProgress value="Cancel upgrade" />
+    <panelTitle.repairBuilding value="Repair building" />
+    <warning.repairBuilding>
+      <p>Turret won't participate in combat until repairs are finished.</p>
+    </warning.repairBuilding>
+    <warning.repairBuildingTechNeeded>
+      <p>You need to research [obj:1:Technology_BuildingRepair::dc]
+      technology to repair turrets.</p>
+    </warning.repairBuildingTechNeeded>
+    <label.repairBuilding value="Repair"/>
+    <label.cancelUpgrade>
+      <p>These resources will be returned if you cancel upgrade of this 
+      building:</p>
+    </label.cancelUpgrade>
+    <label.cancelConstructor>
+      <p>These resources will be returned if you cancel construction of 
+      this building:</p>
+    </label.cancelConstructor>
+    <label.cancel value="Cancel" />
+    <message.scientistsNotAvailable value="This building is currently upgrading and its scientists are unavailable."/>
+    <warning.buildingWorking>
+      <p>Anything this building is constructing will be destroyed if you 
+      initiate self-destruct on this building.</p>
+    </warning.buildingWorking>
+    <!-- {0}: time of planet guard (like "5d") -->
+    <warning.selfDestructGuard>
+      <p>You can not destroy your buildings for creds in planet which belongs
+      to you for less than {0}.</p>
+    </warning.selfDestructGuard>
+    <toolTip.afterUpgrade value="After upgrade" />
+    <title.boost value="Boost" />
+    <title.buildingBonus value="Building bonus" />
+    <label.nextBonus value="Next bonus in:" />
+    <label.victoryPoint>
+      <p>{0 one[? victory point] many[? victory points]}</p>
+    </label.victoryPoint>
+    <label.cred>
+      <p>{0 one[? cred] many[? creds]}</p>
+    </label.cred>
+    <tileBonuses value="Tile properties" />
+    <armor.bonus value="Armor" />
+    <energy.bonus value="Energy output" />
+    <construction.bonus value="Construction speed" />
+    <scientists value="Scientists" />
+    <special value="Attributes" />
+    <title.owner value="Ownership" />
+    <!-- 0: date, 1: time (1 part) -->
+    <label.owner value="You are the owner of this planet from:" />
+    <label.ownerDate value="{0} ({1})." />
+    <label.activateOverdrive> 
+      <p>Overdrive this building to make it extract {0} times more resources
+      while using {1} times more energy.</p>
+    </label.activateOverdrive>
+    <label.deactivateOverdrive> 
+      <p>This building is currently overdriven. It is extracting {0} times 
+      more resources and using {1} times more energy. Deactivate overdrive
+      to return it to its normal state.</p>
+    </label.deactivateOverdrive>
+    <button.activateOverdrive value="Activate overdrive" />
+    <button.deactivateOverdrive value="Deactivate overdrive" />
+    <warning.deployCancel value="You will not get your deployed unit back" />
+    <warning.attackNpc>
+      <p>This is an NPC building. You can destroy it by killing all the units
+        inside.</p>
+    </warning.attackNpc>
+  </BuildingSelectedSidebar>
+
+  <BuildingSidebar>
+    <facilitiesTitle value="Select building facility" />
+    <constructableTitle value="Available buildings" />
+    <infoTitle value="Construction info" />
+    <applicable value="Applicable:" />
+    <notApplicable value="Not applicable:" />
+    <pressEsc value="To deselect press ESC" />
+    <notYourPlanet value="This planet does not belong to you!" />
+    <label.claimPlanet value="Claim planet" />
+    <label.planetHasEnemies>
+      <p>You can not claim this planet because it still has some enemy units or 
+      turrets left</p>
+    </label.planetHasEnemies>
+    <label.noPlayerUnits>
+      <p>You can not claim this planet because you don't have any units in it</p>
+    </label.noPlayerUnits>
+
+    <tooltip.willBeQueued>
+      <p>This building will be added to queue.</p>
+      <p>However it will not be paid for and will be cancelled if you don't have
+      enough resources at the construction time.</p>
+    </tooltip.willBeQueued>
+
+    <tooltip.becomeVipToQueue>
+      <p>Only VIP players can add buildings to the queue without paying first.</p>
+    </tooltip.becomeVipToQueue>
+
+    <deselectButtonText value="deselect building" />
+
+    <noFacilities value="There are no facilities available." />
+    <disabled value="Not enough resources" />
+    <queueFull value="Contruction queue full for constructor." />
+
+    <tileBonuses value="Tile bonuses:" />
+    <armor.bonus value="armor" />
+    <energy.bonus value="energy output" />
+    <construction.bonus value="construction speed" />
+
+    <deployInProgress value="Deploy in progress" />
+
+    <timeToFinish value="Time to finish" />
+
+    <warning.apocalypseClaimForbidden>
+      <p>You can't claim new planets after apocalypse has started.</p>
+    </warning.apocalypseClaimForbidden>
+
+    <warning.deployInAlliancePlanet>
+      <p>After deployment this building will belong to the planet owner.</p>
+    </warning.deployInAlliancePlanet>
+  </BuildingSidebar>
+
+  <Buildings>
+    <property.hp value="Hit Points" />
+    <property.timeToFinish.short value="{0}" />
+    <property.timeToFinish.long value="Ready in {0}" />
+    <property.radar.strength value="Radar strength" />
+    <property.scientists value="Scientists" />
+    <property.upgradeTime value="Upgrade time" />
+    <property.metal.generate value="Metal extraction rate" />
+    <property.metal.store value="Metal storage" />
+    <property.metal.use value="Metal usage rate" />
+    <property.metal.cost value="Metal cost" />
+    <property.energy.generate value="Energy extraction rate" />
+    <property.energy.store value="Energy storage" />
+    <property.energy.use value="Energy usage rate" />
+    <property.energy.cost value="Energy cost" />
+    <property.zetium.generate value="Zetium extraction rate" />
+    <property.zetium.store value="Zetium storage" />
+    <property.zetium.use value="Zetium usage rate" />
+    <property.zetium.cost value="Zetium cost" />
+    <property.queue.max value="Construction queue length" />
+    <property.constructing value="Constructing" />
+    <property.initiative value="Initiative" />
+    <property.armor value="Armor" />
+    <property.armorMod value="Armor modifier" />
+    <property.damageMod value="Damage modifier" />
+    <property.mod.construction value="Construction speedup" />
+    <property.healing.time.mod value="Seconds to heal 1 hp" />
+    <property.healing.cost.mod value="Healing price modifier" />
+    <property.population value="Population" />
+    <property.teleportedVolume value="Volume teleported" />
+    <property.creds value="Creds" />
+    <property.victoryPoints value="Victory points" />
+    <property.fee value="Fee percentage" />
+    <property.width value="Building width" />
+    <property.height value="Building height" />
+    <property.vpsOnDamage value="VPs for 1 damage dealt" />
+    <property.credsForKilling value="Creds for killing" />
+
+    <text.deactivated>
+      <p>
+        Buildings do not use energy while inactive. Activate this building to 
+        resume its operations. If it is upgrading it will activate itself upon 
+        completion. 
+      </p>
+    </text.deactivated>
+    
+    <!-- NPC buildings -->
+
+    <NpcMetalExtractor.name ref="Objects/Building_NpcMetalExtractor" />
+    <NpcMetalExtractor.about>
+      <p>
+        These alien technology driven foundries have been abandoned long time 
+        ago by their true owners. By now only hollow shell remains. However be 
+        cautious because the guardians are still there. 
+      </p>
+    </NpcMetalExtractor.about>
+
+    <NpcZetiumExtractor.name ref="Objects/Building_NpcZetiumExtractor" />
+    <NpcZetiumExtractor.about>
+      <p>
+        These buildings were used for extracting and storing zetium. They are 
+        mainly inactive now. However their defenses are still strong. Caution 
+        is advised. 
+      </p>
+    </NpcZetiumExtractor.about>
+
+    <NpcGeothermalPlant.name ref="Objects/Building_NpcGeothermalPlant" />
+    <NpcGeothermalPlant.about>
+      <p>
+        Built ages ago these buildings were probably meant as collectors for 
+        geothermal heat that is hidden below them. Defeat guardians of this 
+        place and use that power for yourself! 
+      </p>
+    </NpcGeothermalPlant.about>
+
+    <NpcSolarPlant.name ref="Objects/Building_NpcSolarPlant" />
+    <NpcSolarPlant.about>
+      <p>
+        Solar power is converted in these buildings. Our scans indicate strong 
+        energy output and multiple hostile units there. Act with caution. 
+      </p>
+    </NpcSolarPlant.about>
+
+    <NpcCommunicationsHub.name ref="Objects/Building_NpcCommunicationsHub" />
+    <NpcCommunicationsHub.about>
+      <p>
+        These structures look like some kind of communication device. Perhaps 
+        they were used to bring messages to other worlds? 
+      </p>
+    </NpcCommunicationsHub.about>
+
+    <NpcTemple.name ref="Objects/Building_NpcTemple" />
+    <NpcTemple.about>
+      <p>
+        Whilst extremely advanced Precursors were also a deeply religious race. 
+        They gathered in this building to pray to their gods. The land on which 
+        it is standing is sacred and heavily guarded. 
+      </p>
+    </NpcTemple.about>
+
+    <NpcExcavationSite.name ref="Objects/Building_NpcExcavationSite" />
+    <NpcExcavationSite.about>
+      <p>
+        It seems like a dig site. Although nobody knows what they were 
+        searching for it is still guarded by hostile units. 
+      </p>
+    </NpcExcavationSite.about>
+
+    <NpcResearchCenter.name ref="Objects/Building_NpcResearchCenter" />
+    <NpcResearchCenter.about>
+      <p>
+        It seems that this is a Precursor research laboratory. No one knows 
+        what is inside only that outside of it is guarded by swarms of robots. 
+      </p>
+    </NpcResearchCenter.about>
+
+    <NpcJumpgate.name ref="Objects/Building_NpcJumpgate" />
+    <NpcJumpgate.about>
+      <p>
+        These jumpgates were used to warp forces between planets crossing solar 
+        systems in mere seconds. Even if they do not function anymore there is 
+        still great defenses set up to forbid strangers from entering its 
+        vicinity. 
+      </p>
+    </NpcJumpgate.about>
+
+
+
+    <Mothership.name ref="Objects/Building_Mothership" />
+    <Mothership.about>
+      <p>
+        The Mothership is the core ship for humans who inhabit this planet. 
+        They came here in this ship and used it as their first base securing 
+        perimeter around with deadly base defense towers. 
+      </p>
+      <p>
+        Each Mothership has a basic MEX and some solar cells integrated in it 
+        and can provide a colony with core metal and energy needs. 
+      </p>
+    </Mothership.about>
+
+    <MEX.common>
+      <p>
+        Each MEX can be upgraded to increase it's effectiveness and extract 
+        more metal. However by doing so it also requires more energy to 
+        operate. 
+      </p>
+      <p>MEXes will shut down if you do not have energy to run them.</p>
+      <p>Each upgrade level increases metal extraction rate.</p>
+    </MEX.common>
+
+    <MetalExtractor.name ref="Objects/Building_MetalExtractor" />
+    <MetalExtractor.tooltip value="Extracts metal" />
+    <MetalExtractor.about>
+      <p>
+        Built on ore mountains they are used to extract metal from dirt and 
+        rumble. Metal Extractors (MEXes) are facilities that provide metal one 
+        require by eating up through mountains and bringing its ore supplies up 
+        to the surface. 
+      </p>
+      <p>[reference:MEX.common]</p>
+    </MetalExtractor.about>
+
+    <MetalExtractorT2.name ref="Objects/Building_MetalExtractorT2" />
+    <MetalExtractorT2.tooltip value="Extracts metal" />
+    <MetalExtractorT2.common>
+      <p>Better, faster and more expensive version of 
+      [reference:MetalExtractor.name].</p>
+    </MetalExtractorT2.common>
+
+    <MetalExtractorT2.about>
+      <p>[reference:MetalExtractorT2.common]</p>
+      <p>[reference:MEX.common]</p>
+    </MetalExtractorT2.about>
+
+    <MetalStorage.name ref="Objects/Building_MetalStorage" />
+    <MetalStorage.tooltip value="Stores metal" />
+    <MetalStorage.about>
+      <p>
+        As MEXes rip through the ore not all metal is used up immediately. 
+        Excess metal is stored in these giant structures. When the time comes 
+        it is released from these containers and used in construction of our 
+        fleets and buildings. 
+      </p>
+      <p>Each upgrade level increases storage.</p>
+    </MetalStorage.about>
+
+    <CollectorT1.name ref="Objects/Building_CollectorT1" />
+    <CollectorT1.tooltip value="Generates energy" />
+    <CollectorT1.common>
+      <p>
+        These wind panels are used to provide basic needs of energy to all 
+        buildings and construction. They can be upgraded relatively easy and 
+        are cheap and cost effective to produce if you have enough space. 
+      </p>
+    </CollectorT1.common>
+    <CollectorT1.about>
+      <p>[reference:CollectorT1.common]</p>
+      <p>Each upgrade level increases energy output.</p>
+    </CollectorT1.about>
+
+    <CollectorT2.name ref="Objects/Building_CollectorT2" />
+    <CollectorT2.tooltip value="Generates energy" />
+    <CollectorT2.common>
+      <p>
+        These solar collectors are used to provide massive amounts of energy to 
+        all buildings and construction. By using technology from alien 
+        [reference:NpcSolarPlant.name]s their massive panels generate a 
+        formidable amount of energy. Although their advanced designs allow 
+        upgrading them beyond the limits of their former versions they cost a 
+        lot more than simple [reference:Objects/Building_CollectorT2]. 
+      </p>
+    </CollectorT2.common>
+    <CollectorT2.about>
+      <p>[reference:CollectorT2.common]</p>
+      <p>Each upgrade level increases energy output.</p>
+    </CollectorT2.about>
+
+    <CollectorT3.name ref="Objects/Building_CollectorT3" />
+    <CollectorT3.tooltip value="Generates energy" />
+    <CollectorT3.common>
+      <p>
+        Geothermal vents are as rarely found on the planets.
+        However they are powerful and these 
+        hubs allow you to use that power. They are the most effective means of 
+        generating energy and gives best cost to performance ratio. 
+      </p>
+    </CollectorT3.common>
+    <CollectorT3.about>
+      <p>[reference:CollectorT3.common]</p>
+      <p>Each upgrade level increases energy output.</p>
+    </CollectorT3.about>
+
+    <EnergyStorage.name ref="Objects/Building_EnergyStorage" />
+    <EnergyStorage.tooltip value="Stores energy" />
+    <EnergyStorage.about>
+      <p>
+        These large batteries keep vast amounts of excess energy to be used 
+        later. Due to their massiveness most of the structure are buried 
+        underground thus giving sufficient protection from enemy attacks. 
+      </p>
+      <p>Each upgrade level increases energy storage.</p>
+    </EnergyStorage.about>
+
+    <Barracks.name ref="Objects/Building_Barracks" />
+    <Barracks.tooltip value="Trains troops" />
+    <Barracks.about>
+      <p>
+        Finest men are trained here to do battle in our cause. They undergo 
+        best physical and mental training there are and are equipped by 
+        powerful combat suits and weapons to aid them in combat. 
+      </p>
+    </Barracks.about>
+
+    <ResearchCenter.name ref="Objects/Building_ResearchCenter" />
+    <ResearchCenter.tooltip value="Researches technologies" />
+    <ResearchCenter.about>
+      <p>
+        Greatest minds of each planet work here to bring technological 
+        advancements to our civilization. Do notice that even if these 
+        researches often require much resources and manpower to bring visions 
+        alive they are well proven to be worth the cost.
+      </p>
+      <p>
+        It is essential that you have at least one of these research centers or 
+        your opponents will eventually overtake you with their superior 
+        technology. 
+      </p>
+      <p>Each upgrade level increases number of available scientists.</p>
+    </ResearchCenter.about>
+
+    <ZetiumExtractor.common>
+      <p>
+        Zetium extractors will shut down if you do not have energy to run them. 
+      </p>
+      <p>Each upgrade level increases zetium extraction rate.</p>
+    </ZetiumExtractor.common>
+
+    <ZetiumExtractor.name ref="Objects/Building_ZetiumExtractor" />
+    <ZetiumExtractor.tooltip value="Extracts zetium" />
+    <ZetiumExtractor.about>
+      <p>[reference:Technologies/Zetium.common]</p>
+      <p>[reference:ZetiumExtractor.common]</p>
+    </ZetiumExtractor.about>
+
+    <ZetiumExtractorT2.name ref="Objects/Building_ZetiumExtractorT2" />
+    <ZetiumExtractorT2.tooltip value="Extracts zetium" />
+    <ZetiumExtractorT2.common>
+      <p>
+        Better, faster and more expensive version of 
+        [reference:ZetiumExtractor.name]. By using alien technologies these 
+        structures will provide your most advanced zetium needs. 
+      </p>
+    </ZetiumExtractorT2.common>
+    <ZetiumExtractorT2.about>
+      <p>[reference:ZetiumExtractorT2.common]</p>
+      <p>[reference:ZetiumExtractor.common]</p>
+    </ZetiumExtractorT2.about>
+
+    <ZetiumStorage.name ref="Objects/Building_ZetiumStorage" />
+    <ZetiumStorage.tooltip value="Stores zetium" />
+    <ZetiumStorage.about>
+      <p>
+        After extracting zetium crystals are melted and stored as liquid. This 
+        is the only form allowing for later reuse of the material, however it 
+        is highly unstable and even slightest distortion could leave nothing 
+        behind. Because of that when building these storages distance is kept 
+        from all other buildings. 
+      </p>
+      <p>Each upgrade level increases storage.</p>
+    </ZetiumStorage.about>
+
+    <Crane.name ref="Objects/Building_Crane" />
+    <Crane.tooltip value="Constructs buildings" />
+    <Crane.about>
+      <p>
+        These gigantic cranes are very helpful in raising new colonies. Their 
+        price is insignificant compared to their ability to have many orders. 
+        Using few of these cranes commander can fully build a new colony in a 
+        few days. 
+      </p>
+    </Crane.about>
+    
+    <Market.name ref="Objects/Building_Market" />
+    <Market.tooltip value="Allows trading with other players" />
+    <Market.common>
+      <p>Market allows you to trade with other players in this galaxy. 
+      Matter converters allow sending and receiving goods 
+      instantaneously, however galaxy market dealers will require a fee to
+      list your offers on their networks.</p>
+    </Market.common>
+    <Market.about>
+      <p>[reference:Market.common]</p>
+      <p>Each upgrade level decreases offer submission fee.</p>
+    </Market.about>
+
+    <Radar.name ref="Objects/Building_Radar" />
+    <Radar.tooltip value="Increases visible galaxy area" />
+    <Radar.common>
+      <p>
+        These massive buildings are used for deep space telemetry. As they 
+        drain energy from our generators they can see planets in our and other 
+        solar systems. Furthermore it even registers fleet movements in galaxy 
+        and solar systems giving us insight at what is happening in our 
+        neighborhood. 
+      </p>
+    </Radar.common>
+    <Radar.about>
+      <p>[reference:Radar.common]</p>
+      <p>Each upgrade level increases distance it can see.</p>
+    </Radar.about>
+
+    <Housing.name ref="Objects/Building_Housing" />
+    <Housing.tooltip value="Increases population" />
+    <Housing.about>
+      <p>These living pods create living space needed for our troops and
+      crews of our tanks and ships.</p>
+      <p>If you're out of living space you cannot support more units in
+      your army.</p>
+    </Housing.about>
+<!---->
+<!--    <ResourceTransporter.name ref="Objects/ResourceTransporter" />-->
+<!--    <ResourceTransporter.tooltip value="Transports resources between planets" />-->
+<!--    <ResourceTransporter.about value="Teleport resources with this one" />-->
+
+    <Headquarters.name ref="Objects/Building_Headquarters" />
+    <Headquarters.about>
+      <p>
+        Deployed from Mobile Deployable Headquarters it is the first outpost in 
+        a foreign colony. Provided with enough metal and energy for initial 
+        construction it is the seed from which a thriving colony grows. 
+      </p>
+      <p>Headquarters allow you to construct buildings.</p>
+    </Headquarters.about>
+
+    <Vulcan.name ref="Objects/Building_Vulcan" />
+    <Vulcan.tooltip value="Defends against infantry" />
+    <Vulcan.about>
+      <p>
+        Defensive stationary turret especially effective against lightly 
+        armored units. Equipped with 6 CX-60 high speed cannons it can shed 
+        through armies quickly dealing enormous damage. 
+      </p>
+      <p>Only capable of hitting ground units.</p>
+    </Vulcan.about>
+
+    <DeployedFromMobile value="Deployed from mobile version." />
+
+    <MobileVulcan.name ref="Objects/Building_MobileVulcan" />
+    <MobileVulcan.tooltip ref="Vulcan.tooltip" />
+    <MobileVulcan.about>
+      <p>[reference:Vulcan.about]</p>
+      <p>[reference:DeployedFromMobile]</p>
+    </MobileVulcan.about>
+
+    <Screamer.name ref="Objects/Building_Screamer" />
+    <Screamer.tooltip value="Defends against tanks" />
+    <Screamer.about>
+      <p>
+        Equipped with twin ROCKO-3 heavy rocket launchers this stationary 
+        turret is best retaliation against tanks and heavy units. 
+      </p>
+      <p>Only capable of hitting ground units.</p>
+    </Screamer.about>
+
+    <MobileScreamer.name ref="Objects/Building_MobileScreamer" />
+    <MobileScreamer.tooltip ref="Screamer.tooltip" />
+    <MobileScreamer.about>
+      <p>[reference:Screamer.about]</p>
+      <p>[reference:DeployedFromMobile]</p>
+    </MobileScreamer.about>
+
+    <Thunder.name ref="Objects/Building_Thunder" />
+    <Thunder.tooltip value="Defends against space units" />
+    <Thunder.about>
+      <p>
+        Firing plasma balls capable of reaching suborbital levels it is your 
+        best bet against enemy crafts and bombers. Its projectiles detonate 
+        upon impact dealing massive damage. 
+      </p>
+      <p>Only capable of hitting space units.</p>
+    </Thunder.about>
+
+    <MobileThunder.name ref="Objects/Building_MobileThunder" />
+    <MobileThunder.tooltip ref="Thunder.tooltip" />
+    <MobileThunder.about>
+      <p>[reference:Thunder.about]</p>
+      <p>[reference:DeployedFromMobile]</p>
+    </MobileThunder.about>
+
+    <GroundFactory.name ref="Objects/Building_GroundFactory" />
+    <GroundFactory.tooltip value="Builds tanks" />
+    <GroundFactory.about>
+      <p>
+        A great technological advancement allowing us to build tanks and other 
+        advanced ground units. 
+      </p>
+    </GroundFactory.about>
+
+    <SpaceFactory.name ref="Objects/Building_SpaceFactory" />
+    <SpaceFactory.tooltip value="Builds spaceships" />
+    <SpaceFactory.about>
+      <p>
+        From the humble [reference:Units/Crow.name] scout class vessel to the 
+        great [reference:Units/Rhyno.name] battleship - 
+        [reference:SpaceFactory.name] brings it all at your disposal. 
+      </p>
+    </SpaceFactory.about>
+
+    <HealingCenter.name ref="Objects/Building_HealingCenter" />
+    <HealingCenter.tooltip value="Repairs units" />
+    <HealingCenter.common>
+      <p>
+        [reference:HealingCenter.name] is a complex of medical care facilities 
+        and technical repair factories. It allows you to repair your wounded 
+        infantry, tanks and spaceships back to their full potential. 
+      </p>
+    </HealingCenter.common>
+    <HealingCenter.about>
+      <p>[reference:HealingCenter.common]</p>
+      <p>Each level reduces healing cost and cooldown.</p>
+    </HealingCenter.about>
+
+    <DefensivePortal.name ref="Objects/Building_DefensivePortal" />
+    <DefensivePortal.tooltip value="Summons ground units for defense" />
+    <DefensivePortal.common>
+      <p>When activated this portal allows you sending troops to other planets 
+      for defense.
+      It also allows other units to travel to planet it is built on to aid
+      in its defense.</p>
+      <p>Beware that it can only accept a fixed amount of volume from other
+      planets. If you want bigger reinforcements you'll have to either
+      upgrade the portal or build more of them.</p>
+    </DefensivePortal.common>
+    <DefensivePortal.about>
+      <p>[reference:DefensivePortal.common]</p>
+      <p>Each level increases incoming teleportation volume.</p>
+    </DefensivePortal.about>
+
+    <NpcInfantryFactory.name ref="Objects/Building_NpcInfantryFactory" />
+    <NpcInfantryFactory.about>
+      <p>
+        This ancient factory produces light units out of solar energy and 
+        silicone it synthesizes within it. 
+      </p>
+    </NpcInfantryFactory.about>
+
+    <NpcTankFactory.name ref="Objects/Building_NpcTankFactory" />
+    <NpcTankFactory.about>
+      <p>Powerful and heavily armed machines are created in this laboratory.</p>
+    </NpcTankFactory.about>
+
+    <NpcSpaceFactory.name ref="Objects/Building_NpcSpaceFactory" />
+    <NpcSpaceFactory.about>
+      <p>
+        This underground facility constructs spacecraft which can be used for 
+        defense and galactic conquest. 
+      </p>
+    </NpcSpaceFactory.about>
+
+    <NpcHall.name ref="Objects/Building_NpcHall" />
+    <NpcHall.about>
+      <p>
+        Holding this buildings brings you and your alliance victory points. 
+        Collect enough of them and become the supreme ruler of this galaxy! 
+      </p>
+    </NpcHall.about>
+  </Buildings>
+
+  <Credits>
+    <title.vip value="VIP" />
+    <label.currentVipLvl value="You are currently VIP level {0}" />
+    <label.convertRate value="You can trade {0} VIP creds for 1 cred" />
+    <label.selectedConvert 
+    value="{0} VIP creds selected, you would get {1 one[one cred] many[? creds]}" />
+    <label.convert value="Convert" />
+    <label.accelerate value="Accelerate" />
+    <message.vipOrdered value="VIP ordered successfully" />
+    <message.credsConverted value="Vip creds converted successfully" />
+    <title.becomeVIP value="Become a VIP" />
+    <label.becomeVIP>
+      <p>
+        Becoming a VIP grants you daily creds you can spend 
+        on anything you like.
+      </p>
+      <p>Also you get more than you have paid for!</p>
+    </label.becomeVIP>
+    <warning.becomeVIP>
+      <![CDATA[
+      <p>Beware that you should spend all your daily creds.</p>
+      <p/>
+      <p><span fontSize="10">Unspent creds are not transfered 
+      to other day. Next day is considered to be 24 hours after 
+      your VIP has started.</span></p>
+      ]]>
+    </warning.becomeVIP>
+    <tab.select value="Select" />
+    <tab.vipLevel value="VIP level" />
+    <tab.cost value="Cost" />
+    <tab.dailyCreds value="Daily Creds" />
+    <tab.duration value="Duration" />
+    <tab.totalCreds value="Total creds you get" />
+    <label.totalCreds>
+      <![CDATA[
+      <p>
+        {0} * {1} = {2} <span fontWeight="bold" color="#eec500">
+        ({3} times more!)</span>
+      </p>
+      ]]>
+    </label.totalCreds>
+    <label.vipCreds value="VIP creds" />
+    <label.nextVipTick value="VIP tick in" />
+    <tooltip.nextVipTick>
+      <p>Time when your current VIP creds will be reset to their maximum 
+      number</p>
+    </tooltip.nextVipTick>
+    <label.vipEndsIn value="VIP ends in" />
+    <label.whouldFinish value="Upgrade would finish in" />
+    <label.selectAccelerate value="Select acceleration amount" />
+    <label.creds value="creds" />
+    <!-- {0} amount of free creds -->
+    <label.credsTooltip>
+      <p>{0} of them are quest rewards.</p>
+      <p>Creds received from quest rewards cannot be used in market.</p>
+    </label.credsTooltip>
+    <label.credsSum value="Total creds" />
+    <label.waitingCreds value="Waiting for creds..." />
+    <label.instant value="Instant" />
+    <label.confirm value="Confirm" />
+    <label.cancel value="Cancel" />
+    <label.close value="Close" />
+    <label.order value="Order" />
+    <label.buy value="Buy Creds" />
+    <label.move value="Move" />
+    <label.movePrice>
+      <p>It would cost you {0} creds to move this building.</p>
+    </label.movePrice> 
+    <label.boostCost> 
+      <![CDATA[
+      <p>It would cost you <span fontWeight="bold">
+        {0 one[cred] many[? creds]}</span>.</p>
+      ]]>
+    </label.boostCost>
+    <!-- {0}: metal/energy/zetium
+         {1}: rate/storage
+         {2}: int
+         {3}: short time (3m) -->
+    <label.boostInactive>
+      <![CDATA[
+      <p>You can boost this planets <span fontWeight="bold">
+        {0} {1 rate[extraction rate] storage[storage]}</span> 
+      by <span fontWeight="bold">{2}%</span> for 
+      <span fontWeight="bold">{3}</span>.</p> 
+      ]]>
+    </label.boostInactive>
+    <label.boostActive1> 
+      <p>You have your {0} {1 rate[extraction rate] storage[storage]} boosted 
+      by {2}% for</p> 
+    </label.boostActive1>
+    <label.boostActive2> 
+      <p>You can increase this time by {0}.</p>
+    </label.boostActive2>
+    <label.boostRate value="Boost rate" />
+    <label.boostStorage value="Boost storage" />
+    <label.destructPrice>
+      <![CDATA[
+       <p>
+         To destroy this building before cooldown ends you need to pay
+       </p>
+       <p />
+       <p><span fontWeight="bold">{0} creds</span></p>
+      ]]>
+    </label.destructPrice>
+    <label.unlearnPrice>
+      <![CDATA[
+       <p>
+         To unlearn this technology you need to pay
+       </p>
+       <p />
+       <p><span fontWeight="bold">{0} creds</span></p>
+      ]]>
+    </label.unlearnPrice>
+    <label.notEnough>
+     <p>
+      Not enough creds.<br/>You need {0} more
+     </p>
+    </label.notEnough>
+    <warning.notEnoughVipCreds 
+    value="To convert VIP creds you must at least have {0} of them" />
+    <label.additionalPrivileges value="You will also get these privileges:"/>
+    <label.queueBuilding
+    value="● Adding buildings and units to construction queue without paying first."/>
+  </Credits>
+
+  <Exploration>
+    <title.explore value="Exploration" />
+    <label.explore value="Explore" />
+    <label.finishesIn value="Finished in {0}" />
+    <description.noResearchCenter>
+      <p>
+        You could explore this object if you had a research center in this 
+        planet.
+      </p>
+    </description.noResearchCenter>
+    <description.explorationUnderway>
+      <p>
+        You are currently exploring an object. Wait for the expedition to 
+        finish their job. 
+      </p>
+    </description.explorationUnderway>
+    <description.startExploration>
+      <p>You can send a group of scientists to explore this object.</p>
+      <p>
+        You can discover resources and units while exploring objects. If you 
+        explore bigger objects there is a bigger chance that you will get 
+        something worthy of your time. 
+      </p>
+    </description.startExploration>
+    <title.instantFinish value="Finish exploring"/>
+    <label.instantFinish value="Finish exploring"/>
+    <label.buyCreds value="Buy creds"/>
+    <description.instantFinishCost>
+    <![CDATA[It will cost you <span fontWeight="bold">{0}</span> creds to instantly finish exploring.]]>
+    </description.instantFinishCost>
+  </Exploration>
+  
+  <Terraform>
+    <title.terraform value="Terraform"/>
+    <title.confirmTerraform value="Terraform"/>
+    <label.removeFoliage value="Remove folliage"/>
+    <label.buyCreds value="Buy creds"/>
+    <label.cancel value="Cancel"/>
+    <message.foliageRemovalCost>
+      <![CDATA[You can remove this object for <span fontWeight="bold">{0}</span> creds.]]>
+    </message.foliageRemovalCost>
+    <message.foliageRemovalConfirmation>
+      <![CDATA[Removal of this object will cost you <span fontWeight="bold">{0}</span> creds. Are you sure?]]>
+    </message.foliageRemovalConfirmation>
+  </Terraform>
+
+  <Formatters>
+    <date.shortDate value="YYYY-MM-DD" />
+    <date.shortDateTime value="YYYY-MM-DD JJ:NN" />
+  </Formatters>
+
+  <Galaxy>
+    <title.solarSystemInfo value="Solar System info" />
+    <label.playerPlanets value="Player planets detected" />
+    <label.playerShips value="Player ships detected" />
+    <label.alliancePlanets value="Alliance planets detected" />
+    <label.allianceShips value="Alliance ships detected" />
+    <label.enemyPlanets value="Enemy planets detected" />
+    <label.enemyShips value="Enemy ships detected" />
+    <label.napPlanets value="NAP planets detected" />
+    <label.napShips value="NAP ships detected" />
+    <label.openSolarSystem value="Enter solar system" />
+    <label.openWormhole value="Enter battleground" />
+    <label.wormhole value="Battleground"/>
+    <label.pulsar value="Pulsar-{0}"/>
+    <label.shield value="This solar system is shielded."/>
+    <label.ssOwner value="Owned by"/>
+    <label.over value="Fleet over"/>
+    <message.noRadar value="You need a Radar to explore the galaxy" />
+    <label.inviteToAlliance value="Invite to alliance"/>
+
+    <tooltip.apocalypse.common>
+      <p>Click here for more information.</p>
+    </tooltip.apocalypse.common>
+    <!-- TODO: fix these to use TLF p margin instead of two brs. -->
+    <!--
+     {0}: date string
+     {1}: relative time string (5d/3h/...)
+    -->
+    <tooltip.apocalypse.notStarted>
+      <p>Apocalypse will start at {0} (in {1}).<br/><br/></p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.notStarted>
+    <!--
+    {0}: date string
+    {1}: current apocalypose day
+    {2}: how many creds will you get
+    -->
+    <tooltip.apocalypse.started>
+      <p>Apocalypse has started at {0}.<br/><br/></p>
+      <p>
+        It is now {1} apocalypse day. You will get
+        {2 one[one cred] many[? creds]} after losing your last planet.
+        <br/><br/>
+      </p>
+      <p>[reference:tooltip.apocalypse.common]</p>
+    </tooltip.apocalypse.started>
+  </Galaxy>
+
+  <General>
+    <day.short value="d" />
+    <hour.short value="h" />
+    <minute.short value="m" />
+    <second.short value="s" />
+    <day.long value="day" />
+    <hour.long value="hour" />
+    <message.actionCanceled>
+      <p>
+        Sorry. The action you have requested could not be performed. Please try 
+        again. 
+      </p>
+    </message.actionCanceled>
+    <message.copyToClipboardSuccessful value="Copied to clipboard" />
+    <message.planetClaimed value="Planet claimed" />
+    <label.cooldownEndsIn value="Next battle in"/>
+  </General>
+
+  <InfoScreen>
+    <title.details value="Details" />
+    <currentLevel value="Current level" />
+    <description value="Description" />
+    <level value="Level" />
+    <close value="Close" />
+    <property value="Property" />
+    <atLevel value="At level {0}" />
+    <difference value="Difference" />
+    <fullUpgradeCost value="Full cost for level {0}" />
+    <resource value="Resource" />
+    <tableTitle value="Properties" />
+    <guns value="Guns" />
+    <gunProperties value="{0} properties" />
+    <damagesDealt value="Damage dealt by {0}" />
+    <gun.pistol value="Pistol" />
+    <gun.machine_gun value="Machine Gun" />
+    <gun.sniper_rifle value="CR-24 Sniper Rifle" />
+    <gun.laser value="Laser" />
+    <gun.space_laser_red value="Laser" />
+    <gun.space_laser_green value="Laser" />
+    <gun.space_laser_blue value="Laser" />
+    <gun.cannon value="Pyro class cannon" />
+    <gun.alien_cannon value="Crusher" />
+    <gun.zeus_cannon value="Dragon" />
+    <gun.railgun value="Plasma Cannon" />
+    <gun.small_rocket value="P-40 Launcher" />
+    <gun.heavy_rocket value="Rocket launcher" />
+    <gun.space_rocket value="Rocket launcher" />
+    <gun.rhyno_rocket value="Halo missile" />
+    <gun.rhyno_rocket2 value="Scorchmaker Rocket" />
+    <gun.plasma_gun value="Vortex Emitter" />
+    <gun.plasma_spike value="Shock Rifle" />
+    <gun.thor_ground value="Blizzard" />
+    <gun.cannon_air value="Zeus class cannon" />
+    <gun.dart_laser value="Phase Cannon" />
+    <gun.boss_light value="Twin Phazers" />
+    <gun.boss_heavy value="Shock Shells" />
+    <armorType value="Armor type" />
+    <damageInPercent value="Percentage" />
+    <damage value="Damage" />
+    <baseDamage value="Base damage" />
+    <armor.light value="Light armor" />
+    <armor.normal value="Normal armor" />
+    <armor.heavy value="Heavy armor" />
+    <armor.fortified value="Fortified armor" />
+    <armorShort.light value="Light" />
+    <armorShort.normal value="Normal" />
+    <armorShort.heavy value="Heavy" />
+    <armorShort.fortified value="Fortified" />
+    <damageType value="Damage type" />
+    <damage.piercing value="Piercing" />
+    <damage.explosive value="Explosive" />
+    <damage.normal value="Normal" />
+    <damage.siege value="Siege" />
+    <reach value="Reach" />
+    <reach.ground value="Ground" />
+    <reach.space value="Space" />
+    <cooldown value="Cooldown time" />
+    <bestAgainst value="Best against" />
+    <weakAgainst value="Weak against" />
+    <appliesTo value="Technology applies to" />
+    <specialDamage value="Damage: {0} x {1} = {2}" />
+    <damageCoef value="Damage coef: {0}" />
+    <armorFromTechs value="Armor from technologies:" />
+    <damageFromTechs value="Damage from technologies:" />
+    <forOne value="For one:" />
+    <total value="Total:" />
+    <cost value="Cost info" />
+    <deploysTo value="Deploys to:" />
+  </InfoScreen>
+
+  <LoadingScreen>
+    <label.tip value="TIP:"/>
+    <label.pleaseWait value="Preloading images. Please stand by." />
+    <label.progress value="Loading {0}%"/>
+  </LoadingScreen>
+  
+  <Tips>
+    <tip.0>
+      Building energy generators on this land will grant you additional energy
+      rate bonus.
+    </tip.0>
+    <tip.1>
+      Building construction buildings on a flat land will increase their
+      construction speed later.
+    </tip.1>
+    <tip.2>
+      If you're not sure what building or unit does, click on Info icon to 
+      learn more.
+    </tip.2>
+    <tip.3>
+      Don't build turrets on rocky ground! They will lose armor and perish
+      in battle faster!
+    </tip.3>
+    <tip.4>
+      Look for strong dark ground to build your turrets on. This ground gives
+      them additional armor.
+    </tip.4>
+    <tip.5>
+      You can zoom in and out using your mouse wheel or plus/minus signs in
+      top-left map corner.
+    </tip.5>
+    <tip.6>
+      When in battle units in your first flank have 70% chance of being hit
+      while second flank has only 30%. Keep your important units in second
+      flank.
+    </tip.6>
+    <tip.7>
+      You can click blue arrows in unit construction window to skim through
+      available units quickly.
+    </tip.7>
+    <tip.8>
+      Occupy planets in battlegrounds and pulsars to get reinforcements,
+      victory points and creds.
+    </tip.8>
+  </Tips>
+
+  <Location>
+    <label.open value="Open" />
+    <label.openLocation value="Open location" />
+    <label.storage value="{0}/{1}" />
+
+    <sector value="Sector " />
+
+    <header.galaxy value="Galaxy sector" />
+    <header.solarSystem value="Solar System" />
+    <header.planet value="Planet" />
+    <header.building value="Building" />
+    <header.unit value="Unit" />
+    <header.any value="Any" />
+    <header.storage value="Storage" />
+    <header.owner value="Owner" />
+
+    <description.short.galaxy value="Galaxy" />
+    <description.short.solarSystem value="Solar System {0}" />
+    <description.short.planet value="Planet {0}" />
+    <description.long.galaxy>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{0}:{1}</span> in Galaxy
+      </p>
+      ]]>
+    </description.long.galaxy>
+    <description.long.solarSystem>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{1}:{2}</span> in Solar System 
+        <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+    </description.long.solarSystem>
+    <description.long.pulsar>
+      <![CDATA[
+      <p>
+         Sector <span fontWeight="bold">{1}:{2}</span> in Pulsar 
+         <span fontWeight="bold">{0}</span>
+      </p>
+      ]]>
+    </description.long.pulsar>
+    <description.long.battleground>
+      <![CDATA[
+      <p>
+        Sector <span fontWeight="bold">{0}:{1}</span> in battleground
+      </p>
+      ]]>
+    </description.long.battleground>
+    <description.long.planet>
+      <![CDATA[
+      <p>
+        Planet <span fontWeight="bold">{0}</span> in Solar System 
+        <span fontWeight="bold">{1}</span>
+      </p>
+      ]]>
+    </description.long.planet>
+    <description.long.planetInBattleground>
+      <![CDATA[
+      <p>
+        Planet <span fontWeight="bold">{0}</span> in Battleground
+      </p>
+      ]]>
+    </description.long.planetInBattleground>
+
+    <message.locationNotAvailable>
+      <p>You can no longer view this location</p>
+    </message.locationNotAvailable>
+  </Location>
+
+  <MainMenu>
+    <label.vip value="Vip" />
+    <label.quests value="Quests" />
+    <!-- 0- Player flying squadrons count
+         1- Alliance flying squadrons count -->
+    <label.units value="Units ({0}/{1})" />
+    <tooltip.units value="Your moving fleets / Alliances moving fleets" />
+    <label.ratings value="Ratings" />
+    <label.alliances value="Alliance ratings" />
+    <label.alliance value="Alliance" />
+    <label.wiki value="Wiki"/>
+    <label.inviteFriend value="Invites"/>
+    <label.forum value="Forum" />
+    <tooltip.version value="Game version" />
+    <panelWidth value="85" />
+  </MainMenu>
+
+  <MapViewportControls>
+    <tooltip.zoomOut value="Zoom out" />
+    <tooltip.zoomIn value="Zoom in" />
+  </MapViewportControls>
+
+  <Movement>
+    <label.location.open value="Open" />
+    <label.location.source value="From:" />
+    <label.location.target value="To:" />
+    <label.location.arrivesIn value="Arrives in: {0}" />
+    <label.close value="Close" />
+    <label.cancel value="Cancel" />
+    <label.toSector value="Move to Sector" />
+    <label.toPlanet value="Move to Planet" />
+    <label.stop value="Stop" />
+    <label.unitsManagement value="Manage" />
+    <label.showUnits value="Show" />
+    <label.move value="Move" />
+    <label.changeSpeed value="Flight Time Control" />
+    <label.flightTime value="Flight time: {0}" />
+    <label.arrivesIn value="Arrives in: {0}" />
+    <label.arrivesAt value="Arrives at: {0}" />
+    <label.owner value="Owner:" />
+    <label.confirm value="Confirm"/>
+    <label.cancel  value="Cancel"/>
+    <label.reset value="Reset"/>
+    <label.buyCreds value="Buy creds"/>
+    <label.learnMore value="Learn more"/>
+    <label.hop.arrivesIn value="Arrives in:"/>
+    <label.hop.jumpsIn value="Jumps in:"/>
+    <label.hop.landsIn value="Lands in:"/>
+    <title.killBonus value="If you destroy this fleet you will get:"/>
+    <label.credsKillBonus value="Creds "/>
+    <label.vpsKillBonus value="Victory points "/>
+    <label.honorCoef value="Honor coef."/>
+    <tooltip.honorCoef>
+      <p>
+        Honor coefficient is calculated by relative strength between you and
+        your target.
+      </p>
+      <p>
+        You will gain more rewards if you are weaker than your target and less
+        rewards if stronger than him.
+      </p>
+    </tooltip.honorCoef>
+    <label.showKillReward value="Rewards"/>
+    <message.combatCooldownInfo 
+      value="Upon arrival there will be {0} cooldown before combat will ensue."/>
+    <message.speedUpCost 
+      value="Speed up cost: {0 one[one cred] many[? creds]}."/>
+    <message.orderComplete value="Fleet has been dispatched." />
+    <label.avoidNpc value="Avoid battles with NPC" />
+    <description.avoidNpc>
+      <p>Checked: Your fleet will try to avoid any battles with NPC spaceships. This
+      will result in longer travel time if there are NPC units in your way.</p>
+      <p>Not checked: Your fleet will take the shortest route to its destination. It will
+      engage any NPC ships that are on its way.</p>
+    </description.avoidNpc>
+  </Movement>
+
+  <Navigator>
+    <label.currentGalaxy value="Galaxy" />
+  </Navigator>
+  
+  <ListScreen>
+    <label.colorLegend value="Legend:" />
+    <label.close value="Close" />
+  </ListScreen>
+
+  <Notifications>
+    <screenTitle value="Notifications" />
+    <label.notifications.normal value="{0}" />
+    <label.notifications.hasUnread value="{0}" />
+    <label.notifications.hasNew value="{0}" />
+    <label.notifications.all value="All" />
+    <label.notifications.unread value="Unread only" />
+    <label.notifications.starred value="Starred only" />
+    <label.createdAt value="Received at: {0}" />
+    <label.expiresAt value="Expires at: {0}" />
+    <label.planet value="Planet" />
+    <label.showPlanet value="Show planet" />
+    <label.yours value="Yours" />
+    <label.alliances value="Alliances" />
+    <label.nap value="NAPs" />
+    <label.enemies value="Enemies" />
+    <label.leveled value="Leveled Up" />
+    <label.dmgDealtPlayer value="Damage dealt by you" />
+    <label.dmgDealtAlly value="Damage dealt by allies" />
+    <label.dmgDealtAlliance value="Damage dealt by alliance" />
+    <label.dmgTakenPlayer value="Damage taken by you" />
+    <label.dmgTakenAlly value="Damage taken by allies" />
+    <label.dmgTakenAlliance value="Damage taken by alliance" />
+    <label.xp value="XP earned" />
+    <label.points value="War points earned" />
+    <label.victoryPoints value="Victory points earned" />
+    <label.creds value="Creds earned" />
+    <label.stats value="Combat statistics" />
+    <label.close value="Close" />
+    <label.players value="Players" />
+    <label.noNotifications value="There are no notifications" />
+    <label.questCompleted value="Quest '{0}' was completed." />
+    <label.readAll value="Read all" />
+    <label.resourcesGained value="Resources gained" />
+    <label.wreckageLeft value="Wreckage left" />
+    <label.newColor value="● New notifications" />
+    <label.notReadColor value="● Unread notifications" />
+    <label.readColor value="● Read notifications" />
+
+    <title.combatLog value="Combat report" />
+    <message.combatLog>
+      <p>Battle in {0 planet[Planet] galaxy[Galaxy] ss[Solar System] 
+      battleground[]} {1}{0 planet[, Owner] galaxy[] ss[] battleground[]} {2}</p>
+    </message.combatLog>
+    <label.combatLog.outcome.win value="You have won!" />
+    <label.combatLog.outcome.loose value="You have lost!" />
+    <label.combatLog.outcome.tie value="Its a tie" />
+    <label.combatLog.showLog value="View replay" />
+    <label.combatLog.copyToClipboard value="Copy to clipboard" />
+
+    <title.questCompleted value="Quest competed" />
+    <message.questCompleted value="Quest '{0}' was completed." />
+    <message.newQuests value="Following quests were started:" />
+
+    <title.kickedFromAlliance value="Kicked from alliance" />
+    <message.kickedFromAlliance value="Kicked from alliance {0}" />
+    <label.kickedFromAlliance 
+      value="You have been kicked from alliance" />
+
+    <title.credsConverted
+      value="Someone collected enough victory points to win." />
+    <message.credsConverted
+      value="Victory points converted to creds"/>
+    <label.credsConverted>
+      <p>Your victory points was converted to creds.</p>
+      <p>Creds gained:</p>
+    </label.credsConverted>
+    <credsConverted.personalCreds value="● Personal creds: {0}"/>
+    <credsConverted.allianceCreds
+      value="● Creds from alliance pool: {0} (overall alliance pool: {1})"/>
+    <credsConverted.personalCredsTotal value="● Total creds you gained: {0}"/>
+
+    <title.achievementCompleted value="Achievement completed" />
+    <message.achievementCompleted ref="title.achievementCompleted" />
+
+    <title.notEnoughResources value="Not enough resources" />
+    <message.notEnoughResources value="Not enough resources" />
+
+    <title.buildingsDeactivated value="Buildings deactivated" />
+    <message.buildingsDeactivated>
+      <p>Buildings deactivated due to insufficient energy.</p>
+    </message.buildingsDeactivated>
+
+    <title.explorationFinished value="Exploration finished" />
+    <message.explorationFinished value="Exploration finished in planet {0}" />
+
+    <title.marketOfferBought value="Market offer bought" />
+    <message.marketOfferBought value="Market offer bought" />
+    <!-- message with link button between -->
+    <label.marketOfferBought.message1 value="Player" />
+    <label.marketOfferBought.message2 value="has bought:" />
+    <label.marketOfferBought.for value="for" />
+    <label.marketOfferBought.amountLeft>
+    <!-- 1: metal, energy, zetium or creds -->
+      <p>Your offer still has {0} {1} left.</p>
+    </label.marketOfferBought.amountLeft>
+    <label.marketOfferBought.allBought value="Your offer has been bought out." />
+
+    <title.planetAnnexed.win value="You have conquered this planet!" />
+    <title.planetAnnexed.lose value="You have lost this planet!" />
+    <message.planetAnnexed.win value="Planet {0} conquered" />
+    <message.planetAnnexed.lose value="Your planet {0} lost" />
+    <message.planetAnnexed.loseAlly value="Alliances planet {0} lost" />
+    <!-- two lines in notification, link button after first line-->
+    <label.planetAnnexed.win1 value="You won a battle against" />
+    <label.planetAnnexed.win2 value="for planet '{0}'." />
+    <label.planetAnnexed.npcWin>
+      <p>You have won against aliens in planet '{0}'. 
+      You can now claim it for yourself.</p>
+    </label.planetAnnexed.npcWin>
+    <label.planetAnnexed.selfLose>
+      <p>You have lost a battle for your planet '{0}'. 
+      You no longer control it.</p>
+    </label.planetAnnexed.selfLose>
+    <label.planetAnnexed.allyLose>
+      <p>Your ally have lost a battle for his planet '{0}'. 
+      He does not control it anymore.</p>
+    </label.planetAnnexed.allyLose>
+    <label.planetAnnexed.emptyWin>
+      <p>Your units have arrived to unclaimed planet '{0}'. 
+      You can claim this planet if you want.</p>
+    </label.planetAnnexed.emptyWin>
+    <label.planetAnnexed.claimPlanet 
+    value="You can now claim this planet for yourself." />
+    
+    <title.planetProtected value="Planet protected!" />
+    <message.planetProtected ref="title.planetProtected" />
+    <label.planetProtected.explained>
+      <p>While this protection is active there will be no battles in this
+      planet.</p>
+    </label.planetProtected.explained>
+    <label.planetProtected.enemies>
+      <p>
+      In a battle over a planet the owner of a planet lost. 
+      However, due to interstellar treaties his/hers last planet 
+      has been placed under protection for {0} (until {1}).
+      </p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.enemies>
+    <label.planetProtected.yours>
+      <p>
+      Your last planet was under attack and you have lost. 
+      Due to interstellar treaties your planet has been placed 
+      under protection for {0} until {1}.
+      </p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.yours>
+    <label.planetProtected.ally>
+      <p>
+      Your alliance members last planet was under attack and you have lost. 
+      Due to interstellar treaties his/hers planet has been placed 
+      under protection for {0} until {1}.
+      </p>
+      <p>[reference:label.planetProtected.explained]</p>
+    </label.planetProtected.ally>
+    
+    <title.allianceInvitation value="Alliance invitation"/>
+    <message.allianceInvitation value="Invitation to join alliance '{0}'"/>
+    <message.allianceInvitation.long>
+      <![CDATA[
+      You have been invited to the alliance <a href="event:openAlliance">{0}</a>.
+      Click '[reference:Notifications/label.allianceInvitation.join]' to join it.
+      ]]>
+    </message.allianceInvitation.long>
+      <message.allianceInvitation.denied>
+          <![CDATA[
+      You have been invited to the alliance <a href="event:openAlliance">{0}</a>.
+      ]]>
+      </message.allianceInvitation.denied>
+    <label.allianceInvitation.join value="Join"/>
+    <message.allianceInvitation.cooldown value="You can't join any alliance for {0} (until {1})."/>
+    <message.allianceInvitation.alreadyInAlliance>
+      You can't join this alliance because you belong to another alliance. 
+      If you want to leave your alliance to join this one there will be a {0}
+      gap where you won't belong to any alliance at all.
+    </message.allianceInvitation.alreadyInAlliance>
+    
+    <title.allianceJoined value="New player joined alliance" />
+    <message.allianceJoined>
+      Player "{0}" has joined "{1}"
+    </message.allianceJoined>
+    <content.allianceJoined>
+      <p>Player "{0}" has joined your alliance "{1}".</p>
+      <p>Please give him or her a warm welcome!</p>
+    </content.allianceJoined>
+
+    <title.allianceOwnerChanged>
+       Owner of alliance "{0}" has changed!
+    </title.allianceOwnerChanged>
+    <content.allianceOwnerChanged.forOldOwner>
+       <![CDATA[ You have lost ownership of alliance "<a href="event:alliance">{0}</a>".
+       The new owner is "<a href="event:newOwner">{1}</a>". ]]>
+    </content.allianceOwnerChanged.forOldOwner>
+    <content.allianceOwnerChanged.forNewOwner>
+       <![CDATA[ You have taken over the command of "<a href="event:alliance">{0}</a>"
+       from the old ruler "<a href="event:oldOwner">{1}</a>". ]]>
+    </content.allianceOwnerChanged.forNewOwner>
+    <content.allianceOwnerChanged.forOthers>
+       <![CDATA[
+       <p>
+          The leader of "<a href="event:alliance">{0}</a>" alliance has changed!
+       </p>
+       <p>
+          "<a href="event:oldOwner">{1}</a>" commanded this alliances up until now.
+          From now on "<a href="event:newOwner">{2}</a>" is the new leader.
+       </p>
+       ]]>
+    </content.allianceOwnerChanged.forOthers>
+
+    <prop.alive value="Alive" />
+    <prop.destroyed value="Destroyed" />
+  </Notifications>
+
+  <Players>
+    <npc value="NPC" />
+    <noAlliance value="Without alliance" />
+    <alliances value="Alliances" />
+    <label.inRatings value="Show in ratings" />
+    <label.sendMessage value="Send message" />
+    <title.achievements value="ACHIEVEMENTS" />
+    <label.close value="Close" />
+    <label.noPlanets value="You have no planets"/>
+  </Players>
+
+  <Popups>
+    <title.securityError value="Security error!" />
+    <title.defaultError value="Error!" />
+
+    <label.reconnect value="Reconnect" />
+    <label.cancel value="Cancel" />
+    <label.confirm value="Confirm" />
+    <label.ok value="Ok" />
+    <label.yes value="Yes" />
+    <label.no value="No" />
+    
+    <title.convertCreds value="Convert creds" />
+    <message.convertCreds>
+      <p>Are you sure you want to convert {0 one[one VIP cred] many[? VIP creds]} 
+      to {1 one[one cred] many[? creds]}?</p>
+    </message.convertCreds>
+    
+    <title.cancelUnitTraining value="Cancel unit training" />
+    <message.cancelUnitTraining 
+    value="Are you sure you want to cancel training of this unit?"/>
+    
+    <title.cancelUpgrade value="Cancel upgrade" />
+    <message.cancelUpgrade 
+    value="Are you sure you want to cancel upgrade of this building?"/>
+    
+    <title.cancelConstructor value="Cancel construction" />
+    <message.cancelConstructor 
+    value="Are you sure you want to cancel construction of this building?"/>
+    
+    <title.cancelOffer value="Cancel offer" />
+    <message.cancelOffer>
+      <p>Do you realy want to cancel your offer?</p>
+    </message.cancelOffer>
+    
+    <title.buyOffer value="Buy offer" />
+    <message.buyOffer>
+      <p>Do you realy want to buy from this offer?</p>
+    </message.buyOffer>
+    
+    <title.createOffer value="Create offer" />
+    <message.createOffer>
+      <p>Do you realy want to create that offer?</p>
+    </message.createOffer>
+    
+    <title.dailyBonus value="Daily bonus" />
+    <message.dailyBonus>
+      <p>Come back every day and get your daily bonus!</p>
+    </message.dailyBonus>
+    <label.todayYouGot value="Today you've got:" />
+    
+    <title.stopFleet value="Stop fleet" />
+    <message.stopFleet value="Do you realy want to stop your fleet?" />
+    
+    <title.boostPlanet value="Boost planet resources/storage" />
+    <message.areYouSure value="Are you sure?" />
+
+    <title.selfDestruct value="Self destruct!" />
+    <message.selfDestruct>
+      <p>You are about to initiate self-destruct for:</p>
+      <p>{0}</p>
+      <p>Are you sure?</p>
+    </message.selfDestruct>
+
+    <title.dismissUnits value="Dismiss units!" />
+    <message.dismissUnits>
+      <p>You are about to dismiss your units.</p>
+      <p>You won't be able to undo this action.</p>
+      <p>Are you sure?</p>
+    </message.dismissUnits>
+
+    <title.renameAlliance value="Rename Alliance" />
+    <message.renameAlliance>
+      <p>You are about to rename your alliance to '{0}'.</p>
+      <p>It will cost you {1 one[one cred] many[? creds]}.</p>
+      <p>Are you sure?</p>
+    </message.renameAlliance>
+    
+    <title.leaveAlly value="Leave Alliance" />
+    <message.leaveAlly>
+      <p>
+      If you leave this alliance you won't be able to join other 
+      or create your alliance for {0}.
+      </p>
+      <p>Are you sure?</p>
+    </message.leaveAlly>
+    <message.leaveSelfAlly>
+      <p>If you'll leave your alliance it will be dismissed.</p>
+      <p>Are you sure?</p>
+    </message.leaveSelfAlly>
+
+    <title.kick value="Kick alliance member"/>
+    <message.kick>
+       <p>You are about to kick "{0}" from your alliance.</p>
+       <p>Are you sure?</p>
+    </message.kick>
+
+    <title.moveBuilding value="Move Building"/>
+    <message.moveBuilding>
+       <p>It will cost you {0 one[one cred] many[? creds]} to move this 
+       building.</p>
+       <p>Are you sure?</p>
+    </message.moveBuilding>
+
+    <title.loginFailed value="Login failed!" />
+    <message.loginFailed>
+      <p>Server failed to authorize you. Please relogin in the main page
+      and try again.</p>
+    </message.loginFailed>
+    
+    <lookIntoForum>
+      <p>Also - please check out our forum, there might be some useful
+      information regarding this issue there.</p>
+    </lookIntoForum>
+
+    <title.noConnection value="Connection lost!" />
+    <message.noConnection>
+      <p>No connection to server. Click '{0}' to reestablish it.</p>
+      <p>[reference:lookIntoForum]</p>
+    </message.noConnection>
+
+    <title.disconnect.default value="Server has disconnected you!" />
+    <message.disconnect.default>
+      <p>
+        You have been disconnected from the server! Click '{0}' to reconnect. 
+      </p>
+    </message.disconnect.default>
+
+    <title.disconnect.serverError value="Server error!" />
+    <message.disconnect.serverError>
+      <p>
+        Server has encountered an error. You have been disconnected! Click 
+        '{0}' to reconnect. 
+      </p>
+    </message.disconnect.serverError>
+
+    <title.disconnect.otherLogin value="Security error!" />
+    <message.disconnect.otherLogin>
+      <p>
+        Other game client connected as you. 
+        If this wasn't you (e.g. from other browser) and you didn't report
+        any bugs recently (it can be game administrator, check your bug report),
+        we advise to change your password IMMEDIATELY to ensure account safety.
+      </p>
+      <p>Click '{0}' to reconnect.</p>
+    </message.disconnect.otherLogin>
+    
+    <title.disconnect.playerErased value="Bye bye!" />
+    <message.disconnect.playerErased>
+      <p>Your account has been erased. We'll miss you.</p>
+      <p>Don't bother pressing '{0}'. It won't work.</p>
+    </message.disconnect.playerErased>
+
+    <title.disconnect.jsonError value="Communication error!" />
+    <message.disconnect.jsonError>
+      <p>
+        Message from server was not understood. Please reload your client. If 
+        this behaviour repeat itself report us a bug describing what you are 
+        doing that causes this error. Thank you. 
+      </p>
+    </message.disconnect.jsonError>
+
+    <crash>
+      <p>
+        Save yourselves! Mighty Space Bugs have infested our game client and 
+        sadly it is not Space Bug Resistant! (yet) Oh well, don't worry, you 
+        can always just press Refresh button on your browser and everything 
+        will be fine (probably). 
+      </p>
+    </crash>
+
+    <message.slowClient>
+       Your computer is not fast enough for this operation. But if you still
+       think that this is an error, feel free to report it to the forum.
+    </message.slowClient>
+
+    <title.log value="Debug log" />
+    <message.log.general>
+      <p>This is an in-game log of your actions. Paste this to a file and 
+      attach it to your forum post describing your problems and it will help
+      us to solve it.</p>
+    </message.log.general>
+    <label.log.close value="Close" />
+
+    <title.clientCrash value="Waaaargh!" />
+    <message.clientCrash.general>
+      <p>[reference:crash]</p>
+      <p>
+        However! If you want to prevent those pesky Space Bugs from infesting 
+        our client ever again you could send bits and pieces of nifty 
+        information we have collected. We assure you we WILL use that to 
+        improve our Bug-No-More formula (TM) more effective to make your gaming 
+        experience as pleasurable as humanly possible ;) 
+      </p>
+      <p>
+        So just copy that text below to clipboard (or press our conveniently 
+        placed '[reference:label.clientCrash.copy]' button) and wander to our forum to report this bug. 
+        Your hard work will be rewarded. We promise. Cosmic pinky swear. Oh 
+        yeah... 
+      </p>
+    </message.clientCrash.general>
+
+    <message.clientCrash.debugPlayer>
+      <p>[reference:crash]</p>
+      <p>
+        We could fix this however unfortunately you do not have debugger 
+        version of Flash Player so we can't collect much useful information. If 
+        you DO WANT to prevent this from happening ever again then click the 
+        '[reference:label.clientCrash.wiki]' button to get more information on 
+        how you can help us ;) We appreciate your help! 
+      </p>
+    </message.clientCrash.debugPlayer>
+
+    <label.clientCrash.copy value="Copy-O-Matic" />
+    <label.clientCrash.forum value="Report Bug" />
+    <label.clientCrash.wiki value="Get Debugger" />
+  </Popups>
+  
+  <Achievements>
+    <level value="level {0}" />
+  </Achievements>
+  
+  <Objectives>
+    <toLevel value="to level {0}" />
+    <level value=" level {0}" />
+    <ofLevel value="of level {0}" />
+    <of value="of" />
+    
+    <!-- HAVE_UPGRADED_TO
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
+    <objectiveText.HaveUpgradedTo value="Have [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
+    <objectiveText.HaveUpgradedToTech 
+    value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}] technology{2 one[] many[ to level ?]}" />
+    <objectiveText.HaveUpgradedToTechClass 
+    value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
+
+    <!-- UPGRADE_TO
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level to upgrade to -->
+    <objectiveText.UpgradeTo 
+    value="{2 one[Build] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
+
+    <!-- DESTROY
+    0: count of objects, 
+    1: Subclass or class to upgrade, 
+    2: level of objects to destroy -->
+    <objectiveText.Destroy value="Destroy [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
+    <objectiveText.DestroyNpcBuilding 
+    value="Destroy [obj:{0}:{1}:p8d]{2 one[] many[ of level ?]}" />
+    
+    <!-- ANNEX_PLANET
+    0: count of planets to occupy -->
+    <objectiveText.AnnexPlanet.npc>
+    <p>Colonize {0 one[one planet] many[? planets]}</p>
+    </objectiveText.AnnexPlanet.npc>
+    <objectiveText.AnnexPlanet.enemy>
+    <p>Occupy {0 one[enemy planet] many[? enemy planets]}</p>
+    </objectiveText.AnnexPlanet.enemy>
+    
+    <!-- HAVE_PLANETS
+    0: count of planets to have -->
+    <objectiveText.HavePlanets value="Have {0 one[one planet] many[? planets]}" />
+    
+    <!-- HAVE_POINTS, HAVE_XXX_POINTS
+    0: count of points to have -->
+    <objectiveText.HaveSciencePoints 
+    value="Have {0} science {0 one[point] many[points]}" />
+    <objectiveText.HaveEconomyPoints 
+    value="Have {0} economy {0 one[point] many[points]}" />
+    <objectiveText.HaveVictoryPoints 
+    value="Have {0} victory {0 one[point] many[points]}" />
+    <objectiveText.HaveArmyPoints 
+    value="Have {0} army {0 one[point] many[points]}" />
+    <objectiveText.HaveWarPoints 
+    value="Have {0} war {0 one[point] many[points]}" />
+    <objectiveText.HavePoints 
+    value="Have {0 one[? point] many[? points]}" />
+    
+    <!-- 0: count of points to have, 1: word "Point" 
+    from Objects -->
+    <objectiveText.HaveSciencePoints value="Have {0} Science {1}" />
+    <objectiveText.HaveEconomyPoints value="Have {0} Economy {1}" />
+    <objectiveText.HaveVictoryPoints value="Have {0} Victory {1}" />
+    <objectiveText.HaveArmyPoints value="Have {0} Army {1}" />
+    <objectiveText.HaveWarPoints value="Have {0} War {1}" />
+    <objectiveText.HavePoints value="Have {0} {1}" />
+
+    <!-- HEAL_HP
+    0: count of hit points to heal -->
+    <objectiveText.HealHp value="Heal {0} HP for units" />
+
+    <!-- REPAIR_HP
+    0: count of hit points to repair -->
+    <objectiveText.RepairHp value="Repair {0} HP for buildings" />
+    
+    <!-- MOVE_BUILDINGS
+    0: count of times to move building -->
+    <objectiveText.MoveBuilding value="Move building {0 one[] many[? times]}" />
+
+    <!-- BECOME_VIP
+    0: VIP level, 
+    1: count of times to become VIP -->
+    <objectiveText.BecomeVip>
+      <p>Become at least level {0} VIP {1 one[] many[? times]}</p>
+    </objectiveText.BecomeVip>
+
+    <!-- ACCELERATE_FLIGHT
+    0: count of times to accelerate flight -->
+    <objectiveText.AccelerateFlight value="Accelerate flight {0 one[] many[? times]}" />
+
+    <!-- BATTLE
+    0: count of times to proceed battle 
+    1: 'win' or 'lose' -->
+    <objectiveText.Battle 
+    value="{1 win[Win] lose[Lose]} {0 one[a battle] many[? battles]}"/>
+
+    <!-- COMPLETE_QUESTS
+    0: count of quests to complete -->
+    <objectiveText.CompleteQuests value="Complete {0 one[quest] many[? quests]}" />
+
+    <!-- COMPLETE_ACHIEVEMENTS
+    0: count of achievements to complete -->
+    <objectiveText.CompleteAchievements 
+    value="Complete {0 one[achievement] many[? achievements]}" />
+
+    <!-- ACCELERATE
+    0: count of times to accelerate object -->
+    <objectiveText.AccelerateBuilding>
+      <p>Accelerate building construction {0 one[] many[? times]}</p>
+    </objectiveText.AccelerateBuilding>
+    <objectiveText.AccelerateUnit>
+      <p>Accelerate unit training {0 one[] many[? times]}</p>
+    </objectiveText.AccelerateUnit>
+    <objectiveText.AccelerateTechnology>
+      <p>Accelerate technology research {0 one[] many[? times]}</p>
+    </objectiveText.AccelerateTechnology>
+
+    <!-- SELF_DESTRUCT
+    0: count of buildings to self destruct -->
+    <objectiveText.SelfDestruct 
+    value="Destroy {0 one[building] many[? buildings]} that belong to you" />
+
+
+    <!-- EXPLORE_BLOCK
+    0: count of times to explore object, 
+    1: count of minimum scientists to use -->
+    <objectiveText.ExploreBlock>
+      <p>Explore any object {0 one[] many[? times ]}
+      {1 zero[] one[with at least ? scientist] many[with at least ? scientists]}</p>
+    </objectiveText.ExploreBlock>
+  </Objectives>
+
+  <Quests>
+    <rewardsWidth value="100" />
+    <label.current value="Current ({0})" />
+    <label.completed value="Completed ({0})" />
+    <label.showQuest value="Show quest" />
+    <label.noQuests value="There are no quests" />
+    <label.progress value="{0}/{1} completed" />
+    <label.title value="Quests" />
+    <label.rewards value="Rewards:" />
+    <label.objectives value="Objectives:" />
+    <label.close value="Close" />
+    <label.claimReward value="Claim reward!" />
+    <label.claimLater value="Claim later" />
+    <label.tutorial value="Tutorial" />
+    <label.populationIncrease 
+    value="These units will increase your population by {0}." />
+    <label.choosePlanet value="Choose planet:" />
+    <warning.wontFit> 
+      <p> 
+        You will lose {0} if you claim reward to this 
+        planet due to insufficient storage.
+      </p>
+    </warning.wontFit>
+    <warning.cantClaimReward
+      value="You cant claim this reward due to insufficient population." />
+    <label.notCompletedColor value="● Not completed quests" />
+    <label.completedColor value="● Completed quests" />
+
+    <message.rewardClaimed value="Reward has been claimed to planet {0}" />
+
+    <title.newQuest value="New quest: {0}" />
+    <title.questCompleted value="Quest completed: {0}" />
+
+    <units value="Units" />
+    <points value="Economy Points" />
+
+    <Destroy value="Destroy" />
+
+    <!-- ################## -->
+    <!-- ### Main quest ### -->
+    <!-- ################## -->
+    
+    <title.10 value="The Beginning" />
+    <about.10>
+      <p>Welcome, Commander.</p>
+      
+      <p>
+        We have landed in this planet with our
+        [reference:Buildings/Mothership.name] and it seems we are not alone. We 
+        have set up our defenses but they are draining more energy than our 
+        generators can produce. This cannot continue for long!
+      </p>
+      
+      <p>
+        You must build a [reference:Buildings/CollectorT1.name] to fulfill our 
+        energy needs. Do not waste time. Do it now! 
+      </p>
+    </about.10>
+
+    <title.20 value="Warming Up" />
+    <about.20>
+      <p>I see you did well, Commander.</p>
+      
+      <p>
+        Our energy levels are now normal. However, it seems we are stuck here.
+        At least for now. 
+      </p>
+      
+      <p>
+        The good thing is that we have spotted ore deposits nearby. We should
+        build a [reference:Buildings/MetalExtractor.name] to draw metal from 
+        one of those deposits. 
+      </p>
+      
+      <p>Our future rests in your hands, Commander.</p>
+    </about.20>
+
+    <title.30 value="Growing Needs" />
+    <about.30>
+      <p>Commander,</p>
+      <p>
+        It seems that our extractors are working properly. However, we need more
+        resources to keep our growth steady. Upgrade extractors so that they
+        fulfill our needs. 
+      </p>
+    </about.30>
+    
+    <title.40 value="Increase" />
+    <about.40>
+      <p>Commander,</p>
+      <p>
+         Resource extraction is our top priority! Build even more
+         [obj:2:Building_MetalExtractor] so that extraction rates become
+         steady for sure.
+      </p>
+    </about.40>
+    
+    <title.50 value="Unrest" />
+    <about.50>
+      <p>Commander!</p>
+      
+      <p>
+        Our scouts report hearing strange noises in the wind. Suspicions that we
+        are not alone have been confirmed. Our scanners are picking up strange
+        anomalies in this planet. Until we know what we are dealing with, we can't
+        feel safe only behind the thick walls.
+      </p>
+      
+      <p>We need troops. Order construction of [reference:Buildings/Barracks.name] now. </p>
+      
+      <p>Our people need to feel safe.</p>
+    </about.50>
+    
+    <title.60 value="Arming Up" />
+    <about.60>
+      <p>Commander.</p>
+      <p>
+        Construction of your [reference:Buildings/Barracks.name] has been complete as
+        ordered. We now must train more troops to defend ourselves. Go to the
+        [obj:1:Building_Barracks::dc] and order training of [obj:2:Unit_Trooper::dc].
+      </p>
+    </about.60>
+    
+    <title.70 value="First Encounter" />
+    <about.70>
+      <p>Commander.</p>
+      <p>
+        A few lightly guarded alien buildings have been located outside of
+        our base territory. We should attack and destroy them. Our troops need this
+        kind of exercise. Even better, alien wreckages will replenish our supplies.
+      </p>
+      <p>
+        Intelligence estimates that an alien [obj:1:Unit_Gnat] is of the same
+        strength as our [obj:1:Unit_Trooper]. I suggest sending a few extra
+        troops to the battle so that we would gain an advantage over the alien
+        forces.
+      </p>
+    </about.70>
+    
+    <title.80 value="Unresting Minds" />
+    <about.80>
+      <p>Hello again, Commander.</p>
+      <p>
+        Our colony is prospering. We have steady resource income, our troops 
+        are strong and fearless, our people feel safe and last but not least - 
+        the weather is nice. It's almost like I can call this place home. 
+      </p>
+      <p>
+        This wonderful day is perfect for laying ground for our future.
+        [reference:Buildings/ResearchCenter.name] would be a great start. We 
+        already have a group of our colonists that would apply to work there.
+        We do not want to make them wait, do we?
+      </p>
+      <p>
+        My recommendation? You should order construction of a
+        [reference:Buildings/ResearchCenter.name] in this planet at once.
+        After all, one or two tricks from the science fun bag won't hurt us,
+        will it?
+      </p>
+    </about.80>
+
+    <title.90 value="Interesting Discoveries" />
+    <about.90>
+      <p>Good day, Commander!</p>
+      <p>
+        Our scouts located interesting object nearby. It seems to be remains of 
+        some giant creature. Unfortunately, they do no have the knowledge for
+        making a fair assessment of the finding and only reported that they had
+        found "some bones".
+      </p>
+      <p>
+        Still it would be best if you would send team of explorers to check it 
+        out. Perhaps they can find something useful.
+      </p>
+    </about.90>
+    
+    <title.100 value="Shards of Technology" />
+    <about.100>
+      <p>Commander,</p>
+      <p>
+        Our scouts have detected a few strange buildings guarded by alien robots. 
+        They managed to take some samples of the material lying around them and
+        our researchers were working on the samples for quite some time.
+      </p>
+      <p>
+        It seems that those buildings are full of zetium, a new crystal material.
+        Looks like it is very useful and can be used in many ways, even 
+        interstellar space travel. We need those crystals! 
+      </p>
+      <p>
+         Its about time the crystals are freed of the alien heels. Order our
+         scientists to begin researching the technology required for this
+         material processing immediately.
+      </p>
+    </about.100>
+    
+    <title.110 value="Fruits of Patience" />
+    <about.110>
+      <p>Commander!</p>
+      <p>
+        Our research on [reference:Technologies/ZetiumExtraction.name] has 
+        payed of. We are now able to build much needed buildings that will 
+        extract precious zetium from these crystals. 
+      </p>
+      <p>
+        Of course we must get rid of those aliens occupying zetium fields.
+        Assemble a strong army and attack the alien buildings if you haven't
+        done it yet.
+      </p>
+    </about.110>
+    
+    <title.120 value="Critical damage" />
+    <about.120>
+      <p>Commander!</p>
+      <p>
+        Our troops have been injured! We need some way to heal them. Tell scientists
+        to begin researching [obj:1:HealingCenter:what:dc] technology. Once they
+        have completed the task, build it immediately.
+      </p>
+    </about.120>
+    
+    <title.130 value="Saving Every Bit" />
+    <about.130>
+      <p>Welcome back, Commander.</p>
+      <p>
+        I'm afraid I've miscalculated when saying "there can't be too much of
+        resources". Our analytics have presented me with a plan of resource
+        extraction and energy production rates covering a few cycles. According
+        to their prognosis we won't be able to consume everything we are currently
+        producing. Although it may sound as bad news, in fact it is not. All we have
+        to do is build some additional storage buildings to store excess resources.
+      </p>
+      <p>
+        Order construction of buildings that store each resource type, 
+        Commander.
+      </p>
+    </about.130>
+    
+    <title.140 value="Strong economy" />
+    <about.140>
+      <p>Commander, hello again.</p>
+      <p>
+        Each and every empire needs strong economy. We must be prepared
+        for unexpectedly high demand for resources. Let's upgrade our mining
+        facilities.
+      </p>
+    </about.140>
+    
+    <title.150 value="Fulfilling our needs" />
+    <about.150>
+      <p>Hello, Commander.</p>
+      <p>In different times we need different things and it's not always
+      easy to plan ahead. Research a [obj:1:Technology_Market] technology so
+      that we could trade with other inhabitants of this galaxy.</p>
+      <p>After all they might be in need of something we have surplus and
+      vice versa. Why shouldn't we help each other? We could even make
+      a friend or two in this way.</p>
+    </about.150>
+    
+    <title.160 value="Holding Breath" />
+    <about.160>
+      <p>Commander.</p>
+      <p>We need more space for our people. Soon enough we won't have any
+      rooms left.</p>
+      <p>Commence building of [obj:2:Building_Housing::dc] immediately!</p>
+    </about.160>
+    
+    <title.170 value="Reaching To The Stars" />
+    <about.170>
+      <p>Commander.</p>
+      <p>
+        Our scientists have found a way to use zetium in space travel! This is 
+        a glorious day! Order them to start researching of 
+        [reference:Technologies/SpaceFactory.name] now. 
+      </p>
+      <p>We need plans in order to build the factory so do not hesitate!</p>
+    </about.170>
+    
+    <title.180 value="Tools of Travel" />
+    <about.180>
+      <p>Commander!</p>
+      <p>
+        Space factory project and specifications of technologies to be used
+        have already been handed over to builders. Our hard-working colonists
+        are eager to grab their tools and begin the work. Order construction of
+        a [obj:1:Building_SpaceFactory::dc] in this planet.
+      </p>
+      <p>
+        Pay attention to those grey and level fields. They seem to be a perfect
+        place for construction. If we build the factory there, work will be
+        completed much sooner.
+      </p>
+    </about.180>
+    
+    <title.190 value="Threatening Space" />
+    <about.190>
+      <p>Hello, Commander.</p>
+      <p>
+        We have built our [reference:Buildings/SpaceFactory.name]. Now we need 
+        ships to travel space. Unfortunately we cannot rely only on our 
+        [reference:Units/Mule.name] class transporter ships. They are strongly 
+        armored however without any offensive power they will be ripped apart 
+        in seconds by alien ships hovering above planets and other objects in our
+        solar system. 
+      </p>
+      <p>
+        We need combat ships to counter them. Go to your 
+        [reference:Buildings/SpaceFactory.name] and order construction of your first
+        [obj:1:Unit_Crow] class ship.
+      </p>
+    </about.190>
+    
+    <title.200 value="Spy revealed" />
+    <about.200>
+      <p>Commander!</p>
+      <p>
+        Our scanners have picked up an enemy space ship orbiting our planet.
+        It is definitely spying on us!
+      </p>
+      <p>
+        Assemble a fleet, lift it to the planet orbit and shoot down the enemy spy.
+      </p>
+    </about.200>
+    
+    <title.210 value="Expanding Ground" />
+    <about.210>
+      <p>Commander.</p>
+      <p>
+        Now that we have mastered space travel we should start expanding to the
+        other planets. Our sensors indicate there is a nearby planet that can
+        sustain life. However it is guarded by alien ships. 
+      </p>
+      <p>
+        Use your fleet to destroy the guards and take over that planet. 
+      </p>
+      <p>To annex a planet we must land our ships on its soil.</p>
+    </about.210>
+    
+    <title.220 value="Economy of the Words" />
+    <about.220>
+      <p>Greetings, Commander.</p>
+      <p>
+        Let me congratulate you on taking ownership of the second planet.
+        We are now officially a multi-planetary civilization!
+        Of course we still need to build our base there and many other task awaits.
+      </p>
+      <p>
+        Our first task - development of second planet's economy. We need to construct
+        resource extractors so that we can further advance growth of the colony.
+      </p>
+      <p>So let us not waste any time and start working.</p>
+    </about.220>
+    
+    <title.230 value="Freighting Minerals" />
+    <about.230>
+      <p>Its an awful mess down there after that battle - we've got wreckages
+      floating everywhere. We should clean it up.</p>
+      <p>Why the frowned face? Oh, I must have forgotten to mention that those
+      wreckages can be used as resources in our worlds. Heh, I see you're 
+      smiling already.</p>
+      <p>And for that we will need a mule class ship. Right on! Lets collect
+      those resources! Build your first mule class ship!</p>
+    </about.230>
+    
+    <title.240 value="Cleansing" />
+    <about.240>
+      <p>Hello, Commander.</p>
+      <p>
+        As we have built our [reference:Buildings/SpaceFactory.name] we should 
+        train our pilots a bit! As an easy first task go pick on some
+        [obj:2:Unit_Dirac].
+      </p>
+    </about.240>
+    
+    <title.250 value="Boiling Waters" />
+    <about.250>
+      <p>Commander.</p>
+      <p>
+        Your recent activity in this region has made alien ships more cautious. 
+        Some rumors even tell they are planning a rebellion! Go and destroy 
+        their powerful [reference:Units/Thor.name] class ships. Show them who 
+        rules this galaxy! 
+      </p>
+    </about.250>
+    
+    <title.260 value="Fire Against Fire" />
+    <about.260>
+      <p>Greetings, Commander.</p>
+      <p>
+        It seems there is no stopping those alien ships. You must strike at 
+        their strongest spot to make them bow down to your might! It is the 
+        only way to stop the rebellion! 
+      </p>
+    </about.260>
+    
+    <title.270 value="Eye in the Sky" />
+    <about.270>
+      <p>Commander!</p>
+      <p>
+        We now have plenty of space in our new colony. After establishing an 
+        operational base we should begin exploring our galaxy. 
+      </p>
+      <p>
+        Build a [reference:Buildings/Radar.name]. It will reveal a sector of 
+        galaxy map and show other solar systems with ship movement within that 
+        sector. 
+      </p>
+      <p>
+        Keep in mind that running a [reference:Buildings/Radar.name] requires 
+        substantial amount of energy. It will drain your energy storage quickly 
+        if you do not have enough energy generated. And if it runs out of 
+        energy - it will simply shut down keeping you blind from enemy actions. 
+      </p>
+    </about.270>
+    
+    <title.280 value="Technical progress" />
+    <about.280>
+      <p>Greetings, Commander.</p>
+      <p>
+         Our [obj:1:Building_Radar::dc] have been completed and we now see that
+         other solar systems with unoccupied planets exist. Our strategists say
+         that one more planet would be of a great use for us. However, to
+         colonise it we need some special equipment that can only be produced
+         in a [obj:1:Building_GroundFactory::dc].
+      </p>
+      <p>
+        So do not hesitate. Begin researching [obj:1:Technology_GroundFactory]
+        technology immediately.
+      </p>
+    </about.280>
+    
+    <title.290 value="MDH" />
+    <about.290>
+      <p>Commander.</p>
+      <p>
+        We already have a ground factory. We now require [obj:1:Technology_Mdh]
+        technology, or [obj:1:Unit_Mdh] for short. The [obj:1:Unit_Mdh] had
+        already been deployed in our second planet once we arrived there.
+        However that probably is only a fortunate coincidence.
+      </p>
+      <p>
+        Since the travel will take a great deal of time it would be
+        unpleasant if and [obj:1:Unit_Mdh] wasn't already on the planet.
+        So our own unit will come in handy since we want to colonise that
+        third planet.
+      </p>
+    </about.290>
+    
+    <title.300 value="The third world" />
+    <about.300>
+      <p>Commander.</p>
+      <p>
+        The [obj:1:Technology_Mdh] technology is now at our disposal. The only
+        thing left for us to do is fly to another solar system and take control
+        of a third planet.
+      </p>
+      <p>
+        Use your [obj:1:Building_GroundFactory::dc] to build an [obj:1:Unit_Mdh]
+        unit. Load that unit to a [obj:1:Unit_Mule] class ship and send it to a
+        third planet along with an escort. Do not forget to bring along some
+        ground troops - the planet will probably be guarded by alien forces.
+      </p>
+      <p>Good luck!</p>
+    </about.300>
+    
+    <title.310 value="Fortifying Colonies" />
+    <about.310>
+      <p>Commander!</p>
+      <p>
+         Our intelligence reports the attack by alien forces on our third colony
+         is imminent. We must build up defences quickly to ensure safety of our people.
+      </p>
+      <p>
+         You have been rewarded with a few mobile turrets for the completion of your
+         last task. You can claim them directly to your third planet and deploy
+         the turrets there.
+      </p>
+    </about.310>
+    
+    <title.320 value="New economy" />
+    <about.320>
+      <p>Commander.</p>
+      <p>
+        We require new technologies to boost our economy in the new planet.
+        Our scientists think that after analyzing alien mining facilities they
+        could adapt their technologies for increasing resource extraction rates.
+      </p>
+      <p>
+        Research new extractor technologies and build those advanced extractors
+        in the third planet. And do not forget to replace our old mining facilities
+        in other two planets with more advanced counterparts.
+      </p>
+    </about.320>
+    
+    <title.330 value="Circle of Friends" />
+    <about.330>
+      <p>Hello, Commander.</p>
+      <p>
+        Turns out this galaxy is much larger than we have anticipated. And in such a
+        huge galaxy fighting alone is very difficult.
+      </p>
+      <p>
+        Contact other commanders and become a member of an alliance. You can research
+        [obj:1:Technology_Alliances] technology and create your own alliance or
+        you can expect someone to invite you to an already existing alliance.
+      </p>
+    </about.330>
+    
+    <title.340 value="Closer to Victory" />
+    <about.340>
+      <p>Commander.</p>
+      <p>
+        In order to win, we together with our allies need to collect a certain
+        amount of Victory Points, or VPs for short. Try to collect a few VPs and
+        you will be generously rewarded.
+      </p>
+    </about.340>
+    
+    <!-- ################### -->
+    <!-- ### Side quests ### -->
+    <!-- ################### -->
+
+    <title.10010 value="Leveling to the Ground" />
+    <about.10010>
+      <p>Commander.</p>
+      <p>
+        There are lots and lots of alien mines draining the precious metal deposits.
+      </p>
+      <p>
+        We must get rid of them so that construction of our own extractors
+        would be possible.
+      </p>
+    </about.10010>
+
+    <EconomySideQuest.title value="Industrial zone"/>
+    <EconomySideQuest.about>
+      <p>Commander.</p>
+      <p>
+        The colonists and the base crew admire the growth of the power of our
+        economy. But we can't stop at the halfway. Let us increase our industrial
+        potential. Let us not stop the progress!
+      </p>
+    </EconomySideQuest.about>
+    
+    <title.10020 ref="EconomySideQuest.title" />
+    <about.10020 ref="EconomySideQuest.about" />
+
+    <title.10021 value="[reference:EconomySideQuest.title] (II)" />
+    <about.10021 ref="EconomySideQuest.about" />
+
+    <title.10022 value="[reference:EconomySideQuest.title] (III)" />
+    <about.10022 ref="EconomySideQuest.about" />
+
+    <title.10023 value="[reference:EconomySideQuest.title] (IV)" />
+    <about.10023 ref="EconomySideQuest.about" />
+
+    <title.10024 value="[reference:EconomySideQuest.title] (V)" />
+    <about.10024 ref="EconomySideQuest.about" />
+
+    <title.10040 value="[reference:EconomySideQuest.title] (VI)" />
+    <about.10040 ref="EconomySideQuest.about" />
+
+    <title.10041 value="[reference:EconomySideQuest.title] (VII)" />
+    <about.10041 ref="EconomySideQuest.about" />
+
+    <title.10042 value="[reference:EconomySideQuest.title] (VIII)" />
+    <about.10042 ref="EconomySideQuest.about" />
+
+    <title.10043 value="[reference:EconomySideQuest.title] (IX)" />
+    <about.10043 ref="EconomySideQuest.about" />
+
+    <title.10044 value="[reference:EconomySideQuest.title] (X)" />
+    <about.10044 ref="EconomySideQuest.about" />
+
+    <title.10045 value="[reference:EconomySideQuest.title] (XI)" />
+    <about.10045 ref="EconomySideQuest.about" />
+
+    <title.10046 value="[reference:EconomySideQuest.title] (XII)" />
+    <about.10046 ref="EconomySideQuest.about" />
+
+    <title.10047 value="[reference:EconomySideQuest.title] (XIII)" />
+    <about.10047 ref="EconomySideQuest.about" />
+
+    <title.10048 value="[reference:EconomySideQuest.title] (XIV)" />
+    <about.10048 ref="EconomySideQuest.about" />
+
+    <title.10049 value="[reference:EconomySideQuest.title] (XV)" />
+    <about.10049 ref="EconomySideQuest.about" />
+
+    <title.10060 value="[reference:EconomySideQuest.title] (XVI)" />
+    <about.10060 ref="EconomySideQuest.about" />
+
+    <title.10061 value="[reference:EconomySideQuest.title] (XVII)" />
+    <about.10061 ref="EconomySideQuest.about" />
+
+    <title.10062 value="[reference:EconomySideQuest.title] (XVIII)" />
+    <about.10062 ref="EconomySideQuest.about" />
+
+    <title.10063 value="[reference:EconomySideQuest.title] (XIX)" />
+    <about.10063 ref="EconomySideQuest.about" />
+
+    <title.10064 value="[reference:EconomySideQuest.title] (XX)" />
+    <about.10064 ref="EconomySideQuest.about" />
+
+    <title.10065 value="[reference:EconomySideQuest.title] (XXI)" />
+    <about.10065 ref="EconomySideQuest.about" />
+
+    <title.10066 value="[reference:EconomySideQuest.title] (XXII)" />
+    <about.10066 ref="EconomySideQuest.about" />
+
+    <title.10067 value="[reference:EconomySideQuest.title] (XXIII)" />
+    <about.10067 ref="EconomySideQuest.about" />
+
+    <title.10068 value="[reference:EconomySideQuest.title] (XXIV)" />
+    <about.10068 ref="EconomySideQuest.about" />
+
+    <title.10069 value="[reference:EconomySideQuest.title] (XXV)" />
+    <about.10069 ref="EconomySideQuest.about" />
+    
+    <WarSideQuest.title value="Echos Of Battles" />
+    <WarSideQuest.about>
+      <p>Commander.</p>
+      <p>
+        Galaxy is dangerous and unquiet place. Of course, we are peaceful people,
+        but the dangers around us may recognize our sober minds as a sign of fear
+        and a lack of strong will. We must defend ourselves against predatory neighbours. 
+        And the best defence... yes, you've guessed right, Commander - is
+        a good offence! Let's launch a preemptive strike on them!
+      </p>
+      <p>
+         Remember that prevention of evil intention is a legitimate way of defence.
+         Do not waver. Attack the alien forces without fear each time you encounter them.
+         We can't reason with them anyway.
+      </p>
+    </WarSideQuest.about>
+    
+    <title.10100 ref="WarSideQuest.title" />
+    <about.10100 ref="WarSideQuest.about" />
+
+    <title.10101 value="[reference:WarSideQuest.title] (II)" />
+    <about.10101 ref="WarSideQuest.about" />
+
+    <title.10102 value="[reference:WarSideQuest.title] (III)" />
+    <about.10102 ref="WarSideQuest.about" />
+
+    <title.10103 value="[reference:WarSideQuest.title] (IV)" />
+    <about.10103 ref="WarSideQuest.about" />
+
+    <title.10104 value="[reference:WarSideQuest.title] (V)" />
+    <about.10104 ref="WarSideQuest.about" />
+
+    <title.10120 value="[reference:WarSideQuest.title] (VI)" />
+    <about.10120 ref="WarSideQuest.about" />
+
+    <title.10121 value="[reference:WarSideQuest.title] (VII)" />
+    <about.10121 ref="WarSideQuest.about" />
+
+    <title.10122 value="[reference:WarSideQuest.title] (VIII)" />
+    <about.10122 ref="WarSideQuest.about" />
+
+    <title.10123 value="[reference:WarSideQuest.title] (IX)" />
+    <about.10123 ref="WarSideQuest.about" />
+
+    <title.10124 value="[reference:WarSideQuest.title] (X)" />
+    <about.10124 ref="WarSideQuest.about" />
+
+    <title.10125 value="[reference:WarSideQuest.title] (XI)" />
+    <about.10125 ref="WarSideQuest.about" />
+
+    <title.10126 value="[reference:WarSideQuest.title] (XII)" />
+    <about.10126 ref="WarSideQuest.about" />
+
+    <title.10127 value="[reference:WarSideQuest.title] (XIII)" />
+    <about.10127 ref="WarSideQuest.about" />
+
+    <title.10128 value="[reference:WarSideQuest.title] (XIV)" />
+    <about.10128 ref="WarSideQuest.about" />
+
+    <title.10129 value="[reference:WarSideQuest.title] (XV)" />
+    <about.10129 ref="WarSideQuest.about" />
+
+    <title.10140 value="[reference:WarSideQuest.title] (XVI)" />
+    <about.10140 ref="WarSideQuest.about" />
+
+    <title.10141 value="[reference:WarSideQuest.title] (XVII)" />
+    <about.10141 ref="WarSideQuest.about" />
+
+    <title.10142 value="[reference:WarSideQuest.title] (XVIII)" />
+    <about.10142 ref="WarSideQuest.about" />
+
+    <title.10143 value="[reference:WarSideQuest.title] (XIX)" />
+    <about.10143 ref="WarSideQuest.about" />
+
+    <title.10144 value="[reference:WarSideQuest.title] (XX)" />
+    <about.10144 ref="WarSideQuest.about" />
+
+    <title.10145 value="[reference:WarSideQuest.title] (XXI)" />
+    <about.10145 ref="WarSideQuest.about" />
+
+    <title.10146 value="[reference:WarSideQuest.title] (XXII)" />
+    <about.10146 ref="WarSideQuest.about" />
+
+    <title.10147 value="[reference:WarSideQuest.title] (XXIII)" />
+    <about.10147 ref="WarSideQuest.about" />
+
+    <title.10148 value="[reference:WarSideQuest.title] (XXIV)" />
+    <about.10148 ref="WarSideQuest.about" />
+
+    <title.10149 value="[reference:WarSideQuest.title] (XXV)" />
+    <about.10149 ref="WarSideQuest.about" />
+    
+    <title.10160 value="Achieving Greatness" />
+    <about.10160>
+      <p>Commander.</p>
+      <p>
+        As a great leader you have brought us many victories. All your efforts 
+        are appreciated. 
+      </p>
+    </about.10160>
+    
+    <title.10170 value="More Glory" />
+    <about.10170>
+      <p>Commander.</p>
+      <p>Your deeds are most glorious.</p>
+      <p>May luck be with you.</p>
+    </about.10170>
+    
+    <title.10180 value="Even More Glory" />
+    <about.10180>
+      <p>Commander.</p>
+      <p>
+        All our neighbors know of your skills. You are truly worthy. Keep it
+        up! 
+      </p>
+    </about.10180>
+    
+    <title.10190 value="Top of the Hill" />
+    <about.10190>
+      <p>Commander.</p>
+      <p>
+        People who have not been lucky enough to thrive and prosper under your 
+        ruling do not understand the meaning of those words. But we do. We are
+        grateful for that, Commander.
+      </p>
+      <p>I am speaking on behalf of all the people of our colonies.</p>
+    </about.10190>
+    
+    <title.10200 value="The Unstoppable Force" />
+    <about.10200>
+      <p>Commander.</p>
+      <p>
+        You are known in whole sector of this galaxy. Billions of mothers name
+        their suns after you. Our allies respect you and our enemies fear you.
+      </p>
+      <p>You are truly unstoppable.</p>
+    </about.10200>
+    
+    <title.10210 value="Deity" />
+    <about.10210>
+      <p>Commander.</p>
+      <p>
+         You are a leader in economy, science and war. We are leaders everywhere.
+         Have you considered creating your own religion?
+      </p>
+    </about.10210>
+    
+    <ScienceSideQuest.title value="Thirst Of Knowledge" />
+    <ScienceSideQuest.about>
+      <p>Commander.</p>
+      <p>
+        Inventions! Progress! Science is the key for our advancement. Enemies
+        may build more fleets but we will build better ones! Invest into
+        research and you'll see that it is worth its price.
+      </p>
+    </ScienceSideQuest.about>
+    
+    <title.10220 ref="ScienceSideQuest.title" />
+    <about.10220 ref="ScienceSideQuest.about" />
+
+    <title.10225 value="[reference:ScienceSideQuest.title] (II)" />
+    <about.10225 ref="ScienceSideQuest.about" />
+
+    <title.10230 value="[reference:ScienceSideQuest.title] (III)" />
+    <about.10230 ref="ScienceSideQuest.about" />
+
+    <title.10235 value="[reference:ScienceSideQuest.title] (IV)" />
+    <about.10235 ref="ScienceSideQuest.about" />
+
+    <title.10240 value="[reference:ScienceSideQuest.title] (V)" />
+    <about.10240 ref="ScienceSideQuest.about" />
+
+    <title.10245 value="[reference:ScienceSideQuest.title] (VI)" />
+    <about.10245 ref="ScienceSideQuest.about" />
+
+    <title.10250 value="[reference:ScienceSideQuest.title] (VII)" />
+    <about.10250 ref="ScienceSideQuest.about" />
+
+    <title.10255 value="[reference:ScienceSideQuest.title] (VIII)" />
+    <about.10255 ref="ScienceSideQuest.about" />
+
+    <title.10260 value="[reference:ScienceSideQuest.title] (IX)" />
+    <about.10260 ref="ScienceSideQuest.about" />
+
+    <title.10265 value="[reference:ScienceSideQuest.title] (X)" />
+    <about.10265 ref="ScienceSideQuest.about" />
+
+    <title.10270 value="[reference:ScienceSideQuest.title] (XI)" />
+    <about.10270 ref="ScienceSideQuest.about" />
+
+    <title.10275 value="[reference:ScienceSideQuest.title] (XII)" />
+    <about.10275 ref="ScienceSideQuest.about" />
+
+    <title.10280 value="[reference:ScienceSideQuest.title] (XIII)" />
+    <about.10280 ref="ScienceSideQuest.about" />
+
+    <title.10285 value="[reference:ScienceSideQuest.title] (XIV)" />
+    <about.10285 ref="ScienceSideQuest.about" />
+
+    <title.10290 value="[reference:ScienceSideQuest.title] (XV)" />
+    <about.10290 ref="ScienceSideQuest.about" />
+    
+    <TechnologySideQuest.title value="Mastering Science" />
+    <TechnologySideQuest.about>
+      <p>Commander.</p>
+      <p>
+        This technology is extremely important for our future development.
+        Research it and you will be greatly awarded.
+      </p>
+    </TechnologySideQuest.about>
+    
+    <title.10300 ref="TechnologySideQuest.title" />
+    <about.10300 ref="TechnologySideQuest.about" />
+
+    <title.10305 value="[reference:TechnologySideQuest.title] (II)" />
+    <about.10305 ref="TechnologySideQuest.about" />
+
+    <title.10310 value="[reference:TechnologySideQuest.title] (III)" />
+    <about.10310 ref="TechnologySideQuest.about" />
+
+    <title.10315 value="[reference:TechnologySideQuest.title] (IV)" />
+    <about.10315 ref="TechnologySideQuest.about" />
+
+    <title.10320 value="[reference:TechnologySideQuest.title] (V)" />
+    <about.10320 ref="TechnologySideQuest.about" />
+
+    <title.10325 value="[reference:TechnologySideQuest.title] (VI)" />
+    <about.10325 ref="TechnologySideQuest.about" />
+
+    <title.10330 value="[reference:TechnologySideQuest.title] (VII)" />
+    <about.10330 ref="TechnologySideQuest.about" />
+
+    <title.10335 value="[reference:TechnologySideQuest.title] (VIII)" />
+    <about.10335 ref="TechnologySideQuest.about" />
+
+    <title.10340 value="[reference:TechnologySideQuest.title] (IX)" />
+    <about.10340 ref="TechnologySideQuest.about" />
+
+    <title.10345 value="[reference:TechnologySideQuest.title] (X)" />
+    <about.10345 ref="TechnologySideQuest.about" />
+
+    <title.10350 value="[reference:TechnologySideQuest.title] (XI)" />
+    <about.10350 ref="TechnologySideQuest.about" />
+
+    <title.10355 value="[reference:TechnologySideQuest.title] (XII)" />
+    <about.10355 ref="TechnologySideQuest.about" />
+    
+    <title.10400 value="Things Around Us" />
+    <about.10400>
+      <p>
+        In our [reference:Buildings/ResearchCenter.name] a lot of
+        scientists are eager to explore. Our scouts have discovered quite a few
+        interesting objects in this planet and we have people burning to go 
+        there. 
+      </p>
+      <p>
+        I suggest we try exploring those objects. I am certain there is more to 
+        discover. 
+      </p>
+    </about.10400>
+    
+    <title.10405 value="[reference:title.10400] (II)" />
+    <about.10405>
+      <p>
+        Explorers are back but they are burning of their desire to continue the
+        search. By all means we should let them do it.
+      </p>
+    </about.10405>
+    
+    <title.10410 value="Useful Discoveries" />
+    <about.10410>
+      <p>Well, that was unexpected!</p>
+      <p>
+        Bringing a bunch of those alien robots really made the crowd crazy in 
+        our, ehrm, excuse me, jar-head lab. They demand we mount an even
+        bigger expedition to another object. They say they found some 
+        references that they might find one of these 
+        [reference:Units/Glancer.name] robots down there. And that would 
+        certainly prove useful to us. 
+      </p>
+      <p>I say let them go. Order a mega-exploration mission.</p>
+    </about.10410>
+    
+    <title.10415 value="[reference:title.10410] (II)" />
+    <about.10415>
+      <p>
+        Scholars say that somewhere around the unexplored objects we could
+        find a whole army! Would you like to try, Commander?
+      </p>
+    </about.10415>
+    
+    <title.10420 value="Unsatisfiable Intelligence" />
+    <about.10420>
+      <p>They are out of their minds!</p>
+      <p>
+        Our scientists want to mount yet another expedition. To the huge 
+        mountain out there. However it requires a lot of personnel and we 
+        probably don't have enough right now. 
+      </p>
+      <p>
+        We need to upgrade our [reference:Buildings/ResearchCenter.name]. 
+        Beware that while upgrading you won't be able to research any 
+        technologies.
+      </p>
+      <p>It is up to you, Commander.</p>
+    </about.10420>
+    
+    <title.10425 value="Spoils of Curiosity" />
+    <about.10425>
+      <p>Wonderful news!</p>
+      <p>
+        Remember that research expedition you sent out recently? They are back 
+        and they brought alien robots with them! Of course they are a bit damaged 
+        but our scientists have managed to turn them on. They are now loyal 
+        servants of yours! Isn't that wonderful news? 
+      </p>
+      <p>
+        Oh, that research team also brought back some resources with them. 
+        Perhaps it would be wise to continue our exploration of that site? You 
+        never know what you might find there... It could prove very useful. 
+      </p>
+    </about.10425>
+    
+    <title.10450 value="The First Reward" />
+    <about.10450>
+      <p>Commander.</p>
+      <p>
+        Make sure we have enough mines to fulfill our basic needs.
+        Someone is whispering me we will need much more of them soon...
+      </p>
+    </about.10450>
+    
+    <title.10460 value="Empowering Riches" />
+    <about.10460>
+      <p>Commander!</p>
+      <p>In your last mission, "[reference:title.8]" you were rewarded with
+      some creds. Go and take your reward if you haven't done so already.</p>
+      <p>Creds are a useful and powerful tool. They can be spent on various
+      tasks like accelerating your constructions, researches and unit
+      training. They can even be used for moving buildings or speeding up
+      fleets!</p>
+      <p>And how do you get more creds? You can buy them from our shop which
+      is accessible from N44 menu in bottom-left corner. You can also gain
+      them by conquering and holding special battleground planets about which
+      you will learn later.</p>
+      <p>And you can become a VIP. Becoming a VIP gives you more creds than
+      you spend on the VIP service and allows you to use them daily as you
+      see fit.</p>
+      <p>So go, order your first VIP and be rewarded greatly!</p>
+    </about.10460>
+    
+    <title.10470 value="Could you work a little faster?" />
+    <about.10470>
+      <p>Congratulations on becoming a VIP, Commander.</p>
+      <p>As of now you have a daily number of creds to spend so why not spend
+      some on something that is really useful?</p>
+      <p>I suggest we accelerate construction of any building. There are
+      plenty of different buildings we will need sooner of later. Speed up
+      their construction with creds.</p>
+    </about.10470>
+    
+    <title.10500 value="Gaining Ground" />
+    <about.10500>
+      <p>Commander.</p>
+      <p>
+        It is time to expand your empire. Gain another colony so we could 
+        thrive there! Make our ancestors proud. 
+      </p>
+    </about.10500>
+    
+    <title.10510 value="Growing empire" />
+    <about.10510>
+      <p>Good job, Commander.</p>
+      <p>
+        Even if we have conquered that pesky world we should not stop with it. 
+        There is much ground to cover. Go and conquer yet another world. Make 
+        it fall to the might of our empire! 
+      </p>
+    </about.10510>
+
+    <title.10520 value="Reaching for infinity" />
+    <about.10520>
+      <p>Commander!</p>
+      <p>With such area under your influence, only further reach is to
+        infinity and beyond! Our empire is unstoppable!</p>
+    </about.10520>
+    
+    <DestroyingEnemies.title value="Destroying Enemy Will" />
+    <DestroyingEnemies.about>
+      <p>Commander!</p>
+      <p>
+        Shake the grounds of our enemies' power! Let us destroy the cornerstone
+        of their empire - annihilate enemy forces.
+      </p>
+    </DestroyingEnemies.about>
+    
+    <title.10550 value="[reference:DestroyingEnemies.title] (I)" />
+    <about.10550 ref="DestroyingEnemies.about" />
+
+    <title.10555 value="[reference:DestroyingEnemies.title] (II)" />
+    <about.10555 ref="DestroyingEnemies.about" />
+
+    <title.10560 value="[reference:DestroyingEnemies.title] (III)" />
+    <about.10560 ref="DestroyingEnemies.about" />
+
+    <title.10565 value="[reference:DestroyingEnemies.title] (IV)" />
+    <about.10565 ref="DestroyingEnemies.about" />
+
+    <title.10570 value="[reference:DestroyingEnemies.title] (V)" />
+    <about.10570 ref="DestroyingEnemies.about" />
+
+    <title.10575 value="[reference:DestroyingEnemies.title] (VI)" />
+    <about.10575 ref="DestroyingEnemies.about" />
+
+  </Quests>
+
+  <QuestScreens>
+    <BuildingSidebar>
+      <![CDATA[
+      <p>Buildings available for construction are at the sidebar on the right.</p>
+      <p>Once you select a building, at the bottom of the sidebar its
+      construction time and pros and cons provided by terrain under the building
+      become visible.</p>
+      <p>If another building is already being constructed the next is added
+      to construction que.</p>
+      ]]>
+    </BuildingSidebar>
+
+    <ClaimReward>
+      <![CDATA[
+      <p>Each completion of a quest earns you a reward. You can take it if you
+      navigate to the quests screen: click on a N44 logo at the bottom right corner
+      of the screen and click "[reference:Quests/label.title]" button.</p>
+      <p>Then you have to find a completed quest - they are yellow - and click on
+      a '[reference:Quests/label.claimReward]' button</p>
+      ]]>
+    </ClaimReward>
+
+    <OreTile>
+      <![CDATA[
+      <p>You can build [obj:2:Building_MetalExtractor:p8d] only on top of metal
+      deposits. Most of the time you will find alien structures already standing
+      on them. Those structures need to be destroyed first and only then you will
+      be able to build your own extractor. However you may come across a few
+      free deposits as well.</p>
+      ]]>
+    </OreTile>
+
+    <BuildingUpgrade>
+      <![CDATA[
+      <p>Buildings can be upgraded. To do that select a building by clicking on
+      it in a map. Then click "[reference:BuildingSelectedSidebar/upgrade]"
+      button in the menu at the right.</p>
+      <p>Upgraded buildings improves their characteristics: extractors produce
+      more resources, factories take less time to build units, more scientists
+      are able to work in research centers and so on.</p>
+      ]]>
+    </BuildingUpgrade>
+
+    <EnergyTiles>
+      <![CDATA[
+      <p>Although you are free to build power plants anywhere it is recommended
+      to place them on a special terrain to boost power.</p>
+      <p>Terrain bonus can visible at the bottom of the right sidebar while
+      looking for a place to build a power plant.</p>
+      ]]>
+    </EnergyTiles>
+
+    <ConstructionTiles>
+      <![CDATA[
+      <p>
+        Buildings will be erected more quickly on this terrain. By the way,
+        if a building is able to construct other buildings, train troops or
+        manufacture tanks or ships, it will take less time to complete
+        its task. So this type of terrain is best for all kinds of factories.
+      </p>
+      ]]>
+    </ConstructionTiles>
+
+    <SpeedupConstruction>
+       <!-- TODO: replace button names with references -->
+      <![CDATA[
+      <p>You may speed up long taking constructions using special game resource
+      called <span fontWeight="bold">creds</span>. To do that, select a building.
+      Then click "Speed up" button and choose the speed up level.</p>
+      <p>
+        You can buy creds by clicking "Buy creds" button in the N44 menu.
+      </p>
+      <p>
+        Completion of some quests gives you creds also. You have been rewarded
+        with creds after completing your last quest. Claim that reward and
+        speed up construction of a building!
+      </p>
+      ]]>
+    </SpeedupConstruction>
+  </QuestScreens>
+
+  <Ratings>
+    <label.ratings value="Ratings" />
+    <label.loading value="Loading..." />
+    <label.noAlliances value="No alliances found" />
+    <label.allyRatings value="Alliance ratings" />
+    <label.close value="Close"/>
+    <rank value="#" />
+    <player value="Player" />
+    <alliance value="Alliance" />
+    <points value="Total points" />
+    <playersCount value="Players" />
+    <tooltip.deathDay>
+      <p>Player lost his last planet at {0}</p>
+    </tooltip.deathDay>
+    <label.deathDay value="0 (day {0})"/>
+    <planetsCount.long value="Planets count" />
+    <planetsCount value="RPC" />
+    <bgPlanetsCount value="SPC" />
+    <tooltip.planetsCount value="Regular planets count" />
+    <specialPlanets.common>
+      <p>Special planets are located in battleground or pulsar solar systems.</p>
+    </specialPlanets.common>
+    <tooltip.bgPlanetsCount>
+      <p>Special planets count.</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.bgPlanetsCount>
+    <tooltip.planetsVsBattleground>
+      <p>Regular planets count / Special planets count</p>
+      <p>[reference:specialPlanets.common]</p>
+    </tooltip.planetsVsBattleground>
+    <warPoints value="War points" />
+    <economyPoints value="Economy points" />
+    <sciencePoints value="Science points" />
+    <victoryPoints value="Victory points" />
+    <allianceVictoryPoints.short value="AVP" />
+    <allianceVictoryPoints.long>
+      <p>Alliance Victory Points</p>
+      <p>Victory points earned for alliance by its players.</p>
+    </allianceVictoryPoints.long>
+    <armyPoints value="Army points" />
+    <online value="Online" />
+    <offlineCommon value="Offline" />
+    <offline>
+      <p>[reference:offlineCommon]</p>
+      <p>Player has never logged in.</p>
+    </offline>
+    <offlineSince>
+      <p>[reference:offlineCommon]</p>
+      <p>Last seen online {0} ago ({1}).</p>
+    </offlineSince>
+    <label.search value="Search" />
+    <label.pointsToWin value="Victory points to win: {0}" />
+    <label.filterOnline value="Show only online players" />
+  </Ratings>
+
+  <Resources>
+    <all value="All" />
+    <metal value="Metal" />
+    <energy value="Energy" />
+    <zetium value="Zetium" />
+    <creds value="Creds" />
+    <time value="Upgrade time" />
+    <scientists value="Scientists" />
+    <population value="Population" />
+    <points value="Points" />
+    <!-- used in N44 menu -->
+    <warPoints value="War points" />
+    <economyPoints value="Eco. points" />
+    <sciencePoints value="Science points" />
+    <armyPoints value="Army points" />
+    <vps value="VPs" />
+    <timer value="Time till next increasement" />
+    <resources value="Resources" />
+    <current value="Current stock" />
+    <max value="Max storage" />
+    <rates value="Extraction rate" />
+    <full value="Full in {0}" />
+    <empty value="Empty in {0}" />
+    <and value="and" />
+    <notEnoughResources value="Insufficient resources." />
+    <notEnoughStorage value="Insufficient storage." />
+    <enoughResourcesIn value="Enough resources in:" />
+    <insufficientRate value="Insufficient resource extraction rate." />
+    <!-- {0}: metal/energy/zetium -->
+    <wontFit.resource value="{0}" />
+    <!-- {0}: metal/energy/zetium -->
+    <additionalStorage.resource value="{0}" />
+    <!-- {0}: additionalStorage.resource (1..3, joined as human string) -->
+    <additionalStorage value="Additional {0} storage needed." />
+    <toolTip.selectNone value="Select none" />
+    <toolTip.selectAll value="Select all" />
+  </Resources>
+
+  <SSObjects>
+    <label.planetArea value="Area: {0} x {1} tiles"/>
+    <label.totalVolume value="Total volume: {0}"/>
+    <label.wreckageVolume value="(volume: {0})"/>
+    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
+    <title.info value="{0} info" />
+    <!-- {0}: Planet/Jumpgate/Asteroid  
+         {1}: item name -->
+    <typeAndName value="{0} {1}" />
+    <!-- TODO: fix code -->
+    <type.Planet value="Planet" />
+    <type.Jumpgate value="Jumpgate" />
+    <type.Asteroid value="Asteroid" />
+    
+    <label.owner value="Occupied by" />
+    <label.inviteToAlliance value="Invite owner to alliance"/>
+    <label.unoccupied value="Unoccupied" />
+    <label.toPlanet value="Enter planet" />
+    <label.toGalaxy value="Go to galaxy" />
+    <label.endsAt value="Ends at {0}" />
+    <label.cooldownEndsIn value="Ends in" />
+    <location.sector value="Sector {0}:{1}" />
+    <location.position value="Orbit" />
+    <location.angle value="Angle" />
+    <prompt.selectPlanet value="Your Planets" />
+
+    <message.battleground>
+      <p>
+        Taking and holding planets in this solar system gives you 
+        Victory Points, Creds and Units.
+      </p>
+    </message.battleground>
+    <message.planetRenamed value="Your planet name has been changed to {0}." />
+
+    <!-- Following messages and tooltips are show if player 
+    can't invite owner of a planet to alliance -->
+    
+    <message.allianceFull value="Alliance full"/>
+    <tooltip.allianceFull>
+      <p>Your alliance is full.</p>
+      <p>Kick existing players or upgrade your Alliances technology to invite
+      this player.</p>
+    </tooltip.allianceFull>
+    
+  </SSObjects>
+
+  <SpinnerContainer>
+    <label.seconds value="seconds" />
+  </SpinnerContainer>
+
+  <Squadrons>
+    <title.squadrons value="Fleets" />
+    <title.units value="Units" />
+    <title.noSquadrons value="No moving fleets detected." />
+    <title.noUnits value="No units detected." />
+    <label.currentLocation value="Current location:" />
+    <label.sourceLocation value="Flying from:" />
+    <label.targetLocation value="Traveling to:" />
+    <label.units value="Fleet units" />
+    <label.arrivesAt value="Arrives at:" />
+    <label.leavesPlanetAt value="Leaves planet at:" />
+    <label.unknown value="Unknown" />
+    <label.inTime value="(in {0})" />
+    <label.close value="Close" />
+    <label.playerFleets value="Your fleets" />
+    <label.allianceFleets value="Alliance fleets" />
+    <label.playerUnits value="Your units" />
+    <label.allianceUnits value="Alliance units" />
+    <label.stop value="Stop" />
+    <label.manage value="Manage" />
+    <label.owner value="Owner:" />
+    <filter.owner value="Owner:" />
+    <filter.locationType value="Location type:" />
+    <filter.locationObject value="Location:" />
+    <title.filters value="Filters" />
+  </Squadrons>
+
+  <Technologies>
+    <title value="Technology tree" />
+    <scientistsAvailable value="Scientists available" />
+    <currentlyResearching value="Currently researching" />
+    <scientistsAssigned value="Scientists assigned" />
+    <finishedIn value="Finished in {0}" />
+    <scientistsSelected value="Scientists selected" />
+    <scientistsPanelTitle value="Scientists" />
+    <upgradeProgress value="Upgrade progress" />
+    <buildCenters>
+      <p>
+        Build or upgrade Research Centers to increase the 
+        number of your scientists. 
+      </p>
+    </buildCenters>
+    <notEnoughScientists>
+      <p>
+        This technology needs {0 one[one scientist] many[? scientists]}. 
+        However only {1 one[one scientist] many[? scientists]} out 
+        of {2 one[one scientist] many[? scientists]} are available. 
+      </p>
+    </notEnoughScientists>
+    <notEnoughScientistsExploration>
+      <p>You don't have enough scientists to explore this object.</p>
+    </notEnoughScientistsExploration>
+    <technologiesNeeded value="Additional technologies needed" />
+    <warPointsNeeded>
+      <p>You need {0} war points to research this technology but you 
+      only have {1}.</p>
+      <p>You can get more war points by attacking NPCs or other players.</p>
+    </warPointsNeeded>
+    <groupResearched>
+      <p>Another technology in this group has been already researched so you
+      cannot research this technology</p>
+    </groupResearched>
+
+    <upgrade value="Upgrade" />
+    <update value="Update" />
+
+    <paused value="Paused" />
+
+    <upgradeCost value="Upgrade cost" />
+    <forceOvertime value="Force overtime" />
+
+    <title.unlearn value="Unlearn" />
+    <warning.unlearn>      
+      <![CDATA[
+      <p><span fontWeight="bold">Warning!</span> It will cost you {0} creds to 
+      unlearn this technology and you won't get any resources back.</p>
+      ]]>
+    </warning.unlearn>
+    <label.unlearn value="Unlearn" />
+
+    <isGroup>
+      <p>If you research this technology you won't be able to research:</p>
+    </isGroup>
+    <title.requirements value="Requirements" />
+    <details value="Details" />
+    <unlocks value="Unlocks" />
+
+    <level value="level {0}" />
+
+
+    <property.warPoints value="War points needed" />
+    <property.upgradeTime value="Upgrade time" />
+    <property.metal.cost value="Metal cost" />
+    <property.energy.cost value="Energy cost" />
+    <property.zetium.cost value="Zetium cost" />
+    <property.scientists.min value="Scientists required" />
+    <property.mod.zetium.generate value="Zetium generation rate boost" />
+    <property.mod.zetium.store value="Zetium storage boost" />
+    <property.mod.metal.generate value="Metal generation rate boost" />
+    <property.mod.metal.store value="Metal storage boost" />
+    <property.mod.energy.generate value="Energy generation rate boost" />
+    <property.mod.energy.store value="Energy storage boost" />
+    <property.mod.armor value="Armor bonus" />
+    <property.mod.damage value="Damage bonus" />
+    <property.mod.movementTimeDecrease value="Movement time decrease" />
+    <property.mod.storage value="Storage bonus" />
+    <property.maxPlayers value="Maximum number of players" />
+    <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
+    <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
+
+    <UnitTech>
+      <p>First level of this technology unlocks described unit. Other levels
+        upgrade it.</p>
+    </UnitTech>
+    <UnitUpgrade>
+      <p>Each level increases unit armor and damage.</p>
+    </UnitUpgrade>
+
+    <BuildingTech>
+      <p>First level of this technology unlocks described building. Other levels
+        upgrade it.</p>
+    </BuildingTech>
+    <BuildingUpgrade>
+      <p>Each level increases building armor and damage.</p>
+    </BuildingUpgrade>
+
+    <Zetium.common>
+      <p>
+        Zetium is a rare crystal that has incredible properties. Combined with 
+        other technologies it allows for making of great buildings, ships and 
+        weapons. These crystals are also essential to our space engines and 
+        most other advanced technologies. 
+      </p>
+    </Zetium.common>
+
+    <ZetiumExtraction.name ref="Objects/Technology_ZetiumExtraction" />
+    <ZetiumExtraction.about>
+      <p>Allows building Zetium Extractors and Storages.</p>
+      <p>[reference:Zetium.common]</p>
+    </ZetiumExtraction.about>
+
+    <!--
+    <Spy.name ref="Objects/Spy" />
+    <Spy.about value="Just a simple spy technology" />
+
+    <Saboteur.name ref="Objects/Saboteur" />
+    <Saboteur.about value="I think thisone has ability to ruin things" />
+
+    <SatteliteHacking.name ref="Objects/SatteliteHacking" />
+    <SatteliteHacking.about>
+      <p>This one will ruin any satelite if sysAdmin is not there</p>
+    </SatteliteHacking.about>
+
+    <CamouflageSuits.name ref="Objects/CamouflageSuits" />
+    <CamouflageSuits.about>
+      <p>You can dress with this one if you go to picnic</p>
+    </CamouflageSuits.about>
+
+    <TacticalReconnaissance.name ref="Objects/TacticalReconnaissance" />
+    <TacticalReconnaissance.about>
+      <p>
+        This is very strage technology, it is told that ancient scientists are 
+        the ones who invented it first 
+      </p>
+    </TacticalReconnaissance.about>
+
+    <R14Charges.name ref="Objects/R14Charges" />
+    <R14Charges.about value="Charge enemies with R14" />
+    
+
+    <Spaceport.name ref="Objects/Spaceport" />
+    <Spaceport.about value="Fly to the sky" />
+    -->
+
+    <ArmorTech value="Researching this technology increases armor" />
+    <WeaponsTech value="Researching this technology increases damage" />
+
+    <InfantryUpgradeTech>
+      <p>
+        for ground soldiers built in [reference:Buildings/Barracks.name] like 
+        [reference:Units/Trooper.name] or [reference:Units/Seeker.name]. 
+      </p>
+    </InfantryUpgradeTech>
+
+    <MetabolicChargers.name ref="Objects/Technology_MetabolicChargers" />
+    <MetabolicChargers.about>
+      <p>
+        Recent developments in armor technology allows embedding zetium shards 
+        into warrior armor thus making it more resistant to enemy hits. 
+      </p>
+      <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
+    </MetabolicChargers.about>
+
+    <HighVelocityCharges.name ref="Objects/Technology_HighVelocityCharges" />
+    <HighVelocityCharges.about>
+      <p>
+        Recent developments in zetium technology allowed infantry gun ammo to 
+        be upgraded with more explosive power. Zetium enhanced bullets and 
+        rockets reach greater velocity and bigger impact speed meaning more 
+        damage to enemy. 
+      </p>
+      <p>[reference:WeaponsTech] [reference:InfantryUpgradeTech]</p>
+    </HighVelocityCharges.about>
+
+    <ShipUpgradeTech>
+      <p>
+        for spaceships built in [reference:Buildings/SpaceFactory.name] like 
+        [reference:Units/Crow.name] or [reference:Units/Cyrix.name]. 
+      </p>
+      <p>
+        This technology DOES NOT improve [reference:Units/Rhyno.name] and 
+        [reference:Units/Mule.name] class ships. 
+      </p>
+    </ShipUpgradeTech>
+
+    <ShipsArmor.name ref="Objects/Technology_ShipsArmor" />
+    <ShipsArmor.about>
+      <p>
+        This technology allows usage of zetium reinforced armor plates that are 
+        able to withstand more damage and keep ships alive in the battlefield 
+        for longer. 
+      </p>
+      <p>[reference:ArmorTech] [reference:ShipUpgradeTech]</p>
+    </ShipsArmor.about>
+
+    <ShipsDamage.name ref="Objects/Technology_ShipsDamage" />
+    <ShipsDamage.about>
+      <p>
+        Introducing zetium into plasma particle stream greatly improves their 
+        power. Ionized zetium crystals expel intense heat that is enough to 
+        wade even through thickest armor. 
+      </p>
+      <p>[reference:WeaponsTech] [reference:ShipUpgradeTech]</p>
+    </ShipsDamage.about>
+
+    <TankUpgradeTech>
+      <p>
+        for ground tanks built in [reference:Buildings/GroundFactory.name] like 
+        [reference:Units/Scorpion.name] or [reference:Units/Azure.name]. 
+      </p>
+    </TankUpgradeTech>
+
+    <TanksArmor.name ref="Objects/Technology_TanksArmor" />
+    <TanksArmor.about>
+      <p>
+        These shield generators generate point located shields that slow down 
+        incoming projectiles before impact. By minimizing their velocity they 
+        reduce damage dealt to hull of the tank. 
+      </p>
+      <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
+    </TanksArmor.about>
+
+    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
+    <TanksDamage.about>
+      <p>
+        Introducing highly unstable zetium into tank shells greatly improves
+        their firepower and ensures that enemy units do not leave the
+        battlefield alive.
+      </p>
+      <p>[reference:WeaponsTech] [reference:TankUpgradeTech]</p>
+    </TanksDamage.about>
+
+    <Crane.name ref="Buildings/Crane.name" />
+    <Crane.about ref="Buildings/Crane.about" />
+    
+    <Market.name ref="Buildings/Market.name" />
+    <Market.about ref="Buildings/Market.common" />
+
+    <Radar.name ref="Buildings/Radar.name" />
+    <Radar.about ref="Buildings/Radar.common" />
+
+    <MetalExtractorT2.name ref="Buildings/MetalExtractorT2.name" />
+    <MetalExtractorT2.about>
+      <p>Allows building [reference:Buildings/MetalExtractorT2.name].</p>
+      <p>[reference:Buildings/MetalExtractorT2.common]</p>
+    </MetalExtractorT2.about>
+
+    <FieryMelters.name ref="Objects/Technology_FieryMelters" />
+    <FieryMelters.about>
+      <p>
+        Using high pressure in metal extractors allows
+        getting higher metal extraction and storage efficiency. Although this 
+        technology is a bit pricey it may be worth investing to if your metal 
+        needs are growing.
+      </p>
+      <p>Each level increases metal extraction rate and storage.</p>
+    </FieryMelters.about>
+
+    <CollectorT2.name ref="Buildings/CollectorT2.name" />
+    <CollectorT2.about>
+      <p>Allows building [reference:Buildings/CollectorT2.name].</p>
+      <p>[reference:Buildings/CollectorT2.common]</p>
+    </CollectorT2.about>
+
+    <CollectorT3.name ref="Buildings/CollectorT3.name" />
+    <CollectorT3.about>
+      <p>Allows building [reference:Buildings/CollectorT3.name].</p>
+      <p>[reference:Buildings/CollectorT3.common]</p>
+    </CollectorT3.about>
+
+    <SuperconductorTechnology.name ref="Objects/Technology_SuperconductorTechnology" />
+    <SuperconductorTechnology.about>
+      <p>
+        By using zetium coated wires our scientists are able to increase their 
+        throughput and use our energy more efficiently. This increases our 
+        energy generation rates and storage capacities. Investing in 
+        this technology may prove useful if you are falling short on energy. 
+      </p>
+      <p>Each level increases energy generation rate and storage.</p>
+    </SuperconductorTechnology.about>
+
+    <ZetiumExtractorT2.name ref="Buildings/ZetiumExtractorT2.name" />
+    <ZetiumExtractorT2.about>
+      <p>Allows building [reference:Buildings/ZetiumExtractorT2.name].</p>
+      <p>[reference:Buildings/ZetiumExtractorT2.common]</p>
+    </ZetiumExtractorT2.about>
+
+    <PowderedZetium.name ref="Objects/Technology_PowderedZetium" />
+    <PowderedZetium.about>
+      <p>
+        These sharpened zetium cutters are used to get better quality raw 
+        zetium dust which can then be processed into high quality industrial 
+        grade zetium. It can be stored and used more efficiently thus 
+        bolstering our zetium raising needs. 
+      </p>
+      <p>Each level increases zetium generation rate and storage.</p>
+    </PowderedZetium.about>
+
+    <Vulcan.name ref="Buildings/Vulcan.name" />
+    <Vulcan.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Vulcan.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Vulcan.about>
+
+    <MobileVulcan.name ref="Units/MobileVulcan.name" />
+    <MobileVulcan.about ref="Units/MobileVulcan.about" />
+
+    <Screamer.name ref="Buildings/Screamer.name" />
+    <Screamer.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Screamer.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Screamer.about>
+
+    <MobileScreamer.name ref="Units/MobileScreamer.name" />
+    <MobileScreamer.about ref="Units/MobileScreamer.about" />
+
+    <Thunder.name ref="Buildings/Thunder.name" />
+    <Thunder.about>
+      <p>[reference:BuildingTech]</p>
+      <p>[reference:Buildings/Thunder.about]</p>
+      <p>[reference:BuildingUpgrade]</p>
+    </Thunder.about>
+
+    <MobileThunder.name ref="Units/MobileThunder.name" />
+    <MobileThunder.about ref="Units/MobileThunder.about" />
+    
+    <TurretUpgradeTech value="for turrets, both stationary and mobile." />
+
+    <TurretArmor.name ref="Objects/Technology_TurretArmor" />
+    <TurretArmor.about>
+      <p>
+        Advances in nanotechnology allows us to increase structural linking
+        between basic molecules used in our defensive structures, thus
+        increasing their resistance to damage and ensuring turret longevity.
+      </p>
+      <p>[reference:ArmorTech] [reference:TurretUpgradeTech]</p>
+    </TurretArmor.about>
+
+    <TurretDamage.name ref="Objects/Technology_TurretDamage" />
+    <TurretDamage.about>
+      <p>
+        These particle chargers give our turret weapon systems substantial
+        advantage over traditional projectiles. Supercharged projectiles travel
+        faster and deliver more damage on impact, thus reducing enemies to
+        shreds more quickly.
+      </p>
+      <p>[reference:WeaponsTech] [reference:TurretUpgradeTech]</p>
+    </TurretDamage.about>
+
+    <GroundFactory.name ref="Buildings/GroundFactory.name" />
+    <GroundFactory.about>
+      <p>Allows building Ground Factory.</p>
+      <p>[reference:Buildings/GroundFactory.about]</p>
+    </GroundFactory.about>
+
+    <SpaceFactory.name ref="Buildings/SpaceFactory.name" />
+    <SpaceFactory.about>
+      <p>Allows building Space Factory.</p>
+      <p>[reference:Buildings/SpaceFactory.about]</p>
+    </SpaceFactory.about>
+
+    <HeavyFlight.name ref="Objects/Technology_HeavyFlight" />
+    <HeavyFlight.about>
+      <p>Employing gamma particles in our heavy engine inner processes
+      allows us to reach higher velocities thus reducing time we need to
+      make those little hops in solar systems and galaxies.</p>
+      <p>However this technology requires UX-20 engines which can only be
+      found in our biggest ships. As it is they are also slowest, so
+      this technology is very valuable for them.</p>
+      <p>Shortens flight times for [reference:Objects/Unit_Mule] and
+      [reference:Objects/Unit_Rhyno] class ships.</p>
+    </HeavyFlight.about>
+
+    <Trooper.name ref="Units/Trooper.name" />
+    <Trooper.about>
+      <p>
+        Although they are our basic warriors they are a considerable force in 
+        numbers. This upgrade allows to further strengthen our main force by 
+        upgrading their weapons and armor. 
+      </p>
+      <p>[reference:UnitUpgrade]</p>
+    </Trooper.about>
+
+    <Shocker.name ref="Units/Shocker.name" />
+    <Shocker.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Shocker.about]</p>
+      <p>
+        Enhances armor and rockets of already tough 
+        [reference:Units/Shocker.name] making them even more powerful in 
+        battle. Making them stronger helps them protect other units longer and 
+        their zetium enhanced rockets dishes out more damage. 
+      </p>
+      <p>[reference:UnitUpgrade]</p>
+    </Shocker.about>
+
+    <Seeker.name ref="Units/Seeker.name" />
+    <Seeker.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Seeker.about]</p>
+      <p>
+        Upgrading weakly armored Seekers may give them a chance to lay that 
+        final winning shot upon your enemy. And even better - this technology 
+        even increases their damage by fitting them with zetium plated bullets. 
+      </p>
+      <p>[reference:UnitUpgrade]</p>
+    </Seeker.about>
+
+    <Scorpion.name ref="Units/Scorpion.name" />
+    <Scorpion.about>
+      <p>
+        Scorpion class vehicles can be fitted with better shield generators and 
+        faster particle accelerators. Investing into this research gives your 
+        basic unit advantage over same vehicles at your enemy side. 
+      </p>
+      <p>[reference:UnitUpgrade]</p>
+    </Scorpion.about>
+
+    <Azure.name ref="Units/Azure.name" />
+    <Azure.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Azure.about]</p>
+      <p>
+        Mixing explosive materials in [reference:Units/Azure.name] rocket heads 
+        with zetium makes them more damaging and zetium also makes 
+        [reference:Units/Azure.name] hull more resistant to enemy shots. 
+      </p>
+      <p>[reference:UnitUpgrade]</p>
+    </Azure.about>
+    
+    <Zeus.name ref="Units/Zeus.name" />
+    <Zeus.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Zeus.about]</p>
+      <p>This technology increases velocity of tank projectiles thus increasing
+      damage it does. It also thickens its armor so it could withstand more
+      damage.</p>
+      <p>[reference:UnitUpgrade]</p>
+    </Zeus.about>
+
+    <Mdh.name ref="Objects/Technology_Mdh" />
+    <Mdh.about ref="Units/Mdh.common" />
+
+    <Crow.name ref="Units/Crow.name" />
+    <Crow.about>
+      <p>
+        Upgrades [reference:Units/Crow.name] lasers and hull making it a better 
+        fighter that is cheap and cost effective to produce. 
+      </p>
+      <p>[reference:UnitUpgrade]</p>
+    </Crow.about>
+
+    <Cyrix.name ref="Units/Cyrix.name" />
+    <Cyrix.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Cyrix.about]</p>
+      <p>
+        Fitting their lasers with high frequency zetium crystals improves 
+        [reference:Units/Cyrix.name] damage and shields. Researching this 
+        technology means your fleet can last longer and make more damage for 
+        same cost. 
+      </p>
+      <p>[reference:UnitUpgrade]</p>
+    </Cyrix.about>
+
+    <Rhyno.name ref="Units/Rhyno.name" />
+    <Rhyno.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Rhyno.about]</p>
+      <p>
+        Upgrades already fearsome [reference:Units/Rhyno.name] Battlecruiser. 
+        This technology fortifies its armor with zetium plates making even 
+        harder to destroy and gives a formidable energy boost for its weapon 
+        systems making it the most fearsome ship in whole galaxy. 
+      </p>
+      <p>[reference:UnitUpgrade]</p>
+    </Rhyno.about>
+
+    <Dart.name ref="Units/Dart.name" />
+    <Dart.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Dart.about]</p>
+      <p>
+        Improves longevity and damage for [reference:Units/Dart.name] class 
+        ships making them deadlier and allowing engaging enemies in fewer 
+        numbers. 
+      </p>
+      <p>[reference:UnitUpgrade]</p>
+    </Dart.about>
+
+    <Avenger.name ref="Units/Avenger.name" />
+    <Avenger.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Avenger.about]</p>
+      <p>
+        Upgrades [reference:Units/Avenger.name] making its rockets pass through 
+        more armor. Also upgrades its armor allowing to withstand more damage 
+        in unfortunate situation. Overall it makes 
+        [reference:Units/Avenger.name] class ships better interceptors. 
+      </p>
+      <p>[reference:UnitUpgrade]</p>
+    </Avenger.about>
+
+    <Jumper.name ref="Units/Jumper.name" />
+    <Jumper.about>
+      <p>This research allows you to build Jumpers.</p>
+      <p>[reference:Units/Jumper.about]</p>
+    </Jumper.about>
+
+    <HealingCenter.name ref="Buildings/HealingCenter.name" />
+    <HealingCenter.about>
+      <p>Allows building [reference:Buildings/HealingCenter.name].</p>
+      <p>[reference:Buildings/HealingCenter.common]</p>
+    </HealingCenter.about>
+
+    <BuildingRepair.name ref="Objects/Technology_BuildingRepair" />
+    <BuildingRepair.about>
+      <p>
+        These mobile drones allow repairing even severely damaged buildings
+        without having to tear building down and build it from ground up which
+        makes them perfect for repairing heavily upgraded buildings. However
+        this process takes time and building will not be operational while it
+        is being repaired.
+      </p>
+      <p>
+        Allows repairing damaged buildings. Upgrading this technology reduces
+        repair cost and time.
+      </p>
+    </BuildingRepair.about>
+
+    <Alliances.name ref="Objects/Technology_Alliances" />
+    <Alliances.about>
+      <p>Join forces with your neighbours. Protect each other.
+      Coordinate your attacks. Help each other to complete quests. Anything is
+      possible when you are not alone. So why wait? Create your alliance now!</p>
+      <p>Allows creating your own alliance.</p>
+    </Alliances.about>
+
+    <DefensivePortal.name ref="Objects/Technology_DefensivePortal" />
+    <DefensivePortal.about>
+      <p>Allows building [reference:Objects/Building_DefensivePortal].</p>
+      <p>[reference:Buildings/DefensivePortal.common]</p>
+    </DefensivePortal.about>
+
+    <MetalStorage.name ref="Objects/Technology_MetalStorage" />
+    <MetalStorage.about>
+      <p>
+        This technology increases resistance to pressure and temperature of
+        our metal storages. By using higher degree
+        of compression applied we can store even more metal to same buildings.
+      </p>
+    </MetalStorage.about>
+
+    <EnergyStorage.name ref="Objects/Technology_EnergyStorage" />
+    <EnergyStorage.about>
+      <p>
+        Don't have enough space for additional storages and you still have
+        excess energy that you are wasting? Invest to this technology now!
+      </p>
+      <p>
+        With this technology we will be able to store more energy in existing
+        buildings and will save our precious land for other constructions.
+      </p>
+    </EnergyStorage.about>
+
+    <ZetiumStorage.name ref="Objects/Technology_ZetiumStorage" />
+    <ZetiumStorage.about>
+      <p>
+        This revolutionary way of storing zetium allows us to store even more
+        of it to same existing storages. Research this technology to increase
+        usefulness of our [obj:2:Building_ZetiumStorage::dc].
+      </p>
+    </ZetiumStorage.about>
+
+    <ShipStorage.name ref="Objects/Technology_ShipStorage" />
+    <ShipStorage.about>
+      <p>
+        Newly designed attachable cargo decks can be fitted to any cargo ship
+        to extend its available storage. This allows them to transport more
+        resources or units and is very convenient for those gathering or assault
+        missions.
+      </p>
+    </ShipStorage.about>
+  </Technologies>
+
+  <Units>
+    <title.storageScreen value="Load / Unload"/>
+    <label.totalEmptyStorage value="Total free storage: {0}"/>
+    <!-- 0: not fitting string (x metal, y energy and z zetium)-->
+    <message.didNotFit value="Planet did not have enough storage for {0}" />
+  
+    <property.timeToFinish.short value="{0}" />
+    <property.timeToFinish.long value="Ready in {0}" />
+    <property.hp value="Hit Points" />
+    <property.upgradeTime value="Training time" />
+    <property.metal.cost value="Metal cost" />
+    <property.energy.cost value="Energy cost" />
+    <property.zetium.cost value="Zetium cost" />
+    <property.armor value="Armor" />
+    <property.armorMod value="Armor modifier" />
+    <property.damageMod value="Damage modifier" />
+    <property.evasiveness value="Evasion" />
+    <property.xpNeeded value="XP for level up" />
+    <property.initiative value="Initiative" />
+    <property.volume value="Volume" />
+    <property.storage value="Storage" />
+    <property.move.solarSystem.hopTime value="One hop in SS" />
+    <property.move.galaxy.hopTime value="One hop in Galaxy" />
+    <property.population value="Population" />
+    <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
+    <property.credsForKilling ref="Buildings/property.credsForKilling" />
+
+    <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
+    <stance.neutral value="Neutral stance" />
+    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
+
+    <label.showNpc value="Show"/>
+
+    <tooltip.willBeQueued>
+      <p>These units will be added to queue.</p>
+      <p>However they will not be paid for and will be cancelled if you don't have
+      enough resources at the construction time.</p>
+    </tooltip.willBeQueued>
+    <tooltip.becomeVipToQueue>
+      <p>Only VIP players can add units to the queue without paying first.</p>
+    </tooltip.becomeVipToQueue>
+
+    <title.hide value="Hide units"/>
+    <tooltip.hidden>
+      <p>Hide</p>
+      <p>Units won't participate in combats while they are hidden.</p>
+      <p>Units will unhide if they are loaded into transporters or leaves planet</p>
+      <p>If you loose your planet, new owner of the planet will get all hidden
+        units.</p>
+    </tooltip.hidden>
+    <tooltip.notHidden>
+      <p>Don't hide</p>
+      <p>Not hidden units will participate in all combats.</p>
+    </tooltip.notHidden>
+    <!-- params:
+         0 - minimal count of this type of units in raid
+         1 - unit count that might add to the minimal count
+         2 - % probability for each additional unit to be added -->
+    <tooltip.raidProbability>
+      <p>Minimal number of units arriving: {0}</p>
+      <p>
+        There might be {1} additional units with each unit having {2}%
+        probability of appearing.
+      </p>
+    </tooltip.raidProbability>
+    
+    <tooltip.freeStorage>
+      <p>This ship has {0} units of storage available.</p>
+    </tooltip.freeStorage>
+    
+    <tooltip.buildSwitchCommon>
+      <p>Click to change.</p>
+    </tooltip.buildSwitchCommon>
+    
+    <tooltip.buildInFlank1>
+      <p>Your units will appear in first flank.</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
+    </tooltip.buildInFlank1>
+    
+    <tooltip.buildInFlank2>
+      <p>Your units will appear in second flank.</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
+    </tooltip.buildInFlank2>
+
+    <tooltip.buildHidden>
+      <p>Your units will be built not hidden.</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
+    </tooltip.buildHidden>
+
+    <tooltip.buildNotHidden>
+      <p>Your units will be built hidden.</p>
+      <p>[reference:tooltip.buildSwitchCommon]</p>
+    </tooltip.buildNotHidden>
+    
+    <tooltip.populationCommon>
+      <p>{0} population left</p>
+    </tooltip.populationCommon>
+    
+    <tooltip.populationLeft>
+      <p>[reference:tooltip.populationCommon]</p>
+      <p>Max. population: {1}</p>
+    </tooltip.populationLeft>
+    
+    <tooltip.maxPopulationReached>
+      <p>[reference:tooltip.populationCommon]</p>
+      <p>You have reached your maximum population. Your pods can harbor {1} 
+      people but only {2} is allowed in game.</p>
+    </tooltip.maxPopulationReached>
+    
+    <tooltip.overPopulation>
+      <p>Your units and buildings will be {0}% weaker due to overpopulation.</p>
+    </tooltip.overPopulation>
+    
+    <tooltip.nothingToUnload>
+      <p>Nothing to unload</p>
+    </tooltip.nothingToUnload>
+    
+    <tooltip.nothingToLoad>
+      <p>Nothing to load</p>
+    </tooltip.nothingToLoad>
+    
+    <title.defensivePool value="Defensive army pool" />
+    <title.emptyDefensivePool>
+      <p>Your defensive pool is empty. That means no units will be teleported
+      to your defense in case this planet is attacked.</p>
+      <p>Build DefensivePortals in other planets or join an
+      alliance which has DefensivePortals built to enable
+      teleporting units from planets with DefensivePortals
+      built.</p>
+    </title.emptyDefensivePool>
+    <title.possiblePool value="When you are attacked you might get" />
+    <defensivePool.title.yourPool value="Your army pool" />
+    <defensivePool.title.allyPool value="Alliance army pool" />
+    <defensivePool.dontIncludeAlliance 
+      value="Don't communicate with alliance portals" />
+    <defensivePool.tooltip.dontIncludeAlliance>
+      <p>If checked your units won't be teleported to alliance planets and 
+      alliance units won't be teleported to your planets.</p>
+    </defensivePool.tooltip.dontIncludeAlliance>
+    <defensivePool.volume value="Volume: {0}" />
+    <defensivePool.poolEmpty value="Pool empty" />
+    <defensivePool.totalVolume value="Total volume:" />
+    <defensivePool.teleportedVolume value="Teleported volume:" />
+    <defensivePool.maxVolume value="Max power:" />
+    <defensivePool.pickUnits value="Show other" />
+
+    <label.cancelPrepaid value="You will get"/>
+
+    <label.incomingRaiders value="Incoming raiders" />
+    <label.count value="Count:" />
+    <label.current value="Current" />
+    <label.queued value="Queued" />
+    <label.fullQueue value="Construction queue is full" />
+    <label.notEnoughResources value="Not enough resources" />
+    <label.notEnoughStorage value="Not enough storage" />
+    <label.enoughIn value="Enough in {0}" />
+    <label.currentUnits value="Units" />
+    <label.currentFacilities value="Facilities" />
+    <label.flankNr0 value="First" />
+    <label.flankNr1 value="Second" />
+    <!-- 0: units count in that flank -->
+    <label.flankCountNr0 value="First ({0})" />
+    <label.flankCountNr1 value="Second ({0})" />
+    <tooltip.flank>
+      <p>{0} flank</p>
+      <p>Units in {0} flank has {1}% probability to be hit.</p>
+    </tooltip.flank>
+    <label.setStance value="Set stance" />
+    <label.issueOrder value="Issue order" />
+    <label.attack value="Attack" />
+    <title.dismiss value="Dismiss units" />
+    <label.dismiss value="Dismiss" />
+    <message.dismiss value="If you dismiss selected units you will get:" />
+    <label.mission value="Mission" />
+    <label.changesDetected value="Formation changes detected" />
+    <label.confirm value="Confirm" />
+    <label.cancel value="Cancel" />
+    <label.location value="Location" />
+    <label.target value="Target" />
+    <label.select value="Select" />
+    <label.all value="All" />
+    <label.none value="None" />
+    <label.allHealable value="All healable" />
+    <tooltip.allHealable>
+      <p>Select all units in current tab for which you have resources to heal</p>
+    </tooltip.allHealable>
+    <label.transfer value="Transfer" />
+    <label.load value="Load" />
+    <label.close value="Close" />
+    <label.unload value="Unload" />
+    <label.noStorage value="Not enough storage!" />
+    <label.noSelection value="No units selected!" />
+    <label.selectedVolume value="Selected volume: {0}" />
+    <label.freeStorage value="Empty storage: {0}" />
+    <label.volume value="Volume: {0}" />
+    <label.technologyNeeded value="Additional technology required!" />
+    <label.selectUnits value="Select units" />
+    <label.pleaseWait value="Please wait, loading..." />
+    <label.units value="Units" />
+    <label.healing value="Healing" />
+    <label.willHeal value="You can heal selected units for:" />
+    <label.healCooldown value="You wont be able to heal units again for {0}." />
+    <toolTip.healCooldown value="Healing cooldown is active." />
+    <label.heal value="Heal" />
+    <label.show value="Show" />
+    <label.deploy value="Deploy" />
+    <label.manage value="Manage" />
+    <label.withPlanets value="With {0 one[? planet] many[? planets]}" />
+    <label.withPlanetsOrMore value="With {0} planets or more" />
+    <label.afterDays value="{0 one[? day] many[? days]} after apocalypse" />
+    <label.resources value="Resources" />
+    <label.transferResources value="Transfer" />
+    <!-- 0 - resources string, 1 - 'is' or 'are' -->
+    <label.planetFull>
+      <p>You cannot unload {0} to this planet because {0} storage {1} full.</p>
+    </label.planetFull>
+    <label.transporterFull>
+      <p>
+        You cannot load resources to this transporter because it does not have 
+        any free storage space left. 
+      </p>
+    </label.transporterFull>
+    <label.planetEmpty>
+      <p>
+        There are no resources in this planet to load. 
+      </p>
+    </label.planetEmpty>
+    <label.empty>
+      <p>
+        Transporter is empty and there is nothing to load in it's current 
+        location. 
+      </p>
+    </label.empty>
+    <label.notYours value="These units do not belong to you!" />
+    <label.leavingSquadrons>
+      <p>These fleets are currently leaving this planet.</p>
+    </label.leavingSquadrons>
+    <warning.noFleets>
+      <p>There are currently no ships leaving this planet.</p>
+    </warning.noFleets>
+    
+    <btnLabel.cancel value="Cancel" />
+    <label.cancelTraining
+    value="Upon training cancellation you will get:" />
+
+    <stored.short>
+      <p>R: {0}%<br/>U: {1}%</p>
+    </stored.short>
+
+    <message.notSelected>
+      <p>
+        Some units were not selected because their volume exceeds maximum 
+        transporter storage. 
+      </p>
+    </message.notSelected>
+
+    <message.noResources>
+      <p>
+        Some units were not selected because there is no enough resources in 
+        this planet to heal them. 
+      </p>
+    </message.noResources>
+
+    <message.wasDeselected>
+      <p>Unit was deselected due to insufficient resources for healing.</p>
+    </message.wasDeselected>
+
+    <kind.ground value="Ground ({0})" />
+    <kind.space value="Space ({0})" />
+    <kind.moving value="Moving ({0})" />
+    <kind.launch value="Preparing for launch ({0})" />
+    <kind.stored value="Stored ({0})" />
+    <kind.land value="Land ({0})" />
+    <kind.resources value="Resources" />
+    <kind.squadron value="Fleet ({0})" />
+    <kind.self value="Your units" />
+    <kind.nap  value="Nap units" />
+    <kind.ally value="Alliance units" />
+
+    <Gnat.name ref="Objects/Unit_Gnat" />
+    <Gnat.about>
+      <p>
+        Weakest unit from alien ground army. They are pretty weak and 
+        vulnerable and their lasers do not do much damage. However they tend to 
+        be in large groups thus compensating their weakness with their 
+        quantities. 
+      </p>
+    </Gnat.about>
+
+    <Glancer.name ref="Objects/Unit_Glancer" />
+    <Glancer.about>
+      <p>
+        Highly vulnerable but deadly to infantry. Their sniper rifles pierce 
+        through light armor. It is better to dispose of Glancers quickly 
+        however their tendency to hide behind other units makes them hard 
+        targets. 
+      </p>
+    </Glancer.about>
+
+    <Spudder.name ref="Objects/Unit_Spudder" />
+    <Spudder.about>
+      <p>
+        Semi-heavy humanoid robots. Armed with homing plasma particles they are 
+        a considerable threat for your troops. They fire multiple particles at 
+        once making them excellent troops against groups of weak opponents. 
+      </p>
+    </Spudder.about>
+
+    <Gnawer.name ref="Objects/Unit_Gnawer" />
+    <Gnawer.about>
+      <p>
+        Guardians of most sacred artifacts in alien buildings. They are fierce 
+        killing machines destined to annihilate anyone who trespasses their 
+        ground. Highly armored hulls make them hard to destroy and their 
+        massive cannons offer versatility against infantry or tanks. 
+      </p>
+    </Gnawer.about>
+
+    <Dirac.name ref="Objects/Unit_Dirac" />
+    <Dirac.about>
+      <p>
+        These fast vessels were built as quick attackers in assault fleets. 
+        However today they can only be found in small groups all over Nebula 44 
+        lurking in one place and attacking anyone who approaches their vicinity 
+        - may it be friend or foe. 
+      </p>
+    </Dirac.about>
+
+    <Thor.name ref="Objects/Unit_Thor" />
+    <Thor.about>
+      <p>
+        These highly armored but fairly weak ships were used as a front line 
+        live shields long time ago. However now they are mostly scattered alone 
+        or with small groups of Diracs whom they still protect. 
+      </p>
+      <p>If you get a grasp on few of these ships know that they are pretty
+      useful in air to ground bombardment of your enemy ground forces.</p>
+    </Thor.about>
+
+    <Demosis.name ref="Objects/Unit_Demosis" />
+    <Demosis.about>
+      <p>
+        These gigantic ships wander around in Nebula 44. Once built for great 
+        conquest now their simple robotic minds wait for orders from masters 
+        who are long gone. 
+      </p>
+      <p>
+        But beware of their massive armor and weapons. Their laser is slow and 
+        requires some time to recharge but packs a powerful punch that is able 
+        to take down whole ships in a few shots. 
+      </p>
+    </Demosis.about>
+
+    <VpsAndCreds>
+      Dealing damage to this ship gains you victory points. Also landing
+      last killing shot to this ship awards player who dealt it with creds.
+    </VpsAndCreds>
+
+    <BossShip.name ref="Objects/Unit_BossShip" />
+    <BossShip.about>
+      <p>
+        Called after the god of sleep world this gigantic vessel appears from
+        nowhere just to continue its existence in vast vacuum of space.
+      </p>
+      <p>
+        However dare not to disturb its peace or you will face the full power
+        of its wrath. It is armed with plenty of weapons and its massive hulk
+        can withstand firepower of whole armadas without much damage.
+      </p>
+      <p>
+        But adventurers and comanders are still trying to bring it down.
+        Because even with ships threatening power facing them they know -
+        obtaining secrets hidden well within this ship is a key to galactic
+        domination.
+      </p>
+      <p>[reference:VpsAndCreds]</p>
+    </BossShip.about>
+
+    <ConvoyShip.name ref="Objects/Unit_ConvoyShip" />
+    <ConvoyShip.about>
+      <p>
+        These alien ships float across the galaxy in their slow pace. However
+        they have nowhere to rush, because their wide array of weaponry and
+        extremely thick armor allows them to fence off any attacker that dares
+        to oppose them.
+      </p>
+      <p>[reference:VpsAndCreds]</p>
+    </ConvoyShip.about>
+
+    <Trooper.name ref="Objects/Unit_Trooper" />
+    <Trooper.about>
+      <p>
+        Basic warriors of our armies armed with machine guns. They fearlessly 
+        run into battlefield bringing fear into our enemy hearts and confidence 
+        into our allies. Even if not very tough they can prove very useful in 
+        numbers. 
+      </p>
+    </Trooper.about>
+
+    <Shocker.name ref="Objects/Unit_Shocker" />
+    <Shocker.about>
+      <p>
+        Highly armored field warriors with the capabilities to withstand enemy 
+        troop fire. Their rocket launchers are designed to counter more heavily 
+        armored opponents but massive shockers still work as best shields for 
+        your other anti-infantry units. 
+      </p>
+    </Shocker.about>
+
+    <Seeker.name ref="Objects/Unit_Seeker" />
+    <Seeker.about>
+      <p>
+        Armed with [reference:InfoScreen/gun.sniper_rifle] they are lethal to 
+        lightly armored enemy units. Although deadly Seekers are very fragile 
+        and must be covered well behind the backs of other units or they will 
+        perish very quickly. 
+      </p>
+    </Seeker.about>
+
+    <!--
+    <Spy.name ref="Objects/Spy" />
+    <Spy.about value="Explore your enemies" />
+
+    <Saboteur.name value="Saboteur" />
+    <Saboteur.about value="Is likely to ruin things" />
+     -->
+
+    <Scorpion.name ref="Objects/Unit_Scorpion" />
+    <Scorpion.about>
+      <p>
+        Scorpion class tanks are basic ground warfare vehicles. They pack a 
+        heavy punch with their [reference:InfoScreen/gun.cannon]. Scorpions are 
+        quite strong and armored and can take many enemy lives before giving up 
+        their own. 
+      </p>
+    </Scorpion.about>
+
+    <Azure.name ref="Objects/Unit_Azure" />
+    <Azure.about>
+      <p>
+        Azure hovertanks are best way of countering enemy tanks. Their twin 
+        rocket launchers on each side barrages battlefield with missiles 
+        devastating everything in their path. Hovertank technology stabilizes 
+        Azure while it's firing but makes it vulnerable to enemy shots so it 
+        should be shielded by other units. 
+      </p>
+    </Azure.about>
+
+    <Mantis.name ref="Objects/Unit_Mantis" />
+    <Mantis.about>
+      <p>
+        Mantis is a great anti-sniper measure as well as being capable of
+        wiping other lighly armored units out of existence. However you should
+        take notice that it itself does not have heavy armor and cannot
+        withstand heavy fire. Cover them with your more armored units for best
+        results.
+      </p>
+    </Mantis.about>
+
+    <Zeus.name ref="Objects/Unit_Zeus" />
+    <Zeus.about>
+      <p>These massive tanks fortify themselves into the ground and shoot their
+      projectiles into the space. They are designed to fight enemy spaceships
+      and cannot target ground units.</p>
+    </Zeus.about>
+
+    <Mdh.name ref="Objects/Unit_Mdh" />
+    <Mdh.common>
+      <p>
+        Mobile Deployable Headquarters (MDH) is used as first and primary base 
+        upon foreign colony. This massive vehicle deploys into a fully 
+        operational base with building construction capabilities, storage 
+        containers and even brings a small 
+        [reference:Buildings/MetalExtractor.name] and energy source. 
+      </p>
+    </Mdh.common>
+    <Mdh.about>
+      <p>[reference:Mdh.common]</p>
+      <p>
+        Beware! Although massive and big it is very fragile while undeployed. 
+        Do not let it get into battlefield or it will be damaged beyond repair 
+        very soon. 
+      </p>
+    </Mdh.about>
+
+    <Mule.name ref="Objects/Unit_Mule" />
+    <Mule.about>
+      <p>
+        Slow and heavily armored transport unit. Its massive hull protects the 
+        cargo inside and allows deploying troops onto enemy battlefield even 
+        upon heavy fire. 
+      </p>
+    </Mule.about>
+
+    <Crow.name ref="Objects/Unit_Crow" />
+    <Crow.about>
+      <p>
+        Light, fast and versatile basic combat spaceship. Perfect for quick 
+        skirmishes and attacking lone enemy transporters. 
+      </p>
+    </Crow.about>
+
+    <Cyrix.name ref="Objects/Unit_Cyrix" />
+    <Cyrix.about>
+      <p>
+        Cyrix class battleships are standard combat ships used in our fleets. 
+        Their sturdy armor and formidable lasers vanquish our enemies whilst 
+        Cyrixes wade through space in their pride. Sometimes they are also used 
+        as shields for weaker ships like [reference:Dart.name] or 
+        [reference:Avenger.name]. 
+      </p>
+    </Cyrix.about>
+
+    <Rhyno.name ref="Objects/Unit_Rhyno" />
+    <Rhyno.about>
+      <p>
+        Rhyno battlecruisers are flagships of any fleet. With their huge 
+        defences they can withstand massive fire and their array of weapons 
+        makes them strong against multiple types of enemies. However they are 
+        costly and their size makes them slow in travel. 
+      </p>
+    </Rhyno.about>
+
+    <Dart.name ref="Objects/Unit_Dart" />
+    <Dart.about>
+      <p>
+        Dart class ships were built specifically to counter 
+        [reference:Crow.name] and [reference:Avenger.name] class ships. They 
+        are fast and carry weapons deadly to those ships however they lack any 
+        solid protection from enemy fire. 
+      </p>
+      <p>
+        They are best at hit and run attacks where they outnumber enemy to 
+        destroy them quickly and without casualties. 
+      </p>
+    </Dart.about>
+
+    <Avenger.name ref="Objects/Unit_Avenger" />
+    <Avenger.about>
+      <p>
+        Avengers are deadly against heavily armored ships. Their armor piercing 
+        rockets drill through and explode inside enemy ship hulls causing 
+        massive damage. Avenger fast engines ensure they can intercept 
+        [reference:Cyrix.name] and [reference:Rhyno.name] class ships easily 
+        and damage them severely. 
+      </p>
+      <p>
+        However if Avengers are left in the battlefield they can suffer very 
+        quickly because they lack any kind of solid protection from enemy fire. 
+      </p>
+    </Avenger.about>
+
+    <Jumper.name ref="Objects/Unit_Jumper" />
+    <Jumper.about>
+      <p>
+        Jumpers are lightning fast satellites that are
+        used mainly for intelligence missions launched onto enemy
+        planets. However because they were engineered for speed they lack
+        any protection or guns and cannot sustain even lightest enemy fire.
+      </p>
+    </Jumper.about>
+
+    <MobileTurret>
+      <p>Can be transported in transporter ships. Does not shoot until 
+      deployed. Cannot be undeployed after deploying.</p>
+    </MobileTurret>
+
+    <MobileVulcan.name ref="Objects/Unit_MobileVulcan" />
+    <MobileVulcan.about>
+      <p>Mobile version of Vulcan defensive tower. [reference:MobileTurret]</p>
+      <p>[reference:Buildings/Vulcan.about]</p>
+    </MobileVulcan.about>
+
+    <MobileScreamer.name ref="Objects/Unit_MobileScreamer" />
+    <MobileScreamer.about>
+      <p>Mobile version of Screamer defensive tower. [reference:MobileTurret]</p>
+      <p>[reference:Buildings/Screamer.about]</p>
+    </MobileScreamer.about>
+
+    <MobileThunder.name ref="Objects/Unit_MobileThunder" />
+    <MobileThunder.about>
+      <p>Mobile version of Thunder defensive tower. [reference:MobileTurret]</p>
+      <p>[reference:Buildings/Thunder.about]</p>
+    </MobileThunder.about>
+  </Units>
+
+  <WelcomeScreen>
+    <title value="Welcome!" />
+    <greeting value="Greetings, Commander!" />
+    <instructions>
+      <p>I am Kaya, your assistant.</p>
+      <p>We have some urgent matters to attend to. Click introduction button to
+      learn the game basics and lets get started.
+      </p>
+      <p>Good luck.</p>
+    </instructions>
+    <label.intro value="Intro" />
+  </WelcomeScreen>
+
+  <Chat>
+     <format.time value="JJ:NN:SS"/>
+     <message.channelJoin  value="[ {0} joined ]"/>
+     <message.channelLeave value="[ {0} left ]"/>
+     <message.friendOffline value="This player is currently offline."/>
+     <message.silence>
+        You have been silenced for flooding until {0}.
+        You will be able to chat in {1}.
+     </message.silence>
+     <label.send value="Send"/>
+     <label.mainChannel value="#galaxy"/>
+     <label.allianceChannel value="#alliance"/>
+     <label.privateChannel value="{0}"/>
+     <label.channelMembers value="Players"/>
+     <label.generateJoinLeaveMsgs value="Show join / leave messages"/>
+  </Chat>
+  
+  <Market>
+    <label.submit value="Submit" />
+    <label.fee value="Fee:" />
+    <label.total value="Total:" />
+    <label.wantToSell value="Selling" />
+    <label.sellFor value="For" />
+    <!-- 1 cheaper or more -->
+    <label.marketValue value="{0}% {1} than market value" />
+    <title.sell value="Create offer"/>
+    <warning.noSlots value="Offers limit reached" />
+    <title.currentOffers value="Current offers" />
+    <title.filterOffers value="Filter offers" />
+    <filter.show value="Show" />
+    <filter.for value="for" />
+    <title.offers value="Offers" />
+    <header.from value="From" />
+    <header.what value="Selling" />
+    <header.forWhat value="For" />
+    <header.rate value="Rate" />
+    <header.createdAt value="Created at" />
+    <title.buy value="Buy offer" />
+    <title.cancel value="Cancel offer" />
+    
+    <!-- resource image goes after this string -->
+    <label.youBuy value="You are buying {0}" />
+    <label.youSell value="You are selling {0}" />
+    <label.willBuy value="You buy {0}" />
+    <label.willPay value="You will pay {0}" />
+    
+    <label.buy value="Buy" />
+    <label.cancel value="Cancel" />
+    <label.close value="Close" />
+    <label.noOffers value="No offers" />
+    <!-- {0}: metal/energy/zetium/creds
+         {1}: minimal amount -->
+    <warning.noMinResource> 
+      <p>You don't have enough {0} for minimal offer.</p>
+      <p>Minimal offer is {1} {0} + taxes.</p>
+    </warning.noMinResource>
+    <message.offerSubmited value="Offer submited" />
+    <message.offerGone value="Sorry, offer is already gone" />
+    <label.onlyPlanet value="Show orders from this planet only" />
+    <title.section.resources value="RESOURCES" />
+    <title.section.units value="UNITS" />
+    <title.section.current value="{0 left[RESOURCES] right[UNITS]} MARKET" />
+    <tooltip.unitsDisabled 
+    value="Units market is currently under development." />
+    <tooltip.notEnoughStorage value="There are no enough storage for {0}" />
+    <warning.doNotAfford value="You do not afford this offer" />
+    <label.offerCount>
+      <![CDATA[
+      <p>
+        Currently offering: <span fontWeight="bold">{0}/{1}</span>
+      </p>
+      ]]>
+    </label.offerCount>
+    <label.selected value="Selected: {0}" />
+    <!-- link button "here" goes after this label -->
+    <label.changeVip value="VIP creds are not accepted." />
+    <label.here value="Convert them here." />
+    <warning.notFromPlanet 
+    value="This is your offer but it has been submitted from another planet." />
+    <filter.clear value="Clear" />
+    <label.freeCreds value="You can not use free creds in the market." />
+    <label.moreInfo value="Why?" />
+  </Market>
+  
+  <Announcements>
+    <title.popup value="Announcement"/>
+    <label.close value="Close"/>
+  </Announcements>
+  
+  <Authorization>
+    <status.authorization value="Authorizing..."/>
+    <status.login value="Logging into the server..."/>
+  </Authorization>
+
+  <PlanetMapEditor>
+     <label.name value="Name:"/>
+     <label.size value="Size:"/>
+     <label.level value="Level:"/>
+     <label.generate value="Generate"/>
+     <label.save value="Save"/>
+     <label.load value="Load"/>
+     <label.copy value="Copy"/>
+     <label.cancel value="Cancel"/>
+     <title.buildings value="Buildings"/>
+     <title.npcBuildings value="NPC Buildings"/>
+     <title.foliage value="Foliage"/>
+  </PlanetMapEditor>
+
+</locale>

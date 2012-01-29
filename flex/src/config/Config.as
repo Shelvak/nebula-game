@@ -9,6 +9,7 @@ package config
 
    import utils.ModelUtil;
    import utils.StringUtil;
+   import utils.StringUtil;
 
    /**
     * Holds all game configuration data received from server. 
@@ -223,6 +224,11 @@ package config
       {
          return getValue("market.avgRate.offset");
       }
+
+      public static function getMinOfferOffset(): Number
+      {
+         return getValue("market.avgRate.minPrice.offset");
+      }
       
       public static function getMinMarketOffer(): int
       {
@@ -320,6 +326,54 @@ package config
             }
          }
          return requirements;
+      }
+      
+      public static function getTechnologyName(type: String): String
+      {
+         return getTechnologyProperty(type, 'name');
+      }
+
+      public static function getTechnologyGroupElements(type: String): Array
+      {
+         var groupToStringList: Object = grabPropertiesFromData(
+         "^(technologies)\..+?\.groupTo", 1);
+
+         var groupElements:Array = [];
+
+         for (var key: String in groupToStringList) {
+            var parts: Array = key.split(".");
+
+            var techType:String = StringUtil.firstToUpperCase(parts[0]);
+
+            if (getTechnologyGroupTo(techType) == type)
+            {
+               groupElements.push(techType);
+            }
+         }
+         return groupElements;
+      }
+
+      public static function getTechnologyGroupTo(type: String): String
+      {
+         var techType: String = getTechnologyProperty(type, 'groupTo');
+         return techType == null ? null : StringUtil.underscoreToCamelCase(techType);
+      }
+
+      /* Returns a formula */
+      public static function getTechnologyPlanetsRequired(type: String): String
+      {
+         return getTechnologyProperty(type, 'planets.required');
+      }
+
+      /* Returns a formula */
+      public static function getTechnologyPulsarsRequired(type: String): String
+      {
+         return getTechnologyProperty(type, 'pulsars.required');
+      }
+
+      public static function getTechnologyGroupPosition(type: String): int
+      {
+         return getTechnologyProperty(type, 'groupPosition');
       }
       
       public static function getTechnologyWarPoints(type: String): String

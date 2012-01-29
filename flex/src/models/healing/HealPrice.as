@@ -25,21 +25,23 @@ package models.healing
       public static function calculateRepairPrice(building: Building): HealPrice
       {
          var price: HealPrice = new HealPrice();
-         var tech: Technology = ModelLocator.getInstance().technologies.getTechnologyByType(
-                 Technology.BUILDING_REPAIR);
+         var tech: Technology = ModelLocator.getInstance().technologies.
+            getTechnologyByType(Technology.BUILDING_REPAIR);
          var priceMod : Number = tech.repairPriceMod;
          var cooldownMod: Number = tech.repairCooldownMod;
-         price.metal = Math.round(Upgradable.calculateCost(UpgradableType.BUILDINGS,
-           building.type, ResourceType.METAL, {'level': building.level})
-          * priceMod * building.damagePercentage);
-         price.energy = Math.round(Upgradable.calculateCost(UpgradableType.BUILDINGS,
-           building.type, ResourceType.ENERGY, {'level': building.level})
-          * priceMod * building.damagePercentage);
-         price.zetium = Math.round(Upgradable.calculateCost(UpgradableType.BUILDINGS,
-           building.type, ResourceType.ZETIUM, {'level': building.level})
-          * priceMod * building.damagePercentage);
-         price.cooldown = Math.round((building.hpMax - building.hp) * cooldownMod);
-         price.cooldown = Math.max(1, price.cooldown);
+         
+         function calcRes(resource: String): Number {
+            return Math.round(Upgradable.calculateCost(
+               UpgradableType.BUILDINGS, building.type, resource, {'level': 1}
+            ) * priceMod * building.damagePercentage);
+         } 
+         price.metal = calcRes(ResourceType.METAL);
+         price.energy = calcRes(ResourceType.ENERGY);
+         price.zetium = calcRes(ResourceType.ZETIUM);
+
+         price.cooldown = Math.max(
+            1, Math.round((building.hpMax - building.hp) * cooldownMod)
+         );
 
          return price;
       }

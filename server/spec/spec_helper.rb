@@ -11,7 +11,6 @@ if $SPEC_INITIALIZED.nil?
 
   require 'rspec'
   require 'pp'
-  require 'mocha'
 
   # Include helpers/shared
   glob = File.expand_path(

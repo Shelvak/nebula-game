@@ -39,7 +39,9 @@ module Dev
 
   def self.max_resources(planet, rate=100000, storage=1000000)
     planet = SsObject::Planet.find(planet) if planet.is_a?(Fixnum)
-    planet.metal_generation_rate = planet.energy_generation_rate = 
+    planet = SsObject::Planet.where(:name => planet).first \
+      if planet.is_a?(String)
+    planet.metal_generation_rate = planet.energy_generation_rate =
       planet.zetium_generation_rate = rate
     planet.metal = planet.metal_storage = storage
     planet.energy = planet.energy_storage = storage

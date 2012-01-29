@@ -711,7 +711,7 @@ describe UnitsController do
     before(:each) do
       @action = "units|transfer_resources"
       @planet = Factory.create(:planet, :player => player)
-      set_resources(@planet, 100, 100, 100)
+      set_resources(@planet, 100, 100, 100, 200, 200, 200)
       @transporter = Factory.create(:u_with_storage, :location => @planet,
         :player => player)
       @params = {'transporter_id' => @transporter.id, 'metal' => 10,
@@ -739,6 +739,69 @@ describe UnitsController do
       it_should_behave_like "checking all planet owner variations",
         {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
          "nap" => false}
+
+      it "should not fail if planet has no storage" do
+        set_resources(@planet, 100, 100, 100)
+        invoke @action, @params
+        response_should_include(
+          :kept_resources => {:metal => 10, :energy => 10, :zetium => 10}
+        )
+      end
+
+      it "should respond with kept resources hash" do
+        invoke @action, @params
+        response_should_include(
+          :kept_resources => {:metal => 0, :energy => 0, :zetium => 0}
+        )
+      end
+
+      describe "when unloading more resources than planet can hold" do
+        before(:each) do
+          set_resources(@planet, 100, 100, 100, 104, 105, 106)
+        end
+
+        it "should keep resources that don't fit in transporter" do
+          invoke @action, @params
+          @transporter.reload
+          Resources::TYPES.map do |resource|
+            @transporter.send(resource)
+          end.should == [96, 95, 94]
+        end
+
+        it "should invoke unload with adjusted values" do
+          Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
+            @transporter)
+          @transporter.should_receive(:transfer_resources!).with(-4, -5, -6)
+          invoke @action, @params
+        end
+
+        it "should unload ints if planet has float storage" do
+          set_resources(@planet, 100, 100, 100, 104.3, 105.2, 106.1)
+
+          Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
+            @transporter)
+          @transporter.should_receive(:transfer_resources!).with(-4, -5, -6)
+          invoke @action, @params
+        end
+
+        it "should respond with kept resources hash" do
+          invoke @action, @params
+          response_should_include(
+            :kept_resources => {:metal => 6, :energy => 5, :zetium => 4}
+          )
+        end
+
+        it "should use planet storage with modifiers" do
+          [:t_metal_storage, :t_energy_storage, :t_zetium_storage].each do |t|
+            Factory.create!(t, :player => @planet.player, :level => 1)
+          end
+
+          invoke @action, @params
+          response[:kept_resources][:metal].should < 6
+          response[:kept_resources][:energy].should < 5
+          response[:kept_resources][:zetium].should < 4
+        end
+      end
     end
 
     it "should raise error if transporter does not belong to player" do
@@ -748,6 +811,13 @@ describe UnitsController do
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should raise error if you're not trying to do anything" do
+      lambda do
+        invoke @action, @params.
+          merge('metal' => 0, 'energy' => 0, 'zetium' => 0)
+      end.should raise_error(GameLogicError)
     end
 
     it "should call #transfer_resources! on transporter" do

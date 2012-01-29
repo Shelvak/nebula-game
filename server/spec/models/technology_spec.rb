@@ -20,6 +20,7 @@ describe Technology do
   it "should register to tech tracker if we have mods" do
     with_config_values 'technologies.test_technology_a.mod.armor' => '1' do
       class Technology::TestTechnologyA < Technology; end
+      TechTracker.scan(true) # Force rescan to register new technology.
       TechTracker.get('armor').should include(Technology::TestTechnologyA)
     end
   end
@@ -138,15 +139,19 @@ describe Technology do
   end
 
   describe "#resume" do
+    let(:model) do
+      tech = Factory.create :technology_paused
+      tech.scientists = tech.scientists_min
+      tech
+    end
+
     it "should not allow resuming with less than scientists.min scs" do
-      model = Factory.create :technology_paused
       model.scientists = model.scientists_min - 1
       model.resume
       model.should_not be_valid
     end
 
     it "should not allow resuming if there are not enough scientists" do
-      model = Factory.create :technology_paused
       model.scientists = 50
       model.player.scientists = model.scientists - 1
       model.player.save!
@@ -154,8 +159,12 @@ describe Technology do
       model.should_not be_valid
     end
 
+    it "should check planet count requirement" do
+      model.should_receive(:check_planets!)
+      model.resume
+    end
+
     it "should take scientists" do
-      model = Factory.create :technology_paused
       model.scientists = 50
       player = model.player
       lambda do
@@ -165,7 +174,6 @@ describe Technology do
     end
 
     it "should set #pause_scientists to nil" do
-      model = Factory.create :technology_paused
       model.scientists = 50
       lambda do
         model.resume!
@@ -173,7 +181,6 @@ describe Technology do
     end
 
     it "should recalculate pause_remainder according to new scientists" do
-      model = Factory.create :technology_paused
       model.scientists = model.pause_scientists * 2
 
       predicted_time = (
@@ -392,16 +399,14 @@ describe Technology do
       end.should raise_error(ArgumentError)
     end
 
-    it "should not allow taking resources from planet player " +
-    "doesn't own" do
+    it "should not allow taking resources from planet player doesn't own" do
       lambda do
         @model.player = Factory.create(:player)
         @model.upgrade
       end.should raise_error(GameLogicError)
     end
 
-    it "should not allow upgrading if planet does not have a " +
-    "research center" do
+    it "should not allow upgrading if planet does not have a research center" do
       @rc.destroy
       lambda do
         @model.upgrade
@@ -415,6 +420,11 @@ describe Technology do
       lambda do
         @model.upgrade
       end.should raise_error(GameLogicError)
+    end
+
+    it "should check planet count requirement" do
+      @model.should_receive(:check_planets!)
+      @model.upgrade
     end
 
     it "should not allow resuming with less than scientists.min scs" do
@@ -447,6 +457,77 @@ describe Technology do
           @planet.reload
         end.should change(@planet, resource).to(0)
       end
+    end
+  end
+
+  describe "planet requirements" do
+    [
+      ["planets", "planets.required", :planets_required],
+      ["pulsars", "pulsars.required", :pulsars_required]
+    ].each do |type, config_key, method|
+      describe "##{method}" do
+        it "should use next technology level" do
+          with_config_values(
+            "technologies.test_technology.#{config_key}" => "level"
+          ) { Factory.build(:technology, :level => 2).send(method).should == 3 }
+        end
+
+        it "should round returned value" do
+          with_config_values(
+            "technologies.test_technology.#{config_key}" => "0.33 * level"
+          ) { Factory.build(:technology, :level => 1).send(method).should == 1 }
+        end
+
+        it "should return 0 if #{config_key} is not defined" do
+          with_config_values(
+            "technologies.test_technology.#{config_key}" => nil
+          ) { Factory.build(:technology, :level => 1).send(method).should == 0 }
+        end
+      end
+    end
+  end
+
+  describe "#check_planets!" do
+    let(:player) { Factory.build(:player) }
+    let(:technology) do
+      technology = Factory.build(:technology, :player => player)
+      technology.stub(:planets_required).and_return(0)
+      technology.stub(:pulsars_required).and_return(0)
+      technology
+    end
+    let(:level) { 3 }
+
+    [
+      ["planets", :planets_required, :planets_count],
+      ["pulsars", :pulsars_required, :bg_planets_count]
+    ].each do |type, tech_method, player_method|
+      it "should fail #{type} check if player does not have enough #{type}" do
+        technology.should_receive(tech_method).with(level).and_return(5)
+        player.should_receive(player_method).and_return(4)
+        lambda do
+          technology.check_planets!(level)
+        end.should raise_error(GameLogicError)
+      end
+    end
+  end
+
+  describe "#planets_requirement_met?" do
+    let(:technology) { Factory.build(:technology) }
+    let(:level) { 3 }
+
+    it "should pass level along if we need" do
+      technology.should_receive(:check_planets!).with(level)
+      technology.planets_requirement_met?(level)
+    end
+    
+    it "should return true if #check_planets! does not raise exception" do
+      technology.stub(:check_planets!)
+      technology.planets_requirement_met?.should be_true
+    end
+
+    it "should return false if #check_planets! raises exception" do
+      technology.stub(:check_planets!).and_raise(GameLogicError)
+      technology.planets_requirement_met?.should be_false
     end
   end
 

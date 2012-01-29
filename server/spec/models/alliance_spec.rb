@@ -232,6 +232,18 @@ describe Alliance do
       alliance = Factory.create(:alliance)
       Alliance.names_for([alliance.id]).should == {alliance.id => alliance.name}
     end
+
+    it "should not mix up names if ids are not ordered" do
+      alliances = [
+        Factory.create(:alliance),
+        Factory.create(:alliance)
+      ]
+      alliance_ids = alliances.map(&:id).reverse
+      expected = alliances.each_with_object({}) do |alliance, hash|
+        hash[alliance.id] = alliance.name
+      end
+      Alliance.names_for(alliance_ids).should equal_to_hash(expected)
+    end
   end
 
   describe ".visible_enemy_player_ids" do
@@ -496,6 +508,34 @@ describe Alliance do
       ) do
         @alliance.throw_out(@player)
       end
+    end
+  end
+
+  describe "#kick" do
+    let(:alliance) { create_alliance }
+    let(:player) { Factory.create(:player, :alliance => alliance) }
+
+    it "should throw player out from alliance" do
+      alliance.should_receive(:throw_out).with(player)
+      alliance.kick(player)
+    end
+
+    it "should set alliance cooldown" do
+      alliance.kick(player)
+      player.reload.alliance_cooldown_ends_at.
+        should be_within(SPEC_TIME_PRECISION).
+                 of(Cfg.alliance_leave_cooldown.from_now)
+    end
+
+    it "should set alliance cooldown id" do
+      alliance.kick(player)
+      player.reload.alliance_cooldown_id.should == alliance.id
+    end
+
+    it "should create notification" do
+      Notification.should_receive(:create_for_kicked_from_alliance).
+        with(alliance, player)
+      alliance.kick(player)
     end
   end
 

@@ -46,11 +46,32 @@ class MarketOffer < ActiveRecord::Base
   before_create do
     self.galaxy_id ||= player.galaxy_id
     avg_rate = MarketRate.average(galaxy_id, from_kind, to_kind)
+    lowest_rate = MarketRate.lowest(galaxy_id, from_kind, to_kind)
     offset = Cfg.market_rate_offset
-    
-    low = avg_rate * (1 - offset)
+
+    avg_rate_low_bound = avg_rate * (1 - offset)
+
+    # Prevent market manipulation using this process:
+    # 1. Add a lot of resources at very cheap price.
+    # 2. Add another batch of resources at a higher price.
+    # 3. Cancel first offer. Average price goes up and nobody can add lower
+    # price than our manipulator.
+    #
+    # So set lower bound to either:
+    # - average rate - offset (if no offers exist or avg rate bound is lower
+    # than current lowest #to_rate)
+    # - lowest #to_rate - min_price_offset (if lowest #to_rate is lower than
+    # avg rate bound)
+    #
+    # Using this technique process mentioned above becomes useless, because
+    # somebody will always be able to add resources cheaper than manipulator
+    # did.
+    #
+    low = lowest_rate.nil? \
+      ? avg_rate_low_bound \
+      : [avg_rate_low_bound, lowest_rate - Cfg.market_rate_min_price_offset].min
     high = avg_rate * (1 + offset)
-    if to_rate < low 
+    if to_rate < low
       self.to_rate = low
     elsif to_rate > high
       self.to_rate = high

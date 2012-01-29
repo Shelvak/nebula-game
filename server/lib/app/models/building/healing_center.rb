@@ -35,23 +35,13 @@ class Building::HealingCenter < Building
     ) unless planet.metal >= metal && planet.energy >= energy &&
       planet.zetium >= zetium
 
-    planet.metal -= metal
-    planet.energy -= energy
-    planet.zetium -= zetium
-
     self.cooldown_ends_at = healing_time(damaged_hp).seconds.from_now
 
     save!
     Unit.save_all_units(units)
-    planet.save!
+    planet.increase!(:metal => -metal, :energy => -energy, :zetium => -zetium)
 
     EventBroker.fire(self, EventBroker::CHANGED)
-    EventBroker.fire(planet, EventBroker::CHANGED,
-      EventBroker::REASON_OWNER_PROP_CHANGE)
     Objective::HealHp.progress(player, damaged_hp)
-  end
-
-  def as_json(options=nil)
-    super(options).merge(:cooldown_ends_at => cooldown_ends_at)
   end
 end

@@ -56,7 +56,11 @@ def opts_upgrading
   RSpecOptionsHelper.new(
     :upgrade_ends_at => 20.minutes.from_now,
     :pause_remainder => nil
-  ) + opts_inactive
+  )
+end
+
+def opts_upgrading_building
+  opts_upgrading + opts_inactive
 end
 
 def opts_just_upgraded

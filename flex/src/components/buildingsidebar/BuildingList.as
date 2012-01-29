@@ -92,7 +92,7 @@ package components.buildingsidebar
          changeHandler();
       }
       
-      public function deselectBuilding(): void
+      public function deselectBuilding(withEsc: Boolean = false): void
       {
          if (selectedItem != null)
          {
@@ -104,6 +104,10 @@ package components.buildingsidebar
                new GSelectConstructableEvent(null);
             }
          }
+         else if (withEsc)
+         {
+            new GSelectConstructableEvent(null);
+         }
       }
       
       
@@ -114,7 +118,7 @@ package components.buildingsidebar
             {
                moving = false;
             }
-            deselectBuilding();
+            deselectBuilding(true);
          }
       }
       

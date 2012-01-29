@@ -2,10 +2,6 @@
 #
 # New quests can be added here but do not edit old ones!
 
-# Please update this if you add new quests ;)
-# Last quest id: 133
-#
-
 # Tutorial screens:
 # Quest screen.
 s_quest = "Quest"
@@ -474,6 +470,12 @@ QUESTS = QuestDefinition.define(:debug => false) do
       reward_unit Unit::MobileVulcan,   :count => 6
       reward_unit Unit::MobileScreamer, :count => 4
       reward_unit Unit::MobileThunder,  :count => 4
+    end.define(10520) do
+      have_planets :count => 6
+
+      reward_unit Unit::MobileVulcan,   :count => 8
+      reward_unit Unit::MobileScreamer, :count => 6
+      reward_unit Unit::MobileThunder,  :count => 6
     end
   end.define(310, [s_quest, s_deploy_turrets, s_3rd_planet, s_armor_tiles]) do
     # Have fortifications.
@@ -521,6 +523,12 @@ QUESTS = QuestDefinition.define(:debug => false) do
     have_victory_points :count => 500
 
     reward_creds 2500
+  end.define(10600) do
+    destroy Unit::ConvoyShip, :count => 10
+    reward_creds 5000
+  end.define(10610) do
+    destroy Unit::BossShip
+    reward_creds 7500
   end
 
   ####################

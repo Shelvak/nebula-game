@@ -81,7 +81,7 @@ class SsObject::Planet < SsObject
 
   # Attributes which are included when :view => true is passed to
   # #as_json
-  VIEW_ATTRIBUTES = RESOURCE_ATTRIBUTES
+  VIEW_ATTRIBUTES = [] # No extra attributes for now.
 
   # Returns Planet JSON representation. It's basically same as 
   # SsObject#as_json but includes additional fields:
@@ -158,8 +158,7 @@ class SsObject::Planet < SsObject
   #
   Resources::TYPES.each do |resource|
     define_method("#{resource}=") do |value|
-      name = "#{resource}_storage"
-      storage = (read_attribute(name) * resource_modifier(name))
+      storage = send("#{resource}_storage_with_modifier")
 
       if value > storage
         value = storage
@@ -168,6 +167,12 @@ class SsObject::Planet < SsObject
       end
 
       write_attribute(resource, value)
+    end
+
+    # Planet storage increased by owner technologies and other modifiers.
+    define_method("#{resource}_storage_with_modifier") do
+      name = "#{resource}_storage"
+      read_attribute(name) * resource_modifier(name)
     end
   end
 
@@ -240,7 +245,7 @@ class SsObject::Planet < SsObject
   end
 
   private
-  # Set #next_raid_at & #owner_changed.
+  # Set #owner_changed.
   before_update :if => Proc.new { |r| r.player_id_changed? } do
     self.owner_changed = Time.now
     
@@ -304,8 +309,10 @@ class SsObject::Planet < SsObject
     # owner.
     units = Unit.in_location(self).
       where(:player_id => old_player ? old_player.id : nil)
+    fse_counter_change = 1 # 1 for the planet.
     units.each do |unit|
       population_count += unit.population
+      fse_counter_change += 1 if unit.space?
       unit.player = new_player
     end
     Unit.save_all_units(units)
@@ -356,10 +363,30 @@ class SsObject::Planet < SsObject
       new_player.planets_count += 1 if new_player
     end
 
-    old_player.save! if old_player && old_player.changed?
+    if old_player
+      paused_technologies = old_player.technologies.upgrading.compact_map do
+        |technology|
+
+        # We need to pass old player, because it hasn't been saved to database
+        # yet.
+        if technology.planets_requirement_met?(old_player)
+          nil
+        else
+          technology.pause!
+          [technology, Reducer::RELEASED]
+        end
+      end
+
+      Notification.create_for_technologies_changed(
+        old_player.id, paused_technologies
+      ) unless paused_technologies.blank?
+
+      old_player.save! if old_player.changed?
+    end
     new_player.save! if new_player && new_player.changed?
 
-    FowSsEntry.change_planet_owner(self, old_player, new_player)
+    FowSsEntry.
+      change_planet_owner(self, old_player, new_player, fse_counter_change)
     EventBroker.fire(self, EventBroker::CHANGED,
       EventBroker::REASON_OWNER_CHANGED)
 

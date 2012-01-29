@@ -3,32 +3,24 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb
 shared_examples_for "technology upgradable" do
   it "should return technology in upgrading state" do
     invoke @action, @params
-    Technology.find(
-      @controller.response_params[:technology]['id']
-    ).should be_upgrading
+    technology.reload.should be_upgrading
   end
 
   %w{scientists speed_up}.each do |arg|
     it "should pass #{arg}" do
       invoke @action, @params
-      @controller.response_params[:technology][arg].should == @params[arg]
+      technology.reload.send(arg).should == @params[arg]
     end
   end
 end
 
 shared_examples_for "technology existing" do
   it "should not allow to change other player technology" do
-    @technology.player = Factory.create(:player)
-    @technology.save!
+    technology.player = Factory.create(:player)
+    technology.save!
     lambda do
       invoke @action, @params
     end.should raise_error(ActiveRecord::RecordNotFound)
-  end
-
-  it "should return technology" do
-    invoke @action, @params
-    @technology.reload
-    @controller.response_params[:technology].should == @technology.as_json
   end
 end
 
@@ -53,45 +45,51 @@ describe TechnologiesController do
   end
 
   describe "technologies|new" do
+    let(:technology) do
+      Technology.new_by_type(
+        @params['type'],
+        :player => @player, :planet_id => @params['planet_id'], :level => 0,
+        :scientists => @params['scientists'],
+        :speed_up => @params['speed_up']
+      )
+    end
+
     before(:each) do
       @action = "technologies|new"
       @planet = Factory.create :planet_with_player, :player => player
       set_resources(@planet, 10000, 10000, 10000)
       @rc = Factory.create(:b_research_center, :planet => @planet)
-      @params = {'type' => 'TestTechnology', 'planet_id' => @planet.id,
+      @params = {
+        'type' => 'TestTechnology',
+        'planet_id' => @planet.id,
         'scientists' => Technology::TestTechnology.scientists_min(1),
         'speed_up' => false
       }
+      tech = technology
+      Technology.stub(:new_by_type).and_return(tech)
     end
 
     it_behaves_like "with param options", %w{type planet_id scientists speed_up}
 
-    it "should return new technology" do
-      invoke @action, @params
-      @controller.response_params[:technology].should == Technology.find(
-        @controller.response_params[:technology]['id']
-      ).as_json
-    end
-
     it "should set technology as belonging to player" do
       invoke @action, @params
-      Technology.find(
-        @controller.response_params[:technology]['id']
-      ).player.should == player
+      technology.reload.player.should == player
     end
 
     it_behaves_like "technology upgradable"
   end
 
   describe "technologies|upgrade" do
+    let(:technology) do
+      Factory.create :technology, :level => 1, :player => player
+    end
+
     before(:each) do
       @action = "technologies|upgrade"
-      @technology = Factory.create :technology, :level => 1,
-        :player => player
       @planet = Factory.create :planet_with_player, :player => player
       set_resources(@planet, 10000, 10000, 10000)
       @rc = Factory.create(:b_research_center, :planet => @planet)
-      @params = {'id' => @technology.id, 'planet_id' => @planet.id,
+      @params = {'id' => technology.id, 'planet_id' => @planet.id,
         'scientists' => Technology::TestTechnology.scientists_min(2),
         'speed_up' => false
       }
@@ -103,13 +101,16 @@ describe TechnologiesController do
     it_behaves_like "technology existing"
   end
 
-  describe "tehcnologies|update" do
+  describe "technologies|update" do
+    let(:technology) do
+      Factory.create :technology_upgrading, :level => 1, :player => player
+    end
+
     before(:each) do
       @action = "technologies|update"
-      @technology = Factory.create :technology_upgrading, :level => 1,
-        :player => player
-      @params = {'id' => @technology.id,
-        'scientists' => @technology.scientists * 2}
+      @params = {
+        'id' => technology.id, 'scientists' => technology.scientists * 2
+      }
     end
 
     it_behaves_like "with param options", %w{id}
@@ -118,62 +119,66 @@ describe TechnologiesController do
 
     it "should update scientist count" do
       invoke @action, @params
-      @controller.response_params[:technology]['scientists'].should == \
-        @params['scientists']
+      technology.reload.scientists.should == @params['scientists']
     end
   end
 
   describe "technologies|pause" do
+    let(:technology) do
+      Factory.create :technology_upgrading, :level => 1, :player => player
+    end
+
     before(:each) do
       @action = "technologies|pause"
-      @technology = Factory.create :technology_upgrading, :level => 1,
-        :player => player
-      @params = {'id' => @technology.id}
+      @params = {'id' => technology.id}
     end
 
     it_behaves_like "with param options", %w{id}
 
     it_behaves_like "technology existing"
 
-    it "should return paused technology" do
+    it "should pause technology" do
       invoke @action, @params
-      Technology.find(
-        @controller.response_params[:technology]['id']
-      ).should be_paused
+      technology.reload.should be_paused
     end
   end
 
   describe "technologies|resume" do
+    let(:technology) do
+      Factory.create :technology_paused, :level => 1, :player => player
+    end
+
     before(:each) do
       @action = "technologies|resume"
-      @technology = Factory.create :technology_paused, :level => 1,
-        :player => player
-      @params = {'id' => @technology.id, 
-        'scientists' => @technology.scientists_min}
+      @params = {
+        'id' => technology.id, 'scientists' => technology.scientists_min
+      }
     end
 
     it_behaves_like "with param options", %w{id scientists}
 
     it_behaves_like "technology existing"
 
-    it "should return resumed technology" do
+    it "should resume technology" do
       invoke @action, @params
-      Technology.find(
-        @controller.response_params[:technology]['id']
-      ).should be_upgrading
+      technology.reload.should be_upgrading
     end
   end
 
   describe "technologies|accelerate" do
+    let(:technology) do
+      Factory.create :technology_upgrading, :level => 1, :player => player
+    end
+
     before(:each) do
       @action = "technologies|accelerate"
       player.creds = 1000000
       player.save!
 
-      @technology = Factory.create :technology_upgrading, :level => 1,
-        :player => player
-      @params = {'id' => @technology.id,
-        'index' => CONFIG['creds.upgradable.speed_up'].size - 1}
+      @params = {
+        'id' => technology.id,
+        'index' => CONFIG['creds.upgradable.speed_up'].size - 1
+      }
     end
 
     it "should raise error when providing wrong index" do
@@ -183,38 +188,32 @@ describe TechnologiesController do
     end
 
     it "should accelerate technology" do
-      player.stub_chain(:technologies, :find).with(@technology.id).
-        and_return(@technology)
-      Creds.should_receive(:accelerate!).with(@technology, @params['index'])
+      Creds.should_receive(:accelerate!).with(technology, @params['index'])
       invoke @action, @params
-    end
-
-    it "should respond with technology" do
-      invoke @action, @params
-      @technology.reload
-      response_should_include(:technology => @technology.as_json)
     end
   end
 
   describe "technologies|unlearn" do
-    before(:each) do
-      @technology = Factory.create(:technology, :player => player)
+    let(:technology) { Factory.create(:technology, :player => player) }
 
+    before(:each) do
       @action = "technologies|unlearn"
-      @params = {'id' => @technology.id}
+      @params = {'id' => technology.id}
     end
 
     it "should fail if technology does not belong to player" do
-      technology = Factory.create(:technology)
+      technology.player = Factory.create(:player)
+      technology.save!
+
       lambda do
-        invoke @action, @params.merge('id' => technology.id)
+        invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "should call #unlearn! on technology" do
-      player.stub_chain(:technologies, :find).with(@technology.id).
-        and_return(@technology)
-      @technology.should_receive(:unlearn!)
+      player.stub_chain(:technologies, :find).with(technology.id).
+        and_return(technology)
+      technology.should_receive(:unlearn!)
       invoke @action, @params
     end
   end

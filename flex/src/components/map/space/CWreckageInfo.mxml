@@ -7,10 +7,6 @@
                               title="{getString('title.info', ['Wreckage'])}"
                               minWidth="150"
                               minHeight="80">
-   <fx:Declarations>
-      <mx:NumberFormatter id="fmtNumber" precision="{Config.getRoundingPrecision()}"
-                          useThousandsSeparator="false"/>
-   </fx:Declarations>
    <fx:Script>
       <![CDATA[
          import config.Config;
@@ -34,8 +30,8 @@
    </space:layout>
    <s:Group visible="{MWreckage(staticObject).metal > 0}"
             includeInLayout="{MWreckage(staticObject).metal > 0}">
-      <base:ImageAndLabel textToDisplay="{fmtNumber.format(MWreckage(
-                          staticObject).metal)}" type="{ResourceType.METAL}"/>
+      <base:ImageAndLabel textToDisplay="{MWreckage(staticObject).metal}"
+                          type="{ResourceType.METAL}"/>
       <s:Label width="100%" textAlign="right" text="{getString('label.wreckageVolume',
                           [Resource.getResourceVolume(MWreckage(staticObject).metal,
                           ResourceType.METAL)])}"/>
@@ -45,8 +41,8 @@
    </s:Group>
    <s:Group visible="{MWreckage(staticObject).energy > 0}"
             includeInLayout="{MWreckage(staticObject).energy > 0}">
-      <base:ImageAndLabel textToDisplay="{fmtNumber.format(MWreckage(
-                          staticObject).energy)}" type="{ResourceType.ENERGY}"/>
+      <base:ImageAndLabel textToDisplay="{MWreckage(staticObject).energy}"
+                          type="{ResourceType.ENERGY}"/>
       <s:Label width="100%" textAlign="right" text="{getString('label.wreckageVolume',
                           [Resource.getResourceVolume(MWreckage(staticObject).energy,
                           ResourceType.ENERGY)])}"/>
@@ -56,8 +52,8 @@
    </s:Group>
    <s:Group visible="{MWreckage(staticObject).zetium > 0}"
             includeInLayout="{MWreckage(staticObject).zetium > 0}">
-      <base:ImageAndLabel textToDisplay="{fmtNumber.format(MWreckage(
-                          staticObject).zetium)}" type="{ResourceType.ZETIUM}"/>
+      <base:ImageAndLabel textToDisplay="{MWreckage(staticObject).zetium}"
+                          type="{ResourceType.ZETIUM}"/>
       <s:Label width="100%" textAlign="right" text="{getString('label.wreckageVolume',
                           [Resource.getResourceVolume(MWreckage(staticObject).zetium,
                           ResourceType.ZETIUM)])}"/>

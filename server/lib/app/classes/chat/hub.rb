@@ -7,6 +7,7 @@ class Chat::Hub
 
   def initialize(dispatcher)
     @dispatcher = dispatcher
+    @antiflood = Chat::AntiFlood.new(dispatcher)
     @channels = {
       GLOBAL_CHANNEL => Chat::Channel.new(GLOBAL_CHANNEL, @dispatcher)
     }
@@ -80,6 +81,8 @@ class Chat::Hub
 
   # Send a _message_ to channel.
   def channel_msg(channel_name, player, message)
+    @antiflood.message!(player.id)
+
     check_channel!(channel_name)
     channel = @channels[channel_name]
     channel.message(player, message)
@@ -87,6 +90,8 @@ class Chat::Hub
 
   # Send a _message_ to +Player+ with ID _target_id_.
   def private_msg(player_id, target_id, message, created_at=nil)
+    @antiflood.message!(player_id) if created_at.nil?
+
     if @dispatcher.connected?(target_id)
       params = {'pid' => player_id, 'msg' => message}
 
@@ -120,9 +125,8 @@ class Chat::Hub
   # Retrieves player name by _player_id_ either from cache or from db (and
   # stores it in cache).
   def player_name(player_id)
-    @names_cache[player_id] ||= Player.connection.select_value(
-      "SELECT name FROM `#{Player.table_name}` WHERE id=#{player_id.to_i}"
-    )
+    @names_cache[player_id] ||= Player.select("name").where(:id => player_id).
+      c_select_value
 
     @names_cache[player_id]
   end

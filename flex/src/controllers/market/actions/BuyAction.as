@@ -52,11 +52,13 @@ package controllers.market.actions
          }
          else
          {
+            var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
             offer.fromAmount -= cmd.parameters.amount;
             if (offer.fromAmount <= 0)
             {
-               MCMarketScreen.getInstance().publicOffers.remove(offer.id);
+               mScreen.publicOffers.remove(offer.id);
             }
+            mScreen.dispatchRateUpdateNeededEvent();
          }
       }
    }

@@ -61,7 +61,8 @@ bars and so on.
       <base:AdvancedContainer bottom="0" top="0">
          <base:layout><s:HorizontalLayout verticalAlign="bottom" gap="10"/></base:layout>
          <menus:MainMenu id="mnuMain"/>
-         <bars:ResourcesBar id="resBar" visible="{ML.activeMapType == MapType.PLANET}"/>
+         <bars:ResourcesBar id="resBar" visible="{ML.activeMapType == MapType.PLANET
+         &amp;&amp; !ML.latestPlanet.ssObject.metal.unknown}"/>
          <raid:RaidBar id="raidBar"
             visible="{
                ML.activeMapType == MapType.PLANET &amp;&amp;

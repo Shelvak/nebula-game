@@ -73,7 +73,8 @@
                </s:Group>
                <!-- open button -->
                <s:Group left="17" right="5" bottom="5">
-                  <s:layout><s:HorizontalLayout gap="5" horizontalAlign="right"/></s:layout>
+                  <s:layout><s:HorizontalLayout gap="5" horizontalAlign="right"
+                    verticalAlign="middle"/></s:layout>
                   <s:Label text="{getString('label.owner')}"/>
                   <s:Button id="btnOpen" label="{model.player.name}" skinClass="components.skins.LinkButtonSkin"
                             click="NavigationController.getInstance().showPlayer(model.player.id)"/>

@@ -79,6 +79,14 @@ package models.market
             dispatchEvent(new MarketEvent(MarketEvent.AVG_RATE_CHANGE));
          }
       }
+
+      public function dispatchRateUpdateNeededEvent(): void
+      {
+         if (hasEventListener(MarketEvent.RATE_UPDATE_NEEDED))
+         {
+            dispatchEvent(new MarketEvent(MarketEvent.RATE_UPDATE_NEEDED));
+         }
+      }
       
       private function dispatchOfferCountChangeEvent(): void
       {

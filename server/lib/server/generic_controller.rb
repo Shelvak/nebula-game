@@ -145,19 +145,19 @@ class GenericController
     case options[:required]
     when Hash
       options[:required] = options[:required].stringify_keys
-    when Array
+    when Array, Set
       options[:required] = options[:required].map(&:to_s)
     end
 
     case options[:valid]
-    when Array
+    when Array, Set
       options[:valid] = options[:valid].map(&:to_s)
     end
 
     params.ensure_options!(options)
   rescue ArgumentError => e
     raise ControllerArgumentError.new(
-      e.message + "for action #{@current_message['action']}"
+      e.message + " for action #{@current_message['action']}"
     )
   end
 

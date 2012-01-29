@@ -135,6 +135,12 @@ class Player < ActiveRecord::Base
     Hash[player_ids.zip(names)]
   end
 
+  # Return +PlayerOptions+ for this player.
+  def options(reload=false)
+    @_options = nil if reload
+    @_options ||= PlayerOptions.find(id)
+  end
+
   # Returns for how much seconds this player has been inactive.
   def inactivity_time
     return 0 if Dispatcher.instance.connected?(id)
@@ -182,12 +188,14 @@ class Player < ActiveRecord::Base
         raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
       end
     else
-      json = attributes.only(*%w{id name scientists scientists_total xp
+      json = attributes.only(*%w{
+        id name scientists scientists_total xp
         economy_points army_points science_points war_points
         victory_points population population_cap
-        alliance_id alliance_cooldown_ends_at
-        free_creds vip_creds vip_level vip_until vip_creds_until}
-      )
+        alliance_id alliance_cooldown_ends_at alliance_cooldown_id
+        free_creds vip_creds vip_level vip_until vip_creds_until
+        planets_count bg_planets_count
+      })
       json['creds'] = creds
       json['first_time'] = first_time
       json['portal_without_allies'] = portal_without_allies
@@ -302,12 +310,21 @@ class Player < ActiveRecord::Base
 
   def population_free; population_max - population; end
 
-  def overpopulated?;
+  def overpopulated?
     population >= population_max
   end
 
-  def alliance_cooldown_expired?
-    alliance_cooldown_ends_at.nil? || alliance_cooldown_ends_at < Time.now
+  # Check if alliance cooldown has expired for alliance with _alliance_id_ or
+  # all alliances if _alliance_id_ is nil.
+  def alliance_cooldown_expired?(alliance_id)
+    expired = alliance_cooldown_ends_at.nil? || alliance_cooldown_ends_at < Time.now
+    if alliance_cooldown_id.nil?
+      # Global alliance cooldown.
+      expired
+    else
+      # One alliance cooldown.
+      alliance_cooldown_id != alliance_id || expired
+    end
   end
 
   # Leaves current alliance. If player is alliance owner - tries to resign and
@@ -498,14 +515,13 @@ class Player < ActiveRecord::Base
   # It does this by pausing technologies and reducing
   # extra assigned scientists to technologies if needed.
   def ensure_free_scientists!(scientists)
-    changed_technologies = Reducer::ScientistsReducer.reduce(
+    changes = Reducer::ScientistsReducer.reduce(
       technologies.upgrading.order('scientists ASC').all,
       scientists - self.scientists
-    ).map do |technology, state, new_scientists|
-      technology
-    end
-    EventBroker.fire(changed_technologies, EventBroker::CHANGED) \
-      unless changed_technologies.blank?
+    )
+
+    Notification.create_for_technologies_changed(self.id, changes) \
+      unless changes.blank?
 
     # Reload updated player
     reload

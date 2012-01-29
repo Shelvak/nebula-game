@@ -22,7 +22,7 @@ var locales = { // {{{
     if (locale == "lt") return "Per sena žaidimo versija!\n\n" +
        "Serveris reikalauja bent jau \"" + requiredVersion + "\" versijos, " +
        "tačiau pas tave yra versija \"" + currentVersion + "\".\n\n" +
-       "Žaidimas bus perkrautas tam kad jį atnaujintį."
+       "Žaidimas bus perkrautas tam kad jį atnaujinti."
     if (locale == "lv") return "LOCALE: fixme";
     return "Game version too old!\n\n" +
        "Server requires at least version \"" + requiredVersion + "\" but you " +
@@ -162,7 +162,7 @@ function getGameOptions() { // {{{
       if (! defined(server)) server = developmentServer();
       if (! defined(webPlayerId)) webPlayerId = developmentWebPlayerId;
       if (! defined(serverPlayerId)) serverPlayerId = developmentServerPlayerId;
-      if (! defined(locale)) locale = "en";
+      if (! defined(locale)) locale = "lt";
       if (! defined(webHost)) webHost = "localhost";
 
       document.title = "Local Dev Mode" + titleSuffix;
@@ -283,7 +283,7 @@ $(document).ready(function() {
   swfobject.createCSS("#flashContent", "display:block;text-align:left;");
 
   // Ensure player does not close the game accidentally.
-  if (! (inLocalComputer() || inDeveloperMode())) {
+  if (! inLocalComputer() && ! inDeveloperMode()) {
     window.onbeforeunload = function() {
       return locales.navigateAwayMessage(locale);
     }

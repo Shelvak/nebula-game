@@ -198,8 +198,80 @@ describe SsObject::Planet do
         end
       end
 
+      shared_examples_for "pausing technologies" do |player_attr, tech_key|
+        let(:technologies) do
+          [
+            Factory.create!(:technology_t2, opts_upgrading +
+              {:player => @old, :level => 2}),
+            Factory.create!(:technology_t3, opts_upgrading +
+              {:player => @old, :level => 2}),
+            Factory.create!(:technology_t4, opts_upgrading +
+              {:player => @old, :level => 2}),
+          ]
+        end
+
+        before(:each) { technologies() }
+
+        describe "which do not meet #{tech_key} requirements anymore" do
+          config_overrides = lambda do |player|
+            req = player.send(player_attr).to_s
+            {
+              "technologies.test_t2.#{tech_key}.required" => req,
+              "technologies.test_t3.#{tech_key}.required" => "0",
+              "technologies.test_t4.#{tech_key}.required" => req
+            }
+          end
+
+          it "should pause them" do
+            with_config_values(config_overrides[@old]) do
+              @planet.save!
+              technologies[0].reload.should be_paused
+              technologies[1].reload.should_not be_paused
+              technologies[2].reload.should be_paused
+            end
+          end
+
+          it "should create notification with them" do
+            with_config_values(config_overrides[@old]) do
+              Notification.should_receive(:create_for_technologies_changed).with(
+                @old.id, [
+                  [technologies[0], Reducer::RELEASED],
+                  [technologies[2], Reducer::RELEASED],
+                ]
+              )
+              @planet.save!
+            end
+          end
+        end
+
+        describe "when all techs meet their #{tech_key} requirements" do
+          let(:config_overrides) do
+            {
+              "technologies.test_t2.#{tech_key}.required" => "0",
+              "technologies.test_t3.#{tech_key}.required" => "0",
+              "technologies.test_t4.#{tech_key}.required" => "0"
+            }
+          end
+
+          it "should not pause any of the technologies" do
+            with_config_values(config_overrides) do
+              @planet.save!
+              technologies.each { |t| t.reload.should_not be_paused }
+            end
+          end
+
+          it "should not create notification" do
+            with_config_values(config_overrides) do
+              Notification.should_not_receive(:create_for_technologies_changed)
+              @planet.save!
+            end
+          end
+        end
+      end
+
       it_should_behave_like "changing counter cache", :planets_count
       it_should_behave_like "not changing counter cache", :bg_planets_count
+      it_should_behave_like "pausing technologies", :planets_count, :planets
 
       [:battleground, :mini_battleground].each do |type|
         describe "in #{type}" do
@@ -209,6 +281,8 @@ describe SsObject::Planet do
 
           it_should_behave_like "changing counter cache", :bg_planets_count
           it_should_behave_like "not changing counter cache", :planets_count
+          it_should_behave_like "pausing technologies", :bg_planets_count,
+                                :pulsars
         end
       end
     end
@@ -242,7 +316,7 @@ describe SsObject::Planet do
         end
       end
     end
-    
+
     it "should save new #owner_changed" do
       @planet.save!
       @planet.owner_changed.should be_within(SPEC_TIME_PRECISION).of(Time.now)
@@ -250,7 +324,7 @@ describe SsObject::Planet do
     
     it "should call FowSsEntry.change_planet_owner after save" do
       FowSsEntry.should_receive(:change_planet_owner).with(
-        @planet, @old, @new
+        @planet, @old, @new, 1
       ).and_return do |planet, old_player, new_player|
         planet.should be_saved
         true
@@ -310,7 +384,18 @@ describe SsObject::Planet do
           @new.reload
         end.should change(@new, :population).by(@unit.population)        
       end
-      
+
+      it "should call transfer fow ss entries for space units" do
+        Factory.create!(:u_crow, :player => @old, :location => @planet)
+        Factory.create!(:u_crow, :player => @old, :location => @planet)
+        Factory.create!(:u_scorpion, :player => @old, :location => @planet)
+
+        FowSsEntry.should_receive(:change_planet_owner).with(
+          @planet, @old, @new, 3 # 2 crows + 1 for planet
+        )
+        @planet.save!
+      end
+
       it "should dispatch changed event" do
         should_fire_event([@unit], EventBroker::CHANGED) do
           @planet.save!
@@ -457,7 +542,7 @@ describe SsObject::Planet do
         end.should_not change(@new, @attr)
       end
     end
-    
+
     describe "scientists" do
       before(:each) do
         @research_center = Factory.create(:b_research_center,
@@ -1104,13 +1189,12 @@ describe SsObject::Planet do
     
     describe "with :view" do
       it_behaves_like "as json", Factory.create(:planet), {:view => true},
-        %w{
+        %w{},
+        %w{next_raid_at raid_arg energy_diminish_registered
           metal metal_generation_rate metal_usage_rate metal_storage
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate zetium_usage_rate zetium_storage
-          last_resources_update
-        },
-        %w{next_raid_at raid_arg energy_diminish_registered}
+          last_resources_update}
     end
 
     describe "with :owner" do
@@ -1461,6 +1545,21 @@ describe SsObject::Planet do
       model.send(
         :resource_modifier_technologies
       ).should include(tech)
+    end
+  end
+
+  describe "resource storage methods" do
+    Resources::TYPES.each do |resource|
+      w_mod = "#{resource}_storage_with_modifier"
+      wo_mod = "#{resource}_storage"
+      describe "##{w_mod}" do
+        it "should return greater value than without modifiers" do
+          planet = Factory.build(:planet)
+          planet.should_receive(:resource_modifier).with(wo_mod).and_return(1.5)
+
+          planet.send(w_mod).should == planet.send(wo_mod) * 1.5
+        end
+      end
     end
   end
 

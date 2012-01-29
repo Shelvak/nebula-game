@@ -36,13 +36,18 @@ package models.notification.parts
          super();
          _notification = Objects.paramNotNull("notification", notification);
          var alliance:Object = Objects.notNull(
-            _notification.params.alliance, "[param notification.params.alliance] is required but was null"
+            _notification.params.alliance,
+            "[param notification.params.alliance] is required but was null"
          );
          allianceId = Objects.notNull(
-            alliance.id, "[param notification.params.alliance.id] is required but was " + alliance.id
+            alliance.id,
+            "[param notification.params.alliance.id] is required but was "
+               + alliance.id
          );
          allianceName = Objects.notNull(
-            alliance.name, "[param notification.params.alliance.name] is required but was " + alliance.name
+            alliance.name,
+            "[param notification.params.alliance.name] is required but was "
+               + alliance.name
          );
       }
       
@@ -61,10 +66,12 @@ package models.notification.parts
 
        public function get innerMessage() : String
        {
-           return getString("message."  + KEY_PART + (ML.player.canJoinAlliance
-                     ? '.long'
-                     : '.denied'),
-                   [allianceName]);
+           return getString(
+              "message." + KEY_PART + (ML.player.canJoinAlliance(allianceId)
+                                          ? '.long'
+                                          : '.denied'),
+              [allianceName]
+           );
        }
       
       
@@ -101,7 +108,7 @@ package models.notification.parts
       
       
       public function joinAlliance() : void {
-         if (ML.player.canJoinAlliance)
+         if (ML.player.canJoinAlliance(allianceId))
             new AlliancesCommand(AlliancesCommand.JOIN, new JoinActionParams(_notification.id)).dispatch();
          else {
             var errorMessage:String = "Unable to join the alliance '" + allianceName + "': "

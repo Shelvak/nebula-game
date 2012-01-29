@@ -1,10 +1,5 @@
 # Handles events that should push messages to Dispatcher.
 class DispatcherEventHandler
-  # Objects were changed
-  CONTEXT_CHANGED = :changed
-  # Objects were destroyed
-  CONTEXT_DESTROYED = :destroyed
-
   def initialize(dispatcher)
     @dispatcher = dispatcher
     EventBroker.register(self)
@@ -13,161 +8,35 @@ class DispatcherEventHandler
   def fire(object, event_name, reason)
     case event_name
     when EventBroker::CREATED
-      handle_created(object, reason)
+      Handler::Created.handle(@dispatcher, object, reason)
     when EventBroker::CHANGED
-      handle_changed(object, reason)
+      Handler::Changed.handle(@dispatcher, object, reason)
     when EventBroker::DESTROYED
-      handle_destroyed(object, reason)
+      Handler::Destroyed.handle(@dispatcher, object, reason)
     when EventBroker::MOVEMENT_PREPARE
       handle_movement_prepare(object)
     when EventBroker::MOVEMENT
       handle_movement(object, reason)
     when EventBroker::FOW_CHANGE
       handle_fow_change(object, reason)
+    else
+      raise ArgumentError.new("Unknown event: '#{event_name}'!")
     end
   end
 
   private
-  # @param reason [Symbol]
-  def handle_created(objects, reason)
-    object = objects[0]
-    if object.is_a? Parts::Object
-      player_ids, filter = self.class.resolve_objects(objects, reason)
-      player_ids.each do |player_id|
-        @dispatcher.push_to_player(
-          player_id,
-          ObjectsController::ACTION_CREATED,
-          {'objects' => objects},
-          filter
-        )
-      end
-    elsif object.is_a?(Event::PlanetObserversChange)
-      filter = DispatcherPushFilter.
-        new(DispatcherPushFilter::SS_OBJECT, object.planet_id)
-
-      object.non_observer_ids.each do |player_id|
-        @dispatcher.push_to_player(
-          player_id,
-          PlanetsController::ACTION_UNSET_CURRENT,
-          {},
-          filter
-        )
-      end
-    elsif object.is_a?(Event::ApocalypseStart)
-      params = {'start' => object.start}
-      player_ids = Player.select("id").where(:galaxy_id => object.galaxy_id).
-        c_select_values
-      player_ids.each do |player_id|
-        @dispatcher.push_to_player(
-          player_id,
-          GalaxiesController::ACTION_APOCALYPSE,
-          params,
-          nil
-        )
-      end
-    else
-      raise ArgumentError.new("Don't know how to handle created for #{
-        objects.inspect}!")
-    end
-  end
-
-  def handle_destroyed(objects, reason)
-    object = objects[0]
-    if object.is_a? Parts::Object
-      objects = self.class.filter_objects(objects)
-      unless objects.blank?
-        player_ids, filter = self.class.resolve_objects(objects, reason,
-          CONTEXT_DESTROYED)
-
-        player_ids.each do |player_id|
-          @dispatcher.push_to_player(
-            player_id,
-            ObjectsController::ACTION_DESTROYED,
-            {'objects' => objects, 'reason' => reason},
-            filter
-          )
-        end
-      end
-    else
-      raise ArgumentError.new(
-        "Don't know how to handle destroyed for #{objects.inspect}!"
-      )
-    end
-  end
-
-  def handle_changed(objects, reason)
-    object = objects[0]
-    # Case matching doesn't work sometimes
-    if object.is_a? Player
-      @dispatcher.update_player(object) if @dispatcher.connected?(object.id)
-      @dispatcher.push_to_player(
-        object.id,
-        PlayersController::ACTION_SHOW
-      )
-    elsif object.is_a? Event::ConstructionQueue
-      planet = object.constructor.planet
-      @dispatcher.push_to_player(
-        planet.player_id,
-        ConstructionQueuesController::ACTION_INDEX,
-        {'constructor_id' => object.constructor_id},
-        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
-      )
-    elsif object.is_a? Parts::Object
-      if reason == EventBroker::REASON_OWNER_CHANGED
-        old_id, new_id = object.player_id_change
-        [old_id, new_id].each do |player_id|
-          @dispatcher.push_to_player(
-            player_id,
-            PlanetsController::ACTION_PLAYER_INDEX
-          ) unless player_id.nil?
-        end
-      end
-
-      objects = self.class.filter_objects(objects)
-      unless objects.blank?
-        player_ids, filter = self.class.resolve_objects(objects, reason,
-          CONTEXT_CHANGED)
-
-        player_ids.each do |player_id|
-          @dispatcher.push_to_player(
-            player_id,
-            ObjectsController::ACTION_UPDATED,
-            {'objects' => objects, 'reason' => reason},
-            filter
-          )
-        end
-      end
-    elsif object.is_a?(Event::StatusChange)
-      object.statuses.each do |player_id, changes|
-        @dispatcher.push_to_player(
-          player_id,
-          PlayersController::ACTION_STATUS_CHANGE,
-          {'changes' => changes},
-          nil
-        )
-        @dispatcher.push_to_player(
-          player_id,
-          RoutesController::ACTION_INDEX
-        )
-      end
-    elsif object.is_a? Technology
-      # Just silently ignore it, we pass stuff manually with this one.
-    else
-      raise ArgumentError.new(
-        "Don't know how to handle changed for #{objects.inspect}!"
-      )
-    end
-  end
-
   # Handles preparations for unit movement.
   def handle_movement_prepare(movement_prepare_event)
     route = movement_prepare_event.route
     zone_route_hops = route.hops_in_current_zone
     unit_ids = movement_prepare_event.unit_ids
 
-    player_ids, filter = self.class.resolve_location(route.current)
     player = route.player
     friendly_player_ids = player.nil? ? [] : player.friendly_ids
+
+    player_ids, filter = LocationResolver.resolve_movement(
+      route.current, friendly_player_ids
+    )
 
     player_ids.each do |player_id|
       friendly = friendly_player_ids.include?(player_id)
@@ -188,6 +57,8 @@ class DispatcherEventHandler
           'unit_ids' => unit_ids,
           'route_hops' => route_hops
         },
+        # Client always uses route when player is friendly even if the route
+        # is not in currently viewable zone.
         friendly ? nil : filter
       )
     end
@@ -201,14 +72,12 @@ class DispatcherEventHandler
       friendly_player_ids = player.nil? ? [] : player.friendly_ids
       next_hop = movement_event.next_hop
 
-      previous_player_ids, _ = self.class.
-        resolve_movement_location(
-          movement_event.previous_location, friendly_player_ids
-        )
-      current_player_ids, filter = self.class.
-        resolve_movement_location(
-          movement_event.current_hop.location, friendly_player_ids
-        )
+      previous_player_ids, _ = LocationResolver.resolve_movement(
+        movement_event.previous_location, friendly_player_ids
+      )
+      current_player_ids, filter = LocationResolver.resolve_movement(
+        movement_event.current_hop.location, friendly_player_ids
+      )
 
       debug "previous_player_ids: #{previous_player_ids.inspect}"
       debug "current_player_ids: #{current_player_ids.inspect}"
@@ -329,160 +198,6 @@ class DispatcherEventHandler
       STATE_CHANGED_TO_VISIBLE
     else
       STATE_UNCHANGED
-    end
-  end
-
-  # Filter objects to avoid conditions, where we try to notify user about
-  # unsupported kinds.
-  #
-  # E.g.: units inside other units are invisible to everyone and should
-  # never be included in objects passed to #resolve_objects.
-  #
-  def self.filter_objects(objects)
-#    case objects[0]
-#    when Unit
-#      objects = objects.reject do |unit|
-#        ! location_supported?(unit.location)
-#      end
-#    end
-
-    objects
-  end
-
-  # Supported location types
-  SUPPORTED_TYPES = [Location::GALAXY, Location::SOLAR_SYSTEM,
-    Location::SS_OBJECT, Location::UNIT, Location::BUILDING]
-  def self.location_supported?(location)
-    SUPPORTED_TYPES.include?(location.type)
-  end
-
-  # Resolves player ids that should be notified about events in _location_.
-  # Also returns filter for that location.
-  def self.resolve_location(location)
-    debug "Resolving pids & filter for #{location}" do
-      raise ArgumentError.new("Unknown location type #{location.type}!") \
-        unless location_supported?(location)
-
-      case location.type
-      when Location::GALAXY
-        [FowGalaxyEntry.
-           observer_player_ids(location.id, location.x, location.y), nil]
-      when Location::SOLAR_SYSTEM
-        [
-          FowSsEntry.observer_player_ids(location.id),
-          DispatcherPushFilter.new(
-            DispatcherPushFilter::SOLAR_SYSTEM, location.id)
-        ]
-      when Location::SS_OBJECT
-        [
-          location.object.observer_player_ids,
-          DispatcherPushFilter.new(
-            DispatcherPushFilter::SS_OBJECT, location.id)
-        ]
-      when Location::UNIT
-        unit = location.object
-        parent = unit.location.object
-        raise "Support for dispatching when parent is #{parent
-          } is not supported for units" \
-          unless parent.is_a?(SsObject::Planet)
-        [
-          parent.observer_player_ids,
-          DispatcherPushFilter.new(
-            DispatcherPushFilter::SS_OBJECT, parent.id)
-        ]
-      when Location::BUILDING
-        building = location.object
-        [
-          building.observer_player_ids,
-          DispatcherPushFilter.new(
-            DispatcherPushFilter::SS_OBJECT, building.planet_id)
-        ]
-      end
-    end
-  end
-
-  # Resolves player ids that should be notified about movement in _location_.
-  # Also returns filter for that location.
-  #
-  # This one extends #resolve_location. If location is a galaxy point, friendly
-  # players should be notified even if they have no radars enabled.
-  #
-  def self.resolve_movement_location(location, friendly_ids)
-    player_ids, filter = resolve_location(location)
-    player_ids |= friendly_ids if location.type == Location::GALAXY
-    [player_ids, filter]
-  end
-
-  # Resolves player ids that should be notified about _objects_ and that
-  # object filter. First item will be used for resolving.
-  #
-  # Resolver behavior can be altered by providing different context.
-  #
-  def self.resolve_objects(objects, reason, context=nil)
-    object = objects.is_a?(Array) ? objects[0] : objects
-
-    case object
-    when Building
-      planet = object.planet
-      [
-        planet.observer_player_ids,
-        DispatcherPushFilter.new(
-          DispatcherPushFilter::SS_OBJECT, planet.id)
-      ]
-    when Unit, Wreckage, Cooldown
-      resolve_location(object.location)
-    when Route
-      player = object.player
-      if player.nil?
-        [[], nil]
-      else
-        case context
-        when CONTEXT_CHANGED
-          [object.player.friendly_ids, nil]
-        when CONTEXT_DESTROYED
-          player_ids, _ = resolve_location(object.current)
-          player_ids |= object.player.friendly_ids
-          # Don't use filter, because friendly destroy events should be
-          # dispatched without any filter.
-          [player_ids, nil]
-        else
-          raise ArgumentError.new(
-            "Unknown Route context for objects resolver: #{context.inspect}")
-        end
-      end
-    when SsObject
-      # Only owner should know about this change.
-      if object.is_a?(SsObject::Planet) &&
-          reason == EventBroker::REASON_OWNER_PROP_CHANGE
-        player_ids = [object.player_id]
-        # Planets belonging to player should be dispatched even if we don't
-        # currently see them to update planet selector.
-        filter = nil
-      else
-        player_ids = SolarSystem.observer_player_ids(object.solar_system_id)
-        filter = DispatcherPushFilter.new(
-          DispatcherPushFilter::SOLAR_SYSTEM, object.solar_system_id)
-      end
-      [player_ids, filter]
-    when ConstructionQueueEntry
-      planet = object.constructor.planet
-      [
-        planet.player.friendly_ids,
-        DispatcherPushFilter.new(DispatcherPushFilter::SS_OBJECT, planet.id)
-      ]
-    when Notification, ClientQuest, QuestProgress, ObjectiveProgress
-      [[object.player_id], nil]
-    when SolarSystem
-      resolve_location(object.galaxy_point)
-    when SolarSystemMetadata
-      ss = SolarSystem.find(object.id)
-      resolve_location(ss.galaxy_point)
-    when Tile
-      planet = object.planet
-      resolve_location(planet.location_point)
-    else
-      raise ArgumentError.new("Don't know how to resolve player ids for #{
-        object.inspect}!")
     end
   end
 

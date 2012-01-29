@@ -15,6 +15,8 @@ package models.player
    
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
+   import mx.events.CollectionEvent;
+   import mx.events.CollectionEventKind;
    import mx.utils.ObjectUtil;
    
    import namespaces.prop_name;
@@ -22,6 +24,7 @@ package models.player
    import utils.DateUtil;
    import utils.MathUtil;
    import utils.NumberUtil;
+   import utils.Objects;
    import utils.datastructures.Collections;
    
    
@@ -88,7 +91,7 @@ package models.player
          _allianceCooldown = new MTimeEventFixedMoment();
          _allianceCooldown.occuresAt = DateUtil.BEGINNING;
          _allianceCooldown.addEventListener
-            (MTimeEventEvent.HAS_OCCURED_CHANGE, allianceCooldown_hasOccuredChange,  false, 0, true);
+            (MTimeEventEvent.HAS_OCCURED_CHANGE, allianceCooldown_hasOccurredChange,  false, 0, true);
       }
       
       
@@ -393,8 +396,9 @@ package models.player
       
       [Bindable(event="allianceIdChange")]
       [Bindable(event="allianceCooldownChange")]
-      public function get canJoinAlliance() : Boolean {
-         return !belongsToAlliance && !allianceCooldownInEffect;
+      public function canJoinAlliance(allianceId:int) : Boolean {
+         Objects.paramIsId("allianceId", allianceId);
+         return !belongsToAlliance && !allianceCooldownInEffect(allianceId);
       }
       
       public function belongsTo(allianceId:int) : Boolean {
@@ -412,20 +416,37 @@ package models.player
       /* ######################### */
       /* ### ALLIANCE COOLDOWN ### */
       /* ######################### */
-      
+
+      private var _allianceCooldownId: int = 0;
+      public function set allianceCooldownId(value: int): void {
+         if (_allianceCooldownId != value) {
+            _allianceCooldownId = value;
+            dispatchPlayerEvent(PlayerEvent.ALLIANCE_COOLDOWN_CHANGE);
+         }
+      }
+      public function get allianceCooldownId(): int {
+         return _allianceCooldownId;
+      }
+
       private var _allianceCooldown:MTimeEventFixedMoment;
-      [Bindable(event="willNotChange")]
       public function get allianceCooldown() : MTimeEventFixedMoment {
          return _allianceCooldown;
       }
       
-      private function allianceCooldown_hasOccuredChange(event:MTimeEventEvent) : void {
+      private function allianceCooldown_hasOccurredChange(event:MTimeEventEvent) : void {
          dispatchPlayerEvent(PlayerEvent.ALLIANCE_COOLDOWN_CHANGE);
       }
       
       [Bindable(event="allianceCooldownChange")]
-      public function get allianceCooldownInEffect() : Boolean {
-         return !allianceCooldown.hasOccured;
+      public function allianceCooldownInEffect(allianceId: int = 0) : Boolean {
+         Objects.paramPositiveNumber("allianceId", allianceId);
+         if (_allianceCooldownId == 0) {
+            return !_allianceCooldown.hasOccured;
+         }
+         else {
+            return _allianceCooldownId == allianceId
+                      && !_allianceCooldown.hasOccured;
+         }
       }
       
       
@@ -530,12 +551,38 @@ package models.player
       public function get victoryPoints() : int {
          return _victoryPoints;
       }
-      
+
+      private var _planetsCount: int = 0;
+
+      public function get planetsCount():int
+      {
+         return _planetsCount;
+      }
       [Optional]
       /**
        * Number of planets in normal solar systems owned by the player.
        */ 
-      public var planetsCount:int = 0;
+      public function set planetsCount(value:int): void
+      {
+         _planetsCount = value;
+         dispatchPlanetCountChangeEvent();
+      }
+
+      private var _bgPlanetsCount: int = 0;
+
+      public function get bgPlanetsCount():int
+      {
+         return _bgPlanetsCount;
+      }
+      [Optional]
+      /**
+       * Number of planets in pulsar or battleground solar systems owned by the player.
+       */
+      public function set bgPlanetsCount(value:int): void
+      {
+         _bgPlanetsCount = value;
+         dispatchPlanetCountChangeEvent();
+      }
       
       
       public function reset() : void {
@@ -550,6 +597,7 @@ package models.player
          armyPoints = 0;
          economyPoints = 0;
          planetsCount = 0;
+         bgPlanetsCount = 0;
          if (_alliancesTechnology != null) {
             _alliancesTechnology.removeEventListener
                (UpgradeEvent.LEVEL_CHANGE, alliancesTech_levelChangeHandler, false);
@@ -602,6 +650,11 @@ package models.player
       
       private function dispatchPlayerEvent(type:String) : void {
          dispatchSimpleEvent(PlayerEvent as Class, type);
+      }
+
+      private function dispatchPlanetCountChangeEvent(): void
+      {
+         dispatchPlayerEvent(PlayerEvent.PLANET_COUNT_CHANGE);
       }
       
       private function dispatchScientistsChangeEvent(): void {
