@@ -75,12 +75,15 @@
       <s:layout>
          <s:HorizontalLayout gap="10" horizontalAlign="right"/>
       </s:layout>
-      <s:Button id="btnLoad" label="Load" visible="false" visible.import="true"
-                click="btnLoad_clickHandler(event)"/>
+      <s:Button id="btnLoad" label="{getLabel('load')}" visible="false" visible.import="true"
+                click="btnLoad_clickHandler(event)"
+                skinClass="components.skins.GreenButtonSkin"/>
       <s:Button id="btnCopyToClipboard" label="{getLabel('copy')}"
                 visible="false" visible.export="true"
                 includeInLayout="false" includeInLayout.export="true"
-                click="btnCopyToClipboard_clickHandler(event)"/>
-      <s:Button id="btnCancel" label="{getLabel('cancel')}" click="hide()"/>
+                click="btnCopyToClipboard_clickHandler(event)"
+                skinClass="components.skins.GreenButtonSkin"/>
+      <s:Button id="btnCancel" label="{getLabel('cancel')}" click="hide()"
+                skinClass="components.skins.RedButtonSkin"/>
    </s:Group>
 </s:BorderContainer>

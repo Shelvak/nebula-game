@@ -101,6 +101,8 @@ package models.building
       public static const STORE: String = 'store';
       public static const RADAR_STRENGTH: String = 'radar.strength';
       public static const FEE: String = 'fee';
+
+      public var metaLevel: int = 0;
       
       public static function getMarketTaxRate(marketLevel: int): Number
       {

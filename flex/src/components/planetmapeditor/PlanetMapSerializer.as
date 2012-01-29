@@ -8,6 +8,7 @@ package components.planetmapeditor
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
    import models.tile.FolliageTileKind;
+   import models.tile.TerrainType;
    import models.tile.Tile;
    import models.tile.TileKind;
 
@@ -124,7 +125,9 @@ package components.planetmapeditor
                         symPair += getBuildingSymbol(building.type);
                      }
                      else if (y == building.y && x == building.x + 1) {
-                        symPair += building.level % 10;
+                        symPair += (building.npc
+                           ? building.metaLevel % 10
+                           : building.level % 10);
                      }
                      else {
                         symPair += SYM_DASH;
@@ -152,27 +155,52 @@ package components.planetmapeditor
             row = '  - "' + row + '"';
             rows.push(row);
          }
-         return 'terrain: ' + planet.ssObject.terrain + '\n' +
+         return 'terrain: <%= Terrain::' + getTerrainString(
+                  planet.ssObject.terrain) + ' %>\n' +
                 'name: "' + planet.ssObject.name + '-%d"\n' +
                 'map:\n' + rows.reverse().join('\n');
+      }
+
+      private function getTerrainString(terrainType: int): String
+      {
+          switch (terrainType)
+          {
+             case TerrainType.DESERT:
+                return 'DESERT';
+             case TerrainType.GRASS:
+                return 'EARTH';
+             case TerrainType.MUD:
+                return 'MUD';
+          }
+         return 'NOT_FOUND';
       }
 
       public function deserialize(data: String): MPlanet {
          Objects.paramNotEmpty("data", data);
          const dataRows:Array = data.split("\n");
+         var newRows: Array = [];
+         for (var i: int = 0; i < dataRows.length; i++)
+         {
+            if (!(String(dataRows[i]).replace(/^\s*/, "") == ""
+               || (String(dataRows[i]).replace(/^\s*/, "").charAt(0) == "#")))
+            {
+               newRows.push(dataRows[i]);
+            }
+         }
          const ssObject: MSSObject = new MSSObject();
          ssObject.id = 1;
          ssObject.type = SSObjectType.PLANET;
-         ssObject.terrain = int(String(dataRows[0])
+         ssObject.terrain = int(String(newRows[0])
                                    .replace(/terrain:\s+/, "")
                                    .replace(" ", ""));
-         ssObject.name = String(dataRows[1])
+         ssObject.name = String(newRows[1])
                             .replace(/name:\s+"/, "")
                             .replace(/-%d"\s*/, "");
 
-         const rows: Array = dataRows.slice(3).reverse().map(
+         const rows: Array = newRows.slice(3).reverse().map(
             function(row: String, index: int, array: Array): String {
-               return row.replace(/^\s*-\s"/, "").replace(/"\s*$/, "");
+               return row == '' ? ''
+                         : row.replace(/^\s*-\s"/, "").replace(/"\s*$/, "");
             }
          );
 

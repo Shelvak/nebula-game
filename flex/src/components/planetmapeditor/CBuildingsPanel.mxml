@@ -32,7 +32,14 @@
          if (_selectedBuilding != value) {
             _selectedBuilding = value;
             if (_selectedBuilding != null) {
-               _selectedBuilding.level = stepLevel.value;
+               if (_selectedBuilding.npc)
+               {
+                 _selectedBuilding.metaLevel = stepLevel.value;
+               }
+               else
+               {
+                 _selectedBuilding.level = stepLevel.value;
+               }
             }
          }
       }

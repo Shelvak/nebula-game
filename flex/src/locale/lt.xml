@@ -5605,6 +5605,7 @@
 
   <PlanetMapEditor>
      <label.name value="Vardas:"/>
+     <label.area value="Plotas: {0}"/>
      <label.size value="Dydis:"/>
      <label.level value="Lygis:"/>
      <label.generate value="Generuoti"/>

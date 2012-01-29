@@ -39,8 +39,8 @@
          scrSerializer.showForExport();
       }
 
-      private function getLabel(property: String): String {
-         return Localizer.string("PlanetMapEditor", "label." + property);
+      private function getLabel(property: String, params: Array = null): String {
+         return Localizer.string("PlanetMapEditor", "label." + property, params);
       }
       ]]>
    </fx:Script>
@@ -69,6 +69,7 @@
                               minimum="{MODEL.MIN_HEIGHT}"
                               maximum="{MODEL.MAX_HEIGHT}"
                               value="@{MODEL.mapHeight}"/>
+            <s:Label text="{getLabel('area', [MODEL.mapHeight * MODEL.mapWidth])}"/>
             <s:Label text="{getLabel('name')}"/>
             <s:TextInput id="txtName" maxChars="{MODEL.MAX_NAME_CHARS}"
                          text="@{MODEL.mapName}"/>

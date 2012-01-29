@@ -36,9 +36,9 @@ package components.planetmapeditor
       public const DEFAULT_MAP_NAME: String = "P";
       public const MAX_NAME_CHARS: int = 8;
 
-      public const MAX_WIDTH: int = 30;
+      public const MAX_WIDTH: int = 50;
       public const MIN_WIDTH: int = 4;
-      public const MAX_HEIGHT: int = 30;
+      public const MAX_HEIGHT: int = 50;
       public const MIN_HEIGHT: int = 4;
 
       public static const MIN_BUILDING_LEVEL: int = 1;
@@ -69,14 +69,14 @@ package components.planetmapeditor
          newBuilding(BuildingType.BARRACKS),
          newBuilding(BuildingType.METAL_EXTRACTOR_T2),
          newBuilding(BuildingType.COLLECTOR_T2),
-         newBuilding(BuildingType.ZETIUM_EXTRACTOR_T2)
+         newBuilding(BuildingType.ZETIUM_EXTRACTOR_T2),
+         newBuilding(BuildingType.NPC_HALL),
+         newBuilding(BuildingType.NPC_INFANTRY_FACTORY),
+         newBuilding(BuildingType.NPC_GROUND_FACTORY),
+         newBuilding(BuildingType.NPC_SPACE_FACTORY)
       ]);
       
       public const NPC_BUILDINGS: ArrayCollection = new ArrayCollection([
-         newNpcBuilding(BuildingType.NPC_HALL),
-         newNpcBuilding(BuildingType.NPC_INFANTRY_FACTORY),
-         newNpcBuilding(BuildingType.NPC_GROUND_FACTORY),
-         newNpcBuilding(BuildingType.NPC_SPACE_FACTORY),
          newNpcBuilding(BuildingType.NPC_SOLAR_PLANT),
          newNpcBuilding(BuildingType.NPC_METAL_EXTRACTOR),
          newNpcBuilding(BuildingType.NPC_ZETIUM_EXTRACTOR),
@@ -104,10 +104,11 @@ package components.planetmapeditor
       private const COMMAND_INVOKER: CommandInvoker = new CommandInvoker();
       private function keyDownHandler(event: KeyboardEvent): void {
          if (event.ctrlKey) {
-            if (event.charCode == charCode("z")) {
+            if (event.charCode == charCode("z") && !event.shiftKey) {
                COMMAND_INVOKER.undo();
             }
-            else if (event.charCode == charCode("y")) {
+            else if (event.charCode == charCode("y")
+               || (event.charCode == charCode("z") && event.shiftKey)) {
                COMMAND_INVOKER.redo();
             }
          }
@@ -254,8 +255,8 @@ package components.planetmapeditor
 
       public function loadMap(data: String): void {
          createMap(new PlanetMapSerializer().deserialize(data));
-         mapWidth = _planet.width;
-         mapHeight = _planet.height;
+         mapWidth = _planet.ssObject.width;
+         mapHeight = _planet.ssObject.height;
          terrainType = _planet.ssObject.terrain;
          mapName = _planet.ssObject.name;
       }
@@ -335,7 +336,8 @@ package components.planetmapeditor
          }
          building.type = type;
          building.planetId = 1;
-         building.level = level;
+         building.level = building.npc ? 1 : level;
+         building.metaLevel = building.npc ? level : 0;
          Building.setSize(building);
          return building;
       }
