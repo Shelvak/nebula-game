@@ -867,7 +867,7 @@
       To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
     </Mothership.about>
 
-    <ResourceTransporter.name ref="Objects/Building_ResourceTransporter" />
+    <ResourceTransporter.name value="[obj:1:Building_ResourceTransporter]" />
     <ResourceTransporter.about>
       <p>
         [obj:1:Building_ResourceTransporter] gali akimirksniu pergabenti
@@ -5233,7 +5233,7 @@
     <kind.nap  value="NS kariai" />
     <kind.ally value="Sąjungos kariai" />
 
-    <Gnat.name ref="Objects/Unit_Gnat" />
+    <Gnat.name value="[obj:1:Unit_Gnat]" />
     <Gnat.about>
       <p>Silpniausias karys iš ateivių žemės armijos. Jie yra gana silpi ir
       lengvai sužeidžiami, bei jų lazeriai nepadaro didelės žalos, tačiau jie 

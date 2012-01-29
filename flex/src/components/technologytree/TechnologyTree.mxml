@@ -13,7 +13,8 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.base.viewport.events.ViewportEvent;
-         
+         import components.technologytree.TechnologyComponent;
+
          import config.Config;
          
          import controllers.navigation.MCSidebar;
@@ -30,8 +31,11 @@
          import models.technology.events.TechnologySidebarEvent;
 
          import mx.collections.SortField;
+         import mx.controls.Alert;
          import mx.events.FlexEvent;
-         
+
+         import utils.DateUtil;
+
          import utils.assets.AssetNames;
          import utils.datastructures.LineSet;
          import utils.datastructures.PointSet;
@@ -56,7 +60,7 @@
             findPoints();
             for each (var tech: Technology in ML.technologies.technologies)
             {
-               drawTechnology(tech);
+              drawTechnology(tech);
               if (tech.groupTo == null)
               {
                var requirements: Object = Config.getTechnologyRequirements(tech.type);
@@ -495,7 +499,10 @@
              var tGroup: TechnologyGroup = new TechnologyGroup();
              tGroup.belongsTo = selectedTech.type;
              var coords: Object = selectedTech.coords;
-             tGroup.leftCenter = coords[0] * cellSize + (cellSize/2);
+             tGroup.left = Math.max(0,
+               Math.min(
+                 coords[0] * cellSize + (cellSize/2) - (selectedTech.groupElements.length * cellSize/2),
+                 (10 * cellSize) - (selectedTech.groupElements.length * cellSize)));
              tGroup.top = (coords[1] + 1) * cellSize - cellPadding;
              for each (var techName: String in selectedTech.groupElements)
              {
@@ -511,21 +518,39 @@
            }
          }
          
+         private var groupElementsHash: Object = {};
+         
          protected function drawTechnology(tech: Technology): void
          {
             if (tech.groupTo != null)
             {
+              if (groupElementsHash[tech.groupTo] == null)
+              {
+                groupElementsHash[tech.groupTo] = true;
+              }
+              else if (groupElementsHash[tech.groupTo] is TechnologyComponent)
+              {
+                TechnologyComponent(groupElementsHash[tech.groupTo]).hasGroupElements = true;
+                groupElementsHash[tech.groupTo] = false;
+              }
               return;
             }
             var coords: Object;
             var temp: TechnologyComponent = new TechnologyComponent();
             temp.modelName = tech.type;
             coords = tech.coords;
-            temp.hasGroupElements = tech.groupElements != null;
-            treeContainer.addElement(temp);
-            treeCompsList.push(temp);
+            if (groupElementsHash[tech.type] == true)
+            {
+              temp.hasGroupElements = true;
+            }
+            else
+            {
+              groupElementsHash[tech.type] = temp;
+            }
             temp.left = coords[0] * cellSize + cellPadding;
             temp.top = coords[1] * cellSize + cellPadding;
+            treeContainer.addElement(temp);
+            treeCompsList.push(temp);
          }
          
          protected function techTree_creationCompleteHandler(event:FlexEvent):void

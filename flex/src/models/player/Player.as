@@ -87,7 +87,6 @@ package models.player
          planets.sort = new Sort();
          planets.sort.compareFunction = compareFunction_planets;
          planets.refresh();
-         
          _allianceCooldown = new MTimeEventFixedMoment();
          _allianceCooldown.occuresAt = DateUtil.BEGINNING;
          _allianceCooldown.addEventListener
@@ -559,6 +558,7 @@ package models.player
          return _planetsCount;
       }
       [Optional]
+      [Bindable (event="planetCountChange")]
       /**
        * Number of planets in normal solar systems owned by the player.
        */ 
@@ -575,6 +575,7 @@ package models.player
          return _bgPlanetsCount;
       }
       [Optional]
+      [Bindable (event="planetCountChange")]
       /**
        * Number of planets in pulsar or battleground solar systems owned by the player.
        */
