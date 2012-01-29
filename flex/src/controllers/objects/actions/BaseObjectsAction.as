@@ -28,6 +28,7 @@ package controllers.objects.actions
          CUSTOM_CONTROLLERS[COOLDOWN]                 = new CooldownController();
          CUSTOM_CONTROLLERS[SOLAR_SYSTEM]             = new SolarSystemController();
          CUSTOM_CONTROLLERS[TILE]                     = new TileController();
+         CUSTOM_CONTROLLERS[TECHNOLOGY]               = new TechnologyController();
       }
       
       

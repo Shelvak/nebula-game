@@ -6,7 +6,7 @@ package controllers.planets.actions
    import models.Owner;
    import models.factories.SSObjectFactory;
    import models.solarsystem.MSSObject;
-   
+
    import utils.datastructures.Collections;
    
    public class PlayerIndexAction extends CommunicationAction

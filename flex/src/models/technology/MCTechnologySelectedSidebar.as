@@ -16,7 +16,8 @@ package models.technology
       }
       
       private var _selectedTechnology: Technology;
-      
+
+      [Bindable (event="selectedTechnologyChange")]
       public function get selectedTechnology(): Technology
       {
          return _selectedTechnology; 

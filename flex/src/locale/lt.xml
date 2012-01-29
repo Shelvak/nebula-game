@@ -272,6 +272,10 @@
     <Building_SpaceFactory-whos value="{0 one[laivų gamyklos] 1sts[? laivų gamyklos] tens[? laivų gamyklų] many[? laivų gamyklų]}" />
     
     <!-- Kiti pastatai -->
+
+    <Building_ResourceTransporter value="{0 one[Resursų siųstuvas] 1sts[? Resursų siųstuvas] tens[? Resursų siųstuvų] many[? Resursų siųstuvai]}" />
+    <Building_ResourceTransporter-what value="{0 one[resursų siųstuvą] 1sts[? resursų siųstuvą] tens[? resursų siųstuvų] many[? resursų siųstuvus]}" />
+    <Building_ResourceTransporter-whos value="{0 one[resursų siųstuvo] 1sts[? resursų siųstuvo] tens[? resursų siųstuvų] many[? resursų siųstuvų]}" />
     
     <Building_Market value="Turgus" />
     <Building_Market-what value="{0 one[turgų] 1sts[? turgų] tens[? turgų] many[? turgus]}" />
@@ -332,6 +336,8 @@
     <Technology_Mdh-whos value="Mobilaus štabo" />
     <Technology_Mantis ref="Unit_Mantis" />
     <Technology_Mantis-whos ref="Unit_Mantis" />
+    <Technology_ResourceTransporter value="Resursų siuntimas" />
+    <Technology_ResourceTransporter-whos value="Resursų siuntimo" />
 
     <Technology_SpaceDamage value="Laivų ginklai" />
     <Technology_SpaceDamage-whos value="Laivų ginklų" />
@@ -339,8 +345,8 @@
     <Technology_SpaceArmor-whos value="Laivų šarvų" />
     <Technology_SpaceCritical value="Laivų kompiuteriai" />
     <Technology_SpaceCritical-whos value="Laivų kompiuterių" />
-    <Technology_SpaceAbsorpsion value="Laivų gyn. sistemos" />
-    <Technology_SpaceAbsorpsion-whos value="Laivų gyn. sistemų" />
+    <Technology_SpaceAbsorption value="Laivų gyn. sistemos" />
+    <Technology_SpaceAbsorption-whos value="Laivų gyn. sistemų" />
     <Technology_HeavyFlight value="Gama varikliai" />
     <Technology_HeavyFlight-whos value="gama variklių" />
     <Technology_LightFlight value="Laivų palengvinimas" />
@@ -351,8 +357,16 @@
     <Technology_GroundArmor-whos value="Karių šarvų" />
     <Technology_GroundCritical value="Karių kompiuteriai" />
     <Technology_GroundCritical-whos value="Karių kompiuterių" />
-    <Technology_GroundAbsorpsion value="Karių gyn. sistemos" />
-    <Technology_GroundAbsorpsion-whos value="Karių gyn. sistemų" />
+    <Technology_GroundAbsorption value="Karių gyn. sistemos" />
+    <Technology_GroundAbsorption-whos value="Karių gyn. sistemų" />
+    <Technology_TurretDamage value="Bokštelių ginklai" />
+    <Technology_TurretDamage-whos value="Bokštelių ginklų" />
+    <Technology_TurretArmor value="Bokštelių šarvai" />
+    <Technology_TurretArmor-whos value="Bokštelių šarvų" />
+    <Technology_TurretCritical value="Bokštelių kompiuteriai" />
+    <Technology_TurretCritical-whos value="Bokštelių kompiuterių" />
+    <Technology_TurretAbsorption value="Bokštelių gyn. sistemos" />
+    <Technology_TurretAbsorption-whos value="Bokštelių gyn. sistemų" />
 
     <Technology_NpcSpaceDamage value="Ateivių laivų ginklai" />
     <Technology_NpcSpaceDamage-whos value="Ateivių laivų ginklų" />
@@ -360,8 +374,8 @@
     <Technology_NpcSpaceArmor-whos value="Ateivių laivų šarvų" />
     <Technology_NpcSpaceCritical value="Ateivių laivų kompiuteriai" />
     <Technology_NpcSpaceCritical-whos value="Ateivių laivų kompiuterių" />
-    <Technology_NpcSpaceAbsorpsion value="Ateivių laivų gyn. sistemos" />
-    <Technology_NpcSpaceAbsorpsion-whos value="Ateivių laivų gyn. sistemų" />
+    <Technology_NpcSpaceAbsorption value="Ateivių laivų gyn. sistemos" />
+    <Technology_NpcSpaceAbsorption-whos value="Ateivių laivų gyn. sistemų" />
     <Technology_NpcHeavyFlight value="Ateivių varikliai" />
     <Technology_NpcHeavyFlight-whos value="Ateivių variklių" />
     <Technology_NpcLightFlight value="Erdvės iškreipimas" />
@@ -372,8 +386,8 @@
     <Technology_NpcGroundArmor-whos value="Ateivių karių šarvų" />
     <Technology_NpcGroundCritical value="Ateivių karių kompiuteriai" />
     <Technology_NpcGroundCritical-whos value="Ateivių karių kompiuterių" />
-    <Technology_NpcGroundAbsorpsion value="Ateivių karių gyn. sistemos" />
-    <Technology_NpcGroundAbsorpsion-whos value="Ateivių karių gyn. sistemų" />
+    <Technology_NpcGroundAbsorption value="Ateivių karių gyn. sistemos" />
+    <Technology_NpcGroundAbsorption-whos value="Ateivių karių gyn. sistemų" />
 
     <Technology_DamageSpecialization value="Žalos specializacija" />
     <Technology_DamageSpecialization-whos value="Žalos specializacijos" />
@@ -387,6 +401,8 @@
       value="Sugėrimo specializacijos" />
     <Technology_SpeedSpecialization value="Greičio specializacija" />
     <Technology_SpeedSpecialization-whos value="Greičio specializacijos" />
+    <Technology_StorageSpecialization value="Talpos specializacija" />
+    <Technology_StorageSpecialization-whos value="Talpos specializacijos" />
 
     <!-- Kita -->
     
@@ -850,6 +866,21 @@
       saulės baterijas generuoti energijai ir talpyklas šiems resursams saugoti.
       To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
     </Mothership.about>
+
+    <ResourceTransporter.name ref="Objects/Building_ResourceTransporter" />
+    <ResourceTransporter.about>
+      <p>
+        [obj:1:Building_ResourceTransporter] gali akimirksniu pergabenti
+        tam tikrą kiekį resursų iš vienos planetos į kitą. Du
+        [obj:2:Building_ResourceTransporter::dc] susijungia tarpusavyje,
+        sukurdami erdvės tunelį tarp dviejų planetų.
+      </p>
+      <p>
+        Nors mokslininkams dar nepavyko pergabenti tuneliu gyvos butybės, ši
+        technologija puikiai tinka greitam resursų pergabenimui, tiesa,
+        transportavimo eigoje prarandant dalį resursų.
+      </p>
+    </ResourceTransporter.about>
 
     <MEX.common>
       <p>
@@ -4214,6 +4245,15 @@
        {1}.</p>
       <p>Gauk karo taškų kariaudamas su ateiviais arba kitais žaidėjais.</p>
     </warPointsNeeded>
+    <planetsNeeded>
+      <p>Turi valdyti {0 1sts[? planetą] tens[? planetų] many[? planetas]},
+         kad galėtum išrasti šią technologiją, tačiau tu teturi {1}.</p>
+    </planetsNeeded>
+    <pulsarsNeeded>
+      <p>Turi valdyti {0} arenos arba pulsaro tipo
+         {0 1sts[planetą] tens[planetų] many[planetas]},
+         kad galėtum išrasti šią technologiją, tačiau tu teturi {1}.</p>
+    </pulsarsNeeded>
     <groupResearched>
       <p>Kita technologija iš šios grupės jau buvo išrasta, todėl tu negali
       išrasti šios technologijos.</p>
@@ -4287,7 +4327,7 @@
       <p>Pirmas šios technologijos lygis atrakiną šį pastatą. Kiti jos
       lygiai jį tobulina.</p>
     </BuildingTech>
-    <BuildingUpgrade ref="UnitUpgrade" />
+    <BuildingUpgrade ref="GroundUpgrade" />
 
     <Zetium.common>
       <p>
@@ -4529,6 +4569,12 @@
       <p>[reference:AbsorptionTech] [reference:TurretUpgradeTech]</p>
     </TurretAbsorption.about>
 
+    <ResourceTransporter.name ref="Objects/Technology_ResourceTransporter" />
+    <ResourceTransporter.about>
+      <p>Leidžia statyti [obj:2:Building_ResourceTransporter:what:dc].</p>
+      <p>[reference:Buildings/ResourceTransporter.about]</p>
+    </ResourceTransporter.about>
+
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
     
@@ -4655,13 +4701,67 @@
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
 
+    <Gnat.name ref="Units/Gnat.name" />
+    <Gnat.about>
+      <p>[reference:Units/Gnat.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Gnat.about>
+
+    <Glancer.name ref="Units/Glancer.name" />
+    <Glancer.about>
+      <p>[reference:Units/Glancer.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Glancer.about>
+
+    <Spudder.name ref="Units/Spudder.name" />
+    <Spudder.about>
+      <p>[reference:Units/Spudder.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Spudder.about>
+
+    <Gnawer.name ref="Units/Gnawer.name" />
+    <Gnawer.about>
+      <p>[reference:Units/Gnawer.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Gnawer.about>
+
+    <Dirac.name ref="Units/Dirac.name" />
+    <Dirac.about>
+      <p>[reference:Units/Dirac.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Dirac.about>
+
+    <Thor.name ref="Units/Thor.name" />
+    <Thor.about>
+      <p>[reference:Units/Thor.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Thor.about>
+
+    <Demosis.name ref="Units/Demosis.name" />
+    <Demosis.about>
+      <p>[reference:Units/Demosis.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Demosis.about>
+
+    <Mule.name ref="Units/Mule.name" />
+    <Mule.about>
+      <p>[reference:Units/Mule.about]</p>
+      <p>Patobulinimas padidina laivo šarvus, talpą, variklius ir žalos
+         sugėrimo tikimybę</p>
+    </Mule.about>
+
+    <StorageSpecialization.name ref="Objects/Technology_StorageSpecialization"/>
+    <StorageSpecialization.about>
+      <p>Šis patobulinimas padidina [obj:2:Unit_Mule:whos:dc] talpą</p>
+    </StorageSpecialization.about>
+
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
       <p>Nors desantininkai ir neturi ypatingos technikos, būriuose jie yra
-      gana grėsminga jėga. Šis patobulinimas suteikia jiems papildomos kovinės
-      galios ir stipresnius šarvus, jog šie ištikimi vyrai ir moterys galėtų
-      geriau pasitarnauti mūšyje.</p>
-      <p>[reference:UnitUpgrade]</p>
+         gana grėsminga jėga. Šis patobulinimas suteikia jiems papildomos kovinės
+         galios ir stipresnius šarvus, jog šie ištikimi vyrai ir moterys galėtų
+         geriau pasitarnauti mūšyje.</p>
+      <p>[reference:GroundUpgrade]</p>
     </Trooper.about>
 
     <Shocker.name ref="Units/Shocker.name" />
@@ -4671,7 +4771,7 @@
       <p>Pagerina mecho šarvus ir raketas padarydamas jį dar galingesniu mūšyje.
       Papildomi šarvai padeda ilgiau ginti kitus karius, o zetiumu praturtintos
       raketos daro daugiau žalos.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Shocker.about>
 
     <Seeker.name ref="Units/Seeker.name" />
@@ -4682,7 +4782,7 @@
       leisti jam iššauti tą paskutinį šūvį, kurio taip reikėjo. Be šarvų ši
       technologija apginkluoja karį zetiumo lydinio kulkomis, kurios geriau 
       lekia ir daro daugiau žalos.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Seeker.about>
 
     <Scorpion.name ref="Units/Scorpion.name" />
@@ -4690,7 +4790,7 @@
       <p>Į skorpiono klasės tankus galima įmontuoti geresnius skydų generatorius
       ir galingesnius dalelių greitintuvus. Investicijos į šią technologiją
       tau duoda pranašumą prieš tokius pačius priešininko tankus.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Scorpion.about>
 
     <Azure.name ref="Units/Azure.name" />
@@ -4699,7 +4799,7 @@
       <p>[reference:Units/Azure.about]</p>
       <p>Įmaišant zetiumo į azurų raketas išgaunamas didesnis sprogstamasis 
       efektas, o panaudojant zetiumą jų šarvuose, jie sugeria daugiau žalos.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Azure.about>
 
     <Mantis.name ref="Objects/Technology_Mantis" />
@@ -4708,7 +4808,7 @@
       <p>[reference:Units/Mantis.about]</p>
       <p>Įmaišant zetiumo į azurų raketas išgaunamas didesnis sprogstamasis
       efektas, o panaudojant zetiumą jų šarvuose, jie sugeria daugiau žalos.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Mantis.about>
     
     <Zeus.name ref="Units/Zeus.name" />
@@ -4718,7 +4818,7 @@
       <p>Ši technologija padidina tanko šaudmenų greitį, o dėl to didėja ir jų
       daroma žala. Ji taip pat sustiprina tanko šarvus, jog jis galėtų atlaikyti 
       daugiau smūgių.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Zeus.about>
 
     <Mdh.name ref="Objects/Technology_Mdh" />
@@ -4728,7 +4828,7 @@
     <Crow.about>
       <p>Pagerina varno klasės laivų lazerius ir šarvus, taip padarant jį 
       geresniu koviniu laivu, kuris išlieka toks pat greitas.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Crow.about>
 
     <Cyrix.name ref="Units/Cyrix.name" />
@@ -4738,7 +4838,7 @@
       <p>Panaudojant zetiumo kristalus cyrikso klasės laivuose pagerinami jo
       lazeriai ir skydų generatoriai, todėl patobulinti laivai gali dalyvauti
       kovoje ilgiau.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Cyrix.about>
 
     <Rhyno.name ref="Units/Rhyno.name" />
@@ -4748,7 +4848,7 @@
       <p>Ši technologija patobulina ir taip grėsmingus raganosio klasės 
       kovinius laivus. Ji sustiprina jų šarvus zetiumo plokštėmis ir padidina
       laivo daromos žalos kiekį.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Rhyno.about>
 
     <Dart.name ref="Units/Dart.name" />
@@ -4757,7 +4857,7 @@
       <p>[reference:Units/Dart.about]</p>
       <p>Pagerina strėlės klasės laivų šarvus ir ginklus. Taip jie
       tampa dar labiau mirtingesni priešo laivams.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Dart.about>
 
     <Avenger.name ref="Units/Avenger.name" />
@@ -4766,7 +4866,7 @@
       <p>[reference:Units/Avenger.about]</p>
       <p>Pagerina keršytojų šarvus ir sustiprina jų raketas. Tai padaro šiuos
       laivus dar geresniais nuklydusių laivynų medžiotojais.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Avenger.about>
 
     <Jumper.name ref="Units/Jumper.name" />

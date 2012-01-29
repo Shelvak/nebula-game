@@ -15,6 +15,8 @@ package models.player
    
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
+   import mx.events.CollectionEvent;
+   import mx.events.CollectionEventKind;
    import mx.utils.ObjectUtil;
    
    import namespaces.prop_name;
@@ -549,12 +551,38 @@ package models.player
       public function get victoryPoints() : int {
          return _victoryPoints;
       }
-      
+
+      private var _planetsCount: int = 0;
+
+      public function get planetsCount():int
+      {
+         return _planetsCount;
+      }
       [Optional]
       /**
        * Number of planets in normal solar systems owned by the player.
        */ 
-      public var planetsCount:int = 0;
+      public function set planetsCount(value:int): void
+      {
+         _planetsCount = value;
+         dispatchPlanetCountChangeEvent();
+      }
+
+      private var _bgPlanetsCount: int = 0;
+
+      public function get bgPlanetsCount():int
+      {
+         return _bgPlanetsCount;
+      }
+      [Optional]
+      /**
+       * Number of planets in pulsar or battleground solar systems owned by the player.
+       */
+      public function set bgPlanetsCount(value:int): void
+      {
+         _bgPlanetsCount = value;
+         dispatchPlanetCountChangeEvent();
+      }
       
       
       public function reset() : void {
@@ -569,6 +597,7 @@ package models.player
          armyPoints = 0;
          economyPoints = 0;
          planetsCount = 0;
+         bgPlanetsCount = 0;
          if (_alliancesTechnology != null) {
             _alliancesTechnology.removeEventListener
                (UpgradeEvent.LEVEL_CHANGE, alliancesTech_levelChangeHandler, false);
@@ -621,6 +650,11 @@ package models.player
       
       private function dispatchPlayerEvent(type:String) : void {
          dispatchSimpleEvent(PlayerEvent as Class, type);
+      }
+
+      private function dispatchPlanetCountChangeEvent(): void
+      {
+         dispatchPlayerEvent(PlayerEvent.PLANET_COUNT_CHANGE);
       }
       
       private function dispatchScientistsChangeEvent(): void {

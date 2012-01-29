@@ -162,7 +162,7 @@ function getGameOptions() { // {{{
       if (! defined(server)) server = developmentServer();
       if (! defined(webPlayerId)) webPlayerId = developmentWebPlayerId;
       if (! defined(serverPlayerId)) serverPlayerId = developmentServerPlayerId;
-      if (! defined(locale)) locale = "en";
+      if (! defined(locale)) locale = "lt";
       if (! defined(webHost)) webHost = "localhost";
 
       document.title = "Local Dev Mode" + titleSuffix;
