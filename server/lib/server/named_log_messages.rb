@@ -1,5 +1,5 @@
 module NamedLogMessages
-  GameLogger::TYPE_TO_LEVEL.each do |type, level|
+  Logging::Writer::TYPE_TO_LEVEL.each do |type, level|
     define_method(type) do |message|
       LOGGER.send(type, message, to_s)
     end

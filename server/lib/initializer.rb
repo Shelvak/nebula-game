@@ -1,6 +1,8 @@
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
   unless defined?(ROOT_DIR)
 
+Thread.current[:name] = "main"
+
 class App
   SERVER_STATE_INITIALIZING = :initializing
   SERVER_STATE_RUNNING = :running
@@ -142,12 +144,17 @@ MAILER = lambda do |short, long|
   end
 end
 
-LOGGER = GameLogger.new(
-  File.expand_path(
-    File.join(ROOT_DIR, 'log', "#{App.env}.log")
-  )
+require "#{ROOT_DIR}/lib/server/logging.rb"
+log_writer_config = Logging::Writer::Config.new(:info)
+log_writer_config.outputs << File.new(
+  File.expand_path(File.join(ROOT_DIR, 'log', "#{App.env}.log")),
+  'a'
 )
-LOGGER.level = GameLogger::LEVEL_INFO
+# Need to eval to pass local variables to loaded file.
+eval(
+  File.read(File.join(ROOT_DIR, 'config', 'environments', App.env + ".rb")),
+  binding
+)
 
 # Error reporting by mail.
 if App.in_production?
@@ -156,10 +163,19 @@ if App.in_production?
     # -t is skipped because it fucks up delivery on some MTAs
     delivery_method :sendmail, :arguments => "-i"
   end
-  LOGGER.on_fatal = MAILER["FATAL", "Server has encountered an FATAL error!"]
-  LOGGER.on_error = MAILER["ERROR", "Server has encountered an error!"]
-  LOGGER.on_warn = MAILER["WARN", "Server has issued a warning!"]
+  log_writer_config.callbacks[:fatal] = MAILER[
+    "FATAL", "Server has encountered a FATAL error!"
+  ]
+  log_writer_config.callbacks[:error] = MAILER[
+    "ERROR", "Server has encountered an error!"
+  ]
+  log_writer_config.callbacks[:warn] = MAILER[
+    "WARN", "Server has issued a warning!"
+  ]
 end
+
+Logging::Writer.supervise_as :log_writer, log_writer_config.freeze
+LOGGER = Logging::ThreadRouter.instance
 
 def read_config(*path)
   filename = File.expand_path(File.join(*path))
@@ -175,7 +191,6 @@ rescue Exception => e
 end
 
 def load_config
-  load File.join(ROOT_DIR, 'config', 'environments', App.env + ".rb")
   LOGGER.info "Loading configuration for '#{App.env}' environment..."
 
   # Load custom environment configuration file if it exists

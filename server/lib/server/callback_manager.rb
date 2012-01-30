@@ -196,7 +196,7 @@ class CallbackManager
       title = "Callback @ #{row['ends_at']} for #{row['class']} (evt: '#{
         STRING_NAMES[row['event'].to_i]}', obj id: #{
         row['object_id']}, ruleset: #{row['ruleset']})"
-      LOGGER.block(title, :level => :info) do
+      LOGGER.block(title) do
         time = Benchmark.realtime do
           ActiveRecord::Base.transaction(:joinable => false) do
             # Delete entry before processing. This is needed because

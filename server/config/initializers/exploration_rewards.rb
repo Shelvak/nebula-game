@@ -97,8 +97,8 @@ class ExplorationRewardsInitializer < GameConfig::Initializer
       unit_count_range = config['unit_count']
       unit_hp_range = config['unit_hp']
 
-      LOGGER.block("Generating exploration rewards for #{key}", 
-        :level => :debug
+      LOGGER.block(
+        "Generating exploration rewards for #{key}", :level => :debug
       ) do
         %w{
           number level_range time_range unit_types unit_count_range 

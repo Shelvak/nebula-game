@@ -19,7 +19,9 @@ module LoggingServer
     debug "Client disconnected."
   end
 
-  def log_request(message, &block)
-    LOGGER.request(message, to_s, "#{@ip}:#{@port}", &block)
+  def log_request(&block)
+    LOGGER.request(
+      "REQUEST from #{@ip}:#{@port}", {:component => to_s}, &block
+    )
   end
 end
