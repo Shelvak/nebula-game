@@ -163,7 +163,7 @@ class CallbackManager
       ) if include_failed
 
       get_row = lambda do
-        LOGGER.suppress(:debug) { get(sql) }
+        LOGGER.except(:debug) { get(sql) }
       end
 
       # Request unprocessed entries that have hit
