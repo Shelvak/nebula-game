@@ -102,7 +102,10 @@ package models.building
       public static const RADAR_STRENGTH: String = 'radar.strength';
       public static const FEE: String = 'fee';
 
-      public var metaLevel: int = 0;
+      public var metaLevel: int = -1;
+      public function get hasMetaLevel(): Boolean {
+         return metaLevel > -1;
+      }
       
       public static function getMarketTaxRate(marketLevel: int): Number
       {
@@ -139,7 +142,7 @@ package models.building
          return [BuildingType.HEALING_CENTER,
             BuildingType.RESEARCH_CENTER,
             BuildingType.DEFENSIVE_PORTAL,
-            BuildingType.MARKET,
+            BuildingType.MARKET
          ].indexOf(type) != -1;
       }
 

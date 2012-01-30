@@ -337,7 +337,9 @@ package components.planetmapeditor
          building.type = type;
          building.planetId = 1;
          building.level = building.npc ? 1 : level;
-         building.metaLevel = building.npc ? level : 0;
+         if (building.npc) {
+            building.metaLevel = level;
+         }
          Building.setSize(building);
          return building;
       }
