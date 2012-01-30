@@ -5,53 +5,25 @@ package components.map.planet.objects
    
    import models.building.Building;
    import models.tile.Tile;
-   
+
+   import mx.core.UIComponent;
+
    import spark.components.Group;
    import spark.primitives.BitmapImage;
    
    
    /**
-    * This is a component that is shown when user want's to build a new building and looks
+    * This is a component that is shown when user wants to build a new building and looks
     * for a place to build it. 
     */
-   public class BuildingPlaceholder extends Group implements IPrimitivePlanetMapObject
+   public class BuildingPlaceholder extends CObjectPlaceholder
    {
-      public function BuildingPlaceholder()
-      {
-         super();
-         mouseEnabled = false;
-         mouseChildren = false;
-         focusEnabled = false;
-      }
-      
-      
-      include "mixin_defaultModelPropImpl.as";
-      
-      
-      /**
-       * @copy components.map.planet.objects.PrimitivePlanetMapObject#initProperties()
-       */
-      protected function initProperties() : void
-      {
-         width  = model.imageWidth;
-         height = model.imageHeight;
+      override protected function commitModel() : void  {
+         super.commitModel();
          initInterferingTiles();
       }
       
-      
-      public function cleanup() : void
-      {
-         _model = null;
-      }
-      
-      
-      public function setDepth() : void
-      {
-      }
-      
-      
-      public function getBuilding() : Building
-      {
+      public function getBuilding() : Building {
          return Building(model);
       }
       
@@ -60,47 +32,40 @@ package components.map.planet.objects
       /* ### CHILDREN ### */
       /* ################ */
       
-      
       private var _basement:PlanetObjectBasementTiled;
-      
-      
-      protected override function createChildren() : void
-      {
-         super.createChildren();
-         
-         _basement = new PlanetObjectBasementTiled(
-            TileState.BUILD_RESTRICT,
-            getBuilding().width  + Building.GAP_BETWEEN * 2,
-            getBuilding().height + Building.GAP_BETWEEN * 2
-         );
-         _basement.bottom = -Tile.IMAGE_HEIGHT;
-         _basement.right  = -Tile.IMAGE_WIDTH;
-         _basement.alpha = 0.3;
-         addElement(_basement);
-         
-         var mainImage:BitmapImage = new BitmapImage();
-         mainImage.source = getBuilding().imageData;
-         addElement(mainImage);
+      override protected function createBasement(): UIComponent {
+         const gap:int = Building.GAP_BETWEEN;
+         const addSize:int = gap * 2;
+         const basement:PlanetObjectBasementTiled =
+                  new PlanetObjectBasementTiled(
+                     TileState.BUILD_RESTRICT,
+                     model.width  + addSize,
+                     model.height + addSize
+                  );
+         basement.bottom = -Tile.IMAGE_HEIGHT * gap;
+         basement.right  = -Tile.IMAGE_WIDTH * gap;
+         return basement;
       }
       
       
       /* ################### */
       /* ### TILES UNDER ### */
       /* ################### */
-      
-      
-      private var _interferingTiles:Vector.<Vector.<Boolean>>;
-      private function initInterferingTiles() : void
-      {
-         var width:int = getBuilding().width + Building.GAP_BETWEEN * 2;
-         var height:int = getBuilding().height + Building.GAP_BETWEEN * 2;
+
+      private var _interferingTiles: Vector.<Vector.<Boolean>>;
+      private function initInterferingTiles(): void {
+         if (model == null) {
+            return;
+         }
+         var width: int = model.width + Building.GAP_BETWEEN * 2;
+         var height: int = model.height + Building.GAP_BETWEEN * 2;
          _interferingTiles = new Vector.<Vector.<Boolean>>(width, true);
-         for (var lx:int = 0; lx < width; lx++)
-         {
+         for (var lx: int = 0; lx < width; lx++) {
             _interferingTiles[lx] = new Vector.<Boolean>(height, true);
          }
          resetInterferingTiles();
       }
+
       /**
        * A 2D array which marks tiles under the placeholder as interfering with building process
        * (<code>true</code>) or not (<code>false</code>).
@@ -108,63 +73,52 @@ package components.map.planet.objects
        * <p>Once you are done modifying this, invoke <code>applyInterferingTiles()</code> to apply the
        * changes.</p>
        */
-      public function get interferingTiles() : Vector.<Vector.<Boolean>>
-      {
+      public function get interferingTiles(): Vector.<Vector.<Boolean>> {
          return _interferingTiles;
       }
-      
-      
+
       /**
        * Call this when you are done modifying the <code>interferingTiles</code> array to apply the changes.
        */
-      public function applyInterferingTiles() : void
-      {
+      public function applyInterferingTiles(): void {
          f_interferingTilesChanged = true;
          invalidateProperties();
       }
-      
-      
+
       /**
        * Marks all tiles as interfering with building process (if <code>value == true</code>) or
        * not (if <code>value = false</code>).
        */
-      public function resetInterferingTiles(value:Boolean = true) : void
-      {
-         var width:int = getBuilding().width + Building.GAP_BETWEEN * 2;
-         var height:int = getBuilding().height + Building.GAP_BETWEEN * 2;
-         for (var lx:int = 0; lx < width; lx++)
-         {
-            for (var ly:int = 0; ly < height; ly++)
-            {
+      public function resetInterferingTiles(value: Boolean = true): void {
+         if (model == null) {
+            return;
+         }
+         var width: int = model.width + Building.GAP_BETWEEN * 2;
+         var height: int = model.height + Building.GAP_BETWEEN * 2;
+         for (var lx: int = 0; lx < width; lx++) {
+            for (var ly: int = 0; ly < height; ly++) {
                _interferingTiles[lx][ly] = value;
             }
          }
          applyInterferingTiles();
       }
-      
-      
-      private var f_interferingTilesChanged:Boolean = true;
-      
-      
-      protected override function commitProperties() : void
-      {
+
+      private var f_interferingTilesChanged: Boolean = true;
+      protected override function commitProperties(): void {
          super.commitProperties();
-         if (f_interferingTilesChanged && getBuilding() != null)
-         {
-            var building:Building = getBuilding();
-            var width:int  = building.width  + Building.GAP_BETWEEN * 2;
-            var height:int = building.height + Building.GAP_BETWEEN * 2;
-            for (var lx:int = 0; lx < width; lx++)
-            {
-               for (var ly:int = 0; ly < height; ly++)
-               {
-                  _basement.tileStates[lx][ly] = _interferingTiles[lx][ly] ?
-                     TileState.BUILD_RESTRICT :
-                     TileState.BUILD_OK;
-               }
-            }
-            _basement.applyTileStates();
+         if (!f_interferingTilesChanged || model == null) {
+            return;
          }
+         var width: int = model.width + Building.GAP_BETWEEN * 2;
+         var height: int = model.height + Building.GAP_BETWEEN * 2;
+         for (var lx: int = 0; lx < width; lx++) {
+            for (var ly: int = 0; ly < height; ly++) {
+               _basement.tileStates[lx][ly] = _interferingTiles[lx][ly]
+                                                 ? TileState.BUILD_RESTRICT
+                                                 : TileState.BUILD_OK;
+            }
+         }
+         _basement.applyTileStates();
          f_interferingTilesChanged = false;
       }
    }

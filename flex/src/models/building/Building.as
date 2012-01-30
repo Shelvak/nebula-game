@@ -1,27 +1,12 @@
 package models.building
 {
+   import config.Config;
+
+   import controllers.objects.ObjectClass;
+
+   import flash.display.BitmapData;
    import flash.events.Event;
 
-   import models.resource.ResourcesAmount;
-
-   import utils.ModelUtil;
-
-   import utils.ModelUtil;
-
-   // Explicitly reference all building classes here that are not referenced directly anywhere in the code.
-   MetalExtractor;
-   MetalExtractorT2;
-   ZetiumExtractor;
-   ZetiumExtractorT2;
-   CollectorT3;
-   
-   
-   import config.Config;
-   
-   import controllers.objects.ObjectClass;
-   
-   import flash.display.BitmapData;
-   
    import models.ModelsCollection;
    import models.building.events.BuildingEvent;
    import models.constructionqueueentry.ConstructionQueueEntry;
@@ -33,23 +18,32 @@ package models.building
    import models.parts.events.UpgradeEvent;
    import models.planet.MPlanetObject;
    import models.resource.ResourceType;
-   import models.tile.Tile;
    import models.tile.TileKind;
    import models.unit.Unit;
-   
+
    import mx.collections.ArrayCollection;
    import mx.events.FlexEvent;
-   
+
    import namespaces.prop_name;
-   
+
    import spark.components.List;
-   
+
    import utils.MathUtil;
+   import utils.ModelUtil;
+   import utils.Objects;
    import utils.StringUtil;
    import utils.assets.AssetNames;
    import utils.locale.Localizer;
-   
-   
+
+
+   // Explicitly reference all building classes here that are not referenced directly anywhere in the code.
+   MetalExtractor;
+   MetalExtractorT2;
+   ZetiumExtractor;
+   ZetiumExtractorT2;
+   CollectorT3;
+
+
    /**
     * Dispatched when <code>level</code> property has changed.
     * 
@@ -107,6 +101,11 @@ package models.building
       public static const STORE: String = 'store';
       public static const RADAR_STRENGTH: String = 'radar.strength';
       public static const FEE: String = 'fee';
+
+      public var metaLevel: int = -1;
+      public function get hasMetaLevel(): Boolean {
+         return metaLevel > -1;
+      }
       
       public static function getMarketTaxRate(marketLevel: int): Number
       {
@@ -143,8 +142,22 @@ package models.building
          return [BuildingType.HEALING_CENTER,
             BuildingType.RESEARCH_CENTER,
             BuildingType.DEFENSIVE_PORTAL,
-            BuildingType.MARKET,
+            BuildingType.MARKET
          ].indexOf(type) != -1;
+      }
+
+      /**
+       * Sets the size of for the given building. Loads size values from config.
+       * 
+       * @return the building given
+       */
+      public static function setSize(building:Building): Building {
+         Objects.paramNotNull("building", building);
+         building.setSize(
+            Config.getBuildingWidth(building.type),
+            Config.getBuildingHeight(building.type)
+         );
+         return building;
       }
       
       [Bindable (event="typeChange")]
@@ -510,7 +523,7 @@ package models.building
       public var constructableId: int = 0;
       
       /**
-       * Id of the constructor which is curently constructing this building 
+       * Id of the constructor which is currently constructing this building
        */      
       public var constructorId: int = 0;
       
@@ -756,40 +769,8 @@ package models.building
       }
       
       
-      /**
-       * Changes building's position: <code>x</code> and <code>y</code> properties
-       * are set to new values provided and <code>xEnd</code> and <code>yEnd</code>
-       * properties are modified accordingly. This method allows you to pass
-       * negative values. However this will result <code>positionLegal</code>
-       * property change it's value to <code>false</code>.
-       * 
-       * @param x
-       * @param y
-       * 
-       * @return <code>true</code> if the building was actually moved or
-       * <code>false</code> otherwise.
-       */      
-      public function moveTo(x:Number, y:Number) : Boolean
-      {
-         if (x == this.x && y == this.y)
-         {
-            return false;
-         }
-         var w:Number = width;
-         var h:Number = height;
-         suppressDimensionChangeEvent = true;
-         this.x = x;
-         this.y = y;
-         this.xEnd = x + w - 1;
-         this.yEnd = y + h - 1;
-         suppressDimensionChangeEvent = false;
-         dispatchDimensionChangeEvent();
-         return true;
-      }
-      
-      
       public static const RESTRICTED_TILES:ArrayCollection =
-         new ArrayCollection([TileKind.WATER].concat(TileKind.RESOURCE_TILES));
+         new ArrayCollection(TileKind.RESOURCE_TILES);
       /**
        * List of tile types that this building can't be built on. Items in the collection
        * are integers from <code>TileKind</code> class. Instances of <code>Building</code>
@@ -834,8 +815,7 @@ package models.building
                 ", y: " + y +
                 ", yEnd: " + yEnd + "]";
       }
-      
-      
+
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */

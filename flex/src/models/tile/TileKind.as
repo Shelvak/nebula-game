@@ -46,11 +46,6 @@ package models.tile
        */
       public static const ZETIUM: int = 2;
       
-      /**
-       * Defines constant for water tile kind.
-       */
-      public static const WATER:int = 7;
-      
       
       /**
        * @return true if the given tile kind is a resource tile kind, false - otherwise.
@@ -68,7 +63,6 @@ package models.tile
          NOXRIUM,
          SAND,
          TITAN,
-         WATER,
          REGULAR
       ];
       

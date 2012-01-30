@@ -58,7 +58,16 @@ package models.solarsystem
     * 
     * @eventType models.solarsystem.events.MSSObjectEvent.COOLDOWN_CHANGE
     */
-   [Event(name="cooldownChange", type="models.solarsystem.events.MSSObjectEvent")]
+   [Event(
+      name="cooldownChange",
+      type="models.solarsystem.events.MSSObjectEvent")]
+
+   /**
+    * Dispatched when <code>terrain</code> property changes.
+    */
+   [Event(
+      name="terrainChange",
+      type="models.solarsystem.events.MSSObjectEvent")]
    
    public class MSSObject extends BaseModel implements IMStaticSpaceObject,
                                                        ICleanable
@@ -173,21 +182,31 @@ package models.solarsystem
          if (isAsteroid) return NameResolver.resolveAsteroid(id);
          return NameResolver.resolveJumpgate(id);
       }
-      
+
+      private var _terrain: int = TerrainType.GRASS;
       [SkipProperty]
       [Optional]
-      [Bindable(event="willNotChange")]
+      [Bindable(event="terrainChange")]
       /**
        * Terrain type of the object (only relevant if object is a planet).
+       * This property is changed only at runtime by
+       * <code>MPlanetMapEditor</code>.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [SkipProperty]<br/>
-       * [Optional]<br/>
-       * [Bindable(event="willNotChange")]</i></p>
+       * [Optional]</i></p>
        * 
        * @default <code>TerrainType.GRASS</code>
        */
-      public var terrain:int = TerrainType.GRASS;
+      public function set terrain(value: int): void {
+         if (_terrain != value) {
+            _terrain = value;
+            dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.TERRAIN_CHANGE);
+         }
+      }
+      public function get terrain(): int {
+         return _terrain;
+      }
       
       [SkipProperty]
       [Required]

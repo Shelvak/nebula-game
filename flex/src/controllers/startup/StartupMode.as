@@ -4,5 +4,6 @@ package controllers.startup
    {
       public static const GAME:String = "game";
       public static const BATTLE:String = "combatLog";
+      public static const MAP_EDITOR:String = "planetMapEditor";
    }
 }

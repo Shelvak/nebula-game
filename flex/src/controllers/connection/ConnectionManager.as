@@ -6,6 +6,7 @@ package controllers.connection
    import components.popups.ErrorPopup;
 
    import controllers.combatlogs.CombatLogsCommand;
+   import controllers.game.GameCommand;
    import controllers.messages.ResponseMessagesTracker;
    import controllers.players.PlayersCommand;
    import controllers.startup.StartupInfo;
@@ -201,10 +202,20 @@ package controllers.connection
       
       private function serverProxy_connectionEstablishedHandler(event:ServerProxyEvent) : void
       {
-         if (STARTUP_INFO.mode == StartupMode.GAME)
-            new PlayersCommand(PlayersCommand.LOGIN).dispatch();
-         else
-            new CombatLogsCommand(CombatLogsCommand.SHOW).dispatch();
+         switch (STARTUP_INFO.mode) {
+
+            case StartupMode.GAME:
+               new PlayersCommand(PlayersCommand.LOGIN).dispatch();
+               break;
+
+            case StartupMode.BATTLE:
+               new CombatLogsCommand(CombatLogsCommand.SHOW).dispatch();
+               break;
+            
+            case StartupMode.MAP_EDITOR:
+               new GameCommand(GameCommand.CONFIG).dispatch();
+               break;
+         }
       }
       
       

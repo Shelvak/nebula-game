@@ -1,8 +1,7 @@
 package models.factories
 {
    import controllers.objects.ObjectClass;
-   
-   import models.BaseModel;
+
    import models.building.Building;
    import models.constructionqueueentry.ConstructionQueueEntry;
    import models.folliage.Folliage;
@@ -11,16 +10,15 @@ package models.factories
    import models.planet.MPlanetObject;
    import models.solarsystem.MSSObject;
    import models.tile.Tile;
-   
+
    import mx.collections.ArrayCollection;
-   
+
    import utils.ModelUtil;
    import utils.datastructures.Collections;
-   
-   
-   
+
+
    /**
-    * Lets easily create instaces of planets. 
+    * Lets easily create instances of planets.
     */
    public class PlanetFactory
    {
@@ -33,77 +31,54 @@ package models.factories
       public static function fromSSObject(ssObject:MSSObject,
                                           tiles:Array,
                                           buildings:Array,
-                                          folliages:Array) : MPlanet
-      {
-         
+                                          foliage:Array) : MPlanet {
          var planet:MPlanet = new MPlanet(ssObject);
          var objects:ArrayCollection = new ArrayCollection();
-         
-         for each (var t:Object in tiles)
-         {
-            var tile:Tile = TileFactory.fromObject(t);
-            planet.addTile(tile);
-            
-            // If the tile is of resource type, add other three resource tiles but mark
-            // them as fake.
-            if (tile.isResource())
-            {
-               addFakeTile(planet, tile, true,  false);   // Fake tile on the right
-               addFakeTile(planet, tile, false, true);    // Fake tile under
-               addFakeTile(planet, tile, true,  true);    // Fake tile on the right and under
-            }
-            
-            // If the tile is of folliage that means we need blocking folliage
-            if (tile.isFolliage())
-            {
+         for each (var t: Object in tiles) {
+            var tile: Tile = TileFactory.fromObject(t);
+            if (tile.isFolliage()) {
                objects.addItem(FolliageFactory.blocking(tile));
             }
+            else {
+               planet.addTile(tile.kind, tile.x, tile.y);
+            }
          }
-         for each (var building:Object in buildings)
-         {
-            var b:Building = BuildingFactory.fromObject(building);
-            objects.addItem(b);
-            if (b.isConstructor(ObjectClass.BUILDING))
-            {
-               for each (var queueEntry:ConstructionQueueEntry in b.constructionQueueEntries)
-               {
+         for each (var building: Object in buildings) {
+            var buildingModel: Building = BuildingFactory.fromObject(building);
+            objects.addItem(buildingModel);
+            if (buildingModel.isConstructor(ObjectClass.BUILDING)) {
+               for each (var queueEntry:ConstructionQueueEntry
+                                 in buildingModel.constructionQueueEntries) {
                   objects.addItem(BuildingFactory.createGhost(
                      ModelUtil.getModelSubclass(queueEntry.constructableType),
                      queueEntry.params.x,
                      queueEntry.params.y,
-                     b.id,
+                     buildingModel.id,
                      queueEntry.prepaid
                   ));
                }
             }
          }
-         for each (var genericFolliage:Object in folliages)
-         {
-            var folliage:NonblockingFolliage = FolliageFactory.nonblockingFromObject(genericFolliage);
-            var object:MPlanetObject = Collections.findFirst(objects,
-               function(object:MPlanetObject) : Boolean
-               {
-                  return object.fallsIntoArea(folliage.x, folliage.xEnd, folliage.y, folliage.yEnd);
+         for each (var genericFoliage: Object in foliage) {
+            var foliageModel: NonblockingFolliage =
+                   FolliageFactory.nonblockingFromObject(genericFoliage);
+            var object: MPlanetObject = Collections.findFirst(
+               objects,
+               function(object: MPlanetObject): Boolean {
+                  return object.fallsIntoArea(
+                     foliageModel.x, foliageModel.xEnd,
+                     foliageModel.y, foliageModel.yEnd
+                  );
                }
             );
-            if (object == null)
-            {
-               objects.addItem(folliage);
+            if (object == null) {
+               objects.addItem(foliageModel);
             }
          }
          planet.addAllObjects(objects);
          Folliage.setTerrainType(ssObject.terrain, planet.folliages);
          
          return planet;
-      }
-      
-      
-      private static function addFakeTile(planet:MPlanet, orig:Tile, incrX:Boolean, incrY:Boolean) : void
-      {
-         var fake: Tile = orig.cloneFake();
-         if (incrX) fake.x++;
-         if (incrY) fake.y++;
-         planet.addTile(fake);
       }
    }
 }

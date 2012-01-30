@@ -145,10 +145,7 @@ package components.base.viewport
       
       private var f_initializeVisibleAreaTracker:Boolean = false;
       private var _visibleAreaTracker:VisibleAreaTracker;
-      protected function get visibleAreaTracker() : VisibleAreaTracker {
-         return _visibleAreaTracker;
-      }
-      
+
       private function callContentInitialized() : void {
          f_initializeVisibleAreaTracker = false;
          if (_visibleAreaTracker != null && _content != null) {
@@ -205,7 +202,7 @@ package components.base.viewport
       private var _contentContainer:Group;
       private var _viewport:Group;
       private var _scroller:Scroller;
-      private var _underlaySprite:SpriteVisualElement
+      private var _underlaySprite: SpriteVisualElement;
       
       
       private var f_childrenCreated:Boolean = false;
@@ -223,7 +220,7 @@ package components.base.viewport
       
       protected override function createChildren() : void
       {
-         if (f_cleanupCalled) {
+         if (f_cleanupCalled || f_childrenCreated) {
             super.createChildren();
             return;
          }
@@ -257,6 +254,8 @@ package components.base.viewport
          _underlaySprite.bottom = 0;
          _underlaySprite.mouseEnabled =
          _underlaySprite.mouseChildren = false;
+
+         f_childrenCreated = true;
          
          super.createChildren();
       }
@@ -338,17 +337,8 @@ package components.base.viewport
       {
          return _content ? _content.height * _content.scaleY : 0;
       }
-      
-      
-      /**
-       * Container that holds content and is actually moved around.
-       */
-      protected function get contentContainer() : Group
-      {
-         return _contentContainer;
-      }
-      
-      
+
+
       /**
        * You should register any event listeners with <code>code</code> here and do other
        * modifications for the content before it is added to the display list. Calling
@@ -403,15 +393,7 @@ package components.base.viewport
             invalidateProperties();
          }
       }
-      /**
-       * @private
-       */
-      public function get overlay() : UIComponent
-      {
-         return _overlay;
-      }
-      
-      
+
       private function installOverlay(overlay:UIComponent) : void
       {
          overlay.mouseEnabled = false;
@@ -450,15 +432,7 @@ package components.base.viewport
             invalidateDisplayList();
          }
       }
-      /**
-       * @private
-       */
-      public function get underlayImage() : BitmapData
-      {
-         return _underlayImage;
-      }
-      
-      
+
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
@@ -474,15 +448,7 @@ package components.base.viewport
             _underlayScrollSpeedRatio = value;
          }
       }
-      /**
-       * @private
-       */
-      public function get underlayScrollSpeedRatio() : Number
-      {
-         return _underlayScrollSpeedRatio;
-      }
-      
-      
+
       private var _paddingHorizontal:uint = 0;
       /**
        * Horizontal padding (left and right) for content.
@@ -629,6 +595,12 @@ package components.base.viewport
       /* ### MOVING CONTENT AROUND ### */
       /* ############################# */
       
+      /**
+       * Is content drag feature enabled?
+       *
+       * @default true
+       */
+      public var contentDragEnabled:Boolean = true;
       
       /**
        * Centers content in the viewport. 
@@ -748,6 +720,7 @@ package components.base.viewport
       private function startContentDrag(event:MouseEvent) : void
       {
          if (f_cleanupCalled ||
+             !contentDragEnabled ||
              !_content ||
              DisplayListUtil.isInsideType(event.target, VScrollBar) ||
              DisplayListUtil.isInsideType(event.target, HScrollBar) ||
@@ -785,8 +758,9 @@ package components.base.viewport
       
       private function stopContentDrag() : void
       {
-         if (f_cleanupCalled)
+         if (!contentDragEnabled || f_cleanupCalled) {
             return;
+         }
          
          f_contentOnDrag = false;
          removeEventListener(MouseEvent.MOUSE_MOVE, doContentDrag);
@@ -821,7 +795,7 @@ package components.base.viewport
       
       
       /* ############################################################# */
-      /* ### COORDINATES IN VIEWPORT AND CONTENT CORRDINATE SPACES ### */
+      /* ### COORDINATES IN VIEWPORT AND CONTENT COORDINATE SPACES ### */
       /* ############################################################# */
       
       
@@ -875,10 +849,10 @@ package components.base.viewport
       }
       
       
-      protected var f_keyboarControlActive:Boolean = false;
+      protected var f_keyboardControlActive:Boolean = false;
       protected function global_keyDownHandler(event:KeyboardEvent) : void
       {
-         if (!f_cleanupCalled && f_keyboarControlActive)
+         if (!f_cleanupCalled && f_keyboardControlActive)
          {
             var delta:Point;
             switch (event.keyCode)
@@ -970,15 +944,14 @@ package components.base.viewport
       
       protected function this_rollOverHandler(event:MouseEvent) : void
       {
-         f_keyboarControlActive = true;
+         f_keyboardControlActive = true;
       }
       
       
-      protected function this_rollOutHandler(event:MouseEvent) : void
-      {
-         if (!DisplayListUtil.isInsideInstance(event.target, _content))
-         {
-            f_keyboarControlActive = false;
+      protected function this_rollOutHandler(event:MouseEvent) : void {
+         if (_content != null
+                && !DisplayListUtil.isInsideInstance(event.target, _content)) {
+            f_keyboardControlActive = false;
             stopContentDrag();
          }
       }

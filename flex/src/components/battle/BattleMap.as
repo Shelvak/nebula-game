@@ -158,7 +158,7 @@ package components.battle
          unitsMatrix.isFree(currentCell, new Point(currentCell.x, 1));
          calculateSize();
          
-         renderBackground();
+         renderBattleBackground();
          
          //         if (Profiler.enabled) 
          //         {
@@ -195,7 +195,7 @@ package components.battle
       
       public var overallHp: OverallHpPanel = new OverallHpPanel();
       
-      public override function getBackground() : BitmapData
+      public override function getBackground(useCached:Boolean = true) : BitmapData
       {
          return _backgroundData;
       }
@@ -523,7 +523,7 @@ package components.battle
       
       
       private var _backgroundData:BitmapData = null;
-      private function renderBackground() : void
+      private function renderBattleBackground() : void
       {
          _backgroundData = new BattlefieldBackgroundRenderer
             (_battle.location.terrain, spaceHeight, groundHeight, totalWidth).render();
