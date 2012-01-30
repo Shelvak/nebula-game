@@ -1,4 +1,4 @@
-# Ensures synchronized, ordered writing to logfiles.
+# Ensures synchronized, ordered writing to log outputs.
 class Logging::Writer
   class Config
     attr_accessor :level, :outputs, :callbacks
