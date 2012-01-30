@@ -117,8 +117,6 @@ package controllers.startup
          registerStartupInfo(startupInfo);
          
          startupInfo.loadSuccessful = true;
-         // TODO: remove when we are finished with map editor
-         startupInfo.mode = StartupMode.MAP_EDITOR;
          if (startupInfo.mode == StartupMode.BATTLE) {
             ML.player.id = startupInfo.playerId;
          }

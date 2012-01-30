@@ -12,7 +12,9 @@ package components.planetmapeditor
    import models.tile.Tile;
    import models.tile.TileKind;
 
-   import utils.Objects;
+import mx.controls.Alert;
+
+import utils.Objects;
 
 
    public final class PlanetMapSerializer
@@ -175,14 +177,25 @@ package components.planetmapeditor
          const ssObject: MSSObject = new MSSObject();
          ssObject.id = 1;
          ssObject.type = SSObjectType.PLANET;
-         ssObject.terrain = TerrainType.getType(
-            String(newRows[0])
-               .replace(/terrain:\s*<%=\s*Terrain::/, "")
-               .replace(/\s*%>$/, "")
-         );
-         ssObject.name = String(newRows[1])
-                            .replace(/name:\s+"/, "")
-                            .replace(/-%d"\s*/, "");
+         try {
+            ssObject.terrain = TerrainType.getType(
+               /terrain:\s*<%=\s*Terrain::([[A-Z]+)\s*%>/.exec(newRows[0])[1]
+            );
+         }
+         catch (e: Error) {
+            Alert.show("Error parsing terrain, setting to earth!\n" +
+               e.message + "\nData:\n" + newRows[0]);
+            ssObject.terrain = TerrainType.GRASS;
+         }
+
+         try {
+            ssObject.name = /name: "(.+?)(-%d)?"/.exec(newRows[1])[1];
+         }
+         catch (e: Error) {
+            Alert.show("Error parsing name, setting to default!\n" +
+               e.message + "\nData:\n" + newRows[1]);
+            ssObject.name = "P";
+         }
 
          const rows: Array = newRows.slice(3).reverse().map(
             function(row: String, index: int, array: Array): String {

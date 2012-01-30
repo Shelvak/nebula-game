@@ -71,12 +71,12 @@
 # First tile is of given type, second one is level (0 to 9) and other one's are
 # void.
 homeworld:
-  - terrain: <%= Terrain::EARTH %>
-    name: Terra-%d
+  - weight: 1000
     # More weight means more probability this map will be picked.
-    weight: 1000
     resources: [2000.0, 4000.0, 0.0]
     units: []
+    terrain: <%= Terrain::EARTH %>
+    name: "Terra-%d"
     map:
       - "----. . . . .-/-/ .-/-/ . . . / / . . /-/-. . . . .-.-. .-. .-.-.-. .-.-.-.-. "
       - "$Z-2. .-.-. .P/2/ /P/2/ /-/-/ /-/-/ . /P/2. / / . .P.4.P.4. .-.-.-. .P.4.P.4. "
