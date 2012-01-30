@@ -69,7 +69,7 @@ package tests.planetmapeditor
          assertThat(
             "empty map of 4x4 size",
             serialize(newPlanet(4, 4)), equals (
-               'terrain: 0\n' +
+               'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -87,7 +87,7 @@ package tests.planetmapeditor
          assertThat(
             "4x4 map with 2x2 building of level 2 at (1; 1)",
             serialize(planet), equals (
-               'terrain: 0\n' +
+               'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -105,7 +105,7 @@ package tests.planetmapeditor
          assertThat(
             "4x4 map with 2x2 building of level 10 at (1; 1)",
             serialize(planet), equals (
-               'terrain: 0\n' +
+               'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -126,7 +126,7 @@ package tests.planetmapeditor
          assertThat(
             "4x4 map with 2x2 TITAN field at (1; 1)",
             serialize(planet), equals (
-               'terrain: 0\n' +
+               'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -148,7 +148,7 @@ package tests.planetmapeditor
             "4x4 map with 2x2 npc building of level 0 at (1; 1) and " +
                "NOXRIUM at (1; 1), (2; 1), (2; 2)",
             serialize(planet), equals (
-               'terrain: 0\n' +
+               'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -169,7 +169,7 @@ package tests.planetmapeditor
          assertThat(
             "4x7 map with NPC extractor at (1; 1) and player extractor at (1; 4)",
             serialize(planet), equals (
-               'terrain: 0\n' +
+               'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
                'map:\n' +
                '  - ". . . . . . . "\n' +
@@ -187,7 +187,7 @@ package tests.planetmapeditor
          assertThat(
             "4x4 map with GEOTHERMAL spot at (1; 1)",
             serialize(planet), equals (
-               'terrain: 0\n' +
+               'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -205,7 +205,7 @@ package tests.planetmapeditor
          assertThat(
             "4x5 map with 2x3 foliage at (1; 1)",
             serialize(planet), equals (
-               'terrain: 0\n' +
+               'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -225,7 +225,7 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_emptyMap(): void {
          const planet: MPlanet = deserialize(
-            'terrain: 1\n' +
+            'terrain: <%= Terrain::DESERT %>\n' +
             'name: "Test-%d"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
@@ -252,7 +252,7 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithOneResourceTile(): void {
          const planet: MPlanet = deserialize(
-            'terrain: 0\n' +
+            'terrain: <%= Terrain::EARTH %>\n' +
             'name: "P-%d"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
@@ -285,7 +285,7 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithNoxriumField(): void {
          const planet: MPlanet = deserialize(
-            'terrain: 0\n' +
+            'terrain: <%= Terrain::EARTH %>\n' +
             'name: "P-%d"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
@@ -311,7 +311,7 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithFoliage(): void {
          const planet: MPlanet = deserialize(
-            'terrain: 0\n' +
+            'terrain: <%= Terrain::EARTH %>\n' +
             'name: "P-%d"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
@@ -334,7 +334,7 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithBuilding(): void {
          const planet: MPlanet = deserialize(
-            'terrain: 0\n' +
+            'terrain: <%= Terrain::EARTH %>\n' +
             'name: "P-%d"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
@@ -358,7 +358,7 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithExtractor(): void {
          const planet: MPlanet = deserialize(
-            'terrain: 0\n' +
+            'terrain: <%= Terrain::EARTH %>\n' +
             'name: "P-%d"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
@@ -393,7 +393,7 @@ package tests.planetmapeditor
       [Test]
       public function deserialize_mapWithBuildingAndNonRegularTilesUnderIt(): void {
          const planet: MPlanet = deserialize(
-            'terrain: 0\n' +
+            'terrain: <%= Terrain::EARTH %>\n' +
             'name: "P-%d"\n' +
             'map:\n' +
             '  - ". # # # . . "\n' +
@@ -422,7 +422,7 @@ package tests.planetmapeditor
          assertThat( "only one object", planet.objects, arrayWithSize (1) );
          const building: Building = planet.getObject(1, 0) as Building;
          assertThat( "building at (0; 1)", building, notNullValue() );
-         assertThat( "building level", building.level, equals (3) );
+         assertThat( "building level", building.metaLevel, equals (3) );
          assertThat(
             "building is not Extractor",
             building, not (instanceOf (Extractor))
@@ -460,7 +460,12 @@ package tests.planetmapeditor
          const building: Building = new Building();
          building.id = 1;
          building.type = type;
-         building.level = level;
+         if (building.npc) {
+            building.metaLevel = level;
+         }
+         else {
+            building.level = level;
+         }
          building.moveTo(x, y);
          building.hp = building.hpMax;
          Building.setSize(building);

@@ -155,44 +155,31 @@ package components.planetmapeditor
             row = '  - "' + row + '"';
             rows.push(row);
          }
-         return 'terrain: <%= Terrain::' + getTerrainString(
-                  planet.ssObject.terrain) + ' %>\n' +
-                'name: "' + planet.ssObject.name + '-%d"\n' +
-                'map:\n' + rows.reverse().join('\n');
-      }
-
-      private function getTerrainString(terrainType: int): String
-      {
-          switch (terrainType)
-          {
-             case TerrainType.DESERT:
-                return 'DESERT';
-             case TerrainType.GRASS:
-                return 'EARTH';
-             case TerrainType.MUD:
-                return 'MUD';
-          }
-         return 'NOT_FOUND';
+         return 'terrain: <%= Terrain::'
+                   + TerrainType.getName(planet.ssObject.terrain, true)
+                   + ' %>\n'
+                   + 'name: "' + planet.ssObject.name + '-%d"\n'
+                   + 'map:\n' + rows.reverse().join('\n');
       }
 
       public function deserialize(data: String): MPlanet {
          Objects.paramNotEmpty("data", data);
          const dataRows:Array = data.split("\n");
          var newRows: Array = [];
-         for (var i: int = 0; i < dataRows.length; i++)
-         {
+         for (var i: int = 0; i < dataRows.length; i++) {
             if (!(String(dataRows[i]).replace(/^\s*/, "") == ""
-               || (String(dataRows[i]).replace(/^\s*/, "").charAt(0) == "#")))
-            {
+               || (String(dataRows[i]).replace(/^\s*/, "").charAt(0) == "#"))) {
                newRows.push(dataRows[i]);
             }
          }
          const ssObject: MSSObject = new MSSObject();
          ssObject.id = 1;
          ssObject.type = SSObjectType.PLANET;
-         ssObject.terrain = int(String(newRows[0])
-                                   .replace(/terrain:\s+/, "")
-                                   .replace(" ", ""));
+         ssObject.terrain = TerrainType.getType(
+            String(newRows[0])
+               .replace(/terrain:\s*<%=\s*Terrain::/, "")
+               .replace(/\s*%>$/, "")
+         );
          ssObject.name = String(newRows[1])
                             .replace(/name:\s+"/, "")
                             .replace(/-%d"\s*/, "");
