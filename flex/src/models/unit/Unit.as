@@ -47,9 +47,14 @@ package models.unit
          if (list)
          {
             list.sort = new Sort();
-            list.sort.fields = [new SortField('hidden', false, true),
+            list.sort.fields = [
+               new SortField('hasStorage', false, true),
+               new SortField('hidden', false, true),
                new SortField('type'),
-               new SortField('hp', false, true, true), new SortField('id', false, false, true)];
+               new SortField('transporterStorage', false, true, true),
+               new SortField('hp', false, true, true),
+               new SortField('id', false, false, true)
+            ];
             list.refresh();
          }
       }
@@ -232,6 +237,11 @@ package models.unit
       public function get volume(): int
       {
          return Config.getUnitVolume(type);
+      }
+
+      public function get hasStorage(): Boolean
+      {
+         return ML.technologies.getUnitStorage(type, level) > 0;
       }
       
       public function get transporterStorage(): int

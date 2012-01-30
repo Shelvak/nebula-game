@@ -97,7 +97,9 @@ package models.technology
        */      
       public function getUnitStorage(type: String, level: int): int
       {
-         return Math.round(Math.round(StringUtil.evalFormula(Config.getUnitStorage(type), 
+         var formula: String = Config.getUnitStorage(type);
+         return formula == null ? 0
+            : Math.round(Math.round(StringUtil.evalFormula(formula,
             {'level': level})) * ((100 +
          getTechnologiesPropertyMod('storage', 
             ObjectClass.UNIT + '/' + StringUtil.camelCaseToUnderscore(type))) / 100));
