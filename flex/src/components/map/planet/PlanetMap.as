@@ -172,6 +172,7 @@ package components.map.planet
 
       private function ssObject_terrainChangeHandler(event:MSSObjectEvent): void {
          renderBackground(false);
+         _objectsLayer.repositionAllObjects();
       }
    }
 }

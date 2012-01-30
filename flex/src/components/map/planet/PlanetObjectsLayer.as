@@ -657,6 +657,13 @@ package components.map.planet
                        - (object.height - model.realBasementHeight);
       }
 
+      public function repositionAllObjects(): void {
+         for each (var object: IPrimitivePlanetMapObject
+               in primitiveAndInteractiveObjects) {
+            positionObject(object);
+         }
+      }
+
 
       /* ####################### */
       /* ### EVENTS HANDLERS ### */
