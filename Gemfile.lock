@@ -5,6 +5,12 @@ GIT
     flag_shih_tzu (0.2.4)
       activerecord (>= 2.3.0)
 
+GIT
+  remote: git://github.com/tarcieri/celluloid.git
+  revision: 115071ecd40e26c16408ad23bc327c12e3c827dc
+  specs:
+    celluloid (0.8.1)
+
 GEM
   remote: http://rubygems.org/
   remote: http://gems.github.com/
@@ -91,6 +97,7 @@ DEPENDENCIES
   activerecord-jdbcmysql-adapter (~> 1.1)
   activesupport (~> 3.0.9)
   awesome_print
+  celluloid!
   chronic (>= 0.6.2)
   eventmachine (>= 0.12.6)
   factory_girl (~> 2.1.2)

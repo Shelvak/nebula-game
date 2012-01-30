@@ -7,6 +7,7 @@ gem 'activerecord', '~>3.0.9', :require => 'active_record'
 gem 'json', '>=1.4.6', :require => "json/ext"
 gem 'activerecord-jdbcmysql-adapter', '~>1.1'
 gem 'flag_shih_tzu', :git => "git://github.com/arturaz/flag_shih_tzu.git"
+gem "celluloid", :git => "git://github.com/tarcieri/celluloid.git"
 
 # Gems that are needed but should never be activated.
 group :installation do
