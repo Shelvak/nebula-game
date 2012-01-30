@@ -217,11 +217,11 @@ battleground.hard:
       - ". . . . . . . ^ . -f------. ^ ^ . 1---"
     units: <%= battleground_units.inspect %>
 battleground.normal:
-  - terrain: <%= Terrain::DESERT %>
-    name: Inculta
-    weight: 1000
+  - weight: 1000
     resources: [0.0, 0.0, 0.0]
     # 10 turrets, 1 infantry/tank factory, 2 ship factories
+    terrain: <%= Terrain::DESERT %>
+    name: Inculta
     map:
       - "^ ^-^-^ ^-^-. ^-^-. --------. --------"
       - ". ^-^-. ^-^-. ^-^-. --------. --------"
@@ -231,13 +231,13 @@ battleground.normal:
       - "2---^ -i----. . . ^ ^ . . . ^ . . . . "
       - ". . ^ ^ ^ ^ . ----. ^-^-^ ^-^---------"
       - ". ------. ^ . -a--. ^-^-. ^-^---------"
-      - ". 5-----. ^ . . . . . . . ^ . --------"
+      - ". ------. ^ . . . . . . . ^ . --------"
       - "^ ^ ^ ^ ^ ^-^-. ------. ^-^-. --------"
       - "--------. ^-^-. ------. ^-^-. --------"
       - "--------. . ^ . ------. . ^ . 4-------"
       - "--------. ^-^-. *-----. ^-^-. . . . . "
       - "-n------^ ^-^-. . ^ ^ ^ ^-^-. ------. "
-      - ". . . ^ ^ . ^ ^ ^ ^ . . . . . 5-----. "
+      - ". . . ^ ^ . ^ ^ ^ ^ . . . . . ------. "
     units: <%= battleground_units.inspect %>
 battleground.easy:
   - terrain: <%= Terrain::MUD %>
@@ -331,10 +331,10 @@ pulsar:
 
 # Planets in free systems.
 free:
-  - terrain: <%= Terrain::EARTH %>
-    name: Gramen-%d
-    weight: 1000
+  - weight: 1000
     resources: [0.0, 0.0, 0.0]
+    name: Gramen-%d
+    terrain: <%= Terrain::EARTH %>
     # 12 turrets
     map:
       - ". . . ^ ^ ^ ^ ^ . .-.-. ------------. "

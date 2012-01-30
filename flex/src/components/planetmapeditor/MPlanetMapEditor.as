@@ -362,6 +362,7 @@ package components.planetmapeditor
          clone.planetId = building.planetId;
          clone.type = building.type;
          clone.level = Math.min(building.level, building.maxLevel);
+         clone.metaLevel = Math.min(building.metaLevel, MAX_NPC_LEVEL);
          clone.hp = clone.hpMax;
          clone.state = Building.ACTIVE;
          copyDimensions(building, clone);
