@@ -373,7 +373,8 @@ package config
 
       public static function getTechnologyGroupPosition(type: String): int
       {
-         return getTechnologyProperty(type, 'groupPosition');
+         var prop: * = getTechnologyProperty(type, 'groupPosition');
+         return prop != null ? prop : -1; ;
       }
       
       public static function getTechnologyWarPoints(type: String): String

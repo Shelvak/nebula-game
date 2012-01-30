@@ -85,10 +85,18 @@
          public var canBeUpgraded: Boolean;
          
          private var fadeResearch: Fade = new Fade();
+
+         private var lastTech: Technology;
+         private var lastName: String;
          
          [Bindable (event="modelNameChanged")]
          public function get modelObj():Technology {
-            return ML.technologies.getTechnologyByType(modelName);
+            if (lastName != modelName)
+            {
+              lastTech = ML.technologies.getTechnologyByType(modelName);
+              lastName = modelName;
+            }
+            return lastTech;
          }
          
          protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void

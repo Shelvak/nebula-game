@@ -79,7 +79,7 @@ package models.technology
       {
          return Config.getTechnologyGroupTo(type);
       }
-      /* returns tech position in group or 0 if not in group */
+      /* returns tech position in group or -1 if not in group */
       public function get groupPosition(): int
       {
          return Config.getTechnologyGroupPosition(type);
@@ -300,7 +300,7 @@ package models.technology
       {
          return Math.round(StringUtil.evalFormula(
             Config.getTechnologyPlanetsRequired(type),
-            {'level': level}));
+            {'level': level+1}));
       }
 
       [Bindable (event="levelChange")]
