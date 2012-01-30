@@ -45,6 +45,17 @@ package components.planetmapeditor
       private var _currentCommand: TerrainEditCommand = null;
       private var f_active:Boolean = false;
 
+      private function commitCurrentCommand(): void {
+         if (_currentCommand != null && _currentCommand.valid) {
+            _commandInvoker.addCommand(_currentCommand);
+         }
+         _currentCommand = null;
+      }
+
+      private function startNewCommand(): void {
+         _currentCommand = new TerrainEditCommand(map, planet);
+      }
+
       override protected function activationKeyDown(): void {
          if (f_active) {
             return;
@@ -53,7 +64,7 @@ package components.planetmapeditor
          objectsLayer.passOverMouseEventsTo(this);
          map.viewport.contentDragEnabled = false;
          _tilePlaceholder.visible = true;
-         _currentCommand = new TerrainEditCommand(map, planet);
+         startNewCommand();
          moveObjectToMouse(_tilePlaceholder);
       }
 
@@ -64,20 +75,25 @@ package components.planetmapeditor
          f_active = false;
          _tilePlaceholder.visible = false;
          map.viewport.contentDragEnabled = true;
-         if (_currentCommand.valid) {
-            _commandInvoker.addCommand(_currentCommand);
-         }
-         _currentCommand = null;
+         commitCurrentCommand();
       }
 
       override protected function clickHandler(event: MouseEvent): void {
+         commitCurrentCommand();
+         startNewCommand();
          const tile: IRTileKindM = _tilePlaceholder.tile;
          const object: MPlanetObject = _tilePlaceholder.tileObject;
-         if (!planet.isObjectOnMap(object)
-                || !TileKind.isResourceKind(tile.tileKind)) {
+         if (!planet.isObjectOnMap(object)) {
+            return;
+         }
+         const tileKindAtMouse:int = planet.getTileKind(object.x, object.y);
+         if (tileKindAtMouse == tile.tileKind
+                && !TileKind.isResourceKind(tileKindAtMouse)) {
             return;
          }
          _currentCommand.addTile(tile.tileKind, object.x, object.y);
+         commitCurrentCommand();
+         startNewCommand();
          map.renderBackground(false);
       }
 
