@@ -24,7 +24,6 @@ GEM
       jdbc-mysql (~> 5.1.0)
     activesupport (3.0.11)
     arel (2.0.10)
-    awesome_print (1.0.1)
     bouncy-castle-java (1.5.0146.1)
     builder (2.1.2)
     chronic (0.6.6)
@@ -90,7 +89,6 @@ DEPENDENCIES
   activerecord (~> 3.0.9)
   activerecord-jdbcmysql-adapter (~> 1.1)
   activesupport (~> 3.0.9)
-  awesome_print
   chronic (>= 0.6.2)
   eventmachine (>= 0.12.6)
   factory_girl (~> 2.1.2)
