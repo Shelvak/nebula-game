@@ -146,7 +146,6 @@ namespace :build do
       end
 
       info "Compiling SpaceGame..." do
-        # -show-binding-warnings << Mykolas says it's OK.
         compiler_flags = %w{
           as3 strict incremental optimize
           verbose-stacktraces
@@ -196,7 +195,10 @@ namespace :build do
             bin_swf,
             :libraries => Dir["#{lib_dir}/*.swc"],
             :keep_metadata => %w{Required Optional ArrayElementType SkipProperty},
-            :flags => %w{-static-link-runtime-shared-libraries},
+            :flags => %w{
+              -static-link-runtime-shared-libraries
+              -compiler.show-binding-warnings=false
+            },
             # Each one is translated into -compiler.item_name
             :compiler_flags => compiler_flags
           )
