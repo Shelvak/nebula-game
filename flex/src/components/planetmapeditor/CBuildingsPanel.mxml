@@ -35,7 +35,8 @@
              _selectedBuilding.metaLevel = stepLevel.value;
            }
            else {
-             _selectedBuilding.level = stepLevel.value;
+             _selectedBuilding.level = Math.max(
+               MPlanetMapEditor.MIN_BUILDING_LEVEL, stepLevel.value);
            }
          }
        }
