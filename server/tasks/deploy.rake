@@ -17,7 +17,7 @@ DEPLOY_CONFIG = {
   :releases_kept => 6,
   :release_branch => {
     :stable => "master",
-    :beta => "server"
+    :beta => "stable2"
   },
 
   :servers => {
@@ -26,8 +26,8 @@ DEPLOY_CONFIG = {
       :server => ["morpheus.nebula44.lt"],
     },
     :beta => {
-      :client => ["static-beta3.nebula44.com:2022"],
-      :server => ["beta3.nebula44.com:1022"],
+      :client => ["beta.nebula44.lt"],
+      :server => ["beta.nebula44.lt"],
     },
   },
 
