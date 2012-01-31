@@ -309,8 +309,15 @@ describe Parts::Transportation do
         end.should change(@transporter, :stored).by(3)
       end
 
-      it "should fire changed with self" do
-        should_fire_event([@transporter, @planet], EventBroker::CHANGED) do
+      it "should fire changed for transporter" do
+        should_fire_event(@transporter, EventBroker::CHANGED) do
+          @transporter.transfer_resources!(1, 1, 1)
+        end
+      end
+
+      it "should fire changed for planet" do
+        should_fire_event(@planet, EventBroker::CHANGED,
+            EventBroker::REASON_OWNER_PROP_CHANGE) do
           @transporter.transfer_resources!(1, 1, 1)
         end
       end
@@ -342,7 +349,7 @@ describe Parts::Transportation do
           @transporter.metal, @transporter.energy, @transporter.zetium)
       end
 
-      %w{metal energy zetium}.each_with_index do |resource, index|
+      Resources::TYPES.each_with_index do |resource, index|
         resources = Array.new(3, 0)
         resources[index] = -10
 
@@ -409,8 +416,15 @@ describe Parts::Transportation do
         end.should change(@transporter, :stored).to(0)
       end
 
-      it "should fire changed with self" do
-        should_fire_event([@transporter, @planet], EventBroker::CHANGED) do
+      it "should fire changed for transporter" do
+        should_fire_event(@transporter, EventBroker::CHANGED) do
+          @transporter.transfer_resources!(-1, -1, -1)
+        end
+      end
+
+      it "should fire changed for planet" do
+        should_fire_event(@planet, EventBroker::CHANGED,
+            EventBroker::REASON_OWNER_PROP_CHANGE) do
           @transporter.transfer_resources!(-1, -1, -1)
         end
       end
