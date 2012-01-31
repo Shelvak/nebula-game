@@ -345,6 +345,7 @@ package controllers.startup
          bindPair(BuildingsCommand.MOVE, new controllers.buildings.actions.MoveAction());
          bindPair(BuildingsCommand.SET_BUILD_IN_2ND_FLANK, new SetBuildIn2ndFlankAction());
          bindPair(BuildingsCommand.SET_BUILD_HIDDEN, new SetBuildHiddenAction());
+         bindPair(BuildingsCommand.TRANSPORT_RESOURCES, new TransportResourcesAction());
       }
       private static function bindTechnologiesCommands() : void
       {

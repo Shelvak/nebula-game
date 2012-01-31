@@ -214,14 +214,14 @@
                     || oldEnergy > planet.energy.currentStock
                     || oldZetium > planet.zetium.currentStock)
                   {
-                    increased = true;
+                    decreased = true;
                     same = false;
                   }
                   if (oldMetal < planet.metal.currentStock
                    || oldEnergy < planet.energy.currentStock
                    || oldZetium < planet.zetium.currentStock)
                   {
-                    decreased = true;
+                    increased = true;
                     same = false;
                   }
                   if (same)

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:base="components.base.*"
+         xmlns:unitsscreen="components.unitsscreen.*"
+         xmlns:screen="components.base.screen.*"
+         xmlns:screens="components.screens.*" xmlns:controls="mx.controls.*"
+         creationComplete="creationCompleteHandler(event)"
+         addedToStage="addedToStageHandler(event)"
+         removedFromStage="removedFromStageHandler(event)"
+         width="100%" height="100%">
+
+
+  <fx:Script>
+      <![CDATA[
+    import com.developmentarc.core.utils.EventBroker;
+
+    import components.resourcetransporter.events.ResourceTransporterEvent;
+
+    import config.Config;
+
+    import controllers.buildings.BuildingsCommand;
+
+    import globalevents.GResourcesEvent;
+    import globalevents.GlobalEvent;
+
+    import models.building.Building;
+    import models.solarsystem.MSSObject;
+
+    import controllers.ui.NavigationController;
+
+    import models.ModelLocator;
+    import models.resource.Resource;
+    import models.resource.ResourceType;
+    import models.unit.events.UnitEvent;
+
+    import mx.collections.ArrayCollection;
+
+    import mx.collections.ListCollectionView;
+    import mx.events.FlexEvent;
+
+    import spark.events.IndexChangeEvent;
+
+    import utils.DateUtil;
+
+    import utils.DateUtil;
+    import utils.datastructures.Collections;
+    import utils.locale.Localizer;
+
+    private var RT: MCResourceTransporter = MCResourceTransporter.getInstance();
+
+    private function get NAV_CTRL(): NavigationController {
+      return NavigationController.getInstance();
+    }
+
+    private function get ML(): ModelLocator {
+      return ModelLocator.getInstance();
+    }
+
+    private function getString(property: String, parameters: Array = null): String {
+      return Localizer.string("ResourceTransporter", property, parameters);
+    }
+
+    private function setBuilding(e: ResourceTransporterEvent): void {
+      selectBuilding(RT.selectedBuilding);
+    }
+
+    private function selectBuilding(value: Building): void {
+      selectedBuilding = value;
+      dispatchRefreshMaxStorageEvent();
+    }
+
+    private var filtered: ListCollectionView;
+
+    private var oldStored: int;
+
+    private var prevScreenParams: Object = null;
+    private var oldUnits: ListCollectionView;
+    private var oldLocation: *;
+
+    private function get selectedPlanet(): MSSObject {
+      return MSSObject(planetSelector.selectedItem);
+    }
+
+    [Bindable(event="selectedResourcesChange")]
+    private function getMaxStock(resource: String): int {
+      var possibleStore: int =
+        Math.min(
+          Resource(ML.latestPlanet.ssObject[resource]).currentStock,
+          Resource(selectedPlanet[resource]).maxStock
+            - Resource(selectedPlanet[resource]).currentStock,
+          Resource.getResourcesForVolume(selectedBuilding.maxTransportableStorage
+            - getOtherSelected(resource), resource));
+      return Math.max(0, possibleStore);
+    }
+
+    [Bindable(event="selectedResourcesChange")]
+    private function get transferPossible(): Boolean {
+      return (metalSelector.selectedVal > 0
+        || energySelector.selectedVal > 0
+        || zetiumSelector.selectedVal > 0);
+    }
+
+    [Bindable(event="selectedResourcesChange")]
+    private function get estimatedCooldown(): String {
+      if (!transferPossible) {
+        return null;
+      }
+      return DateUtil.secondsToHumanString(
+        Building.getResourceTransporterCooldown(selectedBuilding.level,
+          getOtherSelected()));
+    }
+
+    [Bindable(event="selectedResourcesChange")]
+    private function getOtherSelected(resource: String = ''): int {
+      var selectedTotal: int = 0;
+      if (metalSelector && energySelector && zetiumSelector) {
+        if (resource != ResourceType.METAL) {
+          selectedTotal += Resource.getResourceVolume(metalSelector.selectedVal,
+            ResourceType.METAL)
+        }
+        if (resource != ResourceType.ENERGY) {
+          selectedTotal += Resource.getResourceVolume(energySelector.selectedVal,
+            ResourceType.ENERGY)
+        }
+        if (resource != ResourceType.ZETIUM) {
+          selectedTotal += Resource.getResourceVolume(zetiumSelector.selectedVal,
+            ResourceType.ZETIUM)
+        }
+      }
+      return selectedTotal;
+    }
+
+    protected function selectedResourcesChangeHandler(event: UnitEvent): void {
+      dispatchRefreshMaxStorageEvent();
+    }
+
+    private function dispatchRefreshMaxStorageEvent(e: GResourcesEvent = null): void {
+      dispatchEvent(new ResourceTransporterEvent(
+        ResourceTransporterEvent.SELECTED_RESOURCES_CHANGE));
+    }
+
+
+    protected function transfer_clickHandler(): void {
+      if (transferPossible) {
+        new BuildingsCommand(
+          BuildingsCommand.TRANSPORT_RESOURCES,
+          {
+            id:selectedBuilding.id,
+            targetPlanetId:planetSelector.selectedItem.id,
+            metal:metalSelector.selectedVal,
+            energy:energySelector.selectedVal,
+            zetium:zetiumSelector.selectedVal
+          }).dispatch();
+      }
+    }
+
+    protected function close_clickHandler(event: MouseEvent): void {
+      NAV_CTRL.showPreviousScreen();
+    }
+
+    private function selectAll(): void {
+      metalSelector.setValue(metalSelector.maxAmmount);
+      energySelector.setValue(energySelector.maxAmmount);
+      zetiumSelector.setValue(zetiumSelector.maxAmmount);
+    }
+
+    private function selectNone(): void {
+      metalSelector.setValue(0);
+      energySelector.setValue(0);
+      zetiumSelector.setValue(0);
+    }
+
+    [Bindable]
+    private var selectedBuilding: Building;
+
+    private function creationCompleteHandler(event: FlexEvent): void {
+      RT.addEventListener(ResourceTransporterEvent.SELECTED_BUILDING_CHANGE,
+        setBuilding);
+      EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE,
+        dispatchRefreshMaxStorageEvent);
+      //EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+      selectBuilding(RT.selectedBuilding);
+    }
+
+    [Bindable]
+    private var currentTime: Number;
+
+    private function calcCurrentTime(e: GlobalEvent = null): void {
+      currentTime = new Date().time;
+    }
+
+    private function planetSelector_changeHandler(event: IndexChangeEvent): void {
+      dispatchRefreshMaxStorageEvent();
+    }
+
+    private function getPlanets(from: ArrayCollection): ListCollectionView {
+      var provider: ListCollectionView = Collections.filter(from,
+        function (item: MSSObject): Boolean {
+          return ML.latestPlanet == null || item.id != ML.latestPlanet.ssObject.id;
+        });
+      return provider;
+    }
+
+    private function addedToStageHandler(event: Event): void {
+      GlobalEvent.subscribe_TIMED_UPDATE(calcCurrentTime);
+    }
+
+    private function removedFromStageHandler(event: Event): void {
+      GlobalEvent.unsubscribe_TIMED_UPDATE(calcCurrentTime);
+    }
+
+    private function getTime(from: Date): Number {
+      return from.time;
+    }
+    
+    private function getWithoutFee(selected: int): String
+    {
+      return (selected - (selected * selectedBuilding.fee)).toFixed(2);
+    }
+    ]]>
+   </fx:Script>
+
+  <screen:ScreenBackground/>
+  <s:Group left="0" right="0" top="0" bottom="0">
+    <s:layout>
+      <s:VerticalLayout gap="0" horizontalAlign="justify"/>
+    </s:layout>
+    <screen:ScreenHeader title="{getString('title.resourceTransporter')}"
+                         headerFromContentSeparatorVisible="true">
+      <screen:controls>
+        <s:Group>
+          <s:Label styleName="locationHeader"
+                   text="{getString('label.maxStorage')}"/>
+          <base:SetableProgressBar text="{getString('label.storage',
+                                       [getOtherSelected(),
+                                       selectedBuilding.maxTransportableStorage])}"
+                                  curentStock="{getOtherSelected()}"
+                                  maxStock="{selectedBuilding.maxTransportableStorage}"
+                                  specialHeight="20" width="200"/>
+        </s:Group>
+      </screen:controls>
+    </screen:ScreenHeader>
+    <s:Group height="100%">
+      <base:Scroller id="contScroller" left="0" right="0" top="0" bottom="0" stepMultiplier="5">
+        <base:AdvancedContainer right="6" left="0">
+          <s:Group width="95%">
+            <s:Label text="{getString('label.selectPlanet')}" fontSize="16" fontWeight="bold"
+                     color="#eec500"/>
+            <base:PlanetSelector id="planetSelector" change="planetSelector_changeHandler(event)"
+                                 minWidth="180" dataProvider="{getPlanets(ML.player.planets)}"
+                                 itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
+            <s:layout>
+              <s:HorizontalLayout verticalAlign="middle" paddingLeft="10" paddingTop="20"
+                paddingBottom="10" gap="10"/>
+            </s:layout>
+          </s:Group>
+          <unitsscreen:StoragePanel width="100%" visible="{(getMaxStock(ResourceType.METAL) != 0)
+                                         || (getMaxStock(ResourceType.ENERGY) != 0)
+                                         || (getMaxStock(ResourceType.ZETIUM) != 0)}"
+                                    skinClass="components.unitsscreen.StorageScreenSectionPanelSkin"
+            buttonVisible="false">
+              <base:ResourceSelectorComp resourceType="{ResourceType.METAL}" width="85%"
+                                         maxAmmount="{getMaxStock(ResourceType.METAL)}"
+                                         id="metalSelector"
+                                         selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+              <base:ResourceSelectorComp resourceType="{ResourceType.ENERGY}" width="85%"
+                                         maxAmmount="{getMaxStock(ResourceType.ENERGY)}"
+                                         id="energySelector"
+                                         selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+              <base:ResourceSelectorComp resourceType="{ResourceType.ZETIUM}" width="85%"
+                                         maxAmmount="{getMaxStock(ResourceType.ZETIUM)}"
+                                         id="zetiumSelector"
+                                         selectedResourcesChange="selectedResourcesChangeHandler(event)"/>
+            <s:Group width="85%">
+              <s:Group right="50" width="150">
+                <s:Button label="{getString('label.all')}"
+                          click="selectAll()" right="0"/>
+                <s:Button label="{getString('label.none')}"
+                          click="selectNone()" left="0"/>
+              </s:Group>
+            </s:Group>
+            <base:AdvancedContainer>
+              <s:Label text="{getString('label.fee', [(selectedBuilding.fee * 100).toFixed(1)])}" />
+              <s:Label text="{getString('label.withoutFee')}" paddingTop="6" color="#eec500"
+                fontWeight="bold" visible="{transferPossible}"/>
+              <base:ImageAndLabel type="{ResourceType.METAL}"
+                                  visible="{metalSelector.selectedVal > 0}"
+                                  paddingLeft="6"
+                                  textToDisplay="{getWithoutFee(metalSelector.selectedVal)}"/>
+              <base:ImageAndLabel type="{ResourceType.ENERGY}"
+                                  paddingLeft="6"
+                                  visible="{energySelector.selectedVal > 0}"
+                                  textToDisplay="{getWithoutFee(energySelector.selectedVal)}"/>
+              <base:ImageAndLabel type="{ResourceType.ZETIUM}"
+                                  paddingLeft="6"
+                                  visible="{zetiumSelector.selectedVal > 0}"
+                                  textToDisplay="{getWithoutFee(zetiumSelector.selectedVal)}"/>
+              <base:layout><s:VerticalLayout/></base:layout>
+            </base:AdvancedContainer>
+            <s:Label text="{getString('warning.willSend', [estimatedCooldown])}"
+                     color="#eec500" visible="{estimatedCooldown != null}"
+                     includeInLayout="{estimatedCooldown != null}"/>
+            <s:Group toolTip="{getTime(selectedBuilding.cooldownEndsAt) &lt; currentTime
+              ? '' : getString('tooltip.cooldownActive')}">
+              <s:Button skinClass="components.skins.GreenButtonSkin"
+                        enabled="{getTime(selectedBuilding.cooldownEndsAt) &lt; currentTime
+                              &amp;&amp; transferPossible}"
+                        label="{getTime(selectedBuilding.cooldownEndsAt) &lt; currentTime
+                        ? getString('label.transferResources')
+                        :DateUtil.secondsToHumanString((
+                          getTime(selectedBuilding.cooldownEndsAt) - currentTime)/1000)}"
+                        click="transfer_clickHandler()"/>
+            </s:Group>
+            <unitsscreen:layout>
+              <s:VerticalLayout horizontalAlign="center"/>
+            </unitsscreen:layout>
+          </unitsscreen:StoragePanel>
+
+          <base:Warning text="{getString('label.nothingToTransfer')}"
+                        visible="{!((getMaxStock(ResourceType.METAL) != 0)
+                             || (getMaxStock(ResourceType.ENERGY) != 0) 
+                             || (getMaxStock(ResourceType.ZETIUM) != 0))}"
+                        verticalPaddings="0" paddingTop="5"/>
+          <base:layout>
+            <s:VerticalLayout gap="10" horizontalAlign="center"/>
+          </base:layout>
+
+        </base:AdvancedContainer>
+      </base:Scroller>
+    </s:Group>
+  </s:Group>
+  <screens:ScreenCloseButton right="0" bottom="0" label="{getString('label.close')}"
+                             click="close_clickHandler(event)">
+
+  </screens:ScreenCloseButton>
+
+</s:Group>

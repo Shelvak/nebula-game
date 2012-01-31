@@ -325,8 +325,8 @@ package models.infoscreen
                   }
                   else if (element == Building.FEE)
                   {
-                     currentValue = Math.round(Building.getMarketTaxRate(model.usefulLevel) * 100);
-                     newValue = Math.round(Building.getMarketTaxRate(selectedLevel) * 100);
+                     currentValue = Math.round(Building.getFee(model.type, model.usefulLevel) * 100);
+                     newValue = Math.round(Building.getFee(model.type, selectedLevel) * 100);
                   }
                   else if (element == Building.RADAR_STRENGTH)
                   {

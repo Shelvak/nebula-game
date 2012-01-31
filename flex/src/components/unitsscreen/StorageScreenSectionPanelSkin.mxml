@@ -53,7 +53,7 @@
             </s:Group>
             <s:Button id="actionButton" left="17" right="5" bottom="5"/>
          </s:Group>
-         <s:BitmapImage visible="{!hostComponent.buttonVisible}" includeInLayout="{!hostComponent.visible}"
+         <s:BitmapImage visible="{!hostComponent.buttonVisible}" includeInLayout="{!hostComponent.buttonVisible}"
                         source="{getImage('bottom_right')}"/>
       </s:Group>
    </s:Group>

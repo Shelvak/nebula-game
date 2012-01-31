@@ -23,5 +23,6 @@ package controllers.screens
       public static const VIP:String = "Vip";
       public static const PLAYER:String = "Player";
       public static const DEFENSIVE_PORTAL:String = "DefensivePortal";
+      public static const RESOURCE_TRANSPORTER: String = "ResourceTransporter";
    }
 }

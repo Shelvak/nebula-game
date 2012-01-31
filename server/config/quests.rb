@@ -20,7 +20,8 @@ s_energy_tiles = "EnergyTiles"
 # Explains about +construction tiles.
 s_construction_tiles = "ConstructionTiles"
 # Explains about speeding up constructions.
-s_speedup_construction = "SpeedupConstruction"
+s_speedup_construction1 = "SpeedupConstruction1"
+s_speedup_construction2 = "SpeedupConstruction2"
 # Explains about unit constructors
 s_unit_constructors = "UnitConstructors"
 # Explains about unit construction screen.
@@ -43,7 +44,8 @@ s_notifications = "Notifications"
 # Explains about technology tree.
 s_tech_tree = "TechTree"
 # Explains about researching technologies.
-s_tech_research = "TechResearch"
+s_tech_research1 = "TechResearch1"
+s_tech_research2 = "TechResearch2"
 # Explains about war points importance in technologies.
 s_wp_in_techs = "WPInTechs"
 # Explains about zetium tile and NPC zetium extractor (if you haven't destroyed
@@ -54,13 +56,15 @@ s_resources = "Resources"
 # Explains about resource bar at the bottom of the screen.
 s_resource_bar = "ResourceBar"
 # Explains about the market screen.
-s_market = "Market"
+s_market1 = "Market1"
+s_market2 = "Market2"
 # Explains population and overpopulation.
 s_population = "Population"
 # Explains about unit screen when space units are present.
 s_unit_screen_with_space = "UnitScreenWithSpace"
 # Explains how to send your unit above your planet.
-s_sending_ships = "SendingShips"
+s_sending_ships1 = "SendingShips1"
+s_sending_ships2 = "SendingShips2"
 # Explains about combat in space sector.
 s_combat_in_space = "CombatInSpace"
 # Explains how to send units from space to planet.
@@ -72,12 +76,14 @@ s_claim_planet = "ClaimPlanet"
 s_wreckage = "Wreckage"
 # Explains how to load wreckage into mule when it is above wreckage:
 # Press show, press load on mule, press load all/tune sliders, confirm, close.
-s_load_wreckage = "LoadWreckage"
+s_load_wreckage1 = "LoadWreckage1"
+s_load_wreckage2 = "LoadWreckage2"
 # Explains how to unload wreckage in planet:
 # Press units, press unload, press unload all/tune sliders, confirm, close.
 s_unload_resources = "UnloadResources"
 # Explains what radar does.
-s_radar = "Radar"
+s_radar1 = "Radar1"
+s_radar2 = "Radar2"
 # Explains how to load units. Explain that we need MDH & ground units to attack
 # third planet.
 s_load_units = "LoadUnits"
@@ -155,7 +161,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
     # 200 creds are enough for the speeding up of barracks construction.
     reward_creds 200
   end.define(50, [s_quest_with_image[Building::Barracks], s_construction_tiles,
-                 s_speedup_construction]) do
+                 s_speedup_construction1, s_speedup_construction2]) do
     have_upgraded_to Building::Barracks
 
     reward_cost Unit::Trooper, :count => 1.2
@@ -297,7 +303,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
       end
     end
   end.define(100, [s_quest_with_image[Technology::ZetiumExtraction],
-                   s_tech_tree, s_tech_research, s_wp_in_techs]) do
+                   s_tech_tree, s_tech_research1, s_tech_research2,
+                   s_wp_in_techs]) do
     have_upgraded_to Technology::ZetiumExtraction
 
     reward_cost Building::ZetiumExtractor, :count => 0.9
@@ -355,7 +362,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
 
     reward_cost Technology::Market, :count => 0.8
     reward_cost Building::Market, :count => 0.8
-  end.define(150, [s_quest_with_image[Technology::Market], s_market]) do
+  end.define(150, [s_quest_with_image[Technology::Market], s_market1,
+                   s_market2]) do
     # Build market.
     have_upgraded_to Technology::Market
     have_upgraded_to Building::Market
@@ -383,7 +391,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
 
     reward_unit Unit::Crow, :count => 2
   end.define(200, [s_quest_with_image[Unit::Dirac], s_unit_screen_with_space,
-                  s_sending_ships, s_combat_in_space]) do
+                  s_sending_ships1, s_sending_ships2, s_combat_in_space]) do
     destroy Unit::Dirac
 
     reward_unit Unit::Crow, :count => 2
@@ -404,8 +412,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
                      :count => zex_1st_planet + zex_2nd_planet
 
     reward_cost Unit::Mule, :count => 0.7
-  end.define(230, [s_quest_with_image[Unit::Mule], s_wreckage, s_load_wreckage,
-                  s_unload_resources]) do
+  end.define(230, [s_quest_with_image[Unit::Mule], s_wreckage, s_load_wreckage1,
+                   s_load_wreckage2, s_unload_resources]) do
     # Resource transportation explained.
     have_upgraded_to Unit::Mule
 
@@ -425,7 +433,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
     destroy Unit::Demosis, :count => 3
 
     reward_creds 2000
-  end.define(270, [s_quest_with_image[Technology::Radar], s_radar]) do
+  end.define(270, [s_quest_with_image[Technology::Radar], s_radar1,
+                   s_radar2]) do
     have_upgraded_to Technology::Radar
     have_upgraded_to Building::Radar
 
