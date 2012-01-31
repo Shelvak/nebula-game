@@ -156,15 +156,16 @@ module Parts::Transportation
         send("#{resource}=", send(resource) + amount)
       end
 
-      # Save everybody
       save!
       # Do not save it is a new wreckage and we will unload.
       if (location.new_record? && will_unload) || ! location.new_record?
         location.save!
       end
+      EventBroker.fire(self, EventBroker::CHANGED)
       # Only fire changed for those which does not notify themselves.
-      changed = location.is_a?(SsObject::Planet) ? [self, location] : [self]
-      EventBroker.fire(changed, EventBroker::CHANGED)
+      EventBroker.fire(
+        location, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
+      ) if location.is_a?(SsObject::Planet)
     end
 
     def update_transporter_units(units, location)

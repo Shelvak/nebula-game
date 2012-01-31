@@ -69,19 +69,16 @@ options:
   # swf:quality (i.e. swf:75 would make a SWF with 75 percent quality).
   save_as: ""
 targets:
-  flex: &flex
-    # Disable me
-    # disabled: true
-    path: flex/assets
-    # Options can be defined here
-    combine: swf:75
-    save_as: swf:75
-  flex_unbundled:
-    # Override path for unbundled assets.
-    <<:
-      path: flex/src/assets
-      save_as: ""
-    <<: *flex
+  # Workaround dues to jruby --1.9 mode bug:
+  # http://jira.codehaus.org/browse/JRUBY-6402
+  <%
+  flex = {
+    "path" => "flex/assets", "combine" => "swf:75", "save_as" => "swf:75"
+  }
+  flex_unbundled = flex.merge("path" => "flex/src/assets", "save_as" => "")
+  %>
+  flex: <%= JSON.generate(flex) %>
+  flex_unbundled: <%= JSON.generate(flex_unbundled) %>
 # Optimize files by remote names. Match them with regexp and override global
 # and target options with given options. One file can be matched by multiple
 # rules.
@@ -1139,5 +1136,57 @@ assets:
         Quest.jpg:                  Quest_content0.jpg
         QuestWithImage.jpg:         Quest_content1.jpg
         OreTile.jpg:                Tutorial_OreTile.jpg
-        lt_BuildingSidebar.jpg:     lt_Tutorial_BuildingSidebar.jpg
-        lt_ClaimReward.jpg:         lt_Tutorial_ClaimReward.jpg
+        lt_BuildingSidebar.jpg:     Lt_tutorial_BuildingSidebar.jpg
+        lt_ClaimReward.jpg:         Lt_tutorial_ClaimReward.jpg
+        lt_ArmorTiles.jpg: Lt_tutorial_ArmorTiles.jpg
+        lt_AttackButton.jpg: Lt_tutorial_AttackButton.jpg
+        lt_AttackScreen.jpg: Lt_tutorial_AttackScreen.jpg
+        BgBattles.jpg: Lt_tutorial_BgBattles.jpg
+        lt_BgPlanets.jpg: Lt_tutorial_BgPlanets.jpg
+        BossShip.jpg: Lt_tutorial_BossShip.jpg
+        lt_BuildingUpgrade.jpg: Lt_tutorial_BuildingUpgrade.jpg
+        lt_CombatInSpace.jpg: Lt_tutorial_CombatInSpace.jpg
+        lt_ConstructionTiles.jpg: Lt_tutorial_ConstructionTiles.jpg
+        lt_Convoys.jpg: Lt_tutorial_Convoys.jpg
+        lt_CreateAlliance.jpg: Lt_tutorial_CreateAlliance.jpg
+        lt_DamagedUnits.jpg: Lt_tutorial_DamagedUnits.jpg
+        lt_ClaimPlanet.jpg: Lt_tutorial_ClaimPlanet.jpg
+        lt_DeployMdh.jpg: Lt_tutorial_DeployMdh.jpg
+        lt_DeployTurrets.jpg: Lt_tutorial_DeployTurrets.jpg
+        EcoTier2.jpg: Lt_tutorial_EcoTier2.jpg
+        lt_EnergyTiles.jpg: Lt_tutorial_EnergyTiles.jpg
+        lt_Exploring.jpg: Lt_tutorial_Exploring.jpg
+        GalaxyBattles.jpg: Lt_tutorial_GalaxyBattles.jpg
+        lt_InviteToAlliance.jpg: Lt_tutorial_InviteToAlliance.jpg
+        lt_JoinAlliance.jpg: Lt_tutorial_JoinAlliance.jpg
+        lt_LoadUnits.jpg: Lt_tutorial_LoadUnits.jpg
+        lt_LoadWreckage1.jpg: Lt_tutorial_LoadWreckage1.jpg
+        lt_LoadWreckage2.jpg: Lt_tutorial_LoadWreckage2.jpg
+        lt_Market1.jpg: Lt_tutorial_Market1.jpg
+        lt_Market2.jpg: Lt_tutorial_Market2.jpg
+        lt_MoveToPlanet.jpg: Lt_tutorial_MoveToPlanet.jpg
+        lt_Notifications.jpg: Lt_tutorial_Notifications.jpg
+        lt_Population.jpg: Lt_tutorial_Population.jpg
+        Pulsars.jpg: Lt_tutorial_Pulsars.jpg
+        lt_Radar1.jpg: Lt_tutorial_Radar1.jpg
+        Radar2.jpg: Lt_tutorial_Radar2.jpg
+        lt_ResourceBar.jpg: Lt_tutorial_ResourceBar.jpg
+        Resources.jpg: Lt_tutorial_Resources.jpg
+        lt_SendingShips1.jpg: Lt_tutorial_SendingShips1.jpg
+        lt_SendingShips2.jpg: Lt_tutorial_SendingShips2.jpg
+        lt_SpeedupConstruction1.jpg: Lt_tutorial_SpeedupConstruction1.jpg
+        lt_SpeedupConstruction2.jpg: Lt_tutorial_SpeedupConstruction2.jpg
+        lt_TakeUnitsReward.jpg: Lt_tutorial_TakeUnitsReward.jpg
+        lt_TechResearch1.jpg: Lt_tutorial_TechResearch1.jpg
+        lt_TechResearch2.jpg: Lt_tutorial_TechResearch2.jpg
+        lt_ThirdPlanet.jpg: Lt_tutorial_ThirdPlanet.jpg
+        lt_TechTree.jpg: Lt_tutorial_TechTree.jpg
+        lt_UnitConstructionScreen.jpg: Lt_tutorial_UnitConstructionScreen.jpg
+        lt_UnitConstructors.jpg: Lt_tutorial_UnitConstructors.jpg
+        lt_UnitScreen.jpg: Lt_tutorial_UnitScreen.jpg
+        lt_UnitScreenWithSpace.jpg: Lt_tutorial_UnitScreenWithSpace.jpg
+        lt_UnloadResources.jpg: Lt_tutorial_UnloadResources.jpg
+        lt_UnloadUnits.jpg: Lt_tutorial_UnloadUnits.jpg
+        lt_WPInTechs.jpg: Lt_tutorial_WPInTechs.jpg
+        lt_Wreckage.jpg: Lt_tutorial_Wreckage.jpg
+        ZetiumTile.jpg: Lt_tutorial_ZetiumTile.jpg

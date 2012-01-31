@@ -136,9 +136,16 @@ package components.quests.slides
          const loader:LoaderMax = LoaderMax(event.target);
          const images:Object = new Object();
          for each (var imageLoader:ImageLoader in loader.getChildren()) {
-            images[imageLoader.url] =
-               Bitmap(ContentDisplay(imageLoader.content).rawContent)
-                  .bitmapData;
+            try {
+               images[imageLoader.url] =
+                  Bitmap(ContentDisplay(imageLoader.content).rawContent)
+                     .bitmapData;
+            }
+            catch (e: Error)
+            {
+               throw new ArgumentError("Quest screen background: " + imageLoader.url +
+               "not found!\n" + e.message);
+            }
          }
          imagesLoaded(images);
          _model.loading = false;

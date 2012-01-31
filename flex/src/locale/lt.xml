@@ -868,6 +868,7 @@
     </Mothership.about>
 
     <ResourceTransporter.name value="[obj:1:Building_ResourceTransporter]" />
+    <ResourceTransporter.tooltip value="Leidžia teleportuoti resursus" />
     <ResourceTransporter.about>
       <p>
         [obj:1:Building_ResourceTransporter] gali akimirksniu pergabenti
@@ -3469,7 +3470,7 @@
       ]]>
     </ConstructionTiles>
 
-    <SpeedupConstruction>
+    <SpeedupConstruction1>
       <![CDATA[
       <p>
         Ilgai trunkančias statybas gali pagreitinti pasinaudodamas kredais -
@@ -3477,6 +3478,10 @@
         dešinėje juostoje paspaudus „Paspartinti“ pasirinkti norimą
         pagreitinimo trukmę.
       </p>
+      ]]>
+    </SpeedupConstruction1>
+    <SpeedupConstruction2>
+      <![CDATA[
       <p>
         Kredų gali gauti jų nusipirkdamas - paspausk mygtuką „Pirkti kredus“ iš
         N44 meniu.
@@ -3487,7 +3492,7 @@
         statybą!
       </p>
       ]]>
-    </SpeedupConstruction>
+    </SpeedupConstruction2>
 
     <UnitConstructors>
       <![CDATA[
@@ -3614,20 +3619,24 @@
       ]]>
     </TechTree>
 
-    <TechResearch>
+    <TechResearch1>
       <![CDATA[
       <p>
         Norint išrasti technologiją pirmiausiai tau reikia ją pasirinkti.
         Tada šoninio meniu apačioje paspausk mygtuką
         „[reference:Technologies/upgrade]“.
       </p>
+      ]]>
+    </TechResearch1>
+    <TechResearch2>
+      <![CDATA[
       <p>
         Technologiją išradinėja prie jos priskirtas mokslininkų kiekis. Kuo
         daugiau mokslininkų dirbs prie technologijos, tuo greičiau ji bus
         išrasta.
       </p>
       ]]>
-    </TechResearch>
+    </TechResearch2>
 
     <WPInTechs>
       <![CDATA[
@@ -3679,7 +3688,7 @@
       ]]>
     </ResourceBar>
 
-    <Market>
+    <Market1>
       <![CDATA[
       <p>
         Turgaus ekranas susideda iš dvejų dalių: pirkimo (didžioji) ir
@@ -3689,6 +3698,10 @@
         Pirkimo lange gali matyti visus įdėtus pasiūlymus, bei naudodamasis
         filtrais ir rūšiavimu juos atsirinkti.
       </p>
+      ]]>
+    </Market1>
+    <Market2>
+      <![CDATA[
       <p>
         Pasirinkęs pasiūlymą gali nupirkti tik jo dalį - pasirink kiek resursų
         tau reikia naudodamasis apačioje atsirandančiu slankikliu.
@@ -3697,7 +3710,7 @@
         Atkreipk dėmesį, jog mainytis gali ne tik resursais, bet ir kariais.
       </p>
       ]]>
-    </Market>
+    </Market2>
 
     <Population>
       <![CDATA[
@@ -3730,7 +3743,7 @@
       ]]>
     </UnitScreenWithSpace>
 
-    <SendingShips>
+    <SendingShips1>
       <![CDATA[
       <p>
         Norėdamas išsiųsti savo laivus į kosmosą, pirmiausiai atsidaryk laivų
@@ -3740,12 +3753,16 @@
         Tada pasirink norimus laivus ir spausk mygtuką
         „[reference:Units/label.issueOrder]“.
       </p>
+      ]]>
+    </SendingShips1>
+    <SendingShips2>
+      <![CDATA[
       <p>
         Tau bus atidarytas saulės sistemos žemėlapis. Paspausk ant norimo
         sektoriaus ir pasirink „[reference:Units/label.toSector]“.
       </p>
       ]]>
-    </SendingShips>
+    </SendingShips2>
 
     <CombatInSpace>
       <![CDATA[
@@ -3808,22 +3825,28 @@
       ]]>
     </Wreckage>
 
-    <LoadWreckage>
+    <LoadWreckage1>
       <![CDATA[
       <p>
         Ęsant virš sektoriaus su nuolaužomis pasirink savo laivus, tada spausk
         mygtuką „[reference:Squadrons/label.manage]“.
       </p>
       <p>
-        Atsidariusiame ekrane paspausk įkrovimo mygtuką, pasirink kiek kokių
-        resursų nori įkrauti ir patvirtink savo sprendimą.
+        Atsidariusiame ekrane paspausk įkrovimo mygtuką.
+      <p>
+      ]]>
+    </LoadWreckage1>
+    <LoadWreckage2>
+      <![CDATA[
+      <p>
+        Pasirink kiek kokių resursų nori įkrauti ir patvirtink savo sprendimą.
       </p>
       <p>
         Galiausiai uždaryk resursų bei laivų ekranus, jog vėl atsidurtum
         kosmose.
       </p>
       ]]>
-    </LoadWreckage>
+    </LoadWreckage2>
 
     <UnloadResources>
       <![CDATA[
@@ -3838,14 +3861,18 @@
       ]]>
     </UnloadResources>
 
-    <Radar>
+    <Radar1>
       <![CDATA[
       <p>
         Galaktikoje tu toli gražu ne vienas, tačiau tam, jog galėtum matyti ir
         išskristi iš už savo saulės sistemos ribų tau reikalingas radaras.
       </p>
+      ]]>
+    </Radar1>
+    <Radar2>
+      <![CDATA[
       <p>
-        Radaras vartoją energiją. Kol jis aktyvus, jis atidengia ir rodos aplink
+        Radaras vartoją energiją. Kol jis aktyvus, jis atidengia ir rodo aplink
         tavo saulės sistemą ęsančios galaktikos plotą - kuo didesnis radaro
         lygis, tuos plotelis didelis.
       </p>
@@ -3854,7 +3881,7 @@
         sistemoje ęsančią planetą ir radarą pasistatyti ten.
       </p>
       ]]>
-    </Radar>
+    </Radar2>
 
     <LoadUnits>
       <![CDATA[
@@ -4035,7 +4062,7 @@
     <GalaxyBattles>
       <![CDATA[
       <p>
-        Be to netgi galaktikoje kovodamas su kitais žaidėjais už kovas gausi
+        Kovodamas galaktikoje su kitais žaidėjais už kovas taip pat gausi
         pergalės taškų, tiesa, mažiau nei arenoje.
       </p>
       <p>
@@ -5592,6 +5619,29 @@
     <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje." />
     <label.moreInfo value="Kodėl?" />
   </Market>
+
+  <ResourceTransporter>
+    <title.resourceTransporter value="Resursų siųstuvas" />
+    <label.maxStorage value="Siunčiamų resursų talpa" />
+    <label.storage value="{0}/{1}" />
+    <label.transferResources value="Siųsti" />
+    <label.nothingToTransfer value="Nėra resursų, kuriuos galėtum išsiųsti" />
+    <label.close value="Uždaryti" />
+    <label.all value="Viską" />
+    <label.none value="Nieko" />
+    <label.fee value="Mokestis: {0}%" />
+    <label.selectPlanet value="Pasirink planetą:" />
+    <label.selectResources value="Pasirink resursus" />
+    <label.withoutFee value="Į planeta be mokesčių bus nusiųsta:" />
+    <!-- 0: cooldown as time string (10h 20m 15s) -->
+    <warning.willSend
+            value="Jei išsiųsi šiuos resursus, negalėsi siųsti kitų {0}." />
+    <tooltip.cooldownActive value="Šiuo metu siųstuvas vėsta" />
+    <message.noTransporter>
+      <p>Planetoje, į kurią buvo siunčiami resursai, nėra siųstuvo.
+         Siuntimas buvo atšauktas, o resursai gražinti.</p>
+    </message.noTransporter>
+  </ResourceTransporter>
   
   <Announcements>
     <title.popup value="Skelbimas"/>

@@ -24,7 +24,7 @@ LOGGER.except(:debug) do
     puts "Deleting FowSsEntries"
     FowSsEntry.delete_all
 
-    SolarSystem.all.each do |ss|
+    SolarSystem.find_each do |ss|
       next if ss.main_battleground? || ss.wormhole?
 
       puts "SS: #{ss.inspect}"

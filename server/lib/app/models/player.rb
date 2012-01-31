@@ -143,7 +143,7 @@ class Player < ActiveRecord::Base
 
   # Returns for how much seconds this player has been inactive.
   def inactivity_time
-    return 0 if Dispatcher.instance.connected?(id)
+    return 0 if Celluloid::Actor[:dispatcher].connected?(id)
     Time.now - (last_seen.nil? ? created_at : last_seen)
   end
 
@@ -263,7 +263,7 @@ class Player < ActiveRecord::Base
         row['alliance'] = alliance_id \
           ? {'id' => alliance_id, 'name' => alliance_name} \
           : nil
-        row['last_seen'] = true if Dispatcher.instance.connected?(row['id'])
+        row['last_seen'] = true if Celluloid::Actor[:dispatcher].connected?(row['id'])
         row['last_seen'] = Time.parse(row['last_seen']) \
           if row['last_seen'].is_a?(String)
         row['death_date'] = Time.parse(row['death_date']) \
@@ -290,7 +290,7 @@ class Player < ActiveRecord::Base
         row['alliance'] = alliance_id \
           ? {'id' => alliance_id, 'name' => alliance_name} \
           : nil
-        row['last_seen'] = true if Dispatcher.instance.connected?(row['id'])
+        row['last_seen'] = true if Celluloid::Actor[:dispatcher].connected?(row['id'])
         row['last_seen'] = Time.parse(row['last_seen']) \
           if row['last_seen'].is_a?(String)
         row
@@ -465,7 +465,9 @@ class Player < ActiveRecord::Base
   end
   # Disconnect erased player from server.
   after_destroy do
-    Dispatcher.instance.disconnect(id, Dispatcher::DISCONNECT_PLAYER_ERASED)
+    Celluloid::Actor[:dispatcher].disconnect!(
+      id, Dispatcher::DISCONNECT_PLAYER_ERASED
+    )
   end
 
   # Update player in dispatcher if it is connected so alliance ids and other
@@ -476,7 +478,7 @@ class Player < ActiveRecord::Base
   # This is why DataMapper is great - it keeps one object in memory for one
   # row in DB.
   after_save do
-    dispatcher = Dispatcher.instance
+    dispatcher = Celluloid::Actor[:dispatcher]
     dispatcher.update_player(self) if dispatcher.connected?(id)
 
     Objective::BeInAlliance.progress(self) \
@@ -569,7 +571,7 @@ class Player < ActiveRecord::Base
 
   # Is this player active?
   def active?
-    Dispatcher.instance.connected?(id) || (
+    Celluloid::Actor[:dispatcher].connected?(id) || (
       ! last_seen.nil? &&
         last_seen >= Cfg.player_inactivity_time(points).ago
     )

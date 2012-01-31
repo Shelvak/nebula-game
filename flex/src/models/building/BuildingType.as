@@ -19,6 +19,7 @@ package models.building
       public static const NPC_INFANTRY_FACTORY: String = "NpcInfantryFactory";
       public static const NPC_GROUND_FACTORY: String = "NpcTankFactory";
       public static const NPC_SPACE_FACTORY: String = "NpcSpaceFactory";
+      public static const RESOURCE_TRANSPORTER: String = "ResourceTransporter";
       public static const NPC_SOLAR_PLANT: String = "NpcSolarPlant";
       public static const NPC_COMMUNICATIONS_HUB: String = "NpcCommunicationsHub";
       public static const NPC_METAL_EXTRACTOR: String = "NpcMetalExtractor";

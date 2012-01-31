@@ -1,8 +1,10 @@
 class Dispatcher
   include NamedLogMessages
-  include Singleton
+  include Celluloid
 
   attr_reader :storage
+
+  TAG = 'dispatcher'
   
   # Special key for message id. This is needed for client to do time
   # syncing.
@@ -19,6 +21,7 @@ class Dispatcher
 
   # Initialize the dispatcher.
   def initialize
+    Thread.current[:name] = TAG
     @unknown_client_id = 0
     @last_message_id = 0
     @controllers = {}
@@ -284,7 +287,7 @@ class Dispatcher
     end
 
     LOGGER.block(
-      "Message queue processing", :level => :debug, :component => to_s
+      "Message queue processing", :level => :debug, :component => TAG
     ) do
       @queue_processing = true
       process = lambda do
@@ -314,7 +317,7 @@ class Dispatcher
 
   # Handle message with controllers
   def handle_message(message)
-    LOGGER.block("Message handling", :level => :debug, :component => to_s) do
+    LOGGER.block("Message handling", :level => :debug, :component => TAG) do
       debug "Message: #{message.inspect}"
 
       controller = message['action'].split(
