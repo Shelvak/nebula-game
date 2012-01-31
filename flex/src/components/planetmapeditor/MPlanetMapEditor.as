@@ -37,9 +37,9 @@ package components.planetmapeditor
       public const MAX_NAME_CHARS: int = 8;
 
       public const MAX_WIDTH: int = 50;
-      public const MIN_WIDTH: int = 4;
+      public const MIN_WIDTH: int = 10;
       public const MAX_HEIGHT: int = 50;
-      public const MIN_HEIGHT: int = 4;
+      public const MIN_HEIGHT: int = 10;
 
       public static const MIN_BUILDING_LEVEL: int = 1;
       public static const MAX_BUILDING_LEVEL: int = 10;
@@ -157,7 +157,7 @@ package components.planetmapeditor
          return _selectedTileKind;
       }
 
-      private var _mapWidth:int = MIN_WIDTH;
+      private var _mapWidth:int = (MIN_WIDTH + MAX_WIDTH) / 2;
       [Bindable(event="widthChange")]
       public function set mapWidth(value: int): void {
          Objects.paramInRangeNumbers(
@@ -172,7 +172,7 @@ package components.planetmapeditor
          return _mapWidth;
       }
 
-      private var _mapHeight:int = MIN_HEIGHT;
+      private var _mapHeight:int = (MIN_HEIGHT + MAX_HEIGHT) / 2;
       [Bindable(event="heightChange")]
       public function set mapHeight(value: int): void {
          Objects.paramInRangeNumbers(

@@ -19,8 +19,6 @@ package components.map.planet.objects
       }
       
       protected function initProperties(): void {
-         width = model.imageWidth;
-         height = model.imageHeight;
          addModelEventListeners(model);
          setDepth();
       }
@@ -39,6 +37,21 @@ package components.map.planet.objects
       
       include "mixin_defaultModelPropImpl.as";
       include "mixin_zIndexChangeHandler.as";
+
+
+      override public function set width(value: Number): void {
+         Objects.throwNotSupportedPropertyError("Property is read-only");
+      }
+      override public function get width(): Number {
+         return model != null ? model.imageWidth : 0;
+      }
+
+      override public function set height(value: Number): void {
+         Objects.throwNotSupportedPropertyError("Property is read-only");
+      }
+      override public function get height(): Number {
+         return model != null ? model.imageHeight : 0;
+      }
 
       private var _selected: Boolean = false;
       public function set selected(v: Boolean): void {
