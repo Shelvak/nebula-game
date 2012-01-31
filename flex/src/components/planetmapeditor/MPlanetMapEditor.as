@@ -198,8 +198,8 @@ package components.planetmapeditor
             if (value.length == 0) {
                value = DEFAULT_MAP_NAME;
             }
-            dispatchEditorEvent(MPlanetMapEditorEvent.NAME_CHANGE);
             _mapName = value;
+            dispatchEditorEvent(MPlanetMapEditorEvent.NAME_CHANGE);
          }
       }
       public function get mapName(): String {
