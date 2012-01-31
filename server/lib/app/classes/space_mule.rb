@@ -78,7 +78,7 @@ class SpaceMule
     PmgConfigInitializer.initialize
     LOGGER.info "Sending configuration"
     # Suppress huge configuration. No need to have it in logs.
-    LOGGER.suppress(:debug) do
+    LOGGER.except(:debug) do
       SmModules.config.Runner.run(
         USED_DB_CONFIG.to_scala,
         CONFIG.full_set_values.to_scala

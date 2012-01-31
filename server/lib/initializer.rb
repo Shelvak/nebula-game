@@ -411,3 +411,5 @@ lambda do
 
   SpaceMule.instance
 end.call
+
+Dispatcher.supervise_as :dispatcher

@@ -192,7 +192,7 @@ class SolarSystem < ActiveRecord::Base
 
     raise RuntimeError.new(
       "Cannot detach solar system #{self} while player is connected!"
-    ) if Dispatcher.instance.connected?(player_id)
+    ) if Celluloid::Actor[:dispatcher].connected?(player_id)
 
     # Deactivate radars.
     Building::Radar.for_player(player_id).active.each(&:deactivate!)

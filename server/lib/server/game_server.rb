@@ -5,7 +5,7 @@ module GameServer
   def post_init
     super
     debug "Registering to Dispatcher."
-    Dispatcher.instance.register self
+    Celluloid::Actor[:dispatcher].register! self
     @buffer = ""
   end
 
@@ -19,7 +19,7 @@ module GameServer
       @buffer += data
       newline_at = @buffer.index("\n")
       until newline_at.nil?
-        Dispatcher.instance.disconnect(
+        Celluloid::Actor[:dispatcher].disconnect!(
           self, GenericServer::REASON_EMPTY_MESSAGE
         ) if newline_at == 0
 
@@ -31,19 +31,21 @@ module GameServer
         begin
           log_request do
             info "Message: #{message}"
-            Dispatcher.instance.receive self, JSON.parse(message)
+            Celluloid::Actor[:dispatcher].receive! self, JSON.parse(message)
           end
         rescue JSON::ParserError => e
           debug "Cannot parse it out as JSON: #{e}\nMessage was: #{
             message.inspect}"
-          Dispatcher.instance.disconnect(self,
-            GenericServer::REASON_JSON_ERROR)
+          Celluloid::Actor[:dispatcher].disconnect!(
+            self, GenericServer::REASON_JSON_ERROR
+          )
           return
         rescue Exception => e
           error "UNEXPECTED EXCEPTION: #{e.inspect}\nMessage:\n#{message
             }\nBacktrace:\n#{e.backtrace.join("\n")}"
-          Dispatcher.instance.disconnect(self,
-            GenericServer::REASON_SERVER_ERROR)
+          Celluloid::Actor[:dispatcher].disconnect(
+            self, GenericServer::REASON_SERVER_ERROR
+          )
           return
         end
 
@@ -63,7 +65,7 @@ module GameServer
   end
 
   def unbind
-    Dispatcher.instance.unregister self
+    Celluloid::Actor[:dispatcher].unregister! self
     super
   end
 

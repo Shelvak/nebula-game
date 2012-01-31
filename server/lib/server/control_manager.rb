@@ -415,7 +415,7 @@ Message was:
 
   def action_stats_players(io)
     stats = {
-      :current => Dispatcher.instance.logged_in_count,
+      :current => Celluloid::Actor[:dispatcher].logged_in_count,
       :"24h" => get_player_count_in(24.hours),
       :"48h" => get_player_count_in(48.hours),
       :"1w" => get_player_count_in(1.week),

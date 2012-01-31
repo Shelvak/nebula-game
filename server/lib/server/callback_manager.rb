@@ -58,6 +58,8 @@ class CallbackManager
   # Maximum time for callback
   MAX_TIME = 5
 
+  TAG = "CallbackManager"
+
   class << self
 
     def get_class(object)
@@ -75,8 +77,8 @@ class CallbackManager
 
       time ||= object.upgrade_ends_at
 
-      LOGGER.debug("CM: registering event '#{STRING_NAMES[event]
-        }' at #{time.to_s(:db)} for #{object}")
+      LOGGER.debug("Registering event '#{STRING_NAMES[event]
+        }' at #{time.to_s(:db)} for #{object}", TAG)
 
       raise ArgumentError.new("object #{object} does not have id!") \
         if object.id.nil?
@@ -92,8 +94,8 @@ class CallbackManager
     def update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
       time ||= object.upgrade_ends_at
 
-      LOGGER.debug("CM: updating event '#{STRING_NAMES[event]
-        }' at #{time.to_s(:db)} for #{object}")
+      LOGGER.debug("Updating event '#{STRING_NAMES[event]
+        }' at #{time.to_s(:db)} for #{object}", TAG)
 
       ActiveRecord::Base.connection.execute(
         "UPDATE callbacks SET ends_at='#{time.to_s(:db)}' WHERE class='#{
@@ -126,8 +128,8 @@ class CallbackManager
     end
 
     def unregister(object, event=EVENT_UPGRADE_FINISHED)
-      LOGGER.debug("CM: unregistering event '#{STRING_NAMES[event]
-        }' for #{object}")
+      LOGGER.debug("unregistering event '#{STRING_NAMES[event]
+        }' for #{object}", TAG)
 
       ActiveRecord::Base.connection.execute(
         "DELETE FROM callbacks WHERE class='#{get_class(object)
@@ -163,7 +165,7 @@ class CallbackManager
       ) if include_failed
 
       get_row = lambda do
-        LOGGER.suppress(:debug) { get(sql) }
+        LOGGER.except(:debug) { get(sql) }
       end
 
       # Request unprocessed entries that have hit
@@ -177,9 +179,9 @@ class CallbackManager
             LOGGER.error(
               "Error in callback manager!\nRow: %s\n%s" % [
                 row.inspect, error.to_log_str
-              ]
+              ], TAG
             )
-            LOGGER.info "Marking row as failed."
+            LOGGER.info "Marking row as failed.", TAG
             conn.execute("UPDATE callbacks SET failed=failed+1 #{sql} LIMIT 1")
           else
             fail
@@ -196,7 +198,7 @@ class CallbackManager
       title = "Callback @ #{row['ends_at']} for #{row['class']} (evt: '#{
         STRING_NAMES[row['event'].to_i]}', obj id: #{
         row['object_id']}, ruleset: #{row['ruleset']})"
-      LOGGER.block(title) do
+      LOGGER.block(title, :component => TAG) do
         time = Benchmark.realtime do
           ActiveRecord::Base.transaction(:joinable => false) do
             # Delete entry before processing. This is needed because
@@ -226,7 +228,7 @@ class CallbackManager
               end
             rescue ActiveRecord::RecordNotFound
               LOGGER.info(
-                "Record was not found. It may have been destroyed."
+                "Record was not found. It may have been destroyed.", TAG
               )
             end
           end
@@ -234,7 +236,7 @@ class CallbackManager
 
         if time > MAX_TIME
           LOGGER.warn("Callback took more than #{MAX_TIME}s (#{time
-            })\n\n#{title}")
+            })\n\n#{title}", TAG)
         end
       end
     end

@@ -10,7 +10,7 @@ class AnnouncementsController < GenericController
       LOGGER.info("Setting new announcement #{message.inspect
         } which expires @ #{ends_at}.")
 
-      Dispatcher.instance.push_to_logged_in(
+      Celluloid::Actor[:dispatcher].push_to_logged_in!(
         ACTION_NEW, 
         {'ends_at' => ends_at, 'message' => message}
       )

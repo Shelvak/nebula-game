@@ -7,7 +7,7 @@ require File.dirname(__FILE__) + '/../../lib/initializer.rb'
 
 c = ActiveRecord::Base.connection
 
-LOGGER.suppress(:debug) do
+LOGGER.except(:debug) do
   c.transaction do
     puts "Deactivating radars."
     radars = Building::Radar.all
@@ -24,7 +24,7 @@ LOGGER.suppress(:debug) do
     puts "Deleting FowSsEntries"
     FowSsEntry.delete_all
 
-    SolarSystem.all.each do |ss|
+    SolarSystem.find_each do |ss|
       next if ss.main_battleground? || ss.wormhole?
 
       puts "SS: #{ss.inspect}"

@@ -50,7 +50,7 @@ class GameController < GenericController
     ruleset = player.nil? ? 'default' : session[:ruleset]
 
     # Configuration tends to be huge - no need to litter logs with it.
-    LOGGER.suppress(:traffic_debug) do
+    LOGGER.except(:traffic_debug) do
       respond :config => get_config(ruleset)
     end
   end

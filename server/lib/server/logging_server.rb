@@ -20,7 +20,7 @@ module LoggingServer
   end
 
   def log_request(&block)
-    LOGGER.request(
+    LOGGER.block(
       "REQUEST from #{@ip}:#{@port}", {:component => to_s}, &block
     )
   end

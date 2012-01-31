@@ -10,13 +10,13 @@ class Logging::Logger
     # Buffer for block logging.
     @block_buffer = nil
     # Which log levels we are currently suppressing?
-    @suppressing = []
+    @excepting = []
   end
 
   # Define logging methods
   Logging::Writer::TYPE_TO_LEVEL.each do |type, level|
     define_method(:"#{type}?") do
-      ! @suppressing.include?(type) &&
+      ! @excepting.include?(type) &&
         Celluloid::Actor[:log_writer].write?(type)
     end
     define_method(type) do |message, component=DEFAULT_COMPONENT|
@@ -33,6 +33,7 @@ class Logging::Logger
 
   def block(message, options={})
     options.reverse_merge!(:component => DEFAULT_COMPONENT, :level => :info)
+    return if @excepting.include?(options[:level])
 
     data = data_for(options[:component], options[:level], message)
     if @block_buffer.nil?
@@ -82,11 +83,10 @@ class Logging::Logger
   end
 
   # Suppress given types for the duration of the block. Thread local.
-  def suppress(*types)
-    puts "Suppress called with #{types.inspect}"
-    @suppressing += types
+  def except(*types)
+    @excepting += types
     result = yield
-    types.size.times { @suppressing.pop }
+    types.size.times { @excepting.pop }
 
     result
   end
