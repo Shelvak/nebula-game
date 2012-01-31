@@ -1816,6 +1816,15 @@
     <message.questCompleted value="Užduotis „{0}“ buvo įvykdyta." />
     <message.newQuests value="Tu pradėjai vykdyti šias užduotis:" />
 
+    <title.technologiesChanged value="Įvyko pasikeitimai technologijose" />
+    <message.technologiesChanged value="Pasikeitimai technologijose." />
+    <insideMessage.technologiesChanged>
+        <p>
+            Dėl nepakankamo mokslininkų arba planetų kiekio buvo atlikti šie
+            pakeitimai technologijoms:
+        </p>
+    </insideMessage.technologiesChanged>
+
     <title.kickedFromAlliance value="Buvai pašalintas iš sąjungos" />
     <message.kickedFromAlliance value="Buvai pašalintas iš sąjungos {0}" />
     <label.kickedFromAlliance 
@@ -4285,6 +4294,10 @@
       <p>Kita technologija iš šios grupės jau buvo išrasta, todėl tu negali
       išrasti šios technologijos.</p>
     </groupResearched>
+    <label.wasPaused value="Sustabdyta" />
+    <label.scientistsChanged value="Mokslininkų sumažinta:" />
+    <label.oldScientists value="Iš {0}" />
+    <label.newScientists value="Į {0}" />
 
     <upgrade value="Tobulinti" />
     <update value="Atnaujinti" />

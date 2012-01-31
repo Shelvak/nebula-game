@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                autoDrawBackground="false"
+                xmlns:base="components.base.*">
+  <fx:Script>
+      <![CDATA[
+    import controllers.ui.NavigationController;
+
+    import models.ModelLocator;
+
+    import models.building.Building;
+    import models.resource.ResourceType;
+    import models.technology.MChangedTechnology;
+    import models.technology.Technology;
+    import models.unit.RaidingUnitEntry;
+    import models.unit.Unit;
+    import models.unit.UnitBuildingEntry;
+
+    import utils.ModelUtil;
+    import utils.assets.AssetNames;
+    import utils.assets.ImagePreloader;
+    import utils.locale.Localizer;
+
+    private function get ML(): ModelLocator
+    {
+      return ModelLocator.getInstance();
+    }
+
+    protected function info_clickHandler(event:MouseEvent):void
+    {
+      var tech: Technology = ML.technologies.getTechnologyByType(cast(data).technology);
+      NavigationController.getInstance().showInfo(tech);
+    }
+
+    public static const imageSize: int = 48;
+
+    public function cast(from: Object): MChangedTechnology
+    {
+      return MChangedTechnology(from);
+    }
+    
+    private function getString(property: String,  params: Array = null): String
+    {
+      return Localizer.string('Technologies', property, params);
+    }
+
+    ]]>
+   </fx:Script>
+
+  <s:states>
+    <s:State name="normal"/>
+  </s:states>
+
+  <base:AdvancedContainer left="0" right="0" top="0" bottom="0">
+    <s:BitmapImage
+      source="{cast(data).technology == null
+          ? null
+          : ImagePreloader.getInstance().getImage(
+            AssetNames.getTechnologyImageName(cast(data).technology))}"
+      width="{imageSize}" height="{imageSize}" top="0" left="0" id="techImg"/>
+    <s:Label visible="{cast(data).paused}" text="{getString('label.wasPaused')}"
+      width="100%" height="100%" textAlign="center" verticalAlign="middle"
+      fontWeight="bold"/>
+    <s:Group visible="{!cast(data).paused}" width="100%" height="100%">
+      <s:Label visible="{cast(data).paused}" text="{getString('label.scientistsChanged')}"
+               width="100%" textAlign="center"/>
+      <base:ImageAndLabel type="{ResourceType.SCIENTISTS}"
+                          paddingLeft="6"
+                          textToDisplay="{getString('label.oldScientists',
+                          [cast(data).oldScientists])}"/>
+      <base:ImageAndLabel type="{ResourceType.SCIENTISTS}"
+                          paddingLeft="6"
+                          textToDisplay="{getString('label.newScientists',
+                          [cast(data).newScientists])}"/>
+      <s:layout>
+        <s:VerticalLayout/>
+      </s:layout>
+    </s:Group>
+
+    <base:layout>
+      <s:VerticalLayout/>
+    </base:layout>
+
+
+  </base:AdvancedContainer>
+
+</s:ItemRenderer>
