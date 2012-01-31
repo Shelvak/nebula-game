@@ -29,7 +29,8 @@ module GameServer
         @buffer = @buffer[(newline_at + 1)..-1]
 
         begin
-          log_request "Message: #{message}" do
+          log_request do
+            info "Message: #{message}"
             Dispatcher.instance.receive self, JSON.parse(message)
           end
         rescue JSON::ParserError => e

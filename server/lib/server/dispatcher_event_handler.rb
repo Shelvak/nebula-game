@@ -215,8 +215,10 @@ class DispatcherEventHandler
 
   def self.debug(message, &block)
     if block
-      LOGGER.block message, {:level => :debug,
-        :server_name => "DispatcherEventHandler"}, &block
+      LOGGER.block(
+        message, {:level => :debug, :component => "DispatcherEventHandler"},
+        &block
+      )
     else
       LOGGER.debug message, "DispatcherEventHandler"
     end

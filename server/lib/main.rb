@@ -47,8 +47,8 @@ EventMachine.run do
   EventMachine.start_server "0.0.0.0", CONFIG['control']['port'],
     ControlServer
 
-  LOGGER.info "Starting callback manager..."
-  EventMachine::PeriodicTimer.new(1) { CallbackManager.tick }
+  #LOGGER.info "Starting callback manager..."
+  #EventMachine::PeriodicTimer.new(1) { CallbackManager.tick }
 
   LOGGER.info "Running callback manager..."
   CallbackManager.tick(true)

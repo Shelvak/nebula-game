@@ -8,7 +8,8 @@ module ControlServer
   def receive_data(data)
     disconnect(GenericServer::REASON_EMPTY_MESSAGE) if data == ""
 
-    log_request "Message: #{data}" do
+    log_request do
+      info "Message: #{data}"
       ControlManager.instance.receive self, JSON.parse(data)
     end
   rescue JSON::ParserError => e

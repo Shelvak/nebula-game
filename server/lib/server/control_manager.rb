@@ -314,7 +314,7 @@ class ControlManager
 
   def action_reopen_logs(io)
     LOGGER.info "Got request to control manager, reopening log outputs."
-    LOGGER.reopen!
+    Celluloid::Actor[:log_writer].reopen!
     io.send_message :success => true
   end
 
@@ -507,7 +507,7 @@ Message was:
   end
 
   def only_in_production(message)
-    LOGGER.block(message, :server_name => TAG) do
+    LOGGER.block(message, :component => TAG) do
       if App.in_production?
         yield
       else

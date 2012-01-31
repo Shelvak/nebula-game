@@ -313,8 +313,9 @@ class Unit < ActiveRecord::Base
     # Return distinct player ids which have completed units for given
     # +Location+.
     def player_ids_in_location(location, exclude_non_combat=false)
-      LOGGER.block("Checking for player ids in #{location}",
-          :level => :debug) do
+      LOGGER.block(
+        "Checking for player ids in #{location}", :level => :debug
+      ) do
         # Do not compact here, because NPC units are also distinct player id
         # values.
         query = where(location.location_attrs).where("level > 0")

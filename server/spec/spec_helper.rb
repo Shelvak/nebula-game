@@ -145,7 +145,7 @@ if $SPEC_INITIALIZED.nil?
     end
 
     def restore_logging
-      LOGGER.level = GameLogger::LEVEL_DEBUG
+      Celluloid::Actor[:log_writer].level = Logging::Writer::LEVEL_DEBUG
     end
 
     config.before(:each) do

@@ -67,7 +67,7 @@ class SpaceMule
 
   protected
   def initialize_mule
-    LOGGER.block "Initializing SpaceMule", :level => :info do
+    LOGGER.block("Initializing SpaceMule") do
       send_config
     end
     true

@@ -52,9 +52,10 @@ class EventBroker
   def self.fire(object, event_name, reason=nil)
     object = prepare(object, event_name)
 
-    LOGGER.block("EB: '#{event_name}' fired for #{object.to_s}, reason: #{
-      reason}",
-    :level => :debug) do
+    LOGGER.block(
+      "EB: '#{event_name}' fired for #{object.to_s}, reason: #{reason}",
+      :level => :debug
+    ) do
       @@handlers.each do |handler|
         handler.fire(object, event_name, reason)
       end

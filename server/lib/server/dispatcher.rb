@@ -284,7 +284,7 @@ class Dispatcher
     end
 
     LOGGER.block(
-      "Message queue processing", :level => :debug, :server_name => to_s
+      "Message queue processing", :level => :debug, :component => to_s
     ) do
       @queue_processing = true
       process = lambda do
@@ -314,8 +314,7 @@ class Dispatcher
 
   # Handle message with controllers
   def handle_message(message)
-    LOGGER.block("Message handling", :level => :debug,
-    :server_name => to_s) do
+    LOGGER.block("Message handling", :level => :debug, :component => to_s) do
       debug "Message: #{message.inspect}"
 
       controller = message['action'].split(

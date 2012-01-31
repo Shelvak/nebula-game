@@ -63,8 +63,9 @@ class FowSsEntry < ActiveRecord::Base
 
     # Recalculate metadata for entries that cover _solar_system_id_.
     def recalculate(solar_system_id, dispatch_event=true)
-      LOGGER.block("Recalculating metadata for #{solar_system_id}",
-        :level => :debug) do
+      LOGGER.block(
+        "Recalculating metadata for #{solar_system_id}", :level => :debug
+      ) do
         # Select data we need
         planet_player_ids = SsObject.
           select("DISTINCT(player_id)").
