@@ -9,6 +9,8 @@ package controllers.game.actions
 
    import globalevents.GlobalEvent;
 
+   import utils.remote.ServerProxyInstance;
+
 
    /**
     * Sets configurable static fields for models like Tile, SolarSystem and so on
@@ -19,6 +21,7 @@ package controllers.game.actions
       override public function applyServerAction(cmd:CommunicationCommand): void {
          Config.setConfig(cmd.parameters.config);
          if (StartupInfo.getInstance().mode == StartupMode.MAP_EDITOR) {
+            ServerProxyInstance.getInstance().disconnect();
             new GlobalEvent(GlobalEvent.INITIALIZE_MAP_EDITOR);
          }
       }
