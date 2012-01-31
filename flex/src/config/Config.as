@@ -214,10 +214,17 @@ package config
             {"days": days}
          );
       }
-      
-      public static function getMarketFee(): String
+
+      /* returns a formula */
+      public static function getBuildingCooldownMod(type: String): String
       {
-         return getValue("buildings.market.fee");
+         return getBuildingProperty(type,  "mod.cooldown");
+      }
+
+      /* returns a formula */
+      public static function getFee(type: String): String
+      {
+         return getBuildingProperty(type, "fee");
       }
       
       public static function getMarketRange(): Number
@@ -734,6 +741,12 @@ package config
       public static function getBuildingMoveCost() : int
       {
          return getValue("creds.building.move");
+      }
+      
+      /* Returns a formula */
+      public static function getBuildingMaxTransportableVolume(type: String): String
+      {
+         return getBuildingProperty(type,  "maxVolume")
       }
       
       public static function getBuildingSelfDestructCooldown(): int

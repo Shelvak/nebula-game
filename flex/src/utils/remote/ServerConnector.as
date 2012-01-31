@@ -1,7 +1,9 @@
 package utils.remote
 {
    import controllers.messages.ResponseMessagesTracker;
-   
+   import controllers.startup.StartupInfo;
+   import controllers.startup.StartupMode;
+
    import flash.errors.IOError;
    import flash.events.Event;
    import flash.events.EventDispatcher;
@@ -122,6 +124,7 @@ package utils.remote
          _buffer = "";
          
          _connecting = false;
+         if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR)
          dispatchConnectionLostEvent();
       }
       

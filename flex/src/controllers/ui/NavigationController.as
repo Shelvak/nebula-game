@@ -10,6 +10,7 @@ package controllers.ui
    import components.map.space.CMapGalaxy;
    import components.map.space.CMapSolarSystem;
    import components.player.PlayerScreen;
+   import components.resourcetransporter.MCResourceTransporter;
    import components.screens.MainAreaContainer;
 
    import controllers.market.MarketCommand;
@@ -127,6 +128,9 @@ package controllers.ui
          );
          _screenProperties[String (MainAreaScreens.TECH_TREE)] = new ScreenProperties(
             MainAreaScreens.TECH_TREE, SidebarScreens.TECH_TREE_BASE
+         );
+         _screenProperties[String (MainAreaScreens.RESOURCE_TRANSPORTER)] = new ScreenProperties(
+            MainAreaScreens.RESOURCE_TRANSPORTER, null, false
          );
          _screenProperties[String (MainAreaScreens.STORAGE)] = new ScreenProperties(
             MainAreaScreens.STORAGE, null, false
@@ -475,6 +479,13 @@ package controllers.ui
       public function showTechnologies() : void
       {
          resetToNonMapScreen(_screenProperties[MainAreaScreens.TECH_TREE]);
+      }
+
+
+      public function showResourceTransporter(building: Building) : void
+      {
+         MCResourceTransporter.getInstance().selectedBuilding = building;
+         showNonMapScreen(_screenProperties[MainAreaScreens.RESOURCE_TRANSPORTER]);
       }
       
       

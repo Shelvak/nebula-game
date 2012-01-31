@@ -18,11 +18,11 @@ class Building::ResourceTransporter < Building
 
   def self.cooldown_time(volume, level)
     mod = cooldown_mod(level)
-    volume * mod
+    (volume * mod).ceil
   end
 
   def self.cooldown_mod(level)
-    evalproperty("mod.cooldown", nil, {'level' => level}).round
+    evalproperty("mod.cooldown", nil, {'level' => level})
   end
 
   def fee(level=nil)
