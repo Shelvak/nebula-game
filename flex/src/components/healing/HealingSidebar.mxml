@@ -5,7 +5,8 @@
                     xmlns:base="components.base.*"
                     width="100%" height="100%"
                     addedToStage="basecontainer1_addedToStageHandler(event)"
-                    removedFromStage="basecontainer1_removedFromStageHandler(event)" xmlns:unitsscreen="components.unitsscreen.*">
+                    removedFromStage="basecontainer1_removedFromStageHandler(event)"
+                    xmlns:unitsscreen="components.unitsscreen.*">
    
    <fx:Script>
       <![CDATA[

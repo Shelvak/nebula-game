@@ -33,6 +33,7 @@
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.SOLAR_SYSTEM}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.PLANET}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.TECH_TREE}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.RESOURCE_TRANSPORTER}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.FACILITIES}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.UNITS}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.STORAGE}"/>

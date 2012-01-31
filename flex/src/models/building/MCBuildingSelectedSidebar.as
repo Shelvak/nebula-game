@@ -242,6 +242,9 @@ package models.building
             case BuildingType.RESEARCH_CENTER:
                NC.showTechnologies();
                break;
+            case BuildingType.RESOURCE_TRANSPORTER:
+               NC.showResourceTransporter(building);
+               break;
             case BuildingType.MARKET:
                NC.showMarket(building);
                break;

@@ -57,8 +57,7 @@
                   paddingBottom="6"/>
       <s:Group>
          <market:CMarketSell id="sellGroup" left="0" right="0"
-            taxRate="{Building.getMarketTaxRate(
-            mScreen.market.upgradePart.level)}"
+            taxRate="{mScreen.market.fee}"
             visible="{mScreen.freeSlots > 0}"
             includeInLayout="{mScreen.freeSlots > 0}"/>
          <base:Warning left="0" right="0"

@@ -18,6 +18,7 @@
       import components.player.PlayerScreen;
       import components.quests.QuestsScreen;
       import components.ratings.RatingScreen;
+      import components.resourcetransporter.ResourceTransporterScreen;
       import components.squadronsscreen.CSquadronsScreen;
       import components.technologytree.TechnologyTree;
       import components.unitsscreen.StorageScreen;
@@ -81,6 +82,9 @@
                   break;
                case MainAreaScreens.TECH_TREE:
                   addElement(new TechnologyTree());
+                  break;
+               case MainAreaScreens.RESOURCE_TRANSPORTER:
+                  addElement(new ResourceTransporterScreen());
                   break;
                case MainAreaScreens.FACILITIES:
                   addElement(new UnitsBuild());

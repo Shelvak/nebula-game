@@ -7,6 +7,7 @@ package models.building
    import utils.ModelUtil;
 
    import utils.ModelUtil;
+   import utils.StringUtil;
 
    // Explicitly reference all building classes here that are not referenced directly anywhere in the code.
    MetalExtractor;
@@ -108,10 +109,19 @@ package models.building
       public static const RADAR_STRENGTH: String = 'radar.strength';
       public static const FEE: String = 'fee';
       
-      public static function getMarketTaxRate(marketLevel: int): Number
+      public static function getFee(type: String, level: int): Number
       {
-         return StringUtil.evalFormula(Config.getMarketFee(), 
-            {'level': marketLevel});
+         return StringUtil.evalFormula(Config.getFee(type),
+            {'level': level});
+      }
+
+
+
+      public static function getResourceTransporterCooldown(level: int,
+         volume: int): int
+      {
+         return Math.ceil(StringUtil.evalFormula(Config.getBuildingCooldownMod(
+            BuildingType.RESOURCE_TRANSPORTER), {'level': level}) * volume);
       }
       
       /**
@@ -143,6 +153,7 @@ package models.building
          return [BuildingType.HEALING_CENTER,
             BuildingType.RESEARCH_CENTER,
             BuildingType.DEFENSIVE_PORTAL,
+            BuildingType.RESOURCE_TRANSPORTER,
             BuildingType.MARKET,
          ].indexOf(type) != -1;
       }
@@ -276,6 +287,19 @@ package models.building
       public function get totalConstructorMod(): int
       {
          return Math.min(100 - Config.getMinTimePercentage(), constructorMod + leveledConstructionMod);
+      }
+
+      [Bindable (event="levelChange")]
+      public function get maxTransportableStorage(): int
+      {
+         return Math.round(StringUtil.evalFormula(
+            Config.getBuildingMaxTransportableVolume(type), {'level': level}));
+      }
+
+      [Bindable (event="levelChange")]
+      public function get fee(): Number
+      {
+         return getFee(type,  level);
       }
       
       /**
