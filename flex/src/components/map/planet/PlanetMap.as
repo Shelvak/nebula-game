@@ -4,6 +4,8 @@ package components.map.planet
 
    import components.map.CMap;
    import components.map.planet.objects.IInteractivePlanetMapObject;
+   import components.planetmapeditor.ObjectsEditorLayer;
+   import components.planetmapeditor.TerrainEditorLayer;
 
    import flash.display.BitmapData;
    import flash.geom.Point;
@@ -11,6 +13,8 @@ package components.map.planet
 
    import models.location.LocationMinimal;
    import models.planet.MPlanet;
+   import models.planet.events.MPlanetEvent;
+   import models.solarsystem.events.MSSObjectEvent;
 
 
    /**
@@ -42,6 +46,8 @@ package components.map.planet
       /* ### INITIALIZATION ### */
       /* ###################### */
 
+      private var _objectsEditorLayer: ObjectsEditorLayer = null;
+      private var _terrainEditorLayer: TerrainEditorLayer = null;
       private var _backgroundRenderer: BackgroundRenderer = null;
 
       /**
@@ -49,14 +55,28 @@ package components.map.planet
        *
        * @param model a planet to create map for
        */
-      public function PlanetMap(model: MPlanet) {
+      public function PlanetMap(model: MPlanet,
+                                objectsEditorLayer: ObjectsEditorLayer = null,
+                                terrainEditorLayer: TerrainEditorLayer = null) {
          super(model);
+         _objectsEditorLayer = objectsEditorLayer;
+         _terrainEditorLayer = terrainEditorLayer;
          _coordsTransform = new PlanetMapCoordsTransform(
             model.width, model.height, BORDER_SIZE
+         );
+         model.ssObject.addEventListener(
+            MSSObjectEvent.TERRAIN_CHANGE, ssObject_terrainChangeHandler,
+            false, 0, true
          );
       }
 
       public override function cleanup(): void {
+         if (model != null) {
+            MPlanet(model).ssObject.removeEventListener(
+               MSSObjectEvent.TERRAIN_CHANGE, ssObject_terrainChangeHandler,
+               false
+            );
+         }
          if (_objectsLayer != null) {
             removeElement(_objectsLayer);
             _objectsLayer.cleanup();
@@ -69,16 +89,20 @@ package components.map.planet
          super.cleanup();
       }
 
-      public override function getBackground(): BitmapData {
+      public override function getBackground(useCached:Boolean = true): BitmapData {
          if (_backgroundRenderer == null) {
             _backgroundRenderer = new BackgroundRenderer(this);
          }
-         return _backgroundRenderer.renderBackground();
+         return _backgroundRenderer.renderBackground(useCached);
       }
 
       protected override function createObjects(): void {
          super.createObjects();
-         _objectsLayer = new PlanetObjectsLayer(this, getPlanet());
+         _objectsLayer = new PlanetObjectsLayer(
+            this, getPlanet(), _objectsEditorLayer, _terrainEditorLayer
+         );
+         _objectsEditorLayer = null;
+         _terrainEditorLayer = null;
          addElement(_objectsLayer);
       }
 
@@ -140,6 +164,15 @@ package components.map.planet
        */
       public function get coordsTransform(): PlanetMapCoordsTransform {
          return _coordsTransform;
+      }
+
+      /* #################################### */
+      /* ### RUNTIME BACKGROUND RENDERING ### */
+      /* #################################### */
+
+      private function ssObject_terrainChangeHandler(event:MSSObjectEvent): void {
+         renderBackground(false);
+         _objectsLayer.repositionAllObjects();
       }
    }
 }

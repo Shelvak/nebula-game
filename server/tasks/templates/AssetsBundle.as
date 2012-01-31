@@ -15,6 +15,9 @@ package assets {
     private static var battleModules : Array = [
 %battle_modules%
     ];
+    private static var mapEditorModules : Array = [
+%map_editor_modules%
+    ];
 
     public static function getGameModules() : Array
     {
@@ -24,6 +27,11 @@ package assets {
     public static function getBattleModules() : Array
     {
       return battleModules;
+    }
+
+    public static function getMapEditorModules() : Array
+    {
+       return mapEditorModules;
     }
   }
 }

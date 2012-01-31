@@ -14,9 +14,12 @@ package models.building
                              = new ArrayCollection([
          BuildingType.METAL_EXTRACTOR,
          BuildingType.METAL_EXTRACTOR_T2,
+         BuildingType.NPC_METAL_EXTRACTOR,
          BuildingType.ZETIUM_EXTRACTOR,
          BuildingType.ZETIUM_EXTRACTOR_T2,
-         BuildingType.GEOTHERMAL_PLANT
+         BuildingType.NPC_ZETIUM_EXTRACTOR,
+         BuildingType.GEOTHERMAL_PLANT,
+         BuildingType.NPC_GEOTHERMAL_PLANT
       ]);
 
       public function get baseResource(): int {

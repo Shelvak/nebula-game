@@ -115,7 +115,9 @@ package components.base.viewport
        */
       public function zoomToDefault() : void
       {
-         changeContentScale(1, centerPointViewport_CCS());
+         if (content != null) {
+            changeContentScale(1, centerPointViewport_CCS());
+         }
       }
       
       
@@ -233,7 +235,7 @@ package components.base.viewport
             return;
          }
          
-         // 1 will be set if content's both dimentions are smaller than
+         // 1 will be set if content's both dimensions are smaller than
          // of the viewport.
          _minScale = Math.min(
             (width - paddingHorizontal * 2) / content.getExplicitOrMeasuredWidth(),
@@ -263,7 +265,7 @@ package components.base.viewport
       protected override function global_keyDownHandler(event:KeyboardEvent) : void
       {
          super.global_keyDownHandler(event);
-         if (f_keyboarControlActive)
+         if (f_keyboardControlActive)
          {
             switch (event.keyCode)
             {

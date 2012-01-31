@@ -9,6 +9,11 @@ var locales = { // {{{
     if (locale == "lv") return "LOCALE: Combat Replay";
     return "Combat Replay";
   },
+  planetEditorTitle: function(locale) {
+    if (locale == "lt") return "Planetos žemėlapių redaktorius";
+    if (locale == "lv") return "LOCALE: Planet map editor";
+    return "Planet map editor";
+  },
   failedAuth: function(locale) {
     if (locale == "lt") return "Serveriui nepavyko tavęs prijungti. " +
       "Gali būti, jog esi atsijungęs nuo puslapio.\n\n" +
@@ -39,7 +44,7 @@ var locales = { // {{{
 var developmentServerPlayerId = 1;
 var developmentWebPlayerId = 0;
 
-// Authentification data
+// Authentication data
 var server = urlParams['server'];
 var webPlayerId = urlParams['web_player_id'];
 var serverPlayerId = urlParams['server_player_id'];
@@ -47,6 +52,9 @@ var serverPlayerId = urlParams['server_player_id'];
 // Combat replay data.
 var combatLogId = urlParams['combat_log_id'];
 var playerId = urlParams['player_id'];
+
+// Planet map editor data.
+var planetMapEditor = urlParams['planet_map_editor']
 
 // Support data.
 var locale = urlParams['locale'];
@@ -126,13 +134,38 @@ function missingParam(name) {
 // If it returns null, client should stop initialization.
 //noinspection JSUnusedGlobalSymbols
 function getGameOptions() { // {{{
+  if (planetMapEditor) {
+    if (inLocalComputer() && ! inDeveloperMode()) {
+      if (! defined(server)) server = developmentServer();
+      if (! defined(locale)) locale = "lt";
+      if (! defined(webHost)) webHost = "localhost";
+
+      document.title = "Local Planet Map Editor Dev Mode" + titleSuffix;
+    }
+    else {
+      if (defined(server) && defined(locale) && defined(webHost) &&
+          defined(assetsUrl)) {
+        document.title = locales.planetEditorTitle(locale) + titleSuffix;
+      }
+      else {
+        if (! defined(server)) missingParam('server');
+        if (! defined(locale)) missingParam('locale');
+        if (! defined(webHost)) missingParam('web_host');
+        if (! defined(assetsUrl)) missingParam('assets_url');
+        return null;
+      }
+    }
+
+    return {mode: 'planetMapEditor', server: server, locale: locale,
+      assetsUrl: assetsUrl};
+  }
   // Let's show us some combat!
   //
   // Example:
   //   ?mode=combatLog&server=game.nebula44.com&combat_log_id=a1s2d3f4&
   //     player_id=3&locale=lt&web_host=nebula44.com&
   //     assets_url=http://static.nebula44.com/
-  if (combatLogId) {
+  else if (combatLogId) {
     if (defined(server) && defined(playerId) && defined(locale) && 
         defined(webHost) && defined(assetsUrl)) {
       document.title = locales.combatReplayTitle(locale) + titleSuffix;
@@ -156,7 +189,7 @@ function getGameOptions() { // {{{
   //     locale=lt&web_host=nebula44.com&
   //     assets_url=http://static.nebula44.com/
   //
-  // You can append &dev=1 to skip requesting for web authentification.
+  // You can append &dev=1 to skip requesting for web authentication.
   else {
     if (inLocalComputer() && ! inDeveloperMode()) {
       if (! defined(server)) server = developmentServer();
@@ -168,8 +201,8 @@ function getGameOptions() { // {{{
       document.title = "Local Dev Mode" + titleSuffix;
     }
     else {
-      if (defined(server) && defined(webPlayerId) && defined(serverPlayerId) && 
-          defined(locale) && defined(webHost) && defined(assetsUrl) && 
+      if (defined(server) && defined(webPlayerId) && defined(serverPlayerId) &&
+          defined(locale) && defined(webHost) && defined(assetsUrl) &&
           defined(title)) {
         document.title = title + titleSuffix;
       }

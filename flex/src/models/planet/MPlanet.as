@@ -66,7 +66,7 @@ package models.planet
     */
    [Event(name="buildingMove", type="models.planet.events.MPlanetEvent")]
    
-   
+
    [Event(name="unitUpgradeStarted", type="models.planet.events.MPlanetEvent")]
    [Event(name="unitRefreshNeeded", type="models.planet.events.MPlanetEvent")]
    [Event(name="buildingUpgraded", type="models.planet.events.MPlanetEvent")]
@@ -78,15 +78,15 @@ package models.planet
       private var _zIndexCalculator:ZIndexCalculator = null;
       
       
-      private var _folliagesAnimator:PlanetFolliagesAnimator = null;
-      private var _suppressFolliagesAnimatorUpdate:Boolean = false;
-      private function updateFolliagesAnimator() : void
+      private var _foliageAnimator:PlanetFolliagesAnimator = null;
+      private var _suppressFoliageAnimatorUpdate:Boolean = false;
+      private function updateFoliageAnimator() : void
       {
-         if (_suppressFolliagesAnimatorUpdate)
+         if (_suppressFoliageAnimatorUpdate)
          {
             return;
          }
-         _folliagesAnimator.setFolliages(nonblockingFolliages);
+         _foliageAnimator.setFolliages(nonblockingFolliages);
       }
       
       
@@ -95,7 +95,7 @@ package models.planet
          _ssObject = ssObject;
          super();
          _zIndexCalculator = new ZIndexCalculator(this);
-         _folliagesAnimator = new PlanetFolliagesAnimator();
+         _foliageAnimator = new PlanetFolliagesAnimator();
          initMatrices();
          _nonblockingFolliages = Collections.filter(objects, filterFunction_nonblockingFolliages);
          _blockingFolliages = Collections.filter(objects, filterFunction_blockingFolliages);
@@ -173,15 +173,19 @@ package models.planet
          for (var unitType: String in data)
          {
             var countFrom: int = Math.round(StringUtil.evalFormula(
-                    data[unitType][0], {'arg': arg}));
+                    data[unitType][0], {'arg': arg})
+            );
             var countTo: int = Math.round(StringUtil.evalFormula(
-                    data[unitType][1], {'arg': arg}));
+                    data[unitType][1], {'arg': arg})
+            );
             var prob: Number = StringUtil.evalFormula(
-                    data[unitType][2], {'arg': arg});
+                    data[unitType][2], {'arg': arg}
+            );
             if (countTo > 0)
             {
-               hashedUnits[unitType] = new RaidingUnitEntry(unitType, countFrom,
-                  countTo, prob);
+               hashedUnits[unitType] = new RaidingUnitEntry(
+                  unitType, countFrom, countTo, prob
+               );
             }
          }
          var resultCollection: ArrayCollection = new ArrayCollection();
@@ -197,7 +201,9 @@ package models.planet
       
       public override function get cached() : Boolean
       {
-         return ML.latestPlanet != null && !ML.latestPlanet.fake && ML.latestPlanet.id == id;
+         return ML.latestPlanet != null
+                   && !ML.latestPlanet.fake
+                   && ML.latestPlanet.id == id;
       }
       
       
@@ -224,10 +230,10 @@ package models.planet
          {
             _zIndexCalculator = null;
          }
-         if (_folliagesAnimator != null)
+         if (_foliageAnimator != null)
          {
-            _folliagesAnimator.cleanup();
-            _folliagesAnimator = null;
+            _foliageAnimator.cleanup();
+            _foliageAnimator = null;
          }
          if (_blockingObjects != null)
          {
@@ -457,6 +463,50 @@ package models.planet
       public function get inMiniBattleground() : Boolean {
          return _ssObject.inMiniBattleground;
       }
+
+      /* ############################ */
+      /* ### AREA LOOPING HELPERS ### */
+      /* ############################ */
+
+      public function forEachPointIn(ranges: Array,
+                                     boundaryCheck: Boolean,
+                                     callback: Function): void {
+         Objects.paramNotNull("ranges", ranges);
+         Objects.paramNotNull("callback", callback);
+         function from(value: int): int {
+            return boundaryCheck ? Math.max(value, 0) : value;
+         }
+         function to(value: int, max:int): int {
+            return boundaryCheck ? Math.min(value, max - 1) : value;
+         }
+         for each (var range: Range2D in ranges) {
+            const xFrom: int = from(range.x);
+            const xTo: int = to(range.xEnd, width);
+            const yFrom: int = from(range.y);
+            const yTo: int = to(range.yEnd, height);
+            for (var x: int = xFrom; x <= xTo; x++) {
+               for (var y: int = yFrom; y <= yTo; y++) {
+                  callback.call(null, x,  y);
+               }
+            }
+         }
+      }
+
+      public function forEachPointUnder(object: MPlanetObject,
+                                        includeBuildingGap: Boolean,
+                                        boundaryCheck: Boolean,
+                                        callback: Function): void {
+         Objects.paramNotNull("object", object);
+         Objects.paramNotNull("callback", callback);
+         const gap: int = includeBuildingGap ? Building.GAP_BETWEEN : 0;
+         forEachPointIn(
+            [new Range2D(
+               object.x - gap, object.xEnd + gap,
+               object.y - gap, object.yEnd + gap
+            )],
+            boundaryCheck, callback
+         );
+      }
       
       
       /* ################ */
@@ -491,31 +541,27 @@ package models.planet
       
       
       /**
-       * Two-dimentional array containing tiles of this planet. Regular tiles are represented
-       * with null values.
+       * Two-dimensional array containing tiles of this planet. Regular tiles
+       * are represented with null values.
        * 
        * @default <code>null</code>
        */
       protected var tilesMatrix:Array = null;
       
-      
       /**
-       * Two-dimenstional array containing objects on this planet. One object may occupy more than
-       * one tile so all tiles under such object will refrerence the same instance.
+       * Two-dimensional array containing objects on this planet. One object
+       * may occupy more than one tile so all tiles under such object will
+       * reference the same instance.
        */
       protected var objectsMatrix:Array = null;
-      
-      
-      private function initMatrices() :void
-      {
+
+      private function initMatrices(): void {
          tilesMatrix = [];
          objectsMatrix = [];
-         for (var i:int = 0; i < width; i++)
-         {
-            var objsCol:Array = [];
-            var tilesCol:Array = [];
-            for (var j:int = 0; j < height; j++)
-            {
+         for (var i: int = 0; i < width; i++) {
+            var objsCol: Array = [];
+            var tilesCol: Array = [];
+            for (var j: int = 0; j < height; j++) {
                objsCol.push(null);
                tilesCol.push(null);
             }
@@ -524,26 +570,75 @@ package models.planet
          }
       }
       
-      
       /**
        * Adds a given tile to this planet to appropriate cell in tiles array.
-       * 
-       * @param t A tile that needs to be added to this planet.
        */
-      public function addTile(t:Tile) :void
-      {
-         tilesMatrix[t.x][t.y] = t;
+      public function addTile(kind: int, x: int, y: int): void {
+         Objects.notEquals(
+            kind, [TileKind.REGULAR],
+            "Adding regular tiles to the map is not allowed"
+         );
+         const tile: Tile = new Tile(kind);
+         tile.x = x;
+         tile.y = y;
+         addTileToMatrix(tile);
+         if (tile.isResource()) {
+            var clone:Tile = tile.cloneFake();
+            clone.x++;
+            addTileToMatrix(clone);
+
+            clone = tile.cloneFake();
+            clone.y++;
+            addTileToMatrix(clone);
+
+            clone = tile.cloneFake();
+            clone.x++;
+            clone.y++;
+            addTileToMatrix(clone);
+         }
       }
 
+      private function addTileToMatrix(tile:Tile): void {
+         tilesMatrix[tile.x][tile.y] = tile;
+      }
+
+      /**
+       * Removes tile in the given coordinates if one exists. In case it is
+       * a resource tile other three related tiles are also removed.
+       *
+       * @return not fake tile removed or <code>null</code> if such tile has not
+       * been removed
+       */
+      public function removeTile(x: int, y: int): Tile {
+         if (!isOnMap(x, y)) {
+            return null;
+         }
+         var tile: Tile = getTile(x, y);
+         if (tile == null) {
+            return null;
+         }
+         if (!tile.isResource()) {
+            tilesMatrix[x][y] = null;
+            return tile;
+         }
+         var notFake: Tile = null;
+         forEachPointIn(
+            [new Range2D(x - 1, x + 1, y - 1, y + 1)], true,
+            function(x: int, y: int): void {
+               const tile:Tile = getTile(x, y);
+               if (tile != null && tile.isResource()) {
+                  tilesMatrix[x][y] = null;
+                  if (!tile.fake) {
+                     notFake = tile;
+                  }
+               }
+            }
+         );
+         return notFake;
+      }
 
       /**
        * Returns <code>Tile</code> object at the given coordinates.
-       * 
-       * @param x
-       * @param y
-       *
-       * @return instance of <code>Tile</code> or <code>null</code> if there is no tile (regular tile)
-       * in the given coordinates.
        */
       public function getTile(x: int, y: int): Tile {
          return tilesMatrix[x][y];
@@ -566,8 +661,7 @@ package models.planet
       /**
        * Determines if given coordinates are defined on this map.
        */
-      public function isOnMap(x:int, y:int) : Boolean
-      {
+      public function isOnMap(x: int, y: int): Boolean {
          return x >= 0 && x < width && y >= 0 && y < height;
       }
       
@@ -578,8 +672,7 @@ package models.planet
        */
       public function get resourceTiles() : ArrayCollection
       {
-         if (!_resourceTiles)
-         {
+         if (!_resourceTiles) {
             _resourceTiles = new ArrayCollection();
             for (var x:int = 0; x < width; x++)
             {
@@ -664,7 +757,7 @@ package models.planet
          return object is Folliage;
       }
       /**
-       * Lis of all folliages on the planet (bound to <code>objects</code> list).
+       * Lis of all foliage on the planet (bound to <code>objects</code> list).
        */
       public function get folliages() : ListCollectionView
       {
@@ -930,7 +1023,7 @@ package models.planet
          fillObjectsMatrix(object);
          objects.addItem(object);
          calculateZIndex();
-         updateFolliagesAnimator();
+         updateFoliageAnimator();
          dispatchObjectAddEvent(object);
       }
       
@@ -963,13 +1056,13 @@ package models.planet
       {
          _suppressObjectAddEvent = true;
          _suppressZIndexCalculation = true;
-         _suppressFolliagesAnimatorUpdate = true;
+         _suppressFoliageAnimatorUpdate = true;
          super.addAllObjects(list);
          _suppressObjectAddEvent = false;
          _suppressZIndexCalculation = false;
-         _suppressFolliagesAnimatorUpdate = false;
+         _suppressFoliageAnimatorUpdate = false;
          calculateZIndex();
-         updateFolliagesAnimator();
+         updateFoliageAnimator();
       }
       
       
@@ -981,16 +1074,19 @@ package models.planet
        * @param silent not used
        */
       public override function removeObject(obj:BaseModel, silent:Boolean = false) : * {
-         var object:MPlanetObject = Objects.paramNotNull("obj", obj);
-         var x:int = object.x;
-         var y:int = object.y;
+         var object: MPlanetObject = Objects.paramNotNull("obj", obj);
+         var x: int = object.x;
+         var y: int = object.y;
          if (objectsMatrix[x][y] == object) {
             clearObjectsMatrix(x, object.xEnd, y, object.yEnd);
             objects.removeItemAt(objects.getItemIndex(object));
             dispatchObjectRemoveEvent(object);
-            if (object is ICleanable)
+            if (object is ICleanable) {
                ICleanable(object).cleanup();
+            }
+            return object;
          }
+         return null;
       }
       
       [Bindable (event="planetBuildingUpgraded")]
@@ -1125,12 +1221,12 @@ package models.planet
       
       
       /**
-       * Determines if any blocking folliages in given building basment's area exist.
+       * Determines if any blocking foliage in given building basement's area exist.
        * 
-       * @param building Building to be examinded.
+       * @param building Building to be examined.
        * 
        * @return <code>true</code> if there are at least one blocking folliage in the basement
-       * area of the given bulding or <code>false</code> otherwise.
+       * area of the given building or <code>false</code> otherwise.
        */
       public function blockingFolliagesUnderExist(building:Building) : Boolean
       {
@@ -1176,18 +1272,12 @@ package models.planet
       
       
       /**
-       * Determines if the given building would be on the map with it's whole ground.
-       * This method lets examine buildings that are not part of this map yet.
-       *  
-       * @param building A building to examine.
-       * 
-       * @return <code>true</code> if the building would be on the map, <code>false</code>
-       * if at least one building tile would not be on the map. 
+       * Determines if the given object would be on the map with it's whole ground.
+       * This method lets examine objects that are not part of this map yet.
        */
-      public function isBuildingOnMap(building:Building) : Boolean
-      {
-         return isOnMap(building.x, building.y) &&
-            isOnMap(building.xEnd, building.yEnd);
+      public function isObjectOnMap(object:MPlanetObject) : Boolean {
+         return isOnMap(object.x, object.y)
+                   && isOnMap(object.xEnd, object.yEnd);
       } 
       
       
@@ -1262,7 +1352,7 @@ package models.planet
        * otherwise.
        */
       public function canBeBuilt(building: Building): Boolean {
-         return isBuildingOnMap(building)
+         return isObjectOnMap(building)
                    && !restrTilesUnderBuildingExist(building)
                    && !restrTilesAroundBuildingExist(building)
                    && !buildingsAroundExist(building)
@@ -1286,7 +1376,7 @@ package models.planet
          }
          
          checkBlockingObjectsUnder(b);
-         removeNonBlockingFolliagesUnder(b);
+         removeNonBlockingFoliageUnder(b);
          addObject(b);
       }
       
@@ -1328,7 +1418,7 @@ package models.planet
          clearObjectsMatrix(b.x, b.xEnd, b.y, b.yEnd);
          b.moveTo(newX, newY);
          checkBlockingObjectsUnder(b);
-         removeNonBlockingFolliagesUnder(b);
+         removeNonBlockingFoliageUnder(b);
          fillObjectsMatrix(b);
          calculateZIndex();
          if (hasEventListener(MPlanetEvent.BUILDING_MOVE))
@@ -1338,7 +1428,7 @@ package models.planet
       }
       
       
-      private function removeNonBlockingFolliagesUnder(b:Building) : void
+      private function removeNonBlockingFoliageUnder(b:Building) : void
       {
          var removeList:Array = [];
          for each (var object:MPlanetObject in getObjectsInArea(b.x, b.xEnd, b.y, b.yEnd))
@@ -1393,19 +1483,14 @@ package models.planet
       /**
        * Initializes upgrade process of buildings and units that have not been completed yet.
        */
-      public function initUpgradeProcess() : void
-      {
-         for each (var b:Building in buildings)
-         {
-            if (!b.upgradePart.upgradeCompleted)
-            {
+      public function initUpgradeProcess(): void {
+         for each (var b: Building in buildings) {
+            if (!b.upgradePart.upgradeCompleted) {
                b.upgradePart.startUpgrade();
             }
          }
-         for each (var tUnit: Unit in units)
-         {
-            if (tUnit.upgradePart.upgradeEndsAt != null)
-            {
+         for each (var tUnit: Unit in units) {
+            if (tUnit.upgradePart.upgradeEndsAt != null) {
                tUnit.upgradePart.startUpgrade();
             }
          }
@@ -1416,41 +1501,30 @@ package models.planet
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
 
-
-      public function dispatchUnitRefreshEvent() : void
-      {
+      public function dispatchUnitRefreshEvent(): void {
          if (!f_cleanupStarted &&
-            !f_cleanupComplete &&
-            hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED))
-         {
+                !f_cleanupComplete &&
+                hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_REFRESH_NEEDED));
          }
       }
-      
-      
-      public function dispatchBuildingUpgradedEvent() : void
-      {
-         if (hasEventListener(MPlanetEvent.BUILDING_UPGRADED))
-         {
+
+      public function dispatchBuildingUpgradedEvent(): void {
+         if (hasEventListener(MPlanetEvent.BUILDING_UPGRADED)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.BUILDING_UPGRADED));
          }
       }
-      
-      
-      private var _suppressObjectAddEvent:Boolean = false;
-      private function dispatchObjectAddEvent(object:MPlanetObject) : void
-      {
-         if (!_suppressObjectAddEvent && hasEventListener(MPlanetEvent.OBJECT_ADD))
-         {
+
+      private var _suppressObjectAddEvent: Boolean = false;
+      private function dispatchObjectAddEvent(object: MPlanetObject): void {
+         if (!_suppressObjectAddEvent
+                && hasEventListener(MPlanetEvent.OBJECT_ADD)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.OBJECT_ADD, object));
          }
       }
-      
-      
-      private function dispatchObjectRemoveEvent(object:MPlanetObject) : void
-      {
-         if (hasEventListener(MPlanetEvent.OBJECT_REMOVE))
-         {
+
+      private function dispatchObjectRemoveEvent(object: MPlanetObject): void {
+         if (hasEventListener(MPlanetEvent.OBJECT_REMOVE)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.OBJECT_REMOVE, object));
          }
       }

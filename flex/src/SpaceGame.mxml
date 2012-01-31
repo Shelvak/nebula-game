@@ -6,6 +6,7 @@
                xmlns:popups="components.popups.*"
                xmlns:utils="utils.*"
                xmlns:screen="components.base.screen.*"
+               xmlns:mapeditor="components.planetmapeditor.*"
                skinClass="components.skins.ApplicationContainerSkin"
                width="100%" height="100%"
                initialize="StartupManager.loadStartupInfo()"
@@ -33,6 +34,7 @@
             <!--s:TextArea visible="false" id="profilerTextArea" width="400" height="500" x="200"/-->
          <screen:TopLevelScreenContainer screenName="{Screens.BATTLE}"/>
       </s:Group>
+      <mapeditor:CPlanetMapEditorInitializer/>
    </base:SpinnerContainer>
    
    <popups:ClientCrashPopup id="globalErrorPopUp" visible="{crashed}"
@@ -42,8 +44,6 @@
    <fx:Script>
       <![CDATA[
       import com.developmentarc.core.utils.EventBroker;
-
-      import utils.ApplicationLocker;
 
       import controllers.messages.MessagesProcessor;
       import controllers.messages.ResponseMessagesTracker;
@@ -57,8 +57,10 @@
 
       import mx.events.FlexEvent;
 
+      import utils.ApplicationLocker;
       import utils.DateUtil;
       import utils.profiler.Profiler;
+
 
       [Bindable]
       private var crashed: Boolean = false;
@@ -87,9 +89,13 @@
 
 
       private function this_applicationCompleteHandler(event: FlexEvent): void {
-         flash.external.ExternalInterface.marshallExceptions = true;
-         stage.addEventListener(KeyboardEvent.KEY_UP, stage_keyboardEventHandler);
-         stage.addEventListener(KeyboardEvent.KEY_DOWN, stage_keyboardEventHandler);
+         ExternalInterface.marshallExceptions = true;
+         stage.addEventListener(
+            KeyboardEvent.KEY_UP, stage_keyboardEventHandler
+         );
+         stage.addEventListener(
+            KeyboardEvent.KEY_DOWN, stage_keyboardEventHandler
+         );
          _mainTimer = new Timer(500);
          _mainTimer.start();
          _mainTimer.addEventListener(TimerEvent.TIMER, mainTimer_timerHandler);
@@ -108,14 +114,14 @@
 
       private var _mainTimer: Timer;
 
-
       // we only need one instance of this event
-      private var _timedUpdateEvent: GlobalEvent = new GlobalEvent(GlobalEvent.TIMED_UPDATE, false);
+      private var _timedUpdateEvent: GlobalEvent =
+                     new GlobalEvent(GlobalEvent.TIMED_UPDATE, false);
 
-
-      private var _messagesProcessor: MessagesProcessor = MessagesProcessor.getInstance();
-      private var _respMsgTracker: ResponseMessagesTracker = ResponseMessagesTracker.getInstance();
-
+      private var _messagesProcessor: MessagesProcessor =
+                     MessagesProcessor.getInstance();
+      private var _respMsgTracker: ResponseMessagesTracker =
+                     ResponseMessagesTracker.getInstance();
 
       /**
        *

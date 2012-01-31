@@ -2,6 +2,7 @@ package components.map.planet.objects
 {
 
    import components.base.Filters;
+   import components.planetmapeditor.MPlanetMapEditor;
 
    import config.Config;
    
@@ -140,8 +141,8 @@ package components.map.planet.objects
          }
          if (f_buildingIdChanged || f_buildingTypeChanged)
          {
-            _levelIndicator.visible = !b.isGhost && !b.npc;
-            _npcIndicator.visible = !b.isGhost && b.npc;
+            _levelIndicator.visible = !b.isGhost && !b.npc || b.hasMetaLevel;
+            _npcIndicator.visible = !b.hasMetaLevel && !b.isGhost && b.npc;
          }
          if (f_buildingStateChanged ||
              f_buildingUpgradePropChanged ||
@@ -170,7 +171,12 @@ package components.map.planet.objects
          }
          if (f_buildingLevelChanged)
          {
-            _levelIndicator.currentLevel = b.level;
+            if (b.hasMetaLevel) {
+               _levelIndicator.fillColorRed = true;
+            }
+            _levelIndicator.currentLevel = b.hasMetaLevel
+                                              ? b.metaLevel
+                                              : b.level;
          }
          if (f_buildingOverdrivenChanged)
          {
@@ -337,14 +343,15 @@ package components.map.planet.objects
          
          _levelIndicator = new LevelDisplay();
          _levelIndicator.depth = 900;
-         _levelIndicator.maxLevel = Config.getBuildingMaxLevel(b.type);
+         _levelIndicator.maxLevel = b.hasMetaLevel
+                                       ? MPlanetMapEditor.MAX_NPC_LEVEL
+                                       : b.maxLevel;
          addElement(_levelIndicator);
          
          _npcIndicator = new BitmapImage();
          _npcIndicator.depth = 900;
          _npcIndicator.source = ImagePreloader.getInstance()
             .getImage(AssetNames.getLevelDisplayImageName('npc'));
-         _npcIndicator.visible = !b.isGhost && b.npc;
          addElement(_npcIndicator);
          
          _hpBar = new ProgressBar();
@@ -505,12 +512,6 @@ package components.map.planet.objects
       /* ############################### */
       /* ### CHILDREN EVENT HANDLERS ### */
       /* ############################### */
-      
-      
-      private function addLevelIndicatorEventHandlers(indicator:LevelDisplay) : void
-      {
-         indicator.addEventListener(ResizeEvent.RESIZE, levelIndicator_resizeHandler, false, 0, true);
-      }
       
       
       private function levelIndicator_resizeHandler(event:ResizeEvent) : void

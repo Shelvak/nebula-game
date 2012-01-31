@@ -1,163 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
-                    xmlns:base="components.base.*"
-                    xmlns:mx="library://ns.adobe.com/flex/halo">
+                    xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
-         import flash.filters.BitmapFilter;
-         import flash.filters.GlowFilter;
-         
-         import mx.core.UIComponent;
-         
-         import utils.MathUtil;
-         import utils.assets.AssetNames;
-         private static const emptyName: String = "level_empty";
-         private static const fillName: String = "level_full";
-         private static const spaceName: String = "level_space";
-         
-         
-         [Bindable]
-         private var spaceMask: UIComponent = new UIComponent();
-         
-         [Bindable]
-         private var fillMask: UIComponent = new UIComponent();
-         
-         [Bindable]
-         private var _maxLevel: int;
-         
-         [Bindable]
-         private var _overdriven: Boolean = false;
-         
-         public function set overdriven(value: Boolean): void
-         {
-            _overdriven = value;
-         }
-         
-         [Bindable]
-         private var _currentLevel: int;
-         
-         public function set currentLevel(value: int): void
-         {
-            _currentLevel = value;
-            invalidateDisplayList();
-         }
-         
-         protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number) : void
-         {
-            super.updateDisplayList(unscaledWidth, unscaledHeight);
-            updateMasks();
-         }
-         
-         private function updateMasks(): void
-         {  
-            updateSpaceMask();
-            updateFillMask();
-         }
-         
-         private function updateFillMask(): void
-         {
-            var distanceToSpace: int = 10;
-            var r: int = baseLayer.width/2;
-            fillMask.graphics.clear();
-            fillMask.graphics.beginFill(0xFFFFFF);
-            fillMask.graphics.moveTo(r, r);
-            for (var i: int = 1; i <= _currentLevel; i++)
-            {
-               var xSideA: int = Math.sin(MathUtil.degreesToRadians(((i-1) * 360/_maxLevel) + distanceToSpace)) 
-                  * r + r;
-               var xSideB: int = Math.sin(MathUtil.degreesToRadians((i * 360/_maxLevel) - distanceToSpace)) 
-                  * r + r;
-               var ySideA: int = r - Math.cos(MathUtil.degreesToRadians(((i-1) * 360/_maxLevel) + distanceToSpace)) 
-                  * r;
-               var ySideB: int = r - Math.cos(MathUtil.degreesToRadians((i * 360/_maxLevel) - distanceToSpace)) 
-                  * r;
-               fillMask.graphics.lineTo(xSideA, ySideA);
-               boundsDrawingHelper((i-1) * 360/_maxLevel + distanceToSpace, 
-                  i * 360/_maxLevel - distanceToSpace, fillMask);
-               fillMask.graphics.lineTo(xSideB, ySideB);
-               fillMask.graphics.lineTo(r, r);
+      import flash.filters.ColorMatrixFilter;
+
+      import mx.core.UIComponent;
+
+      import utils.MathUtil;
+      import utils.assets.AssetNames;
+
+      [Bindable]
+      private var _fillFilters:Array = null;
+
+      private var _fillColorRed: Boolean = false;
+      public function set fillColorRed(value: Boolean): void {
+         if (_fillColorRed != value) {
+            _fillColorRed = value;
+            if (_fillColorRed) {
+               _fillFilters = [new ColorMatrixFilter([
+                  3, 0, 0, 0, 0, // r
+                  0, 0, 0, 0, 0, // g
+                  0, 0, 0, 0, 0, // b
+                  0, 0, 0, 1, 0  // a
+               ])];
             }
-            fillMask.graphics.endFill();
-            fillMask.horizontalCenter = 0;
-            fillMask.verticalCenter = 0;
-         }
-         
-         private function boundsDrawingHelper(alfa: Number, beta: Number, target: UIComponent): void
-         {
-            var crossCorner: Boolean = false;
-            
-            //if mask part cross corner, need to pass that one
-            if (alfa <= 45 && beta >= 45)
-            {
-               target.graphics.lineTo(width, 0);
-               crossCorner = true;
-            }
-            if (alfa <= 135 && beta >= 135)
-            {
-               target.graphics.lineTo(width, height);
-               crossCorner = true;
-            }
-            if (alfa <= 225 && beta >= 225)
-            {
-               target.graphics.lineTo(0, height);
-               crossCorner = true;
-            }
-            if (alfa <= 315 && beta >= 315)
-            {
-               target.graphics.lineTo(0, 0);
-               crossCorner = true;
-            }
-            //if mask part doesnt cross any corner, need to ensure
-            //no stuff are being cut
-            if (!crossCorner)
-            {
-               if ((alfa >=-45 && alfa <= 45)||(alfa >=315 && alfa <= 405))
-                  target.graphics.lineTo(baseLayer.width/2, 0);
-               if (alfa >=45 && alfa <= 135)
-                  target.graphics.lineTo(baseLayer.width, baseLayer.height/2);
-               if (alfa >=135 && alfa <= 225)
-                  target.graphics.lineTo(baseLayer.width/2, baseLayer.height);
-               if (alfa >=135 && alfa <= 225)
-                  target.graphics.lineTo(0, baseLayer.height/2);
+            else {
+               _fillFilters = null;
             }
          }
-         
-         private function updateSpaceMask(): void
-         {
-            var spaceLineWeight: int = 3;
-            var r: int = baseLayer.width/2;
-            spaceMask.graphics.clear();
-            spaceMask.graphics.beginFill(0xFFFFFF);
-            spaceMask.graphics.moveTo(r, r);
-            for (var i: int = 0; i < _maxLevel; i++)
-            {
-               var xSideA: int = Math.sin(MathUtil.degreesToRadians((i * 360/_maxLevel) - spaceLineWeight)) * r + r;
-               var xSideB: int = Math.sin(MathUtil.degreesToRadians((i * 360/_maxLevel) + spaceLineWeight)) * r + r;
-               var ySideA: int = r - (Math.cos(MathUtil.degreesToRadians((i * 360/_maxLevel) - spaceLineWeight)) * r);
-               var ySideB: int = r - (Math.cos(MathUtil.degreesToRadians((i * 360/_maxLevel) + spaceLineWeight)) * r);
-               spaceMask.graphics.lineTo(xSideA, ySideA);
-               //boundsDrawingHelper(i * 360/_maxLevel - 1, i * 360/_maxLevel + 1, spaceMask);
-               spaceMask.graphics.lineTo(xSideB, ySideB);
-               spaceMask.graphics.lineTo(r, r);
+      }
+
+      private static const emptyName: String = "level_empty";
+      private static const fillName: String = "level_full";
+      private static const spaceName: String = "level_space";
+      [Bindable]
+      private var spaceMask: UIComponent = new UIComponent();
+      [Bindable]
+      private var fillMask: UIComponent = new UIComponent();
+      [Bindable]
+      private var _maxLevel: int;
+      [Bindable]
+      private var _overdriven: Boolean = false;
+      public function set overdriven(value: Boolean): void {
+         _overdriven = value;
+      }
+      [Bindable]
+      private var _currentLevel: int;
+      public function set currentLevel(value: int): void {
+         _currentLevel = value;
+         invalidateDisplayList();
+      }
+      protected override function updateDisplayList(unscaledWidth: Number,
+                                                    unscaledHeight: Number): void {
+         super.updateDisplayList(unscaledWidth, unscaledHeight);
+         updateMasks();
+      }
+      private function updateMasks(): void {
+         updateSpaceMask();
+         updateFillMask();
+      }
+      private function updateFillMask(): void {
+         var distanceToSpace: int = 10;
+         var r: int = baseLayer.width / 2;
+         fillMask.graphics.clear();
+         fillMask.graphics.beginFill(0xFFFFFF);
+         fillMask.graphics.moveTo(r, r);
+         for (var i: int = 1; i <= _currentLevel; i++) {
+            var xSideA: int = Math.sin(MathUtil
+                                          .degreesToRadians(((i - 1) * 360 / _maxLevel) + distanceToSpace))
+                                 * r + r;
+            var xSideB: int = Math.sin(MathUtil
+                                          .degreesToRadians((i * 360 / _maxLevel) - distanceToSpace))
+                                 * r + r;
+            var ySideA: int = r - Math.cos(MathUtil
+                                              .degreesToRadians(((i - 1) * 360 / _maxLevel) + distanceToSpace))
+                                     * r;
+            var ySideB: int = r - Math.cos(MathUtil
+                                              .degreesToRadians((i * 360 / _maxLevel) - distanceToSpace))
+                                     * r;
+            fillMask.graphics.lineTo(xSideA, ySideA);
+            boundsDrawingHelper((i - 1) * 360 / _maxLevel + distanceToSpace,
+                                i * 360 / _maxLevel - distanceToSpace,
+                                fillMask);
+            fillMask.graphics.lineTo(xSideB, ySideB);
+            fillMask.graphics.lineTo(r, r);
+         }
+         fillMask.graphics.endFill();
+         fillMask.horizontalCenter = 0;
+         fillMask.verticalCenter = 0;
+      }
+      private function boundsDrawingHelper(alfa: Number, beta: Number,
+                                           target: UIComponent): void {
+         var crossCorner: Boolean = false;
+         //if mask part cross corner, need to pass that one
+         if (alfa <= 45 && beta >= 45) {
+            target.graphics.lineTo(width, 0);
+            crossCorner = true;
+         }
+         if (alfa <= 135 && beta >= 135) {
+            target.graphics.lineTo(width, height);
+            crossCorner = true;
+         }
+         if (alfa <= 225 && beta >= 225) {
+            target.graphics.lineTo(0, height);
+            crossCorner = true;
+         }
+         if (alfa <= 315 && beta >= 315) {
+            target.graphics.lineTo(0, 0);
+            crossCorner = true;
+         }
+         //if mask part doesnt cross any corner, need to ensure
+         //no stuff are being cut
+         if (!crossCorner) {
+            if ((alfa >= -45 && alfa <= 45) || (alfa >= 315 && alfa <= 405)) {
+               target.graphics.lineTo(baseLayer.width / 2, 0);
             }
-            spaceMask.graphics.endFill();
-            spaceMask.horizontalCenter = 0;
-            spaceMask.verticalCenter = 0;
+            if (alfa >= 45 && alfa <= 135) {
+               target.graphics.lineTo(baseLayer.width, baseLayer.height / 2);
+            }
+            if (alfa >= 135 && alfa <= 225) {
+               target.graphics.lineTo(baseLayer.width / 2, baseLayer.height);
+            }
+            if (alfa >= 135 && alfa <= 225) {
+               target.graphics.lineTo(0, baseLayer.height / 2);
+            }
          }
-         
-         
-         public function set maxLevel(value: int): void
-         {
-            _maxLevel = value;
-            invalidateDisplayList();
+      }
+      private function updateSpaceMask(): void {
+         var spaceLineWeight: int = 3;
+         var r: int = baseLayer.width / 2;
+         spaceMask.graphics.clear();
+         spaceMask.graphics.beginFill(0xFFFFFF);
+         spaceMask.graphics.moveTo(r, r);
+         for (var i: int = 0; i < _maxLevel; i++) {
+            var xSideA: int = Math.sin(MathUtil
+                                          .degreesToRadians((i * 360 / _maxLevel) - spaceLineWeight)) * r + r;
+            var xSideB: int = Math.sin(MathUtil
+                                          .degreesToRadians((i * 360 / _maxLevel) + spaceLineWeight)) * r + r;
+            var ySideA: int = r - (Math.cos(MathUtil
+                                               .degreesToRadians((i * 360 / _maxLevel) - spaceLineWeight)) * r);
+            var ySideB: int = r - (Math.cos(MathUtil
+                                               .degreesToRadians((i * 360 / _maxLevel) + spaceLineWeight)) * r);
+            spaceMask.graphics.lineTo(xSideA, ySideA);
+            //boundsDrawingHelper(i * 360/_maxLevel - 1, i * 360/_maxLevel + 1, spaceMask);
+            spaceMask.graphics.lineTo(xSideB, ySideB);
+            spaceMask.graphics.lineTo(r, r);
          }
-         
-         public function get vOverdrivenOffset(): Number
-         {
-            return _overdriven?Math.floor((71 - 44)/2)+1:0;
-         }
-         
+         spaceMask.graphics.endFill();
+         spaceMask.horizontalCenter = 0;
+         spaceMask.verticalCenter = 0;
+      }
+      public function set maxLevel(value: int): void {
+         _maxLevel = value;
+         invalidateDisplayList();
+      }
+      public function get vOverdrivenOffset(): Number {
+         return _overdriven ? Math.floor((71 - 44) / 2) + 1 : 0;
+      }
+      private function getImage(name: String): BitmapData {
+         return IMG.getImage(AssetNames.getLevelDisplayImageName(name));
+      }
       ]]>
    </fx:Script>
    
@@ -169,12 +173,13 @@
    
    <!-- maby later this wheel should be added to the group for common filter, but for now
    that was not done, because grafics doesnt seem to work that way -->
-   <s:BitmapImage id="baseLayer" source="{IMG.getImage(AssetNames.getLevelDisplayImageName(emptyName))}"
+   <s:BitmapImage id="baseLayer" source="{getImage(emptyName)}"
                   horizontalCenter="0" verticalCenter="0"/>
-   <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(spaceName))}" mask="{spaceMask}"
+   <s:BitmapImage source="{getImage(spaceName)}" mask="{spaceMask}"
                   horizontalCenter="0" verticalCenter="0"/>
-   <s:BitmapImage source="{IMG.getImage(AssetNames.getLevelDisplayImageName(fillName))}" 
-                  mask="{_currentLevel == _maxLevel?null:fillMask}"
+   <s:BitmapImage source="{getImage(fillName)}"
+                  mask="{_currentLevel == _maxLevel ? null : fillMask}"
+                  filters="{_fillFilters}"
                   horizontalCenter="0" verticalCenter="0"/>
    
    

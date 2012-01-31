@@ -5653,4 +5653,19 @@
     <status.login value="Jungiamasi prie serverio..."/>
   </Authorization>
 
+  <PlanetMapEditor>
+     <label.name value="Vardas:"/>
+     <label.area value="Plotas: {0}"/>
+     <label.size value="Dydis:"/>
+     <label.level value="Lygis:"/>
+     <label.generate value="Generuoti"/>
+     <label.save value="Išsaugoti"/>
+     <label.load value="Įkelti"/>
+     <label.copy value="Kopijuoti"/>
+     <label.cancel value="Atšaukti"/>
+     <title.buildings value="Pastatai"/>
+     <title.npcBuildings value="Ateivių pastatai"/>
+     <title.foliage value="Kalnai"/>
+  </PlanetMapEditor>
+
 </locale>

@@ -141,16 +141,21 @@ package controllers.startup
        * Call this once during application startup. This method will bind commands to appropriate actions as
        * well as initialize any classes that need special treatment.
        */
-      public static function initializeAppAfterLoad():void
-      {
-         AnimationTimer.forUi.start();
-         AnimationTimer.forMovement.start();
+      public static function initializeAppAfterLoad():void {
          ToolTipManager.showDelay = 0;
          ToolTipManager.hideDelay = int.MAX_VALUE;
          initializeFreeSingletons();
          bindCommandsToActions();
          setupObjects();
-         masterTrigger = new MasterUpdateTrigger();
+         switch (StartupInfo.getInstance().mode) {
+            case StartupMode.GAME:
+               masterTrigger = new MasterUpdateTrigger();
+               AnimationTimer.forUi.start();
+               AnimationTimer.forMovement.start();
+            
+            case StartupMode.BATTLE:
+               AnimationTimer.forUi.start();
+         }
          connectAndAuthorize();
       }
       

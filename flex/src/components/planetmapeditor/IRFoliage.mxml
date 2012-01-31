@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:utl="utils.components.*">
+   <fx:Binding source="BlockingFolliage(data)" destination="foliage"/>
+   <fx:Script>
+      <![CDATA[
+      import models.folliage.BlockingFolliage;
+      import models.tile.FolliageTileKind;
+
+
+      [Bindable]
+      private var foliage:BlockingFolliage;
+
+      private function getSizeLabel(foliage:BlockingFolliage): String {
+         const size:Point = FolliageTileKind.getSize(foliage.kind);
+         return size.x + " x " + size.y;
+      }
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout gap="5"/>
+   </s:layout>
+   <utl:CenteredBitmapImage source="{foliage.imageData}" width="96" height="96"/>
+   <s:Group width="100%">
+      <s:Label text="{getSizeLabel(foliage)}"
+               left="0" right="0" lineBreak="toFit" textAlign="center"/>
+   </s:Group>
+</s:ItemRenderer>

@@ -20,7 +20,6 @@ package components.map.planet
 
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
-   import flash.geom.Point;
    import flash.ui.Keyboard;
 
    import flashx.textLayout.formats.LineBreak;
@@ -37,6 +36,7 @@ package components.map.planet
    import models.tile.Tile;
 
    import mx.collections.ArrayCollection;
+   import mx.collections.ListCollectionView;
 
    import spark.components.Button;
    import spark.components.Label;
@@ -47,7 +47,7 @@ package components.map.planet
    /**
     * Dispatched from <code>EventBroker</code> while user is moving new building
     * around the map and as a result tiles under the building are changing.
-    * <p><code>building</code> property is set to the new building that is beeing
+    * <p><code>building</code> property is set to the new building that is being
     * moved.</p> 
     * 
     * @eventType globalevents.GBuildingMoveEvent.MOVE 
@@ -76,8 +76,8 @@ package components.map.planet
          return Building;
       }
 
-      protected override function get objectsListName(): String {
-         return "buildings";
+      protected override function get objectsList(): ListCollectionView {
+         return planet.buildings;
       }
 
 
@@ -208,11 +208,11 @@ package components.map.planet
       }
 
       private function this_mouseOverHandler(e: MouseEvent): void {
-         positionBuildingPH();
+         moveObjectToMouse(_buildingPH);
       }
 
       private function this_mouseMoveHandler(e: MouseEvent): void {
-         positionBuildingPH();
+         moveObjectToMouse(_buildingPH);
       }
 
       private function this_clickHandler(e: MouseEvent): void {
@@ -240,8 +240,6 @@ package components.map.planet
       /* ######################## */
       
       private var _buildingPH:BuildingPlaceholder = null;
-      private var _deselectMsg:String =
-                     Localizer.string('BuildingSidebar', 'pressEsc');
       private var _buildingProcessStarted:Boolean = false;
       
       /**
@@ -425,7 +423,7 @@ package components.map.planet
       
       
       private function initBuildingPH(building: Building): void {
-         Messenger.show(_deselectMsg);
+         Messenger.show(Localizer.string('BuildingSidebar', 'pressEsc'));
 
          objectsLayer.passOverMouseEventsTo(this);
 
@@ -444,7 +442,7 @@ package components.map.planet
             objectsLayer.deselectSelectedObject();
          }
          objectsLayer.resetAllInteractiveObjectsState();
-         positionBuildingPH();
+         moveObjectToMouse(_buildingPH);
       }
 
       private function destroyBuildingPH(): void {
@@ -462,28 +460,9 @@ package components.map.planet
          }
       }
 
-      /**
-       * Moves building placeholder to a tile under the mouse and updates associated building model
-       * accordingly.
-       *
-       * <p>Calls <code>updateBuildingPHState()</code> and
-       * <code>makeOverlappingBuildingsTransp()</code> if position has actually been
-       * changed.</p>
-       */
-      private function positionBuildingPH(): void {
-         var b: Building = _buildingPH.getBuilding();
-         var lc: Point = map.coordsTransform.realToLogical(
-            new Point(objectsLayer.mouseX,objectsLayer.mouseY)
-         );
-
-         // Don't do anything if building has not been moved.
-         if (!b.moveTo(lc.x, lc.y)) {
-            return;
-         }
-
+      override protected function afterObjectMoveToMouse(object: IPrimitivePlanetMapObject): void {
          _buildingPH.visible = true;
-         objectsLayer.positionObject(_buildingPH);
-         dispatchBuildingMoveEvent(b);
+         dispatchBuildingMoveEvent(_buildingPH.getBuilding());
          updateBuildingPHState();
          makeOverlappingObjectsTransp();
       }
@@ -577,10 +556,11 @@ package components.map.planet
       /* ######################## */
 
       protected override function openObjectImpl(object: IPrimitivePlanetMapObject): void {
-         var buildingC: MapBuilding = MapBuilding(object);
-         if (!buildingC.getBuilding().isGhost) {
+         const building: MapBuilding = MapBuilding(object);
+         if (!building.getBuilding().isGhost) {
             MCBuildingSelectedSidebar.getInstance().openBuilding(
-               Building(buildingC.model));
+               Building(building.model)
+            );
          }
       }
    }
