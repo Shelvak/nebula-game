@@ -119,7 +119,13 @@ package components.quests.slides
       private function loadImages(): void {
          const imageLoaders:Array = new Array();
          for each (var imageUrl:String in getImageUrlsToLoad()) {
-            imageLoaders.push(new ImageLoader(imageUrl));
+            try {
+               imageLoaders.push(new ImageLoader(imageUrl));
+            }
+            catch (e: Error) {
+               throw new Error("Error while creating ImageLoader for " +
+                  imageUrl + "!\n\n" + e.name + "\n\n" + e.message);
+            }
          }
          const loader:LoaderMax = new LoaderMax(
             new LoaderMaxVars()
