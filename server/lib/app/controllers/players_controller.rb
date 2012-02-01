@@ -1,5 +1,4 @@
 class PlayersController < GenericController
-  ACTION_LOGIN = 'players|login'
   # Log player in.
   #
   # Parameters:
@@ -10,15 +9,24 @@ class PlayersController < GenericController
   # - success (Boolean)
   # - required_version (String): version required for connection if client
   # is refused because of the old version.
-  def action_login
-    param_options :required => {
+  ACTION_LOGIN = 'players|login'
+
+  def self.login_options
+    required(
       :server_player_id => Fixnum,
       :web_player_id => Fixnum,
       :version => String
-    }
+    )
+  end
 
-    if ClientVersion.ok?(params['version'])
-      player = Player.find(params['server_player_id'])
+  def self.login_scope(message)
+    player = Player.find(message.params['server_player_id'])
+    scope.galaxy(player.galaxy_id)
+  end
+
+  def self.login_action(m)
+    if ClientVersion.ok?(m.params['version'])
+      player = Player.find(m.params['server_player_id'])
       if player.galaxy.dev? || ControlManager.instance.
           login_authorized?(player, params['web_player_id'])
         login player
@@ -40,16 +48,16 @@ class PlayersController < GenericController
             {'ends_at' => ends_at, 'message' => announcement}
         end
 
-        push DailyBonusController::ACTION_SHOW \
+        push m, DailyBonusController::ACTION_SHOW \
           if player.daily_bonus_available?
 
-        respond :success => true
+        respond m, :success => true
       else
         raise ActiveRecord::RecordNotFound
       end
     else
-      respond :success => false,
-              :required_version => Cfg.required_client_version
+      respond m,
+        :success => false, :required_version => Cfg.required_client_version
       disconnect
     end
   rescue ActiveRecord::RecordNotFound
@@ -58,10 +66,10 @@ class PlayersController < GenericController
   end
 
   ACTION_SHOW = 'players|show'
-  def action_show
-    only_push!
-    respond :player => player.as_json
-  end
+  def self.show_options; only_push; end
+  def self.show_scope(message); scope.player(message.player.id); end
+  def self.show_action(player, params); respond :player => player.as_json; end
+
 
   # Shows player profile.
   #
@@ -74,19 +82,22 @@ class PlayersController < GenericController
   # - player (Hash): Player#ratings Hash
   # - achievements (Hash[]): Quest#achievements_by_player_id
   #
-  def action_show_profile
-    param_options :required => %w{id}
+  ACTION_SHOW_PROFILE = "players|show_profile"
 
+  def self.show_profile_options; required(:id => Fixnum); end
+  def self.show_profile_scope(message); scope.player(message.player.id); end
+  def self.show_profile_action(player, params)
     player_hash = Player.ratings(self.player.galaxy_id,
       Player.where(:id => params['id']))[0]
 
     raise ActiveRecord::RecordNotFound.new("Cannot find player with id #{
       params['id']} in galaxy #{self.player.galaxy_id}!") if player_hash.nil?
 
-    respond \
+    respond player, \
       :player => player_hash,
       :achievements => Quest.achievements_by_player_id(params['id'])
   end
+
 
   # Shows all player ratings on current players galaxy.
   #
@@ -97,9 +108,13 @@ class PlayersController < GenericController
   # Response:
   # - ratings (Hash[]): Player#as_json array with :ratings
   #
-  def action_ratings
-    respond :ratings => Player.ratings(player.galaxy_id)
+  ACTION_RATINGS = "players|ratings"
+  def self.ratings_options; nil; end
+  def self.ratings_scope(message); scope.galaxy(message.player.galaxy_id); end
+  def self.ratings_action(player, params)
+    respond player, :ratings => Player.ratings(player.galaxy_id)
   end
+
 
   # Edits your properties.
   #
@@ -111,10 +126,11 @@ class PlayersController < GenericController
   # - portal_without_allies (Boolean): should alliance units be used when
   # attacked and sent to allies when they are attacked?
   #
-  def action_edit
-    param_options :valid => %w{first_time portal_without_allies}
+  ACTION_EDIT = "players|edit"
 
-    player = self.player
+  def self.edit_options; valid(%w{portal_without_allies}); end
+  def self.edit_scope(message); scope.player(message.player.id); end
+  def self.edit_action(player, params)
     player.first_time = params['first_time'] \
       unless params['first_time'].nil?
     player.portal_without_allies = params['portal_without_allies'] \
@@ -123,6 +139,7 @@ class PlayersController < GenericController
     player.save!
   end
 
+
   # Starts VIP status for you. This action costs creds!
   #
   # Invocation: by client
@@ -130,16 +147,18 @@ class PlayersController < GenericController
   # Parameters:
   # - vip_level (Fixnum): 1 to CONFIG['creds.vip'].size
   #
-  def action_vip
-    param_options :required => %w{vip_level}
+  ACTION_VIP = "players|vip"
 
+  def self.vip_options; required(:vip_level => Fixnum); end
+  def self.vip_scope(message); scope.player(message.player.id); end
+  def self.vip_action(player, params)
     player.vip_start!(params['vip_level'])
   rescue ArgumentError => e
     # VIP level was incorrect.
     raise GameLogicError.new(e)
   end
 
-  ACTION_STATUS_CHANGE = 'players|status_change'
+
   # Informs client that status of player has changed.
   #
   # Invocation: by server
@@ -152,11 +171,16 @@ class PlayersController < GenericController
   #   - player_id (Fixnum): id of +Player+ for which status is being changed
   #   - status (Fixnum): new status of player
   #
-  def action_status_change
-    param_options :required => %w{changes}
-    only_push!
+  ACTION_STATUS_CHANGE = 'players|status_change'
 
-    respond :changes => params['changes']
+  def self.status_change_options; required(:changes => Array) + only_push; end
+  def self.status_change_scope(message); scope.player(message.player.id); end
+  def self.status_change_action(player, params)
+    respond player, :changes => params['changes']
+  end
+
+  def self.scope_convert_creds(message)
+    Dispatcher::Scope.player(message.player.id)
   end
 
   # Convert creds from VIP creds to normal creds.
@@ -175,6 +199,10 @@ class PlayersController < GenericController
     
     player.vip_convert(params['amount'])
     player.save!
+  end
+
+  def self.scope_edit(message)
+    Dispatcher::Scope.player(message.player.id, message.params['target_id'])
   end
 
   # Returns multiplier for battle victory points when fighting against

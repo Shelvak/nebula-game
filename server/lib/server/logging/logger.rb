@@ -93,10 +93,11 @@ class Logging::Logger
 
   private
   def data_for(component, type, message)
+    actor_id = Thread.current[:actor].try(:object_id).try(:to_s, 16)
     "%s[%s%s|%s|%-5s] %s\n" % [
       ' ' * @indent,
       @include_time ? "#{Time.now.strftime(DATETIME_FORMAT)}|" : "",
-      Thread.current[:name] || "t_#{Thread.current.object_id}",
+      actor_id ? "Ax#{actor_id}" : "main",
       component, type, message
     ]
   end

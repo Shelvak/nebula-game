@@ -6,7 +6,7 @@ module GameServer
     super
     debug "Registering to Dispatcher."
     Celluloid::Actor[:dispatcher].register! self
-    @buffer = ""
+    @buffer = StreamBuffer.new("\n")
   end
 
   def receive_data(data)
@@ -16,17 +16,14 @@ module GameServer
       # Disconnect upon flash policy, otherwise flash client gets stuck.
       close_connection_after_writing
     else
-      @buffer += data
-      newline_at = @buffer.index("\n")
-      until newline_at.nil?
-        Celluloid::Actor[:dispatcher].disconnect!(
-          self, GenericServer::REASON_EMPTY_MESSAGE
-        ) if newline_at == 0
-
-        # Get our message.
-        message = @buffer[0...newline_at]
-        # Leave other part of buffer for further processing.
-        @buffer = @buffer[(newline_at + 1)..-1]
+      @buffer.data(data)
+      @buffer.each_message do |message|
+        if message == ""
+          Celluloid::Actor[:dispatcher].disconnect!(
+            self, GenericServer::REASON_EMPTY_MESSAGE
+          )
+          return
+        end
 
         begin
           log_request do
@@ -48,8 +45,6 @@ module GameServer
           )
           return
         end
-
-        newline_at = @buffer.index("\n")
       end
     end
   end

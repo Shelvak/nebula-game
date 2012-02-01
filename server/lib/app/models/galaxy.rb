@@ -70,6 +70,10 @@ class Galaxy < ActiveRecord::Base
     find(galaxy_id).create_player(web_user_id, name)
   end
 
+  def self.create_player_scope(galaxy_id, web_user_id, name)
+    Dispatcher::Scope.galaxy(galaxy_id)
+  end
+
   def self.on_callback(id, event)
     case event
     when CallbackManager::EVENT_SPAWN
@@ -85,8 +89,21 @@ class Galaxy < ActiveRecord::Base
         id, MarketOffer::CALLBACK_MAPPINGS_FLIPPED[event]
       ).save!
     else
-      raise ArgumentError.new("Don't know how to handle #{
-        CallbackManager::STRING_NAMES[event]} (#{event})")
+      raise CallbackManager::UnknownEvent.new(self, id, event)
+    end
+  end
+
+  def self.callback_scope(id, event)
+    case event
+    when CallbackManager::EVENT_SPAWN
+      # TODO: fixme
+      Dispatcher::Scope.player(nil)
+    when CallbackManager::EVENT_CREATE_METAL_SYSTEM_OFFER,
+        CallbackManager::EVENT_CREATE_ENERGY_SYSTEM_OFFER,
+        CallbackManager::EVENT_CREATE_ZETIUM_SYSTEM_OFFER
+      Dispatcher::Scope.galaxy(id)
+    else
+      raise CallbackManager::UnknownEvent.new(self, id, event)
     end
   end
 

@@ -1,16 +1,13 @@
 class GenericController
-  MESSAGE_SPLITTER = "|"
   # Used to distinguish which methods are used as actions.
-  ACTION_RE = /^action_/
-
-  class ActionFiltered < GameError; end
-  class UnknownAction < GameError; end
-  class PushRequired < StandardError; end
+  ACTION_RE = /_action$/
 
   attr_reader :dispatcher, :params, :client_id, :player
 
-  # Controllers get messages in this order
-  def self.priority; 0; end
+  def self.required(hash); ParamOpts.required(hash); end
+  def self.valid(list); ParamOpts.valid(list); end
+  def self.only_push; ParamOpts.only_push; end
+  def self.scope; Dispatcher::Scope; end
 
   def initialize(dispatcher)
     @dispatcher = dispatcher
@@ -78,19 +75,14 @@ class GenericController
     end
   end
 
-  def respond(params={})
-    @dispatcher.transmit({
-      'action' => @current_message['action'],
-      'params' => params}, @client_id)
-    true
+  def self.respond(message, params={})
+    Celluloid::Actor[:dispatcher].transmit!(
+      {"action" => message.full_action, "params" => params}, message.client
+    )
   end
 
-  def push(action, params={})
-    @dispatcher.push({
-      'action' => action,
-      'params' => params
-    }, @client_id)
-    true
+  def self.push(message, action, params={})
+    Celluloid::Actor[:dispatcher].push!(message.client, action, params)
   end
 
   def session

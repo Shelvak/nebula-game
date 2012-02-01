@@ -1,4 +1,12 @@
 GIT
+  remote: git://github.com/arturaz/celluloid-io.git
+  revision: 76973958a0fe78e32aab97e22a4b8805c06e9131
+  specs:
+    celluloid-io (0.8.0)
+      celluloid (~> 0.8.0)
+      nio4r (>= 0.2.2)
+
+GIT
   remote: git://github.com/arturaz/flag_shih_tzu.git
   revision: 4cb1c9088e6fb33eec49bda402f92cef11c2dc69
   specs:
@@ -59,6 +67,7 @@ GEM
     net-sftp (2.0.5)
       net-ssh (>= 2.0.9)
     net-ssh (2.2.1)
+    nio4r (0.2.2-java)
     polyglot (0.3.3)
     pry (0.9.7.4-java)
       coderay (~> 0.9.8)
@@ -96,6 +105,7 @@ DEPENDENCIES
   activerecord-jdbcmysql-adapter (~> 1.1)
   activesupport (~> 3.0.9)
   celluloid!
+  celluloid-io!
   chronic (>= 0.6.2)
   eventmachine (>= 0.12.6)
   factory_girl (~> 2.1.2)

@@ -3,8 +3,7 @@ module FlashPolicyHandler
     data.strip == "<policy-file-request/>"
   end
 
-  def respond_with_policy
-    # Write server policy
+  def policy_data
     str =<<EOF
 <?xml version='1.0'?>
 <!DOCTYPE cross-domain-policy SYSTEM
@@ -16,7 +15,5 @@ module FlashPolicyHandler
 </cross-domain-policy>\0
 EOF
     str.strip!
-    send_data str
-    debug "Sending #{str.inspect} to client."
   end
 end

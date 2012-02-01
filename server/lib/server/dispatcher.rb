@@ -18,12 +18,11 @@ class Dispatcher
   DISCONNECT_OTHER_LOGIN = "other_login"
   # Player was erased from server.
   DISCONNECT_PLAYER_ERASED = "player_erased"
+  
+  class UnhandledMessage < StandardError; end
 
   # Initialize the dispatcher.
   def initialize
-    Thread.current[:name] = TAG
-    @unknown_client_id = 0
-    @last_message_id = 0
     @controllers = {}
     Dir.glob(
       File.join(ROOT_DIR, 'lib', 'app', 'controllers', '*.rb')
@@ -31,208 +30,212 @@ class Dispatcher
       file_name = File.basename(file).sub(/\.rb$/, '')
       class_name = file_name.camelcase
 
-      debug "Adding #{class_name} to dispatcher."
+      debug "Registering controller: #{class_name}"
       controller_name = file_name.sub(/_controller$/, '')
-      @controllers[controller_name] = class_name.constantize.new(self)
+      @controllers[controller_name] = class_name.constantize
     end
 
-    @client_id_to_player = {}
-    @client_id_to_io = {}
-    @io_to_client_id = {}
+    @client_to_player = {}
+    @player_id_to_client = {}
     # Session level storage to store data between controllers
     @storage = {}
 
-    # Message processing queue
-    @message_queue = []
-
-    @event_handler = DispatcherEventHandler.new(self)
+    #@event_handler = DispatcherEventHandler.new(self)
   end
 
-  # Register new connection on GameServer to dispatcher. This creates outgoing
-  # message queue.
-  def register(io)
-    id = next_unknown_client_id
-    info "Registering [#{io}] as client #{id}"
-    @client_id_to_io[id] = io
-    @io_to_client_id[io] = id
-    @storage[id] = {}
+  def to_s(client=nil)
+    client.nil? ? TAG : "#{TAG}-#{client}"
+  end
+
+  # Register new client to dispatcher. This creates outgoing message queue.
+  def register(client)
+    info "Registering.", to_s(client)
+    @storage[client] = {}
   end
 
   # Unregister connection from GameServer.
-  def unregister(io)
-    id = @io_to_client_id[io]
+  def unregister(client)
     # Someone unregistered us before, probably from #disconnect
-    unless id.nil?
-      info "Unregistering [#{io}] (client id #{id})"
+    return unless @storage.has_key?(client)
 
-      player = resolve_player(id)
-      unless player.nil?
-        player.last_seen = Time.now
-        player.save!
+    info "Unregistering.", to_s(client)
 
-        # There is no point of notifying about leaves if server is shutdowning.
-        # Also this generates NPE in buggy EM version.
-        unless App.server_shutdowning?
-          Chat::Pool.instance.hub_for(player).unregister(player)
-        end
+    # FIXME: not threadsafe
+    player = resolve_player(id)
+    unless player.nil?
+      player.last_seen = Time.now
+      player.save!
+
+      # There is no point of notifying about leaves if server is shutdowning.
+      # Also this generates NPE in buggy EM version.
+      unless App.server_shutdowning?
+        Chat::Pool.instance.hub_for(player).unregister(player)
       end
-
-      # Filter message queue to remove this client messages.
-      @message_queue = @message_queue.reject do |message|
-        message['client_id'] == id
-      end
-
-      each_storage_by_client_id do |storage|
-        storage.delete id
-      end
-
-      @io_to_client_id.delete io
     end
+
+    # Clean up containers.
+    player = @client_to_player[client]
+    @player_id_to_client.delete(player.id) unless player.nil?
+    @client_to_player.delete client
+    @storage.delete client
   end
   
   # Returns number of logged in players.
-  def logged_in_count; @client_id_to_player.size; end
+  def logged_in_count; @client_to_player.size; end
 
   # Change current player associated with current player id. Also register
   # this player to chat.
-  def change_player(current_client_id, player)
-    raise ArgumentError.new("player should be Player object but #{
-      player.inspect} was given") unless player.is_a?(Player)
+  def change_player(client, player)
+    typesig binding, ServerActor::Client, Player
+    debug "Registering #{client} as #{player}.", to_s(client)
 
-    debug "Changing client id #{current_client_id} to #{player}"
-    change_client_id(current_client_id, player.id)
-    @client_id_to_player.delete current_client_id
-    @client_id_to_player[player.id] = player
+    if player_connected?(player.id)
+      client = @player_id_to_client[player.id]
+      disconnect(client, DISCONNECT_OTHER_LOGIN)
+    end
+
+    @client_to_player[client] = player
+    # FIXME: not threadsave!
     Chat::Pool.instance.hub_for(player).register(player)
   end
 
   # Update player entry if player is connected.
   def update_player(player)
-    if @client_id_to_player[player.id]
-      @client_id_to_player[player.id] = player
+    client = @player_id_to_client[player.id]
+    if client
+      @client_to_player[client] = player
     else
-      raise StandardError.new(
-        "Cannot update player which is not registered!"
-      )
+      raise "Cannot update player #{player} which is not registered!"
     end
   end
 
-  # Receive message from _io_. Confirm receiving. Pass message to all
+  # Receive message from _client_. Confirm receiving. Pass message to all
   # controllers.
-  def receive(io, message)
-    debug "Received message from [#{io}]: #{message.inspect}"
+  def receive(client, message)
+    debug "Received message from [#{client}]: #{message.inspect}"
 
-    assign_message_vars!(io, message)
+    message = message_object(client, message)
     info "Client ID: %s, player: %s" % [
-      message['client_id'],
-      message['player'].to_s
+      message.client_id,
+      message.player.to_s
     ]
 
-    unless message['client_id'].nil?
-      error = nil
-
-      # Catch game logic errors and say to client that this action failed.
-      begin
-        process_message(message)
-      rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
-          ActiveRecord::RecordNotDestroyed, GameError => e
-        error = e
-        LOGGER.info "Action failed: #{e.message}"
-      end
-      confirm_receive_by_io(io, message, error)
+    unless message.client_id.nil?
+      process_message(message)
     else
-      info "Dropping message without client id."
+      info "Dropping message without client id.", to_s(client)
     end
   end
 
   # Transmit _message_ to clients identified by _ids_.
-  def transmit(message, *ids)
-    ids.each do |id|
-      io = @client_id_to_io[id]
-      # io may be nil if client is disconnected
-      transmit_by_io(io, message) unless io.nil?
+  def transmit(message, *clients)
+    clients.each do |client|
+      transmit_to_client(client, message)
     end
   end
 
   # Solar system ID which is currently viewed by client.
-  def current_ss_id(client_id); @storage[client_id][:current_ss_id]; end
+  def current_ss_id(client); @storage[client][:current_ss_id]; end
   # SsObject ID which is currently viewed by client.
-  def current_planet_id(client_id)
-    @storage[client_id][:current_planet_id]
+  def current_planet_id(client)
+    @storage[client][:current_planet_id]
   end
   
   # Pushes message to all logged in players.
   def push_to_logged_in(action, params={})
-    message = {'action' => action, 'params' => params}
-    @client_id_to_player.each do |client_id, _|
-      push(message, client_id)
+    @client_to_player.each do |client, _|
+      push(client, action, params)
     end
   end
 
-  # Push message to player if he's connected.
+  # Push message to client if he's connected.
   #
   # Filters can be:
   # - nil: no filter
   # - Dispatcher::PushFilter[]: if one of them matches, message is passed
   # through.
   #
-  def push_to_player(client_id, action_or_message, params={}, filters=nil)
-    if connected?(client_id)
-      return unless push_filters_match?(client_id, filters)
-
-      if action_or_message.is_a?(Hash)
-        message = action_or_message
-      else
-        message = {'action' => action_or_message, 'params' => params}
-      end
-
-      push(message, client_id)
+  def push(client, action, params, filters=nil)
+    log = "action #{action.inspect} with params #{params.inspect} and filters #{
+      filters.inspect}."
+    if client_connected?(client) && push_filters_match?(client, filters)
+      debug "Pushing #{log}", to_s(client)
+      message = message_object(
+        client,
+        {"action" => action, "params" => params},
+        true
+      )
+      process_message(message)
+    else
+      debug "Pushing #{log}", to_s(client)
     end
   end
 
-  # Push message from one controller to processing queue.
-  def push(message, client_id)
-    # Do not modify the original message
-    message = message.dup
-    debug "Pushing #{message.inspect} to client #{client_id.inspect}"
-    assign_message_vars!(client_id, message)
-    message['pushed'] = true
-
-    process_message(message)
-  end
-
-  # Friendly string name
-  def to_s
-    self.class.to_s
-  end
-
   # Disconnect client. Send message and close connection.
-  def disconnect(io_or_id, reason=nil)
-    io = io_or_id.is_a?(Fixnum) ? @client_id_to_io[io_or_id] : io_or_id
-    return if io.nil?
+  def disconnect(client_or_id, reason=nil, error_message=nil)
+    client = client_or_id.is_a?(Fixnum) \
+      ? @id_to_client[client_or_id] : client_or_id
+    return if client.nil?
 
-    transmit_by_io(io, {
+    transmit_to_client(client, {
       "action" => ACTION_DISCONNECT,
-      "params" => {"reason" => reason}
+      "params" => {"reason" => reason, "error" => error_message}
     })
-    io.close_connection_after_writing
-    unregister io
+    unregister client
+    Actor[:server].disconnect!(client)
   end
 
-  # Is client with _id_ connected?
-  def connected?(id)
-    ! @client_id_to_io[id].nil?
+  # Is player with _player_id_ connected?
+  def player_connected?(player_id)
+    @player_id_to_client.has_key?(player_id)
   end
 
   # Resolves _id_ to +Player+ model if it is connected.
-  def resolve_player(id)
-    @client_id_to_player[id]
+  def resolve_player(client)
+    @client_to_player[client]
   end
 
   protected
+
+  def process_message(message)
+    debug "Message: #{message.inspect}"
+
+    options_method = "#{message.action}_options"
+    scope_method = "#{message.action}_scope"
+    action_method = "#{message.action}_action"
+
+    controller_class = @controllers[message.controller_name]
+    raise UnhandledMessage.new(
+      "No such controller: #{message.controller_name}"
+    ) if controller_class.nil?
+    raise UnhandledMessage.new(
+      "No such action: #{message.action}"
+    ) unless controller_class.respond_to?(action_method)
+
+    # Check options.
+    raise(
+      "#{controller_class} is missing options for action #{message.action}"
+    ) unless controller_class.respond_to?(options_method)
+    controller_class.send(options_method).check!(message.params)
+
+
+    raise(
+      "#{controller_class} is missing scope resolver for action #{
+        message.action}"
+    ) unless controller_class.respond_to?(scope_method)
+
+    scope = controller_class.send(scope_method, message)
+  rescue UnhandledMessage => e
+    disconnect(message['client_id'], DISCONNECT_UNHANDLED_MESSAGE, e.message)
+  end
+
+  def check_options
+
+  end
+
   # Check if one of the given push filters match for current client.
   # TODO: spec
-  def push_filters_match?(client_id, filters)
+  def push_filters_match?(client, filters)
     return true if filters.nil?
 
     filters = filters.is_a?(Array) ? filters : [filters]
@@ -241,18 +244,17 @@ class Dispatcher
 
       case filter.scope
       when PushFilter::SOLAR_SYSTEM
-        current = current_ss_id(client_id)
+        current = current_ss_id(client)
         return true if current == filter.id
-        LOGGER.debug("Push filtered: wanted SS #{filter.id}, had #{
-          current.inspect}")
+        debug "Push filtered: wanted SS #{filter.id}, had #{current.inspect}",
+          to_s(client)
       when PushFilter::SS_OBJECT
-        current = current_planet_id(client_id)
+        current = current_planet_id(client)
         return true if current == filter.id
-        LOGGER.debug("Push filtered: wanted SSO #{filter.id}, had #{
-          current.inspect}")
+        debug "Push filtered: wanted SSO #{filter.id}, had #{current.inspect}",
+          to_s(client)
       else
-        raise ArgumentError.new("Unknown filter scope: #{
-          filter.scope.inspect}")
+        raise ArgumentError.new("Unknown filter scope: #{filter.scope.inspect}")
       end
     end
 
@@ -260,107 +262,17 @@ class Dispatcher
   end
 
   # Assign client_id and player to _message_ and log assignation.
-  def assign_message_vars!(io_or_client_id, message)
-    message['client_id'] = io_or_client_id.is_a?(Fixnum) \
-      ? io_or_client_id : @io_to_client_id[io_or_client_id]
-    message['player'] = @client_id_to_player[
-      message['client_id']
-    ]
-
-    message
+  def message_object(client, message, pushed=false)
+    Dispatcher::Message.new(
+      message['id'],
+      message['action'] || "",
+      message['params'] || {},
+      client,
+      @client_to_player[client],
+      pushed
+    )
   end
 
-  def process_message(message)
-    @message_queue.push message
-    process_queue
-  end
-
-  def queue_in_processing?
-    @queue_processing
-  end
-
-  # Processes messages in message queue
-  def process_queue
-    if queue_in_processing?
-      LOGGER.debug "Message queue is currently being processed, returning."
-      return
-    end
-
-    LOGGER.block(
-      "Message queue processing", :level => :debug, :component => TAG
-    ) do
-      @queue_processing = true
-      process = lambda do
-        until @message_queue.blank?
-          message = @message_queue.shift
-          handle_message(message)
-        end
-      end
-
-      # Avoid nesting transactions.
-      if ActiveRecord::Base.connection.open_transactions == 0
-        ActiveRecord::Base.transaction(:joinable => false, &process)
-      else
-        process.call
-      end
-
-      @queue_processing = false
-    end
-  # Ensure that even if we fail somewhere while handling the message, 
-  # the queue should be unmarked as still processing.
-  #
-  # Don't use ensure because it's executed even if we return early.
-  rescue 
-    @queue_processing = false
-    fail
-  end
-
-  # Handle message with controllers
-  def handle_message(message)
-    LOGGER.block("Message handling", :level => :debug, :component => TAG) do
-      debug "Message: #{message.inspect}"
-
-      controller = message['action'].split(
-        GenericController::MESSAGE_SPLITTER)[0]
-
-      if @controllers[controller]
-        @controllers[controller].receive(message)
-      else
-        disconnect(message['client_id'], DISCONNECT_UNHANDLED_MESSAGE)
-      end
-    end
-  end
-
-  # Change client to IO mapping from _from_ to _to_.
-  #
-  # This should only be called from #change_player
-  def change_client_id(from, to)
-    disconnect(to, DISCONNECT_OTHER_LOGIN) if connected?(to)
-
-    info "Changing client id from #{from} to #{to}"
-    @io_to_client_id[ @client_id_to_io[from] ] = to
-
-    each_storage_by_client_id do |storage|
-      storage[to] = storage[from]
-      storage.delete from
-    end
-  end
-
-  # Yield each storage that is accessed by client id
-  def each_storage_by_client_id
-    [@client_id_to_io, @client_id_to_player, @storage].each do |storage|
-      yield storage
-    end
-  end
-
-  # Get next id for unknown client (not logged in). Returns negative number.
-  def next_unknown_client_id
-    @unknown_client_id -= 1
-    # Protect for number overflow
-    @unknown_client_id = -1 if @unknown_client_id >= 0
-    @unknown_client_id
-  end
-  
   # Return new pseudo-unique ID for message.
   def next_message_id
     "%d" % (Time.now.to_f * 1000)
@@ -368,8 +280,8 @@ class Dispatcher
 
   # Confirm client of _message_ receiving. Set _failed_ to inform client
   # that his last action has failed.
-  def confirm_receive_by_io(io, message, error=nil)
-    confirmation = {'reply_to' => message[MESSAGE_ID_KEY]}
+  def confirm_receive_by_client(client, message, error=nil)
+    confirmation = {'reply_to' => message.id}
     if error
       confirmation['failed'] = true
       confirmation['error'] = {
@@ -380,12 +292,12 @@ class Dispatcher
     else
       info "Sending confirmation message."
     end
-    transmit_by_io(io, confirmation)
+    transmit_to_client(client, confirmation)
   end
 
   # Set message id and push it into outgoing messages stack for given IO.
-  def transmit_by_io(io, message)
+  def transmit_to_client(client, message)
     message[MESSAGE_ID_KEY] = next_message_id
-    io.send_message message
+    Actor[:server].write!(client, message)
   end
 end

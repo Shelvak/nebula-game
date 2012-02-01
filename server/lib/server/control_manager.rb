@@ -374,7 +374,6 @@ Message was:
     raise e
   end
 
-
   def action_create_player(io, message)
     message.ensure_options! :required => {
       'galaxy_id' => Fixnum, 'web_user_id' => Fixnum, 'name' => String

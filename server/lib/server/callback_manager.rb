@@ -5,6 +5,9 @@ class CallbackManager
         event} for #{klass} ID #{id}")
     end
   end
+
+  include Celluloid
+  include NamedLogMessages
   
   # Constructable has finished upgrading.
   EVENT_UPGRADE_FINISHED = 0
@@ -55,13 +58,86 @@ class CallbackManager
     EVENT_CREATE_ZETIUM_SYSTEM_OFFER => "create zetium system offer",
   }
 
-  # Maximum time for callback
-  MAX_TIME = 5
+  def to_s
+    "callback_manager"
+  end
 
-  TAG = "CallbackManager"
+  def initialize
+    @connection = ActiveRecord::Base.connection_pool.checkout
+    @running = false
+    @pause = false
+    tick!(true) # Tick first time with failed callbacks.
+    run!
+  end
+
+  def finalize
+    ActiveRecord::Base.connection_pool.checkin(@connection)
+  end
+
+  def run
+    raise "Cannot run callback manager while it is running!" if @running
+    @running = true
+
+    loop do
+      if @pause
+        @pause = false
+        wait :resume
+      end
+
+      tick
+      Kernel.sleep(1) # Wait 1 second before next tick.
+    end
+  end
+
+  # Pauses callback manager. Callbacks will not be
+  def pause
+    info "Pausing."
+    @pause = true
+  end
+
+  def resume
+    info "Resuming."
+    signal :resume
+  end
+
+  # Run every callback that is not processed and should have happened by now.
+  def tick(include_all=false)
+    now = Time.now.to_s(:db)
+    conditions = include_all \
+      ? "ends_at <= '#{now}'" \
+      : "ends_at <= '#{now}' AND processed=0 AND failed=0"
+    sql = "WHERE #{conditions} ORDER BY ends_at"
+
+    get_callback = lambda do
+      LOGGER.except(:debug) do
+        row = self.class.get(sql, @connection)
+        row = Callback.new(
+          row['id'], row['class'].constantize, row['object_id'], row['event'],
+          row['ruleset'], row['time']
+        ) unless row.nil?
+        row
+      end
+    end
+
+    # Request unprocessed entries that have hit.
+    callback = get_callback.call
+
+    until callback.nil?
+      info callback.to_s
+
+      # Mark this row as sent to processing.
+      LOGGER.except(:debug) do
+        @connection.execute(
+          "UPDATE `callbacks` SET processed=1 WHERE id=#{callback.id}"
+        )
+      end
+      Actor[:dispatcher].callback!(callback)
+
+      callback = get_callback.call
+    end
+  end
 
   class << self
-
     def get_class(object)
       object.class.to_s
     end
@@ -137,108 +213,14 @@ class CallbackManager
       )
     end
 
-    def get(sql)
-      ActiveRecord::Base.connection.select_one(
-        "SELECT class, ruleset, object_id, event, ends_at FROM callbacks
+    def get(sql, connection=nil)
+      connection ||= ActiveRecord::Base.connection
+      connection.select_one(
+        "SELECT id, class, ruleset, object_id, event, ends_at FROM callbacks
           #{sql} LIMIT 1"
       )
     end
 
-    # Run every callback that should happen by now.
-    #
-    def tick(include_failed=false)
-      sleep 1 while $IRB_RUNNING
 
-      conn = ActiveRecord::Base.connection
-
-      now = Time.now.to_s(:db)
-      conditions = include_failed \
-        ? "ends_at <= '#{now}' AND failed <= 1" \
-        : "ends_at <= '#{now}' AND failed = 0"
-      sql = "WHERE #{conditions} ORDER BY ends_at"
-
-      # Reset failed callbacks to 0 fails so we could try to process them
-      # again.
-      conn.execute(
-        "UPDATE callbacks SET failed=0 WHERE ends_at <= '#{now
-          }' AND failed > 1"
-      ) if include_failed
-
-      get_row = lambda do
-        LOGGER.except(:debug) { get(sql) }
-      end
-
-      # Request unprocessed entries that have hit
-      row = get_row.call
-
-      until row.nil?
-        begin
-          process_callback(row)
-        rescue Exception => error
-          if App.in_production?
-            LOGGER.error(
-              "Error in callback manager!\nRow: %s\n%s" % [
-                row.inspect, error.to_log_str
-              ], TAG
-            )
-            LOGGER.info "Marking row as failed.", TAG
-            conn.execute("UPDATE callbacks SET failed=failed+1 #{sql} LIMIT 1")
-          else
-            fail
-          end
-        end
-
-        row = get_row.call
-      end
-    end
-
-    private
-
-    def process_callback(row)
-      title = "Callback @ #{row['ends_at']} for #{row['class']} (evt: '#{
-        STRING_NAMES[row['event'].to_i]}', obj id: #{
-        row['object_id']}, ruleset: #{row['ruleset']})"
-      LOGGER.block(title, :component => TAG) do
-        time = Benchmark.realtime do
-          ActiveRecord::Base.transaction(:joinable => false) do
-            # Delete entry before processing. This is needed because
-            # some callbacks may want to add same type callback to same
-            # object.
-            #
-            # We're still protected of callback silently disappearing
-            # because this won't be executed if the transaction fails.
-            #
-            # Use this instead of just using same SQL used for querying, because
-            # this is more specific and using same SQL fails when starting
-            # server.
-
-            ActiveRecord::Base.connection.execute(
-              # Ugly formatting to fit SQL query to one line.
-              %Q{DELETE FROM callbacks WHERE ends_at='#{
-                row['ends_at'].gsub("'", "")}' AND class='#{
-                row['class'].gsub("'", "")}' AND object_id=#{
-                row['object_id'].to_i} AND event=#{row['event']} LIMIT 1}
-            )
-
-            begin
-              CONFIG.with_set_scope(row['ruleset']) do
-                row['class'].constantize.on_callback(
-                  row['object_id'].to_i, row['event'].to_i
-                )
-              end
-            rescue ActiveRecord::RecordNotFound
-              LOGGER.info(
-                "Record was not found. It may have been destroyed.", TAG
-              )
-            end
-          end
-        end
-
-        if time > MAX_TIME
-          LOGGER.warn("Callback took more than #{MAX_TIME}s (#{time
-            })\n\n#{title}", TAG)
-        end
-      end
-    end
   end
 end
