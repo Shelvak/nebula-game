@@ -521,15 +521,19 @@ package components.map.space
                                               center: Boolean = false,
                                               openOnSecondCall: Boolean = false) : void {
          Objects.paramNotNull("location", location);
-         const staticObject:CStaticSpaceObjectsAggregator =
-                  grid.getStaticObjectInSector(location);
-         if (staticObject == null) {
-            return;
-         }
          if (location.equals(selectedLocation)) {
             if (openOnSecondCall) {
                openLocation(location);
             }
+            return;
+         }
+         const position:Point = grid.getSectorRealCoordinates(location);
+         if (center) {
+            viewport.moveContentTo(position, true);
+         }
+         const staticObject:CStaticSpaceObjectsAggregator =
+                  grid.getStaticObjectInSector(location);
+         if (staticObject == null) {
             return;
          }
          deselectSelectedLocation();
@@ -537,17 +541,11 @@ package components.map.space
          staticObjectsPopup.model = staticObject.model;
          staticObjectsPopup.visible = true;
          staticObjectsPopup.includeInLayout = true;
-         var position:Point = grid.getSectorRealCoordinates(location);
          sectorPopups.move(position.x, position.y);
          VerticalLayout(sectorPopups.layout).paddingTop = OBJECT_POPUP_YSHIFT;
          staticObject.selected = true;
-         if (center) {
-            viewport.moveContentTo(
-               new Point(staticObject.x, staticObject.y), true
-            );
-         }
          if (ORDERS_CTRL.issuingOrders) {
-            grid.issueOrderToLocationUnderMouse(staticObject.currentLocation);
+            grid.issueOrderToLocationUnderMouse(location);
          }
       }
 
