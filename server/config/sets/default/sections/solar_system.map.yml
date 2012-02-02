@@ -182,17 +182,27 @@ pulsar:
         <%= wreckage.call %>
       <% end %>
 
-      # Inner ring with planet
-      <% planet_position = first_ring.random_element %>
-      "<%= planet_position %>":
+      # Inner ring with planet(s)
+      <%
+      count = [1, 2, 3].weighted_random([85, 10, 5])
+      cs_to = case count
+      when 1 then 1
+      when 2 then [1, 2].weighted_random([7, 3])
+      when 3 then [1, 2, 3].weighted_random([60, 30, 10])
+      end
+      planet_positions = first_ring.random_elements(count)
+      planet_positions.each do |position|
+      %>
+      "<%= position %>":
         "type": "planet"
         "map": "pulsar"
         "owned_by_player": false
         "units":
           - "<%= units[23, 27] %>"
-          - [1, <%= convoy_ship %>, 0, 1]
+          - [<%= rand(1, cs_to + 1) %>, <%= convoy_ship %>, 0, 1]
         <%= wreckage.call %>
-      <% (first_ring - [planet_position]).each do |position| %>
+      <% end %>
+      <% (first_ring - planet_positions).each do |position| %>
       "<%= position %>":
         "type": "nothing"
         "units": "<%= units[23, 27] %>"
