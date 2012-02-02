@@ -161,7 +161,7 @@ public final class PlanetMapSerializer
          return StringUtil.substitute(
             'terrain: <%= Terrain::{0} %>\n' +
             'name: "{1}-%d"\n' +
-            '# {2}x{3} (area {4})' +
+            '# {2}x{3} (area {4})\n' +
             'map:\n{5}',
             TerrainType.getName(planet.ssObject.terrain, true),
             planet.ssObject.name,
