@@ -432,6 +432,7 @@ sections.each do |section, values|
           \.(
             (solar_system|galaxy)\.hop_time|
             upgrade_time|
+            mod\.cooldown$|
             healing\.time\.mod
           )
         $/x
