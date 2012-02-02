@@ -198,10 +198,10 @@ class TerrainEditCommand extends MapEditCommand implements ICommand
 
    private function addSimpleTile(kind: int, x: int, y: int): void {
       removeTileToRestore(x, y);
-      const objectUnder: MPlanetObject = planet.getObject(x, y);
-      if (objectUnder != null) {
-         if (objectUnder is Building) {
-            const building: Building = Building(objectUnder);
+      const object: MPlanetObject = planet.getObject(x, y);
+      if (object != null) {
+         if (object is Building) {
+            const building: Building = Building(object);
             if (!building.npc) {
                removeObjectToRestore(x, y);
             }
