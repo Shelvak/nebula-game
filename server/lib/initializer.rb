@@ -80,6 +80,13 @@ if RUBY_VERSION.to_f < 1.9
       end
     end
   end
+
+  # 1.9 compat.
+  class Complex
+    def initialize
+      raise "I'm not supposed to do anything!"
+    end
+  end
 else
   # Unshift current directory for factory girl (ruby 1.9)
   $LOAD_PATH.unshift File.expand_path(ROOT_DIR)
