@@ -13,7 +13,6 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.base.viewport.events.ViewportEvent;
-         import components.technologytree.TechnologyComponent;
 
          import config.Config;
          
@@ -31,10 +30,7 @@
          import models.technology.events.TechnologySidebarEvent;
 
          import mx.collections.SortField;
-         import mx.controls.Alert;
          import mx.events.FlexEvent;
-
-         import utils.DateUtil;
 
          import utils.assets.AssetNames;
          import utils.datastructures.LineSet;

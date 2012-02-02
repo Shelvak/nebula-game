@@ -1,9 +1,7 @@
 package models.battle
 {
    import flash.geom.Point;
-   
-   import mx.collections.ArrayCollection;
-   import mx.controls.Alert;
+
    
    import spark.primitives.Rect;
    

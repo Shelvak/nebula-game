@@ -15,8 +15,6 @@ package components.battle
    
    import config.BattleConfig;
    
-   import controllers.ui.NavigationController;
-   
    import flash.display.BitmapData;
    import flash.events.Event;
    import flash.events.KeyboardEvent;
@@ -24,8 +22,6 @@ package components.battle
    import flash.geom.Point;
    import flash.text.engine.FontWeight;
    import flash.ui.Keyboard;
-   
-   import globalevents.GlobalEvent;
    
    import models.BaseModel;
    import models.IMBattleParticipant;
@@ -46,8 +42,6 @@ package components.battle
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
    import mx.collections.SortField;
-   import mx.controls.Alert;
-   import mx.core.FlexGlobals;
    
    import spark.components.Button;
    import spark.components.Group;

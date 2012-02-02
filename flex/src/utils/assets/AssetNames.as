@@ -1,14 +1,12 @@
 package utils.assets
 {
    import components.battle.BattlefieldBackgroundPart;
-   import components.skins.SliderSkin;
 
    import controllers.objects.ObjectClass;
 
    import models.quest.slides.SlidesConfiguration;
 
    import models.tile.FolliageTileKind;
-   import models.tile.TerrainType;
    import models.tile.TileKind;
 
    import utils.ModelUtil;
