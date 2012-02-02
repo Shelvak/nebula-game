@@ -5648,6 +5648,8 @@
     <warning.willSend
             value="Jei išsiųsi šiuos resursus, negalėsi siųsti kitų {0}." />
     <tooltip.cooldownActive value="Šiuo metu siųstuvas vėsta" />
+    <label.noOtherPlanet
+            value="Tu neturi kitos planetos į kurią galėtum siųsti resursus" />
     <message.noTransporter>
       <p>Planetoje, į kurią buvo siunčiami resursai, nėra siųstuvo.
          Siuntimas buvo atšauktas, o resursai gražinti.</p>
