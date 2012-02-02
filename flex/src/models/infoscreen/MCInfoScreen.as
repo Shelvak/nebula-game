@@ -84,7 +84,7 @@ package models.infoscreen
          ['metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
             'kind', 'constructable.position', 'constructable', 'npc', 'requirement', 'ui', 'actions', 'box', 'dead.passable', 'frameWidth',
             'gunPoints', 'targetPoint', 'xpModifier', 'appliesTo', 'armor', 'deploysTo', 'upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost',
-            'unitBonus', 'destroyable', 'cooldown', 'managable'];
+            'unitBonus', 'destroyable', 'cooldown', 'managable', 'name'];
       
       [Bindable]
       public var model: InfoObject;
