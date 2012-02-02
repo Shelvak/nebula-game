@@ -280,8 +280,8 @@
                           click="selectNone()" left="0"/>
               </s:Group>
             </s:Group>
-            <base:AdvancedContainer>
               <s:Label text="{getString('label.fee', [(selectedBuilding.fee * 100).toFixed(1)])}" />
+            <base:AdvancedContainer>
               <s:Label text="{getString('label.withoutFee')}" paddingTop="6" color="#eec500"
                 fontWeight="bold" visible="{transferPossible}"/>
               <base:ImageAndLabel type="{ResourceType.METAL}"
@@ -296,7 +296,7 @@
                                   paddingLeft="6"
                                   visible="{zetiumSelector.selectedVal > 0}"
                                   textToDisplay="{getWithoutFee(zetiumSelector.selectedVal)}"/>
-              <base:layout><s:VerticalLayout/></base:layout>
+              <base:layout><s:HorizontalLayout/></base:layout>
             </base:AdvancedContainer>
             <s:Label text="{getString('warning.willSend', [estimatedCooldown])}"
                      color="#eec500" visible="{estimatedCooldown != null}"
