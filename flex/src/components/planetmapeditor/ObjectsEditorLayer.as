@@ -160,7 +160,10 @@ class AddObjectCommand extends MapEditCommand implements ICommand
          planet.forEachPointUnder(
             _objectToAdd, true, true,
             function(x: int, y: int): void {
-               removeObjectToRestore(x, y);
+               if (building.standsOn(x, y)
+                      || !(planet.getObject(x, y) is BlockingFolliage)) {
+                  removeObjectToRestore(x, y);
+               }
                if (TileKind.isResourceKind(planet.getTileKind(x, y))) {
                   removeTileToRestore(x, y);
                }
