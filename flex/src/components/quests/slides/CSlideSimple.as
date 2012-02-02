@@ -1,14 +1,10 @@
 package components.quests.slides
 {
-   import flash.text.engine.FontWeight;
+   import components.base.Scroller;
 
    import models.quest.slides.MSlideSimple;
 
-   import mx.graphics.SolidColor;
-
    import spark.components.Group;
-   import spark.components.RichText;
-   import spark.primitives.Rect;
 
    import utils.TextFlowUtil;
    import utils.assets.AssetNames;
@@ -24,8 +20,10 @@ package components.quests.slides
          return AssetNames.getQuestSlideBackgroundImageURL(model.key);
       }
 
-      private var txtText:RichText;
+      private var txtText:CSlideTextScrollable;
       private var grpTextContainer:Group;
+      private var grpTextScroller:Scroller;
+      private var insideGrpTextContainer:Group;
 
       protected override function createChildren(): void {
          if (childrenAlreadyCreated) {
@@ -33,29 +31,12 @@ package components.quests.slides
          }
          super.createChildren();
 
-         grpTextContainer = new Group();
-         grpTextContainer.x = 10;
-         grpTextContainer.y = 265;
-         grpTextContainer.width = 650;
-         grpTextContainer.height = 85;
-         addElement(grpTextContainer);
-
-         const textBackground:Rect = new Rect();
-         textBackground.radiusX = 20;
-         textBackground.radiusY = 20;
-         textBackground.fill = new SolidColor(0x000000, 0.15);
-         textBackground.percentWidth = 100;
-         textBackground.percentHeight = 100;
-         grpTextContainer.addElement(textBackground)
-
-         txtText = new RichText();
-         txtText.setStyle("fontSize", 14);
-         txtText.setStyle("fontWeight", FontWeight.BOLD);
-         txtText.left = 10;
-         txtText.right = 10;
-         txtText.top = 10;
-         txtText.bottom = 10;
-         grpTextContainer.addElement(txtText);
+         txtText = new CSlideTextScrollable();
+         txtText.x = 10;
+         txtText.y = 265;
+         txtText.width = 650;
+         txtText.height = 85;
+         addElement(txtText);
       }
 
       protected override function modelCommit(): void {
