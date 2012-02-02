@@ -19,6 +19,7 @@ object Runner extends BenchmarkableMock {
     Config.withSetScope(ruleset) { () =>
       val createdAt = DB.date(new Date())
       TableIds.initialize()
+      Manager.initDates()
       val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
       val galaxy = new Galaxy(galaxyRow.id, ruleset)
 

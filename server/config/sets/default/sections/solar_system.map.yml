@@ -8,6 +8,10 @@ third_ring = %w{2,0 2,30 2,60 2,90 2,120 2,150 2,180 2,210 2,240 2,270 2,300
   2,330}
 fourth_ring = %w{3,0 3,22 3,44 3,66 3,90 3,112 3,134 3,156 3,180 3,202 3,224
   3,246 3,270 3,292 3,314 3,336}
+unit_funcs = ["u", "ud", "ut", "uD", "udt", "udD", "utD"]
+units = lambda do |from, to|
+  "#{unit_funcs.random_element}[#{rand(from, to + 1)}]"
+end
 %>
 # Home solar system configuration.
 #
@@ -121,11 +125,17 @@ battleground:
           - [1, <%= convoy_ship %>, 1, 1]
       <% end %>
 
+      # Asteroid with resource spawn
+      "0,90":
+        "type": "asteroid"
+        "units": "u[30]"
+        "resources": "r[25]"
+
       # Spots with defensive aliens
       <%
         %w{
           3,112 2,120 2,150 3,156 2,180 1,180 0,180 1,225 3,202 3,224 2,240
-          3,246 2,270 1,270 3,292 1,315 0,0 1,0 2,0 3,0 0,90 1,90 2,60 3,44 2,30
+          3,246 2,270 1,270 3,292 1,315 0,0 1,0 2,0 3,0 1,90 2,60 3,44 2,30
         }.each do |position|
       %>
       "<%= position %>": {"type": "nothing", "units": "u[25]"}
@@ -146,23 +156,30 @@ battleground:
         "wreckage": [500000.0, 1000000.0, 150000.0]
       <% end %>
 
-
 pulsar:
-  <% 15.times do %>
-  - weight: 1000
+  <% 250.times do %>
+  <%
+  wreckage = lambda do
+    rand <= 0.1 ? %Q{"wreckage": "w[#{rand(4, 6)}]"} : ""
+  end
+  %>
+  - weight: 1
     map:
       # 2-4 jumpgates
       <% fourth_ring.random_elements(rand(2, 5)).each do |position| %>
-      "<%= position %>": {"type": "jumpgate", "units": "u[22]"}
+      "<%= position %>": {"type": "jumpgate", "units": "<%= units[20, 25] %>"}
       <% end %>
 
       # Defensive ring
       <% third_ring.each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": "u[15]"}
+      "<%= position %>": {"type": "nothing", "units": "<%= units[13, 17] %>"}
       <% end %>
       # Stronger defensive ring
       <% second_ring.each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": "u[20]"}
+      "<%= position %>":
+        "type": "nothing"
+        "units": "<%= units[18, 22] %>"
+        <%= wreckage.call %>
       <% end %>
 
       # Inner ring with planet
@@ -172,42 +189,91 @@ pulsar:
         "map": "pulsar"
         "owned_by_player": false
         "units":
-          - "u[25]"
+          - "<%= units[23, 27] %>"
           - [1, <%= convoy_ship %>, 0, 1]
+        <%= wreckage.call %>
       <% (first_ring - [planet_position]).each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": "u[25]"}
+      "<%= position %>":
+        "type": "nothing"
+        "units": "<%= units[23, 27] %>"
+        <%= wreckage.call %>
       <% end %>
   <% end %>
 
 # Free, non-shielded systems.
 free:
-  <% 15.times do %>
-  - weight: 1000
+  <% 250.times do %>
+  - weight: 1
     map:
-      # 2-4 jumpgates
-      <% fourth_ring.random_elements(rand(2, 5)).each do |position| %>
-      "<%= position %>": {"type": "jumpgate", "units": "u[22]"}
+      # 1-5 jumpgates
+      <% fourth_ring_unused = fourth_ring.dup %>
+      <% fourth_ring.random_elements(rand(1, 6)).each do |position| %>
+      <% fourth_ring_unused.delete position %>
+      "<%= position %>": {"type": "jumpgate", "units": "u[<%= rand(10, 21) %>]"}
       <% end %>
 
-      # Defensive ring
-      <% third_ring.each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": "u[15]"}
-      <% end %>
-      # Stronger defensive ring
-      <% second_ring.each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": "u[20]"}
-      <% end %>
+      <%
+      special_count = [0, 1].weighted_random([95, 5])
+      regular_count = special_count == 0 \
+        ? [1, 2, 3].weighted_random([1, 8, 1]) \
+        : [0, 1, 2].weighted_random([2, 7, 1])
+      rings = [first_ring, second_ring, third_ring].
+        random_elements(special_count + regular_count)
 
-      # Inner ring with planet
-      <% planet_position = first_ring.random_element %>
+      maps = (Array.new(special_count, "free_special") +
+        Array.new(regular_count, "free")).shuffle
+
+      unused_positions = first_ring + second_ring + third_ring
+      %>
+
+      # Planets.
+      <% maps.each do |map| %>
+      <%
+      planet_position = rings.shift.random_element
+      unused_positions.delete(planet_position)
+      %>
       "<%= planet_position %>":
         "type": "planet"
-        "map": "pulsar"
+        "map": "<%= map %>"
         "owned_by_player": false
+        "units": "<%= unit_funcs.random_element %>[<%= rand(8, 21) %>]"
+      <% end %>
+
+      # Asteroids
+      <% unused_positions.random_elements(rand(4, 8)).each do |position| %>
+      <% unused_positions.delete position %>
+      "<%= position %>":
+        "type": "asteroid"
+        "resources": "r[<%= rand(5, 8) %>]"
+        "units": "<%= unit_funcs.random_element %>[<%= rand(5, 21) %>]"
+      <% end %>
+
+      <% unused_positions += fourth_ring_unused %>
+      # Resource stashes
+      <%
+      count = [unused_positions.size, rand(5, 15)].min
+      unused_positions.random_elements(count).each do |position|
+      %>
+      <% unused_positions.delete position %>
+      <% stash = rand(1, 6) %>
+      "<%= position %>":
+        "type": "nothing"
+        "units": "<%= unit_funcs.random_element %>[<%=
+          rand(stash * 3, stash * 4 + 1)
+        %>]"
+        "wreckage": "w[<%= stash %>]"
+      <% end %>
+
+      # Just units.
+      <%
+      count = [unused_positions.size, rand(10, 20)].min
+      unused_positions.random_elements(count).each do |position|
+      %>
+      <% unused_positions.delete position %>
+      "<%= position %>":
+        "type": "nothing"
         "units":
-          - "u[25]"
-          - [1, BossShip, 0, 1]
-      <% (first_ring - [planet_position]).each do |position| %>
-      "<%= position %>": {"type": "nothing", "units": "u[25]"}
+          - "<%= unit_funcs.random_element %>[<%= rand(2, 15) %>]"
+          - [<%= [0, 1].weighted_random([95, 5]) %>, "<%= convoy_ship %>", 0, 1]
       <% end %>
   <% end %>

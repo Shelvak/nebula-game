@@ -73,8 +73,8 @@ class PmgConfigInitializer < GameConfig::Initializer
         ]
       end,
       'udD' => lambda do |arg|
-        dirac_total = 3.5 * arg
-        demosis_total = arg
+        dirac_total = 3 * arg
+        demosis_total = 0.5 * arg
         [
           [(0.10 * dirac_total).round, dirac, 0, 1.0],
           [(0.90 * dirac_total).round, dirac, 1, 1.0],
@@ -83,8 +83,8 @@ class PmgConfigInitializer < GameConfig::Initializer
         ]
       end,
       'utD' => lambda do |arg|
-        thor_total = 1.8 * arg
-        demosis_total = 0.8 * arg
+        thor_total = 1.5 * arg
+        demosis_total = 0.5 * arg
         [
           [(0.05 * thor_total).round, thor, 0, 1.0],
           [(0.95 * thor_total).round, thor, 1, 1.0],
