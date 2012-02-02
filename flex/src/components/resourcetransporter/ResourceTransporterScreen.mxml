@@ -255,11 +255,12 @@
                 paddingBottom="10" gap="10"/>
             </s:layout>
           </s:Group>
-          <unitsscreen:StoragePanel width="100%" visible="{(getMaxStock(ResourceType.METAL) != 0)
+          <unitsscreen:StoragePanel width="100%" visible="{((getMaxStock(ResourceType.METAL) != 0)
                                          || (getMaxStock(ResourceType.ENERGY) != 0)
-                                         || (getMaxStock(ResourceType.ZETIUM) != 0)}"
+                                         || (getMaxStock(ResourceType.ZETIUM) != 0))
+                                         &amp;&amp; ML.player.planets.length > 1}"
                                     skinClass="components.unitsscreen.StorageScreenSectionPanelSkin"
-            buttonVisible="false">
+                                    buttonVisible="false">
               <base:ResourceSelectorComp resourceType="{ResourceType.METAL}" width="85%"
                                          maxAmmount="{getMaxStock(ResourceType.METAL)}"
                                          id="metalSelector"
@@ -280,8 +281,8 @@
                           click="selectNone()" left="0"/>
               </s:Group>
             </s:Group>
-            <base:AdvancedContainer>
               <s:Label text="{getString('label.fee', [(selectedBuilding.fee * 100).toFixed(1)])}" />
+            <base:AdvancedContainer>
               <s:Label text="{getString('label.withoutFee')}" paddingTop="6" color="#eec500"
                 fontWeight="bold" visible="{transferPossible}"/>
               <base:ImageAndLabel type="{ResourceType.METAL}"
@@ -296,7 +297,7 @@
                                   paddingLeft="6"
                                   visible="{zetiumSelector.selectedVal > 0}"
                                   textToDisplay="{getWithoutFee(zetiumSelector.selectedVal)}"/>
-              <base:layout><s:VerticalLayout/></base:layout>
+              <base:layout><s:HorizontalLayout/></base:layout>
             </base:AdvancedContainer>
             <s:Label text="{getString('warning.willSend', [estimatedCooldown])}"
                      color="#eec500" visible="{estimatedCooldown != null}"
@@ -320,8 +321,10 @@
           <base:Warning text="{getString('label.nothingToTransfer')}"
                         visible="{!((getMaxStock(ResourceType.METAL) != 0)
                              || (getMaxStock(ResourceType.ENERGY) != 0) 
-                             || (getMaxStock(ResourceType.ZETIUM) != 0))}"
-                        verticalPaddings="0" paddingTop="5"/>
+                             || (getMaxStock(ResourceType.ZETIUM) != 0))}"/>
+
+          <base:Warning text="{getString('label.noOtherPlanet')}"
+                        visible="{ML.player.planets.length == 1}"/>
           <base:layout>
             <s:VerticalLayout gap="10" horizontalAlign="center"/>
           </base:layout>

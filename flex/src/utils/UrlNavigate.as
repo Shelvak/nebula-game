@@ -32,14 +32,14 @@ package utils
 
       private function getUnbundledAssetUrl(relativePath:String,
                                             includeLocale:Boolean): String {
-         var url:String = unbundledAssetsUrlRoot + relativePath;
+         var url:String = relativePath;
          if (includeLocale) {
             url = url.replace(/(\w+\.\w+$)/, Locale.currentLocale + "_$1");
          }
          if (SI.unbundledAssetsSums != null) {
             url = SI.unbundledAssetsSums[url];
          }
-         return url;
+         return unbundledAssetsUrlRoot + url;
       }
 
       /**

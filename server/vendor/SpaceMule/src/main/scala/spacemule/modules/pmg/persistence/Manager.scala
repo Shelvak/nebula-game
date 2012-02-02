@@ -157,6 +157,12 @@ WHERE
     )
   }
 
+  def initDates() {
+    CallbackRow.initPlayerInactivityCheck
+    CallbackRow.initAsteroidSpawn
+    CallbackRow.initSsUnitsSpawn
+  }
+
   /**
    * Clears all buffers.
    */
@@ -258,9 +264,7 @@ WHERE
   }
 
   private def readGalaxy(galaxy: Galaxy) {
-    CallbackRow.initPlayerInactivityCheck
-    CallbackRow.initAsteroidSpawn
-    CallbackRow.initSsUnitsSpawn
+    initDates()
     galaxy.zones.foreach { case (coords, zone) => readZone(galaxy, zone) }
   }
 

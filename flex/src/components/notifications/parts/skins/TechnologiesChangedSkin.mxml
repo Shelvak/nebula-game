@@ -13,7 +13,7 @@
   <s:DataGroup id="technologies" width="100%"
                itemRenderer="components.technologytree.IRChangedTechnology">
     <s:layout>
-      <s:HorizontalLayout gap="2"/>
+      <s:HorizontalLayout gap="2" paddingLeft="6"/>
     </s:layout>
   </s:DataGroup>
 

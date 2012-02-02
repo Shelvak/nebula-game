@@ -1,12 +1,18 @@
 <?xml version="1.0"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
-         xmlns:s="library://ns.adobe.com/flex/spark">
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:base="components.base.*"
+         addedToStage="addedToStageHandler(event)"
+         removedFromStage="removedFromStageHandler(event)">
    <fx:Binding source="lstBuildings.selectedItem" destination="selectedBuilding"/>
    <fx:Script>
       <![CDATA[
+     import com.developmentarc.core.utils.EventBroker;
+
      import models.building.Building;
 
      import mx.collections.IList;
+     import mx.events.FlexEvent;
 
      import spark.events.IndexChangeEvent;
 
@@ -60,6 +66,60 @@
          }
        }
      }
+
+     /*keykodes*/
+     private static const NUMBERS: Array = [
+       Keyboard.NUMPAD_0, 48,
+       Keyboard.NUMPAD_1, 49,
+       Keyboard.NUMPAD_2, 50,
+       Keyboard.NUMPAD_3, 51,
+       Keyboard.NUMPAD_4, 52,
+       Keyboard.NUMPAD_5, 53,
+       Keyboard.NUMPAD_6, 54,
+       Keyboard.NUMPAD_7, 55,
+       Keyboard.NUMPAD_8, 56,
+       Keyboard.NUMPAD_9, 57
+     ];
+
+     private function checkLevel(e: KeyboardEvent): void {
+       if (NUMBERS.indexOf(e.keyCode) != -1 && visible) {
+         if (e.keyCode < 58 && e.keyCode > 47) {
+           setLevel(e.keyCode - 48);
+         }
+         else {
+           setLevel(e.keyCode - 96);
+         }
+       }
+     }
+
+     /* from 0 to 9 (sometimes 0 is 10)*/
+     private function setLevel(value: int): void {
+       if (minLevel == 1 && value == 0) {
+         value = 10;
+       }
+       stepLevel.value = value;
+       if (_selectedBuilding != null) {
+         if (_selectedBuilding.npc) {
+           _selectedBuilding.metaLevel = stepLevel.value;
+         }
+         else {
+           _selectedBuilding.level = stepLevel.value;
+         }
+       }
+     }
+
+     private function addedToStageHandler(event: Event): void {
+       EventBroker.subscribe(KeyboardEvent.KEY_DOWN, checkLevel);
+     }
+
+     private function removedFromStageHandler(event: Event): void {
+       EventBroker.unsubscribe(KeyboardEvent.KEY_DOWN, checkLevel);
+     }
+
+     private function stepLevel_creationCompleteHandler(event: FlexEvent): void {
+       stepLevel.textDisplay.editable = false;
+       stepLevel.textDisplay.selectable = false;
+     }
      ]]>
    </fx:Script>
    <s:layout>
@@ -74,15 +134,16 @@
       <s:NumericStepper id="stepLevel"
                         minimum="{minLevel}"
                         maximum="{maxLevel}"
+                        creationComplete="stepLevel_creationCompleteHandler(event)"
         change="stepLevel_changeHandler(event)"/>
    </s:Group>
-   <s:List id="lstBuildings" left="0" right="0" height="100%"
+   <base:NoKeyboardList id="lstBuildings" left="0" right="0" height="100%"
            horizontalCenter="0"
            requireSelection="true" selectedIndex="0"
            dataProvider="{listData}" borderVisible="false"
            itemRenderer="components.planetmapeditor.IRBuilding">
-      <s:layout>
+      <base:layout>
          <s:TileLayout orientation="rows" columnAlign="justifyUsingGap"/>
-      </s:layout>
-   </s:List>
+      </base:layout>
+   </base:NoKeyboardList>
 </s:Group>

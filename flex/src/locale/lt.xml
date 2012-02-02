@@ -3558,7 +3558,7 @@
       <![CDATA[
       <p>
         Norint užpulti ateivių pastatą, tau reikia jį pasirinkti ir šoninėje
-        juostoje paspausti mygtuką „[reference:BuildingSelectedSidebar:attack]“.
+        juostoje paspausti mygtuką „[reference:BuildingSelectedSidebar/attack]“.
       </p>
       ]]>
     </AttackButton>
@@ -4295,9 +4295,7 @@
       išrasti šios technologijos.</p>
     </groupResearched>
     <label.wasPaused value="Sustabdyta" />
-    <label.scientistsChanged value="Mokslininkų sumažinta:" />
-    <label.oldScientists value="Iš {0}" />
-    <label.newScientists value="Į {0}" />
+    <label.scientistsChanged value="Mokslininkų po sumažinimo" />
 
     <upgrade value="Tobulinti" />
     <update value="Atnaujinti" />
@@ -5650,6 +5648,8 @@
     <warning.willSend
             value="Jei išsiųsi šiuos resursus, negalėsi siųsti kitų {0}." />
     <tooltip.cooldownActive value="Šiuo metu siųstuvas vėsta" />
+    <label.noOtherPlanet
+            value="Tu neturi kitos planetos į kurią galėtum siųsti resursus" />
     <message.noTransporter>
       <p>Planetoje, į kurią buvo siunčiami resursai, nėra siųstuvo.
          Siuntimas buvo atšauktas, o resursai gražinti.</p>
