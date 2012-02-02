@@ -152,7 +152,6 @@ module Dev
       :creds => true, :war_points => true
     
     if opts[:population]
-      player.population = 0
       player.population_cap = 10_000
     end
     player.scientists = player.scientists_total = 10_000 if opts[:scientists]
