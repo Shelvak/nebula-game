@@ -41,7 +41,11 @@ class Assets
 
   def self.load_hashes(source)
     contents = File.exists?(source) ? File.read(source).strip : ""
-    contents == "" ? {} : Hash[ *YAML.load(contents).flatten ]
+    array = YAML.load(contents).flatten
+    contents == "" ? {} : Hash[ *array ]
+  rescue Exception => e
+    STDERR.write "Error while loading #{source}!\n"
+    raise e
   end
 
   # Return hash of one asset or +Hash+ of hashes if directory is given.

@@ -12,38 +12,91 @@ class PmgConfigInitializer < GameConfig::Initializer
     dirac = Unit::Dirac.to_s.demodulize
     thor = Unit::Thor.to_s.demodulize
     demosis = Unit::Demosis.to_s.demodulize
-    # TODO: replace BossShip with convoy unit
-    convoy_ship = Unit::BossShip.to_s.demodulize
+    convoy_ship = Unit::ConvoyShip.to_s.demodulize
 
-    w_re = /^w\[([\d\.]+)\]$/
-    w = lambda do |level|
-      level -= 1
-      [3750.0 * 2 ** level, 7500.0 * 2 ** level, 1250.0 * 2 ** level]
-    end
+    functions = {
+      # Wreckage functions
+      'w' => lambda do |level|
+        level -= 1
+        [3750.0 * 2 ** level, 7500.0 * 2 ** level, 1250.0 * 2 ** level]
+      end,
 
-    r_re = /^r\[([\d\.]+)\]$/
-    r = lambda do |level|
-      [2.0 * level, 2.0 * level, 2.0 * level]
-    end
+      # Resource functions
+      'r' => lambda do |level|
+        [2.0 * level, 2.0 * level, 2.0 * level]
+      end,
 
-    u_re = /^u\[([\d\.]+)\]$/
-    u = lambda do |arg|
-      units = [
-        [(0.8 * arg).round, dirac, 0, 1.0],
-        [arg.round, dirac, 1, 1.0],
-      ]
-      units += [
-        [(0.25 * arg).round, thor, 0, 1.0],
-        [(0.75 * arg).round, thor, 1, 1.0],
-      ] if arg >= 1.5
-      units += [
-        [(0.5 * arg).round, demosis, 0, 1.0]
-      ] if arg >= 3
-      units
-    end
+      # Unit functions
+      'u' => lambda do |arg|
+        units = [
+          [(0.8 * arg).round, dirac, 0, 1.0],
+          [arg.round, dirac, 1, 1.0],
+        ]
+        units += [
+          [(0.25 * arg).round, thor, 0, 1.0],
+          [(0.75 * arg).round, thor, 1, 1.0],
+        ] if arg >= 1.5
+        units += [
+          [(0.5 * arg).round, demosis, 0, 1.0]
+        ] if arg >= 3
+        units
+      end,
+      'ud' => lambda do |arg|
+        total = 5 * arg
+        [
+          [(0.35 * total).round, dirac, 0, 1.0],
+          [(0.65 * total).round, dirac, 1, 1.0],
+        ]
+      end,
+      'ut' => lambda do |arg|
+        total = 3 * arg
+        [
+          [(0.35 * total).round, thor, 0, 1.0],
+          [(0.65 * total).round, thor, 1, 1.0],
+        ]
+      end,
+      'uD' => lambda do |arg|
+        total = 1.5 * arg
+        [
+          [(0.35 * total).round, demosis, 0, 1.0],
+          [(0.65 * total).round, demosis, 1, 1.0],
+        ]
+      end,
+      'udt' => lambda do |arg|
+        dirac_total = 3.5 * arg
+        thor_total = 2 * arg
+        [
+          [(0.85 * dirac_total).round, dirac, 0, 1.0],
+          [(0.15 * dirac_total).round, dirac, 1, 1.0],
+          [(0.05 * thor_total).round, thor, 0, 1.0],
+          [(0.95 * thor_total).round, thor, 1, 1.0],
+        ]
+      end,
+      'udD' => lambda do |arg|
+        dirac_total = 3 * arg
+        demosis_total = 0.5 * arg
+        [
+          [(0.10 * dirac_total).round, dirac, 0, 1.0],
+          [(0.90 * dirac_total).round, dirac, 1, 1.0],
+          [(0.95 * demosis_total).round, demosis, 0, 1.0],
+          [(0.05 * demosis_total).round, demosis, 1, 1.0],
+        ]
+      end,
+      'utD' => lambda do |arg|
+        thor_total = 1.5 * arg
+        demosis_total = 0.5 * arg
+        [
+          [(0.05 * thor_total).round, thor, 0, 1.0],
+          [(0.95 * thor_total).round, thor, 1, 1.0],
+          [(0.90 * demosis_total).round, demosis, 0, 1.0],
+          [(0.10 * demosis_total).round, demosis, 1, 1.0],
+        ]
+      end
+    }
 
-    apply_functions = lambda do |data, functions|
-      functions.each do |regexp, function|
+    apply_functions = lambda do |data|
+      functions.each do |key, function|
+        regexp = /^#{key}\[([\d\.]+)\]$/
         match = data.match(regexp)
         return function.call(match[1].to_f) if match
       end
@@ -66,7 +119,7 @@ class PmgConfigInitializer < GameConfig::Initializer
             data["units"] = [data["units"]] unless data["units"].is_a?(Array)
             data["units"] = data["units"].inject([]) do |array, unit_def|
               if unit_def.is_a?(String)
-                array + apply_functions[unit_def, [[u_re, u]]]
+                array + apply_functions[unit_def]
               else
                 array << unit_def
                 array
@@ -74,12 +127,8 @@ class PmgConfigInitializer < GameConfig::Initializer
             end
           end
 
-          [
-            ["wreckage", [[w_re, w]]],
-            ["resources", [[r_re, r]]]
-          ].each do |type, functions|
-            data[type] = apply_functions[data[type], functions] \
-              if data[type].is_a?(String)
+          %w{wreckage resources}.each do |type|
+            data[type] = apply_functions[data[type]] if data[type].is_a?(String)
           end
 
           hash[position_str] = data

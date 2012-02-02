@@ -12,12 +12,13 @@ package components.planetmapeditor
    import models.tile.Tile;
    import models.tile.TileKind;
 
-import mx.controls.Alert;
+   import mx.controls.Alert;
+   import mx.utils.StringUtil;
 
-import utils.Objects;
+   import utils.Objects;
 
 
-   public final class PlanetMapSerializer
+public final class PlanetMapSerializer
    {
       private const SYM_SPACE: String = " ";
       private const SYM_DASH: String = "-";
@@ -157,11 +158,16 @@ import utils.Objects;
             row = '  - "' + row + '"';
             rows.push(row);
          }
-         return 'terrain: <%= Terrain::'
-                   + TerrainType.getName(planet.ssObject.terrain, true)
-                   + ' %>\n'
-                   + 'name: "' + planet.ssObject.name + '-%d"\n'
-                   + 'map:\n' + rows.reverse().join('\n');
+         return StringUtil.substitute(
+            'terrain: <%= Terrain::{0} %>\n' +
+            'name: "{1}-%d"\n' +
+            '# {2}x{3} (area {4})' +
+            'map:\n{5}',
+            TerrainType.getName(planet.ssObject.terrain, true),
+            planet.ssObject.name,
+            planet.width, planet.height, planet.width * planet.height,
+            rows.reverse().join('\n')
+         );
       }
 
       public function deserialize(data: String): MPlanet {
