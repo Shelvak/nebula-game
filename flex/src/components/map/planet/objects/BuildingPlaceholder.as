@@ -4,6 +4,7 @@ package components.map.planet.objects
    import components.map.planet.TileState;
    
    import models.building.Building;
+   import models.planet.MPlanetObject;
    import models.tile.Tile;
 
    import mx.core.UIComponent;
@@ -18,11 +19,11 @@ package components.map.planet.objects
     */
    public class BuildingPlaceholder extends CObjectPlaceholder
    {
-      override protected function commitModel() : void  {
-         super.commitModel();
+      override public function initModel(model: MPlanetObject): void {
+         super.initModel(model);
          initInterferingTiles();
       }
-      
+
       public function getBuilding() : Building {
          return Building(model);
       }
@@ -36,15 +37,15 @@ package components.map.planet.objects
       override protected function createBasement(): UIComponent {
          const gap:int = Building.GAP_BETWEEN;
          const addSize:int = gap * 2;
-         const basement:PlanetObjectBasementTiled =
+         _basement =
                   new PlanetObjectBasementTiled(
                      TileState.BUILD_RESTRICT,
                      model.width  + addSize,
                      model.height + addSize
                   );
-         basement.bottom = -Tile.IMAGE_HEIGHT * gap;
-         basement.right  = -Tile.IMAGE_WIDTH * gap;
-         return basement;
+         _basement.bottom = -Tile.IMAGE_HEIGHT * gap;
+         _basement.right  = -Tile.IMAGE_WIDTH * gap;
+         return _basement;
       }
       
       
