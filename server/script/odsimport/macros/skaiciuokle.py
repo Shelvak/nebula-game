@@ -3,6 +3,7 @@
 # For this to work, it needs to be in script path.
 #
 # Linux:
+# $ mkdir -p ~/.libreoffice/3/user/Scripts/python/
 # $ ln -s path/to/skaiciuokle.py ~/.libreoffice/3/user/Scripts/python/
 #
 # While developing, you need to update symlink timestamp for libreoffice to
