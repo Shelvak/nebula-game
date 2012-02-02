@@ -2,7 +2,8 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
                 xmlns:s="library://ns.adobe.com/flex/spark"
                 autoDrawBackground="false"
-                xmlns:base="components.base.*">
+                xmlns:base="components.base.*"
+                width="104" height="138">
   <fx:Script>
       <![CDATA[
     import controllers.ui.NavigationController;
@@ -52,30 +53,43 @@
     <s:State name="normal"/>
   </s:states>
 
-  <base:AdvancedContainer left="0" right="0" top="0" bottom="0">
+  <!-- background -->
+  <s:Rect left="0" right="0" top="0" bottom="0">
+    <s:stroke>
+      <s:SolidColorStroke color="0x3E3E3E" weight="1"/>
+    </s:stroke>
+    <s:fill>
+      <s:SolidColor color="0x0F0F0F"/>
+    </s:fill>
+  </s:Rect>
+
+  <!-- unit image -->
+  <s:Group left="3" right="3" top="3" bottom="34">
     <s:BitmapImage
       source="{cast(data).technology == null
           ? null
           : ImagePreloader.getInstance().getImage(
             AssetNames.getTechnologyImageName(cast(data).technology))}"
-      width="{imageSize}" height="{imageSize}" top="0" left="0" id="techImg"/>
+      width="{imageSize}" height="{imageSize}"
+      top="0" left="0" right="0" bottom="0" id="techImg"/>
+  </s:Group>
+
+  <base:AdvancedContainer left="3" right="3" bottom="8">
+
     <s:Label visible="{cast(data).paused}" text="{getString('label.wasPaused')}"
       width="100%" height="100%" textAlign="center" verticalAlign="middle"
       fontWeight="bold"/>
     <s:Group visible="{!cast(data).paused}" width="100%" height="100%">
-      <s:Label visible="{cast(data).paused}" text="{getString('label.scientistsChanged')}"
-               width="100%" textAlign="center"/>
-      <base:ImageAndLabel type="{ResourceType.SCIENTISTS}"
-                          paddingLeft="6"
-                          textToDisplay="{getString('label.oldScientists',
-                          [cast(data).oldScientists])}"/>
-      <base:ImageAndLabel type="{ResourceType.SCIENTISTS}"
-                          paddingLeft="6"
-                          textToDisplay="{getString('label.newScientists',
-                          [cast(data).newScientists])}"/>
-      <s:layout>
-        <s:VerticalLayout/>
-      </s:layout>
+      <s:Group width="100%" verticalCenter="0">
+        <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" paddingLeft="6"
+                            textToDisplay="{cast(data).oldScientists}"
+                            toolTip="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
+        <base:NextValueComp textToDisplay="{cast(data).newScientists}"
+          toolTip="{getString('label.scientistsChanged')}"/>
+        <s:layout>
+          <s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"/>
+        </s:layout>
+      </s:Group>
     </s:Group>
 
     <base:layout>

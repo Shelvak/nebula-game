@@ -4295,9 +4295,7 @@
       išrasti šios technologijos.</p>
     </groupResearched>
     <label.wasPaused value="Sustabdyta" />
-    <label.scientistsChanged value="Mokslininkų sumažinta:" />
-    <label.oldScientists value="Iš {0}" />
-    <label.newScientists value="Į {0}" />
+    <label.scientistsChanged value="Mokslininkų po sumažinimo" />
 
     <upgrade value="Tobulinti" />
     <update value="Atnaujinti" />
