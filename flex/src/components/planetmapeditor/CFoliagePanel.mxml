@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
-         xmlns:s="library://ns.adobe.com/flex/spark">
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:base="components.base.*">
    <fx:Binding source="lstFoliage.selectedItem" destination="selectedFoliage"/>
    <fx:Script>
       <![CDATA[
@@ -25,13 +26,13 @@
       <s:VerticalLayout gap="10" horizontalAlign="justify"/>
    </s:layout>
    <s:Label fontSize="16" fontWeight="bold" text="{title}" textAlign="center"/>
-   <s:List id="lstFoliage" left="0" right="0" height="100%"
+   <base:NoKeyboardList id="lstFoliage" left="0" right="0" height="100%"
            horizontalCenter="0"
            requireSelection="true" selectedIndex="0"
            dataProvider="{listData}" borderVisible="false"
            itemRenderer="components.planetmapeditor.IRFoliage">
-      <s:layout>
+      <base:layout>
          <s:TileLayout orientation="rows" columnAlign="justifyUsingGap"/>
-      </s:layout>
-   </s:List>
+      </base:layout>
+   </base:NoKeyboardList>
 </s:Group>

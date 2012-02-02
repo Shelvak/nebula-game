@@ -46,13 +46,6 @@
         pnlBuildings.visible = false;
         pnlNpcBuildings.visible = false;
         pnlFoliage.visible = false;
-        if (!button.selected)
-        {
-          btnBuildings.selected = false;
-          btnNpcBuildings.selected = false;
-          btnFoliage.selected = false;
-          button.selected = true;
-        }
         switch (button) {
 
           case btnBuildings:
@@ -76,15 +69,15 @@
       {
         if (e.keyCode == Keyboard.INSERT || e.keyCode == 81)
         {
-          erectByButton(btnBuildings);
+          buttonsGroup.select(btnBuildings);
         }
         else if (e.keyCode == Keyboard.HOME || e.keyCode == 87)
         {
-          erectByButton(btnNpcBuildings);
+          buttonsGroup.select(btnNpcBuildings);
         }
         else if (e.keyCode == Keyboard.PAGE_UP || e.keyCode == 69)
         {
-          erectByButton(btnFoliage)
+          buttonsGroup.select(btnFoliage);
         }
       }
 

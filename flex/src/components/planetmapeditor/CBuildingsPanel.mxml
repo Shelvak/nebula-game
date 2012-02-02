@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:base="components.base.*"
          addedToStage="addedToStageHandler(event)"
          removedFromStage="removedFromStageHandler(event)">
    <fx:Binding source="lstBuildings.selectedItem" destination="selectedBuilding"/>
@@ -136,13 +137,13 @@
                         creationComplete="stepLevel_creationCompleteHandler(event)"
         change="stepLevel_changeHandler(event)"/>
    </s:Group>
-   <s:List id="lstBuildings" left="0" right="0" height="100%"
+   <base:NoKeyboardList id="lstBuildings" left="0" right="0" height="100%"
            horizontalCenter="0"
            requireSelection="true" selectedIndex="0"
            dataProvider="{listData}" borderVisible="false"
            itemRenderer="components.planetmapeditor.IRBuilding">
-      <s:layout>
+      <base:layout>
          <s:TileLayout orientation="rows" columnAlign="justifyUsingGap"/>
-      </s:layout>
-   </s:List>
+      </base:layout>
+   </base:NoKeyboardList>
 </s:Group>
