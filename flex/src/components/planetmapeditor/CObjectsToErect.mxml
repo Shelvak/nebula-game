@@ -11,7 +11,9 @@
                destination="model.objectToErect"/>
    <fx:Script>
       <![CDATA[
-      import mx.events.FlexEvent;
+     import com.developmentarc.core.utils.EventBroker;
+
+     import mx.events.FlexEvent;
 
       import utils.components.ToggleButtonsGroup;
       import utils.components.events.ToggleButtonsGroupEvent;
@@ -36,30 +38,59 @@
       }
 
       private function buttonsGroup_selectionChangeHandler(event: ToggleButtonsGroupEvent): void {
-         pnlBuildings.visible = false;
-         pnlNpcBuildings.visible = false;
-         pnlFoliage.visible = false;
-         switch (event.selectedButton) {
+         erectByButton(event.selectedButton);
+      }
+      
+      private function erectByButton(button: ToggleButton): void
+      {
+        pnlBuildings.visible = false;
+        pnlNpcBuildings.visible = false;
+        pnlFoliage.visible = false;
+        if (!button.selected)
+        {
+          btnBuildings.selected = false;
+          btnNpcBuildings.selected = false;
+          btnFoliage.selected = false;
+          button.selected = true;
+        }
+        switch (button) {
 
-            case btnBuildings:
-               pnlBuildings.visible = true;
-               model.objectToErect = pnlBuildings.selectedBuilding;
-               break;
+          case btnBuildings:
+            pnlBuildings.visible = true;
+            model.objectToErect = pnlBuildings.selectedBuilding;
+            break;
 
-            case btnNpcBuildings:
-               pnlNpcBuildings.visible = true;
-               model.objectToErect = pnlNpcBuildings.selectedBuilding;
-               break;
+          case btnNpcBuildings:
+            pnlNpcBuildings.visible = true;
+            model.objectToErect = pnlNpcBuildings.selectedBuilding;
+            break;
 
-            case btnFoliage:
-               pnlFoliage.visible = true;
-               model.objectToErect = pnlFoliage.selectedFoliage;
-               break;
-         }
+          case btnFoliage:
+            pnlFoliage.visible = true;
+            model.objectToErect = pnlFoliage.selectedFoliage;
+            break;
+        }
+      }
+     
+      private function checkErect(e: KeyboardEvent): void
+      {
+        if (e.keyCode == Keyboard.INSERT || e.keyCode == 81)
+        {
+          erectByButton(btnBuildings);
+        }
+        else if (e.keyCode == Keyboard.HOME || e.keyCode == 87)
+        {
+          erectByButton(btnNpcBuildings);
+        }
+        else if (e.keyCode == Keyboard.PAGE_UP || e.keyCode == 69)
+        {
+          erectByButton(btnFoliage)
+        }
       }
 
       private function this_creationCompleteHandler(event: FlexEvent): void {
          model.objectToErect = pnlBuildings.selectedBuilding;
+         EventBroker.subscribe(KeyboardEvent.KEY_DOWN, checkErect);
       }
 
       private const TITLE_BUILDINGS:String = "buildings";
