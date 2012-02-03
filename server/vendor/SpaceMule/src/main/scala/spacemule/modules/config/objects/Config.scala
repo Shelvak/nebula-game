@@ -1,6 +1,5 @@
 package spacemule.modules.config.objects
 
-import java.math.BigDecimal
 import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.geom.Coords
@@ -13,6 +12,7 @@ import spacemule.modules.combat
 import spacemule.modules.pathfinder.{objects => pfo}
 import scala.collection.Map
 import spacemule.modules.combat.objects.{Combatant, Damage, Armor, Stance}
+import spacemule.modules.config.ScalaConfig
 
 object Config {
   /**
@@ -20,10 +20,16 @@ object Config {
    */
   val DefaultSet = "default"
 
-  /**
-   * Various game configuration sets.
-   */
-  var sets = Map[String, Map[String, Any]]()
+  var _data: ScalaConfig = null
+  def data: ScalaConfig = {
+    if (_data == null)
+      throw new UninitializedFieldError(
+        "data for config has not been set yet!"
+      )
+
+    _data
+  }
+  def data_=(value: ScalaConfig) { _data = value }
 
   /**
    * Current set from which to take configuration.
@@ -42,18 +48,10 @@ object Config {
   }
 
   private[this] def getOpt[T](key: String): Option[T] =
-    sets.getOrError(
-      currentSet,
-      "Config set '%s' not found!".format(currentSet)
-    ).get(key).asInstanceOf[Option[T]]
+    data.getOpt(key, currentSet)
 
   private[objects] def get[T](key: String): T =
-    getOpt[T](key) match {
-      case Some(value) => value
-      case None => throw new NoSuchElementException(
-        "Key '%s' not found in config set '%s'!".format(key, currentSet)
-      )
-    }
+    data.get(key, currentSet)
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper methods

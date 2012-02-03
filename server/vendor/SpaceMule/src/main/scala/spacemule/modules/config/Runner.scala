@@ -10,9 +10,9 @@ import spacemule.persistence.DB
 import objects.Config
 
 object Runner {
-  def run(dbConfig: Map[String, String], sets: Map[String, Map[String, Any]]) {
+  def run(dbConfig: Map[String, String], config: ScalaConfig) {
     processDb(dbConfig)
-    Config.sets = sets
+    Config.data = config
   }
 
   private def processDb(config: Map[String, String]) = {

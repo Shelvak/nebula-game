@@ -68,31 +68,8 @@ class GameConfig
     @fallbacks[set] = fallback unless fallback.nil?
   end
 
-  # Returns all the values for each set. Each set features a full base of
-  # values, that is even values which have no override in child set are
-  # returned from parent set.
-  #
-  # Also those values are evaluated to numbers if they only contain speed
-  # modifier.
-  #
-  # Returns {set_name => set_hash, ...}
-  def full_set_values
-    sets = {}
-    @data.keys.each do |set_name|
-      set = {}
-      @keys.each do |key|
-        value = self[key, set_name]
-        if value.is_a?(String) && value.include?("speed")
-          value = value.gsub('speed', self["speed", set_name].to_s)
-          # Evaluate if we have no more variables there
-          value = self.class.safe_eval(value) unless value =~ /[a-z]/
-        end
-        set[key] = value
-      end
-      sets[set_name] = set
-    end
-
-    sets
+  def scala_wrapper
+    ScalaWrapper.new(self)
   end
 
   # Store
