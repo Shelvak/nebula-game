@@ -1,14 +1,6 @@
-class PmgConfigInitializer < GameConfig::Initializer
-  def self.generate
-    LOGGER.block(
-      "Generating home solar system configuration", :level => :debug
-    ) { generate_ss_maps }
-    LOGGER.block(
-      "Generating planet map configurations", :level => :debug
-    ) { generate_planet_maps }
-  end
-
-  def self.generate_ss_maps
+# Convention requires us to name this lambda as generator.
+lambda do
+  generate_ss_maps = lambda do
     dirac = Unit::Dirac.to_s.demodulize
     thor = Unit::Thor.to_s.demodulize
     demosis = Unit::Demosis.to_s.demodulize
@@ -140,7 +132,7 @@ class PmgConfigInitializer < GameConfig::Initializer
     end
   end
 
-  def self.generate_planet_maps
+  generate_planet_maps = lambda do
     gnat = Unit::Gnat.to_s.demodulize
     gnat_flanks = [0.4, 0.6]
 
@@ -382,4 +374,11 @@ class PmgConfigInitializer < GameConfig::Initializer
       end
     end
   end
-end
+
+  LOGGER.block(
+    "Generating home solar system configuration", :level => :debug
+  ) { generate_ss_maps.call }
+  LOGGER.block(
+    "Generating planet map configurations", :level => :debug
+  ) { generate_planet_maps.call }
+end.call

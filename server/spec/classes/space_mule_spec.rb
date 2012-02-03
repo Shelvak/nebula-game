@@ -46,7 +46,6 @@ describe SpaceMule do
   before(:all) do
     # Ensure we're not testing against randomness: leave only one map of
     # each type.
-    PmgConfigInitializer.initialize
     @old_maps = CONFIG.filter(/^(solar_system|planet)\.map\./)
     @old_maps.each { |key, map_set| CONFIG[key] = [map_set[0]] }
 

@@ -224,7 +224,6 @@ class Cfg
 
     # Initializes exploration rewards and returns possible rewards.
     def exploration_rewards(key)
-      ExplorationRewardsInitializer.initialize
       CONFIG["tiles.exploration.rewards.#{key}"]
     end
 
