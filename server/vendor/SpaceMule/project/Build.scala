@@ -50,9 +50,6 @@ object SpaceMule extends Build {
 
           // MySQL connector
           "mysql" % "mysql-connector-java" % "5.1.17",
-          // Evaluation of the formulas
-          //"net.java.dev.eval" % "eval" % "0.5",
-          "de.congrace" % "exp4j" % "0.2.9",
           // Apache Commons IO
           "commons-io" % "commons-io" % "2.0.1",
           // Graph library

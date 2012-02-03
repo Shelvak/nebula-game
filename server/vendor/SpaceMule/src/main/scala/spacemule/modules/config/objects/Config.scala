@@ -91,14 +91,14 @@ object Config {
   )
 
   def formulaEval(key: String): Double =
-    FormulaEval.eval(get[Any](key).toString)
+    data.eval(get[Any](key).toString)
 
   def formulaEval(key: String, vars: Map[String, Double]): Double =
-    FormulaEval.eval(get[Any](key).toString, vars)
+    data.evalWithVars(get[Any](key).toString, vars)
 
   def formulaEval(key: String, default: Double): Double =
     getOpt[Any](key) match {
-      case Some(value) => FormulaEval.eval(value.toString)
+      case Some(value) => data.eval(value.toString)
       case None => default
     }
 
@@ -106,7 +106,7 @@ object Config {
     key: String, vars: Map[String, Double], default: Double
   ): Double =
     getOpt[Any](key) match {
-      case Some(value) => FormulaEval.eval(value.toString, vars)
+      case Some(value) => data.evalWithVars(value.toString, vars)
       case None => default
     }
 
@@ -121,9 +121,8 @@ object Config {
    */
   private def evalRange(key: String): Range = {
     val rangeData = seq[String](key)
-    val params = Map("speed" -> speed.toDouble)
-    val from = FormulaEval.eval(rangeData(0), params).toInt
-    val to = FormulaEval.eval(rangeData(1), params).toInt
+    val from = data.eval(rangeData(0)).toInt
+    val to = data.eval(rangeData(1)).toInt
 
     Range.inclusive(from, to)
   }
@@ -146,7 +145,6 @@ object Config {
   private def cost(key: String) = double(key).ceil.toInt
   private def cost(key: String, level: Int) =
     formulaEval(key, Map("level" -> level.toDouble)).ceil.toInt
-  private def speed = int("speed")
 
   //////////////////////////////////////////////////////////////////////////////
   // Reader methods 
@@ -222,7 +220,7 @@ object Config {
     val key = "%s.battle.victory_points".format(kind)
     (groundDamage: Int, spaceDamage: Int, fairnessMultiplier: Double) => {
       get[Any](key) match {
-        case formula: String => FormulaEval.eval(formula, Map(
+        case formula: String => data.evalWithVars(formula, Map(
           "damage_dealt_to_ground" -> groundDamage.toDouble,
           "damage_dealt_to_space" -> spaceDamage.toDouble,
           "fairness_multiplier" -> fairnessMultiplier
@@ -237,7 +235,7 @@ object Config {
     val key = "%s.battle.creds".format(kind)
     (victoryPoints: Double) => {
       get[Any](key) match {
-        case formula: String => FormulaEval.eval(formula, Map(
+        case formula: String => data.evalWithVars(formula, Map(
           "victory_points" -> victoryPoints
         ))
         case l: Long => l.toDouble

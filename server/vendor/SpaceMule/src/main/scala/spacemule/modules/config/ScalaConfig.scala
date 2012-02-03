@@ -1,5 +1,7 @@
 package spacemule.modules.config
 
+import scala.{collection => sc}
+
 /**
  * Created by IntelliJ IDEA.
  * User: arturas
@@ -12,4 +14,8 @@ trait ScalaConfig {
   def get[T](key: String, set: String): T
 
   def getOpt[T](key: String, set: String): Option[T]
+
+  def eval(formula: String): Double
+
+  def evalWithVars(formula: String, vars: sc.Map[String, Double]): Double
 }

@@ -1,0 +1,291 @@
+---
+<%
+dirac = Unit::Dirac.to_s.demodulize
+convoy_ship = Unit::ConvoyShip.to_s.demodulize
+first_ring = %w{0,0 0,90 0,180 0,270}
+second_ring = %w{1,0 1,45 1,90 1,135 1,180 1,225 1,270 1,315}
+third_ring = %w{2,0 2,30 2,60 2,90 2,120 2,150 2,180 2,210 2,240 2,270 2,300
+  2,330}
+fourth_ring = %w{3,0 3,22 3,44 3,66 3,90 3,112 3,134 3,156 3,180 3,202 3,224
+  3,246 3,270 3,292 3,314 3,336}
+unit_funcs = ["u", "ud", "ut", "uD", "udt", "udD", "utD"]
+units = lambda do |from, to|
+  "#{unit_funcs.random_element}[#{rand(from, to + 1)}]"
+end
+%>
+# Home solar system configuration.
+#
+# Common configuration
+#
+#  "position,angle": {
+#    "type": "planet|asteroid|jumpgate|nothing"
+#    # array of [count, type, flank, hp percentage (Float)]
+#    "units": [[1, "Dirac", 0, 1.0]]
+#    "wreckage": [metal, energy, zetium] (Floats)
+#  }
+#
+# Extra parameters for planet type:
+#   "map": "homeworld|other_map_name"
+#   "terrain": 0 # Earth
+#   "owned_by_player": true|false
+#
+# Extra parameters for asteroid type:
+#   "resources": [metal, energy, zetium] (Floats)
+#
+home:
+  - weight: 1000
+    map:
+      # Homeworld planet
+      "0,90":
+        "type": "planet"
+        "map": "homeworld"
+        "owned_by_player": true
+        "units": [[1, <%= dirac %>, 0, 1.0]]
+      # Expansion planet
+      "1,135":
+        "type": "planet"
+        "map": "expansion"
+        "owned_by_player": false
+        "units": [[2, <%= dirac %>, 0, 1.0], [2, <%= dirac %>, 1, 1.0]]
+      # First asteroids
+      "0,0":   {"type": "asteroid", "resources": "r[1]", "units": "u[1]"}
+      "0,180": {"type": "asteroid", "resources": "r[1]", "units": "u[1]"}
+      "1,90":  {"type": "asteroid", "resources": "r[2]", "units": "u[1]"}
+      
+      # Resource path
+      "2,150": {"type": "nothing", "units": "u[1.25]"}
+      "3,134": {"type": "nothing", "units": "u[1.75]", "wreckage": "w[1]"}
+      "3,112": {"type": "nothing", "units": "u[2.25]"}
+      "3,90" : {"type": "nothing", "units": "u[2.5]", "wreckage": "w[2]"}
+      "3,66" : {"type": "nothing", "units": "u[2.75]"}
+      "3,44" : {"type": "nothing", "units": "u[3]", "wreckage": "w[3]"}
+      "3,22" : {"type": "nothing", "units": "u[4]"}
+      "3,0"  : {"type": "nothing", "units": "u[5]", "wreckage": "w[4]"}
+      "3,336": {"type": "nothing", "units": "u[6]"}
+      "3,314": {"type": "nothing", "units": "u[7]", "wreckage": "w[5]"}
+      "3,292": {"type": "nothing", "units": "u[8]"}
+      "2,270": {"type": "nothing", "units": "u[9]", "wreckage": "w[6]"}
+      
+      # Protective ring near the path
+      "1,180": {"type": "nothing", "units": "u[1.25]"}
+      "1,0"  : {"type": "nothing", "units": "u[1.5]"}
+      "1,45" : {"type": "nothing", "units": "u[1.5]"}
+      "3,156": {"type": "nothing", "units": "u[1.5]"}
+      "2,120": {"type": "asteroid", "resources": "r[3]", "units": "u[3]"}
+      "2,90" : {"type": "nothing", "units": "u[4]"}
+      "2,60" : {"type": "asteroid", "resources": "r[3]", "units": "u[5]"}
+      "2,30" : {"type": "asteroid", "resources": "r[3]", "units": "u[6]"}
+      "2,0"  : {"type": "nothing", "units": "u[7]"}
+      "2,330": {"type": "asteroid", "resources": "r[3]", "units": "u[8]"}
+      # Lesser biggest stash protection
+      "0,270": {"type": "asteroid", "resources": "r[1]", "units": "u[8]"}
+      "1,225": {"type": "asteroid", "resources": "r[2]", "units": "u[8]"}
+      "1,315": {"type": "asteroid", "resources": "r[2]", "units": "u[8]"}
+      # Greater biggest stash protection
+      "1,270": {"type": "nothing", "units": "u[10]"}
+      "2,240": {"type": "asteroid", "resources": "r[3]", "units": "u[10]"}
+      "2,300": {"type": "nothing", "units": "u[10]"}
+      "3,246": {"type": "nothing", "units": "u[10]"}
+      "3,270": {"type": "nothing", "units": "u[10]"}
+      
+      # Jumpgate and its premises
+      "3,202":
+        "type": "jumpgate"
+        "units":
+          - "u[11]"
+          - [1, <%= convoy_ship %>, 0, 0.05]
+      "2,180": {"type": "asteroid", "resources": "r[3]", "units": "u[10]"}
+      "2,210": {"type": "asteroid", "resources": "r[3]", "units": "u[10]"}
+      "3,180": {"type": "nothing", "units": "u[10]"}
+      
+      # Mega-stash of resources
+      "3,224": {"type": "nothing", "units": "u[45]", "wreckage": "w[8]"}
+
+battleground:
+  - weight: 1000
+    map:
+      # 3 jumpgates
+      <% %w{3,22 3,134 3,270}.each do |position| %>
+      "<%= position %>": {"type": "jumpgate", "units": "u[20]"}
+      <% end %>
+
+      # 3 arena planets
+      <%
+        [
+          ["0,270", 40, "hard"], ["1,45", 35, "normal"], ["2,210", 30, "easy"]
+        ].each do |position, units_level, map_set_name|
+      %>
+      "<%= position %>":
+        "type": "planet"
+        "map": "battleground.<%= map_set_name %>"
+        "owned_by_player": false
+        "units":
+          - "u[<%= units_level %>]"
+          - [1, <%= convoy_ship %>, 0, 1]
+          - [1, <%= convoy_ship %>, 1, 1]
+      <% end %>
+
+      # Asteroid with resource spawn
+      "0,90":
+        "type": "asteroid"
+        "units": "u[30]"
+        "resources": "r[25]"
+
+      # Spots with defensive aliens
+      <%
+        %w{
+          3,112 2,120 2,150 3,156 2,180 1,180 0,180 1,225 3,202 3,224 2,240
+          3,246 2,270 1,270 3,292 1,315 0,0 1,0 2,0 3,0 1,90 2,60 3,44 2,30
+        }.each do |position|
+      %>
+      "<%= position %>": {"type": "nothing", "units": "u[25]"}
+      <% end %>
+
+      # Resource stashes
+      <%
+        %w{
+          1,180 1,135 2,90 3,90 3,66 3,336 2,330 3,314 2,300
+        }.each do |position|
+      %>
+      "<%= position %>":
+        "type": "nothing"
+        "units":
+          - "u[35]"
+          - [2, <%= convoy_ship %>, 0, 1]
+          - [1, <%= convoy_ship %>, 1, 1]
+        "wreckage": [500000.0, 1000000.0, 150000.0]
+      <% end %>
+
+pulsar:
+  <% 250.times do %>
+  <%
+  wreckage = lambda do
+    rand <= 0.1 ? %Q{"wreckage": "w[#{rand(4, 6)}]"} : ""
+  end
+  %>
+  - weight: 1
+    map:
+      # 2-4 jumpgates
+      <% fourth_ring.random_elements(rand(2, 5)).each do |position| %>
+      "<%= position %>": {"type": "jumpgate", "units": "<%= units[20, 25] %>"}
+      <% end %>
+
+      # Defensive ring
+      <% third_ring.each do |position| %>
+      "<%= position %>": {"type": "nothing", "units": "<%= units[13, 17] %>"}
+      <% end %>
+      # Stronger defensive ring
+      <% second_ring.each do |position| %>
+      "<%= position %>":
+        "type": "nothing"
+        "units": "<%= units[18, 22] %>"
+        <%= wreckage.call %>
+      <% end %>
+
+      # Inner ring with planet(s)
+      <%
+      count = [1, 2, 3].weighted_random([85, 10, 5])
+      cs_to = case count
+      when 1 then 1
+      when 2 then [1, 2].weighted_random([7, 3])
+      when 3 then [1, 2, 3].weighted_random([60, 30, 10])
+      end
+      planet_positions = first_ring.random_elements(count)
+      planet_positions.each do |position|
+      %>
+      "<%= position %>":
+        "type": "planet"
+        "map": "pulsar"
+        "owned_by_player": false
+        "units":
+          - "<%= units[23, 27] %>"
+          - [<%= rand(1, cs_to + 1) %>, <%= convoy_ship %>, 0, 1]
+        <%= wreckage.call %>
+      <% end %>
+      <% (first_ring - planet_positions).each do |position| %>
+      "<%= position %>":
+        "type": "nothing"
+        "units": "<%= units[23, 27] %>"
+        <%= wreckage.call %>
+      <% end %>
+  <% end %>
+
+# Free, non-shielded systems.
+free:
+  <% 250.times do %>
+  - weight: 1
+    map:
+      # 1-5 jumpgates
+      <% fourth_ring_unused = fourth_ring.dup %>
+      <% fourth_ring.random_elements(rand(1, 6)).each do |position| %>
+      <% fourth_ring_unused.delete position %>
+      "<%= position %>": {"type": "jumpgate", "units": "u[<%= rand(10, 21) %>]"}
+      <% end %>
+
+      <%
+      special_count = [0, 1].weighted_random([95, 5])
+      regular_count = special_count == 0 \
+        ? [1, 2, 3].weighted_random([1, 8, 1]) \
+        : [0, 1, 2].weighted_random([2, 7, 1])
+      rings = [first_ring, second_ring, third_ring].
+        random_elements(special_count + regular_count)
+
+      maps = (Array.new(special_count, "free_special") +
+        Array.new(regular_count, "free")).shuffle
+
+      unused_positions = first_ring + second_ring + third_ring
+      %>
+
+      # Planets.
+      <% maps.each do |map| %>
+      <%
+      planet_position = rings.shift.random_element
+      unused_positions.delete(planet_position)
+      %>
+      "<%= planet_position %>":
+        "type": "planet"
+        "map": "<%= map %>"
+        "owned_by_player": false
+        "units": "<%= unit_funcs.random_element %>[<%= rand(8, 21) %>]"
+      <% end %>
+
+      # Asteroids
+      <% unused_positions.random_elements(rand(4, 8)).each do |position| %>
+      <% unused_positions.delete position %>
+      "<%= position %>":
+        "type": "asteroid"
+        "resources": "r[<%= rand(5, 8) %>]"
+        "units": "<%= unit_funcs.random_element %>[<%= rand(5, 21) %>]"
+      <% end %>
+
+      <% unused_positions += fourth_ring_unused %>
+      # Resource stashes
+      <%
+      count = [unused_positions.size, rand(5, 15)].min
+      unused_positions.random_elements(count).each do |position|
+      %>
+      <% unused_positions.delete position %>
+      <% stash = rand(1, 6) %>
+      "<%= position %>":
+        "type": "nothing"
+        "units": "<%= unit_funcs.random_element %>[<%=
+          rand(stash * 3, stash * 4 + 1)
+        %>]"
+        "wreckage": "w[<%= stash %>]"
+      <% end %>
+
+      # Just units.
+      <%
+      count = [unused_positions.size, rand(10, 20)].min
+      unused_positions.random_elements(count).each do |position|
+      %>
+      <% unused_positions.delete position %>
+      "<%= position %>":
+        "type": "nothing"
+        "units":
+          - "<%= unit_funcs.random_element %>[<%= rand(2, 15) %>]"
+          <% if rand >= 0.95 %>
+          - [1, "<%= convoy_ship %>", 0, 1]
+          <% end %>
+      <% end %>
+  <% end %>
