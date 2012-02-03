@@ -248,8 +248,6 @@ describe SpaceMule do
     before(:all) do
       @quest = Factory.create(:quest)
       @objective = Factory.create(:objective, :quest => @quest)
-      # Restart space mule to load new quests.
-      SpaceMule.instance.restart!
 
       @galaxy = Factory.create(:galaxy)
 

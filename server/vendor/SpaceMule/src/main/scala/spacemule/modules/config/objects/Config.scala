@@ -174,7 +174,7 @@ object Config {
     positions("galaxy.free_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")
   lazy val miniBattlegrounds = positions("galaxy.mini_battlegrounds.positions")
-  def convoyTime = int("galaxy.convoy.time")
+  def convoyTime = formulaEval("galaxy.convoy.time").toInt
   def marketBotResourceCooldownRange = 
     evalRange("market.bot.resources.cooldown")
   def marketBotRandomResourceCooldown = marketBotResourceCooldownRange.random
@@ -288,8 +288,9 @@ object Config {
     else 
       double("solar_system.regular.jump.multiplier")
 
-  def asteroidFirstSpawnCooldown = int(
-    "ss_object.asteroid.wreckage.time.first")
+  def asteroidFirstSpawnCooldown = formulaEval(
+    "ss_object.asteroid.wreckage.time.first"
+  ).toInt
 
   def ssObjectSize = range("ss_object.size")
 
