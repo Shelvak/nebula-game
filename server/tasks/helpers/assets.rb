@@ -41,8 +41,12 @@ class Assets
 
   def self.load_hashes(source)
     contents = File.exists?(source) ? File.read(source).strip : ""
-    array = YAML.load(contents).flatten
-    contents == "" ? {} : Hash[ *array ]
+    if contents == ""
+      {}
+    else
+      array = YAML.load(contents).flatten
+      Hash[ *array ]
+    end
   rescue Exception => e
     STDERR.write "Error while loading #{source}!\n"
     raise e
