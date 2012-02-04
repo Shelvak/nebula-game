@@ -63,7 +63,9 @@ module GameConfig::Creation
       return true
     end
 
-    LOGGER.block "Config cache does not exist! Loading config from disk." do
+    LOGGER.block(
+      "Config cache does not exist or is invalid! Loading config from disk."
+    ) do
       fallbacks.each do |set_name, fallback|
         add_set(set_name, fallback)
       end
