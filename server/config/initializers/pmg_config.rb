@@ -182,8 +182,8 @@ lambda do
       '%' => Tile::GEOTHERMAL,
       '$' => Tile::ZETIUM,
 
-      '1' => Tile::FOLLIAGE_2X4,
-      '2' => Tile::FOLLIAGE_2X3,
+      '1' => Tile::FOLLIAGE_2X3,
+      '2' => Tile::FOLLIAGE_2X4,
       '5' => Tile::FOLLIAGE_3X2,
       '3' => Tile::FOLLIAGE_3X3,
       '*' => Tile::FOLLIAGE_3X4,
@@ -324,6 +324,7 @@ lambda do
       CONFIG[key] = map_set.map do |map_parameters|
         map = map_parameters['map']
         map_data = {
+          'comment' => "Key: #{key}, index: #{map_index}",
           'size' => [map[0].length / 2, map.size],
           'name' => map_parameters['name'],
           'terrain' => map_parameters['terrain'],

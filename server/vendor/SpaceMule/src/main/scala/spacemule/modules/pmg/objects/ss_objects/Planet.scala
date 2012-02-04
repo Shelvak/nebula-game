@@ -48,10 +48,10 @@ object Planet {
        'terrain' => Fixnum,
        'weight' => Fixnum,
        'tiles' => {
-         kind (Fixnum) => [[x, y], ...]
+         kind (Fixnum) => [ [x, y], ...]
        },
        'buildings' => {
-         building_name (String) => [[x, y, units], ...]
+         building_name (String) => [ [x, y, units], ...]
        },
        'units' => UnitsEntry configuration
      }
@@ -73,7 +73,16 @@ object Planet {
           val tile = Tile(tileKind.toInt)
           tiles.foreach { coordArray =>
             val coord = Coords(coordArray(0).toInt, coordArray(1).toInt)
-            Planet.setTile(tilesMap, tile, coord)
+            try {
+              Planet.setTile(tilesMap, tile, coord)
+            }
+            catch {
+              case e: Exception =>
+                System.err.println(
+                  "Error while setting %s at %s!".format(tile, coord)
+                )
+                throw e
+            }
           }
         }
 
