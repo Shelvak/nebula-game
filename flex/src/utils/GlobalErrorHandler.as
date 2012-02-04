@@ -1,8 +1,8 @@
 package utils
 {
-import application.Version;
+   import application.Version;
 
-import com.adobe.ac.logging.GlobalExceptionHandlerAction;
+   import com.adobe.ac.logging.GlobalExceptionHandlerAction;
    
    import controllers.startup.StartupManager;
    
@@ -55,6 +55,7 @@ import com.adobe.ac.logging.GlobalExceptionHandlerAction;
             
             FlexGlobals.topLevelApplication.crash(message, slowClient, !Capabilities.isDebugger);
          }
+         logger.info("Resetting due to crash.");
          StartupManager.resetApp();
       }
    }
