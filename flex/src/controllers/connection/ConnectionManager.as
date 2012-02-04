@@ -16,6 +16,10 @@ package controllers.connection
 
    import models.ModelLocator;
 
+   import mx.logging.ILogger;
+
+   import mx.logging.Log;
+
    import spark.components.Button;
 
    import utils.SingletonFactory;
@@ -27,6 +31,10 @@ package controllers.connection
 
    public class ConnectionManager
    {
+      private static function get logger() : ILogger {
+         return Log.getLogger("controllers.connection.ConnectionManager");
+      }
+
       public static function getInstance() : ConnectionManager
       {
          return SingletonFactory.getSingletonInstance(ConnectionManager);
@@ -189,6 +197,7 @@ package controllers.connection
       
       private function retryButton_clickHandler(button:Button) : void
       {
+         logger.info("Resetting due to reconnect.");
          StartupManager.resetApp();
          StartupManager.connectAndAuthorize();
       }
