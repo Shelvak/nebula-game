@@ -119,14 +119,14 @@ s_convoys = "Convoys"
 # Explains about galaxy battles.
 s_galaxy_battles = "GalaxyBattles"
 
-mex_1st_planet = 7
-mex_2nd_planet = 8
+mex_1st_planet = 6 # 7 for real, but last one is pretty hard.
+mex_2nd_planet = 6 # 8 for real, but first two already have MEX T2
 mex_3rd_planet = 4
 energy_1st_planet = 8
 energy_2nd_planet = 8
 energy_3rd_planet = 6
-zex_1st_planet = 3
-zex_2nd_planet = 4
+zex_1st_planet = 2 # 3 for real, but last one is pretty hard.
+zex_2nd_planet = 2 # 4 for real, but 1 is hard and 1 has ZEX T2 on it.
 zex_3rd_planet = 2
 
 QUESTS = QuestDefinition.define(:debug => false) do
