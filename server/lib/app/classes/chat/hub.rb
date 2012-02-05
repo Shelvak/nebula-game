@@ -8,6 +8,7 @@ class Chat::Hub
   def initialize(dispatcher)
     @dispatcher = dispatcher
     @antiflood = Chat::AntiFlood.new(dispatcher)
+    @control = Chat::Control.new(dispatcher, @antiflood)
     @channels = {
       GLOBAL_CHANNEL => Chat::Channel.new(GLOBAL_CHANNEL, @dispatcher)
     }
@@ -81,6 +82,8 @@ class Chat::Hub
 
   # Send a _message_ to channel.
   def channel_msg(channel_name, player, message)
+    # Return if this was a control message.
+    @control.message(player, message) and return
     @antiflood.message!(player.id)
 
     check_channel!(channel_name)
@@ -90,7 +93,14 @@ class Chat::Hub
 
   # Send a _message_ to +Player+ with ID _target_id_.
   def private_msg(player_id, target_id, message, created_at=nil)
-    @antiflood.message!(player_id) if created_at.nil?
+    if created_at.nil?
+      if target_id == Chat::Control::SYSTEM_ID
+        @control.message(Player.find(player_id), message)
+        return # Never process messages directed to system.
+      end
+
+      @antiflood.message!(player_id)
+    end
 
     if @dispatcher.connected?(target_id)
       params = {'pid' => player_id, 'msg' => message}

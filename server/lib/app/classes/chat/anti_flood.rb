@@ -21,6 +21,22 @@ class Chat::AntiFlood
     message(player_id, timestamp || Time.now)
   end
 
+  def silence(player_id, silence_until=nil)
+    typesig binding, Fixnum, [NilClass, Time]
+
+    counter = @silence_counters[player_id] += 1
+    if silence_until.nil?
+      silence_period = Cfg.chat_antiflood_silence_for(counter)
+      silence_until = silence_period.from_now
+    end
+
+    @silence_until[player_id] = silence_until
+
+    @dispatcher.push_to_player(
+      player_id, ChatController::ACTION_SILENCE, {'until' => silence_until}
+    )
+  end
+
   private
 
   def message(player_id, timestamp)
@@ -35,16 +51,6 @@ class Chat::AntiFlood
       silence(player_id) \
         if timestamp - first < Cfg.chat_antiflood_period
     end
-  end
-
-  def silence(player_id)
-    counter = @silence_counters[player_id] += 1
-    silence_period = Cfg.chat_antiflood_silence_for(counter)
-    silence_until = @silence_until[player_id] = silence_period.from_now
-
-    @dispatcher.push_to_player(
-      player_id, ChatController::ACTION_SILENCE, {'until' => silence_until}
-    )
   end
 
   def check_if_silenced!(player_id)
