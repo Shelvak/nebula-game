@@ -51,7 +51,10 @@ class Chat::Control
       report(player.id,
         "Supported commands: silence",
         "",
-        %Q{Message "/help command_name" for more information.}
+        %Q{Message "/help command_name" for more information.},
+        "",
+        %Q{*** All commands only work in channels and private chat with "#{
+          SYSTEM_NAME}" ***}
       )
     end
   end
@@ -69,13 +72,18 @@ class Chat::Control
     end
 
     name, time_str = args
-    target_id = Player.select("id").
+    target = Player.
       where(:galaxy_id => player.galaxy_id, :name => name).
-      c_select_value.to_i
+      first
 
-    if target_id == 0
+    if target.nil?
       report(player.id, %Q{Cannot find player "#{name}" in galaxy #{
         player.galaxy_id}!})
+      return
+    end
+
+    if target.chat_mod?
+      report(player.id, %Q{Cannot silence another chat moderator!})
       return
     end
 
@@ -84,8 +92,12 @@ class Chat::Control
       report(player.id, %Q{Cannot parse "#{time_str}" as a time!})
       return
     end
+    if time <= Time.now
+      report(player.id, %Q{Parsed time "#{time}" is in the past!})
+      return
+    end
 
-    @antiflood.silence(target_id, time)
+    @antiflood.silence(target.id, time)
     report(player.id, %Q{Player "#{name}" silenced until "#{time}".})
   end
 
@@ -108,13 +120,9 @@ class Chat::Control
   # quotes, however they do not support quotes within quotes. Arguments are
   # separated by spaces.
   def self.parse_args(line)
-    args = []
-    while match = line.match(/(["'])(.+?)\1\s*/)
-      args << match[2]
-      line = line.sub(match[0], '')
-    end
-
-    args += line.split(/\s+/)
-    args
+    # Magic of regexps...
+    #
+    # http://stackoverflow.com/questions/3243103/how-to-parse-a-quoted-search-string-using-regex
+    line.scan(/'(.+?)'|"(.+?)"|([^ ]+)/).flatten.compact
   end
 end
