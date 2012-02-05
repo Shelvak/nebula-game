@@ -547,35 +547,44 @@ package models.infoscreen
       {
          guns.removeAll();
          var i: int = -1;
-         for each (var gun: Object in _guns)
-         {
-            i++;
-            var newGun: Gun;
-            if (model.objectType == ObjectClass.BUILDING)
-            {
-               newGun = new Gun(Config.getBuildingGunType(model.type, i), gun.dpt, 
-                  gun.period, gun.damage, gun.reach);
-            }
-            if (model.objectType == ObjectClass.UNIT)
-            {
-               newGun = new Gun(Config.getUnitGunType(model.type, i), gun.dpt, 
-                  gun.period, gun.damage, gun.reach);
-            }
-            var grouped: Boolean = false;
-            for each (var oldGun: Gun in guns)
-            {
-               if (oldGun.hashKey() == newGun.hashKey())
-               {
-                  oldGun.count++;
-                  grouped = true;
+         try {
+            for each (var gun: Object in _guns) {
+               i++;
+               var type: String;
+               if (model.objectType == ObjectClass.BUILDING) {
+                  type = Config.getBuildingGunType(model.type, i);
+               }
+               else if (model.objectType == ObjectClass.UNIT) {
+                  type = Config.getUnitGunType(model.type, i);
+               }
+               else {
+                  throw new Error(
+                     "Unknown model.objectType: " + model.objectType
+                  );
+               }
+
+               var newGun: Gun = new Gun(
+                  type, gun.dpt, gun.period, gun.damage, gun.reach
+               );
+
+               var grouped: Boolean = false;
+               for each (var oldGun: Gun in guns) {
+                  if (oldGun.hashKey() == newGun.hashKey()) {
+                     oldGun.count++;
+                     grouped = true;
+                  }
+               }
+               if (! grouped) {
+                  guns.addItem(newGun);
                }
             }
-            if (!grouped)
-            {
-               guns.addItem(newGun);
-            }
+            dispatchGunsCreatedEvent();
          }
-         dispatchGunsCreatedEvent();
+         catch (e: Error) {
+            e.message = "Error while creating gun " + i + " for " +
+               model.toString() + ": " + e.message;
+            throw e;
+         }
       }
       
       [Bindable (event="technologyChanged")]
