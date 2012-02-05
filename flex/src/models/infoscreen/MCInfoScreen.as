@@ -77,7 +77,7 @@ package models.infoscreen
       private static const diffIgnorableProperties: Array =
          ['upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost', 'deploysTo',
             'volume', 'width', 'height', 'move.solarSystem.hopTime',
-            'move.galaxy.hopTime'];
+            'move.galaxy.hopTime', 'groupTo', 'groupPosition'];
       
       //properties that dont need to be displayed in data grid
       private static const ignorableProperties: Array = 

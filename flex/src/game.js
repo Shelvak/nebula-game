@@ -135,7 +135,7 @@ function missingParam(name) {
 //noinspection JSUnusedGlobalSymbols
 function getGameOptions() { // {{{
   if (planetMapEditor) {
-    if (inLocalComputer() && ! inDeveloperMode()) {
+    if (inLocalComputer() || inDeveloperMode()) {
       if (! defined(server)) server = developmentServer();
       if (! defined(locale)) locale = "lt";
       if (! defined(webHost)) webHost = "localhost";
@@ -191,7 +191,7 @@ function getGameOptions() { // {{{
   //
   // You can append &dev=1 to skip requesting for web authentication.
   else {
-    if (inLocalComputer() && ! inDeveloperMode()) {
+    if (inLocalComputer() || inDeveloperMode()) {
       if (! defined(server)) server = developmentServer();
       if (! defined(webPlayerId)) webPlayerId = developmentWebPlayerId;
       if (! defined(serverPlayerId)) serverPlayerId = developmentServerPlayerId;

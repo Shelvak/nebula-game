@@ -125,7 +125,7 @@ mex_3rd_planet = 4
 energy_1st_planet = 8
 energy_2nd_planet = 8
 energy_3rd_planet = 6
-zex_1st_planet = 2
+zex_1st_planet = 3
 zex_2nd_planet = 4
 zex_3rd_planet = 2
 
@@ -261,7 +261,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
       [10335, Technology::Screamer,                 3, 0.35],
       [10340, Technology::Thunder,                  3, 0.3 ],
       [10345, Technology::ShipStorage,              3, 0.25],
-      [10350, Technology::HeavyFlight,              3, 0.2 ],
+      [10350, Technology::BuildingRepair,           3, 0.2 ],
       [10355, Technology::DefensivePortal,          1, nil ],
     ]
 
