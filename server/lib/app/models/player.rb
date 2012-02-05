@@ -64,6 +64,8 @@ class Player < ActiveRecord::Base
     4 => :portal_without_allies,
     # This player has been detached from galaxy map.
     5 => :detached,
+    # This player is a chat moderator.
+    6 => :chat_mod,
     # No index there anyway.
     :flag_query_mode => :bit_operator,
     :check_for_column => false
