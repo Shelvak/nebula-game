@@ -636,7 +636,10 @@ class Player < ActiveRecord::Base
   # players. Different formula is used depending on if aggressor is stronger
   # than defender or weaker.
   def self.battle_vps_multiplier(aggressor_id, defender_id)
-    condition = select("economy_points + science_points + army_points").limit(1)
+    condition = select(
+      "economy_points / 2 + science_points / 2 + army_points + " +
+        "victory_points * 10"
+    ).limit(1)
     aggressor_points = condition.where(:id => aggressor_id).c_select_value.to_f
     defender_points = condition.where(:id => defender_id).c_select_value.to_f
 
