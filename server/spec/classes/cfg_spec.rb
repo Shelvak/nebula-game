@@ -65,7 +65,11 @@ describe Cfg do
 
   describe ".player_inactivity_time" do
     let(:key) { 'galaxy.player.inactivity_check' }
-    let(:value) { [[1, 1.minute], [100, 5.minutes], [1000, 10.minutes]] }
+    let(:value) { [
+      [1, "#{1.minute} / speed"],
+      [100, "#{5.minutes} / speed"],
+      [1000, "#{10.minutes} / speed"]
+    ] }
 
     it "should return found seconds" do
       with_config_values(key => value) do
@@ -76,6 +80,12 @@ describe Cfg do
     it "should return last value if points are too large" do
       with_config_values(key => value) do
         Cfg.player_inactivity_time(1500).should == 10.minutes
+      end
+    end
+
+    it "should eval formula with speed" do
+      with_config_values(key => value, 'speed' => 5) do
+        Cfg.player_inactivity_time(1500).should == 2.minutes
       end
     end
   end

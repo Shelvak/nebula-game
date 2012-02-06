@@ -197,11 +197,16 @@ class Cfg
     # considered active.
     def player_inactivity_time(points)
       data = CONFIG['galaxy.player.inactivity_check']
+      formula = nil
       data.each do |points_required, seconds|
-        return seconds if points <= points_required
+        if points <= points_required
+          formula = seconds
+          break
+        end
       end
 
-      data.last[1]
+      formula = data.last[1] if formula.nil?
+      CONFIG.safe_eval(formula)
     end
 
     def player_referral_points_needed

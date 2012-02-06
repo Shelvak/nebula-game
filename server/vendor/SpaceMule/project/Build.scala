@@ -48,6 +48,9 @@ object SpaceMule extends Build {
         libraryDependencies := Seq(
           // Java libraries
 
+          // Evaluation of the formulas
+          "de.congrace" % "exp4j" % "0.2.9",
+
           // MySQL connector
           "mysql" % "mysql-connector-java" % "5.1.17",
           // Apache Commons IO

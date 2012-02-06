@@ -91,14 +91,14 @@ object Config {
   )
 
   def formulaEval(key: String): Double =
-    data.eval(get[Any](key).toString)
+    FormulaEval.eval(get[Any](key).toString, speedMap)
 
   def formulaEval(key: String, vars: Map[String, Double]): Double =
-    data.evalWithVars(get[Any](key).toString, vars)
+    FormulaEval.eval(get[Any](key).toString, speedMap ++ vars)
 
   def formulaEval(key: String, default: Double): Double =
     getOpt[Any](key) match {
-      case Some(value) => data.eval(value.toString)
+      case Some(value) => FormulaEval.eval(value.toString, speedMap)
       case None => default
     }
 
@@ -106,7 +106,7 @@ object Config {
     key: String, vars: Map[String, Double], default: Double
   ): Double =
     getOpt[Any](key) match {
-      case Some(value) => data.evalWithVars(value.toString, vars)
+      case Some(value) => FormulaEval.eval(value.toString, speedMap ++ vars)
       case None => default
     }
 
@@ -121,8 +121,9 @@ object Config {
    */
   private def evalRange(key: String): Range = {
     val rangeData = seq[String](key)
-    val from = data.eval(rangeData(0)).toInt
-    val to = data.eval(rangeData(1)).toInt
+    val speedMap = this.speedMap
+    val from = FormulaEval.eval(rangeData(0), speedMap).toInt
+    val to = FormulaEval.eval(rangeData(1), speedMap).toInt
 
     Range.inclusive(from, to)
   }
@@ -150,6 +151,9 @@ object Config {
   // Reader methods 
   //////////////////////////////////////////////////////////////////////////////
 
+  def speed = int("speed")
+  def speedMap = Map("speed" -> int("speed").toDouble)
+
   def zoneStartSlot = int("galaxy.zone.start_slot")
   def zoneDiameter = int("galaxy.zone.diameter")
   def zoneMaturityAge = int("galaxy.zone.maturity_age")
@@ -157,7 +161,10 @@ object Config {
   // Number of seconds for first inactivity check.
   def playerInactivityCheck: Int = {
     try {
-      seq[Seq[Long]]("galaxy.player.inactivity_check")(0)(1).toInt
+      val formula = seq[Seq[Any]](
+        "galaxy.player.inactivity_check"
+      )(0)(1).asInstanceOf[String]
+      FormulaEval.eval(formula, speedMap).toInt
     }
     catch {
       case e: Exception =>
@@ -220,7 +227,7 @@ object Config {
     val key = "%s.battle.victory_points".format(kind)
     (groundDamage: Int, spaceDamage: Int, fairnessMultiplier: Double) => {
       get[Any](key) match {
-        case formula: String => data.evalWithVars(formula, Map(
+        case formula: String => FormulaEval.eval(formula, Map(
           "damage_dealt_to_ground" -> groundDamage.toDouble,
           "damage_dealt_to_space" -> spaceDamage.toDouble,
           "fairness_multiplier" -> fairnessMultiplier
@@ -235,7 +242,7 @@ object Config {
     val key = "%s.battle.creds".format(kind)
     (victoryPoints: Double) => {
       get[Any](key) match {
-        case formula: String => data.evalWithVars(formula, Map(
+        case formula: String => FormulaEval.eval(formula, Map(
           "victory_points" -> victoryPoints
         ))
         case l: Long => l.toDouble

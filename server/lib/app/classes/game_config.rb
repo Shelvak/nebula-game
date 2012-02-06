@@ -6,6 +6,8 @@ class GameConfig
   # Default config set name
   DEFAULT_SET = 'default'
 
+  FormulaEval = Java::spacemule.modules.config.objects.FormulaEval
+
   attr_reader :set_scope, :scope
 
   def initialize
@@ -169,26 +171,21 @@ class GameConfig
     config.each do |key, value|
       if value.is_a?(String) && value.match(/\bspeed\b/)
         replaced = value.gsub(/\bspeed\b/, self['speed'].to_s)
-        replaced = eval(replaced) if replaced !~ /[a-z]/i
+        replaced = self.class.safe_eval(replaced) if replaced !~ /[a-z]/i
         config[key] = replaced
       end
     end
     config
   end
 
-  protected
   # Evaluate a _string_ filtered by .filter_for_eval
-  def self.safe_eval(string, params={})
-    eval filter_for_eval(string.to_s, params)
-  end
+  def self.safe_eval(formula, params=nil)
+    typesig binding, [String, Fixnum, Float], [NilClass, Hash]
 
-  # Filter _string_ substituting keys in _params_ with their values and only
-  # leaving mathematical formulas.
-  def self.filter_for_eval(string, params={})
-    params.each do |key, value|
-      raise ArgumentError.new("Value for #{key} is nil!") if value.nil?
-      string = string.gsub(/\b#{key}\b/, value.to_s)
-    end
-    string.gsub(/[^\d\s()+-\\*\/]/, '')
+    params.nil? || params.blank? \
+      ? FormulaEval.eval(formula) \
+      : FormulaEval.eval(
+        formula, params.map_values { |key, value| value.to_f }.to_scala
+      )
   end
 end

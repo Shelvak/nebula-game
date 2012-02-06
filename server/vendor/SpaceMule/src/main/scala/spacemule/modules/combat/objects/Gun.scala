@@ -2,7 +2,7 @@ package spacemule.modules.combat.objects
 
 import spacemule.helpers.Converters._
 import spacemule.helpers.Random
-import spacemule.modules.config.objects.Config
+import spacemule.modules.config.objects.{FormulaEval, Config}
 
 object Gun {
   def apply(owner: Combatant, definition: Config.GunDefinition, index: Int) =
@@ -11,7 +11,7 @@ object Gun {
       owner,
       Kind(definition.getOrError("reach").asInstanceOf[String]),
       Damage(definition.getOrError("damage").asInstanceOf[String]),
-      Config.data.evalWithVars(
+      FormulaEval.eval(
         definition.getOrError("dpt").toString,
         Map("level" -> owner.level.toDouble)
       ).intValue,

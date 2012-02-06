@@ -1,7 +1,8 @@
 RSpec::Matchers.define :be_created_from_static_ss_configuration do
-  |configuration|
+  |configuration, launch_time|
+  typesig binding, Hash, Time
 
-  def check_planet(position_str, ss_conditions, data)
+  def check_planet(position_str, ss_conditions, data, launch_time)
     exp_to = "Expected planet @ #{position_str} to"
     if SsObject::Planet.where(ss_conditions).exists?
       planet = SsObject::Planet.where(ss_conditions).first
@@ -11,7 +12,8 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
         } but it was #{owned_by_player}." \
         if owned_by_player != data["owned_by_player"]
 
-      check_planet_ownership(exp_to, planet) if data["owned_by_player"]
+      check_planet_ownership(exp_to, planet, launch_time) \
+        if data["owned_by_player"]
 
       @errors << "#{exp_to} have next_raid_at but it did not." \
         if planet.next_raid_at.nil?
@@ -39,7 +41,8 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
         }, but it was #{planet.terrain}" \
         unless planet.terrain == planet_data['terrain']
 
-      check_planet_resources(exp_to, planet, planet_data['resources'])
+      check_planet_resources(exp_to, planet, planet_data['resources'],
+        launch_time)
       check_planet_tiles(exp_to, planet, planet_data['tiles'])
       check_planet_folliage(exp_to, planet)
       check_planet_buildings(exp_to, planet, planet_data['buildings'],
@@ -54,20 +57,19 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
     end
   end
 
-  def check_planet_ownership(exp_to, planet)
-    @errors << "#{exp_to} to have #owner_changed set to #{Time.now
+  def check_planet_ownership(exp_to, planet, launch_time)
+    @errors << "#{exp_to} to have #owner_changed set to #{launch_time
       } but it was set to #{planet.owner_changed}" \
-      unless planet.owner_changed.within?(Time.now, SPEC_TIME_PRECISION)
-
-
+      unless planet.owner_changed.within?(launch_time, SPEC_TIME_PRECISION)
   end
 
-  def check_planet_resources(exp_to, planet, starting_resources)
+  def check_planet_resources(exp_to, planet, starting_resources, launch_time)
     precision = 1.0
 
     Resources::TYPES.each_with_index do |type, index|
       actual = planet.send(type)
-      expected = starting_resources[index]
+      expected = starting_resources[index] +
+        (Time.now - launch_time) * planet.send("#{type}_rate")
 
       @errors << "#{exp_to} have resource #{type} within #{precision
         } of #{expected} but it was #{actual}." \
@@ -109,9 +111,9 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
         unless actual.within?(expected, precision)
     end
 
-    @errors << "#{exp_to} to have #last_resources_update set to #{Time.now
-      } but it was set to #{planet.last_resources_update}" \
-      unless planet.last_resources_update.within?(Time.now, SPEC_TIME_PRECISION)
+    # Cannot check exact time, because after-find updates it.
+    @errors << "#{exp_to} have non-nil #last_resources_update" \
+      if planet.last_resources_update.nil?
   end
 
   def check_planet_tiles(exp_to, planet, tiles)
@@ -192,13 +194,13 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
     end
   end
 
-  def check_asteroid(position_str, ss_conditions, resources)
-    exp_to = "Expected asteroid @ #{position_str} to"
+  def check_asteroid(position_str, ss_conditions, resources, launch_time)
     asteroid = SsObject::Asteroid.where(ss_conditions).first
 
     if asteroid.nil?
-      @errors << "#{exp_to} exist but it did not."
+      @errors << "Expected asteroid @ #{position_str} to exist but it did not."
     else
+      exp_to = "Expected asteroid (#{asteroid.id}) @ #{position_str} to"
       Resources::TYPES.each_with_index do |type, index|
         actual = asteroid.send :"#{type}_generation_rate"
         expected = resources[index]
@@ -206,9 +208,8 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
           } but it had rate of #{actual}." if actual != expected
       end
 
-      spawn_time = CONFIG.
-        evalproperty('ss_object.asteroid.wreckage.time.first').
-        from_now
+      spawn_time = launch_time + CONFIG.
+        evalproperty('ss_object.asteroid.wreckage.time.first')
       @errors << "#{exp_to} have spawn callback @ #{spawn_time
         } but it did not." \
         unless CallbackManager.has?(asteroid, CallbackManager::EVENT_SPAWN,
@@ -287,9 +288,10 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
 
       case data["type"]
         when "planet"
-          check_planet(position_str, ss_conditions, data)
+          check_planet(position_str, ss_conditions, data, launch_time)
         when "asteroid"
-          check_asteroid(position_str, ss_conditions, data["resources"])
+          check_asteroid(position_str, ss_conditions, data["resources"],
+            launch_time)
         when "jumpgate"
           check_jumpgate(position_str, ss_conditions)
       end
