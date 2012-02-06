@@ -361,7 +361,7 @@ lambda do
                 level = 1
               else
                 units = []
-                level = [level, 1].max
+                level = 10 if level == 0
               end
 
               map_data['buildings'][name] ||= []
