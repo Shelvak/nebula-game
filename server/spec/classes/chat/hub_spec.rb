@@ -9,6 +9,7 @@ describe Chat::Hub do
     @dispatcher.stub!(:push).and_return(true)
     @hub = Chat::Hub.new(@dispatcher)
     @antiflood = @hub.instance_variable_get("@antiflood")
+    @control = @hub.instance_variable_get("@control")
   end
 
   describe ".new" do
@@ -174,6 +175,24 @@ describe Chat::Hub do
         ]
       end
 
+      it "should check with control" do
+        @control.should_receive(:message).with(@player, "test")
+        @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, "test")
+      end
+
+      it "should return false if it is a control message" do
+        @control.should_receive(:message).with(@player, "test").and_return(true)
+        @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, "test").
+          should be_false
+      end
+
+      it "should return true if it is not a control message" do
+        @control.should_receive(:message).with(@player, "test").
+          and_return(false)
+        @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, "test").
+          should be_true
+      end
+
       it "should check with antiflood" do
         @antiflood.should_receive(:message!).with(@player.id)
         @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, "test")
@@ -183,6 +202,11 @@ describe Chat::Hub do
         msg = "OMG"
         @channel.should_receive(:message).with(@player, msg)
         @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, msg)
+      end
+
+      it "should return true" do
+        @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, "test").
+          should be_true
       end
     end
   end
@@ -209,6 +233,10 @@ describe Chat::Hub do
       it "should check with antiflood if timestamp is not provided" do
         @antiflood.should_receive(:message!).with(@source.id)
         @hub.private_msg(@source.id, @target.id, @message)
+      end
+
+      it "should return true" do
+        @hub.private_msg(@source.id, @target.id, @message).should be_true
       end
 
       describe "source player is not connected" do
@@ -262,12 +290,39 @@ describe Chat::Hub do
     end
 
     describe "target player is not connected" do
-      it "should store message" do
-        @dispatcher.should_receive(:connected?).with(@target.id).
-          and_return(false)
-        Chat::Message.should_receive(:store!).with(
-          @source.id, @target.id, @message)
-        @hub.private_msg(@source.id, @target.id, @message)
+      describe "if directed to system player" do
+        let(:target_id) { Chat::Control::SYSTEM_ID }
+
+        it "should check with the control" do
+          @control.should_receive(:message).with(@source, @message)
+          @hub.private_msg(@source.id, target_id, @message)
+        end
+
+        it "should not store any messages" do
+          Chat::Message.should_not_receive(:store!)
+          @hub.private_msg(@source.id, target_id, @message)
+        end
+
+        it "should return false" do
+          @hub.private_msg(@source.id, target_id, @message).should be_false
+        end
+      end
+
+      describe "if directed to normal player" do
+        before(:each) do
+          @dispatcher.should_receive(:connected?).with(@target.id).
+            and_return(false)
+        end
+
+        it "should store message" do
+          Chat::Message.should_receive(:store!).with(
+            @source.id, @target.id, @message)
+          @hub.private_msg(@source.id, @target.id, @message)
+        end
+
+        it "should return true" do
+          @hub.private_msg(@source.id, @target.id, @message).should be_true
+        end
       end
     end
   end

@@ -10,6 +10,7 @@ Factory.define :player do |m|
   m.planets_count 3
   m.war_points 1000
   m.first_time false
+  m.after_build { |r| Factory.create(:solar_system, :player => r)}
 end
 
 Factory.define :player_for_ratings, :parent => :player do |m|

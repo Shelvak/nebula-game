@@ -15,7 +15,8 @@ class Player < ActiveRecord::Base
   belongs_to :galaxy
   # FK :dependent => :delete_all
   has_many :solar_systems
-  has_one :home_solar_system, :class_name => SolarSystem.to_s
+  has_one :home_solar_system, :class_name => SolarSystem.to_s,
+    :inverse_of => :player
   # FK :dependent => :delete_all
   has_many :fow_ss_entries
   # FK :dependent => :delete_all

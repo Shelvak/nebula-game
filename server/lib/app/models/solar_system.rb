@@ -12,6 +12,7 @@ class SolarSystem < ActiveRecord::Base
   # Battleground solar system
   KIND_BATTLEGROUND = 2
 
+  # FK :dependent => :delete_all
   belongs_to :player
 
   # Foreign keys take care of the destruction
