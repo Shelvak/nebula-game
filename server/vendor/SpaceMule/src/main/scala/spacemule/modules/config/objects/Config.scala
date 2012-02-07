@@ -211,6 +211,28 @@ object Config {
   lazy val energyVolume = double("units.transportation.volume.energy")
   lazy val zetiumVolume = double("units.transportation.volume.zetium")
 
+  def fairnessPoints(
+    economy: Int, science: Int, army: Int, war: Int, victory: Int
+  ): Int = FormulaEval.eval(
+    string("combat.battle.fairness_points"),
+    Map(
+      "economy" -> economy.toDouble, "science" -> science.toDouble,
+      "army" -> army.toDouble, "war" -> war.toDouble,
+      "victory" -> victory.toDouble
+    )
+  ).round.toInt
+  def fairnessPoints(
+    economy: Long, science: Long, army: Long, war: Long, victory: Long
+  ): Int = fairnessPoints(
+    economy.toInt, science.toInt, army.toInt, war.toInt, victory.toInt
+  )
+  def fairnessPoints(points: combat.objects.Player.Points): Int =
+    fairnessPoints(
+      points.economy, points.science, points.army, points.war, points.victory
+    )
+  def fairnessPoints(player: combat.objects.Player): Int =
+    fairnessPoints(player.points)
+
   lazy val battleVpsMaxWeakness = double("combat.battle.max_weakness")
 
   // Seq of location kinds where combat gives victory points

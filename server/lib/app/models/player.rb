@@ -638,11 +638,21 @@ class Player < ActiveRecord::Base
   # than defender or weaker.
   def self.battle_vps_multiplier(aggressor_id, defender_id)
     condition = select(
-      "economy_points / 2 + science_points / 2 + army_points + " +
-        "victory_points * 10"
+      "economy_points, science_points, army_points, war_points, victory_points"
     ).limit(1)
-    aggressor_points = condition.where(:id => aggressor_id).c_select_value.to_f
-    defender_points = condition.where(:id => defender_id).c_select_value.to_f
+
+    points = lambda do |row|
+      Cfg::Java.fairnessPoints(
+        row['economy_points'], row['science_points'], row['army_points'],
+        row['war_points'], row['victory_points']
+      )
+    end
+
+    aggressor_row = condition.where(:id => aggressor_id).c_select_one
+    aggressor_points = points[aggressor_row]
+
+    defender_row = condition.where(:id => defender_id).c_select_one
+    defender_points = points[defender_row]
 
     Java::spacemule.modules.combat.post_combat.Statistics.fairnessMultiplier(
       aggressor_points, defender_points

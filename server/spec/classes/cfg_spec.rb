@@ -105,4 +105,20 @@ describe Cfg do
       )
     end
   end
+
+  describe "Java" do
+    describe ".fairnessPoints" do
+      it "should use the formula" do
+        formula = "economy * 2 + science * 4 + army * 6 + war * 8 + victory * 9"
+        with_config_values("combat.battle.fairness_points" => formula) do
+          e, s, a, w, v = 10, 20, 30, 40, 50
+
+          Cfg::Java.fairnessPoints(e, s, a, w, v).should == CONFIG.safe_eval(
+            formula, {"economy" => e, "science" => s, "army" => a, "war" => w,
+              "victory" => v}
+          )
+        end
+      end
+    end
+  end
 end

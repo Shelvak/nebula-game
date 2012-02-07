@@ -14,13 +14,4 @@ object JRuby {
    * => #<#<Class:0x10060d664>:0x69a54c>
    */
   val None = scala.None
-
-  def rethrow(exception: Exception, message: String) {
-    val e = exception.getClass.getDeclaredConstructor(classOf[String]).
-      newInstance(message + "\n\n" + exception.getMessage).
-      asInstanceOf[Exception]
-    e.initCause(exception.getCause)
-    e.setStackTrace(exception.getStackTrace)
-    throw e
-  }
 }

@@ -64,7 +64,7 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
   end
 
   def check_planet_resources(exp_to, planet, starting_resources, launch_time)
-    precision = 1.0
+    precision = 10.0
 
     Resources::TYPES.each_with_index do |type, index|
       actual = planet.send(type)

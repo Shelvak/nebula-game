@@ -347,3 +347,5 @@ CONFIG.setup_initializers!
 
 # Initialize event handlers
 QUEST_EVENT_HANDLER = QuestEventHandler.new
+
+SpaceMule.instance

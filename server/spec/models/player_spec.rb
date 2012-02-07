@@ -1826,46 +1826,55 @@ describe Player do
 
   describe ".battle_vps_multiplier" do
     def player(economy_points=10, science_points=15, army_points=20,
-        war_points=25)
+        war_points=25, victory_points=30)
       Factory.create(:player, :economy_points => economy_points,
         :science_points => science_points, :army_points => army_points,
-        :war_points => war_points)
+        :war_points => war_points, :victory_points => victory_points)
     end
     
     def points(player)
-      (player.economy_points + player.science_points + player.army_points).to_f
+      Cfg::Java.fairnessPoints(
+        player.economy_points, player.science_points,
+        player.army_points, player.war_points, player.victory_points
+      ).to_f
     end
 
-    def multiplier(aggressor, defender)
+    def ratio(aggressor, defender)
       points(defender) / points(aggressor)
     end
 
-    it "should ignore war points" do
-      Player.battle_vps_multiplier(
-        player(10, 15, 20, 25).id, player(10, 15, 20, 250).id
-      ).should == 1
+    it "should use Cfg::Java.fairnessPoints" do
+      p1_args = [10, 20, 30, 40, 50]
+      p2_args = p1_args.reverse
+
+      Cfg::Java.should_receive(:fairnessPoints).with(*p1_args).and_return(10)
+      Cfg::Java.should_receive(:fairnessPoints).with(*p2_args).and_return(20)
+      player1 = player(*p1_args)
+      player2 = player(*p2_args)
+      Player.battle_vps_multiplier(player1.id, player2.id)
     end
 
     it "should return 1 if aggressor has no points" do
       Player.battle_vps_multiplier(
-        player(0, 0, 0, 0).id, player(10, 15, 20, 250).id
+        player(0, 0, 0, 0, 0).id, player().id
       ).should == 1
     end
 
     describe "if aggressor is stronger than defender" do
       it "should use proportional linear formula" do
-        aggressor = player(10, 10, 10, 10)
-        defender = player(9, 9, 9, 9)
-        Player.battle_vps_multiplier(aggressor.id, defender.id).
-          should == MathFormulas.line(
-            Cfg::Java.battleVpsMaxWeakness, 0, 1, 1
-          )[multiplier(aggressor, defender)]
+        aggressor = player(10, 10, 10, 10, 10)
+        defender = player(9, 9, 9, 9, 9)
+
+        formula = MathFormulas.line(Cfg::Java.battleVpsMaxWeakness, 0, 1, 1)
+        expected = formula.call(ratio(aggressor, defender))
+        Player.battle_vps_multiplier(aggressor.id, defender.id).should ==
+          expected
       end
 
       it "should return 0 if aggressor is too strong" do
-        aggressor = player(10, 10, 10, 10)
+        aggressor = player(10, 10, 10, 10, 10)
         d_points = 10 * (Cfg::Java.battleVpsMaxWeakness - 0.1)
-        defender = player(d_points, d_points, d_points, d_points)
+        defender = player(d_points, d_points, d_points, d_points, d_points)
         Player.battle_vps_multiplier(aggressor.id, defender.id).
           should == 0
       end
@@ -1873,9 +1882,9 @@ describe Player do
 
     describe "if aggressor is weaker than defender" do
       it "should use linear formula" do
-        aggressor = player(10, 10, 10, 10)
-        defender = player(20, 20, 20, 20)
-        Player.battle_vps_multiplier(aggressor.id, defender.id).should == 2
+        aggressor = player(10, 10, 10, 10, 10)
+        defender = player(30, 30, 30, 30, 30)
+        Player.battle_vps_multiplier(aggressor.id, defender.id).should == 3
       end
     end
   end
