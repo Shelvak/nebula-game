@@ -14,13 +14,6 @@ describe DispatcherEventHandler::Handler::Changed do
       DispatcherEventHandler::Handler::Changed.handle(dispatcher, objs, reason)
     end
 
-    it "should handle changed technologies" do
-      obj = Factory.create(:technology)
-      lambda do
-        DispatcherEventHandler::Handler::Changed.handle(dispatcher, obj, reason)
-      end.should_not raise_error
-    end
-
     it "should handle changed construction queue" do
       planet = Factory.create(:planet_with_player)
       constructor = Factory.create(:b_constructor_test, :planet => planet)
