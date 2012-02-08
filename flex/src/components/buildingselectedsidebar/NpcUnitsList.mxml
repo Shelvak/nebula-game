@@ -13,7 +13,8 @@
          import models.Owner;
          import models.building.Building;
          import models.building.Npc;
-         import models.unit.Unit;
+      import models.building.events.BuildingEvent;
+      import models.unit.Unit;
       import models.unit.UnitKind;
       import models.unit.UnitsFlank;
          
@@ -35,7 +36,15 @@
          public function set building(value: Building): void
          {
             _building = value as Npc;
-            rebuildFlanks();
+            if (!_building.unitsCached)
+            {
+              _building.addEventListener(BuildingEvent.CACHED_UNITS_CHANGE,
+                 rebuildFlanks);
+            }
+            else
+            {
+              rebuildFlanks();
+            }
          }
       
          private function refreshUnitsDisplayType(e: CollectionEvent): void
@@ -63,8 +72,13 @@
          [Bindable]
          private var displayAsCached: Boolean = false;
          
-         private function rebuildFlanks(): void
+         private function rebuildFlanks(e: BuildingEvent = null): void
          {
+            if (e != null)
+            {
+              _building.removeEventListener(BuildingEvent.CACHED_UNITS_CHANGE,
+                rebuildFlanks);
+            }
             flanks.removeAll();
             flanksHash = {};
             if (_building != null) {

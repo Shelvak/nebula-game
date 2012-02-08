@@ -10,9 +10,9 @@ package controllers
    import utils.locale.Localizer;
    import utils.remote.IResponder;
    import utils.remote.rmo.ClientRMO;
-   
-   
-   
+   import utils.remote.rmo.ServerRMO;
+
+
    /**
     * Actions that include sending messages to the server and receiving responses and acting
     * accordingly to them should extend this class.
@@ -48,7 +48,7 @@ package controllers
        * 
        * @see IResponder#cancel()
        */
-      public function cancel(rmo:ClientRMO) : void
+      public function cancel(rmo:ClientRMO, srmo: ServerRMO) : void
       {
          appLocker.decreaseLockCounter();
          Messenger.show(Localizer.string("General", "message.actionCanceled"), Messenger.MEDIUM);

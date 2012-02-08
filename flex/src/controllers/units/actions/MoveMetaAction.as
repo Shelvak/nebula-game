@@ -9,8 +9,9 @@ package controllers.units.actions
    
    import utils.DateUtil;
    import utils.remote.rmo.ClientRMO;
-   
-   
+   import utils.remote.rmo.ServerRMO;
+
+
    /**
     * Calculate arrival date of selected space units.
     *
@@ -68,10 +69,10 @@ package controllers.units.actions
       }
       
       
-      public override function cancel(rmo:ClientRMO) : void
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void
       {
          ORDERS_CTRL.cancelOrder();
-         super.cancel(rmo);
+         super.cancel(rmo, srmo);
       }
    }
 }

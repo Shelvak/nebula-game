@@ -17,8 +17,9 @@ package controllers.planets.actions
    import models.solarsystem.MSolarSystem;
    
    import utils.remote.rmo.ClientRMO;
-   
-   
+   import utils.remote.rmo.ServerRMO;
+
+
    /**
     * Dispached from <code>EventBroker</code> when list of buildings in current
     * planet changes.
@@ -76,7 +77,6 @@ package controllers.planets.actions
          var paramsPlanet:Object = params["planet"];
          ML.units.disableAutoUpdate();
          ML.units.addAll(UnitFactory.fromObjects(params["units"], params["players"]));
-         ML.units.addAll(UnitFactory.fromObjects(params["npcUnits"], new Object()));
          ML.units.enableAutoUpdate();
          paramsPlanet["cooldownEndsAt"] = params["cooldownEndsAt"];
          var planet:MPlanet = PlanetFactory.fromSSObject(
@@ -154,9 +154,9 @@ package controllers.planets.actions
       }
       
       
-      public override function cancel(rmo:ClientRMO) : void {
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void {
          resetFlags();
-         super.cancel(rmo);
+         super.cancel(rmo, srmo);
       }
       
       public override function result(rmo:ClientRMO) : void {

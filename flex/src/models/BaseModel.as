@@ -119,7 +119,8 @@ package models
        * @throws Error if <code>model</code> is of different type than
        * <code>this</code>.
        */
-      public function copyProperties(source:BaseModel, ignoreSkipProperty:Boolean = false, props:Array = null) : void {
+      /*public function copyProperties(_source:Object, ignoreSkipProperty:Boolean = false, props:Array = null) : void {
+         var source: BaseModel = BaseModel(_source);
          if (source == null)
             return;
          if (!(source is CLASS))
@@ -139,7 +140,7 @@ package models
             }
          }
          afterCopyProperties(source, props);
-      }
+      } */
       
       
       /**

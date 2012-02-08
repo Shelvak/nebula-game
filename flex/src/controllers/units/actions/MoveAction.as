@@ -8,8 +8,9 @@ package controllers.units.actions
    import models.location.LocationMinimal;
    
    import utils.remote.rmo.ClientRMO;
-   
-   
+   import utils.remote.rmo.ServerRMO;
+
+
    /**
     * Order units to move to a new location. Response is received as <code>MOVEMENT_PREPARE</code>
     * action.
@@ -51,9 +52,9 @@ package controllers.units.actions
       }
       
       
-      public override function cancel(rmo:ClientRMO) : void
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void
       {
-         super.cancel(rmo);
+         super.cancel(rmo, srmo);
          ORDERS_CTRL.cancelOrder();
       }
    }

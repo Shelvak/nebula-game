@@ -1,8 +1,9 @@
 package utils.remote
 {
    import utils.remote.rmo.ClientRMO;
-   
-   
+   import utils.remote.rmo.ServerRMO;
+
+
    /**
     * Implement this interface if you want your action to respond to response messages recieved from the
     * server.
@@ -24,9 +25,10 @@ package utils.remote
        * successfully fulfill clients requests and as a result all actions taken by the client app must be
        * rolled back.
        * 
-       * @param rmo instance of <code>ClientRMO</code> wich contains all information passed to the server
+       * @param rmo instance of <code>ClientRMO</code> which contains all information passed to the server
        * in a message that caused this response
+       * @param srmo Server remote message object.
        */
-      function cancel(rmo:ClientRMO) : void;
+      function cancel(rmo:ClientRMO, srmo: ServerRMO) : void;
 	}
 }

@@ -1,10 +1,10 @@
 package models.unit
 {
    import com.developmentarc.core.utils.EventBroker;
-   
+
    import components.unitsscreen.events.LoadUnloadEvent;
    import components.unitsscreen.events.UnitsScreenEvent;
-   
+
    import utils.ApplicationLocker;
    import controllers.Messenger;
    import controllers.units.UnitsCommand;
@@ -134,10 +134,16 @@ package models.unit
          return (!transporterIsFull && getMaxStock(ResourceType.METAL) == 0
             && getMaxStock(ResourceType.ENERGY) == 0 && getMaxStock(ResourceType.ZETIUM) == 0);
       }
+
+      private var maxStocksCache: Object = {};
       
       [Bindable (event="selectedResourcesChange")]
       public function getMaxStock(resource: String): Number
       {
+         if (maxStocksCache[resource] != null)
+         {
+            return maxStocksCache[resource];
+         }
          var possibleStore: Number = 
             (location is Unit
                ? ML.latestPlanet.ssObject.metal.unknown
@@ -150,7 +156,8 @@ package models.unit
                      getOtherSelected(resource) - unitsSelectedVolume, resource),
                   Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
          rebuildWarning();
-         return Math.max(0, Math.floor(possibleStore));
+         maxStocksCache[resource] = Math.max(0, Math.floor(possibleStore));
+         return maxStocksCache[resource];
       }
       
       [Bindable]
@@ -203,8 +210,7 @@ package models.unit
             missingStorageString = tempStorageString;
          }
       }
-      
-      [Bindable (event="selectedResourcesChange")]
+
       private function getOtherSelected(resource: String = ''): int
       {
          var selectedTotal: int = 0;
@@ -219,6 +225,8 @@ package models.unit
       
       public function dispatchRefreshMaxStorageEvent(e: Event = null): void
       {
+         if (dontDispatchResourcesChange)
+            return;
          dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
       }
       
@@ -390,19 +398,29 @@ package models.unit
       public var energySelectedVal: int = 0;
       [Bindable]
       public var zetiumSelectedVal: int = 0;
+
+      private var dontDispatchResourcesChange : Boolean = false;
       
       public function selectAllResources(): void
       {
+         dontDispatchResourcesChange = true;
          metalSelectedVal = getMaxStock(ResourceType.METAL);
          energySelectedVal = getMaxStock(ResourceType.ENERGY);
          zetiumSelectedVal = getMaxStock(ResourceType.ZETIUM);
+         dontDispatchResourcesChange = false;
+         dispatchRefreshMaxStorageEvent();
+         refreshVolume();
       }
       
       public function deselectAllResources(): void
       {
+         dontDispatchResourcesChange = true;
          metalSelectedVal = 0;
          energySelectedVal = 0;
          zetiumSelectedVal = 0;
+         dontDispatchResourcesChange = false;
+         dispatchRefreshMaxStorageEvent();
+         refreshVolume();
       }
       
       public function selectAllUnits(): void
@@ -423,13 +441,20 @@ package models.unit
          }
          refreshVolume();
       }
+
+      private var cachedVolume: int = 0;
       
       [Bindable (event="selectedVolumeChanged")]
       public function get volume(): int
       {
+         if (cachedVolume != -1)
+         {
+            return cachedVolume;
+         }
          var volumeTotal: int = 0;
          volumeTotal += unitsSelectedVolume;
          volumeTotal += getOtherSelected();
+         cachedVolume = volumeTotal;
          return volumeTotal;
       }
       
@@ -439,7 +464,12 @@ package models.unit
       {
          selectionClass.freeStorage = (target is Unit
             ? transporter.transporterStorage - transporter.stored - volume : -1);
-         dispatchVolumeChangeEvent();
+         cachedVolume = -1;
+         maxStocksCache = {};
+         if (!dontDispatchResourcesChange)
+         {
+            dispatchVolumeChangeEvent();
+         }
       }
       /**
        var selectedVolume: int = volume;

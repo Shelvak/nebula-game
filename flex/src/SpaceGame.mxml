@@ -32,6 +32,7 @@
                                          localeBundlesLoaded="loadingscreen1_localeBundlesLoadedHandler(event)"/>
          <screen:TopLevelScreenContainer screenName="{Screens.MAIN}"/>
             <!--s:TextArea visible="false" id="profilerTextArea" width="400" height="500" x="200"/-->
+         <screen:TopLevelScreenContainer screenName="{Screens.CREATING_MAP}"/>
          <screen:TopLevelScreenContainer screenName="{Screens.BATTLE}"/>
       </s:Group>
       <mapeditor:CPlanetMapEditorInitializer/>
@@ -60,7 +61,6 @@
       import utils.ApplicationLocker;
       import utils.DateUtil;
       import utils.profiler.Profiler;
-
 
       [Bindable]
       private var crashed: Boolean = false;

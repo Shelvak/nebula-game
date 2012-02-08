@@ -27,7 +27,9 @@
          import components.base.Filters;
          
          import controllers.ui.NavigationController;
-         
+
+         import globalevents.GResourcesEvent;
+
          import globalevents.GlobalEvent;
          
          import models.ModelLocator;
@@ -38,7 +40,9 @@
          import models.parts.UpgradableType;
          import models.resource.ResourceType;
          import models.solarsystem.MSSObject;
-         
+
+         import mx.core.FlexGlobals;
+
          import utils.assets.AssetNames;
          import utils.assets.ImagePreloader;
          import utils.locale.Localizer;
@@ -109,7 +113,7 @@
          
          protected function itemrenderer1_addedToStageHandler(event:Event):void
          {
-            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshState);
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshState);
             if (_data)
             {
                _data.addEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
@@ -119,7 +123,7 @@
          
          protected function itemrenderer1_removedFromStageHandler(event:Event):void
          {
-            EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshState);            
+            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshState);
             if (_data)
             {
                _data.removeEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);

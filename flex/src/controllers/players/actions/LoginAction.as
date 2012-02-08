@@ -9,8 +9,9 @@ package controllers.players.actions
    import controllers.startup.StartupInfo;
    
    import utils.remote.rmo.ClientRMO;
-   
-   
+   import utils.remote.rmo.ServerRMO;
+
+
    /**
     * Performs a login operation.
     */
@@ -46,13 +47,13 @@ package controllers.players.actions
                AM.versionTooOld(cmd.parameters["requiredVersion"]);
             }
             else {
-               cancel(null);
+               cancel(null, null);
             }
          }
       }
       
-      public override function cancel(rmo:ClientRMO) : void {
-         super.cancel(rmo);
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void {
+         super.cancel(rmo, srmo);
          AM.loginFailed();
       }
    }

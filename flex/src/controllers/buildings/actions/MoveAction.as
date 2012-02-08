@@ -6,6 +6,7 @@ package controllers.buildings.actions
    import globalevents.GBuildingEvent;
 
    import utils.remote.rmo.ClientRMO;
+   import utils.remote.rmo.ServerRMO;
 
    /**
     * Moves building to another spot in the planet. Requires credits.
@@ -38,9 +39,9 @@ package controllers.buildings.actions
       }
       
       
-      override public function cancel(rmo:ClientRMO) : void
+      override public function cancel(rmo:ClientRMO, srmo: ServerRMO) : void
       {
-         super.cancel(rmo);
+         super.cancel(rmo, srmo);
          var params:MoveActionParams = MoveActionParams(rmo.additionalParams);
          new GBuildingEvent(GBuildingEvent.MOVE_CANCEL, params.building);
       }

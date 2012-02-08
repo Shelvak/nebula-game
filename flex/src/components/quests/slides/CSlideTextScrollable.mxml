@@ -9,12 +9,14 @@
     </s:fill>
   </s:Rect>
   <s:Group left="0" top="0" bottom="0" right="0">
-  <base:Scroller left="0" top="0" bottom="0" right="0">
+  <base:Scroller left="0" top="0" bottom="0" right="0" stepMultiplier="2">
+    <s:Group left="0" right="0">
     <s:Group left="0" right="0">
       <s:RichText textFlow="{textFlow}" fontSize="14" fontWeight="bold"
         width="100%"/>
       <s:layout><s:VerticalLayout paddingLeft="10" paddingRight="10"
       paddingTop="10" paddingBottom="10"/></s:layout>
+    </s:Group>
     </s:Group>
   </base:Scroller>
   </s:Group>

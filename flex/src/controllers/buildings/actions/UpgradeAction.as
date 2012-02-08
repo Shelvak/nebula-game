@@ -7,6 +7,8 @@ package controllers.buildings.actions
    import models.building.Building;
    import models.factories.BuildingFactory;
 
+   import utils.Objects;
+
    /**
     * Used for upgrading building
     */
@@ -14,16 +16,15 @@ package controllers.buildings.actions
    {
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         if (cmd.parameters.building != null)
+         var building: Object = cmd.parameters.building;
+         if (building != null)
          {
-            var temp:Building = BuildingFactory.fromObject(cmd.parameters.building);
-            if (ML.latestPlanet && ML.latestPlanet.id == cmd.parameters.building.planetId)
+            if (ML.latestPlanet && ML.latestPlanet.id == building.planetId)
             {
-               var targetBuilding:Building = ML.latestPlanet.getBuildingById(temp.id);
-               targetBuilding.copyProperties(temp);
+               var targetBuilding:Building = ML.latestPlanet.getBuildingById(building.id);
+               Objects.update(targetBuilding, building);
                targetBuilding.upgradePart.startUpgrade();
             }
-            temp.cleanup();
          }
       }
    }

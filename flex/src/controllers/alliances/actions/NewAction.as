@@ -13,7 +13,8 @@ package controllers.alliances.actions
    import mx.collections.SortField;
    
    import utils.remote.rmo.ClientRMO;
-   
+   import utils.remote.rmo.ServerRMO;
+
    /**
     * Gets ratings data. 
     */
@@ -25,9 +26,9 @@ package controllers.alliances.actions
          new GAllianceEvent(GAllianceEvent.ALLIANCE_CONFIRMED);
       }
       
-      public override function cancel(rmo:ClientRMO):void
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO):void
       {
-         super.cancel(rmo);
+         super.cancel(rmo, srmo);
          new GAllianceEvent(GAllianceEvent.ALLIANCE_CONFIRMED);
       }
       

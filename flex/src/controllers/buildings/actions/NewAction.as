@@ -5,15 +5,16 @@ package controllers.buildings.actions
    import globalevents.GObjectEvent;
    
    import utils.remote.rmo.ClientRMO;
+   import utils.remote.rmo.ServerRMO;
 
    /**
     * Used for constructing new building
     */
    public class NewAction extends CommunicationAction
    {
-      public override function cancel(rmo:ClientRMO):void
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO):void
       {
-         super.cancel(rmo);
+         super.cancel(rmo, srmo);
          new GObjectEvent(GObjectEvent.OBJECT_APPROVED);
       }
       

@@ -20,6 +20,7 @@ package controllers.solarsystems.actions
 
    import utils.Objects;
    import utils.remote.rmo.ClientRMO;
+   import utils.remote.rmo.ServerRMO;
 
    /**
     * Downloads objects for one solar system and shows solar system map.
@@ -122,9 +123,9 @@ package controllers.solarsystems.actions
          resetFlags();
       }
 
-      public override function cancel(rmo:ClientRMO) : void {
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void {
          resetFlags();
-         super.cancel(rmo);
+         super.cancel(rmo, srmo);
       }
 
       public override function result(rmo:ClientRMO) : void {

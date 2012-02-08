@@ -1,7 +1,11 @@
 package models
 {
+   import models.BaseModel;
+
    import mx.collections.ArrayCollection;
-   
+
+   import utils.Objects;
+
    import utils.datastructures.Collections;
    import utils.random.Rndm;
    
@@ -140,17 +144,17 @@ package models
        * @param model
        * @return <code>true</code> if model has been added or <code>false</code> if updated 
        */      
-      public function addOrUpdate(model:BaseModel) : Boolean
+      public function addOrUpdate(model:Object, type: Class) : Boolean
       {
-         var idx:int = findIndexExact(model);
+         var idx:int = findIndex(model.id);
          if (idx < 0)
          {
-            addItem(model);
+            addItem(Objects.create(type, model));
             return true;
          }
          else
          {
-            BaseModel(getItemAt(idx)).copyProperties(model);
+            Objects.update(getItemAt(idx), model);
             return false;
          }
       }
@@ -162,16 +166,16 @@ package models
        * 
        * @throws ArgumentError if model to update could not be found
        */
-      public function update(model:BaseModel) : void
+      public function update(model:Object) : void
       {
-         var modelToUpdate:BaseModel = findExact(model);
+         var modelToUpdate:Object = find(model.id);
          if (modelToUpdate)
          {
-            modelToUpdate.copyProperties(model);
+            Objects.update(modelToUpdate, model);
          }
          else
          {
-            throw new ArgumentError("Could not find " + model + ": can't update");
+            throw new ArgumentError("Could not find " + 'model' + ": can't update");
          }
       }
       

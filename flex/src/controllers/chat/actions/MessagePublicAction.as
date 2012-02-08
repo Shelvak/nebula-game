@@ -8,8 +8,9 @@ package controllers.chat.actions
    import utils.locale.Localizer;
 
    import utils.remote.rmo.ClientRMO;
-   
-   
+   import utils.remote.rmo.ServerRMO;
+
+
    /**
     * Processes public (channel) messages.
     * 
@@ -67,7 +68,7 @@ package controllers.chat.actions
       }
       
       
-      public override function cancel(rmo:ClientRMO) : void
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void
       {
          MCHAT.messageSendFailure(MChatMessage(rmo.additionalParams));
          Messenger.show(Localizer.string("General", "message.actionCanceled"),

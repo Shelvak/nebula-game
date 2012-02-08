@@ -6,7 +6,8 @@ package controllers.alliances.actions
    import models.alliance.MAlliance;
    
    import utils.remote.rmo.ClientRMO;
-   
+   import utils.remote.rmo.ServerRMO;
+
    /**
     * Edits alliance description
     *  
@@ -34,9 +35,9 @@ package controllers.alliances.actions
          alliance = null;
       }
       
-      public override function cancel(rmo:ClientRMO):void
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO):void
       {
-         super.cancel(rmo);
+         super.cancel(rmo, srmo);
          alliance.newDescription = alliance.description;
          alliance = null;
       }

@@ -22,14 +22,13 @@ package controllers.objects.actions.customcontrollers
       public override function objectUpdated(objectSubclass:String,
                                              object:Object,
                                              reason:String) : void {
-         var ssMetadata:MSSMetadata = Objects.create(MSSMetadata, object);
-         var ss:MSolarSystem = ML.latestGalaxy.getSSById(ssMetadata.id);
+         var ss:MSolarSystem = ML.latestGalaxy.getSSById(object.id);
          if (ss == null) {
             throw new Error("Unable to find solar system with id " + 
-               ssMetadata.id + " to update its metadata!");
+               object.id + " to update its metadata!");
          }
          var metadata:MSSMetadata = ss.metadata;
-         metadata.copyProperties(ssMetadata);
+         Objects.update(metadata, object);
          ML.latestGalaxy.refreshSolarSystemsWithPlayer();
       }
       

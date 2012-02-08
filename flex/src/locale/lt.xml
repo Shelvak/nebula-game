@@ -547,6 +547,8 @@
     <status2 value="NS" />
     <status2.tooltip value="Nepuolimo Sutartis" />
     <status3 value="Priešų" />
+
+    <label.loadingBattleMap value="Kraunamas kovos laukas" />
     
     <space value="Kosmosas" />
     <ground value="Žemė" />

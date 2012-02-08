@@ -10,6 +10,8 @@ package controllers.objects.actions.customcontrollers
 
    import mx.collections.ArrayCollection;
 
+   import utils.Objects;
+
    import utils.SingletonFactory;
    import utils.locale.Localizer;
 
@@ -44,15 +46,12 @@ package controllers.objects.actions.customcontrollers
       }
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
-         var unit:Unit = UnitFactory.fromObject(object);
          if (reason == UpdatedReason.COMBAT ||
              reason == UpdatedReason.TRANSPORTATION) {
-            if (!ML.units.addOrUpdate(unit))
-               unit.cleanup();
+            ML.units.addOrUpdate(object, Unit);
          }
          else {
-            ML.units.update(unit);
-            unit.cleanup();
+            ML.units.update(object);
          }
       }
       

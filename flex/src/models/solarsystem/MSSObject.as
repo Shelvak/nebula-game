@@ -738,15 +738,21 @@ package models.solarsystem
       
       private function recalculateResources(event:GlobalEvent) : void {
          var timeDiff:Number = Math.floor((DateUtil.now - lastResourcesUpdate.time) / 1000);
+         var resourceChanged: Boolean = false;
          for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM]) {
             var resource:Resource = this[type];
             resource.boost.refreshBoosts();
+            var oldStock: Number = resource.currentStock;
             resource.currentStock = Math.max(0, Math.min(
                resource.maxStock,
                this[type + "AfterLastUpdate"] + resource.rate * timeDiff
             ));
+            if (oldStock != resource.currentStock)
+            {
+               resourceChanged = true;
+            }
          }
-         if (ML.latestPlanet && this == ML.latestPlanet.ssObject)
+         if (resourceChanged && ML.latestPlanet && this == ML.latestPlanet.ssObject)
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
          if (nextRaidAt != null)
             raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - DateUtil.now)/1000,2);

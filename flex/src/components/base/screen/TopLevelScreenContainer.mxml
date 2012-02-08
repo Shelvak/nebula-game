@@ -13,6 +13,7 @@
    <fx:Script>
       <![CDATA[
          import components.base.viewport.ViewportZoomable;
+         import components.battle.LoadingBattleMapScreen;
          import components.map.controllers.IMapViewportController;
          import components.screens.AuthorizationScreen;
          import components.screens.LoadingScreen;
@@ -87,6 +88,9 @@
                   case Screens.BATTLE:
                      TL.addEventListener(ScreensSwitchEvent.MAP_ELEMENTS_ADDED, addMapElements);
                      TL.addEventListener(ScreensSwitchEvent.DESTROY_MAP_ELEMENTS, destroyMapElements);
+                     break;
+                 case Screens.CREATING_MAP:
+                     addElement(new LoadingBattleMapScreen());
                      break;
                   case Screens.LOADING:
                      var lScreen: LoadingScreen = new LoadingScreen();

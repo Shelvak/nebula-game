@@ -851,7 +851,7 @@ package utils
          }
          return collectionInstance;
       }
-      
+
       /**
        * Creates an object and copies values to appropriate fields from a provided generic object that holds data.
        * <ul>
@@ -887,6 +887,12 @@ package utils
          Objects.paramNotNull("type", type);
          return createImpl(type, null, data);
       }
+      
+      public static function update(object: Object, data: Object): void
+      {
+         createImpl(getClass(object), object, data);
+      }
+      
       private static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null) : Object {
          paramNotNull("type", type);
 

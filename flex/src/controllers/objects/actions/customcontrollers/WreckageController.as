@@ -31,25 +31,24 @@ package controllers.objects.actions.customcontrollers
       public override function objectUpdated(objectSubclass: String,
                                              object: Object,
                                              reason: String): void {
-         var wreckNew: MWreckage = Objects.create(MWreckage, object);
          var wreckOld: MWreckage = null;
+         function isEqualTo(item: MWreckage): Boolean
+         {
+            return item.id == object.id;
+         }
          if (ML.latestGalaxy != null) {
-            wreckOld = Collections.findFirstEqualTo(
-               ML.latestGalaxy.wreckages, wreckNew
-            );
+            wreckOld = Collections.findFirst(ML.latestGalaxy.wreckages, isEqualTo);
          }
          if (ML.latestSSMap != null && wreckOld == null) {
-            wreckOld = Collections.findFirstEqualTo(
-               ML.latestSSMap.wreckages, wreckNew
-            );
+            wreckOld = Collections.findFirst(ML.latestSSMap.wreckages, isEqualTo);
          }
          if (wreckOld == null) {
             throw new Error(
-               "Can't update wreckage " + wreckNew + ": the object was "
+               "Can't update wreckage with id: " + object.id + ": the object "
                   + "was not found"
             );
          }
-         wreckOld.copyProperties(wreckNew);
+         Objects.update(wreckOld, object);
       }
 
       public override function objectDestroyed(objectSubclass: String,

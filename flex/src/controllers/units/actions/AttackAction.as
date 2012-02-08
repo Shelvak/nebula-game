@@ -21,7 +21,7 @@ package controllers.units.actions
                break;
             }
          }
-         ML.notifications.show(cmd.parameters.notificationId);
+         ML.notifications.show(cmd.parameters.notificationId, true);
       }
    }
 }
