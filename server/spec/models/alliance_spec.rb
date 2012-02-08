@@ -119,7 +119,7 @@ describe Alliance do
       end
 
       it "should dispatch changed" do
-        should_fire_event([@player], EventBroker::CHANGED) do
+        should_fire_event(@alliance.players.all, EventBroker::CHANGED) do
           @alliance.destroy
         end
       end
@@ -141,6 +141,7 @@ describe Alliance do
 
       # Included players
       @a0_players = [
+        @a[0].owner,
         Factory.create(:player_for_ratings, :galaxy => @g[0],
           :alliance => @a[0]),
         Factory.create(:player_for_ratings, :galaxy => @g[0],
@@ -149,6 +150,7 @@ describe Alliance do
           :alliance => @a[0]),
       ]
       @a1_players = [
+        @a[1].owner,
         Factory.create(:player_for_ratings, :galaxy => @g[0],
           :alliance => @a[1]),
         Factory.create(:player_for_ratings, :galaxy => @g[0],
@@ -222,7 +224,7 @@ describe Alliance do
       p4 = Factory.create :player, :alliance => alliance
 
       Alliance.player_ids_for(alliance.id).sort.should == [
-        p1.id, p2.id, p4.id
+        alliance.owner.id, p1.id, p2.id, p4.id
       ].sort
     end
   end
@@ -258,8 +260,7 @@ describe Alliance do
 
     it "should include enemy player ids in home ss" do
       enemy = Factory.create(:player)
-      home_ss = Factory.create(:home_ss, :galaxy => enemy.galaxy,
-                               :player => enemy)
+      home_ss = enemy.home_solar_system
       fse = Factory.create(:fse_alliance, :enemy_planets => true,
                            :enemy_ships => false, :solar_system => home_ss)
       planet = Factory.create(:planet, :player => enemy,
@@ -407,8 +408,12 @@ describe Alliance do
     end
     
     it "should not call control manager if we're accepting alliance owner" do
+      # Ensure player is not in alliance.
+      player = @alliance.owner
+      player.alliance = nil
+
       ControlManager.instance.should_not_receive(:player_joined_alliance)
-      @alliance.accept(@alliance.owner)
+      @alliance.accept(player)
     end
 
     it "should not call control manager if we're in a dev galaxy" do

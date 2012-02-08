@@ -15,10 +15,6 @@ describe PlayersController do
         # LoginController scope...
         @test_player = Factory.create(:player)
 
-        # Create home solar system for reattachment detection.
-        Factory.create(:solar_system, :galaxy => @test_player.galaxy,
-          :player => @test_player)
-
         @action = "players|login"
         @params = {'server_player_id' => @test_player.id, 'web_player_id' => 3,
           'version' => Cfg.required_client_version}

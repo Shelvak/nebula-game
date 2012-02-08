@@ -181,6 +181,9 @@ class GameConfig
   def self.safe_eval(formula, params={})
     typesig binding, [String, Fixnum, Float], [NilClass, Hash]
 
+    # 60.seconds returns not pure Fixnum, but Duration object...
+    formula = formula.to_f if formula.is_a?(ActiveSupport::Duration)
+
     FormulaCalc.calc(
       formula, params.map_values { |key, value| value.to_f }.to_scala
     )

@@ -277,7 +277,8 @@ class FowSsEntry < ActiveRecord::Base
         EventBroker.fire(
           Event::FowChange::SolarSystem.new(solar_system_id),
           EventBroker::FOW_CHANGE,
-          EventBroker::REASON_SS_ENTRY)
+          EventBroker::REASON_SS_ENTRY
+        )
       end if dispatch_event
 
       dispatch_event

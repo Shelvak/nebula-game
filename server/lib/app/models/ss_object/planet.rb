@@ -404,9 +404,7 @@ class SsObject::Planet < SsObject
   # Register callbacks if energy is diminishing.
   def register_callbacks
     if energy_rate < 0
-      method = energy_diminish_registered? ? :update : :register
-
-      CallbackManager.send(method,
+      CallbackManager.register_or_update(
         self,
         CallbackManager::EVENT_ENERGY_DIMINISHED,
         last_resources_update + (energy / energy_rate).abs.ceil

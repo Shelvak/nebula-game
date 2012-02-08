@@ -16,7 +16,8 @@ describe Objective::HavePlanets do
         :planets_count => 1)
 
       obj = Factory.create(:o_have_planets, :alliance => true)
-      obj.initial_completed(player1.id).should == 2
+      obj.initial_completed(player1.id).
+        should == 2 + alliance.owner.planets_count
     end
 
     it "should not count other planets" do

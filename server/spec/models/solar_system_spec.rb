@@ -372,7 +372,7 @@ describe SolarSystem do
       {:x => x - 5, :x_end => x + 5, :y => y - 2, :y_end => y + 2}
     end
     let(:galaxy) { Factory.create(:galaxy) }
-    let(:player) { Factory.create(:player, :galaxy => galaxy) }
+    let(:player) { Factory.create(:player_no_home_ss, :galaxy => galaxy) }
     let(:solar_system) do
       Factory.create(:ss_detached, :player => player, :galaxy => galaxy)
     end
