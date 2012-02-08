@@ -169,7 +169,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
                  s_unit_construction_screen]) do
     have_upgraded_to Unit::Trooper
 
-    reward_unit Unit::Trooper, :count => 5
+    reward_unit Unit::Trooper, :count => 10, :level => 4
   end.tap do |quest|
     quest.define(10010) do
       destroy_npc_building Building::NpcMetalExtractor
