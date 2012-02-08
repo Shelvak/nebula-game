@@ -15,7 +15,6 @@ class PlanetsController < GenericController
   # - units (Hash[]): Unit#as_json with :perspective
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
-  # - npc_units (Unit[]): NPC units
   # - cooldown_ends_at (Time): date for cooldown for this planet or nil
   #
   def action_show
@@ -38,9 +37,6 @@ class PlanetsController < GenericController
         :tiles => Tile.fast_find_all_for_planet(planet),
         :folliages => Folliage.fast_find_all_for_planet(planet),
         :buildings => planet.buildings.map(&:as_json),
-        :npc_units => (planet.can_view_npc_units?(player.id) \
-          ? Unit.garrisoned_npc_in(planet) \
-          : []).map(&:as_json),
         :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
           Route.non_friendly_for_ss_object(planet.id, player.friendly_ids)
         ),

@@ -137,36 +137,6 @@ describe PlanetsController do
         end
       end
 
-      describe "without npc units" do
-        before(:each) do
-          @planet.stub!(:can_view_npc_units?).with(player.id).and_return(
-            false)
-          invoke @action, @params
-        end
-
-        it_behaves_like "visible planet"
-
-        it "should not include npc units" do
-          response_should_include(:npc_units => [])
-        end
-      end
-
-      describe "with npc units" do
-        before(:each) do
-          @planet.stub!(:can_view_npc_units?).with(player.id).and_return(
-            true)
-          invoke @action, @params
-        end
-
-        it_behaves_like "visible planet"
-
-        it "should include npc units" do
-          response_should_include(
-            :npc_units => [@npc_unit.as_json]
-          )
-        end
-      end
-
       it "should include non-friendly route jumps_at" do
         routes = [Factory.create(:route)]
         Route.should_receive(:non_friendly_for_ss_object).with(
