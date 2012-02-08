@@ -10,6 +10,7 @@ package controllers.objects.actions.customcontrollers
    import models.map.MapType;
    import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
+   import models.solarsystem.MSSObject;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
@@ -28,21 +29,18 @@ package controllers.objects.actions.customcontrollers
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
          var planetOld:MSSObject;
-         //var planetNew:MSSObject = SSObjectFactory.fromObject(object);
+         var planetNew:MSSObject = SSObjectFactory.fromObject(object);
          function findExistingPlanet(list:IList) : MSSObject {
-            return Collections.findFirst(list, function (item: MSSObject): Boolean
-            {
-               return item.id == object.id;
-            });
+            return Collections.findFirstEqualTo(list, planetNew);
          }
-         
+
          // update planet in current solar system's objects list
          var ssMap:MMapSolarSystem = ML.latestSSMap;
          if (ssMap != null
                 && !ssMap.fake
-                && ssMap.id == object.solarSystemId) {
+                && ssMap.id == planetNew.solarSystemId) {
             planetOld = findExistingPlanet(ssMap.naturalObjects);
-            Objects.update(planetOld, object);
+            planetOld.copyProperties(planetNew);
          }
          
          // update planet in list of player planets
@@ -51,23 +49,23 @@ package controllers.objects.actions.customcontrollers
          if (planetOld != null) {
             // planet does not belong to the player anymore so remove it
             // from the list
-            if (object.status != Owner.PLAYER) {
+            if (!planetNew.ownerIsPlayer) {
                planets.removeItemAt(planets.getItemIndex(planetOld));
                planetOld.cleanup();
             }
             // otherwise just update
             else {
-               Objects.update(planetOld, object);
+               planetOld.copyProperties(planetNew);
             }
          }
          
          // update current planet
          var planet:MPlanet = ML.latestPlanet;
          var nameChanged:Boolean =
-                planet != null && planet.ssObject.name != object.name;
-         if (planet != null && !planet.fake && planet.id == object.id) {
+                planet != null && planet.ssObject.name != planetNew.name;
+         if (planet != null && !planet.fake && planet.id == planetNew.id) {
             // the planet is not visible to the player anymore, so invalidate it
-            if (!object.viewable) {
+            if (!planetNew.viewable) {
                ML.latestPlanet.setFlag_destructionPending();
                ML.latestPlanet = null;
                if (ML.activeMapType == MapType.PLANET)
@@ -75,7 +73,7 @@ package controllers.objects.actions.customcontrollers
             }
             // otherwise just update SSObject inside it
             else {
-               Objects.update(planetOld, object);
+               planet.ssObject.copyProperties(planetNew);
             }
          }
          
@@ -86,9 +84,11 @@ package controllers.objects.actions.customcontrollers
             allLocUsers.addAll(ML.routes);
             allLocUsers.addAll(ML.notifications);
             for each (var locUser:ILocationUser in allLocUsers) {
-               locUser.updateLocationName(object.id, object.name);
+               locUser.updateLocationName(planetNew.id, planetNew.name);
             }
          }
+
+         planetNew.cleanup();
       }
    }
 }
