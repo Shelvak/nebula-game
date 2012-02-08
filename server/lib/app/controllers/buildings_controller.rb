@@ -6,23 +6,19 @@ class BuildingsController < GenericController
   #
   # Parameters:
   # - id (Fixnum) - building id which we want to view.
-  # - planet_id (Fixnum) - planet id where the building is standing.
   #
   # Response:
   # - units(Unit[]) - units inside that building.
   #
   def action_show_garrison
-    param_options :required => {:planet_id => Fixnum, :id => Fixnum}
+    param_options :required => {:id => Fixnum}
 
-    planet = SsObject::Planet.find(params['planet_id'])
+    building = Building.find(params['id'])
+    planet = building.planet
     raise GameLogicError.new("You cannot view NPC units in planet #{planet}!") \
-      unless planet.can_view_npc_units?(player.id)
+      if planet.player_id != player.id
 
-    units = where(
-      :location_type => Location::BUILDING,
-      :location_id => params['id']
-    ).all
-
+    units = building.units
     respond :units => units.map(&:as_json)
   end
 

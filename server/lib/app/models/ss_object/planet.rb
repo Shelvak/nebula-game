@@ -46,13 +46,6 @@ class SsObject::Planet < SsObject
       ">"
   end
 
-  # Can given _player_id_ view NPC units on this planet?
-  #
-  # Also see Building#observer_player_ids
-  def can_view_npc_units?(player_id)
-    self.player_id == player_id
-  end
-
   def cooldown
     Cooldown.for_planet(self)
   end
