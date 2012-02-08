@@ -229,17 +229,20 @@ describe FowSsEntry do
       end
     end
 
-    describe "when i have ships and alliance has planets in same ss" do
+    describe "when i have ships and alliance has planet in same ss" do
       it "should fire updated instead of destroyed when i fly out of that ss" do
-        Factory.create(:fse_player, :solar_system => @solar_system,
-          :counter => 1, :player => @player)
         Factory.create(:fse_alliance,
           :solar_system => @solar_system, :counter => 2, :alliance => @alliance)
 
-        should_fire_event(
-          Event::FowChange::SolarSystem.new(@solar_system_id),
-          EventBroker::FOW_CHANGE, @event_reason
-        ) do
+        # Create event before adding player fse, because when we are going to
+        # destroy it, metadata will be reset to this state.
+        event = Event::FowChange::SolarSystem.new(@solar_system_id)
+
+        Factory.create(:fse_player, :solar_system => @solar_system,
+          :counter => 1, :player => @player)
+
+        should_fire_event(event, EventBroker::FOW_CHANGE, @event_reason) do
+          # I'm not sure why, but this is necessary.
           @klass.stub!(:recalculate).and_return(true)
           FowSsEntry.decrease(@solar_system_id, @player, 1)
         end

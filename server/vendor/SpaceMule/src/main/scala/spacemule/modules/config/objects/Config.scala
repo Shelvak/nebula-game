@@ -354,10 +354,7 @@ object Config {
   def pulsarSsConfig = solarSystemMap("pulsar")
   def freeSsConfig = solarSystemMap("free")
 
-  def startingScientists: Int =
-    double("buildings.mothership.scientists").toInt
-  def startingPopulationMax: Int =
-    int("galaxy.player.population") + int("buildings.mothership.population")
+  def startingPopulationMax: Int = int("buildings.mothership.population")
 
   // Common combatant attributes
 

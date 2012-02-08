@@ -13,7 +13,7 @@ Factory.define :player_no_home_ss, :class => Player do |m|
 end
 
 Factory.define :player, :parent => :player_no_home_ss do |m|
-  m.after_build do |r|
+  m.after_create do |r|
     Factory.create(:solar_system, :player => r, :galaxy => r.galaxy,
       :x => (SolarSystem.maximum(:x) || 0) + 1
     )

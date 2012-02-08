@@ -138,20 +138,33 @@ describe GameConfig do
   end
 
   describe ".safe_eval" do
+    let(:formula) { "bar * 3" }
+
     it "should call scala" do
-      string = "foo"
       params = {'bar' => 3.5}
       GameConfig::FormulaCalc.should_receive(:calc).
-        with(string, params.to_scala)
-      GameConfig.safe_eval(string, params)
+        with(formula, params.to_scala)
+      GameConfig.safe_eval(formula, params)
     end
 
     it "should work with non-float params" do
-      string = "foo"
-      params = {'bar' => 3}
-      GameConfig::FormulaCalc.should_receive(:calc).
-        with(string, {'bar' => 3.0}.to_scala)
-      GameConfig.safe_eval(string, params)
+      GameConfig.safe_eval(formula, {"bar" => 10}).should == 30.0
+    end
+
+    it "should work with ActiveSupport::Duration" do
+      GameConfig.safe_eval(formula, {"bar" => 1.minute}).should == (60 * 3).to_f
+    end
+
+    it "should work with fixnum 'formulas'" do
+      GameConfig.safe_eval(3).should == 3.0
+    end
+
+    it "should work with float 'formulas'" do
+      GameConfig.safe_eval(3.5).should == 3.5
+    end
+
+    it "should work with ActiveSupport::Duration 'formulas'" do
+      GameConfig.safe_eval(10.seconds).should == 10.0
     end
   end
 

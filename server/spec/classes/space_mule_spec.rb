@@ -307,19 +307,8 @@ describe SpaceMule do
         )
       end
 
-      it "should set scientists" do
-        @player.scientists.should ==
-          CONFIG["buildings.mothership.scientists"].to_i
-      end
-
-      it "should set scientists_total" do
-        @player.scientists_total.should == @player.scientists
-      end
-
       it "should set population_max" do
-        @player.population_max.should ==
-          CONFIG["galaxy.player.population"] +
-            CONFIG["buildings.mothership.population"]
+        @player.population_max.should == Cfg::Java.startingPopulationMax
       end
 
       it "should set created_at" do

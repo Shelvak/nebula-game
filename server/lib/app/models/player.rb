@@ -448,11 +448,15 @@ class Player < ActiveRecord::Base
     # Dispatch that home solar system is destroyed. This needs to be in
     # before_destroy so that visibilities can be gathered.
     home_ss = home_solar_system
-    EventBroker.fire(
-      Event::FowChange::SsDestroyed.all_except(home_ss.id, id),
-      EventBroker::FOW_CHANGE,
-      EventBroker::REASON_SS_ENTRY
-    ) unless home_ss.detached?
+    if home_ss.nil?
+      LOGGER.warn "No home solar system for #{self} but destroying it anyway."
+    else
+      EventBroker.fire(
+        Event::FowChange::SsDestroyed.all_except(home_ss.id, id),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      ) unless home_ss.detached?
+    end
 
     leave_alliance! unless alliance_id.nil?
     true
