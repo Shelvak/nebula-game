@@ -661,11 +661,15 @@ class Player < ActiveRecord::Base
 
   def self.on_callback(id, event)
     case event
-      when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
-        player = find(id)
-        player.check_activity!
+    when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
+      player = find(id)
+      player.check_activity!
+    else
+      if defined?(super)
+        super(id, event)
       else
         raise CallbackManager::UnknownEvent.new(self, id, event)
+      end
     end
   end
 end

@@ -19,7 +19,11 @@ module Parts
         when CallbackManager::EVENT_VIP_STOP
           find(id).vip_stop!
         else
-          raise CallbackManager::UnknownEvent.new(self, id, event)
+          if defined?(super)
+            super(id, event)
+          else
+            raise CallbackManager::UnknownEvent.new(self, id, event)
+          end
         end
       end
     end

@@ -58,10 +58,10 @@ describe Chat::AntiFlood do
   describe "#silence" do
     it "should silence player until given time if it is given" do
       silence_until = 10.minutes.from_now
-      antiflood.silence(player_id, silence_until)
       dispatcher.should_receive(:push_to_player).with(
         player_id, ChatController::ACTION_SILENCE, {'until' => silence_until}
       )
+      antiflood.silence(player_id, silence_until)
     end
   end
 end

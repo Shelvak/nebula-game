@@ -91,14 +91,14 @@ object Config {
   )
 
   def formulaEval(key: String): Double =
-    FormulaEval.eval(get[Any](key).toString, speedMap)
+    FormulaCalc.calc(get[Any](key).toString, speedMap)
 
   def formulaEval(key: String, vars: Map[String, Double]): Double =
-    FormulaEval.eval(get[Any](key).toString, speedMap ++ vars)
+    FormulaCalc.calc(get[Any](key).toString, speedMap ++ vars)
 
   def formulaEval(key: String, default: Double): Double =
     getOpt[Any](key) match {
-      case Some(value) => FormulaEval.eval(value.toString, speedMap)
+      case Some(value) => FormulaCalc.calc(value.toString, speedMap)
       case None => default
     }
 
@@ -106,7 +106,7 @@ object Config {
     key: String, vars: Map[String, Double], default: Double
   ): Double =
     getOpt[Any](key) match {
-      case Some(value) => FormulaEval.eval(value.toString, speedMap ++ vars)
+      case Some(value) => FormulaCalc.calc(value.toString, speedMap ++ vars)
       case None => default
     }
 
@@ -122,8 +122,8 @@ object Config {
   private def evalRange(key: String): Range = {
     val rangeData = seq[String](key)
     val speedMap = this.speedMap
-    val from = FormulaEval.eval(rangeData(0), speedMap).toInt
-    val to = FormulaEval.eval(rangeData(1), speedMap).toInt
+    val from = FormulaCalc.calc(rangeData(0), speedMap).toInt
+    val to = FormulaCalc.calc(rangeData(1), speedMap).toInt
 
     Range.inclusive(from, to)
   }
@@ -164,7 +164,7 @@ object Config {
       val formula = seq[Seq[Any]](
         "galaxy.player.inactivity_check"
       )(0)(1).asInstanceOf[String]
-      FormulaEval.eval(formula, speedMap).toInt
+      FormulaCalc.calc(formula, speedMap).toInt
     }
     catch {
       case e: Exception =>
@@ -213,7 +213,7 @@ object Config {
 
   def fairnessPoints(
     economy: Int, science: Int, army: Int, war: Int, victory: Int
-  ): Int = FormulaEval.eval(
+  ): Int = FormulaCalc.calc(
     string("combat.battle.fairness_points"),
     Map(
       "economy" -> economy.toDouble, "science" -> science.toDouble,
@@ -249,7 +249,7 @@ object Config {
     val key = "%s.battle.victory_points".format(kind)
     (groundDamage: Int, spaceDamage: Int, fairnessMultiplier: Double) => {
       get[Any](key) match {
-        case formula: String => FormulaEval.eval(formula, Map(
+        case formula: String => FormulaCalc.calc(formula, Map(
           "damage_dealt_to_ground" -> groundDamage.toDouble,
           "damage_dealt_to_space" -> spaceDamage.toDouble,
           "fairness_multiplier" -> fairnessMultiplier
@@ -264,7 +264,7 @@ object Config {
     val key = "%s.battle.creds".format(kind)
     (victoryPoints: Double) => {
       get[Any](key) match {
-        case formula: String => FormulaEval.eval(formula, Map(
+        case formula: String => FormulaCalc.calc(formula, Map(
           "victory_points" -> victoryPoints
         ))
         case l: Long => l.toDouble

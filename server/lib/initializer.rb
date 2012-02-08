@@ -249,7 +249,7 @@ require File.join(ROOT_DIR, 'config', 'environments', App.env + ".rb")
 
 # Set up config object
 config_dir = File.expand_path(File.join(ROOT_DIR, 'config'))
-CONFIG = GameConfig.instance
+CONFIG = GameConfig.new
 CONFIG.setup!(config_dir, File.join(ROOT_DIR, 'run'))
 
 # Establish database connection

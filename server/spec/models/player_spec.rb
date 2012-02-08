@@ -350,9 +350,13 @@ describe Player do
     end
 
     it "should return false if player does not have any planets" do
-      Factory.build(:player, :daily_bonus_at => nil,
-                    :planets_count => 0, :bg_planets_count => 0).
-        daily_bonus_available?.should be_false
+      # Player can have 0 planets only in apocalyptic galaxy.
+      galaxy = Factory.create(:galaxy, :apocalypse_start => 5.minutes.ago)
+      player = Factory.build(
+        :player, :daily_bonus_at => nil, :galaxy => galaxy,
+        :planets_count => 0, :bg_planets_count => 0
+      )
+      player.daily_bonus_available?.should be_false
     end
     
     it "should return false if it's players first time" do
@@ -795,16 +799,17 @@ describe Player do
 
     describe "when alliance id changes" do
       it "should update chat hub" do
-        player = Factory.create(:player,
-          :alliance => Factory.create(:alliance))
+        player = Factory.create(:player, :alliance => Factory.create(:alliance))
         player.alliance = Factory.create(:alliance)
-        Chat::Pool.instance.hub_for(player).should_receive(
-          :on_alliance_change).with(player)
+        hub = Chat::Pool.instance.hub_for(player)
+        hub.stub(:on_alliance_change)
+        hub.should_receive(:on_alliance_change).with(player)
         player.save!
       end
 
       it "should progress BeInAlliance objective if it is not nil" do
         player = Factory.create(:player)
+        Objective::BeInAlliance.stub(:progress)
         Objective::BeInAlliance.should_receive(:progress).with(player)
 
         player.alliance = Factory.create(:alliance)
@@ -850,8 +855,10 @@ describe Player do
 
   it "should not allow creating two players in same galaxy" do
     p1 = Factory.create(:player)
-    p2 = Factory.build(:player, :galaxy_id => p1.galaxy_id,
-      :web_user_id => p1.web_user_id)
+    p2 = Factory.build(
+      :player_no_home_ss, :galaxy_id => p1.galaxy_id,
+      :web_user_id => p1.web_user_id
+    )
     lambda do
       p2.save!
     end.should raise_error(ActiveRecord::RecordNotUnique)
@@ -1298,14 +1305,13 @@ describe Player do
 
     describe "home solar system" do
       let(:player) { Factory.create(:player) }
-      let(:home_ss) { Factory.create(:solar_system, :player => player) }
-
-      before(:each) { home_ss() }
+      let(:home_ss) { player.home_solar_system }
 
       it "should destroy players home solar system" do
+        home_ss_id = home_ss.id
         player.destroy!
         lambda do
-          home_ss.reload
+          SolarSystem.find(home_ss_id)
         end.should raise_error(ActiveRecord::RecordNotFound)
       end
 
@@ -1588,10 +1594,7 @@ describe Player do
   describe "#relocatable?" do
     let(:galaxy) { Factory.create(:galaxy) }
     let(:player) { Factory.create(:player, :galaxy => galaxy) }
-    let(:home_ss) do
-      Factory.create(:solar_system, :player => player, :galaxy => galaxy,
-                     :x => 0, :y => 0)
-    end
+    let(:home_ss) { player.home_solar_system }
     let(:home_planet) do
       Factory.create(:planet, :player => player, :solar_system => home_ss)
     end
@@ -1656,7 +1659,7 @@ describe Player do
   end
 
   describe "#active?" do
-    let(:player) { Factory.build(:player) }
+    let(:player) { Factory.create(:player) }
 
     it "should return false if he has never logged in" do
       player.last_seen = nil
@@ -1672,7 +1675,7 @@ describe Player do
     end
 
     it "should return true if he is currently connected" do
-      Dispatcher.instance.should_receive(:connected?).with(player.id).
+      Dispatcher.instance.stub(:connected?).with(player.id).
         and_return(true)
       player.should be_active
     end
@@ -1768,6 +1771,7 @@ describe Player do
     let(:player) { Factory.create(:player) }
 
     it "should register a callback" do
+      player.register_check_activity!
       player.should have_callback(
         CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
         Cfg.player_inactivity_time(player.points).from_now
@@ -1778,8 +1782,7 @@ describe Player do
   describe "#attach!" do
     let(:player) { Factory.create(:player) }
     let(:home_solar_system) do
-      home_ss = Factory.create(:solar_system, :player => player,
-                               :galaxy => player.galaxy)
+      home_ss = player.home_solar_system
       Factory.create(:fse_player, :solar_system => home_ss, :player => player)
       home_ss
     end

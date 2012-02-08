@@ -3,12 +3,6 @@ require File.expand_path(
 )
 
 describe Cfg do
-  describe ".galaxy_zone_death_age" do
-    it "should return a number" do
-      Cfg.galaxy_zone_death_age(3).should be_instance_of(Fixnum)
-    end
-  end
-
   describe ".foliage_removal_cost" do
     it "should return rounded number" do
       with_config_values(
@@ -26,27 +20,6 @@ describe Cfg do
       ) do
         Cfg.exploration_finish_cost(4, 5).should == 7
       end
-    end
-  end
-
-  describe ".planet_protection_duration" do
-    let(:galaxy) { Factory.build(:galaxy) }
-
-    it "should return one key when galaxy is not finished" do
-      expected = CONFIG.evalproperty(
-        'combat.cooldown.protection.duration'
-      )
-      Cfg.planet_protection_duration(galaxy).
-        should be_within(SPEC_TIME_PRECISION).of(expected)
-    end
-
-    it "should return other key when galaxy is finished" do
-      galaxy.stub(:finished?).and_return(true)
-      expected = CONFIG.evalproperty(
-        'combat.cooldown.protection.finished_galaxy.duration'
-      )
-      Cfg.planet_protection_duration(galaxy).
-        should be_within(SPEC_TIME_PRECISION).of(expected)
     end
   end
 

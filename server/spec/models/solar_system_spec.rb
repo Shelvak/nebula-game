@@ -67,12 +67,6 @@ describe SolarSystem do
     end
   end
 
-  it "should not allow two systems in same place" do
-    model = Factory.create :solar_system
-    Factory.build(:solar_system, :galaxy => model.galaxy, :x => model.x,
-      :y => model.y).should_not be_valid
-  end
-
   describe "visibility methods" do
     describe ".single_visible_for" do
       before(:all) do
@@ -103,15 +97,12 @@ describe SolarSystem do
 
       describe "shielded ss" do
         before(:each) do
-          @ss = Factory.create(:solar_system, :galaxy => @player.galaxy,
-            :shield_ends_at => 10.days.from_now,
-            :shield_owner => @player)
-          Factory.create :fse_player, :player => @player,
-            :solar_system => @ss
+          @ss = @player.home_solar_system
+          Factory.create :fse_player, :player => @player, :solar_system => @ss
         end
 
         it "should not allow viewing ss if it is shielded" do
-          @ss.shield_owner = Factory.create(:player)
+          @ss.player = Factory.create(:player)
           @ss.save!
 
           lambda do
@@ -199,47 +190,6 @@ describe SolarSystem do
     end
   end
   
-  describe "#die!" do
-    before(:each) do
-      @ss = Factory.create(:solar_system)
-    end
-    
-    it "should change kind to KIND_DEAD" do
-      @ss.die!
-      @ss.kind.should == SolarSystem::KIND_DEAD
-    end
-    
-    it "should save record" do
-      @ss.die!
-      @ss.should be_saved
-    end
-    
-    it "should delete all assets" do
-      @ss.should_receive(:delete_assets!)
-      @ss.die!
-    end
-    
-    it "should update metadata" do
-      fse = Factory.create(:fse_player, :solar_system => @ss,
-        :enemy_planets => true, :enemy_ships => true)
-      @ss.die!
-      fse.reload
-      [fse.enemy_planets, fse.enemy_ships].should == [false, false]
-    end
-
-    it "should unregister spawn from callback manager" do
-      CallbackManager.should_receive(:unregister).
-        with(@ss, CallbackManager::EVENT_SPAWN)
-      @ss.die!
-    end
-    
-    it "should dispatch changed" do
-      should_fire_event(@ss, EventBroker::CHANGED) do
-        @ss.die!
-      end
-    end
-  end
-
   describe "#spawn!" do
     let(:solar_system) { Factory.create(:battleground) }
 
@@ -510,7 +460,7 @@ describe SolarSystem do
 
     it "should dispatch created with FSEs" do
       entries = create_fges(:galaxy => galaxy).map do |fge|
-        FowSsEntry.new(
+        FowSsEntry.create(
           :solar_system_id => solar_system.id,
           :counter => fge.counter,
           :player_id => fge.player_id,
@@ -519,7 +469,7 @@ describe SolarSystem do
           :enemy_ships => fse.player_ships
         )
       end
-      player = Player.minimal(player.id)
+      player = Player.minimal(player().id)
       should_fire_event(
         Event::FowChange::SsCreated.
           new(solar_system.id, x, y, solar_system.kind, player, entries),

@@ -7,4 +7,8 @@ Factory.define :alliance do |m|
     Factory.create!(:t_alliances, :level => 1, :player => player)
     player
   end
+  m.after_build do |r|
+    r.owner.alliance = r
+    r.owner.save!
+  end
 end

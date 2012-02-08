@@ -491,22 +491,6 @@ class Unit < ActiveRecord::Base
       evalproperty('xp_needed', nil, 'level' => level)
     end
 
-    # Returns Unit[] of NPC units in given _planet_.
-    def garrisoned_npc_in(planet)
-      npc_building_ids = planet.buildings.reject do |building|
-        ! building.npc?
-      end.map { |building| building.id }
-
-      if npc_building_ids.blank?
-        []
-      else
-        where(
-          :location_type => Location::BUILDING,
-          :location_id => npc_building_ids
-        ).all
-      end
-    end
-
     # Give units described in _description_ to _player_ and place them in
     # _location_.
     #

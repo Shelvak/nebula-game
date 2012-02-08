@@ -57,11 +57,6 @@ describe GameConfig do
     end
   end
 
-  it "should support initial params" do
-    @object = GameConfig.new 'foo.bar.baz' => '123'
-    @object['foo.bar.baz'].should == '123'
-  end
-
   describe "#with_scope" do
     it "should allow scoped get" do
       scope = "foo.bar"
@@ -103,7 +98,8 @@ describe GameConfig do
 
   describe "#hashrand" do
     it "should call self.class.hashrand" do
-      @object = GameConfig.new 'hash.rand' => [100, 200]
+      @object = GameConfig.new
+      @object['hash.rand'] = [100, 200]
       Kernel.should_receive(:rangerand).with(100, 200 + 1)
       @object.hashrand 'hash.rand'
     end
@@ -141,36 +137,20 @@ describe GameConfig do
     end
   end
 
-  describe ".filter_for_eval" do
-    it "should only leave formulas" do
-      GameConfig.filter_for_eval("(1 + 2 - 3 * 4 / 5 ** level)").should == \
-        "(1 + 2 - 3 * 4 / 5 ** )"
-    end
-
-    it "should substitute params" do
-      level = 30
-      GameConfig.filter_for_eval(
-        "(1 + 2 - 3 * 4 / 5 ** level)",
-        :level => level
-      ).should == "(1 + 2 - 3 * 4 / 5 ** #{level})"
-    end
-
-    it "should substitute multiple params with same beginnings" do
-      xp_with_dead = 10
-      xp = 20
-      GameConfig.filter_for_eval(
-        "(xp_with_dead + xp)",
-        :xp_with_dead => xp_with_dead,
-        :xp => xp
-      ).should == "(#{xp_with_dead} + #{xp})"
-    end
-  end
-
   describe ".safe_eval" do
-    it "should call .filter_for_eval" do
+    it "should call scala" do
       string = "foo"
-      params = {'bar' => 'baz'}
-      GameConfig.should_receive(:filter_for_eval).with(string, params).and_return("")
+      params = {'bar' => 3.5}
+      GameConfig::FormulaCalc.should_receive(:calc).
+        with(string, params.to_scala)
+      GameConfig.safe_eval(string, params)
+    end
+
+    it "should work with non-float params" do
+      string = "foo"
+      params = {'bar' => 3}
+      GameConfig::FormulaCalc.should_receive(:calc).
+        with(string, {'bar' => 3.0}.to_scala)
       GameConfig.safe_eval(string, params)
     end
   end

@@ -13,7 +13,10 @@ class CombatLogsController < GenericController
   def action_show
     param_options :required => {:id => String}
 
-    combat_log = CombatLog.find(params['id'])
+    combat_log = CombatLog.where(:sha1_id => params['id']).first
+    raise ActiveRecord::RecordNotFound.new(
+      "Cannot find combat log with id #{params['id']}!"
+    ) if combat_log.nil?
     respond :log => combat_log.info
   end
 end

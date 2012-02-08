@@ -1,12 +1,11 @@
 # Class that stores game config data.
 class GameConfig
-  include Singleton
   include GameConfig::Creation
 
   # Default config set name
   DEFAULT_SET = 'default'
 
-  FormulaEval = Java::spacemule.modules.config.objects.FormulaEval
+  FormulaCalc = Java::spacemule.modules.config.objects.FormulaCalc
 
   attr_reader :set_scope, :scope
 
@@ -179,13 +178,11 @@ class GameConfig
   end
 
   # Evaluate a _string_ filtered by .filter_for_eval
-  def self.safe_eval(formula, params=nil)
+  def self.safe_eval(formula, params={})
     typesig binding, [String, Fixnum, Float], [NilClass, Hash]
 
-    params.nil? || params.blank? \
-      ? FormulaEval.eval(formula) \
-      : FormulaEval.eval(
-        formula, params.map_values { |key, value| value.to_f }.to_scala
-      )
+    FormulaCalc.calc(
+      formula, params.map_values { |key, value| value.to_f }.to_scala
+    )
   end
 end
