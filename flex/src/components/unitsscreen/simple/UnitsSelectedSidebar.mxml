@@ -150,7 +150,8 @@
                         visible="{(US.selection.length > 0)
                         &amp;&amp; (US.location is Location)
                         &amp;&amp; (Location(US.location).isSSObject)
-                        &amp;&amp; Location(US.location).player.id == ML.player.id }">
+                        &amp;&amp; Location(US.location).player.id == ML.player.id
+                        &amp;&amp; !(US.target is Building)}">
                <s:Button skinClass="components.skins.HideButtonSkin"
                          click="hide(true)"
                          toolTip="{getText('tooltip.hidden')}"/>

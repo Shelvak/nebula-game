@@ -946,14 +946,12 @@ package models.planet
       }
       
       [Bindable(event="unitRefresh")]
-      public function hasAgressiveGroundUnits(owner: int = Owner.PLAYER,
-                                              hiddenCounts: Boolean = true): Boolean
+      public function hasAgressiveGroundUnits(owner: int = Owner.PLAYER): Boolean
       {
-         return getAgressiveGroundUnits(owner, hiddenCounts).length > 0;
+         return getAgressiveGroundUnits(owner).length > 0;
       }
       
-      public function getAgressiveGroundUnits(owner: int = Owner.PLAYER,
-                                              hiddenCounts: Boolean = true): ListCollectionView
+      public function getAgressiveGroundUnits(owner: int = Owner.PLAYER): ListCollectionView
       {
          return Collections.filter(ML.units, function(unit: Unit): Boolean
          {
@@ -962,7 +960,7 @@ package models.planet
                return (unit.level > 0
                   && definesLocation(unit.location) 
                   && unit.kind == UnitKind.GROUND
-                  && (!unit.hidden || hiddenCounts)
+                  && (!unit.hidden)
                   && (unit.owner == owner || (owner == Owner.ENEMY && unit.owner == Owner.NPC))
                   && unit.hasGuns);
             }

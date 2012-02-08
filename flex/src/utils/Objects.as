@@ -890,11 +890,13 @@ package utils
       
       public static function update(object: Object, data: Object): void
       {
-         createImpl(getClass(object), object, data);
+         createImpl(getClass(object), object, data, null, false);
       }
       
-      private static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null) : Object {
+      private static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null,
+                                         skipNulls: Boolean = true) : Object {
          paramNotNull("type", type);
+
 
          if (data == null)
             return null;
@@ -919,6 +921,14 @@ package utils
          
          // collections
          if (TypeChecker.isCollection(object)) {
+            if (object is IList)
+            {
+               IList(object).removeAll();
+            }
+            else
+            {
+               object = [];
+            }
             fillCollection(object, itemType, data);
             // afterCreate() callback is not supported on the collections because including this feature
             // would be too much dependent on internals of each collection type
@@ -1062,7 +1072,7 @@ package utils
                   }
                   else {
                      try {
-                        setProp(createImpl(propClass, propValue, performMapping(aggrData, metaPropsMap)));
+                        setProp(createImpl(propClass, propValue, performMapping(aggrData, metaPropsMap), null, skipNulls));
                      }
                      catch (err:MappingError) {
                         pushMappingError(err);
@@ -1078,7 +1088,7 @@ package utils
                }
                
                // skip null and undefined values in source object
-               if (propData == null)
+               if (skipNulls && propData == null)
                   continue;
                
                // error when property is a primitive but the value in data object is generic object or 
@@ -1095,7 +1105,7 @@ package utils
                    TypeChecker.isPrimitiveClass(propClass) ||
                    propClass == Object) {
                   try {
-                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap)));
+                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, skipNulls));
                   }
                   catch (err:MappingError) {
                      pushMappingError(err);
@@ -1133,13 +1143,13 @@ package utils
                         propClassName.length - 1
                      );
                   }
-                  setProp(createImpl(propClass, propValue, propData, getDefinitionByName(itemTypeName) as Class));
+                  setProp(createImpl(propClass, propValue, propData, getDefinitionByName(itemTypeName) as Class, skipNulls));
                }
                   
                // other objects
                else {
                   try {
-                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap)));
+                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, skipNulls));
                   }
                   catch (err:MappingError) {
                      pushMappingError(err);
