@@ -1141,6 +1141,7 @@ assets:
         OreTile.jpg:                Tutorial_OreTile.jpg
         lt_BuildingSidebar.jpg:     Lt_tutorial_BuildingSidebar.jpg
         lt_ClaimReward.jpg:         Lt_tutorial_ClaimReward.jpg
+        lt_ClaimRewardRC.jpg:         Lt_tutorial_ClaimRewardRC.jpg
         lt_ArmorTiles.jpg: Lt_tutorial_ArmorTiles.jpg
         lt_AttackButton.jpg: Lt_tutorial_AttackButton.jpg
         lt_AttackScreen.jpg: Lt_tutorial_AttackScreen.jpg

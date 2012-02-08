@@ -3566,6 +3566,15 @@
       ]]>
     </AttackScreen>
 
+    <ClaimRewardRC>
+      <![CDATA[
+      <p>Ką tik įvykdyta užduotis tau davė vertingų resursų, kurių reikės
+      tolimesniam tavo vystymuisi - zetiumo. Be to, už puikų darbą gavai
+      prizinių kredų - neabejoju, jog rasi kaip juos panaudoti.</p>
+      <p>BŪTINAI atsiimk savo užduoties atlygį!</p>
+      ]]>
+    </ClaimRewardRC>
+
     <DamagedUnits>
       <![CDATA[
       <p>Puolimo metu tavo kariai buvo sužeisti. Juos būtų galima pagydyti,
