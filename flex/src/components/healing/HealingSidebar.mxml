@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                    xmlns:s="library://ns.adobe.com/flex/spark" 
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                    xmlns:s="library://ns.adobe.com/flex/spark"
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:base="components.base.*"
+                    xmlns:screens="components.screens.*"
                     width="100%" height="100%"
                     addedToStage="basecontainer1_addedToStageHandler(event)"
                     removedFromStage="basecontainer1_removedFromStageHandler(event)"
@@ -114,8 +115,8 @@
       }
       ]]>
    </fx:Script>
-  <base:Scroller top="0" left="0" right="0" bottom="{closeGroup.height + 3}"
-                 stepMultiplier="3">
+  <base:Scroller top="0" left="0" right="-4" bottom="12"
+                 stepMultiplier="3" id="scroller">
       <s:Group left="0" right="0">
          <base:AdvancedContainer left="0" right="0">
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.select')}">
@@ -202,11 +203,11 @@
          </base:AdvancedContainer>
       </s:Group>
    </base:Scroller>
-
-  <s:Group width="100%" id="closeGroup" bottom="3">
-    <s:Button label="{Localizer.string ('Units', 'label.close')}" top="10"
-              click="button1_clickHandler(event)" horizontalCenter="0"
-              skinClass="components.skins.RedButtonSkin"/>
+  <s:Group width="100%" id="closeGroup" bottom="0">
+    <screens:ScreenCloseButton right="0" bottom="0" top="0"
+                               click="button1_clickHandler(event)"
+                               scroller="{scroller}"
+                               label="{Localizer.string ('Units', 'label.close')}"/>
   </s:Group>
    
 </base:BaseContainer>
