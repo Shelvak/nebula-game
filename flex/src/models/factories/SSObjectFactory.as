@@ -24,7 +24,9 @@ package models.factories
             object.cooldown.endsEvent.occuresAt = DateUtil.parseServerDTF(data.cooldownEndsAt);
             object.cooldown.currentLocation = object.currentLocation;
          }
-         function createResource(type:String) : void
+         function createResource(
+            type:String, getResource: Function, setResource: Function
+         ) : void
          {
             var resource:Resource = new Resource();
             resource.type = type;
@@ -36,16 +38,31 @@ package models.factories
             resource.maxStock = data[type + "Storage"];
             resource.usageRate = data[type + "UsageRate"];
             resource.generationRate = data[type + "GenerationRate"];
-            if (object[type] != null)
-            {
-               resource.boost = object[type].boost;
+
+            var originalResource: Resource = getResource();
+            if (originalResource != null) {
+               resource.boost = originalResource.boost;
             }
-            object[type] = resource;
+            
+            setResource(resource);
          }
-         for each (var type:String in [ResourceType.METAL, ResourceType.ENERGY, ResourceType.ZETIUM])
-         {
-            createResource(type);
-         }
+         
+         createResource(
+            ResourceType.METAL,
+            function(): Resource { return object.metal; },
+            function(resource: Resource): void { object.metal = resource; }
+         );
+         createResource(
+            ResourceType.ENERGY,
+            function(): Resource { return object.energy; },
+            function(resource: Resource): void { object.energy = resource; }
+         );
+         createResource(
+            ResourceType.ZETIUM,
+            function(): Resource { return object.zetium; },
+            function(resource: Resource): void { object.zetium = resource; }
+         );
+
          return object;
       }
    }

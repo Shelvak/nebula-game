@@ -84,7 +84,7 @@
             NavigationController.getInstance().showInfo(temp);
          }
          
-         public function refreshState(e: Event = null): void
+         private function refreshState(e: Event = null): void
          {
             if (_data && ML.latestPlanet && ML.latestPlanet.ssObject)
             {
