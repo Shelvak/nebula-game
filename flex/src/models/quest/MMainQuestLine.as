@@ -46,8 +46,12 @@ package models.quest
          dispatchMQLEvent(MMainQuestLineEvent.SHOW_BUTTON_CHANGE);
       }
 
+      public function hasUncompletedMainQuest(): Boolean {
+         return _quests.hasUncompletedMainQuest;
+      }
+
       public function openCurrentUncompletedQuest(): void {
-         if (!_quests.hasUncompletedMainQuest) {
+         if (! hasUncompletedMainQuest()) {
             throw new IllegalOperationError(
                "There is no uncompleted main quest in the quests list"
             );

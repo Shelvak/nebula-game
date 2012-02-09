@@ -359,11 +359,6 @@ describe Player do
       player.daily_bonus_available?.should be_false
     end
     
-    it "should return false if it's players first time" do
-      Factory.build(:player, :daily_bonus_at => nil, :first_time => true).
-        daily_bonus_available?.should be_false
-    end
-    
     it "should return false if #daily_bonus_at is in future" do
       Factory.build(:player, :daily_bonus_at => 10.seconds.from_now).
         daily_bonus_available?.should be_false
@@ -876,7 +871,7 @@ describe Player do
 
     describe "normal mode" do
       required_fields = %w{id name scientists scientists_total xp
-        first_time economy_points army_points science_points war_points
+        economy_points army_points science_points war_points
         victory_points creds population population_cap
         alliance_id alliance_cooldown_ends_at alliance_cooldown_id
         free_creds vip_level vip_creds vip_until vip_creds_until
