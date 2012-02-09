@@ -60,6 +60,10 @@ describe Chat::Control do
           let(:target) { Factory.create(:player, :galaxy => player.galaxy) }
           let(:msg) { %Q{/adminify "#{target.name}"} }
 
+          it "should return true" do
+            control.message(player, msg).should be_true
+          end
+
           it "should be ignored if invoked by chat mod" do
             player.admin = false
             dispatcher.should_not_receive(:transmit)
@@ -99,6 +103,10 @@ describe Chat::Control do
           let(:target) { Factory.create(:player, :galaxy => player.galaxy) }
           def msg(value=true)
             %Q{/set_mod "#{target.name}" #{value.to_s}}
+          end
+
+          it "should return true" do
+            control.message(player, msg).should be_true
           end
 
           it "should be ignored if invoked by chat mod" do

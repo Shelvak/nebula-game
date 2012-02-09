@@ -27,7 +27,7 @@ class DailyBonus
       now = Time.now
       hash = player_id * 7 + now.year * 7 + now.month * 7 + now.day * 7
       name = get_range(points)
-      entries = CONFIG["daily_bonus.range.#{name}"]
+      entries = Cfg.daily_bonus_range(name)
       entry = entries[hash % entries.size]
       raise ArgumentError.new("#{entry.inspect} is not an entry") \
         unless entry.is_a?(Array)
@@ -36,7 +36,7 @@ class DailyBonus
     
     # Returns range name from player _points_.
     def get_range(points)
-      CONFIG['daily_bonus.ranges'].each do |name, start, ending|
+      Cfg.daily_bonus_ranges.each do |name, start, ending|
         return name if points >= start && (ending.nil? || points < ending)
       end
       

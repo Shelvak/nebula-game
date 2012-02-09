@@ -153,6 +153,7 @@ class Player < ActiveRecord::Base
   # Is daily bonus available for this player?
   def daily_bonus_available?
     (planets_count > 0 || bg_planets_count > 0) &&
+      points >= Cfg.daily_bonus_start_points &&
       (daily_bonus_at.nil? || daily_bonus_at <= Time.now)
   end
 
@@ -166,7 +167,7 @@ class Player < ActiveRecord::Base
     now = Time.now
     self.daily_bonus_at ||= now
     while self.daily_bonus_at <= now
-      self.daily_bonus_at += CONFIG['daily_bonus.cooldown']
+      self.daily_bonus_at += Cfg.daily_bonus_cooldown
     end
     self.daily_bonus_at
   end
