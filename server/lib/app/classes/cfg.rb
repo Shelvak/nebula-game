@@ -57,6 +57,24 @@ class Cfg
       CONFIG.evalproperty('chat.antiflood.silence_for', {'counter' => counter})
     end
 
+    ### daily_bonus.yml ###
+
+    def daily_bonus_start_points
+      CONFIG['daily_bonus.start_points']
+    end
+
+    def daily_bonus_cooldown
+      CONFIG['daily_bonus.cooldown']
+    end
+
+    def daily_bonus_ranges
+      CONFIG['daily_bonus.ranges']
+    end
+
+    def daily_bonus_range(name)
+      CONFIG["daily_bonus.range.#{name}"]
+    end
+
     ### market.yml ###
 
     # Minimal amount you can offer in market.

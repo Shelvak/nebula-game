@@ -1,4 +1,7 @@
 ---
+# How much points you need to have to qualify for daily bonuses.
+start_points: 5000
+
 cooldown: <%= 1.day %>
 
 # Point ranges for rewards.

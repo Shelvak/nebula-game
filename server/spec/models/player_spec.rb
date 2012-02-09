@@ -339,29 +339,42 @@ describe Player do
   end
   
   describe "#daily_bonus_available?" do
+    def player(bonus=nil, opts={})
+      Factory.build(
+        :player, {
+          :daily_bonus_at => bonus,
+          :economy_points => Cfg.daily_bonus_start_points,
+          :science_points => 0,
+          :army_points => 0,
+          :war_points => 0
+        }.merge(opts)
+      )
+    end
+
     it "should return true if #daily_bonus_at is nil" do
-      Factory.build(:player, :daily_bonus_at => nil).daily_bonus_available?.
-        should be_true
+      player.daily_bonus_available?.should be_true
     end
     
     it "should return true if #daily_bonus_at is in past" do
-      Factory.build(:player, :daily_bonus_at => 10.seconds.ago).
-        daily_bonus_available?.should be_true
+      player(10.seconds.ago).daily_bonus_available?.should be_true
+    end
+
+    it "should return false if player does not have enough points" do
+      player(nil, :economy_points => Cfg.daily_bonus_start_points - 1).
+        daily_bonus_available?.should be_false
     end
 
     it "should return false if player does not have any planets" do
       # Player can have 0 planets only in apocalyptic galaxy.
       galaxy = Factory.create(:galaxy, :apocalypse_start => 5.minutes.ago)
-      player = Factory.build(
-        :player, :daily_bonus_at => nil, :galaxy => galaxy,
-        :planets_count => 0, :bg_planets_count => 0
+      player = player(nil,
+        :galaxy => galaxy, :planets_count => 0, :bg_planets_count => 0
       )
       player.daily_bonus_available?.should be_false
     end
     
     it "should return false if #daily_bonus_at is in future" do
-      Factory.build(:player, :daily_bonus_at => 10.seconds.from_now).
-        daily_bonus_available?.should be_false
+      player(10.seconds.from_now).daily_bonus_available?.should be_false
     end
   end
   
