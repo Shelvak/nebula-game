@@ -34,6 +34,8 @@ s_unit_screen = "UnitScreen"
 s_attack_button = "AttackButton"
 # Explains about attack screen.
 s_attack_screen = "AttackScreen"
+# Reminds to claim reward for research center.
+s_claim_reward_rc = "ClaimRewardRC"
 # Explains about damaged units and their healing (that it will be available
 # later and you need to research it).
 s_damaged_units = "DamagedUnits"
@@ -165,6 +167,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
     have_upgraded_to Building::Barracks
 
     reward_cost Unit::Trooper, :count => 1.2
+    # 100 is enough for speeding up trooper construction.
+    reward_creds 100
   end.define(60, [s_quest_with_image[Unit::Trooper], s_unit_constructors,
                  s_unit_construction_screen]) do
     have_upgraded_to Unit::Trooper
@@ -225,7 +229,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
     reward_cost Building::ResearchCenter
     # 1000 creds should be sufficient for completing research center.
     reward_creds 1000
-  end.define(80, [s_damaged_units,
+  end.define(80, [s_claim_reward_rc, s_damaged_units,
                  s_quest_with_image[Building::ResearchCenter]]) do
     have_upgraded_to Building::ResearchCenter
 

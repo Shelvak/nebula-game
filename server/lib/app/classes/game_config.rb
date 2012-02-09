@@ -53,6 +53,8 @@ class GameConfig
 
   # Store
   def []=(key, set_or_value, value=nil)
+    ensure_setup!
+
     if value.nil?
       value = set_or_value
       set = DEFAULT_SET
@@ -71,6 +73,8 @@ class GameConfig
 
   # Get
   def [](key, set=nil)
+    ensure_setup!
+
     set ||= @set_scope
     raise ArgumentError.new("Unknown set #{set.inspect}") \
       unless @data.has_key?(set)

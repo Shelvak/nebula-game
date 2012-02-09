@@ -57,7 +57,7 @@ class Player < ActiveRecord::Base
 
   include FlagShihTzu
   has_flags(
-    1 => :first_time,
+    1 => :admin,
     2 => :vip_free,
     3 => :referral_submitted,
     # For defensive portals - skip ally planets when transferring. Don't send
@@ -152,7 +152,7 @@ class Player < ActiveRecord::Base
 
   # Is daily bonus available for this player?
   def daily_bonus_available?
-    ! first_time? && (planets_count > 0 || bg_planets_count > 0) &&
+    (planets_count > 0 || bg_planets_count > 0) &&
       (daily_bonus_at.nil? || daily_bonus_at <= Time.now)
   end
 
@@ -200,7 +200,6 @@ class Player < ActiveRecord::Base
         planets_count bg_planets_count
       })
       json['creds'] = creds
-      json['first_time'] = first_time
       json['portal_without_allies'] = portal_without_allies
       unless alliance_id.nil?
         is_owner = id == alliance.owner_id

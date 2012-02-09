@@ -26,8 +26,11 @@ describe Chat::Control do
     describe "#message" do
       let(:msg) { "/help" }
 
-      describe "if player is not a chat moderator" do
-        before(:each) { player.chat_mod = false }
+      describe "if player is not a chat moderator or admin" do
+        before(:each) do
+          player.admin = false
+          player.chat_mod = false
+        end
 
         it "should return false" do
           control.message(player, msg).should be_false
@@ -45,6 +48,102 @@ describe Chat::Control do
 
       it "should return false on non-command" do
         control.message(player, "/lolololol").should be_false
+      end
+
+      describe "admin commands" do
+        before(:each) do
+          player.admin = true
+          player.chat_mod = true
+        end
+
+        describe "/adminify" do
+          let(:target) { Factory.create(:player, :galaxy => player.galaxy) }
+          let(:msg) { %Q{/adminify "#{target.name}"} }
+
+          it "should be ignored if invoked by chat mod" do
+            player.admin = false
+            dispatcher.should_not_receive(:transmit)
+            control.message(player, msg).should be_false
+          end
+
+          it "should fail if wrong argument count is given" do
+            lambda do
+              control.message(player, msg + " lol")
+              target.reload
+            end.should_not change(target, :admin).to(true)
+          end
+
+          it "should not crash if player cannot be found" do
+            target.destroy!
+            control.message(player, msg)
+          end
+
+          it "should fail if player is in another galaxy" do
+            target.galaxy = Factory.create(:galaxy)
+            target.save!
+            lambda do
+              control.message(player, msg)
+              target.reload
+            end.should_not change(target, :admin).to(true)
+          end
+
+          it "should make player admin" do
+            lambda do
+              control.message(player, msg)
+              target.reload
+            end.should change(target, :admin).from(false).to(true)
+          end
+        end
+
+        describe "/set_mod" do
+          let(:target) { Factory.create(:player, :galaxy => player.galaxy) }
+          def msg(value=true)
+            %Q{/set_mod "#{target.name}" #{value.to_s}}
+          end
+
+          it "should be ignored if invoked by chat mod" do
+            player.admin = false
+            dispatcher.should_not_receive(:transmit)
+            control.message(player, msg).should be_false
+          end
+
+          it "should fail if wrong argument count is given" do
+            lambda do
+              control.message(player, msg + " lol")
+              target.reload
+            end.should_not change(target, :chat_mod).to(true)
+          end
+
+          it "should not crash if player cannot be found" do
+            target.destroy!
+            control.message(player, msg)
+          end
+
+          it "should fail if player is in another galaxy" do
+            target.galaxy = Factory.create(:galaxy)
+            target.save!
+            lambda do
+              control.message(player, msg)
+              target.reload
+            end.should_not change(target, :chat_mod).to(true)
+          end
+
+          it "should be able to make player a chat moderator" do
+            lambda do
+              control.message(player, msg(true))
+              target.reload
+            end.should change(target, :chat_mod).from(false).to(true)
+          end
+
+          it "should be able to unmake player a chat moderator" do
+            target.chat_mod = true
+            target.save!
+            lambda do
+              control.message(player, msg(false))
+              target.reload
+            end.should change(target, :chat_mod).from(true).to(false)
+          end
+        end
       end
 
       describe "/help" do

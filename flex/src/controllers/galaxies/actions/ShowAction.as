@@ -20,6 +20,7 @@ package controllers.galaxies.actions
    import models.map.MapType;
    import models.movement.MHop;
    import models.quest.MMainQuestLine;
+   import models.quest.MMainQuestLine;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
    import models.time.MTimeEventFixedMoment;
@@ -112,11 +113,10 @@ package controllers.galaxies.actions
             }
          }
          else {
-            // If you are playing the game for the first time or only have
-            // one planet and don't have any units in galaxy - then open first
-            // player planet.
+            // If you only have one planet and don't have any units in galaxy -
+            // then open first player planet.
             var deepOpen:Boolean =
-               (ML.player.firstTime || ML.player.planetsCountAll == 1 &&
+               (ML.player.planetsCountAll == 1 &&
                ! galaxy.hasMoreThanOneObject && ! galaxy.hasUnits)
                        && ML.player.planets.length > 0;
             if (deepOpen) {
@@ -127,10 +127,10 @@ package controllers.galaxies.actions
                      NAV_CTRL.toPlanet(
                         MSSObject(ML.player.planets.getItemAt(0)),
                         function() : void {
-                           if (ML.player.firstTime) {
-                              MMainQuestLine.getInstance()
-                                 .openCurrentUncompletedQuest();
-                           }
+                           var instance: MMainQuestLine = MMainQuestLine.
+                              getInstance();
+                           if (instance.hasUncompletedMainQuest())
+                              instance.openCurrentUncompletedQuest();
                         }
                      );
                   }

@@ -27,13 +27,13 @@ module Parts::ResourceManager
       define_method("#{resource}_generation_rate") do |level|
         raise ArgumentError.new("level must not be nil!") if level.nil?
         evalproperty("#{resource}.generate", 0, 'level' => level).to_f.
-          round(ROUNDING_PRECISION)
+          round(Cfg.rounding_precision)
       end
 
       define_method("#{resource}_usage_rate") do |level|
         raise ArgumentError.new("level must not be nil!") if level.nil?
         evalproperty("#{resource}.use", 0, 'level' => level).to_f.
-          round(ROUNDING_PRECISION)
+          round(Cfg.rounding_precision)
       end
 
       define_method("#{resource}_rate") do |level|
@@ -45,7 +45,7 @@ module Parts::ResourceManager
       define_method("#{resource}_storage") do |level|
         raise ArgumentError.new("level must not be nil!") if level.nil?
         evalproperty("#{resource}.store", 0, 'level' => level).to_f.
-          round(ROUNDING_PRECISION)
+          round(Cfg.rounding_precision)
       end
     end
 
@@ -71,7 +71,7 @@ module Parts::ResourceManager
           if method == "energy_generation_rate"
             calculate_mods if energy_mod.nil?
             value = (value * (100.0 + energy_mod) / 100).to_f.
-              round(ROUNDING_PRECISION)
+              round(Cfg.rounding_precision)
           end
 
           # Overdrive support.

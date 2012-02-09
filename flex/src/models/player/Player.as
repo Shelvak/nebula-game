@@ -93,20 +93,6 @@ package models.player
             (MTimeEventEvent.HAS_OCCURED_CHANGE, allianceCooldown_hasOccurredChange,  false, 0, true);
       }
       
-      
-      [Optional]
-      /**
-       * Indicates if the player has logged in for the first time. Makes sense only for the player instance
-       * in <code>ModelLocator</code>.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [Optional]</i></p>
-       * 
-       * @default false
-       */
-      public var firstTime:Boolean = false;
-      
-      
       [Optional]
       /**
        * Indicates if player blocks portals from communicating 
