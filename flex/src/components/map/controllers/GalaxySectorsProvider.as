@@ -23,17 +23,10 @@ package components.map.controllers
       }
 
       public function getSpaceSectors(): Array {
-         var sectorsWithSolarSystems:Array = new Array();
-         if (_map.solarSystems != null) {
-            for each (var ss:MSolarSystem in _map.solarSystemsWithPlayer) {
-               sectorsWithSolarSystems
-                  .push(new Sector(ss.currentLocation, null, ss));
-            }
-         }
-         var sectorsWithShips:Array = new Array();
+         var sectorsHash: Object = new Object();
+         var sectors: Array;
          if (_map.squadrons != null) {
             var loc: LocationMinimal;
-            var sectorsHash: Object = new Object();
             for each (var squad: MSquadron in _map.squadrons) {
                if (squad.owner == Owner.PLAYER) {
                   loc = squad.currentHop.location;
@@ -46,9 +39,19 @@ package components.map.controllers
                   }
                }
             }
-            sectorsWithShips = ArrayUtil.fromObject(sectorsHash);
          }
-         return sectorsWithSolarSystems.concat(sectorsWithShips);
+
+         if (_map.solarSystems != null) {
+            for each (var ss:MSolarSystem in _map.solarSystemsWithPlayer) {
+               if (sectorsHash[ss.currentLocation.hashKey()] === undefined)
+               {
+                  sectorsHash[ss.currentLocation] =
+                     new Sector(ss.currentLocation, null, ss);
+               }
+            }
+         }
+         sectors = ArrayUtil.fromObject(sectorsHash);
+         return sectors
       }
 
       public function includeSectorsWithShipsOf(owner: int): Boolean {
