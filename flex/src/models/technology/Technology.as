@@ -294,21 +294,31 @@ package models.technology
       {
          return Config.getTechnologyMaxLevel(type);
       }
+      
+      public static function getPlanetsRequired(type: String,  level: int): int
+      {
+         return Math.round(StringUtil.evalFormula(
+            Config.getTechnologyPlanetsRequired(type),
+            {'level': level}));
+      }
 
       [Bindable (event="levelChange")]
       public function get planetsRequired(): int
       {
+         return getPlanetsRequired(type,  level + 1);
+      }
+
+      public static function getPulsarsRequired(type: String,  level: int): int
+      {
          return Math.round(StringUtil.evalFormula(
-            Config.getTechnologyPlanetsRequired(type),
-            {'level': level+1}));
+            Config.getTechnologyPulsarsRequired(type),
+            {'level': level}));
       }
 
       [Bindable (event="levelChange")]
       public function get pulsarsRequired(): int
       {
-         return Math.round(StringUtil.evalFormula(
-            Config.getTechnologyPulsarsRequired(type),
-            {'level': level}));
+         return getPulsarsRequired(type,  level + 1);
       }
       
       [Bindable (event="levelChange")]

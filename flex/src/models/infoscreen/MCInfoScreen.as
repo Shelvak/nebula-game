@@ -72,6 +72,8 @@ package models.infoscreen
       private static const MAX_WEAK_LENGTH: int = 1000;
 
       private static const XP_NEEDED: String = 'xpNeeded';
+      private static const PLANETS_REQUIRED: String = 'planets.required';
+      private static const PULSARS_REQUIRED: String = 'pulsars.required';
       
       //properties that dont need to be displayed in difference column of datagrid
       private static const diffIgnorableProperties: Array =
@@ -84,7 +86,7 @@ package models.infoscreen
          ['metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
             'kind', 'constructable.position', 'constructable', 'npc', 'requirement', 'ui', 'actions', 'box', 'dead.passable', 'frameWidth',
             'gunPoints', 'targetPoint', 'xpModifier', 'appliesTo', 'armor', 'deploysTo', 'upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost',
-            'unitBonus', 'destroyable', 'cooldown', 'managable', 'name'];
+            'unitBonus', 'destroyable', 'groupPosition', 'cooldown', 'managable', 'name', 'groupTo'];
       
       [Bindable]
       public var model: InfoObject;
@@ -328,6 +330,16 @@ package models.infoscreen
                      currentValue = Math.round(Building.getFee(model.type, model.usefulLevel) * 100);
                      newValue = Math.round(Building.getFee(model.type, selectedLevel) * 100);
                   }
+                  else if (element == PLANETS_REQUIRED)
+                  {
+                     currentValue = Technology.getPlanetsRequired(model.type,  model.usefulLevel);
+                     newValue = Technology.getPlanetsRequired(model.type,  selectedLevel);
+                  }
+                  else if (element == PULSARS_REQUIRED)
+                  {
+                     currentValue = Technology.getPlanetsRequired(model.type,  model.usefulLevel);
+                     newValue = Technology.getPlanetsRequired(model.type,  selectedLevel);
+                  }
                   else if (element == Building.RADAR_STRENGTH)
                   {
                      currentValue = Building.calculateRadarStrenth(model.type,
@@ -355,6 +367,13 @@ package models.infoscreen
                         newValue = TechnologyUpgradable.getMod(model.type, selectedLevel,
                            element.slice(4));
                      }
+                  }
+                  else if (element == XP_NEEDED)
+                  {
+                     currentValue = StringUtil.evalFormula(model.infoData[element],
+                        {"level": model.usefulLevel + 1});
+                     newValue = StringUtil.evalFormula(model.infoData[element],
+                        {"level": selectedLevel + 1});
                   }
                   else if (element == XP_NEEDED)
                   {
