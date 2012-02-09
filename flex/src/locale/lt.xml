@@ -2503,7 +2503,7 @@
     </p>
     <p>
       Mūsų žvalgyba sako, kad ateivių gnatai savo karine galia maždaug 
-      prilygsta su mūsų desantinikams, tad prieš puolant siūlau turėti
+      prilygsta mūsų desantinikams, tad prieš puolant siūlau turėti
       kelių karių persvarą.
     </p>
     </about.70>
@@ -4200,7 +4200,7 @@
     <property.mod.metal.store value="Metalo talpos priedas" />
     <property.mod.energy.generate value="Energijos išgavimo greičio priedas" />
     <property.mod.energy.store value="Energijos talpos priedas" />
-    <property.mod.armor value="Šarvų prieitelkdas" />
+    <property.mod.armor value="Šarvų priedas" />
     <property.mod.damage value="Žalos priedas" />
     <property.mod.critical value="Kritinio šūvio tikimybė" />
     <property.mod.absorption value="Žalos sugėrimo tikimybė" />
