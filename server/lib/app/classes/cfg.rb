@@ -31,6 +31,10 @@ class Cfg
 
     ### buildings.yml ###
 
+    def rounding_precision
+      CONFIG['buildings.resources.rounding_precision']
+    end
+
     def buildings_self_destruct_creds_safeguard_time
       CONFIG.evalproperty('buildings.self_destruct.creds.safeguard_time')
     end

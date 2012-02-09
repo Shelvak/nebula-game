@@ -44,80 +44,24 @@ module GameConfig::Creation
   # Setup config, either using cache (if its not outdated) or by reading
   # config from the disk.
   def setup!(config_dir, cache_dir)
-    current_hashes, fallbacks = gather_data(config_dir)
-    cached_hashes = File.expand_path(
+    current_hashes, @setup_fallbacks = gather_data(config_dir)
+    hashes_file = File.expand_path(
       File.join(cache_dir, "config_hashes.cache")
     )
 
-    cached_config = File.expand_path(
+    config_file = File.expand_path(
       File.join(cache_dir, "config_data.cache")
     )
 
-    if File.exists?(cached_hashes) &&
-        Marshal.load(File.read(cached_hashes)) == current_hashes &&
-        File.exists?(cached_config)
-      LOGGER.block "Loading config from cache." do
-        load(cached_config)
-      end
-      @from_cache = true # We use this in #setup_initialize!
-      return true
-    end
-
-    LOGGER.block(
-      "Config cache does not exist or is invalid! Loading config from disk."
-    ) do
-      fallbacks.each do |set_name, fallback|
-        add_set(set_name, fallback)
-      end
-
-      current_hashes.each do |(set, scope, filename), hash|
-        if filename.ends_with?(".yml")
-          contents = self.class.read_file(filename)
-          raise "Eh? #{filename} was empty!" if contents.nil?
-          if scope.nil?
-            merge!(contents, set)
-          else
-            with_scope(scope) { merge!(contents, set) }
-          end
-        elsif filename.ends_with?(".rb")
-          # Delay initialization of these until #setup_initializers!
-        else
-          raise "Unknown config file type: #{filename}"
-        end
-      end
-    end
-
-    # Store data for #setup_initializers!
+    # Store data for #ensure_setup! & #setup_initializers!
+    @setup_hashes_file = hashes_file
+    @setup_config_file = config_file
     @setup_current_hashes = current_hashes
-    @setup_cached_config = cached_config
 
-    LOGGER.info "Saving config hashes to cache."
-    File.open(cached_hashes, "wb") { |f| Marshal.dump(current_hashes, f) }
+    @from_cache = File.exists?(hashes_file) &&
+      Marshal.load(File.read(hashes_file)) == current_hashes &&
+      File.exists?(config_file)
 
-    true
-  end
-
-  # Run initializer code.
-  #
-  # This must be done AFTER plugins/etc is loaded, because that code actually
-  # references actual classes/runs actual methods that won't work if:
-  # a) base config is not loaded.
-  # b) code is not fully setuped.
-  #
-  # This creates this unholy mess of stupid initialization. I'd smack myself
-  # if I had an ability to travel 2 years back in time. Eh...
-  def setup_initializers!
-    # We don't need this bullshit if we load from cache.
-    return true if @from_cache
-
-    LOGGER.block "Running config initializers" do
-      @setup_current_hashes.each do |(set, scope, filename), hash|
-        require filename if filename.ends_with?(".rb")
-      end
-    end
-
-    LOGGER.info "Saving config to cache (#{@setup_cached_config})."
-    dump(@setup_cached_config)
     true
   end
 
@@ -170,5 +114,72 @@ module GameConfig::Creation
     end
 
     [files, fallbacks]
+  end
+
+  def ensure_setup!
+    return if @set_up
+
+    # Because set up uses #[]= itself, ensure we don't get into a loop.
+    @set_up = :running
+
+    if @from_cache
+      LOGGER.block "Loading config from cache." do
+        load(@setup_config_file)
+      end
+    else
+      LOGGER.block(
+        "Config cache does not exist or is invalid! Loading config from disk."
+      ) do
+        @setup_fallbacks.each do |set_name, fallback|
+          add_set(set_name, fallback)
+        end
+
+        LOGGER.block("Loading YAML files.") do
+          @setup_current_hashes.each do |(set, scope, filename), hash|
+            if filename.ends_with?(".yml")
+              contents = self.class.read_file(filename)
+              raise "Eh? #{filename} was empty!" if contents.nil?
+              if scope.nil?
+                merge!(contents, set)
+              else
+                with_scope(scope) { merge!(contents, set) }
+              end
+            elsif filename.ends_with?(".rb")
+              # Delay initialization of these until #setup_initializers!
+            else
+              raise "Unknown config file type: #{filename}"
+            end
+          end
+        end
+
+        # Run initializer code.
+        #
+        # This must be done AFTER plugins/etc is loaded, because that code actually
+        # references actual classes/runs actual methods that won't work if:
+        # a) base config is not loaded.
+        # b) code is not fully setuped.
+        #
+        # This creates this unholy mess of stupid initialization. I'd smack myself
+        # if I had an ability to travel 2 years back in time. Eh...
+        LOGGER.block "Running config initializers." do
+          @setup_current_hashes.each do |(set, scope, filename), hash|
+            require filename if filename.ends_with?(".rb")
+          end
+        end
+
+        LOGGER.info "Saving config hashes to cache."
+        File.open(@setup_hashes_file, "wb") do |f|
+          Marshal.dump(@setup_current_hashes, f)
+        end
+
+        LOGGER.info "Saving config to cache (#{@setup_config_file})."
+        dump(@setup_config_file)
+      end
+    end
+
+    @set_up = true
+  rescue Exception
+    @set_up = false
+    raise
   end
 end

@@ -340,11 +340,6 @@ ActiveSupport::JSON.backend = 'JSONGem'
 ActiveSupport.use_standard_json_time_format = true
 ActiveSupport::LogSubscriber.colorize_logging = false
 
-# Extract some constants
-ROUNDING_PRECISION = CONFIG['buildings.resources.rounding_precision']
-
-CONFIG.setup_initializers!
-
 # Initialize event handlers
 QUEST_EVENT_HANDLER = QuestEventHandler.new
 
