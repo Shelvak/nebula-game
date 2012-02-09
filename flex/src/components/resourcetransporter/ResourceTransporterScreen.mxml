@@ -177,8 +177,6 @@
     private function creationCompleteHandler(event: FlexEvent): void {
       RT.addEventListener(ResourceTransporterEvent.SELECTED_BUILDING_CHANGE,
         setBuilding);
-      EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE,
-        dispatchRefreshMaxStorageEvent);
       //EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
       selectBuilding(RT.selectedBuilding);
     }
@@ -186,8 +184,9 @@
     [Bindable]
     private var currentTime: Number;
 
-    private function calcCurrentTime(e: GlobalEvent = null): void {
+    private function timedUpdate(e: GlobalEvent = null): void {
       currentTime = new Date().time;
+      dispatchRefreshMaxStorageEvent();
     }
 
     private function planetSelector_changeHandler(event: IndexChangeEvent): void {
@@ -203,11 +202,11 @@
     }
 
     private function addedToStageHandler(event: Event): void {
-      GlobalEvent.subscribe_TIMED_UPDATE(calcCurrentTime);
+      GlobalEvent.subscribe_TIMED_UPDATE(timedUpdate);
     }
 
     private function removedFromStageHandler(event: Event): void {
-      GlobalEvent.unsubscribe_TIMED_UPDATE(calcCurrentTime);
+      GlobalEvent.unsubscribe_TIMED_UPDATE(timedUpdate);
     }
 
     private function getTime(from: Date): Number {

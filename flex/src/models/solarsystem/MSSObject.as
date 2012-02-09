@@ -8,7 +8,8 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
-   
+   import flash.events.Event;
+
    import globalevents.GResourcesEvent;
    import globalevents.GlobalEvent;
    
@@ -68,7 +69,11 @@ package models.solarsystem
    [Event(
       name="terrainChange",
       type="models.solarsystem.events.MSSObjectEvent")]
-   
+
+   /* when MSsObject gets updated, metal, energy and zetium properties gets overwritten.
+    * The problem is, same resource reference is written to player planets list ssObject model,
+    * latestPlanet ssObject model and ssMap objects list ssObject model resource...
+    * so, TODO: find out the way to keep same references for ssObjects in different lists */
    public class MSSObject extends BaseModel implements IMStaticSpaceObject,
                                                        ICleanable
    {
@@ -663,7 +668,7 @@ package models.solarsystem
          return _lastResourcesUpdate;
       }
       private var _lastResourcesUpdate:Date;
-      
+
       [Bindable]
       public var metal:Resource;
       
@@ -752,7 +757,8 @@ package models.solarsystem
                resourceChanged = true;
             }
          }
-         if (resourceChanged && ML.latestPlanet && this == ML.latestPlanet.ssObject)
+         /* CHECKING FOR SS OBJECT BY ID, NOT REFERENCE, READ MSsObject DOCUMENTATION FOR REASONS */
+         if (resourceChanged && ML.latestPlanet && this.id == ML.latestPlanet.ssObject.id)
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
          if (nextRaidAt != null)
             raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - DateUtil.now)/1000,2);
