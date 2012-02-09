@@ -3676,9 +3676,10 @@
       <![CDATA[
       <p>Pasirinkęs pasiūlymą gali nupirkti tik jo dalį - pasirink kiek resursų
         tau reikia naudodamasis apačioje atsirandančiu slankikliu.</p>
-      <p>Atkreipk dėmesį, jog mainytis gali ne tik resursais, bet ir
-        kariais.</p>
       ]]>
+      <!-- Not implemented for now.
+      <p>Atkreipk dėmesį, jog mainytis gali ne tik resursais, bet ir
+        kariais.</p>-->
     </Market2>
 
     <Population>
