@@ -385,7 +385,7 @@ Message was:
 		response = Galaxy.create_player(galaxy_id, web_user_id, name)
 
 		io.send_message :success => true,
-                    :player_id => response.player_ids[web_user_id]
+                    :player_id => response[web_user_id]
   rescue Exception => e
     io.send_message :success => false
     raise e
