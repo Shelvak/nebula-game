@@ -57,6 +57,7 @@ class Player < ActiveRecord::Base
 
   include FlagShihTzu
   has_flags(
+    1 => :admin,
     2 => :vip_free,
     3 => :referral_submitted,
     # For defensive portals - skip ally planets when transferring. Don't send

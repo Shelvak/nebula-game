@@ -16,15 +16,21 @@ class Chat::Control
   # Processes message as a command. Returns true if it was processed, false if
   # it is just a regular message.
   def message(player, message)
-    return false unless player.chat_mod?
+    return false unless player.admin? || player.chat_mod?
 
     command, args = message.split(" ", 2)
     args = args.nil? ? [] : self.class.parse_args(args)
+
+    # Admin-only commands
     case command
-    when "/help"
-      cmd_help(player, args)
-    when "/silence"
-      cmd_silence(player, args)
+    when "/adminify" then cmd_adminify(player, args)
+    when "/set_mod" then cmd_set_mod(player, args)
+    end if player.admin?
+
+    # Regular commands.
+    case command
+    when "/help" then cmd_help(player, args)
+    when "/silence" then cmd_silence(player, args)
     else
       return false # Report that this is not a command.
     end
@@ -47,9 +53,28 @@ class Chat::Control
         "    /silence \"bad player\" 'until 22:00'",
         "    /silence bad_player 'until 2012-01-01'"
       )
-    else
+    when "adminify"
       report(player.id,
-        "Supported commands: silence",
+        "/adminify - makes player a galaxy administrator",
+        "",
+        "WARNING: THERE IS NO WAY DO DE-ADMINIFY PLAYER FROM CHAT AFTER THIS!",
+        "",
+        "Examples:",
+        "    /adminify 'player name'"
+      )
+    when "set_mod"
+      report(player.id,
+        "/set_mod - sets if player is a chat moderator",
+        "",
+        "Examples:",
+        "    /set_mod 'player name' true",
+        "    /set_mod 'player name' false"
+      )
+    else
+      report(player.id, "Supported commands: silence")
+      report(player.id, "Supported admin commands: adminify set_mod") \
+        if player.admin?
+      report(player.id,
         "",
         %Q{Message "/help command_name" for more information.},
         "",
@@ -61,26 +86,10 @@ class Chat::Control
 
   def cmd_silence(player, args)
     log(player, "silence", args)
-    if args.size != 2
-      report(player.id,
-        "Wrong /silence argument count!",
-        "Expected to get 2, got #{args.size}!",
-        ""
-      )
-      cmd_help(player, ["silence"])
-      return
-    end
+    check_args(player, args, 2) or return
 
     name, time_str = args
-    target = Player.
-      where(:galaxy_id => player.galaxy_id, :name => name).
-      first
-
-    if target.nil?
-      report(player.id, %Q{Cannot find player "#{name}" in galaxy #{
-        player.galaxy_id}!})
-      return
-    end
+    target = find_player(player, name) or return
 
     if target.chat_mod?
       report(player.id, %Q{Cannot silence another chat moderator!})
@@ -102,6 +111,40 @@ class Chat::Control
     report(player.id, %Q{Player "#{name}" silenced until "#{time}".})
   end
 
+  def cmd_adminify(player, args)
+    log(player, "adminify", args)
+    check_args(player, args, 1) or return
+
+    name = args[0]
+    target = find_player(player, name) or return
+
+    target.admin = true
+    target.save!
+    report(player.id, %Q{Player "#{name}" is now galaxy administrator.})
+  end
+
+  def cmd_set_mod(player, args)
+    log(player, "adminify", args)
+    check_args(player, args, 2) or return
+
+    name, value = args
+    target = find_player(player, name) or return
+    value = case value
+    when "true" then true
+    when "false" then false
+    else
+      report(player.id, "Unknown second parameter: #{value.inspect}!")
+      return
+    end
+
+    target.chat_mod = value
+    target.save!
+    msg = value \
+      ? "has been made a chat moderator." \
+      : "is not longer a chat moderator."
+    report(player.id, %Q{Player "#{name}" #{msg}})
+  end
+
   def report(player_id, *messages)
     messages.each do |message|
       params = {'pid' => SYSTEM_ID, 'msg' => message, 'name' => SYSTEM_NAME}
@@ -110,6 +153,28 @@ class Chat::Control
         {'action' => ChatController::PRIVATE_MESSAGE, 'params' => params},
         player_id
       )
+    end
+  end
+
+  def find_player(player, name)
+    target = Player.where(:galaxy_id => player.galaxy_id, :name => name).first
+    if target.nil?
+      report(player.id,
+        %Q{Cannot find player by "#{name}" in galaxy #{player.galaxy_id}!})
+      return false
+    end
+
+    target
+  end
+
+  def check_args(player, args, arity)
+    if args.size != arity
+      report(player.id,
+        "Wrong argument count! Expected to get #{arity}, got #{args.size}!"
+      )
+      false
+    else
+      true
     end
   end
 
