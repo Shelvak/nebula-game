@@ -337,8 +337,8 @@ package models.infoscreen
                   }
                   else if (element == PULSARS_REQUIRED)
                   {
-                     currentValue = Technology.getPlanetsRequired(model.type,  model.usefulLevel);
-                     newValue = Technology.getPlanetsRequired(model.type,  selectedLevel);
+                     currentValue = Technology.getPulsarsRequired(model.type,  model.usefulLevel);
+                     newValue = Technology.getPulsarsRequired(model.type,  selectedLevel);
                   }
                   else if (element == Building.RADAR_STRENGTH)
                   {
