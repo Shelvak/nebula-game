@@ -22,20 +22,32 @@ class Chat::Control
     args = args.nil? ? [] : self.class.parse_args(args)
 
     # Admin-only commands
-    case command
-    when "/adminify" then cmd_adminify(player, args)
-    when "/set_mod" then cmd_set_mod(player, args)
-    end if player.admin?
+    admin_commands = lambda do
+      case command
+      when "/adminify" then cmd_adminify(player, args)
+      when "/set_mod" then cmd_set_mod(player, args)
+      else return false
+      end
 
-    # Regular commands.
-    case command
-    when "/help" then cmd_help(player, args)
-    when "/silence" then cmd_silence(player, args)
-    else
-      return false # Report that this is not a command.
+      true
     end
 
-    true
+    # Regular commands.
+    regular_commands = lambda do
+      case command
+      when "/help" then cmd_help(player, args)
+      when "/silence" then cmd_silence(player, args)
+      else return false
+      end
+
+      true
+    end
+
+    if player.admin?
+      admin_commands.call || regular_commands.call
+    else
+      regular_commands.call
+    end
   end
 
   private
