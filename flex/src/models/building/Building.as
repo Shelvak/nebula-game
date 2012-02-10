@@ -126,13 +126,16 @@ package models.building
             {'level': level});
       }
 
-
+      public static function getBuildingCooldownMod(type: String,  level: int): Number
+      {
+         return StringUtil.evalFormula(Config.getBuildingCooldownMod(
+            type), {'level': level});
+      }
 
       public static function getResourceTransporterCooldown(level: int,
          volume: int): int
       {
-         return Math.ceil(StringUtil.evalFormula(Config.getBuildingCooldownMod(
-            BuildingType.RESOURCE_TRANSPORTER), {'level': level}) * volume);
+         return Math.ceil(getBuildingCooldownMod(BuildingType.RESOURCE_TRANSPORTER, level) * volume);
       }
       
       /**

@@ -40,8 +40,10 @@ package models.infoscreen
    import mx.collections.SortField;
    import mx.core.ClassFactory;
    import mx.core.IFactory;
-   
+
    import utils.DateUtil;
+   import utils.MathUtil;
+   import utils.MathUtil;
    import utils.MathUtil;
    import utils.ModelUtil;
    import utils.NumberUtil;
@@ -74,6 +76,9 @@ package models.infoscreen
       private static const XP_NEEDED: String = 'xpNeeded';
       private static const PLANETS_REQUIRED: String = 'planets.required';
       private static const PULSARS_REQUIRED: String = 'pulsars.required';
+      private static const MOD_CONSTRUCTION: String = 'mod.construction';
+      private static const MOD_COOLDOWN: String = 'mod.cooldown';
+      private static const MAX_VOLUME: String = 'maxVolume';
       
       //properties that dont need to be displayed in difference column of datagrid
       private static const diffIgnorableProperties: Array =
@@ -357,8 +362,21 @@ package models.infoscreen
                   {
                      if (model.objectType == ObjectClass.BUILDING)
                      {
-                        currentValue = BuildingUpgradable.getConstructionMod(model.type, model.usefulLevel);
-                        newValue = BuildingUpgradable.getConstructionMod(model.type, selectedLevel);
+                        if (element == MOD_CONSTRUCTION)
+                        {
+                           currentValue = BuildingUpgradable.getConstructionMod(model.type, model.usefulLevel);
+                           newValue = BuildingUpgradable.getConstructionMod(model.type, selectedLevel);
+                        }
+                        else if (element == MOD_COOLDOWN)
+                        {
+                           currentValue = MathUtil.round(Building.getBuildingCooldownMod(
+                              model.type, model.usefulLevel),
+                              Config.getRoundingPrecision());
+                           newValue = MathUtil.round(Building.getBuildingCooldownMod(
+                              model.type, selectedLevel),
+                              Config.getRoundingPrecision());
+                           useRounding = true;
+                        }
                      }
                      else
                      {
@@ -384,28 +402,43 @@ package models.infoscreen
                   }
                   else
                   {
-                     currentValue = StringUtil.evalFormula(model.infoData[element], 
-                        {"level": model.usefulLevel});
-                     newValue = StringUtil.evalFormula(model.infoData[element], 
-                        {"level": selectedLevel});
+                     if (element == MAX_VOLUME)
+                     {
+                        currentValue = MathUtil.round(StringUtil.evalFormula(model.infoData[element],
+                           {"level": model.usefulLevel}),
+                           Config.getRoundingPrecision());
+                        newValue = MathUtil.round(StringUtil.evalFormula(model.infoData[element],
+                           {"level": selectedLevel}),
+                           Config.getRoundingPrecision());
+                        useRounding = true;
+                     }
+                     else
+                     {
+                        currentValue = StringUtil.evalFormula(model.infoData[element],
+                           {"level": model.usefulLevel});
+                        newValue = StringUtil.evalFormula(model.infoData[element],
+                           {"level": selectedLevel});
+                     }
                   }
-                  
-                  var label: String;
+
+                  var bundle: String;
                   switch (model.objectType)
                   {
                      case ObjectClass.BUILDING:
-                        label = Localizer.string('Buildings', 'property.' + element);
+                        bundle = 'Buildings';
                         break;
                      case ObjectClass.TECHNOLOGY:
-                        label = Localizer.string('Technologies', 'property.' + element);
+                        bundle = 'Technologies';
                         break;
                      case ObjectClass.UNIT:
-                        label = Localizer.string('Units', 'property.' + element);
+                        bundle = 'Units';
                         break;
                   }
-                  if (label == null) {
-                     label = "!!! " + element;
-                  }
+                  var label: String = Localizer.string(bundle, 'property.' + element);
+                  var tooltip: String = Localizer.hasProperty(
+                     bundle, 'property.' + element + '.tooltip')
+                        ? Localizer.string(
+                           bundle, 'property.' + element + '.tooltip') : '';
                   
                   var newValueString: String;
                   var currentValueString: String;
@@ -449,12 +482,11 @@ package models.infoscreen
                              model.usefulLevel);
                   }
                   
-                  if (element.indexOf(TechnologyUpgradable.MOD) == 0
-                     || element == Building.FEE)
+                  if (Localizer.hasProperty(bundle,  'property.' + element + '.format'))
                   {
-                     newValueString += '%';
-                     currentValueString += '%';
-                     diffString += '%';
+                     newValueString = Localizer.string(bundle,  'property.' + element + '.format', [newValueString]);
+                     currentValueString = Localizer.string(bundle,  'property.' + element + '.format', [currentValueString]);
+                     diffString = Localizer.string(bundle,  'property.' + element + '.format', [diffString]);
                   }
                   
                   if (diffIgnorableProperties.indexOf(element) != -1)
@@ -462,7 +494,7 @@ package models.infoscreen
                      diffString = '-';
                   }
                   dataForTable.addItem(
-                     new MInfoRow(label, currentValueString, newValueString, diffString));
+                     new MInfoRow(label, currentValueString, newValueString, diffString, tooltip));
                }
             }
          }

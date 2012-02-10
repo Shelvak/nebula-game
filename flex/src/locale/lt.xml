@@ -762,16 +762,27 @@
     <property.constructing value="Stato" />
     <property.initiative value="Iniciatyva" />
     <property.armor value="Šarvai" />
-    <property.armorMod value="Šarvų daugiklis" />
-    <property.damageMod value="Žalos daugiklis" />
-    <property.mod.construction value="Konstravimo greičio daugiklis" />
+    <property.armorMod value="Šarvų pliusas" />
+    <property.armorMod.format value="{0}%" />
+    <property.mod.construction value="Konstravimo greičio priedas" />
+    <property.mod.construction.format value="{0}%" />
+    <property.mod.cooldown value="Petraukos daugiklis" />
+    <property.mod.cooldown.format value="{0} s" />
+    <property.mod.cooldown.tooltip>
+      <p>Siunčiant resursus petraukos trukmė skaičiuojama dauginant šį skaičių
+      su persiųstų resursų apimti.</p>
+      <p>Kuo šis skaičius mažesnis, tuo trumpiau po resursų siuntimo truks
+      pertrauka.</p>
+    </property.mod.cooldown.tooltip>
     <property.healing.time.mod value="Sekundžių pagydyti 1 GT" />
+    <property.healing.time.format value="{0} s" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
     <property.population value="Populiacija" />
     <property.maxVolume value="Maks. perkeliamas tūris" />
     <property.creds value="Kredai" />
     <property.victoryPoints value="Pergalės taškai" />
     <property.fee value="Mokesčio procentas" />
+    <property.fee.format value="{0}%" />
     <property.width value="Pastato plotis" />
     <property.height value="Pastato ilgis" />
     <property.vpsOnDamage value="PT už 1 žalos vienetą" />
@@ -4195,21 +4206,34 @@
     <property.zetium.cost value="Zetiumo kaina" />
     <property.scientists.min value="Reikia mokslininkų" />
     <property.mod.zetium.generate value="Zetiumo išgavimo greičio priedas" />
+    <property.mod.zetium.generate.format value="{0}%" />
     <property.mod.zetium.store value="Zetiumo talpos priedas" />
+    <property.mod.zetium.store.format value="{0}%" />
     <property.mod.metal.generate value="Metalo išgavimo greičio priedas" />
+    <property.mod.metal.generate.format value="{0}%" />
     <property.mod.metal.store value="Metalo talpos priedas" />
+    <property.mod.metal.store.format value="{0}%" />
     <property.mod.energy.generate value="Energijos išgavimo greičio priedas" />
+    <property.mod.energy.generate.format value="{0}%" />
     <property.mod.energy.store value="Energijos talpos priedas" />
+    <property.mod.energy.store.format value="{0}%" />
     <property.mod.armor value="Šarvų priedas" />
+    <property.mod.armor.format value="{0}%" />
     <property.mod.damage value="Žalos priedas" />
+    <property.mod.damage.format value="{0}%" />
     <property.mod.critical value="Kritinio šūvio tikimybė" />
+    <property.mod.critical.format value="{0}%" />
     <property.mod.absorption value="Žalos sugėrimo tikimybė" />
+    <property.mod.absorption.format value="{0}%" />
     <property.mod.speed value="Judėjimo trukmės sumažinimas" />
+    <property.mod.speed.format value="{0}%" />
     <property.mod.storage value="Talpumo priedas" />
+    <property.mod.storage.format value="{0}%" />
     <property.planets.required value="Reikiamas planetų kiekis" />
     <property.pulsars.required value="Reikiamas pulsarų kiekis" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
     <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
+    <property.healing.time.mod.format ref="Buildings/property.healing.time.mod.format" />
     <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
@@ -4868,7 +4892,7 @@
     <property.zetium.cost value="Zetiumo kaina" />
     <property.armor value="Šarvai" />
     <property.armorMod value="Šarvų pliusas" />
-    <property.damageMod value="Žalos pliusas" />
+    <property.armorMod.format value="{0}%" />
     <property.evasiveness value="Išsisukimas" />
     <property.xpNeeded value="Patirties taškų pakelti lygiui" />
     <property.initiative value="Iniciatyva" />
