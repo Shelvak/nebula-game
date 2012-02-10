@@ -65,12 +65,13 @@
       [Bindable]
       private var crashed: Boolean = false;
 
-      public function crash(msg: String, showDebugWarning: Boolean): void {
-         if (!crashed) {
-            crashed = true;
-            globalErrorPopUp.messageText = msg;
-            globalErrorPopUp.showDebugPlayerWarning = showDebugWarning;
-         }
+      public function crash(
+         msg: String, slowClient: Boolean, showDebugWarning: Boolean
+      ): void {
+         crashed = true;
+         globalErrorPopUp.messageText = msg;
+         globalErrorPopUp.slowClientMessage = slowClient;
+         globalErrorPopUp.showDebugPlayerWarning = showDebugWarning;
       }
 
       private function vstTopLevelScreens_creationCompleteHandler(event: FlexEvent): void {
