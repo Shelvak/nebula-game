@@ -9,6 +9,8 @@ package utils
 
    import interfaces.IAutoCreated;
 
+   import models.BaseModel;
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.logging.ILogger;
@@ -891,10 +893,14 @@ package utils
       public static function update(object: Object, data: Object): void
       {
          createImpl(getClass(object), object, data, null, false);
+         if (object is BaseModel)
+         {
+            BaseModel(object).refresh();
+         }
       }
       
       private static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null,
-                                         skipNulls: Boolean = true) : Object {
+                                         rawCreation: Boolean = true) : Object {
          paramNotNull("type", type);
 
 
@@ -947,6 +953,14 @@ package utils
                var readOnly:Boolean = propInfo.name() == "constant" ||
                                       propInfo.name() == "accessor" && propInfo.@access[0] == "readonly";
                var propMetadata:XMLList = propInfo.metadata;
+               /* FOR NEW OBJECTS UPDATE SYSTEM */
+               var skipProperty:XML = propMetadata.(@name == "SkipProperty")[0];
+
+               if (skipProperty != null && !rawCreation)
+               {
+                  continue;
+               }
+
                var propName:String  = propInfo.@name[0];
                var propClassName:String = String(propInfo.@type[0]).replace("&lt;", "<");
                var propClass:Class = getDefinitionByName(propClassName) as Class;
@@ -1072,7 +1086,7 @@ package utils
                   }
                   else {
                      try {
-                        setProp(createImpl(propClass, propValue, performMapping(aggrData, metaPropsMap), null, skipNulls));
+                        setProp(createImpl(propClass, propValue, performMapping(aggrData, metaPropsMap), null, rawCreation));
                      }
                      catch (err:MappingError) {
                         pushMappingError(err);
@@ -1088,7 +1102,7 @@ package utils
                }
                
                // skip null and undefined values in source object
-               if (skipNulls && propData == null)
+               if (rawCreation && propData == null)
                   continue;
                
                // error when property is a primitive but the value in data object is generic object or 
@@ -1105,7 +1119,7 @@ package utils
                    TypeChecker.isPrimitiveClass(propClass) ||
                    propClass == Object) {
                   try {
-                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, skipNulls));
+                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, rawCreation));
                   }
                   catch (err:MappingError) {
                      pushMappingError(err);
@@ -1143,13 +1157,13 @@ package utils
                         propClassName.length - 1
                      );
                   }
-                  setProp(createImpl(propClass, propValue, propData, getDefinitionByName(itemTypeName) as Class, skipNulls));
+                  setProp(createImpl(propClass, propValue, propData, getDefinitionByName(itemTypeName) as Class, rawCreation));
                }
                   
                // other objects
                else {
                   try {
-                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, skipNulls));
+                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, rawCreation));
                   }
                   catch (err:MappingError) {
                      pushMappingError(err);
