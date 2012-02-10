@@ -762,11 +762,11 @@
     <property.constructing value="Stato" />
     <property.initiative value="Iniciatyva" />
     <property.armor value="Šarvai" />
-    <property.armorMod value="Šarvų pliusas" />
+    <property.armorMod value="Šarvų priedas" />
     <property.armorMod.format value="{0}%" />
     <property.mod.construction value="Konstravimo greičio priedas" />
     <property.mod.construction.format value="{0}%" />
-    <property.mod.cooldown value="Petraukos daugiklis" />
+    <property.mod.cooldown value="Sekundžių persiųsti 1 apimties vnt." />
     <property.mod.cooldown.format value="{0} s" />
     <property.mod.cooldown.tooltip>
       <p>Siunčiant resursus petraukos trukmė skaičiuojama dauginant šį skaičių
@@ -777,6 +777,11 @@
     <property.healing.time.mod value="Sekundžių pagydyti 1 GT" />
     <property.healing.time.format value="{0} s" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
+    <property.healing.cost.mod.tooltip>
+      <p>Gydant karius/laivus gydymo kaina apskaičiuojama pagal 1 lygio kario
+      kainą * sužeidimo procentas * šis daugiklis.</p>
+      <p>Kuo šis skaičius mažesnis, tuo pigiau kainuos gydymas.</p>
+    </property.healing.cost.mod.tooltip>
     <property.population value="Populiacija" />
     <property.maxVolume value="Maks. perkeliamas tūris" />
     <property.creds value="Kredai" />
@@ -4897,7 +4902,6 @@
     <property.armor value="Šarvai" />
     <property.armorMod value="Šarvų pliusas" />
     <property.armorMod.format value="{0}%" />
-    <property.evasiveness value="Išsisukimas" />
     <property.xpNeeded value="Patirties taškų pakelti lygiui" />
     <property.initiative value="Iniciatyva" />
     <property.volume value="Apimtis" />
