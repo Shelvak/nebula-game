@@ -141,8 +141,6 @@ class Building < ActiveRecord::Base
 
   # Buildings have fortified armor.
   def armor; :fortified; end
-  # They do not have ability to evade.
-  def evasiveness; 0; end
   # They are always on the ground.
   def kind; :ground; end
   # Buildings don't accumulate XP. This method always returns 0.

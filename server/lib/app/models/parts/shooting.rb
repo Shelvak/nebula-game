@@ -17,7 +17,6 @@ module Parts
       end
 
       def armor; property('armor'); end
-      def evasiveness; property('evasiveness'); end
       def kind; property('kind'); end
       def ground?; kind == KIND_GROUND; end
       def space?; kind == KIND_SPACE; end

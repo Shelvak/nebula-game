@@ -4902,7 +4902,6 @@
     <property.armor value="Šarvai" />
     <property.armorMod value="Šarvų pliusas" />
     <property.armorMod.format value="{0}%" />
-    <property.evasiveness value="Išsisukimas" />
     <property.xpNeeded value="Patirties taškų pakelti lygiui" />
     <property.initiative value="Iniciatyva" />
     <property.volume value="Apimtis" />
