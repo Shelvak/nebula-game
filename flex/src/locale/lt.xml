@@ -896,9 +896,9 @@
     <ResourceTransporter.tooltip value="Leidžia teleportuoti resursus" />
     <ResourceTransporter.about>
       <p>
-        [obj:1:Building_ResourceTransporter] gali akimirksniu pergabenti
+        Resursų siųstuvas gali akimirksniu pergabenti
         tam tikrą kiekį resursų iš vienos planetos į kitą. Du
-        [obj:2:Building_ResourceTransporter::dc] susijungia tarpusavyje,
+        resursų siųstuvai susijungia tarpusavyje,
         sukurdami erdvės tunelį tarp dviejų planetų.
       </p>
       <p>
@@ -4225,8 +4225,12 @@
     <property.mod.critical.format value="{0}%" />
     <property.mod.absorption value="Žalos sugėrimo tikimybė" />
     <property.mod.absorption.format value="{0}%" />
-    <property.mod.speed value="Judėjimo trukmės sumažinimas" />
+    <property.mod.speed value="Judėjimo trukmės daliklis" />
     <property.mod.speed.format value="{0}%" />
+    <property.mod.speed.tooltip>
+      <p>Skaičiavimo formulė: (šuolio laikas) / (1 + daliklis / 100)</p>
+      <p>Pvz. 100% reiškia, jog laivas judės 2 kartus greičiau.</p>
+    </property.mod.speed.tooltip>
     <property.mod.storage value="Talpumo priedas" />
     <property.mod.storage.format value="{0}%" />
     <property.planets.required value="Reikiamas planetų kiekis" />
@@ -4498,7 +4502,7 @@
 
     <ResourceTransporter.name ref="Objects/Technology_ResourceTransporter" />
     <ResourceTransporter.about>
-      <p>Leidžia statyti [obj:2:Building_ResourceTransporter:what:dc].</p>
+      <p>Leidžia statyti resursų siųstuvus.</p>
       <p>[reference:Buildings/ResourceTransporter.about]</p>
     </ResourceTransporter.about>
 
@@ -4909,7 +4913,7 @@
     <tooltip.willBeQueued>
       <p>Šie kariai bus įdėti į statymo eilę.</p>
       <p>Už karius nebus sumokėta iš anksto ir jų apmokymas bus atšauktas jei
-        statymo metu Tau pritruks resursų.</p>
+        statymo metu tau pritruks resursų.</p>
     </tooltip.willBeQueued>
     <tooltip.becomeVipToQueue>
       <p>Tik VIP nariai gali dėti karius į eilę nesumokėję iš anksto.</p>

@@ -145,9 +145,10 @@ query_cache_size        = 16M
 log_error                = /var/log/mysql/error.log
 
 # Here you can see queries with especially long duration
-slow_query_log  = /var/log/mysql/slow.log
-long_query_time = 0.1
-#log-queries-not-using-indexes
+slow_query_log  = true
+slow_query_log_file  = /var/log/mysql/slow.log
+long_query_time = 1
+log-queries-not-using-indexes
 #
 # The following can be used as easy to replay backup logs or for replication.
 # note: if you are setting up a replication slave, see README.Debian about
@@ -207,140 +208,6 @@ cd $HOME/nebula-server/current/
 
 eval "$@"
 }
-
-JDK_DIR = "/usr/lib/jvm/java-7-oracle"
-JAVA7_JINFO = %Q{name=java-7-oracle-1.7.0
-alias=java-7-oracle
-priority=73
-section=non-free
-
-jre ControlPanel #{JDK_DIR}/jre/bin/ControlPanel
-jre java #{JDK_DIR}/jre/bin/java
-jre java_vm #{JDK_DIR}/jre/bin/java_vm
-jre javaws #{JDK_DIR}/jre/bin/javaws
-jre jcontrol #{JDK_DIR}/jre/bin/jcontrol
-jre keytool #{JDK_DIR}/jre/bin/keytool
-jre pack200 #{JDK_DIR}/jre/bin/pack200
-jre policytool #{JDK_DIR}/jre/bin/policytool
-jre rmid #{JDK_DIR}/jre/bin/rmid
-jre rmiregistry #{JDK_DIR}/jre/bin/rmiregistry
-jre unpack200 #{JDK_DIR}/jre/bin/unpack200
-jre orbd #{JDK_DIR}/jre/bin/orbd
-jre servertool #{JDK_DIR}/jre/bin/servertool
-jre tnameserv #{JDK_DIR}/jre/bin/tnameserv
-jre jexec #{JDK_DIR}/jre/lib/jexec
-jdk appletviewer #{JDK_DIR}/bin/appletviewer
-jdk apt #{JDK_DIR}/bin/apt
-jdk extcheck #{JDK_DIR}/bin/extcheck
-jdk idlj #{JDK_DIR}/bin/idlj
-jdk jar #{JDK_DIR}/bin/jar
-jdk jarsigner #{JDK_DIR}/bin/jarsigner
-jdk java-rmi.cgi #{JDK_DIR}/bin/java-rmi.cgi
-jdk javac #{JDK_DIR}/bin/javac
-jdk javadoc #{JDK_DIR}/bin/javadoc
-jdk javah #{JDK_DIR}/bin/javah
-jdk javap #{JDK_DIR}/bin/javap
-jdk jconsole #{JDK_DIR}/bin/jconsole
-jdk jdb #{JDK_DIR}/bin/jdb
-jdk jhat #{JDK_DIR}/bin/jhat
-jdk jinfo #{JDK_DIR}/bin/jinfo
-jdk jmap #{JDK_DIR}/bin/jmap
-jdk jps #{JDK_DIR}/bin/jps
-jdk jrunscript #{JDK_DIR}/bin/jrunscript
-jdk jsadebugd #{JDK_DIR}/bin/jsadebugd
-jdk jstack #{JDK_DIR}/bin/jstack
-jdk jstat #{JDK_DIR}/bin/jstat
-jdk jstatd #{JDK_DIR}/bin/jstatd
-jdk native2ascii #{JDK_DIR}/bin/native2ascii
-jdk rmic #{JDK_DIR}/bin/rmic
-jdk schemagen #{JDK_DIR}/bin/schemagen
-jdk serialver #{JDK_DIR}/bin/serialver
-jdk wsgen #{JDK_DIR}/bin/wsgen
-jdk wsimport #{JDK_DIR}/bin/wsimport
-jdk xjc #{JDK_DIR}/bin/xjc
-}
-# Don't need plugins right now.
-#plugin xulrunner-1.9-javaplugin.so #{JDK_DIR}/jre/lib/i386/libnpjp2.so
-#plugin firefox-javaplugin.so #{JDK_DIR}/jre/lib/i386/libnpjp2.so
-#plugin iceape-javaplugin.so #{JDK_DIR}/jre/lib/i386/libnpjp2.so
-#plugin iceweasel-javaplugin.so #{JDK_DIR}/jre/lib/i386/libnpjp2.so
-#plugin mozilla-javaplugin.so #{JDK_DIR}/jre/lib/i386/libnpjp2.so
-#plugin midbrowser-javaplugin.so #{JDK_DIR}/jre/lib/i386/libnpjp2.so
-#plugin xulrunner-javaplugin.so #{JDK_DIR}/jre/lib/i386/libnpjp2.so
-
-def register_java7(mode)
-  # "Register JDK7 for update-alternatives Script in Debian Way"
-  # Based on 1. codeslinger's "install_java7_alternatives" from https://gist.github.com/445930
-  #          2. sun-java6-plugin.deb postint script (for plugin)
-  # Modified by Cheng-Wei Chien<e.cwchien@gmail.com>, 2011-07-30
-  # ------------------------------------------------------------------------------
-  # Note:  This script works on x86 Debian GNU/Linux.
-  #        If you use other arch or distro, you may have to modify some parameters.
-  #
-  # Usage: 1. Extract jdk7 tar.gz to, for example, /usr/lib/jvm/java-7-sun-1.7.0,
-  #           create a symbolic link /usr/lib/jvm/java-7-sun to it.
-  #        2. Download java-7-sun.jinfo from https://gist.github.com/1114515,
-  #           move it to /usr/lib/jvm/.java-7-sun.jinfo, do some modification if necessary.
-  #        3. Run this script with sudo
-  #        4. sudo update-java-alternatives -s java-7-sun
-  #        5. Have fun with jdk7!
-  #
-  # Trouble Shooting: If something goes wrong,
-  #        1. Uncomment "remove" commands and comment "install" commands.
-  #        2. Run this script again to rollback.
-  #        3. Fix what causes the problem, maybe typo or something else.
-  #        4. Comment "remove" commands and uncomment "install" commands
-  #        5. Run this script to update
-
-  # Follow the Debian's priority rule for java5 = 53, java6 = 63 .. I guess
-  priority = 73
-  
-  # Your man1 dir, you don't need to change this
-  mandir="#{JDK_DIR}/man/man1"
-  
-  # Variables from /usr/lib/jvm/.java-6-sun.jinfo except HtmlConverter (not in jdk7)
-  vars = [
-    ['bin', %w{appletviewer apt extcheck idlj jar jarsigner java-rmi.cgi javac
-      javadoc javah javap jconsole jdb jhat jinfo jmap jps jrunscript jsadebugd
-      jstack jstat jstatd native2ascii rmic schemagen serialver wsgen wsimport
-      xjc}],
-    ['jre/bin', %w{ControlPanel java java_vm javaws jcontrol keytool pack200
-      policytool rmid rmiregistry unpack200 orbd servertool tnameserv}],
-    ['jre/lib', %w{jexec}]
-  ]
-
-  #browser_var = %w{xulrunner-addons endrefox iceape iceweasel mozilla
-  #  midbrowser xulrunner}
-  
-  # Java plugin path, you don't need to change this
-  # plugin="#{JDK_DIR}/jre/lib/i386/libnpjp2.so"
-  
-  # First, gzip man1 endles to meet the 1.gz form
-  Dir["#{mandir}/*.1"].each do |i|
-    run "gzip #{i}"
-  end
-  
-  # Register jdk variables
-  vars.each do |src, files|
-    files.each do |i|
-      slave = File.exists?("#{mandir}/#{i}.1.gz") \
-        ? "--slave /usr/share/man/man1/#{i}.1.gz #{i}.1.gz #{mandir}/#{i}.1.gz" \
-        : ""
-
-      if mode == :install
-        run "update-alternatives --install /usr/bin/#{i} #{i} #{
-          JDK_DIR}/#{src}/#{i} #{priority} #{slave}"
-      else
-        run "update-alternatives --remove #{i} #{JDK_DIR}/#{src}/#{i}"
-      end
-    end
-  end
-end
-
-JAVA7_URL = "http://download.oracle.com/otn-pub/java/jdk/7u1-b08/jdk-7u1-linux-i586.tar.gz"
-JAVA7_TGZ = File.basename(JAVA7_URL)
-JAVA7_EXTRACTED_DIR = "jdk1.7.0_01"
-
 # }}}
 
 # DSL {{{
@@ -598,29 +465,6 @@ if ARGV.include?("basic") # {{{
   puts "Installing Git & curl"
   install "git-core curl"
 
-  puts "Checking for RVM..."
-  (rvm() == "").and {
-    puts "Installing RVM"
-    rvminst="/tmp/rvm-installer"
-    run("wget -O #{rvminst} https://rvm.beginrescueend.com/install/rvm")
-    run("chmod +x #{rvminst}")
-    run(rvminst)
-    File.unlink(rvminst)
-
-    File.modify(BASHRC) do |bashrc|
-      bashrc.sub!(%Q{[ -z "$PS1" ] && return}, %Q{if [ -z "$PS1" ]; then})
-      bashrc += %Q{\nfi\n\n[[ -s "/usr/local/rvm/scripts/rvm" ]] && . "/usr/local/rvm/scripts/rvm"}
-      bashrc
-    end
-
-    puts
-    puts "RVM installed and it needs to be loaded."
-    puts
-    puts "Please run this:"
-    puts ". #{BASHRC}"
-    exit
-  }
-
   puts "Installing Ruby build deps"
   install "build-essential bison openssl libreadline6 libreadline6-dev curl " +
     "git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 " +
@@ -667,6 +511,29 @@ export JRUBY_OPTS='--server -J-XX:-UseLoopPredicate -J-XX:+TieredCompilation'},
       sub(/^#?PubkeyAuthentication .+$/, "PubkeyAuthentication yes")
   end
   run "/etc/init.d/ssh reload"
+  
+  puts "Checking for RVM..."
+  (rvm() == "").and {
+    puts "Installing RVM"
+    rvminst="/tmp/rvm-installer"
+    run("wget -O #{rvminst} https://raw.github.com/wayneeseguin/rvm/master/binscripts/rvm-installer")
+    run("chmod +x #{rvminst}")
+    run("#{rvminst} stable")
+    File.unlink(rvminst)
+
+    File.modify(BASHRC) do |bashrc|
+      bashrc.sub!(%Q{[ -z "$PS1" ] && return}, %Q{if [ -z "$PS1" ]; then})
+      bashrc += %Q{\nfi\n\n[[ -s "/usr/local/rvm/scripts/rvm" ]] && . "/usr/local/rvm/scripts/rvm"}
+      bashrc
+    end
+
+    puts
+    puts "RVM installed and it needs to be loaded."
+    puts
+    puts "Please run this:"
+    puts ". #{BASHRC}"
+    exit
+  }
 end # }}}
 
 if ARGV.include?("sql") # {{{
@@ -692,16 +559,11 @@ if ARGV.include?("server") # {{{
   install "java-common"
 
   `java -version 2>&1`.include?("java version \"1.7").or do
-    unless File.exists?(JDK_DIR)
-      run("wget #{JAVA7_URL}") unless File.exists?(JAVA7_TGZ)
-      run("tar -xzf #{JAVA7_TGZ}") unless File.exists?(JAVA7_EXTRACTED_DIR)
-      run("mkdir -p #{File.dirname(JDK_DIR)}")
-      run("mv #{JAVA7_EXTRACTED_DIR} #{JDK_DIR}")
-    end
+    run "add-apt-repository ppa:webupd8team/java"
+    run "apt-get update"
+    run "mkdir -p /usr/lib/mozilla/plugins"
+    install "oracle-jdk7-installer"
 
-    File.write("#{File.dirname(JDK_DIR)}/.java-7-sun.jinfo", JAVA7_JINFO)
-    register_java7(:install)
-    run("update-java-alternatives -s java-7-oracle")
     `java -version 2>&1`.include?("java version \"1.7").or do
       puts "Java7 install failed!"
       exit
@@ -709,9 +571,10 @@ if ARGV.include?("server") # {{{
   end
 
   puts "Checking for jruby"
-  rvm("list rubies").include?("jruby").or do
+  rvm("list rubies").include?("jruby-1.6.6").or do
     puts "Building jruby, this will take a while..."
     rvm("install jruby")
+    rvm("jruby do gem install bundler")
   end
 
   Dir.mkdir("#{HOME}/bin", nil, UCH)
@@ -778,6 +641,7 @@ end # }}}
 
 if ARGV.include?("client") # {{{
   install "apache2"
+  run "a2enmod expires headers"
   Dir.mkdir "#{HOME}/nebula-client", nil, UCH
   apache_vhost("nebula-client", "#{HOME}/nebula-client/current", "static")
 end # }}}

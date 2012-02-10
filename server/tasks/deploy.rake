@@ -27,7 +27,7 @@ DEPLOY_CONFIG = {
     },
     :beta => {
       :client => ["beta.nebula44.lt"],
-      :server => ["beta.nebula44.lt"],
+      :server => ["thor.nebula44.com"],
     },
   },
 
