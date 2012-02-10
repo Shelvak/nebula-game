@@ -59,6 +59,10 @@ class Player < ActiveRecord::Base
     # For defensive portals - skip ally planets when transfering. Don't send
     # units to ally planets or receive units from them.
     4 => :portal_without_allies,
+    # This player has been detached from galaxy map.
+    5 => :detached,
+    # This player is a chat moderator.
+    6 => :chat_mod,
     # No index there anyway.
     :flag_query_mode => :bit_operator,
     :check_for_column => false
