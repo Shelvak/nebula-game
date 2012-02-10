@@ -1,8 +1,15 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe GameConfig do
+  let(:config) do
+    config = GameConfig.new
+    # Stub our #setup! method.
+    config.instance_variable_set("@set_up", true)
+    config
+  end
+
   before(:each) do
-    @object = GameConfig.new
+    @object = config
   end
 
   it "should support simple keys" do
@@ -98,7 +105,7 @@ describe GameConfig do
 
   describe "#hashrand" do
     it "should call self.class.hashrand" do
-      @object = GameConfig.new
+      @object = config
       @object['hash.rand'] = [100, 200]
       Kernel.should_receive(:rangerand).with(100, 200 + 1)
       @object.hashrand 'hash.rand'
