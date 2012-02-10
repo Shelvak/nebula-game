@@ -30,7 +30,7 @@ begin
       else
         file = args[:spec]
         if File.file?(file)
-          Dir['spec/**/*_spec.rb'].each do |other|
+          Dir[ENV['glob'] || 'spec/**/*_spec.rb'].each do |other|
             unless file == other
               pair = "#{other} #{file}"
               puts "******** Invoking rspec #{pair}"
