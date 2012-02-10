@@ -84,8 +84,9 @@ class UnitMover
           "Unit type #{type} should be space unit but was #{kind.inspect}"
         ) unless kind == :space
 
-        find_max_hop_times!(hop_times, type, 
-          1 - (decreases["Unit::#{type}"] || 0))
+        find_max_hop_times!(
+          hop_times, type, 1 + (decreases["Unit::#{type}"] || 0)
+        )
         selected_count += count
       end
 
@@ -158,14 +159,17 @@ class UnitMover
     end
 
     # Find and store hop times for given unit _type_ into _hop_times_ hash.
-    def find_max_hop_times!(hop_times, type, multiplier)
+    def find_max_hop_times!(hop_times, type, divider)
+      raise ArgumentError.new(
+        "Divider for #{type} must be >= 1, but #{divider} was given!"
+      ) if divider < 1
+
       type = type.underscore
       [:solar_system, :galaxy].each do |space|
-        hop_time = (CONFIG.evalproperty(
-          "units.#{type}.move.#{space}.hop_time"
-        ) * multiplier).round
+        hop_time = CONFIG.evalproperty("units.#{type}.move.#{space}.hop_time")
         raise "CONFIG[units.#{type}.move.#{space}.hop_time] is nil!" \
           if hop_time.nil?
+        hop_time = (hop_time.to_f / divider).round
         hop_times[space] = hop_time if hop_time > hop_times[space]
       end
     end

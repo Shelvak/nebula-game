@@ -4204,7 +4204,11 @@
     <property.mod.damage value="Žalos priedas" />
     <property.mod.critical value="Kritinio šūvio tikimybė" />
     <property.mod.absorption value="Žalos sugėrimo tikimybė" />
-    <property.mod.speed value="Judėjimo trukmės sumažinimas" />
+    <property.mod.speed value="Judėjimo trukmės daliklis" />
+    <property.mod.speed.tooltip>
+      <p>Skaičiavimo formulė: (šuolio laikas) / (1 + daliklis / 100)</p>
+      <p>Pvz. 100% reiškia, jog laivas judės 2 kartus greičiau.</p>
+    </property.mod.speed.tooltip>
     <property.mod.storage value="Talpumo priedas" />
     <property.planets.required value="Reikiamas planetų kiekis" />
     <property.pulsars.required value="Reikiamas pulsarų kiekis" />

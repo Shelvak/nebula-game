@@ -6,7 +6,7 @@ if $SPEC_INITIALIZED.nil?
   require File.join(File.dirname(__FILE__), '..', 'lib', 'initializer.rb')
 
   DEFAULT_SPEC_CLIENT_ID = -1
-  SPEC_TIME_PRECISION = 10
+  SPEC_TIME_PRECISION = 5
   SPEC_FLOAT_PRECISION = 0.0001
 
   require 'rspec'

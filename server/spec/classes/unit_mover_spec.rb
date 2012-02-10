@@ -231,14 +231,18 @@ describe UnitMover do
     end
 
     it "should make use of the speed multiplier" do
-      mult = 1.237849263597
-      arrives_at, _ = 
+      mult = 1.5 # Increase move time, because decreasing requires creds.
+      without_mult, _ =
         UnitMover.move_meta(@player.id, @unit_ids, @source, @target)
-      UnitMover.move(
+      original_move_time = without_mult - Time.now
+
+      with_mult = UnitMover.move(
         @player.id, @unit_ids, @source, @target, true, mult
-      ).arrives_at.should be_within(30.seconds).of(
-        ((arrives_at - Time.now) * mult).seconds.from_now
-      )
+      ).arrives_at
+      reduced_move_time = with_mult - Time.now
+
+      (original_move_time * mult).
+        should be_within(SPEC_TIME_PRECISION).of(reduced_move_time)
     end
 
     it "should use slowest of the units speed for movements" do
@@ -251,18 +255,18 @@ describe UnitMover do
     end
 
     it "should use technologies for movement" do
-      without_tech, _ = UnitMover.move_meta(
-        @player.id, @units_slow.map(&:id), @source, @target)
+      with_config_values("technologies.heavy_flight.mod.speed" => 160) do
+        args = [@player.id, @units_slow.map(&:id), @source, @target]
+        without_tech, _ = UnitMover.move_meta(*args)
+        original_move_time = without_tech - Time.now
 
-      tech = Factory.create!(:t_heavy_flight, :level => 5,
-        :player => @player)
-      with_tech, _ = UnitMover.move_meta(
-        @player.id, @units_slow.map(&:id), @source, @target)
+        tech = Factory.create!(:t_heavy_flight, :player => @player, :level => 1)
+        with_tech, _ = UnitMover.move_meta(*args)
+        reduced_move_time = with_tech - Time.now
 
-      decreasement = (without_tech - Time.now) * tech.speed_mod.to_f / 100
-
-      (without_tech - decreasement).should be_within(SPEC_TIME_PRECISION).
-        of(with_tech)
+        (original_move_time / 2.6).
+          should be_within(SPEC_TIME_PRECISION).of(reduced_move_time)
+      end
     end
     
     it "should use weights" do
