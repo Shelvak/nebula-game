@@ -152,8 +152,9 @@ package models.unit
                      ML.latestPlanet.ssObject[resource]).maxStock -
                      Resource(ML.latestPlanet.ssObject[resource]).currentStock))
                :(Math.min(
-                  Resource.getResourcesForVolume(transporter.transporterStorage - transporter.stored - 
-                     getOtherSelected(resource) - unitsSelectedVolume, resource),
+                  Resource.getResourcesForVolume(transporter.transporterStorage
+                     - transporter.stored - getOtherSelected(resource)
+                     - unitsSelectedVolume, resource),
                   Resource(ML.latestPlanet.ssObject[resource]).currentStock)));
          rebuildWarning();
          maxStocksCache[resource] = Math.max(0, Math.floor(possibleStore));
@@ -213,6 +214,10 @@ package models.unit
 
       private function getOtherSelected(resource: String = ''): int
       {
+         if (maxStocksCache['other_'+resource] != null)
+         {
+            return maxStocksCache['other_'+resource];
+         }
          var selectedTotal: int = 0;
          if (resource != ResourceType.METAL)
             selectedTotal += Resource.getResourceVolume(metalSelectedVal, ResourceType.METAL);
@@ -220,14 +225,32 @@ package models.unit
             selectedTotal += Resource.getResourceVolume(energySelectedVal, ResourceType.ENERGY);
          if (resource != ResourceType.ZETIUM)
             selectedTotal += Resource.getResourceVolume(zetiumSelectedVal, ResourceType.ZETIUM);
+         maxStocksCache['other_'+resource] = selectedTotal;
          return selectedTotal;
       }
+      
+      private static var UPDATE_RESOURCES_FREQUENCY: int = 5;
+      private var resourceUpdateIteration: int = 0;
       
       public function dispatchRefreshMaxStorageEvent(e: Event = null): void
       {
          if (dontDispatchResourcesChange)
             return;
-         dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+         if (e is GResourcesEvent)
+         {
+            resourceUpdateIteration++;
+            if (resourceUpdateIteration == UPDATE_RESOURCES_FREQUENCY)
+            {
+               resourceUpdateIteration = 0;
+               maxStocksCache = {};
+               dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+            }
+         }
+         else
+         {
+            maxStocksCache = {};
+            dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
+         }
       }
       
       public function selectedResourcesChangeHandler(event:UnitEvent):void
@@ -404,6 +427,7 @@ package models.unit
       public function selectAllResources(): void
       {
          dontDispatchResourcesChange = true;
+         maxStocksCache = {};
          metalSelectedVal = getMaxStock(ResourceType.METAL);
          energySelectedVal = getMaxStock(ResourceType.ENERGY);
          zetiumSelectedVal = getMaxStock(ResourceType.ZETIUM);

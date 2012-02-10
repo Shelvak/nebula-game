@@ -33,13 +33,19 @@ package utils.locale
          var bundle: String = bundleName ? bundleName : currentBundle;
          return string(bundle, propertyName);
       }
+
+      public static function hasProperty(bundle: String, property: String): Boolean
+      {
+         return (property in RM.getResourceBundle(
+                                 Locale.currentLocale, bundle).content);
+      }
       
       public static function string(bundle: String, property: String, parameters: Array = null): String
       {
          // using workaround for wrong implementation of IResourceManager
          // see http://bugs.adobe.com/jira/browse/SDK-17041
          var resultString: String;
-         if (property in RM.getResourceBundle(Locale.currentLocale, bundle).content) 
+         if (hasProperty(bundle, property))
          {
             resultString = RM.getResourceBundle(
                Locale.currentLocale, bundle).content[property];

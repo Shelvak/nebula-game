@@ -25,7 +25,7 @@
          <s:SolidColor color="{itemIndex%2==0?0x0e0e0e:0x141414}"/>
       </s:fill>
    </s:Rect>
-   <s:Group top="3" bottom="3" left="0" right="0" id="row">
+   <s:Group top="3" bottom="3" left="0" right="0" id="row" toolTip="{model.tooltip}">
       <s:layout>
          <s:HorizontalLayout gap="1" verticalAlign="middle" paddingLeft="3"/>
       </s:layout>
