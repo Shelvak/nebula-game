@@ -758,7 +758,8 @@ package models.solarsystem
             }
          }
          /* CHECKING FOR SS OBJECT BY ID, NOT REFERENCE, READ MSsObject DOCUMENTATION FOR REASONS */
-         if (resourceChanged && ML.latestPlanet && this.id == ML.latestPlanet.ssObject.id)
+         if (resourceChanged && ML.latestPlanet && ML.latestPlanet.ssObject
+            && this.id == ML.latestPlanet.ssObject.id)
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
          if (nextRaidAt != null)
             raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - DateUtil.now)/1000,2);
