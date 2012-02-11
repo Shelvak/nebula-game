@@ -141,7 +141,7 @@ namespace :build do
       end
     end
     
-    desc "Compile SpaceGame into SWF file. Pass debug=1 for debug build."
+    desc "Compile SpaceGame into SWF file."
     task :swf do
       [output_dir, bin_dir, dist_dir].each do |dir|
         info "Creating #{dir}."
@@ -171,8 +171,8 @@ namespace :build do
           warn-no-type-decl
           warn-number-from-string-changes warn-slow-text-field-addition
           warn-unlikely-function-value
+          debug
         }
-        compiler_flags.push "debug" if ENV['debug'] || ENV['DEBUG']
 
         build = Time.now.strftime("%Y-%m%d-%H%M")
         version_file = "#{src_dir}/application/Version.as"
