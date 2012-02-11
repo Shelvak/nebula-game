@@ -338,6 +338,8 @@
     <Technology_ShipStorage-whos value="Išorinių dokų" />
     <Technology_DefensivePortal ref="Building_DefensivePortal" />
     <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
+    <Technology_Radar value="Radaras" />
+    <Technology_Radar-whos value="Radaro" />
     <Technology_Alliances value="Sąjungos" />
     <Technology_Alliances-whos value="Sąjungų" />
     <Technology_BuildingRepair value="Taisymo robotai" />
