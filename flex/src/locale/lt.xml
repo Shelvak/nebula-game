@@ -320,8 +320,10 @@
     <Technology_ZetiumExtraction-whos value="Zetiumo gavybos" />
     <Technology_Market value="Turgus" />
     <Technology_Market-whos value="Turgaus" />
-    <Technology_SpaceFactory-whos value="Laivų gamyklos" />
+    <Technology_GroundFactory value="Tankų gamykla" />
+    <Technology_GroundFactory-whos value="Tankų gamyklos" />
     <Technology_SpaceFactory value="Laivų gamykla" />
+    <Technology_SpaceFactory-whos value="Laivų gamyklos" />
     <Technology_FieryMelters value="Aukšto spaudimo lydymas" />
     <Technology_FieryMelters-whos value="aukšto spaudimo lydymo" />
     <Technology_SuperconductorTechnology value="Superlaidininkai" />
