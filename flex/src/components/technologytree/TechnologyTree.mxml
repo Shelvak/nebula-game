@@ -13,7 +13,6 @@
          import com.developmentarc.core.utils.EventBroker;
          
          import components.base.viewport.events.ViewportEvent;
-         import components.technologytree.TechnologyComponent;
 
          import config.Config;
          
@@ -28,13 +27,11 @@
          import models.solarsystem.MSSObject;
          import models.technology.MCTechnologySelectedSidebar;
          import models.technology.Technology;
+         import models.technology.events.TechnologyEvent;
          import models.technology.events.TechnologySidebarEvent;
 
          import mx.collections.SortField;
-         import mx.controls.Alert;
          import mx.events.FlexEvent;
-
-         import utils.DateUtil;
 
          import utils.assets.AssetNames;
          import utils.datastructures.LineSet;
@@ -87,6 +84,7 @@
                EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
                EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
                ML.player.addEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
+               ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, refreshPurchasableState);
                ML.player.addEventListener(PlayerEvent.PLANET_COUNT_CHANGE, refreshPurchasableState);
                tSidebar.addEventListener(TechnologySidebarEvent.SELECTED_CHANGE,
                  selectedTechChangeHandler
@@ -106,6 +104,7 @@
             if (ML.player)
             {
                ML.player.removeEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
+               ML.technologies.removeEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, refreshPurchasableState);
                ML.player.removeEventListener(PlayerEvent.PLANET_COUNT_CHANGE, refreshPurchasableState);
             }
             EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);

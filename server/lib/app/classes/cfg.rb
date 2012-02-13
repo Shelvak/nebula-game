@@ -31,6 +31,10 @@ class Cfg
 
     ### buildings.yml ###
 
+    def rounding_precision
+      CONFIG['buildings.resources.rounding_precision']
+    end
+
     def buildings_self_destruct_creds_safeguard_time
       CONFIG.evalproperty('buildings.self_destruct.creds.safeguard_time')
     end
@@ -51,6 +55,24 @@ class Cfg
 
     def chat_antiflood_silence_for(counter)
       CONFIG.evalproperty('chat.antiflood.silence_for', {'counter' => counter})
+    end
+
+    ### daily_bonus.yml ###
+
+    def daily_bonus_start_points
+      CONFIG['daily_bonus.start_points']
+    end
+
+    def daily_bonus_cooldown
+      CONFIG['daily_bonus.cooldown']
+    end
+
+    def daily_bonus_ranges
+      CONFIG['daily_bonus.ranges']
+    end
+
+    def daily_bonus_range(name)
+      CONFIG["daily_bonus.range.#{name}"]
     end
 
     ### market.yml ###
@@ -186,10 +208,6 @@ class Cfg
 
     def galaxy_zone_diameter; CONFIG['galaxy.zone.diameter']; end
 
-    def galaxy_zone_death_age(diagonal_no)
-      CONFIG.evalproperty('galaxy.zone.death_age', 'arg' => diagonal_no)
-    end
-
     def player_initial_population; CONFIG['galaxy.player.population']; end
     def player_max_population; CONFIG['galaxy.player.population.max']; end
 
@@ -197,11 +215,16 @@ class Cfg
     # considered active.
     def player_inactivity_time(points)
       data = CONFIG['galaxy.player.inactivity_check']
+      formula = nil
       data.each do |points_required, seconds|
-        return seconds if points <= points_required
+        if points <= points_required
+          formula = seconds
+          break
+        end
       end
 
-      data.last[1]
+      formula = data.last[1] if formula.nil?
+      CONFIG.safe_eval(formula)
     end
 
     def player_referral_points_needed
@@ -224,7 +247,6 @@ class Cfg
 
     # Initializes exploration rewards and returns possible rewards.
     def exploration_rewards(key)
-      ExplorationRewardsInitializer.initialize
       CONFIG["tiles.exploration.rewards.#{key}"]
     end
 

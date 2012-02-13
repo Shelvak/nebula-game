@@ -107,7 +107,7 @@ package utils
          if (instance == null) {
             return false;
          }
-         return getQualifiedClassName(instance).indexOf("<") >= 0;
+         return getQualifiedClassName(instance).indexOf(">") >= 0;
       }
       
       /**

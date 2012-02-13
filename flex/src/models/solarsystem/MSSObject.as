@@ -8,7 +8,8 @@ package models.solarsystem
    
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
-   
+   import flash.events.Event;
+
    import globalevents.GResourcesEvent;
    import globalevents.GlobalEvent;
    
@@ -68,7 +69,11 @@ package models.solarsystem
    [Event(
       name="terrainChange",
       type="models.solarsystem.events.MSSObjectEvent")]
-   
+
+   /* when MSsObject gets updated, metal, energy and zetium properties gets overwritten.
+    * The problem is, same resource reference is written to player planets list ssObject model,
+    * latestPlanet ssObject model and ssMap objects list ssObject model resource...
+    * so, TODO: find out the way to keep same references for ssObjects in different lists */
    public class MSSObject extends BaseModel implements IMStaticSpaceObject,
                                                        ICleanable
    {
@@ -212,7 +217,7 @@ package models.solarsystem
       [Required]
       /**
        * Size of the planet image in the solar system map compared with original image
-       * dimentions in percents.
+       * dimensions in percents.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [SkipProperty]<br/>
@@ -663,7 +668,7 @@ package models.solarsystem
          return _lastResourcesUpdate;
       }
       private var _lastResourcesUpdate:Date;
-      
+
       [Bindable]
       public var metal:Resource;
       
@@ -738,15 +743,23 @@ package models.solarsystem
       
       private function recalculateResources(event:GlobalEvent) : void {
          var timeDiff:Number = Math.floor((DateUtil.now - lastResourcesUpdate.time) / 1000);
+         var resourceChanged: Boolean = false;
          for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM]) {
             var resource:Resource = this[type];
             resource.boost.refreshBoosts();
+            var oldStock: Number = resource.currentStock;
             resource.currentStock = Math.max(0, Math.min(
                resource.maxStock,
                this[type + "AfterLastUpdate"] + resource.rate * timeDiff
             ));
+            if (oldStock != resource.currentStock)
+            {
+               resourceChanged = true;
+            }
          }
-         if (ML.latestPlanet && this == ML.latestPlanet.ssObject)
+         /* CHECKING FOR SS OBJECT BY ID, NOT REFERENCE, READ MSsObject DOCUMENTATION FOR REASONS */
+         if (resourceChanged && ML.latestPlanet && ML.latestPlanet.ssObject
+            && this.id == ML.latestPlanet.ssObject.id)
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
          if (nextRaidAt != null)
             raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - DateUtil.now)/1000,2);

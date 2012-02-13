@@ -46,13 +46,6 @@ class SsObject::Planet < SsObject
       ">"
   end
 
-  # Can given _player_id_ view NPC units on this planet?
-  #
-  # Also see Building#observer_player_ids
-  def can_view_npc_units?(player_id)
-    self.player_id == player_id
-  end
-
   def cooldown
     Cooldown.for_planet(self)
   end
@@ -411,9 +404,7 @@ class SsObject::Planet < SsObject
   # Register callbacks if energy is diminishing.
   def register_callbacks
     if energy_rate < 0
-      method = energy_diminish_registered? ? :update : :register
-
-      CallbackManager.send(method,
+      CallbackManager.register_or_update(
         self,
         CallbackManager::EVENT_ENERGY_DIMINISHED,
         last_resources_update + (energy / energy_rate).abs.ceil

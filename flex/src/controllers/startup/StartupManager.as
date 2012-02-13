@@ -60,6 +60,8 @@ package controllers.startup
    import models.quest.MainQuestSlideFactory;
    import models.time.MTimeEventFixedMoment;
 
+   import mx.controls.Alert;
+
    import mx.logging.ILogger;
    import mx.logging.Log;
    import mx.logging.LogEventLevel;
@@ -200,12 +202,16 @@ package controllers.startup
          var traceTarget:TraceTarget = new TraceTarget();   
          traceTarget.includeCategory = true;
          traceTarget.includeLevel = true;
+         traceTarget.includeDate = true;
+         traceTarget.includeTime = true;
          traceTarget.level = LogEventLevel.ALL;
          Log.addTarget(traceTarget);
          
          _inMemoryLog = new InMemoryTarget();   
          _inMemoryLog.includeCategory = true;
          _inMemoryLog.includeLevel = true;
+         _inMemoryLog.includeDate = true;
+         _inMemoryLog.includeTime = true;
          _inMemoryLog.maxEntries = 1000;
          _inMemoryLog.level = LogEventLevel.ALL;
          Log.addTarget(_inMemoryLog);
@@ -345,6 +351,7 @@ package controllers.startup
          bindPair(BuildingsCommand.MOVE, new controllers.buildings.actions.MoveAction());
          bindPair(BuildingsCommand.SET_BUILD_IN_2ND_FLANK, new SetBuildIn2ndFlankAction());
          bindPair(BuildingsCommand.SET_BUILD_HIDDEN, new SetBuildHiddenAction());
+         bindPair(BuildingsCommand.SHOW_GARRISON, new ShowGarrisonAction());
          bindPair(BuildingsCommand.TRANSPORT_RESOURCES, new TransportResourcesAction());
       }
       private static function bindTechnologiesCommands() : void

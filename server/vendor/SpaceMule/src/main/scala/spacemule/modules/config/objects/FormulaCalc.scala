@@ -12,7 +12,9 @@ import de.congrace.exp4j.ExpressionBuilder
  * To change this template use File | Settings | File Templates.
  */
 
-object FormulaEval {
+object FormulaCalc {
+  type VarMap = sc.Map[String, Double]
+  
   private[this] val formulaCache = HashMap.empty[String, ExpressionBuilder]
   private[this] def resolveExpression(formula: String) = {
     if (formulaCache.contains(formula)) {
@@ -36,7 +38,7 @@ object FormulaEval {
     }).build().calculate()
   }
 
-  def eval(formula: String): Double =
+  def calc(formula: String): Double =
     try {
       calculateValue(resolveExpression(formula), None)
     }
@@ -48,17 +50,24 @@ object FormulaEval {
       throw e
     }
   
-  def eval(formula: String, vars: sc.Map[String, Double]): Double =
+  def calc(formula: String, vars: VarMap): Double =
     try {
       calculateValue(resolveExpression(formula), Some(vars))
     }
     catch {
       case e: Exception =>
-        System.err.println(
+        throw new IllegalArgumentException(
           "Error while calculating formula '%s' with variables %s".format(
             formula, vars
-          )
+          ), e
         )
-      throw e
     }
+  
+  // Just placeholders if formula is not exactly a formula. (When called from
+  // jruby side)
+  
+  def calc(formula: Long) = formula
+  def calc(formula: Long, vars: VarMap) = formula
+  def calc(formula: Double) = formula
+  def calc(formula: Double, vars: VarMap) = formula
 }

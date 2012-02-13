@@ -109,7 +109,7 @@
    </s:Group>
    <s:Label text="0"/>
    <s:HSlider id="slider" minimum="0" width="100%" maximum="{_maxAmmount}" value="0"
-              changeEnd="hslider1_changeHandler(event)"/>
+              change="hslider1_changeHandler(event)" liveDragging="false"/>
    <s:Label text="{_maxAmmount}" width="50"/>
    <s:Button skinClass="components.skins.ZoomOutButtonSkin" click="setValue(0)"
              toolTip="{Localizer.string('Resources', 'toolTip.selectNone')}"/>

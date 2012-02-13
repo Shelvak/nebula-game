@@ -4,8 +4,6 @@ package tests.time
    import models.time.MTimeEventFixedInterval;
    import models.time.MTimeEventFixedMoment;
    
-   import mx.controls.Alert;
-   
    import namespaces.change_flag;
    
    import org.hamcrest.assertThat;

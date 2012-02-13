@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                autoDrawBackground="false"
+                xmlns:base="components.base.*"
+                width="104" height="138">
+  <fx:Script>
+      <![CDATA[
+    import controllers.ui.NavigationController;
+
+    import models.ModelLocator;
+
+    import models.building.Building;
+    import models.resource.ResourceType;
+    import models.technology.MChangedTechnology;
+    import models.technology.Technology;
+    import models.unit.RaidingUnitEntry;
+    import models.unit.Unit;
+    import models.unit.UnitBuildingEntry;
+
+    import utils.ModelUtil;
+    import utils.assets.AssetNames;
+    import utils.assets.ImagePreloader;
+    import utils.locale.Localizer;
+
+    private function get ML(): ModelLocator
+    {
+      return ModelLocator.getInstance();
+    }
+
+    protected function info_clickHandler(event:MouseEvent):void
+    {
+      var tech: Technology = ML.technologies.getTechnologyByType(cast(data).technology);
+      NavigationController.getInstance().showInfo(tech);
+    }
+
+    public static const imageSize: int = 48;
+
+    public function cast(from: Object): MChangedTechnology
+    {
+      return MChangedTechnology(from);
+    }
+    
+    private function getString(property: String,  params: Array = null): String
+    {
+      return Localizer.string('Technologies', property, params);
+    }
+
+    ]]>
+   </fx:Script>
+
+  <s:states>
+    <s:State name="normal"/>
+  </s:states>
+
+  <!-- background -->
+  <s:Rect left="0" right="0" top="0" bottom="0">
+    <s:stroke>
+      <s:SolidColorStroke color="0x3E3E3E" weight="1"/>
+    </s:stroke>
+    <s:fill>
+      <s:SolidColor color="0x0F0F0F"/>
+    </s:fill>
+  </s:Rect>
+
+  <!-- unit image -->
+  <s:Group left="3" right="3" top="3" bottom="34">
+    <s:BitmapImage
+      source="{cast(data).technology == null
+          ? null
+          : ImagePreloader.getInstance().getImage(
+            AssetNames.getTechnologyImageName(cast(data).technology))}"
+      width="{imageSize}" height="{imageSize}"
+      top="0" left="0" right="0" bottom="0" id="techImg"/>
+  </s:Group>
+
+  <base:AdvancedContainer left="3" right="3" bottom="8">
+
+    <s:Label visible="{cast(data).paused}" text="{getString('label.wasPaused')}"
+      width="100%" height="100%" textAlign="center" verticalAlign="middle"
+      fontWeight="bold"/>
+    <s:Group visible="{!cast(data).paused}" width="100%" height="100%">
+      <s:Group width="100%" verticalCenter="0">
+        <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" paddingLeft="6"
+                            textToDisplay="{cast(data).oldScientists}"
+                            toolTip="{Localizer.string('Resources', ResourceType.SCIENTISTS)}"/>
+        <base:NextValueComp textToDisplay="{cast(data).newScientists}"
+          toolTip="{getString('label.scientistsChanged')}"/>
+        <s:layout>
+          <s:HorizontalLayout horizontalAlign="center" verticalAlign="middle"/>
+        </s:layout>
+      </s:Group>
+    </s:Group>
+
+    <base:layout>
+      <s:VerticalLayout/>
+    </base:layout>
+
+
+  </base:AdvancedContainer>
+
+</s:ItemRenderer>

@@ -34,6 +34,8 @@ s_unit_screen = "UnitScreen"
 s_attack_button = "AttackButton"
 # Explains about attack screen.
 s_attack_screen = "AttackScreen"
+# Reminds to claim reward for research center.
+s_claim_reward_rc = "ClaimRewardRC"
 # Explains about damaged units and their healing (that it will be available
 # later and you need to research it).
 s_damaged_units = "DamagedUnits"
@@ -119,14 +121,14 @@ s_convoys = "Convoys"
 # Explains about galaxy battles.
 s_galaxy_battles = "GalaxyBattles"
 
-mex_1st_planet = 7
-mex_2nd_planet = 8
+mex_1st_planet = 6 # 7 for real, but last one is pretty hard.
+mex_2nd_planet = 6 # 8 for real, but first two already have MEX T2
 mex_3rd_planet = 4
 energy_1st_planet = 8
 energy_2nd_planet = 8
 energy_3rd_planet = 6
-zex_1st_planet = 2
-zex_2nd_planet = 4
+zex_1st_planet = 2 # 3 for real, but last one is pretty hard.
+zex_2nd_planet = 2 # 4 for real, but 1 is hard and 1 has ZEX T2 on it.
 zex_3rd_planet = 2
 
 QUESTS = QuestDefinition.define(:debug => false) do
@@ -165,11 +167,13 @@ QUESTS = QuestDefinition.define(:debug => false) do
     have_upgraded_to Building::Barracks
 
     reward_cost Unit::Trooper, :count => 1.2
+    # 100 is enough for speeding up trooper construction.
+    reward_creds 100
   end.define(60, [s_quest_with_image[Unit::Trooper], s_unit_constructors,
                  s_unit_construction_screen]) do
     have_upgraded_to Unit::Trooper
 
-    reward_unit Unit::Trooper, :count => 5
+    reward_unit Unit::Trooper, :count => 10, :level => 4
   end.tap do |quest|
     quest.define(10010) do
       destroy_npc_building Building::NpcMetalExtractor
@@ -225,7 +229,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
     reward_cost Building::ResearchCenter
     # 1000 creds should be sufficient for completing research center.
     reward_creds 1000
-  end.define(80, [s_damaged_units,
+  end.define(80, [s_claim_reward_rc, s_damaged_units,
                  s_quest_with_image[Building::ResearchCenter]]) do
     have_upgraded_to Building::ResearchCenter
 
@@ -261,7 +265,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
       [10335, Technology::Screamer,                 3, 0.35],
       [10340, Technology::Thunder,                  3, 0.3 ],
       [10345, Technology::ShipStorage,              3, 0.25],
-      [10350, Technology::HeavyFlight,              3, 0.2 ],
+      [10350, Technology::BuildingRepair,           3, 0.2 ],
       [10355, Technology::DefensivePortal,          1, nil ],
     ]
 

@@ -40,8 +40,7 @@ class Logging::Logger
       @block_buffer = data
       started_buffering = true
       @include_time = false
-      #puts data
-      #Celluloid::Actor[:log_writer].suspend!
+      #suspend_writer!
     else
       @block_buffer += data
     end
@@ -81,8 +80,7 @@ class Logging::Logger
       # Clear block buffer if this was the call that started buffering.
       @block_buffer = nil
       @include_time = true
-      #puts data
-      #Celluloid::Actor[:log_writer].resume!
+      #resume_writer!
     end
   end
 
@@ -106,7 +104,8 @@ class Logging::Logger
     ]
   end
 
-  def write(type, data)
-    Celluloid::Actor[:log_writer].write!(type, data)
-  end
+  def suspend_writer!; writer.suspend!; end
+  def resume_writer!; writer.resume!; end
+  def write(type, data); writer.write!(type, data); end
+  def writer; Celluloid::Actor[:log_writer]; end
 end

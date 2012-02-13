@@ -3,6 +3,7 @@
 # For this to work, it needs to be in script path.
 #
 # Linux:
+# $ mkdir -p ~/.libreoffice/3/user/Scripts/python/
 # $ ln -s path/to/skaiciuokle.py ~/.libreoffice/3/user/Scripts/python/
 #
 # While developing, you need to update symlink timestamp for libreoffice to
@@ -40,8 +41,9 @@ spec_critical = ("Critical", lambda base, coef: base / (coef - 1))
 spec_absorption = (
   "Absorption", lambda base, coef: (1 / (1 + base) - 1) / (1 / coef - 1)
 )
-# 140% attack maps to 400% speed.
-spec_speed = ("Speed", lambda base, coef: base / 0.35)
+# 140% attack maps to extra 300% speed. That means that the ship will fly 4
+# times as fast hop_time / (1 + 3.0)
+spec_speed = ("Speed", lambda base, coef: base / 7.0 * 15.0)
 # 140% attack maps to 119% storage
 spec_storage = ("Storage", lambda base, coef: base * 0.85)
 

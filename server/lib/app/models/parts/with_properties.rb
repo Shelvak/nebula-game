@@ -46,12 +46,8 @@ module Parts
           CONFIG.safe_eval(formula, params)
         end
       rescue Exception => e
-        raise e.class.new(
-          "While evaling property #{key.inspect\
-          } for #{self
-          }\n(default: #{default.inspect}, params: #{params.inspect
-          })\n" + e.message
-        )
+        add_exception_info(e, "While evaling property #{key.inspect} for #{
+          self}\n(default: #{default.inspect}, params: #{params.inspect})")
       end
 
       def config_name

@@ -126,7 +126,7 @@ module SpaceMule::Combat
   def self.points_for(player)
     CO.Player::Points.new(
       player.economy_points, player.science_points, player.army_points,
-      player.war_points
+      player.war_points, player.victory_points
     )
   end
 

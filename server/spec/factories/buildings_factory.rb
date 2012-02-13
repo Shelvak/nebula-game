@@ -199,5 +199,3 @@ Factory.define :b_mobile_screamer, :parent => :building_built,
 Factory.define :b_mobile_vulcan, :parent => :building_built,
 :class => Building::MobileVulcan do |m|; end
 
-Factory.define :b_npc_tech_lab, :parent => :building_built,
-:class => Building::NpcTechLab do |m|; end

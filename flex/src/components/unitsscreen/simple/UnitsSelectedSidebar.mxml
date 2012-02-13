@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                    xmlns:s="library://ns.adobe.com/flex/spark" 
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                    xmlns:s="library://ns.adobe.com/flex/spark"
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:base="components.base.*"
-                    width="100%" height="100%" xmlns:unitsscreen="components.unitsscreen.*">
+                    xmlns:screens="components.screens.*"
+                    width="100%" height="100%"
+                    xmlns:unitsscreen="components.unitsscreen.*">
    
    <fx:Script>
       <![CDATA[
@@ -103,7 +105,9 @@
       }
       ]]>
    </fx:Script>
-   <base:Scroller top="0" left="0" right="0" bottom="0" stepMultiplier="3">
+  <base:Scroller top="0" left="0" right="-4" bottom="12" id="scroller"
+                 stepMultiplier="3">
+      <s:Group left="0" right="0">
       <base:AdvancedContainer left="0" right="0">
          <s:Label top="20" text="{getText('label.leavingSquadrons')}" fontWeight="bold"
                   color="#eec500" fontSize="14" textAlign="center" 
@@ -146,7 +150,8 @@
                         visible="{(US.selection.length > 0)
                         &amp;&amp; (US.location is Location)
                         &amp;&amp; (Location(US.location).isSSObject)
-                        &amp;&amp; Location(US.location).player.id == ML.player.id }">
+                        &amp;&amp; Location(US.location).player.id == ML.player.id
+                        &amp;&amp; !(US.target is Building)}">
                <s:Button skinClass="components.skins.HideButtonSkin"
                          click="hide(true)"
                          toolTip="{getText('tooltip.hidden')}"/>
@@ -237,23 +242,26 @@
                </base:layout>
             </base:Panel>
             
-            
-            <s:Group width="100%" visible="{US.location is Unit}">
-               <s:Button label="{getText('label.close')}"
-                         click="button1_clickHandler(event)" horizontalCenter="0"
-                         skinClass="components.skins.RedButtonSkin"/>
-            </s:Group>
-            
             <base:layout>
                <s:VerticalLayout/>
             </base:layout>
             
          </base:AdvancedContainer>
+
+         <s:Group height="{closeGroup.height}"/>
+
          <base:layout>
             <s:VerticalLayout horizontalAlign="justify" 
                               paddingLeft="6" paddingRight="6"/>
          </base:layout>
       </base:AdvancedContainer>
+      </s:Group>
    </base:Scroller>
+  <s:Group width="100%" id="closeGroup" bottom="0">
+    <screens:ScreenCloseButton right="0" bottom="0" top="0"
+                               click="button1_clickHandler(event)"
+                               scroller="{scroller}"
+                               label="{Localizer.string ('Units', 'label.close')}"/>
+  </s:Group>
    
 </base:BaseContainer>

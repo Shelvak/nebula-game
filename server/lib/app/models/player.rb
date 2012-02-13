@@ -15,7 +15,8 @@ class Player < ActiveRecord::Base
   belongs_to :galaxy
   # FK :dependent => :delete_all
   has_many :solar_systems
-  has_one :home_solar_system, :class_name => SolarSystem.to_s
+  has_one :home_solar_system, :class_name => SolarSystem.to_s,
+    :inverse_of => :player
   # FK :dependent => :delete_all
   has_many :fow_ss_entries
   # FK :dependent => :delete_all
@@ -58,7 +59,7 @@ class Player < ActiveRecord::Base
 
   include FlagShihTzu
   has_flags(
-    1 => :first_time,
+    1 => :admin,
     2 => :vip_free,
     3 => :referral_submitted,
     # For defensive portals - skip ally planets when transferring. Don't send
@@ -66,6 +67,8 @@ class Player < ActiveRecord::Base
     4 => :portal_without_allies,
     # This player has been detached from galaxy map.
     5 => :detached,
+    # This player is a chat moderator.
+    6 => :chat_mod,
     # No index there anyway.
     :flag_query_mode => :bit_operator,
     :check_for_column => false
@@ -151,7 +154,8 @@ class Player < ActiveRecord::Base
 
   # Is daily bonus available for this player?
   def daily_bonus_available?
-    ! first_time? && (planets_count > 0 || bg_planets_count > 0) &&
+    (planets_count > 0 || bg_planets_count > 0) &&
+      points >= Cfg.daily_bonus_start_points &&
       (daily_bonus_at.nil? || daily_bonus_at <= Time.now)
   end
 
@@ -165,7 +169,7 @@ class Player < ActiveRecord::Base
     now = Time.now
     self.daily_bonus_at ||= now
     while self.daily_bonus_at <= now
-      self.daily_bonus_at += CONFIG['daily_bonus.cooldown']
+      self.daily_bonus_at += Cfg.daily_bonus_cooldown
     end
     self.daily_bonus_at
   end
@@ -199,7 +203,6 @@ class Player < ActiveRecord::Base
         planets_count bg_planets_count
       })
       json['creds'] = creds
-      json['first_time'] = first_time
       json['portal_without_allies'] = portal_without_allies
       unless alliance_id.nil?
         is_owner = id == alliance.owner_id
@@ -447,11 +450,15 @@ class Player < ActiveRecord::Base
     # Dispatch that home solar system is destroyed. This needs to be in
     # before_destroy so that visibilities can be gathered.
     home_ss = home_solar_system
-    EventBroker.fire(
-      Event::FowChange::SsDestroyed.all_except(home_ss.id, id),
-      EventBroker::FOW_CHANGE,
-      EventBroker::REASON_SS_ENTRY
-    ) unless home_ss.detached?
+    if home_ss.nil?
+      LOGGER.warn "No home solar system for #{self} but destroying it anyway."
+    else
+      EventBroker.fire(
+        Event::FowChange::SsDestroyed.all_except(home_ss.id, id),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      ) unless home_ss.detached?
+    end
 
     leave_alliance! unless alliance_id.nil?
     true
@@ -638,20 +645,27 @@ class Player < ActiveRecord::Base
   # players. Different formula is used depending on if aggressor is stronger
   # than defender or weaker.
   def self.battle_vps_multiplier(aggressor_id, defender_id)
-    condition = select("economy_points + science_points + army_points").limit(1)
-    aggressor_points = condition.where(:id => aggressor_id).c_select_value.to_f
-    defender_points = condition.where(:id => defender_id).c_select_value.to_f
+    condition = select(
+      "economy_points, science_points, army_points, war_points, victory_points"
+    ).limit(1)
+
+    points = lambda do |row|
+      Cfg::Java.fairnessPoints(
+        row['economy_points'], row['science_points'], row['army_points'],
+        row['war_points'], row['victory_points']
+      )
+    end
+
+    aggressor_row = condition.where(:id => aggressor_id).c_select_one
+    aggressor_points = points[aggressor_row]
+
+    defender_row = condition.where(:id => defender_id).c_select_one
+    defender_points = points[defender_row]
 
     Java::spacemule.modules.combat.post_combat.Statistics.fairnessMultiplier(
       aggressor_points, defender_points
     )
   end
-
-  def self.vip_tick_scope(callback); DScope.player(callback.object_id); end
-  def self.vip_tick(player); player.vip_tick!; end
-
-  def self.vip_stop_scope(player); DScope.player(player); end
-  def self.vip_stop(player); player.vip_stop!; end
 
   # Checking inactive player is only dependant on player, because his points
   # might change. It is not dependent on the galaxy, because it only detaches

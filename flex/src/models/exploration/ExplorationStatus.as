@@ -212,8 +212,8 @@ package models.exploration
             return false;
          var researchCenter:Building = Collections.findFirst(ML.latestPlanet.buildings,
             function(building:Building) : Boolean {
-               return building.type == BuildingType.RESEARCH_CENTER && building.level > 0 ||
-                      building.type == BuildingType.MOTHERSHIP;
+               return building.type == BuildingType.RESEARCH_CENTER &&
+                  building.level > 0;
             }
          );
          return researchCenter != null;

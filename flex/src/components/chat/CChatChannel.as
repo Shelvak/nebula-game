@@ -504,7 +504,7 @@ package components.chat
          if (!model.silenced.hasOccured) {
             return;
          }
-         var message:String = StringUtil.trim(inpMessage.text);
+         const message: String = StringUtil.trim(inpMessage.text);
          if (message.length > 0) {
             _model.sendMessage(message);
          }

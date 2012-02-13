@@ -294,50 +294,6 @@ describe Unit do
     end
   end
 
-  describe ".garrisoned_npc_in" do
-    describe "non empty" do
-      before(:all) do
-        planet = Factory.create(:planet)
-        @building = Factory.create(:b_collector_t1, :planet => planet)
-        @unit = Factory.create(:u_trooper, :location => planet)
-        @npc_building = Factory.create(:b_npc_solar_plant,
-          :planet => planet, :x => 10)
-        @npc_unit = Factory.create(:u_gnat, :location => @npc_building)
-        @result = Unit.garrisoned_npc_in(planet)
-      end
-
-      it "should return a array" do
-        @result.should be_instance_of(Array)
-      end
-
-      it "should not include non npc buildings" do
-        @result.find do |unit|
-          unit.location_id == @building.id
-        end.should be_nil
-      end
-
-      it "should not include non npc units" do
-        @result.should_not include(@unit)
-      end
-
-      it "should include npc buildings" do
-        @result.find do |unit|
-          unit.location_id == @npc_building.id
-        end.should_not be_nil
-      end
-
-      it "should include units inside npc buildings" do
-        @result.should include(@npc_unit)
-      end
-    end
-
-    describe "empty" do
-      it "should return empty array" do
-        Unit.garrisoned_npc_in(Factory.create(:planet)).should == []
-      end
-    end
-  end
-
   describe ".update_location_sql" do
     before(:all) do
       @unit = Factory.create(:unit)

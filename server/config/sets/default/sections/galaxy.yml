@@ -18,14 +18,14 @@ player.population: 60
 # Maximum population player can have.
 player.population.max: 2500
 player.inactivity_check:
-- [1, <%= 10.minutes %>]
-- [1000, <%= 1.hour %>]
-- [10000, <%= 1.day %>]
-- [25000, <%= 2.days %>]
-- [100000, <%= 3.days %>]
-- [250000, <%= 5.days %>]
-- [500000, <%= 10.days %>]
-- [1000000, <%= 14.days %>]
+- [1, <%= 10.minutes %> / speed]
+- [1000, <%= 1.hour %> / speed]
+- [10000, <%= 1.day %> / speed]
+- [25000, <%= 2.days %> / speed]
+- [100000, <%= 3.days %> / speed]
+- [250000, <%= 5.days %> / speed]
+- [500000, <%= 10.days %> / speed]
+- [1000000, <%= 14.days %> / speed]
 
 # How much points do you need to trigger referral callback?
 # This one is also defined in web configuration.

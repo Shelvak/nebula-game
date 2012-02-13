@@ -5,6 +5,9 @@ package components.map.controllers
 
    public interface ISectorsProvider
    {
+      function sectorsCompareFunction(a: Sector,
+                                      b: Sector,
+                                      fields: Array = null): int;
       function getSpaceSectors(): Array;
       function includeSectorsWithShipsOf(owner: int): Boolean;
       function itemRendererFunction(sector: Sector): IFactory;

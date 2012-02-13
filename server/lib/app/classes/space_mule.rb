@@ -6,12 +6,11 @@ class SpaceMule
   SmModules = Java::spacemule.modules
   Pmg = SmModules.pmg
 
-  def restart!
-    send_config
-  end
-
   def initialize
-    initialize_mule
+    SmModules.config.Runner.run(
+      USED_DB_CONFIG.to_scala,
+      CONFIG.scala_wrapper
+    )
   end
 
   # Create a new galaxy with battleground solar system. Returns id of that
@@ -63,24 +62,5 @@ class SpaceMule
   #
   def find_path(source, target, avoid_npc=true)
     Pathfinder.invoke(source, target, avoid_npc)
-  end
-
-  protected
-  def initialize_mule
-    LOGGER.block("Initializing SpaceMule") do
-      send_config
-    end
-    true
-  end
-
-  def send_config
-    # This must be initialized before configuration is sent to SpaceMule.
-    PmgConfigInitializer.initialize
-    LOGGER.block("Sending configuration") do
-      SmModules.config.Runner.run(
-        USED_DB_CONFIG.to_scala,
-        CONFIG.full_set_values.to_scala
-      )
-    end
   end
 end

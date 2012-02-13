@@ -64,7 +64,7 @@ package models.infoscreen
             var tTechnology: Technology = (target as Technology);
             type = tTechnology.type;
             name = tTechnology.title;
-            imageSource = img.getImage(AssetNames.getTechnologyImageName(tTechnology.type));
+            imageSource = img.getImage(AssetNames.getTechnologyImageName(tTechnology.configName));
             description = tTechnology.description;
             currentLevel = tTechnology.upgradePart.level;
             usefulLevel = currentLevel > 1 ? currentLevel : 1;

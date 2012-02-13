@@ -14,7 +14,6 @@ class PlanetsController < GenericController
   # - units (Hash[]): Unit#as_json with :perspective
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom units belong.
-  # - npc_units (Unit[]): NPC units
   # - cooldown_ends_at (Time): date for cooldown for this planet or nil
   #
   ACTION_SHOW = 'planets|show'
@@ -39,9 +38,6 @@ class PlanetsController < GenericController
         :tiles => Tile.fast_find_all_for_planet(planet),
         :folliages => Folliage.fast_find_all_for_planet(planet),
         :buildings => planet.buildings.map(&:as_json),
-        :npc_units => (planet.can_view_npc_units?(m.player.id) \
-          ? Unit.garrisoned_npc_in(planet) \
-          : []).map(&:as_json),
         :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
           Route.non_friendly_for_ss_object(planet.id, m.player.friendly_ids)
         ),
@@ -107,14 +103,9 @@ class PlanetsController < GenericController
     logged_in + required(:planet_id => Fixnum, :x => Fixnum, :y => Fixnum)
   end
   # This only starts exploring which is only seen by current planet owner.
-  def self.explore_scope(message)
-    planet = SsObject::Planet.find(message.params['planet_id'])
-    scope.player(planet.owner_id)
-  rescue ActiveRecord::RecordNotFound => e
-    raise Dispatcher::UnresolvableScope, e.message, e.backtrace
-  end
-  def action_explore
-    planet = SsObject::Planet.where(:player_id => player.id).
+  def self.explore_scope(m); scope.planet_owner(m.params['planet_id']); end
+  def self.explore_action(m)
+    planet = SsObject::Planet.where(:player_id => m.player.id).
       find(m.params['planet_id'])
 
     raise GameLogicError.new(

@@ -71,6 +71,7 @@ package tests.planetmapeditor
             serialize(newPlanet(4, 4)), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
+               '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
                '  - ". . . . "\n' +
@@ -89,6 +90,7 @@ package tests.planetmapeditor
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
+               '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
                '  - ". ----. "\n' +
@@ -107,6 +109,7 @@ package tests.planetmapeditor
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
+               '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
                '  - ". ----. "\n' +
@@ -128,6 +131,7 @@ package tests.planetmapeditor
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
+               '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
                '  - ". ^ ^ . "\n' +
@@ -150,6 +154,7 @@ package tests.planetmapeditor
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
+               '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
                '  - ". .-/-. "\n' +
@@ -167,10 +172,11 @@ package tests.planetmapeditor
          planet.addTile(TileKind.ZETIUM, 1, 1);
          planet.addTile(TileKind.ORE, 4, 1);
          assertThat(
-            "4x7 map with NPC extractor at (1; 1) and player extractor at (1; 4)",
+            "7x4 map with NPC extractor at (1; 1) and player extractor at (1; 4)",
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
+               '# 7x4 (area 28)\n' +
                'map:\n' +
                '  - ". . . . . . . "\n' +
                '  - ". ----. ----. "\n' +
@@ -189,6 +195,7 @@ package tests.planetmapeditor
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
+               '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
                '  - ". - - . "\n' +
@@ -207,6 +214,7 @@ package tests.planetmapeditor
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
                'name: "P-%d"\n' +
+               '# 4x5 (area 20)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
                '  - ". ----. "\n' +

@@ -10,6 +10,89 @@ require "erb"
 require "pp"
 require "thread"
 
+# Load Scala support.
+lambda do
+  jar_path = File.join(ROOT_DIR, 'vendor', 'SpaceMule', 'dist', 'SpaceMule.jar')
+
+  # Win32 requires us to manually require all the jars before requiring
+  # main jar.
+  Dir[File.dirname(jar_path) + "/lib/*.jar"].each { |jar| require jar }
+  require jar_path
+
+  # Scala <-> Ruby interoperability.
+  class Object
+    # TODO: upon upgrade to 1.6.6 replace $plus and $plus$eq to + and +=
+    def to_scala
+      case self
+      when Hash
+        scala_hash = Java::scala.collection.immutable.HashMap.new
+        each do |key, value|
+          scala_hash = scala_hash.updated(key.to_scala, value.to_scala)
+        end
+        scala_hash
+      when Set
+        scala_set = Java::scala.collection.immutable.HashSet.new
+        each { |item| scala_set = scala_set.send(:"$plus", item.to_scala) }
+        scala_set
+      when Array
+        scala_array = Java::scala.collection.mutable.ArrayBuffer.new
+        each { |value| scala_array.send(:"$plus$eq", value.to_scala) }
+        scala_array.to_indexed_seq
+      when Symbol
+        to_s
+      else
+        self
+      end
+    end
+
+    def from_scala
+      case self
+      when Java::scala.collection.Map, Java::scala.collection.immutable.Map,
+          Java::scala.collection.mutable.Map
+        ruby_hash = {}
+        foreach { |tuple| ruby_hash[tuple._1.from_scala] = tuple._2.from_scala }
+        ruby_hash
+      when Java::scala.collection.Set, Java::scala.collection.immutable.Set,
+          Java::scala.collection.mutable.Set
+        ruby_set = Set.new
+        foreach { |item| ruby_set.add item.from_scala }
+        ruby_set
+      when Java::scala.collection.Seq
+        ruby_array = []
+        foreach { |item| ruby_array.push item.from_scala }
+        ruby_array
+      when Java::scala.Product
+        if self.class.to_s.match /Tuple\d+$/
+          # Conversion from scala Tuples.
+          ruby_array = []
+          productIterator.foreach { |item| ruby_array.push item.from_scala }
+          ruby_array
+        else
+          self
+        end
+      else
+        self
+      end
+    end
+  end
+
+  module Kernel
+    def Some(value); Java::scala.Some.new(value); end
+    None = Java::spacemule.helpers.JRuby.None
+
+    def add_exception_info(exception, message)
+      if exception.is_a?(NativeException)
+        # Workaround for http://jira.codehaus.org/browse/JRUBY-6103
+        STDERR.puts message
+        raise exception
+      else
+        raise exception.class, message + "\n\n" + exception.message,
+          exception.backtrace
+      end
+    end
+  end
+end.call
+
 class App
   SERVER_STATE_INITIALIZING = :initializing
   SERVER_STATE_RUNNING = :running
@@ -79,40 +162,8 @@ module ActiveRecord::Transactions
   def save!(*); super; end
 end
 
-if RUBY_VERSION.to_f < 1.9
-  $KCODE = 'u'
-  Range.send(:alias_method, :cover?, :include?)
-  class Integer
-    alias :precisionless_round :round
-    private :precisionless_round
-
-    # Rounds the integer with the specified precision.
-    #
-    # x = 1233
-    # x.round # => 1233
-    # x.round(1) # => 1233
-    # x.round(-1) # => 1230
-    # x.round(-5) # => 0
-    def round(precision = nil)
-      if precision
-        magnitude = 10 ** precision
-        ((self * magnitude).round / magnitude).to_i
-      else
-        precisionless_round
-      end
-    end
-  end
-
-  class Complex
-    def initialize
-      raise "I'm not a real class! I just pretend to exist to give " +
-              "an illusion of 1.9 compat!"
-    end
-  end
-else
-  # Unshift current directory for factory girl (ruby 1.9)
-  $LOAD_PATH.unshift File.expand_path(ROOT_DIR) if App.in_test?
-end
+# Unshift current directory for factory girl (ruby 1.9)
+$LOAD_PATH.unshift File.expand_path(ROOT_DIR) if App.in_test?
 
 # Require plugins so all their functionality is present during
 # initialization
@@ -183,68 +234,13 @@ end
 Logging::Writer.supervise_as :log_writer, log_writer_config.freeze
 LOGGER = Logging::ThreadRouter.instance
 
-def read_config(*path)
-  filename = File.expand_path(File.join(*path))
-  template = ERB.new(File.read(filename))
-  contents = template.result(binding)
-  YAML.load(contents)
-rescue Exception => e
-  STDERR.write "Error while reading config #{filename}!\n\n"
-  STDERR.write "File contents: \n#{
-    defined?(contents) ? contents : "not read yet"
-  }"
-  raise e
-end
-
-def load_config
-  LOGGER.info "Loading configuration for '#{App.env}' environment..."
-
-  # Load custom environment configuration file if it exists
-  sets_dir = File.expand_path(File.join(CONFIG_DIR, 'sets'))
-
-  # Merge server-level config
-  CONFIG.merge!(read_config(CONFIG_DIR, 'application.yml'))
-
-  Dir["#{sets_dir}/*"].each do |dir_name|
-    set_name, fallback_name = File.basename(dir_name).split("-")
-
-    CONFIG.add_set(set_name, fallback_name) \
-      unless set_name == CONFIG.class::DEFAULT_SET
-    CONFIG.merge!(read_config(dir_name, 'application.yml'), set_name)
-
-    Dir[File.join(dir_name, 'sections', '**', '*.yml')].each do |file|
-      section = File.basename(file, ".yml")
-
-      #LOGGER.debug("Loading config section #{section.inspect} from #{
-      #  file.inspect}")
-      CONFIG.with_scope(section) do |config|
-        contents = read_config(file)
-        config.merge!(contents, set_name)
-      end
-    end
-
-    # ENV config is great for overrides (i.e. in test)
-    env_config_file = File.join(dir_name, "#{ENV['configuration']}.yml")
-    env_config = File.exists?(env_config_file) \
-      ? read_config(env_config_file) : {}
-    
-    if env_config.is_a?(Hash)
-      CONFIG.merge!(env_config, set_name)
-    elsif ! env_config.nil?
-      $stderr.write(
-        "Warning! Config file #{env_config_file} empty or unreadable.\n"
-      )
-    end
-  end
-end
-
 # Set up config object
-CONFIG_DIR = File.expand_path(File.join(ROOT_DIR, 'config'))
+config_dir = File.expand_path(File.join(ROOT_DIR, 'config'))
 CONFIG = GameConfig.new
-load_config
+CONFIG.setup!(config_dir, File.join(ROOT_DIR, 'run'))
 
 # Establish database connection
-DB_CONFIG = read_config(CONFIG_DIR, 'database.yml')
+DB_CONFIG = GameConfig.read_file(config_dir, 'database.yml')
 DB_CONFIG.each do |env, config|
   config["adapter"] = "jdbcmysql"
   config["pool"] = 30
@@ -334,92 +330,8 @@ ActiveSupport::JSON.backend = 'JSONGem'
 ActiveSupport.use_standard_json_time_format = true
 ActiveSupport::LogSubscriber.colorize_logging = false
 
-# Extract some constants
-ROUNDING_PRECISION = CONFIG['buildings.resources.rounding_precision']
-
-# Finally load config generation initializers.
-initializers_dir = File.join(ROOT_DIR, 'config', 'initializers')
-raise "#{initializers_dir} must be a directory!" \
-  unless File.directory?(initializers_dir)
-
-Dir[File.join(initializers_dir, '*.rb')].each { |file| require file }
-
 # Initialize event handlers
 QUEST_EVENT_HANDLER = QuestEventHandler.new
-
-# Load SpaceMule.
-lambda do
-  jar_path = File.join(ROOT_DIR, 'vendor', 'SpaceMule', 'dist', 'SpaceMule.jar')
-
-  # Win32 requires us to manually require all the jars before requiring
-  # main jar.
-  Dir[File.dirname(jar_path) + "/lib/*.jar"].each { |jar| require jar }
-  require jar_path
-
-  # Scala <-> Ruby interoperability.
-  class Object
-    # TODO: upon upgrade to 1.6.6 replace $plus and $plus$eq to + and +=
-    def to_scala
-      case self
-      when Hash
-        scala_hash = Java::scala.collection.immutable.HashMap.new
-        each do |key, value|
-          scala_hash = scala_hash.updated(key.to_scala, value.to_scala)
-        end
-        scala_hash
-      when Set
-        scala_set = Java::scala.collection.immutable.HashSet.new
-        each { |item| scala_set = scala_set.send(:"$plus", item.to_scala) }
-        scala_set
-      when Array
-        scala_array = Java::scala.collection.mutable.ArrayBuffer.new
-        each { |value| scala_array.send(:"$plus$eq", value.to_scala) }
-        scala_array.to_indexed_seq
-      when Symbol
-        to_s
-      else
-        self
-      end
-    end
-
-    def from_scala
-      case self
-      when Java::scala.collection.Map, Java::scala.collection.immutable.Map,
-          Java::scala.collection.mutable.Map
-        ruby_hash = {}
-        foreach { |tuple| ruby_hash[tuple._1.from_scala] = tuple._2.from_scala }
-        ruby_hash
-      when Java::scala.collection.Set, Java::scala.collection.immutable.Set,
-          Java::scala.collection.mutable.Set
-        ruby_set = Set.new
-        foreach { |item| ruby_set.add item.from_scala }
-        ruby_set
-      when Java::scala.collection.Seq
-        ruby_array = []
-        foreach { |item| ruby_array.push item.from_scala }
-        ruby_array
-      when Java::scala.Product
-        if self.class.to_s.match /Tuple\d+$/
-          # Conversion from scala Tuples.
-          ruby_array = []
-          productIterator.foreach { |item| ruby_array.push item.from_scala }
-          ruby_array
-        else
-          self
-        end
-      else
-        self
-      end
-    end
-  end
-
-  module Kernel
-    def Some(value); Java::scala.Some.new(value); end
-    None = Java::spacemule.helpers.JRuby.None
-  end
-
-  SpaceMule.instance
-end.call
 
 # Ensure dispatcher is restarted if it crashes.
 Dispatcher.supervise_as :dispatcher

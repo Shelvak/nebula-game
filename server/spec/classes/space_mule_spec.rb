@@ -46,11 +46,14 @@ describe SpaceMule do
   before(:all) do
     # Ensure we're not testing against randomness: leave only one map of
     # each type.
-    PmgConfigInitializer.initialize
     @old_maps = CONFIG.filter(/^(solar_system|planet)\.map\./)
     @old_maps.each { |key, map_set| CONFIG[key] = [map_set[0]] }
 
     @mule = SpaceMule.instance
+  end
+
+  before(:each) do
+    break_transaction
   end
 
   after(:all) do
@@ -59,6 +62,7 @@ describe SpaceMule do
 
   describe "#create_galaxy" do
     before(:all) do
+      @launch_time = Time.now
       @galaxy_id = @mule.create_galaxy("default", "localhost")
       @galaxy = Galaxy.find(@galaxy_id)
     end
@@ -101,7 +105,8 @@ describe SpaceMule do
 
       it "should be created from static configuration" do
         @ss.should be_created_from_static_ss_configuration(
-                     CONFIG['solar_system.map.battleground'][0]['map']
+                     CONFIG['solar_system.map.battleground'][0]['map'],
+                     @launch_time
                    )
       end
 
@@ -163,14 +168,16 @@ describe SpaceMule do
 
       it "should have spawn callbacks registered" do
         @pulsars.each do |pulsar|
-          pulsar.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+          pulsar.
+            should have_callback(CallbackManager::EVENT_SPAWN, @launch_time)
         end
       end
 
       it "should be created from static configuration" do
         @pulsars.each do |pulsar|
           pulsar.should be_created_from_static_ss_configuration(
-                       CONFIG['solar_system.map.pulsar'][0]['map']
+                       CONFIG['solar_system.map.pulsar'][0]['map'],
+                       @launch_time
                      )
         end
       end
@@ -191,14 +198,15 @@ describe SpaceMule do
 
       it "should register callback for spawn" do
         @solar_systems.each do |ss|
-          ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+          ss.should have_callback(CallbackManager::EVENT_SPAWN, @launch_time)
         end
       end
 
       it "should be created from static configuration" do
         @solar_systems.each do |ss|
           ss.should be_created_from_static_ss_configuration(
-                      CONFIG['solar_system.map.free'][0]['map']
+                      CONFIG['solar_system.map.free'][0]['map'],
+                      @launch_time
                     )
         end
       end
@@ -249,8 +257,6 @@ describe SpaceMule do
     before(:all) do
       @quest = Factory.create(:quest)
       @objective = Factory.create(:objective, :quest => @quest)
-      # Restart space mule to load new quests.
-      SpaceMule.instance.restart!
 
       @galaxy = Factory.create(:galaxy)
 
@@ -273,6 +279,7 @@ describe SpaceMule do
         @web_user_id => "Some player",
         @existing_player.web_user_id => @existing_player.name
       }
+      @launch_time = Time.now
       @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
       @player = Player.where(:galaxy_id => @galaxy.id,
                              :web_user_id => @web_user_id).first
@@ -296,27 +303,17 @@ describe SpaceMule do
       it "should register callback for inactivity check" do
         @player.should have_callback(
           CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
-          Cfg.player_inactivity_time(@player.points).from_now
+          @launch_time + Cfg.player_inactivity_time(@player.points)
         )
       end
 
-      it "should set scientists" do
-        @player.scientists.should ==
-          CONFIG["buildings.mothership.scientists"].to_i
-      end
-
-      it "should set scientists_total" do
-        @player.scientists_total.should == @player.scientists
-      end
-
       it "should set population_max" do
-        @player.population_max.should ==
-          CONFIG["galaxy.player.population"] +
-            CONFIG["buildings.mothership.population"]
+        @player.population_max.should == Cfg::Java.startingPopulationMax
       end
 
       it "should set created_at" do
-        @player.created_at.should be_within(SPEC_TIME_PRECISION).of(Time.now)
+        @player.created_at.should be_within(SPEC_TIME_PRECISION).
+          of(@launch_time)
       end
     end
 
@@ -350,12 +347,13 @@ describe SpaceMule do
       end
 
       it "should register callback for spawn" do
-        @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        @ss.should have_callback(CallbackManager::EVENT_SPAWN, @launch_time)
       end
 
       it "should be created from static configuration" do
         @ss.should be_created_from_static_ss_configuration(
-                     CONFIG['solar_system.map.home'][0]['map']
+                     CONFIG['solar_system.map.home'][0]['map'],
+                     @launch_time
                    )
       end
     end
@@ -442,6 +440,7 @@ describe SpaceMule do
       # Create a player for alliance.
       Factory.create(:player, :alliance_id => @alliance_fge.alliance_id)
 
+      @launch_time = Time.now
       @mule.create_zone(@galaxy.id, @galaxy.ruleset, 10, 3)
     end
 

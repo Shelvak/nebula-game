@@ -963,6 +963,7 @@ assets:
         point_active.png: Techtree_point_active.png
         point_inactive.png: Techtree_point_inactive.png
         clock.png:          Technology_tree_clock.png
+        open_context.png: Tach_context_menu.png
 
       "panel":
         bottom_center.png: Panel_bottom_center.png
@@ -1138,6 +1139,7 @@ assets:
         OreTile.jpg:                Tutorial_OreTile.jpg
         lt_BuildingSidebar.jpg:     Lt_tutorial_BuildingSidebar.jpg
         lt_ClaimReward.jpg:         Lt_tutorial_ClaimReward.jpg
+        lt_ClaimRewardRC.jpg:         Lt_tutorial_ClaimRewardRC.jpg
         lt_ArmorTiles.jpg: Lt_tutorial_ArmorTiles.jpg
         lt_AttackButton.jpg: Lt_tutorial_AttackButton.jpg
         lt_AttackScreen.jpg: Lt_tutorial_AttackScreen.jpg

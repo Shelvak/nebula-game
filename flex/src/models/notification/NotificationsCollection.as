@@ -224,10 +224,12 @@ package models.notification
        * Navigates to notifications screen and selects notification with a given id.
        * 
        * @param id id on notification to select
+       * @param replaceCurrent should current screen be replaced with
+       *        notifications screen
        */
-      public function show(id:int) : void
+      public function show(id:int, replaceCurrent: Boolean = false) : void
       {
-         NavigationController.getInstance().showNotifications();
+         NavigationController.getInstance().showNotifications(replaceCurrent);
          select(id, true);
       }
       

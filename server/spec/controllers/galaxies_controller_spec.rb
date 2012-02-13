@@ -12,8 +12,7 @@ describe GalaxiesController do
       @action = "galaxies|show"
       @params = {}
 
-      @battleground = Factory.create(:solar_system, :x => nil, :y => nil,
-        :galaxy_id => player.galaxy_id)
+      @battleground = Factory.create(:battleground, :galaxy => player.galaxy)
       Factory.create :fge_player, :player => player,
         :galaxy => player.galaxy,
         :rectangle => Rectangle.new(0, 0, 2, 2)

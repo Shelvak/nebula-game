@@ -4,19 +4,22 @@ require File.expand_path(
 
 describe Event::FowChange::SsCreated do
   describe "creation" do
-    let(:solar_system_id) { 10 }
+    let(:solar_system) { Factory.create(:solar_system) }
     let(:x) { 15 }
     let(:y) { 20 }
     let(:kind) { SolarSystem::KIND_NORMAL }
     let(:ss_created) do
       Event::FowChange::SsCreated.new(
-        solar_system_id, x, y, kind,
-        [Factory.create(:fse_player), Factory.create(:fse_alliance)]
+        solar_system.id, x, y, kind, nil,
+        [
+          Factory.create(:fse_player, :solar_system => solar_system),
+          Factory.create(:fse_alliance, :solar_system => solar_system)
+        ]
       )
     end
 
     it "should have #solar_system_id set" do
-      ss_created.solar_system_id.should == solar_system_id
+      ss_created.solar_system_id.should == solar_system.id
     end
 
     describe "metadatas" do

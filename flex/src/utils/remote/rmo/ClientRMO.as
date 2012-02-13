@@ -35,7 +35,7 @@ package utils.remote.rmo
       /**
        * Any additional parameters, objects, models or whatever you may need once
        * <code>responder.result()</code> or <code>responder.cancel()</code> is called.
-       * Server won't received anything you put in here. 
+       * Server won't receive anything you put in here.
        */
       public var additionalParams:Object = null;
       

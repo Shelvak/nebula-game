@@ -578,10 +578,19 @@ package controllers.ui
          resetToNonMapScreen(_screenProperties[MainAreaScreens.FACILITIES]);
       }
       
-      
-      public function showNotifications() :void
+
+      /* takes optional param replace - if true replaces current screen
+      with notifications */
+      public function showNotifications(replace: Boolean = false) :void
       {
-         showNonMapScreen(_screenProperties[MainAreaScreens.NOTIFICATIONS]);
+         if (replace)
+         {
+            replaceCurrentWithNonMapScreen(_screenProperties[MainAreaScreens.NOTIFICATIONS]);
+         }
+         else
+         {
+            showNonMapScreen(_screenProperties[MainAreaScreens.NOTIFICATIONS]);
+         }
       }
       
       public function showVip() :void
@@ -926,6 +935,34 @@ package controllers.ui
             var temp: String = _activeButton.name.replace(MainAreaScreens.UNITS, '');
             resetActiveButton(_screenProperties[MainAreaScreens.UNITS+temp.charAt()+kind].button);
          }
+      }
+
+
+      /**
+       * Use this to <code>_mainAreaSwitch.replaceCurrentWith()</code> non-map screen. The method will
+       * show given screen.
+       *
+       * @throws IllegalOperationError if given name is of a map screen
+       */
+      private function replaceCurrentWithNonMapScreen(screenProps:ScreenProperties) : void
+      {
+         if (screenProps.holdsMap)
+         {
+            throw new IllegalOperationError(
+               "Screen '" + screenProps.screenName + "' is a map screen. Use showMapScreen() or resetToMapScreen() " +
+                  "instead."
+            );
+         }
+
+         if (_currentScreenProps != null && _currentScreenProps.screenName == screenProps.screenName)
+            return;
+
+         beforeScreenChange();
+         MA.replaceCurrentWith(screenProps.screenName);
+         resetActiveButton(screenProps.button);
+         resetSidebarToCurrentScreenDefault();
+         updateContainerState();
+         afterScreenChange();
       }
       
       

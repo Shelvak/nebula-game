@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:base="components.base.*" clipAndEnableScrolling="true">
+  <s:Rect left="0" top="0" bottom="0" right="0" radiusX="20" radiusY="20">
+    <s:fill>
+      <s:SolidColor color="#000000" alpha="0.15"/>
+    </s:fill>
+  </s:Rect>
+  <s:Group left="0" top="0" bottom="0" right="0">
+  <base:Scroller left="0" top="0" bottom="0" right="0" stepMultiplier="2">
+    <s:Group left="0" right="0">
+    <s:Group left="0" right="0">
+      <s:RichText textFlow="{textFlow}" fontSize="14" fontWeight="bold"
+        width="100%"/>
+      <s:layout><s:VerticalLayout paddingLeft="10" paddingRight="10"
+      paddingTop="10" paddingBottom="10"/></s:layout>
+    </s:Group>
+    </s:Group>
+  </base:Scroller>
+  </s:Group>
+  <fx:Script><![CDATA[
+    import flashx.textLayout.elements.TextFlow;
+
+    [Bindable]
+    public var textFlow: TextFlow;
+    ]]></fx:Script>
+</s:Group>

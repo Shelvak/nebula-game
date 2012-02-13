@@ -144,7 +144,9 @@ package models.unit
       
       public function handleShiftClick(model: MCUnit): Boolean
       {
-         if (selectionMode != UNDEFINED_SELECTION && model != lastUnit)
+         if (selectionMode != UNDEFINED_SELECTION
+            && model != lastUnit
+            && flankUnits.getItemIndex(lastUnit) != -1)
          {
             executeShiftSelection(model);
             US.dispatchSelectionChangeEvent();
@@ -159,7 +161,7 @@ package models.unit
       public function invertSelection(model: MCUnit, shiftPressed: Boolean): void
       {
          if (selectionMode == UNDEFINED_SELECTION || !shiftPressed
-         || model == lastUnit)
+         || model == lastUnit || flankUnits.getItemIndex(lastUnit) == -1)
          {
             if (model.selected)
             {

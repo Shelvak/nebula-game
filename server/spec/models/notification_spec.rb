@@ -217,7 +217,7 @@ describe Notification do
       @resources = :resources
 
       @args = [@player.id, @player.alliance_id, @alliances,
-        @combat_log.id, @location.client_location.as_json, @outcome,
+        @combat_log.sha1_id, @location.client_location.as_json, @outcome,
         @yane_units, @leveled_up, @statistics, @resources]
     end
 

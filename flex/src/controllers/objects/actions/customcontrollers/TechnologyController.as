@@ -21,6 +21,8 @@ package controllers.objects.actions.customcontrollers
 
    import mx.collections.ArrayCollection;
 
+   import utils.Objects;
+
    import utils.SingletonFactory;
    import utils.locale.Localizer;
 
@@ -42,10 +44,9 @@ package controllers.objects.actions.customcontrollers
       }
 
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
-         var temp:Technology = TechnologyFactory.fromObject(object);
-         var technology:Technology = ML.technologies.getTechnologyByType(temp.type);
+         var technology:Technology = ML.technologies.getTechnologyByType(object.type);
          technology.upgradePart.stopUpgrade();
-         technology.copyProperties(temp);
+         Objects.update(technology, object);
          if (technology.upgradeEndsAt != null)
          {
             technology.upgradePart.startUpgrade();
@@ -56,7 +57,6 @@ package controllers.objects.actions.customcontrollers
             ML.resourcesMods.recalculateMods();
             ML.technologies.dispatchTechsChangeEvent();
          }
-         temp.cleanup();
       }
 
       public function techUnlearned(techIds:Array) : void {

@@ -37,9 +37,8 @@ package controllers.objects.actions.customcontrollers
       }
       
       public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
-         var tempQuery:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(object);
-         var constructor:Building = ML.latestPlanet.getBuildingById(tempQuery.constructorId);
-         constructor.constructionQueueEntries.addOrUpdate(tempQuery); 
+         var constructor:Building = ML.latestPlanet.getBuildingById(object.constructorId);
+         constructor.constructionQueueEntries.addOrUpdate(object, ConstructionQueueEntry);
          constructor.dispatchQueryChangeEvent();
          new GObjectEvent(GObjectEvent.OBJECT_APPROVED);
       }

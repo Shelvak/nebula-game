@@ -93,8 +93,7 @@ class Statistics(
       pointsCache(player)
     }
     else {
-      val points = player.points.economy + player.points.science +
-        player.points.army
+      val points = Config.fairnessPoints(player)
       pointsCache(player) = points
       points
     }

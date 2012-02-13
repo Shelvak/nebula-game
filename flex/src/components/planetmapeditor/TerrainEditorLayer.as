@@ -163,6 +163,7 @@ import components.planetmapeditor.MapEditCommand;
 
 import models.building.Building;
 import models.planet.MPlanet;
+import models.planet.MPlanetObject;
 import models.planet.Range2D;
 import models.tile.Tile;
 import models.tile.TileKind;
@@ -197,7 +198,18 @@ class TerrainEditCommand extends MapEditCommand implements ICommand
 
    private function addSimpleTile(kind: int, x: int, y: int): void {
       removeTileToRestore(x, y);
-      removeObjectToRestore(x, y);
+      const object: MPlanetObject = planet.getObject(x, y);
+      if (object != null) {
+         if (object is Building) {
+            const building: Building = Building(object);
+            if (!building.npc) {
+               removeObjectToRestore(x, y);
+            }
+         }
+         else {
+            removeObjectToRestore(x, y);
+         }
+      }
       if (kind != TileKind.REGULAR) {
          addTileToMap(kind, x, y);
       }

@@ -27,8 +27,6 @@ class ChatController < GenericController
     hub.send_stored!(m.player)
   end
 
-  # Action name used for channel message.
-  CHANNEL_MESSAGE = 'chat|c'
   # Channel message.
   #
   # Invocation: by client.
@@ -46,15 +44,15 @@ class ChatController < GenericController
   # - msg (String): message (up to 255 symbols)
   # - pid (Fixnum): player ID that has sent the message
   #
-  def action_c
-    param_options :required => {:chan => String, :msg => String}
+  CHANNEL_MESSAGE = 'chat|c'
 
-    hub = Chat::Pool.instance.hub_for(player)
-    hub.channel_msg(params['chan'], player, params['msg'])
+  def self.c_options; logged_in + required(:chan => String, :msg => String); end
+  def self.c_scope(m); scope.chat; end
+  def self.c_action(m)
+    hub = Chat::Pool.instance.hub_for(m.player)
+    hub.channel_msg(m.params['chan'], m.player, m.params['msg'])
   end
 
-  # Action name used for private message.
-  PRIVATE_MESSAGE = 'chat|m'
   # Private message.
   #
   # Invocation: by client
@@ -71,16 +69,18 @@ class ChatController < GenericController
   # - pid (Fixnum): source +Player+ ID.
   # - msg (String): message (up to 255 symbols)
   # - name (String): name of the +Player+. (only sent if player is not logged in)
-  # - stamp (Time): time when the message was created. (only sent if message was stored in DB)
+  # - stamp (Time): time when the message was created. (only sent if message
+  # was stored in DB)
   #
-  def action_m
-    param_options :required => {:pid => Fixnum, :msg => String}
+  PRIVATE_MESSAGE = 'chat|m'
 
-    hub = Chat::Pool.instance.hub_for(player)
-    hub.private_msg(player.id, params['pid'], params['msg'])
+  def self.m_options; logged_in + required(:pid => Fixnum, :msg => String); end
+  def self.m_scope(m); scope.chat; end
+  def self.m_action(m)
+    hub = Chat::Pool.instance.hub_for(m.player)
+    hub.private_msg(m.player.id, m.params['pid'], m.params['msg'])
   end
 
-  ACTION_JOIN = 'chat|join'
   # Notifies client about another player joining a channel.
   #
   # This can be pushed for same player too if it is issued as a part of some
@@ -95,15 +95,19 @@ class ChatController < GenericController
   # - pid (Fixnum): +Player+ id
   # - name (String): +Player+ name
   #
-  def action_join
-    only_push!
-    param_options :required => {:channel => String, :player => Player}
+  ACTION_JOIN = 'chat|join'
 
-    respond :chan => params['channel'], :pid => params['player'].id,
-      :name => params['player'].name
+  def self.join_options
+    logged_in + only_push + required(:channel => String, :player => Player)
+  end
+  def self.join_scope(m); scope.chat; end
+  def self.join_action(m)
+    respond m,
+      :chan => m.params['channel'],
+      :pid  => m.params['player'].id,
+      :name => m.params['player'].name
   end
 
-  ACTION_LEAVE = 'chat|leave'
   # Notifies client about another player leaving a channel.
   #
   # See chat|join for notes about cases when this can be sent for the same
@@ -115,14 +119,16 @@ class ChatController < GenericController
   # - chan (String): channel name
   # - pid (Fixnum): +Player+ id
   #
-  def action_leave
-    only_push!
-    param_options :required => {:channel => String, :player => Player}
+  ACTION_LEAVE = 'chat|leave'
 
-    respond :chan => params['channel'], :pid => params['player'].id
+  def self.leave_options
+    logged_in + only_push + required(:channel => String, :player => Player)
+  end
+  def self.leave_scope(m); scope.chat; end
+  def self.leave_action(m)
+    respond m, :chan => m.params['channel'], :pid => m.params['player'].id
   end
 
-  ACTION_SILENCE = 'chat|silence'
   # Notifies client that player was silenced.
   #
   # Invocation: by server
@@ -130,10 +136,13 @@ class ChatController < GenericController
   # Response:
   # - until (Time): time when silence expires
   #
-  def action_silence
-    only_push!
-    param_options :required => {:until => Time}
+  ACTION_SILENCE = 'chat|silence'
 
-    respond :until => params['until']
+  def self.silence_options
+    logged_in + only_push + required(:until => Time)
+  end
+  def self.silence_scope(m); scope.chat; end
+  def self.silence_action(m)
+    respond m, :until => m.params['until']
   end
 end

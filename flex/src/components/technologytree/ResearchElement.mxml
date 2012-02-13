@@ -121,7 +121,9 @@
    <s:Group left="0" right="0">
       <s:Label text="{_researchModel.title}" left="6" fontWeight="bold" fontSize="14"/>
       <s:BitmapImage
-         source="{IMG.getImage(AssetNames.getTechnologyImageName(_researchModel.type))}" 
+         source="{IMG.getImage(
+            AssetNames.getTechnologyImageName(_researchModel.configName)
+         )}"
          width="32" height="32" left="6" bottom="2"/>
       <s:Group left="43" right="10" top="14"> 
          <s:Group width="100%">

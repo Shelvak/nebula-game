@@ -29,6 +29,8 @@ class GenericController
 
     # Respond to clients message.
     def respond(message, params={})
+      typesig binding, Dispatcher::Message, Hash
+
       dispatcher.transmit!(
         {"action" => message.full_action, "params" => params}, message.client
       )
@@ -36,11 +38,15 @@ class GenericController
 
     # Push message to client who sent message.
     def push(message, action, params={})
+      typesig binding, Dispatcher::Message, String, Hash
+
       dispatcher.push!(message.client, action, params)
     end
 
     # Disconnect client who sent message.
     def disconnect(message, reason=nil)
+      typesig binding, Dispatcher::Message, [NilClass, String]
+
       dispatcher.disconnect!(message.client, reason)
     end
 

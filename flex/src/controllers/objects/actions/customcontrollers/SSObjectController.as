@@ -1,17 +1,22 @@
 package controllers.objects.actions.customcontrollers
 {
    import controllers.ui.NavigationController;
-   
+
+   import models.Owner;
+
    import models.factories.SSObjectFactory;
    import models.location.ILocationUser;
    import models.map.MMapSolarSystem;
    import models.map.MapType;
    import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
+   import models.solarsystem.MSSObject;
    
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   
+
+   import utils.Objects;
+
    import utils.datastructures.Collections;
 
    
@@ -28,7 +33,7 @@ package controllers.objects.actions.customcontrollers
          function findExistingPlanet(list:IList) : MSSObject {
             return Collections.findFirstEqualTo(list, planetNew);
          }
-         
+
          // update planet in current solar system's objects list
          var ssMap:MMapSolarSystem = ML.latestSSMap;
          if (ssMap != null
@@ -82,7 +87,7 @@ package controllers.objects.actions.customcontrollers
                locUser.updateLocationName(planetNew.id, planetNew.name);
             }
          }
-         
+
          planetNew.cleanup();
       }
    }

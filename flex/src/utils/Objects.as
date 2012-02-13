@@ -9,6 +9,8 @@ package utils
 
    import interfaces.IAutoCreated;
 
+   import models.BaseModel;
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.logging.ILogger;
@@ -851,7 +853,7 @@ package utils
          }
          return collectionInstance;
       }
-      
+
       /**
        * Creates an object and copies values to appropriate fields from a provided generic object that holds data.
        * <ul>
@@ -887,7 +889,21 @@ package utils
          Objects.paramNotNull("type", type);
          return createImpl(type, null, data);
       }
-      private static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null) : Object {
+      
+      public static function update(object: Object, data: Object): void
+      {
+         createImpl(getClass(object), object, data, null, false);
+         if (object is BaseModel)
+         {
+            BaseModel(object).refresh();
+         }
+      }
+      
+      private static function createImpl(type: Class,
+                                         object: Object,
+                                         data: Object,
+                                         itemType: Class = null,
+                                         rawCreation: Boolean = true): Object {
          paramNotNull("type", type);
 
          if (data == null)
@@ -913,6 +929,12 @@ package utils
          
          // collections
          if (TypeChecker.isCollection(object)) {
+            if (object is IList) {
+               IList(object).removeAll();
+            }
+            else {
+               object.splice(0, object.length);
+            }
             fillCollection(object, itemType, data);
             // afterCreate() callback is not supported on the collections because including this feature
             // would be too much dependent on internals of each collection type
@@ -931,6 +953,14 @@ package utils
                var readOnly:Boolean = propInfo.name() == "constant" ||
                                       propInfo.name() == "accessor" && propInfo.@access[0] == "readonly";
                var propMetadata:XMLList = propInfo.metadata;
+               /* FOR NEW OBJECTS UPDATE SYSTEM */
+               var skipProperty:XML = propMetadata.(@name == "SkipProperty")[0];
+
+               if (skipProperty != null && !rawCreation)
+               {
+                  continue;
+               }
+
                var propName:String  = propInfo.@name[0];
                var propClassName:String = String(propInfo.@type[0]).replace("&lt;", "<");
                var propClass:Class = getDefinitionByName(propClassName) as Class;
@@ -1056,7 +1086,7 @@ package utils
                   }
                   else {
                      try {
-                        setProp(createImpl(propClass, propValue, performMapping(aggrData, metaPropsMap)));
+                        setProp(createImpl(propClass, propValue, performMapping(aggrData, metaPropsMap), null, rawCreation));
                      }
                      catch (err:MappingError) {
                         pushMappingError(err);
@@ -1072,7 +1102,7 @@ package utils
                }
                
                // skip null and undefined values in source object
-               if (propData == null)
+               if (rawCreation && propData == null)
                   continue;
                
                // error when property is a primitive but the value in data object is generic object or 
@@ -1089,7 +1119,7 @@ package utils
                    TypeChecker.isPrimitiveClass(propClass) ||
                    propClass == Object) {
                   try {
-                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap)));
+                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, rawCreation));
                   }
                   catch (err:MappingError) {
                      pushMappingError(err);
@@ -1127,13 +1157,13 @@ package utils
                         propClassName.length - 1
                      );
                   }
-                  setProp(createImpl(propClass, propValue, propData, getDefinitionByName(itemTypeName) as Class));
+                  setProp(createImpl(propClass, propValue, propData, getDefinitionByName(itemTypeName) as Class, rawCreation));
                }
                   
                // other objects
                else {
                   try {
-                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap)));
+                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, rawCreation));
                   }
                   catch (err:MappingError) {
                      pushMappingError(err);

@@ -1,4 +1,28 @@
 class BuildingsController < GenericController
+  # Show units garrisoned in building.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum) - building id which we want to view.
+  #
+  # Response:
+  # - units(Unit[]) - units inside that building.
+  #
+  ACTION_SHOW_GARRISON = 'buildings|show_garrison'
+
+  def self.show_garrison_options; logged_in + required(:id => Fixnum); end
+  def self.show_garrison_scope(m); scope.npc_building(m.params['id']); end
+  def self.show_garrison_action(m)
+    building = Building.find(m.params['id'])
+    planet = building.planet
+    raise GameLogicError.new("You cannot view NPC units in planet #{planet}!") \
+      if planet.player_id != m.player.id
+
+    units = building.units
+    respond m, :units => units.map(&:as_json)
+  end
+
   ACTION_NEW = 'buildings|new'
   # Start construction of new building in a planet that player owns.
   #

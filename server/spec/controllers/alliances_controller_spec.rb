@@ -97,7 +97,7 @@ describe AlliancesController do
 
   describe "alliances|invite" do
     before(:each) do
-      @tech = Factory.create(:t_alliances, :player => player, :level => 1)
+      @tech = Factory.create!(:t_alliances, :player => player, :level => 1)
       @alliance = Factory.create(:alliance, :owner => player,
         :galaxy => player.galaxy)
       player.alliance = @alliance

@@ -38,7 +38,45 @@ describe BuildingsController do
       end.should raise_error(GameLogicError)
     end
   end
-  
+
+  describe "buildings|show_garrison" do
+    let(:planet) { Factory.create(:planet, :player => player) }
+    let(:building) { Factory.create(:building, :planet => planet) }
+
+    before(:each) do
+      @units = [
+        Factory.create(:unit, :location => building),
+        Factory.create(:unit, :location => building),
+      ]
+
+      @action = "buildings|show_garrison"
+      @params = {'id' => building.id}
+    end
+
+    it_should_behave_like "with param options", %w{id}
+
+    it "should fail if building cannot be found" do
+      building.destroy
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if player cannot view npc units" do
+      planet.update_row! :player_id => Factory.create(:player).id
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should return units otherwise" do
+      invoke @action, @params
+      response_should_include(
+        :units => @units.map(&:as_json)
+      )
+    end
+  end
+
   describe "buildings|new" do
     before(:each) do
       @action = "buildings|new"

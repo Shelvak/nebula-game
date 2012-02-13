@@ -8,6 +8,7 @@ package controllers.planets.actions
    import models.planet.MPlanet;
 
    import utils.remote.rmo.ClientRMO;
+   import utils.remote.rmo.ServerRMO;
 
    public class BoostAction extends CommunicationAction
    {
@@ -22,9 +23,9 @@ package controllers.planets.actions
          }, planet));
       }
       
-      public override function cancel(rmo:ClientRMO):void
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO):void
       {
-         super.cancel(rmo);
+         super.cancel(rmo, srmo);
          new GCreditEvent(GCreditEvent.BOOST_CONFIRMED);
       }
       

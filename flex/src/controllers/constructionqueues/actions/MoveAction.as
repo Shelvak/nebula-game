@@ -8,8 +8,9 @@ package controllers.constructionqueues.actions
    import mx.states.OverrideBase;
    
    import utils.remote.rmo.ClientRMO;
-   
-   
+   import utils.remote.rmo.ServerRMO;
+
+
    public class MoveAction extends CommunicationAction
    {
       public override function result(rmo:ClientRMO) : void
@@ -18,9 +19,9 @@ package controllers.constructionqueues.actions
          new GBuildingEvent(GBuildingEvent.QUEUE_APROVED);
       }
       
-      public override function cancel(rmo:ClientRMO) : void
+      public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void
       {
-         super.cancel(rmo);
+         super.cancel(rmo, srmo);
          new GBuildingEvent(GBuildingEvent.QUEUE_APROVED);
       }
 //      # Move ConstructionQueueEntry in queue.

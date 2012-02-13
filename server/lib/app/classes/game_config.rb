@@ -1,34 +1,15 @@
 # Class that stores game config data.
 class GameConfig
-  # Helper class for game config initializers.
-  class Initializer
-    # Synchronize all initializations against one mutex
-    @@mutex = Mutex.new
-
-    def self.initialize
-      @@mutex.synchronize do
-        return if @initialized
-
-        # Reset to default set scope. This is needed because lazy
-        # initialization might happen in other set scope.
-        CONFIG.with_set_scope('default') do
-          generate
-          @initialized = true
-        end
-      end
-    end
-
-    def self.generate
-      raise NotImplementedError.new("This method is not implemented!")
-    end
-  end
+  include GameConfig::Creation
 
   # Default config set name
   DEFAULT_SET = 'default'
 
+  FormulaCalc = Java::spacemule.modules.config.objects.FormulaCalc
+
   attr_reader :set_scope, :scope
 
-  def initialize(hash={}, set=nil)
+  def initialize
     set ||= DEFAULT_SET
     @keys = Set.new
     @data = {
@@ -38,8 +19,6 @@ class GameConfig
     @scope = nil
     @galaxy_id_scope = nil
     @set_scope = DEFAULT_SET
-
-    merge!(hash, set)
   end
 
   def inspect
@@ -68,35 +47,14 @@ class GameConfig
     @fallbacks[set] = fallback unless fallback.nil?
   end
 
-  # Returns all the values for each set. Each set features a full base of
-  # values, that is even values which have no override in child set are
-  # returned from parent set.
-  #
-  # Also those values are evaluated to numbers if they only contain speed
-  # modifier.
-  #
-  # Returns {set_name => set_hash, ...}
-  def full_set_values
-    sets = {}
-    @data.keys.each do |set_name|
-      set = {}
-      @keys.each do |key|
-        value = self[key, set_name]
-        if value.is_a?(String) && value.include?("speed")
-          value = value.gsub('speed', self["speed", set_name].to_s)
-          # Evaluate if we have no more variables there
-          value = self.class.safe_eval(value) unless value =~ /[a-z]/
-        end
-        set[key] = value
-      end
-      sets[set_name] = set
-    end
-
-    sets
+  def scala_wrapper
+    ScalaWrapper.new(self)
   end
 
   # Store
   def []=(key, set_or_value, value=nil)
+    ensure_setup!
+
     if value.nil?
       value = set_or_value
       set = DEFAULT_SET
@@ -115,6 +73,8 @@ class GameConfig
 
   # Get
   def [](key, set=nil)
+    ensure_setup!
+
     set ||= @set_scope
     raise ArgumentError.new("Unknown set #{set.inspect}") \
       unless @data.has_key?(set)
@@ -214,26 +174,22 @@ class GameConfig
     config.each do |key, value|
       if value.is_a?(String) && value.match(/\bspeed\b/)
         replaced = value.gsub(/\bspeed\b/, self['speed'].to_s)
-        replaced = eval(replaced) if replaced !~ /[a-z]/i
+        replaced = self.class.safe_eval(replaced) if replaced !~ /[a-z]/i
         config[key] = replaced
       end
     end
     config
   end
 
-  protected
   # Evaluate a _string_ filtered by .filter_for_eval
-  def self.safe_eval(string, params={})
-    eval filter_for_eval(string.to_s, params)
-  end
+  def self.safe_eval(formula, params={})
+    typesig binding, [String, Fixnum, Float], [NilClass, Hash]
 
-  # Filter _string_ substituting keys in _params_ with their values and only
-  # leaving mathematical formulas.
-  def self.filter_for_eval(string, params={})
-    params.each do |key, value|
-      raise ArgumentError.new("Value for #{key} is nil!") if value.nil?
-      string = string.gsub(/\b#{key}\b/, value.to_s)
-    end
-    string.gsub(/[^\d\s()+-\\*\/]/, '')
+    # 60.seconds returns not pure Fixnum, but Duration object...
+    formula = formula.to_f if formula.is_a?(ActiveSupport::Duration)
+
+    FormulaCalc.calc(
+      formula, params.map_values { |key, value| value.to_f }.to_scala
+    )
   end
 end

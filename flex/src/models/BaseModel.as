@@ -478,7 +478,8 @@ package models
             {
                source = this;
             }
-            dispatchEvent(PropertyChangeEvent.createUpdateEvent(source, property, oldValue, newValue));
+            var event: PropertyChangeEvent = PropertyChangeEvent.createUpdateEvent(source, property, oldValue, newValue);
+            dispatchEvent(event);
          }
       }
       

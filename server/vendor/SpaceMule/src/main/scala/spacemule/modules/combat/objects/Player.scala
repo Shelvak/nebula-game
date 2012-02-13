@@ -2,10 +2,11 @@ package spacemule.modules.combat.objects
 
 object Player {
   object Points {
-    def empty = Points(0, 0, 0, 0)
+    def empty = Points(0, 0, 0, 0, 0)
   }
 
-  case class Points(economy: Int, science: Int, army: Int, war: Int)
+  case class Points(economy: Int, science: Int, army: Int, war: Int,
+                    victory: Int)
   
   object Technologies {
     /**

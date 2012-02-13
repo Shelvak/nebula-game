@@ -142,7 +142,7 @@ package controllers.messages
                      + "Server error: {1}",
                   [rmo.id, ObjectUtil.toString(sRMO.error)]
                );
-               rmo.responder.cancel(rmo);
+               rmo.responder.cancel(rmo, sRMO);
             }
             else {
                msgLog.logMessage(

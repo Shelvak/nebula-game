@@ -583,7 +583,7 @@ describe Combat do
       location_container = nil
       @dsl = CombatDsl.new do
         location_container = location(:planet) do
-          buildings { thunder :hp => 6 }
+          buildings { thunder :hp => 2 }
         end
         player(:planet_owner => true)
         player = self.player do
@@ -642,7 +642,7 @@ describe Combat do
     ground_dmg = 'damage_dealt_to_ground'
     space_dmg = 'damage_dealt_to_space'
 
-    ground_units = lambda { scorpion :count => 20 }
+    ground_units = lambda { azure :count => 20 }
     space_units = lambda { avenger :count => 20 }
 
     gives_vps = lambda do |given_kind|
@@ -695,6 +695,7 @@ describe Combat do
           Player.battle_vps_multiplier(player1.id, player2.id),
           Player.battle_vps_multiplier(player2.id, player1.id)
         ]
+        precision = 2
 
         [player1, player2].each_with_index do |player, index|
           player.reload
@@ -710,12 +711,8 @@ describe Combat do
             :player_creds => player.creds,
           }
           if config_key.nil?
-            actual.should equal_to_hash(
-              :notification_vps => 0,
-              :player_vps => 0,
-              :notification_creds => 0,
-              :player_creds => 0
-            )
+            vps_earned = 0
+            creds_earned = 0
           else
             damage_dealt = notification.params['statistics'][
               Combat::STATS_PLR_DMG_DEALT_ATTR
@@ -733,13 +730,16 @@ describe Combat do
               {'victory_points' => vps_earned}
             )
 
-            # Rounding errors or smth. I'm not sure but we are randomly not
-            # getting precise numbers here.
-            actual[:notification_vps].should be_within(2).of(vps_earned)
-            actual[:player_vps].should be_within(2).of(vps_earned)
-            actual[:notification_creds].should be_within(5).of(creds_earned)
-            actual[:player_creds].should be_within(5).of(creds_earned)
+            vps_earned = be_within(precision).of(vps_earned.round)
+            creds_earned = be_within(precision).of(creds_earned.round)
           end
+
+          actual.should equal_to_hash(
+            :notification_vps => vps_earned,
+            :player_vps => vps_earned,
+            :notification_creds => creds_earned,
+            :player_creds => creds_earned
+          )
         end
       end
 

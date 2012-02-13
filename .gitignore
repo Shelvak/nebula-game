@@ -41,6 +41,7 @@ server/config/database.yml
 # Temp output files
 server/script/odsimport/*.txt
 server/run/stopped_normally
+server/run/*.cache
 
 # SpaceMule ignores
 server/vendor/SpaceMule/target/

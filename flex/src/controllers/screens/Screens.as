@@ -10,5 +10,6 @@ package controllers.screens
 		public static const LOADING:String = "Loading";
       public static const INFO:String = "Info";
       public static const BATTLE:String = "Battle";
+      public static const CREATING_MAP:String = "CreatingMap";
 	}
 }

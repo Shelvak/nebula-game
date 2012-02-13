@@ -386,7 +386,9 @@
             <components:CenteredBitmapImage
                     source="{IMG.getImage(AssetNames.getUnitImageName(type))}"
                     width="100%" height="100%"
-                    filters="{(ML.player.vipLevel > 0 &amp;&amp; !canBeUpgraded)
+                    filters="{(ML.player.vipLevel > 0 &amp;&amp; !canBeUpgraded
+                    &amp;&amp; facility.constructableType != null
+                    &amp;&amp; facility.getQueueEmptySpace() > 0)
                      ? Filters.GRAYSCALE : []}"/>
          </s:Group>
          <s:BitmapImage source="{IMG.getImage(

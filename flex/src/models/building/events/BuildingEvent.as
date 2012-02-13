@@ -48,6 +48,13 @@ package models.building.events
        * @eventType facilityCollapse
        */
       public static const COLLAPSE:String="facilityCollapse";
+
+      /**
+       * Dispached when building has received it's units from ShowGarrisonAction
+       *
+       * @eventType cachedUnitsChange
+       */
+      public static const CACHED_UNITS_CHANGE:String="cachedUnitsChange";
       
       /**
        * Dispached when building as unit facility needs to expand

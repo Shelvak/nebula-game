@@ -10,13 +10,16 @@ package models.infoscreen
       public var after: String;
       [Bindable]
       public var diff: String;
+      [Bindable]
+      public var tooltip: String;
       
-      public function MInfoRow(_property: String, _current: String, _after: String, _diff: String)
+      public function MInfoRow(_property: String, _current: String, _after: String, _diff: String, _tooltip: String = '')
       {
          property = _property;
          current = _current;
          after = _after;
          diff = _diff;
+         tooltip = _tooltip;
       }
    }
 }

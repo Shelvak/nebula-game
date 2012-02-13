@@ -282,7 +282,7 @@ class Dispatcher
     raise e
   rescue Exception => e
     error "Error while resolving scope with #{klass}.#{method}#{args.inspect
-      }!\n\n#{e.to_log_str}", log_str
+      }!\n\n#{e.to_log_str}"
     raise UnresolvableScope, e.message, e.backtrace
   end
 

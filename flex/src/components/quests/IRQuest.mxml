@@ -20,7 +20,7 @@
          <s:Group>
             <s:BitmapImage source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'quest_advisor')}"/>
 
-            <quests:CQuestInfo quest="{quest}" width="100%"/>
+            <quests:CQuestInfo quest="{quest}" limitSize="false" width="100%"/>
             
             <s:layout>
                <s:HorizontalLayout gap="20" paddingTop="12" paddingLeft="22" paddingRight="18" 

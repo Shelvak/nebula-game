@@ -75,7 +75,7 @@ describe Building::ResourceManagerPartTest do
     model.energy_rate.should == \
       (
         model.class.energy_generation_rate(model.level) * (100.0 + mod)/ 100
-      ).to_f.round(ROUNDING_PRECISION) - model.class.energy_usage_rate(
+      ).to_f.round(Cfg.rounding_precision) - model.class.energy_usage_rate(
         model.level)
   end
 
@@ -95,7 +95,7 @@ describe Building::ResourceManagerPartTest do
         rate = 0.3336233463
         with_config_values key => rate do
           model.send("#{resource}_#{type}_rate").should == rate.round(
-            ROUNDING_PRECISION)
+            Cfg.rounding_precision)
         end
       end
     end
@@ -105,7 +105,7 @@ describe Building::ResourceManagerPartTest do
       storage = 333.6233463
       with_config_values key => storage do
         model.send("#{resource}_storage").should == storage.round(
-          ROUNDING_PRECISION)
+          Cfg.rounding_precision)
       end
     end
 

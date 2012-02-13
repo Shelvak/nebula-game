@@ -16,6 +16,7 @@ package models.infoscreen
    
    import utils.MathUtil;
    import utils.ModelUtil;
+   import utils.Objects;
    import utils.StringUtil;
    import utils.locale.Localizer;
    
@@ -32,6 +33,7 @@ package models.infoscreen
        */      
       public function set type(value: String): void
       {
+         Objects.paramNotNull("type", value);
          _type = value;
       }
       
@@ -48,6 +50,7 @@ package models.infoscreen
        */      
       public function set dpt(value: String): void
       {
+         Objects.paramNotNull("dpt", value);
          _dpt = value;
          dispatchDptChangeEvent();
       }
@@ -177,6 +180,7 @@ package models.infoscreen
        */      
       public function set damage(value: String):void
       {
+         Objects.paramNotNull("damage", value);
          _damage = value;
          dispatchDamageTypeChangeEvent();
       }
@@ -201,6 +205,7 @@ package models.infoscreen
        */      
       public function set reach(value: String):void
       {
+         Objects.paramNotNull("reach", value);
          _reach = value;
          dispatchReachChangeEvent();
       }

@@ -12,6 +12,11 @@ module Parts
     end
 
     module ClassMethods
+      def vip_tick_scope(callback); DScope.player(callback.object_id); end
+      def vip_tick(player); player.vip_tick!; end
+
+      def vip_stop_scope(player); DScope.player(player); end
+      def vip_stop(player); player.vip_stop!; end
     end
 
     module InstanceMethods

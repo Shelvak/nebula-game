@@ -40,8 +40,10 @@ package models.infoscreen
    import mx.collections.SortField;
    import mx.core.ClassFactory;
    import mx.core.IFactory;
-   
+
    import utils.DateUtil;
+   import utils.MathUtil;
+   import utils.MathUtil;
    import utils.MathUtil;
    import utils.ModelUtil;
    import utils.NumberUtil;
@@ -72,19 +74,24 @@ package models.infoscreen
       private static const MAX_WEAK_LENGTH: int = 1000;
 
       private static const XP_NEEDED: String = 'xpNeeded';
+      private static const PLANETS_REQUIRED: String = 'planets.required';
+      private static const PULSARS_REQUIRED: String = 'pulsars.required';
+      private static const MOD_CONSTRUCTION: String = 'mod.construction';
+      private static const MOD_COOLDOWN: String = 'mod.cooldown';
+      private static const MAX_VOLUME: String = 'maxVolume';
       
       //properties that dont need to be displayed in difference column of datagrid
       private static const diffIgnorableProperties: Array =
          ['upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost', 'deploysTo',
             'volume', 'width', 'height', 'move.solarSystem.hopTime',
-            'move.galaxy.hopTime'];
+            'move.galaxy.hopTime', 'groupTo', 'groupPosition'];
       
       //properties that dont need to be displayed in data grid
       private static const ignorableProperties: Array = 
          ['metal.starting', 'energy.starting', 'zetium.starting', 'maxLevel', 'coords', 'constructor.items',
             'kind', 'constructable.position', 'constructable', 'npc', 'requirement', 'ui', 'actions', 'box', 'dead.passable', 'frameWidth',
             'gunPoints', 'targetPoint', 'xpModifier', 'appliesTo', 'armor', 'deploysTo', 'upgradeTime', 'metal.cost', 'energy.cost', 'zetium.cost',
-            'unitBonus', 'destroyable', 'cooldown', 'managable'];
+            'unitBonus', 'destroyable', 'groupPosition', 'cooldown', 'managable', 'name', 'groupTo'];
       
       [Bindable]
       public var model: InfoObject;
@@ -328,6 +335,16 @@ package models.infoscreen
                      currentValue = Math.round(Building.getFee(model.type, model.usefulLevel) * 100);
                      newValue = Math.round(Building.getFee(model.type, selectedLevel) * 100);
                   }
+                  else if (element == PLANETS_REQUIRED)
+                  {
+                     currentValue = Technology.getPlanetsRequired(model.type,  model.usefulLevel);
+                     newValue = Technology.getPlanetsRequired(model.type,  selectedLevel);
+                  }
+                  else if (element == PULSARS_REQUIRED)
+                  {
+                     currentValue = Technology.getPulsarsRequired(model.type,  model.usefulLevel);
+                     newValue = Technology.getPulsarsRequired(model.type,  selectedLevel);
+                  }
                   else if (element == Building.RADAR_STRENGTH)
                   {
                      currentValue = Building.calculateRadarStrenth(model.type,
@@ -345,8 +362,21 @@ package models.infoscreen
                   {
                      if (model.objectType == ObjectClass.BUILDING)
                      {
-                        currentValue = BuildingUpgradable.getConstructionMod(model.type, model.usefulLevel);
-                        newValue = BuildingUpgradable.getConstructionMod(model.type, selectedLevel);
+                        if (element == MOD_CONSTRUCTION)
+                        {
+                           currentValue = BuildingUpgradable.getConstructionMod(model.type, model.usefulLevel);
+                           newValue = BuildingUpgradable.getConstructionMod(model.type, selectedLevel);
+                        }
+                        else if (element == MOD_COOLDOWN)
+                        {
+                           currentValue = MathUtil.round(Building.getBuildingCooldownMod(
+                              model.type, model.usefulLevel),
+                              Config.getRoundingPrecision());
+                           newValue = MathUtil.round(Building.getBuildingCooldownMod(
+                              model.type, selectedLevel),
+                              Config.getRoundingPrecision());
+                           useRounding = true;
+                        }
                      }
                      else
                      {
@@ -363,30 +393,52 @@ package models.infoscreen
                      newValue = StringUtil.evalFormula(model.infoData[element],
                         {"level": selectedLevel + 1});
                   }
+                  else if (element == XP_NEEDED)
+                  {
+                     currentValue = StringUtil.evalFormula(model.infoData[element],
+                        {"level": model.usefulLevel + 1});
+                     newValue = StringUtil.evalFormula(model.infoData[element],
+                        {"level": selectedLevel + 1});
+                  }
                   else
                   {
-                     currentValue = StringUtil.evalFormula(model.infoData[element], 
-                        {"level": model.usefulLevel});
-                     newValue = StringUtil.evalFormula(model.infoData[element], 
-                        {"level": selectedLevel});
+                     if (element == MAX_VOLUME)
+                     {
+                        currentValue = MathUtil.round(StringUtil.evalFormula(model.infoData[element],
+                           {"level": model.usefulLevel}),
+                           Config.getRoundingPrecision());
+                        newValue = MathUtil.round(StringUtil.evalFormula(model.infoData[element],
+                           {"level": selectedLevel}),
+                           Config.getRoundingPrecision());
+                        useRounding = true;
+                     }
+                     else
+                     {
+                        currentValue = StringUtil.evalFormula(model.infoData[element],
+                           {"level": model.usefulLevel});
+                        newValue = StringUtil.evalFormula(model.infoData[element],
+                           {"level": selectedLevel});
+                     }
                   }
-                  
-                  var label: String;
+
+                  var bundle: String;
                   switch (model.objectType)
                   {
                      case ObjectClass.BUILDING:
-                        label = Localizer.string('Buildings', 'property.' + element);
+                        bundle = 'Buildings';
                         break;
                      case ObjectClass.TECHNOLOGY:
-                        label = Localizer.string('Technologies', 'property.' + element);
+                        bundle = 'Technologies';
                         break;
                      case ObjectClass.UNIT:
-                        label = Localizer.string('Units', 'property.' + element);
+                        bundle = 'Units';
                         break;
                   }
-                  if (label == null) {
-                     label = "!!! " + element;
-                  }
+                  var label: String = Localizer.string(bundle, 'property.' + element);
+                  var tooltip: String = Localizer.hasProperty(
+                     bundle, 'property.' + element + '.tooltip')
+                        ? Localizer.string(
+                           bundle, 'property.' + element + '.tooltip') : '';
                   
                   var newValueString: String;
                   var currentValueString: String;
@@ -430,12 +482,11 @@ package models.infoscreen
                              model.usefulLevel);
                   }
                   
-                  if (element.indexOf(TechnologyUpgradable.MOD) == 0
-                     || element == Building.FEE)
+                  if (Localizer.hasProperty(bundle,  'property.' + element + '.format'))
                   {
-                     newValueString += '%';
-                     currentValueString += '%';
-                     diffString += '%';
+                     newValueString = Localizer.string(bundle,  'property.' + element + '.format', [newValueString]);
+                     currentValueString = Localizer.string(bundle,  'property.' + element + '.format', [currentValueString]);
+                     diffString = Localizer.string(bundle,  'property.' + element + '.format', [diffString]);
                   }
                   
                   if (diffIgnorableProperties.indexOf(element) != -1)
@@ -443,7 +494,7 @@ package models.infoscreen
                      diffString = '-';
                   }
                   dataForTable.addItem(
-                     new MInfoRow(label, currentValueString, newValueString, diffString));
+                     new MInfoRow(label, currentValueString, newValueString, diffString, tooltip));
                }
             }
          }
@@ -547,35 +598,44 @@ package models.infoscreen
       {
          guns.removeAll();
          var i: int = -1;
-         for each (var gun: Object in _guns)
-         {
-            i++;
-            var newGun: Gun;
-            if (model.objectType == ObjectClass.BUILDING)
-            {
-               newGun = new Gun(Config.getBuildingGunType(model.type, i), gun.dpt, 
-                  gun.period, gun.damage, gun.reach);
-            }
-            if (model.objectType == ObjectClass.UNIT)
-            {
-               newGun = new Gun(Config.getUnitGunType(model.type, i), gun.dpt, 
-                  gun.period, gun.damage, gun.reach);
-            }
-            var grouped: Boolean = false;
-            for each (var oldGun: Gun in guns)
-            {
-               if (oldGun.hashKey() == newGun.hashKey())
-               {
-                  oldGun.count++;
-                  grouped = true;
+         try {
+            for each (var gun: Object in _guns) {
+               i++;
+               var type: String;
+               if (model.objectType == ObjectClass.BUILDING) {
+                  type = Config.getBuildingGunType(model.type, i);
+               }
+               else if (model.objectType == ObjectClass.UNIT) {
+                  type = Config.getUnitGunType(model.type, i);
+               }
+               else {
+                  throw new Error(
+                     "Unknown model.objectType: " + model.objectType
+                  );
+               }
+
+               var newGun: Gun = new Gun(
+                  type, gun.dpt, gun.period, gun.damage, gun.reach
+               );
+
+               var grouped: Boolean = false;
+               for each (var oldGun: Gun in guns) {
+                  if (oldGun.hashKey() == newGun.hashKey()) {
+                     oldGun.count++;
+                     grouped = true;
+                  }
+               }
+               if (! grouped) {
+                  guns.addItem(newGun);
                }
             }
-            if (!grouped)
-            {
-               guns.addItem(newGun);
-            }
+            dispatchGunsCreatedEvent();
          }
-         dispatchGunsCreatedEvent();
+         catch (e: Error) {
+            e.message = "Error while creating gun " + i + " for " +
+               model.toString() + ": " + e.message;
+            throw e;
+         }
       }
       
       [Bindable (event="technologyChanged")]

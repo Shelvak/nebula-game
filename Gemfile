@@ -10,13 +10,13 @@ gem 'flag_shih_tzu', :git => "git://github.com/arturaz/flag_shih_tzu.git"
 gem "celluloid", :git => "git://github.com/tarcieri/celluloid.git"
 gem "celluloid-io", :git => "git://github.com/arturaz/celluloid-io.git",
   :require => "celluloid/io"
+# For natural date parsing, e.g. "in 5 minutes"
+gem "chronic", ">=0.6.2"
 
 # Gems that are needed but should never be activated.
 group :installation do
   gem 'rake', '~>0.9.0'
   gem 'jruby-openssl'
-  # For natural date parsing, e.g. "in 5 minutes"
-  gem "chronic", ">=0.6.2"
 end
 
 # Gems that are needed for running (not testing).

@@ -304,12 +304,26 @@
 
     <!-- Technologijos -->
 
+    <Technology_Trooper value="Desantininkas" />
+    <Technology_Trooper-whos value="Desantininko" />
+    <Technology_Seeker value="Sėlintojas" />
+    <Technology_Seeker-whos value="Sėlinotojo" />
+    <Technology_Shocker value="Mechas" />
+    <Technology_Shocker-whos value="Mecho" />
+    <Technology_Vulcan value="Vulkanas" />
+    <Technology_Vulcan-whos value="Vulkano" />
+    <Technology_Screamer value="Rėksnys" />
+    <Technology_Screamer-whos value="Rėksnio" />
+    <Technology_Thunder value="Griausmas" />
+    <Technology_Thunder-whos value="Griausmo" />
     <Technology_ZetiumExtraction value="Zetiumo gavyba" />
-    <Technology_ZetiumExtraction-whos value="zetiumo gavybos" />
+    <Technology_ZetiumExtraction-whos value="Zetiumo gavybos" />
     <Technology_Market value="Turgus" />
     <Technology_Market-whos value="Turgaus" />
-    <Technology_SpaceFactory-whos value="Laivų gamyklos" />
+    <Technology_GroundFactory value="Tankų gamykla" />
+    <Technology_GroundFactory-whos value="Tankų gamyklos" />
     <Technology_SpaceFactory value="Laivų gamykla" />
+    <Technology_SpaceFactory-whos value="Laivų gamyklos" />
     <Technology_FieryMelters value="Aukšto spaudimo lydymas" />
     <Technology_FieryMelters-whos value="aukšto spaudimo lydymo" />
     <Technology_SuperconductorTechnology value="Superlaidininkai" />
@@ -326,6 +340,8 @@
     <Technology_ShipStorage-whos value="Išorinių dokų" />
     <Technology_DefensivePortal ref="Building_DefensivePortal" />
     <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
+    <Technology_Radar value="Radaras" />
+    <Technology_Radar-whos value="Radaro" />
     <Technology_Alliances value="Sąjungos" />
     <Technology_Alliances-whos value="Sąjungų" />
     <Technology_BuildingRepair value="Taisymo robotai" />
@@ -535,6 +551,8 @@
     <status2 value="NS" />
     <status2.tooltip value="Nepuolimo Sutartis" />
     <status3 value="Priešų" />
+
+    <label.loadingBattleMap value="Kraunamas kovos laukas" />
     
     <space value="Kosmosas" />
     <ground value="Žemė" />
@@ -748,16 +766,32 @@
     <property.constructing value="Stato" />
     <property.initiative value="Iniciatyva" />
     <property.armor value="Šarvai" />
-    <property.armorMod value="Šarvų daugiklis" />
-    <property.damageMod value="Žalos daugiklis" />
-    <property.mod.construction value="Konstravimo greičio daugiklis" />
+    <property.armorMod value="Šarvų priedas" />
+    <property.armorMod.format value="{0}%" />
+    <property.mod.construction value="Konstravimo greičio priedas" />
+    <property.mod.construction.format value="{0}%" />
+    <property.mod.cooldown value="Sekundžių persiųsti 1 apimties vnt." />
+    <property.mod.cooldown.format value="{0} s" />
+    <property.mod.cooldown.tooltip>
+      <p>Siunčiant resursus petraukos trukmė skaičiuojama dauginant šį skaičių
+      su persiųstų resursų apimti.</p>
+      <p>Kuo šis skaičius mažesnis, tuo trumpiau po resursų siuntimo truks
+      pertrauka.</p>
+    </property.mod.cooldown.tooltip>
     <property.healing.time.mod value="Sekundžių pagydyti 1 GT" />
+    <property.healing.time.format value="{0} s" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
+    <property.healing.cost.mod.tooltip>
+      <p>Gydant karius/laivus gydymo kaina apskaičiuojama pagal 1 lygio kario
+      kainą * sužeidimo procentas * šis daugiklis.</p>
+      <p>Kuo šis skaičius mažesnis, tuo pigiau kainuos gydymas.</p>
+    </property.healing.cost.mod.tooltip>
     <property.population value="Populiacija" />
-    <property.teleportedVolume value="Perkeliamas tūris" />
+    <property.maxVolume value="Maks. perkeliamas tūris" />
     <property.creds value="Kredai" />
     <property.victoryPoints value="Pergalės taškai" />
     <property.fee value="Mokesčio procentas" />
+    <property.fee.format value="{0}%" />
     <property.width value="Pastato plotis" />
     <property.height value="Pastato ilgis" />
     <property.vpsOnDamage value="PT už 1 žalos vienetą" />
@@ -871,9 +905,9 @@
     <ResourceTransporter.tooltip value="Leidžia teleportuoti resursus" />
     <ResourceTransporter.about>
       <p>
-        [obj:1:Building_ResourceTransporter] gali akimirksniu pergabenti
+        Resursų siųstuvas gali akimirksniu pergabenti
         tam tikrą kiekį resursų iš vienos planetos į kitą. Du
-        [obj:2:Building_ResourceTransporter::dc] susijungia tarpusavyje,
+        resursų siųstuvai susijungia tarpusavyje,
         sukurdami erdvės tunelį tarp dviejų planetų.
       </p>
       <p>
@@ -1816,6 +1850,15 @@
     <message.questCompleted value="Užduotis „{0}“ buvo įvykdyta." />
     <message.newQuests value="Tu pradėjai vykdyti šias užduotis:" />
 
+    <title.technologiesChanged value="Įvyko pasikeitimai technologijose" />
+    <message.technologiesChanged value="Pasikeitimai technologijose." />
+    <insideMessage.technologiesChanged>
+        <p>
+            Dėl nepakankamo mokslininkų arba planetų kiekio buvo atlikti šie
+            pakeitimai technologijoms:
+        </p>
+    </insideMessage.technologiesChanged>
+
     <title.kickedFromAlliance value="Buvai pašalintas iš sąjungos" />
     <message.kickedFromAlliance value="Buvai pašalintas iš sąjungos {0}" />
     <label.kickedFromAlliance 
@@ -2437,8 +2480,8 @@
       <p>Komandore,</p>
 
       <p>
-        Resursų gavyba - mūsų pirmoji užduotis! Įrenkite daugiau kasyklų, kad
-        tikrai užtikrintumėte stabilų resursų augimą.
+        Užtikrinta resursų gavyba - mūsų kritinė užduotis! Įrenkite daugiau 
+        kasyklų, kad tikrai užtikrintumėte stabilų resursų augimą.
       </p>
     </about.40>
 
@@ -2479,9 +2522,9 @@
       sunaikintų ateivių nuolaužų papildysime savo resursų saugyklas.
     </p>
     <p>
-      Mūsų žvalgyba sako, kad ateivių [obj:2:Unit_Gnat::dc] stiprumu yra
-      apylygiai su mūsų [obj:2:Unit_Trooper:whom:dc]. Siūlau prieš puolant
-      turėti kelių karių persvarą.
+      Mūsų žvalgyba sako, kad ateivių gnatai savo karine galia maždaug 
+      prilygsta mūsų desantinikams, tad prieš puolant siūlau turėti
+      kelių karių persvarą.
     </p>
     </about.70>
 
@@ -2611,7 +2654,7 @@
       <p>Komandore,</p>
       <p>Mūsų žmonėms reikia daugiau vietos! Dar truputis ir nebus kur
         kojos padėti!</p>
-      <p>Nedelsiant pradėkite [obj:2:Building_Housing:whos:dc] statybas.</p>
+      <p>Nedelsiant pradėkite gyvenųjų bokštų statybas.</p>
     </about.160>
 
     <title.170 value="Kelias į žvaigždes" />
@@ -2645,15 +2688,14 @@
     <title.190 value="Kosmoso grėsmės" />
     <about.190>
     <p>Sveiki, Komandore.</p>
-    <p>Štai, mūsų [reference:Objects/Building_SpaceFactory] jau stovi. Galėtume
+    <p>Štai, mūsų laivų gamykla jau stovi. Galėtume
       kilti į kosmosą, tačiau mums reikia laivų! Žinoma, mes galėtume naudotis
-      [obj:1:Unit_Mule:whos:dc] klasės laivais, tačiau jų pagrindinė paskirtis -
+      mulo klasės laivais, tačiau jų pagrindinė paskirtis -
       gabenti krovinius. Nors jie ir turi stiprius šarvus, tačiau beveik neturi
       puolamosios galios.</p>
     <p>Ne, tam, kad įveiktumėme ateivių laivus, stovinčius prie asteroidų ir
       planetų, mums prireiks kovinių laivų! Keliaukite į savo laivų gamyklą ir
-      liepkite pradėti savo pirmojo [obj:1:Unit_Crow:whos:dc] klasės laivo
-      gamybą!</p>
+      liepkite pradėti savo pirmojo varno klasės laivo gamybą!</p>
     </about.190>
 
     <title.200 value="Atskleistas šnipas" />
@@ -2726,7 +2768,7 @@
     <p>Sveiki, Komandore.</p>
     <p>Kadangi jau turime funkcionuojančią laivų gamyklą, galime truputi
       patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos
-      [obj:2:Unit_Dirac:what:dc]. Mūsų laivynui tai neturėtų būti sunki
+      dirako klasės laivų. Mūsų laivynui tai neturėtų būti sunki
       užduotis.</p>
     </about.240>
 
@@ -2735,7 +2777,7 @@
     <p>Komandore,</p>
     <p>Jūsų aktyvumas šiame regione privertė ateivius būti atsargesniais.
       Sklinda gandai, kad jie netgi planuoja atsakomąjį smūgį! Sunaikinkite jų
-      galinguosius [obj:1:Unit_Thor:whos:dc] klasės laivus, parodykite jiems
+      galinguosius toro klasės laivus, parodykite jiems
       kas valdo šią galaktiką!</p>
     </about.250>
 
@@ -3415,6 +3457,9 @@
   </Quests>
 
   <QuestScreens>
+    <!-- Ensure no spaces are between text and starting p tag or else
+    they will be visible in the client. -->
+
     <BuildingSidebar>
       <![CDATA[
       <p>Pastatus gali statyti iš dešinėje pusėje esančio meniu.</p>
@@ -3444,8 +3489,9 @@
 
     <BuildingUpgrade>
       <![CDATA[
-      <p>Pastatai gali būti tobulinami. Kad patobulintum pastatą pasirink jį
-      žemėlapyje, ir dešinėje esančiame meniu paspausk mygtuką „Tobulinti“.</p>
+      <p>Pastatai gali būti tobulinami. Kad patobulintum pastatą, pasirink jį
+      žemėlapyje ir dešinėje pusėje esančiame meniu paspausk mygtuką 
+      „[reference:BuildingSelectedSidebar/upgrade]“.</p>
       <p>Patobulinti pastatai pagerina savo savybes - greičiau išgauna resursus,
       stato karius, teikia daugiau mokslininkų ir t.t.</p>
       ]]>
@@ -3462,195 +3508,151 @@
 
     <ConstructionTiles>
       <![CDATA[
-      <p>
-        Pastatus ant šios žemės pastatys greičiau. Be to - jeigu pastatas
-        stato kitus pastatus arba gamina karius - jis taip pat tai darys
-        greičiau, todėl šią žemę geriausia išnaudoti įvairioms gamykloms.
-      </p>
+      <p>Ieškok pilkos, lygios žemės - pastatus ant jos pastatys greičiau.
+      Be to, jeigu pastatas stato kitus pastatus arba gamina karius, jis 
+      taip pat tai darys greičiau.</p>
+      <p>Ant šios žemės geriausia statyti kareivines ir gamyklas.</p>
       ]]>
     </ConstructionTiles>
 
     <SpeedupConstruction1>
       <![CDATA[
-      <p>
-        Ilgai trunkančias statybas gali pagreitinti pasinaudodamas kredais -
+      <p>Ilgai trunkančias statybas gali pagreitinti pasinaudodamas kredais -
         specialiu žaidimo resursu. Tam tau reikia pasirinkti statomą pastatą ir
         dešinėje juostoje paspaudus „Paspartinti“ pasirinkti norimą
-        pagreitinimo trukmę.
-      </p>
+        pagreitinimo trukmę.</p>
       ]]>
     </SpeedupConstruction1>
     <SpeedupConstruction2>
       <![CDATA[
-      <p>
-        Kredų gali gauti jų nusipirkdamas - paspausk mygtuką „Pirkti kredus“ iš
-        N44 meniu.
-      </p>
-      <p>
-        Taip pat kredų duoda kai kurios užduotys. Jų tau kaip tik davė prieš tai
+      <p>Kredų gali nusipirkti - paspausk mygtuką „Pirkti kredus“ iš
+        N44 meniu.</p>
+      <p>Taip pat kredų duoda kai kurios užduotys. Jų tau kaip tik davė prieš tai
         įvykdyta užduotis - nueik atsiimk apdovanojimą ir paspartink pastato
-        statybą!
-      </p>
+        statybą!</p>
       ]]>
     </SpeedupConstruction2>
 
     <UnitConstructors>
       <![CDATA[
-      <p>
-        Kai kurie pastatai yra skirti treniruoti kareivius, bei gaminti tankus
-        ir kosminius laivus.
-      </p>
-      <p>
-        Karių statybą gali pradėk pasirinkęs tokį pastatą (pvz.
+      <p>Kai kurie pastatai yra skirti treniruoti kareivius, bei gaminti tankus
+        ir kosminius laivus.</p>
+      <p>Karių statybą gali pradėk pasirinkęs pastatą (pvz.
         [obj:1:Building_Barracks:what:dc]) ir šoninėje juostoje paspaudęs
-        „[reference:BuildingSelectedSidebar/open]“.
-      </p>
+        „[reference:BuildingSelectedSidebar/open]“.</p>
       ]]>
     </UnitConstructors>
 
     <UnitConstructionScreen>
       <![CDATA[
-      <p>
-        Per bet kurį iš tokių pastatų gali patekti į karių gamybos ekraną iš
-        kurio gali valdyti visą karių statybą vykstančią planetoje.
-      </p>
-      <p>
-        Jog pradėtum statyti karius pasirink norimą karių skaičių ir paspausk
-        statymo mygtuką.
-      </p>
+      <p>Per bet kurį pastatą gali patekti į karių gamybos ekraną. Jame
+        gali valdyti visą karių statybą vykstančią planetoje.</p>
+      <p>Tam kad pradėtum statyti karius, pasirink norimą karių skaičių ir paspausk
+        statymo mygtuką.</p>
       ]]>
     </UnitConstructionScreen>
 
     <TakeUnitsReward>
       <![CDATA[
-      <p>
-        Užduotis, kurią ką tik įvykdei, kaip atlygi tau duoda treniruotų karių.
-        Prieš vykdant kitą užduotį būtų gerai juos priimti į mūsų gretas.
-      </p>
-      <p>
-        Nueik į N44 meniu, paspausk mygtuką „[reference:MainMenu/label.quests]“,
+      <p>Užduotis, kurią ką tik įvykdei, kaip atlygi tau duoda treniruotų karių.
+        Prieš vykdant kitą užduotį būtų gerai juos priimti į mūsų gretas.</p>
+      <p>Nueik į N44 meniu, paspausk mygtuką „[reference:MainMenu/label.quests]“,
         pasirink ką tik įvykdytą užduotį ir spausk
-        „[reference:Quests/label.claimReward]“.
-      </p>
+        „[reference:Quests/label.claimReward]“.</p>
       ]]>
     </TakeUnitsReward>
 
     <UnitScreen>
       <![CDATA[
-      <p>
-        Kiek karių turi gali matyti dešiniame viršutiniame ekrano kampe.
-        Paspaudęs ant skaičiaus pateksi į karių valdymo langą, kuriame jiems
-        galėsi duoti nurodymus, kurie paveiks mūšio baigtį.
-      </p>
+      <p>Dešiniame viršutiniame ekrano kampe gali matyti, kiek šiuo metu 
+      turi karių. Paspaudęs ant skaičiaus pateksi į karių valdymo langą, 
+      kuriame jiems galėsi duoti nurodymus, kurie paveiks mūšio baigtį.</p>
       ]]>
     </UnitScreen>
 
     <AttackButton>
       <![CDATA[
-      <p>
-        Norint užpulti ateivių pastatą, tau reikia jį pasirinkti ir šoninėje
-        juostoje paspausti mygtuką „[reference:BuildingSelectedSidebar:attack]“.
-      </p>
+      <p>Norint užpulti ateivių pastatą, tau reikia jį pasirinkti ir šoninėje
+        juostoje paspausti mygtuką „[reference:BuildingSelectedSidebar/attack]“.</p>
       ]]>
     </AttackButton>
 
     <AttackScreen>
       <![CDATA[
-      <p>
-        Atsidariusiame ekrane gali pasirinkti su kuriais kariai nori pulti.
-      </p>
-      <p>
-        Dažniausiai puolama su visais turimais kariais. Juos gali pasirinkti
-        šoninėje juostoje paspaudęs mygtuką „[reference:Units/label.all]“.
-      </p>
-      <p>
-        Pasirinkęs karius spausk mygtuką „[reference:Units/label.attack]“.
-      </p>
+      <p>Atsidariusiame ekrane gali pasirinkti su kuriais kariai nori pulti.</p>
+      <p>Dažniausiai puolama su visais turimais kariais. Juos gali pasirinkti
+        šoninėje juostoje paspaudęs mygtuką „[reference:Units/label.all]“.</p>
+      <p>Pasirinkęs karius spausk mygtuką „[reference:Units/label.attack]“.</p>
       ]]>
     </AttackScreen>
 
+    <ClaimRewardRC>
+      <![CDATA[
+      <p>Ką tik įvykdyta užduotis tau davė vertingų resursų, kurių reikės
+      tolimesniam tavo vystymuisi - zetiumo. Be to, už puikų darbą gavai
+      prizinių kredų - neabejoju, jog rasi kaip juos panaudoti.</p>
+      <p>BŪTINAI atsiimk savo užduoties atlygį!</p>
+      ]]>
+    </ClaimRewardRC>
+
     <DamagedUnits>
       <![CDATA[
-      <p>
-        Puolimo metu tavo kariai buvo sužeisti. Juos būtų galima pagydyti,
-        tačiau tam mums reikia išrasti technologiją, kuri leis mums pastatyti
-        [obj:1:Building_HealingCenter:what:dc].
-      </p>
+      <p>Puolimo metu tavo kariai buvo sužeisti. Juos būtų galima pagydyti,
+        tačiau tam tau reikia išrasti technologiją, kuri leistų pastatyti
+        [obj:1:Building_HealingCenter:what:dc].</p>
       ]]>
     </DamagedUnits>
 
     <Exploring>
       <![CDATA[
-      <p>
-        Planetoje yra nemažai objektų, kuriuos galima tyrinėti. Tam tau reikia
+      <p>Planetoje yra nemažai objektų, kuriuos galima tyrinėti. Tam tau reikia
         pasirinkti vieną iš tokių objektų žemėlapyje ir šoninėje juostoje
-        paspausti mygtuką „[reference:Exploration/label.explore]“.
-      </p>
-      <p>
-        Mokslininkai bus išsiųsti į ekspediciją ir po kurio laiko praneš apie
-        savo atradimus.
-      </p>
+        paspausti mygtuką „[reference:Exploration/label.explore]“.</p>
+      <p>Mokslininkai bus išsiųsti į ekspediciją ir po kurio laiko praneš apie
+        savo atradimus.</p>
       ]]>
     </Exploring>
 
     <Notifications>
       <![CDATA[
-      <p>
-        Apie baigtų tyrinėjimų rezultatus bei kitus pranešimus gali perskaityti
-        pranešimų centre, kurį rasi viršutiniame kairiame ekrano kampe.
-      </p>
-      <p>
-        Jeigu apie pranešimų centrą nori sužinoti daugiau, siūlau aplankyti
-        <a href="wiki://Notifications">Nebula 44 Wiki</a>
-      </p>
+      <p>Apie baigtų tyrinėjimų rezultatus bei kitus pranešimus gali perskaityti
+        pranešimų centre, kurį rasi viršutiniame kairiame ekrano kampe.</p>
+      <p>Jeigu apie pranešimų centrą nori sužinoti daugiau, siūlau aplankyti
+        Nebula 44 Wiki, kurį rasi N44 meniu.</p>
       ]]>
     </Notifications>
 
     <TechTree>
       <![CDATA[
-      <p>
-        Atsidaręs [obj:1:Building_ResearchCenter:what:dc] rasi technologijų
-        medį. Jame matomos visos technologijos, kurios yra tau prieinamos.
-      </p>
-      <p>
-        Technologijų, kurios yra pilkos, kol kas išrasti negali. Technologijoms,
-        kurios yra raudonos, trūksta resursų arba mokslininkų.
-      </p>
+      <p>Atsidaręs [obj:1:Building_ResearchCenter:what:dc] rasi technologijų
+        medį. Jame matomos visos technologijos, kurios yra tau prieinamos.</p>
+      <p>Technologijų, kurios yra pilkos, kol kas išrasti negali. Technologijoms,
+        kurios yra raudonos, trūksta resursų arba mokslininkų.</p>
       ]]>
     </TechTree>
 
     <TechResearch1>
       <![CDATA[
-      <p>
-        Norint išrasti technologiją pirmiausiai tau reikia ją pasirinkti.
+      <p>Norint išrasti technologiją pirmiausiai tau reikia ją pasirinkti.
         Tada šoninio meniu apačioje paspausk mygtuką
-        „[reference:Technologies/upgrade]“.
-      </p>
+        „[reference:Technologies/upgrade]“.</p>
       ]]>
     </TechResearch1>
     <TechResearch2>
       <![CDATA[
-      <p>
-        Technologiją išradinėja prie jos priskirtas mokslininkų kiekis. Kuo
+      <p>Technologiją išradinėja prie jos priskirtas mokslininkų kiekis. Kuo
         daugiau mokslininkų dirbs prie technologijos, tuo greičiau ji bus
-        išrasta.
-      </p>
+        išrasta.</p>
       ]]>
     </TechResearch2>
 
     <WPInTechs>
       <![CDATA[
-      <p>
-        Kai kurios technologijos iš pradžių tau bus užrakintos - joms išrasti
-        tau reikės surinkti tam tikrą kiekį karo taškų.
-      </p>
-      <p>
-        Savo karo taškų kiekį gali pažiūrėti N44 meniu.
-      </p>
-      <p>
-        Kol kas lengviausias būdas rinkti karo taškus yra išsivalyti savo
-        planetą nuo ateivių pastatų.
-      </p>
+      <p>Kai kurios technologijos iš pradžių tau bus užrakintos - joms išrasti
+        tau reikės surinkti tam tikrą kiekį karo taškų.</p>
+      <p>Savo karo taškų kiekį gali pažiūrėti N44 meniu.</p>
+      <p>Kol kas lengviausias būdas rinkti karo taškus - išsivalyti savo
+        planetą nuo ateivių pastatų.</p>
       ]]>
     </WPInTechs>
 
@@ -3664,411 +3666,301 @@
 
     <Resources>
       <![CDATA[
-      <p>
-        Nebula 44 yra trijų rūšių resursai: metalas, energija ir zetiumas.
-        Nedideli jų kiekiai yra saugomi [obj:1:Building_Mothership:what:dc]
-        talpose, o didesni - specialiose saugyklose.
-      </p>
-      <p>
-        Metalas pagrinde naudojamas karių bei pastatų gamybai. Energija - taip
+      <p>Žaidime Nebula 44 yra trijų rūšių resursai: metalas, energija ir
+      zetiumas. Nedideli jų kiekiai yra saugomi motininio laivo talpose,
+      o didesni - specialiose saugyklose.</p>
+      <p>Metalas pagrinde naudojamas karių bei pastatų gamybai. Energija - taip
         pat gamybai, tačiau ją vartoja ir įvairūs pastatai, tokie kaip MEX-ai,
         ZEX-ai ar radarai. Zetiumas yra naudojamas galingų tankų bei laivų
         gamyboje. Be to jis yra ypatingai reikalingas išrandant naujas
-        technologijas.
-      </p>
+        technologijas.</p>
       ]]>
     </Resources>
 
     <ResourceBar>
       <![CDATA[
-      <p>
-        Visų savo resursų atsargas, talpyklų dydžius ir išgavimo greitį gali
-        pamatyti užvedęs pelę ant apatinėje juostoje ęsančios resursų zonos.
-      </p>
+      <p>Visų savo resursų atsargas, talpyklų dydžius ir išgavimo greitį gali
+        pamatyti užvedęs pelę ant apatinėje juostoje ęsančios resursų zonos.</p>
       ]]>
     </ResourceBar>
 
     <Market1>
       <![CDATA[
-      <p>
-        Turgaus ekranas susideda iš dvejų dalių: pirkimo (didžioji) ir
-        pardavimo (šoninė juosta).
-      </p>
-      <p>
-        Pirkimo lange gali matyti visus įdėtus pasiūlymus, bei naudodamasis
-        filtrais ir rūšiavimu juos atsirinkti.
-      </p>
+      <p>Turgaus ekranas susideda iš dvejų dalių: pirkimo (didžioji) ir
+        pardavimo (šoninė juosta).</p>
+      <p>Pirkimo lange gali matyti visus įdėtus pasiūlymus, bei naudodamasis
+        filtrais ir rūšiavimu juos atsirinkti.</p>
       ]]>
     </Market1>
     <Market2>
       <![CDATA[
-      <p>
-        Pasirinkęs pasiūlymą gali nupirkti tik jo dalį - pasirink kiek resursų
-        tau reikia naudodamasis apačioje atsirandančiu slankikliu.
-      </p>
-      <p>
-        Atkreipk dėmesį, jog mainytis gali ne tik resursais, bet ir kariais.
-      </p>
+      <p>Pasirinkęs pasiūlymą gali nupirkti tik jo dalį - pasirink kiek resursų
+        tau reikia naudodamasis apačioje atsirandančiu slankikliu.</p>
       ]]>
+      <!-- Not implemented for now.
+      <p>Atkreipk dėmesį, jog mainytis gali ne tik resursais, bet ir
+        kariais.</p>-->
     </Market2>
 
     <Population>
       <![CDATA[
-      <p>
-        Tavo kariai naudoja gyvybinius resursus - orą, maistą, vandenį. Tai
+      <p>Tavo kariai naudoja gyvybinius resursus - orą, maistą, vandenį. Tai
         įtakoja kiek gyventojų mes galime išlaikyti. Šis skaičius yra matomas
-        viršuje dešinėje, šalia karių skaičiaus.
-      </p>
-      <p>
-        Jeigu viršysi savo gyventojų resursus, tavo kariai taps silpnesni, tad
-        pasirūpink, jog turėtum jiems pakankamai vietos.
-      </p>
+        viršuje dešinėje, šalia karių skaičiaus.</p>
+      <p>Jeigu viršysi savo gyventojų resursus, tavo kariai taps silpnesni, tad
+        pasirūpink, jog turėtum jiems pakankamai vietos.</p>
       ]]>
     </Population>
 
     <UnitScreenWithSpace>
       <![CDATA[
-      <p>
-        Jeigu turi ne tik žemės karių, bet ir kosminių laivų, šalia žemės karių
-        skaičiaus bus rodomas laivų skaičius.
-      </p>
-      <p>
-        Paspaudus ant jo atsidursi laivų tvarkymo ekrane, iš kurio gali išsiųsti
-        savo laivus.
-      </p>
-      <p>
-        Tame pačiame ekrane gali greitai persijungti tarp savo žemės karių ir
-        kosminių laivų. Tam pasinaudok mygtukais virš pirmo flango.
-      </p>
+      <p>Jeigu turi ne tik žemės karių, bet ir kosminių laivų, šalia žemės karių
+        skaičiaus bus rodomas laivų skaičius.</p>
+      <p>Paspaudus ant jo atsidursi laivų tvarkymo ekrane, iš kurio gali išsiųsti
+        savo laivus.</p>
+      <p>Tame pačiame ekrane gali greitai persijungti tarp savo žemės karių ir
+        kosminių laivų. Tam pasinaudok mygtukais virš pirmo flango.</p>
       ]]>
     </UnitScreenWithSpace>
 
     <SendingShips1>
       <![CDATA[
-      <p>
-        Norėdamas išsiųsti savo laivus į kosmosą, pirmiausiai atsidaryk laivų
-        ekraną.
-      </p>
-      <p>
-        Tada pasirink norimus laivus ir spausk mygtuką
-        „[reference:Units/label.issueOrder]“.
-      </p>
+      <p>Norėdamas išsiųsti savo laivus į kosmosą, pirmiausiai atsidaryk laivų
+        ekraną.</p>
+      <p>Tada pasirink norimus laivus ir spausk mygtuką
+        „[reference:Units/label.issueOrder]“.</p>
       ]]>
     </SendingShips1>
     <SendingShips2>
       <![CDATA[
-      <p>
-        Tau bus atidarytas saulės sistemos žemėlapis. Paspausk ant norimo
-        sektoriaus ir pasirink „[reference:Units/label.toSector]“.
-      </p>
+      <p>Tau bus atidarytas saulės sistemos žemėlapis. Paspausk ant norimo
+        sektoriaus ir pasirink „[reference:Movement/label.toSector]“.</p>
       ]]>
     </SendingShips2>
 
     <CombatInSpace>
       <![CDATA[
-      <p>
-        Į sektorių atskridę tavo laivai nuskanuoja erdvę. Jeigu joje yra
+      <p>Į sektorių atskridę tavo laivai nuskanuoja erdvę. Jeigu joje yra
         priešiškų laivynų - jie persirikiuoja (tai užtrunka tam tikrą laiko
-        tarpą) ir puola priešų laivyną.
-      </p>
-      <p>
-        Jeigu šis nebūna sunaikintas per vieną kovą, laivai atsitraukia,
+        tarpą) ir puola priešų laivyną.</p>
+      <p>Jeigu šis nebūna sunaikintas per vieną kovą, laivai atsitraukia,
         persirikiuoja (tai vėl užtrunka) ir puola iš naujo, tol kol sektoriuje
-        lieka tiktai draugiški laivai.
-      </p>
+        lieka tiktai draugiški laivai.</p>
       ]]>
     </CombatInSpace>
 
     <MoveToPlanet>
       <![CDATA[
-      <p>
-        Savo laivyną gali judinti ir jeigu jis yra kosmose. Pasirink vieną savo
-        laivų grupę ir spausk mygtuką „[reference:Units/label.move]“. Tada
-        tiesiog pasirink sektorių į kurį nori judėti.
-      </p>
-      <p>
-        Jeigu nori, kad tavo laivynas nuskristų į planetą, pasirink sektorių
-        virš planetos ir spausk mygtuką „[reference:Units/label.toPlanet]“.
-      </p>
+      <p>Savo laivyną gali judinti ir jeigu jis yra kosmose. Pasirink vieną savo
+        laivų grupę ir spausk mygtuką „[reference:Movement/label.move]“. Tada
+        tiesiog pasirink sektorių į kurį nori judėti.</p>
+      <p>Jeigu nori, kad tavo laivynas nuskristų į planetą, pasirink sektorių
+        virš planetos ir spausk mygtuką
+        „[reference:Movement/label.toPlanet]“.</p>
       ]]>
     </MoveToPlanet>
 
     <ClaimPlanet>
       <![CDATA[
-      <p>
-        Jeigu planetoje, į kurią atskridai, nėra priešiškų pajėgų, tu gali ją
+      <p>Jeigu planetoje, į kurią atskridai, nėra priešiškų pajėgų, tu gali ją
         perimti. Perėmus planetą visi joje ęsantys pastatai ir resursai atitenka
-        tau.
-      </p>
-      <p>
-        Planetai perimti tau reikia šoninėje juostoje paspausti mygtuką
-        „[reference:BuildingSidebar:label.claimPlanet]“.
-      </p>
+        tau.</p>
+      <p>Planetai perimti tau reikia šoninėje juostoje paspausti mygtuką
+        „[reference:BuildingSidebar/label.claimPlanet]“.</p>
       ]]>
     </ClaimPlanet>
 
     <Wreckage>
       <![CDATA[
-      <p>
-        Po įvykusio mūšio lieka nemažai nuolaužų, kurios gali būti panaudotos
-        kaip resursai.
-      </p>
-      <p>
-        Jeigu mūšis įvyko planetoje, nuolaužos yra automatiškai surenkamos ir
-        padedamos į planetos talpyklas.
-      </p>
-      <p>
-        Jeigu mūšis įvyko kosmose, nuolaužos lieka sektoriuje tol, kol jas kas
+      <p>Po įvykusio mūšio lieka nemažai nuolaužų, kurios gali būti panaudotos
+        kaip resursai.</p>
+      <p>Jeigu mūšis įvyko planetoje, nuolaužos yra automatiškai surenkamos ir
+        padedamos į planetos talpyklas.</p>
+      <p>Jeigu mūšis įvyko kosmose, nuolaužos lieka sektoriuje tol, kol jas kas
         nors surenka. Norint susirinkti nuolaužas tau reikia atskristi į
-        sektorių su mulo klasės transportiniu laivu.
-      </p>
+        sektorių su mulo klasės transportiniu laivu.</p>
       ]]>
     </Wreckage>
 
     <LoadWreckage1>
       <![CDATA[
-      <p>
-        Ęsant virš sektoriaus su nuolaužomis pasirink savo laivus, tada spausk
-        mygtuką „[reference:Squadrons/label.manage]“.
-      </p>
-      <p>
-        Atsidariusiame ekrane paspausk įkrovimo mygtuką.
-      <p>
+      <p>Ęsant virš sektoriaus su nuolaužomis pasirink savo laivus, tada spausk
+        mygtuką „[reference:Squadrons/label.manage]“.</p>
+      <p>Atsidariusiame ekrane paspausk įkrovimo mygtuką.<p>
       ]]>
     </LoadWreckage1>
     <LoadWreckage2>
       <![CDATA[
-      <p>
-        Pasirink kiek kokių resursų nori įkrauti ir patvirtink savo sprendimą.
-      </p>
-      <p>
-        Galiausiai uždaryk resursų bei laivų ekranus, jog vėl atsidurtum
-        kosmose.
-      </p>
+      <p>Pasirink kiek kokių resursų nori įkrauti ir patvirtink savo
+      sprendimą.</p>
+      <p>Galiausiai uždaryk resursų bei laivų ekranus, jog vėl atsidurtum
+      kosmose.</p>
       ]]>
     </LoadWreckage2>
 
     <UnloadResources>
       <![CDATA[
-      <p>
-        Atskridęs atgal į planetą įeik į laivų ekraną ir paspausk iškrovimo
-        mygtuką.
-      </p>
-      <p>
-        Pasirink kiek kokių resursų nori iškrauti ir patvirtink savo sprendimą,
-        bei uždaryk ekranus, jog grįžtum į planetą.
-      </p>
+      <p>Atskridęs atgal į planetą įeik į laivų ekraną ir paspausk iškrovimo
+      mygtuką.</p>
+      <p>Pasirink kiek kokių resursų nori iškrauti ir patvirtink savo sprendimą,
+      bei uždaryk ekranus, jog grįžtum į planetą.</p>
       ]]>
     </UnloadResources>
 
     <Radar1>
       <![CDATA[
-      <p>
-        Galaktikoje tu toli gražu ne vienas, tačiau tam, jog galėtum matyti ir
-        išskristi iš už savo saulės sistemos ribų tau reikalingas radaras.
-      </p>
+      <p>Galaktikoje tu toli gražu ne vienas, tačiau tam, jog galėtum matyti ir
+      išskristi iš už savo saulės sistemos ribų tau reikalingas radaras.</p>
       ]]>
     </Radar1>
     <Radar2>
       <![CDATA[
-      <p>
-        Radaras vartoją energiją. Kol jis aktyvus, jis atidengia ir rodo aplink
-        tavo saulės sistemą ęsančios galaktikos plotą - kuo didesnis radaro
-        lygis, tuos plotelis didelis.
-      </p>
-      <p>
-        Norėdamas matyti daugiau taip pat gali užkariauti kitoje saulės
-        sistemoje ęsančią planetą ir radarą pasistatyti ten.
-      </p>
+      <p>Radaras vartoją energiją. Kol jis aktyvus, jis atidengia ir rodo aplink
+      tavo saulės sistemą ęsančios galaktikos plotą. Tobulinant radarą didėja
+      matomos erdvės plotas.</p>
+      <p>Norėdamas matyti daugiau taip pat gali užkariauti kitoje saulės
+      sistemoje ęsančią planetą ir radarą pasistatyti ten.</p>
       ]]>
     </Radar2>
 
     <LoadUnits>
       <![CDATA[
-      <p>
-        Norint užkariauti kitą planetą, tau prireiks karių, kuriuos
-        gali pergabenti mulo klasės transportiniu laivu.
-      </p>
-      <p>
-        Nueik į laivų ekraną, ir paspausk įkrovimo mygtuką. Tada pasirink
+      <p>Norint užkariauti kitą planetą, tau prireiks karių, kuriuos
+      gali pergabenti mulo klasės transportiniu laivu.</p>
+      <p>Nueik į laivų ekraną, ir paspausk įkrovimo mygtuką. Tada pasirink
         karius, kuriuos nori įkrauti į laivą ir dešinėje juostoje spausk
-        mygtuką „[reference:Units/label.load]“.
-      </p>
-      <p>
-        Atmink, norint kolonizuoti planetą tau prireiks kariuomenės, bei
-        mobilaus štabo.
-      </p>
+        mygtuką „[reference:Units/label.load]“.</p>
+      <p>Atmink, norint kolonizuoti planetą tau prireiks kariuomenės, bei
+        mobilaus štabo.</p>
       ]]>
     </LoadUnits>
 
     <UnloadUnits>
       <![CDATA[
-      <p>
-        Nuskridęs į planetą paspausk iškrovimo mygtuką, pasirink karius ir
-        dešinėje juostoje spausk mygtuką „[reference:Units/label.unload]“.
-      </p>
+      <p>Nuskridęs į planetą paspausk iškrovimo mygtuką, pasirink karius ir
+        dešinėje juostoje spausk mygtuką „[reference:Units/label.unload]“.</p>
       ]]>
     </UnloadUnits>
 
     <DeployMdh>
       <![CDATA[
-      <p>
-        Tavo štabas yra vis dar mobilioje savo formoje. Kolonijos įkūrimui tau
-        reikia jį išskleisti.
-      </p>
-      <p>
-        Nueik į karių langą, paspausk išskleidimo mygtuką ir pasirink žemės
-        plotą, kuriame statysi savo štabą.
-      </p>
+      <p>Tavo štabas yra vis dar mobilioje savo formoje. Kolonijos įkūrimui tau
+        reikia jį išskleisti.</p>
+      <p>Nueik į karių langą, paspausk išskleidimo mygtuką ir pasirink žemės
+        plotą, kuriame statysi savo štabą.</p>
       ]]>
     </DeployMdh>
 
     <DeployTurrets>
       <![CDATA[
-      <p>
-        Praeita užduotis tave apdovanojo mobiliais bokšteliais. Atsiimk juos į
+      <p>Praeita užduotis tave apdovanojo mobiliais bokšteliais. Atsiimk juos į
         savo naują koloniją, bei išskleisk - jie bus puiki pirmoji ginybos
-        linija.
-      </p>
+        linija.</p>
       ]]>
     </DeployTurrets>
 
     <ThirdPlanet>
       <![CDATA[
-      <p>
-        Trečioji tavo planeta yra atviroje saulės sistemoje - ją bet kada gali
-        užpulti kiti žaidėjai. Be to - ją reguliariai puldinės ateivių piratai.
-      </p>
-      <p>
-        Jeigu nori apie piratus sužinot daugiau, siūlau paskaityti apie juos
-        <a href="wiki://Raiders">Nebula 44 wiki</a>.
-      </p>
+      <p>Trečioji tavo planeta yra atviroje saulės sistemoje - ją bet kada gali
+        užpulti kiti žaidėjai. Be to - ją reguliariai puldinės ateivių
+        piratai.</p>
+      <p>Jeigu nori apie piratus sužinot daugiau, siūlau paskaityti apie juos
+        Nebula 44 wiki, į kurį nuorodą rasi N44 meniu.</p>
       ]]>
     </ThirdPlanet>
 
     <ArmorTiles>
       <![CDATA[
-      <p>
-        Bokštelius išskleisk ant tamsios žemės - ji yra tvirta ir suteikia
-        papildomo tvirtumo bokšteliams - juos bus sunkiau nugriauti.
-      </p>
+      <p>Bokštelius išskleisk ant tamsios žemės - ji yra tvirta ir suteikia
+        papildomo tvirtumo bokšteliams - juos bus sunkiau nugriauti.</p>
       ]]>
     </ArmorTiles>
 
     <EcoTier2>
       <![CDATA[
-      <p>
-        Išradus technologijas leidžiančias statyti geresnes kasyklas
-        rekomenduotina atnaujinti savo ekonominę bazę.
-      </p>
-      <p>
-        Norint atnaujinti kasyklą, ją reikia pirma nugriauti, o tada,
-        jos vietoje, pastatyti naujesnę jos versiją.
-      </p>
+      <p>Išradus technologijas leidžiančias statyti geresnes kasyklas
+        rekomenduotina atnaujinti savo ekonominę bazę.</p>
+      <p>Norint atnaujinti kasyklą, ją reikia pirma nugriauti, o tada,
+        jos vietoje, pastatyti naujesnę jos versiją.</p>
       ]]>
     </EcoTier2>
 
     <JoinAlliance>
       <![CDATA[
-      <p>
-        Prie sąjungos gali prisijungti gavęs pakvietimą, kuris atsidurs tavo
-        pranešimų centre.
-      </p>
+      <p>Prie sąjungos gali prisijungti gavęs pakvietimą, kuris atsidurs tavo
+        pranešimų centre.</p>
       ]]>
     </JoinAlliance>
 
     <CreateAlliance>
       <![CDATA[
-      <p>
-        Norint įkurti savo sąjungą, reikia būti išradus sąjungos technologiją.
-      </p>
-      <p>
-        Tuome nueik į N44 meniu ir paspausk
+      <p>Norint įkurti savo sąjungą, reikia būti išradus sąjungos
+      technologiją.</p>
+      <p>Tuome nueik į N44 meniu ir paspausk
         „[reference:MainMenu/label.alliance]“ mygtuką. Atsidariusiame ekrane
-        gali įkurti savo sąjungą.
-      </p>
+        gali įkurti savo sąjungą.</p>
       ]]>
     </CreateAlliance>
 
     <InviteToAlliance>
       <![CDATA[
-      <p>
-        Įkūrus sąjungą žaidėjus gali pakviesti nuėjęs į N44 meniu ir paspaudęs
+      <p>Įkūrus sąjungą žaidėjus gali pakviesti nuėjęs į N44 meniu ir paspaudęs
         „[reference:MainMenu/label.alliance]“ mygtuką. Tada ekrano viršuje
         pasirink kortelę, ant kurios užrašyta
         „[reference:Alliances/title.section.management]“ ir naudokis joje
-        ęsančiu sąrašu žaidėjams pakviesti.
-      </p>
+        ęsančiu sąrašu žaidėjams pakviesti.</p>
       ]]>
     </InviteToAlliance>
 
     <BgBattles>
       <![CDATA[
-      <p>
-        Už mūšius arenoje su kitais žaidėjais tu ir tavo sąjunga gauna
-        pergalės taškus, kurie būtini žaidimui laimėti.
-      </p>
+      <p>Už mūšius arenoje su kitais žaidėjais tu ir tavo sąjunga gauna
+        pergalės taškus, kurie būtini žaidimui laimėti.</p>
       ]]>
     </BgBattles>
 
     <BgPlanets>
       <![CDATA[
-      <p>
-        Arenoje ęsančios planetos yra ypatingos - jas užėmus valdytojui ir jo
+      <p>Arenoje ęsančios planetos yra ypatingos - jas užėmus valdytojui ir jo
         sąjungai periodiškai yra duodami pergalės taškai. Kuo ilgiau valdysi
-        arenos planetas - tuo daugiau pergalės taškų gausi.
-      </p>
-      <p>
-        Arenoje ęsančios planetos neįtakoja paprastas planetas puolančių
-        ateivių piratų kiekio.
-      </p>
+        arenos planetas - tuo daugiau pergalės taškų gausi.</p>
+      <p>Arenoje ęsančios planetos neįtakoja paprastas planetas puolančių
+        ateivių piratų kiekio.</p>
       ]]>
     </BgPlanets>
 
     <BossShip>
       <![CDATA[
-      <p>
-        Taip pat arenoje atsiranda Morfėjus - galingas ateivių laivas, kurį
+      <p>Taip pat arenoje atsiranda Morfėjus - galingas ateivių laivas, kurį
         nužudžius gaunama premija kredais. Už jam padarytą žalą taip pat duodami
-        pergalės taškai.
-      </p>
+        pergalės taškai.</p>
       ]]>
     </BossShip>
 
     <Pulsars>
       <![CDATA[
-      <p>
-        Pulsarai - tai mažesnės, vietinės arenos versijos. Užėmus juose
-        ęsančias planetas pergalės taškų gaunama žymiai mažiau.
-      </p>
-      <p>
-        Pulsaruose ęsančios planetos neįtakoja paprastas planetas puolančių
-        ateivių piratų kiekio.
-      </p>
+      <p>Pulsarai - tai mažesnės, vietinės arenos versijos. Užėmus juose
+        ęsančias planetas pergalės taškų gaunama žymiai mažiau.</p>
+      <p>Pulsaruose ęsančios planetos neįtakoja paprastas planetas puolančių
+        ateivių piratų kiekio.</p>
       ]]>
     </Pulsars>
 
     <Convoys>
       <![CDATA[
-      <p>
-        Pro tavo galaktikos sektorių karts nuo karto gali praskristi ateivių
+      <p>Pro tavo galaktikos sektorių karts nuo karto gali praskristi ateivių
         konvojai. Šie ateivių laivai yra gerai ginkluoti, tačiau juos sunaikinus
         gaunama premija kredais. Be to už konvojų laivams padarytą žalą taip
-        pat gaunami pergalės taškai.
-      </p>
+        pat gaunami pergalės taškai.</p>
       ]]>
     </Convoys>
 
     <GalaxyBattles>
       <![CDATA[
-      <p>
-        Kovodamas galaktikoje su kitais žaidėjais už kovas taip pat gausi
-        pergalės taškų, tiesa, mažiau nei arenoje.
-      </p>
-      <p>
-        Be to galaktikoje galioja teisingumo kodeksas - už silpnesnių žaidėjų
-        laivynų naikinimą pergalės taškų negausi.
-      </p>
+      <p>Kovodamas su kitais žaidėjais galaktikoje, saulės sistemose ar
+      planetose taip pat gausi pergalės taškų, tiesa, mažiau nei arenoje.</p>
+      <p>Be to galaktikoje galioja teisingumo kodeksas - už silpnesnių žaidėjų
+        laivynų naikinimą pergalės taškų negausi.</p>
       ]]>
     </GalaxyBattles>
   </QuestScreens>
@@ -4285,6 +4177,8 @@
       <p>Kita technologija iš šios grupės jau buvo išrasta, todėl tu negali
       išrasti šios technologijos.</p>
     </groupResearched>
+    <label.wasPaused value="Sustabdyta" />
+    <label.scientistsChanged value="Mokslininkų po sumažinimo" />
 
     <upgrade value="Tobulinti" />
     <update value="Atnaujinti" />
@@ -4321,19 +4215,38 @@
     <property.zetium.cost value="Zetiumo kaina" />
     <property.scientists.min value="Reikia mokslininkų" />
     <property.mod.zetium.generate value="Zetiumo išgavimo greičio priedas" />
+    <property.mod.zetium.generate.format value="{0}%" />
     <property.mod.zetium.store value="Zetiumo talpos priedas" />
+    <property.mod.zetium.store.format value="{0}%" />
     <property.mod.metal.generate value="Metalo išgavimo greičio priedas" />
+    <property.mod.metal.generate.format value="{0}%" />
     <property.mod.metal.store value="Metalo talpos priedas" />
+    <property.mod.metal.store.format value="{0}%" />
     <property.mod.energy.generate value="Energijos išgavimo greičio priedas" />
+    <property.mod.energy.generate.format value="{0}%" />
     <property.mod.energy.store value="Energijos talpos priedas" />
+    <property.mod.energy.store.format value="{0}%" />
     <property.mod.armor value="Šarvų priedas" />
+    <property.mod.armor.format value="{0}%" />
     <property.mod.damage value="Žalos priedas" />
-    <property.mod.speed value="Judėjimo trukmės sumažinimas" />
+    <property.mod.damage.format value="{0}%" />
+    <property.mod.critical value="Kritinio šūvio tikimybė" />
+    <property.mod.critical.format value="{0}%" />
+    <property.mod.absorption value="Žalos sugėrimo tikimybė" />
+    <property.mod.absorption.format value="{0}%" />
+    <property.mod.speed value="Judėjimo trukmės daliklis" />
+    <property.mod.speed.format value="{0}%" />
+    <property.mod.speed.tooltip>
+      <p>Skaičiavimo formulė: (šuolio laikas) / (1 + daliklis / 100)</p>
+      <p>Pvz. 100% reiškia, jog laivas judės 2 kartus greičiau.</p>
+    </property.mod.speed.tooltip>
     <property.mod.storage value="Talpumo priedas" />
+    <property.mod.storage.format value="{0}%" />
     <property.planets.required value="Reikiamas planetų kiekis" />
     <property.pulsars.required value="Reikiamas pulsarų kiekis" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
     <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
+    <property.healing.time.mod.format ref="Buildings/property.healing.time.mod.format" />
     <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
@@ -4598,7 +4511,7 @@
 
     <ResourceTransporter.name ref="Objects/Technology_ResourceTransporter" />
     <ResourceTransporter.about>
-      <p>Leidžia statyti [obj:2:Building_ResourceTransporter:what:dc].</p>
+      <p>Leidžia statyti resursų siųstuvus.</p>
       <p>[reference:Buildings/ResourceTransporter.about]</p>
     </ResourceTransporter.about>
 
@@ -4782,7 +4695,7 @@
       <p>Šis patobulinimas padidina [obj:2:Unit_Mule:whos:dc] talpą</p>
     </StorageSpecialization.about>
 
-    <Trooper.name ref="Units/Trooper.name" />
+    <Trooper.name ref="Objects/Technology_Trooper" />
     <Trooper.about>
       <p>Nors desantininkai ir neturi ypatingos technikos, būriuose jie yra
          gana grėsminga jėga. Šis patobulinimas suteikia jiems papildomos kovinės
@@ -4992,8 +4905,7 @@
     <property.zetium.cost value="Zetiumo kaina" />
     <property.armor value="Šarvai" />
     <property.armorMod value="Šarvų pliusas" />
-    <property.damageMod value="Žalos pliusas" />
-    <property.evasiveness value="Išsisukimas" />
+    <property.armorMod.format value="{0}%" />
     <property.xpNeeded value="Patirties taškų pakelti lygiui" />
     <property.initiative value="Iniciatyva" />
     <property.volume value="Apimtis" />
@@ -5009,7 +4921,7 @@
     <tooltip.willBeQueued>
       <p>Šie kariai bus įdėti į statymo eilę.</p>
       <p>Už karius nebus sumokėta iš anksto ir jų apmokymas bus atšauktas jei
-        statymo metu Tau pritruks resursų.</p>
+        statymo metu tau pritruks resursų.</p>
     </tooltip.willBeQueued>
     <tooltip.becomeVipToQueue>
       <p>Tik VIP nariai gali dėti karius į eilę nesumokėję iš anksto.</p>
@@ -5421,7 +5333,7 @@
       todėl negali taikytis į žemės karius.</p>
     </Zeus.about>
 
-    <Mdh.name ref="Objects/Unit_MDH" />
+    <Mdh.name ref="Objects/Unit_Mdh" />
     <Mdh.common>
       <p>Mobilusis štabas naudojamas kaip pirminė vadavietė ir operacijų 
       centras, įkuriant naujas kolonijas. Šios masyvios mašinos geba būti ne 
@@ -5539,8 +5451,8 @@
      <message.channelLeave value="[ {0} išėjo ]"/>
      <message.friendOffline value="Šis žaidėjas šiuo metu neprisijungęs"/>
      <message.silence>
-        Tu buvai nutildytas iki {0}, nes siuntei per daug žinučių.
-        Tu vėl galėsi šnekėtis už {1}.
+        Tu buvai nutildytas iki {0} dėl pokalbių teršimo.
+        Vėl galėsi šnekėti už {1}.
      </message.silence>
      <label.send value="Siųsti" />
      <label.mainChannel value="#galaktika"/>
@@ -5632,14 +5544,16 @@
     <label.fee value="Mokestis: {0}%" />
     <label.selectPlanet value="Pasirink planetą:" />
     <label.selectResources value="Pasirink resursus" />
-    <label.withoutFee value="Į planeta be mokesčių bus nusiųsta:" />
+    <label.withoutFee value="Atskaičiavus mokesčius į planetą bus nusiųsta:" />
     <!-- 0: cooldown as time string (10h 20m 15s) -->
     <warning.willSend
             value="Jei išsiųsi šiuos resursus, negalėsi siųsti kitų {0}." />
     <tooltip.cooldownActive value="Šiuo metu siųstuvas vėsta" />
+    <label.noOtherPlanet
+            value="Tu neturi kitos planetos į kurią galėtum siųsti resursus" />
     <message.noTransporter>
       <p>Planetoje, į kurią buvo siunčiami resursai, nėra siųstuvo.
-         Siuntimas buvo atšauktas, o resursai gražinti.</p>
+         Siuntimas buvo atšauktas, o resursai grąžinti.</p>
     </message.noTransporter>
   </ResourceTransporter>
   

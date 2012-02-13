@@ -3,12 +3,6 @@ require File.expand_path(
 )
 
 describe Cfg do
-  describe ".galaxy_zone_death_age" do
-    it "should return a number" do
-      Cfg.galaxy_zone_death_age(3).should be_instance_of(Fixnum)
-    end
-  end
-
   describe ".foliage_removal_cost" do
     it "should return rounded number" do
       with_config_values(
@@ -29,27 +23,6 @@ describe Cfg do
     end
   end
 
-  describe ".planet_protection_duration" do
-    let(:galaxy) { Factory.build(:galaxy) }
-
-    it "should return one key when galaxy is not finished" do
-      expected = CONFIG.evalproperty(
-        'combat.cooldown.protection.duration'
-      )
-      Cfg.planet_protection_duration(galaxy).
-        should be_within(SPEC_TIME_PRECISION).of(expected)
-    end
-
-    it "should return other key when galaxy is finished" do
-      galaxy.stub(:finished?).and_return(true)
-      expected = CONFIG.evalproperty(
-        'combat.cooldown.protection.finished_galaxy.duration'
-      )
-      Cfg.planet_protection_duration(galaxy).
-        should be_within(SPEC_TIME_PRECISION).of(expected)
-    end
-  end
-
   describe ".market_bot_random_resource" do
     it "should return item from range multiplied by time multiplier" do
       kind = MarketOffer::KIND_METAL
@@ -65,7 +38,11 @@ describe Cfg do
 
   describe ".player_inactivity_time" do
     let(:key) { 'galaxy.player.inactivity_check' }
-    let(:value) { [[1, 1.minute], [100, 5.minutes], [1000, 10.minutes]] }
+    let(:value) { [
+      [1, "#{1.minute} / speed"],
+      [100, "#{5.minutes} / speed"],
+      [1000, "#{10.minutes} / speed"]
+    ] }
 
     it "should return found seconds" do
       with_config_values(key => value) do
@@ -76,6 +53,12 @@ describe Cfg do
     it "should return last value if points are too large" do
       with_config_values(key => value) do
         Cfg.player_inactivity_time(1500).should == 10.minutes
+      end
+    end
+
+    it "should eval formula with speed" do
+      with_config_values(key => value, 'speed' => 5) do
+        Cfg.player_inactivity_time(1500).should == 2.minutes
       end
     end
   end
@@ -93,6 +76,22 @@ describe Cfg do
       Cfg.market_bot_resource_multiplier(galaxy.id).should be_within(0.01).of(
         (divider + 28) / divider.to_f
       )
+    end
+  end
+
+  describe "Java" do
+    describe ".fairnessPoints" do
+      it "should use the formula" do
+        formula = "economy * 2 + science * 4 + army * 6 + war * 8 + victory * 9"
+        with_config_values("combat.battle.fairness_points" => formula) do
+          e, s, a, w, v = 10, 20, 30, 40, 50
+
+          Cfg::Java.fairnessPoints(e, s, a, w, v).should == CONFIG.safe_eval(
+            formula, {"economy" => e, "science" => s, "army" => a, "war" => w,
+              "victory" => v}
+          )
+        end
+      end
     end
   end
 end

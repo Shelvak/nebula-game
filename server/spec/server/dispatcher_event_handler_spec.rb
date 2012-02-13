@@ -87,7 +87,9 @@ describe DispatcherEventHandler do
           metadatas = player_ids.each_with_object({}) do |id, hash|
             hash[id] = mock(SolarSystemMetadata)
           end
-          event = Event::FowChange::SsCreated.new(10, 5, 50, [])
+          event = Event::FowChange::SsCreated.new(
+            10, 5, 50, SolarSystem::KIND_NORMAL, nil, []
+          )
           event.stub!(:player_ids).and_return(player_ids)
           event.stub!(:metadatas).and_return(metadatas)
 

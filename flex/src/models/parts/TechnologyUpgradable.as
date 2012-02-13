@@ -8,8 +8,6 @@ package models.parts
    import models.parts.events.UpgradeEvent;
    import models.technology.Technology;
    
-   import mx.controls.Alert;
-   
    import utils.DateUtil;
    import utils.StringUtil;
 

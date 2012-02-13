@@ -513,21 +513,17 @@ describe Technology do
 
   describe "#planets_requirement_met?" do
     let(:technology) { Factory.build(:technology) }
+    let(:player) { technology.player }
     let(:level) { 3 }
 
-    it "should pass level along if we need" do
-      technology.should_receive(:check_planets!).with(level)
-      technology.planets_requirement_met?(level)
-    end
-    
     it "should return true if #check_planets! does not raise exception" do
       technology.stub(:check_planets!)
-      technology.planets_requirement_met?.should be_true
+      technology.planets_requirement_met?(player).should be_true
     end
 
     it "should return false if #check_planets! raises exception" do
       technology.stub(:check_planets!).and_raise(GameLogicError)
-      technology.planets_requirement_met?.should be_false
+      technology.planets_requirement_met?(player).should be_false
     end
   end
 

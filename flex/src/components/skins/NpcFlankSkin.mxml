@@ -112,13 +112,13 @@
       </s:Group>
       
       <!--- All the content goes here -->
-      <s:Group id="contentGroup" left="20" right="1" top="13" height="100%">
+      <s:Group id="contentGroup" left="15" right="1" top="13" height="100%">
          <s:Group width="100%" height="{
                      !hostComponent.flankModel.showCachedUnits
                         ? flankLayout.rowCount * 79 : 0}"
                   visible="{!hostComponent.flankModel.showCachedUnits}">
             <s:DataGroup id="unitsList" dataProvider="{hostComponent.flankModel.flankUnits}" 
-                         left="0" right="0"
+                         left="15" right="0"
                          itemRenderer="components.unitsscreen.IRSimpleUnit">
                <s:layout>
                   <s:TileLayout horizontalGap="3" id="flankLayout" verticalGap="3"

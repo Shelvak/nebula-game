@@ -17,7 +17,7 @@ module Combat::Integration
             player_id,
             alliance_id,
             response['classified_alliances'][player_id],
-            combat_log.id,
+            combat_log.sha1_id,
             client_location.as_json,
             response['outcomes'][player_id],
             response['yane'][player_id],

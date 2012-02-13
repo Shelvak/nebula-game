@@ -8,7 +8,9 @@ package controllers.technologies.actions
    import models.building.MCBuildingSelectedSidebar;
    import models.factories.TechnologyFactory;
    import models.technology.Technology;
-   
+
+   import utils.Objects;
+
    /**
     * Downloads all technologies
     */ 
@@ -24,12 +26,10 @@ package controllers.technologies.actions
          var technologies: Object = cmd.parameters.technologies;
          for each (var element: Object in technologies)
          {
-            var temp: Technology = TechnologyFactory.fromObject(element);
-            var technology:Technology = ML.technologies.getTechnologyByType(temp.type);
-            technology.copyProperties(temp);
+            var technology:Technology = ML.technologies.getTechnologyByType(element.type);
+            Objects.update(technology, element);
             if (technology.upgradePart.upgradeEndsAt)
                technology.upgradePart.startUpgrade();
-            temp.cleanup();
          }
          MCBuildingSelectedSidebar.getInstance().constructable = 
             Building.getConstructableBuildings();

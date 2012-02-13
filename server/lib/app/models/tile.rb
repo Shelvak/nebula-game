@@ -74,8 +74,11 @@ class Tile < ActiveRecord::Base
   # Tiles that resource extractors are built upon.
   RESOURCE_TILES = [ORE, GEOTHERMAL, ZETIUM]
 
+  # Tiles that can be built upon.
+  REGULAR_TILES = [NOXRIUM, JUNKYARD, SAND, TITAN]
+
   # Tile kinds that can be explored.
-  EXPLORATION_TILES = MAPPING.keys - RESOURCE_TILES
+  EXPLORATION_TILES = MAPPING.keys - RESOURCE_TILES - REGULAR_TILES
   
   include Parts::Object
   def self.notify_on_create?; false; end
@@ -94,6 +97,10 @@ class Tile < ActiveRecord::Base
       ]
     }
   }
+
+  def to_s
+    "<Tile(#{id}, kind #{kind}) @ P #{planet_id}: #{x},#{y}>"
+  end
 
   # {
   #   'id' => Fixnum,

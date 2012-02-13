@@ -5,19 +5,18 @@ module Parts::FowEntry
     receiver.send :belongs_to, :alliance
 
     # TODO: outfactor spec to shared from FowSsEntry spec.
-    receiver.send(:scope, :for, Proc.new { |player|
-        conditions = [
-          [
-            "player_id=?",
-            player.alliance_id ? "alliance_id=?" : nil
-          ].compact.join(" OR "),
-          player.id,
-          player.alliance_id
-        ].compact
+    receiver.send(:scope, :for, lambda { |player|
+      conditions = [
+        [
+          "`#{receiver.table_name}`.player_id=?",
+          player.alliance_id ? "`#{receiver.table_name}`.alliance_id=?" : nil
+        ].compact.join(" OR "),
+        player.id,
+        player.alliance_id
+      ].compact
 
-        {:conditions => conditions}
-      }
-    )
+      {:conditions => conditions}
+    })
 
     receiver.extend ClassMethods
   end

@@ -25,6 +25,7 @@ package components.notifications
       TYPE_TO_CLASS[NotificationType.MARKET_OFFER_BOUGHT] = IRMarketOfferBought;
       TYPE_TO_CLASS[NotificationType.VPS_CONVERTED_TO_CREDS] = IRCredsConverted;
       TYPE_TO_CLASS[NotificationType.ALLIANCE_OWNER_CHANGED] = IRAllianceOwnerChanged;
+      TYPE_TO_CLASS[NotificationType.TECHNOLOGIES_CHANGED] = IRTechnologiesChanged;
       
       
       /**

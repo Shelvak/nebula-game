@@ -102,6 +102,19 @@ package models.building
       public static const RADAR_STRENGTH: String = 'radar.strength';
       public static const FEE: String = 'fee';
 
+      private var _unitsCached: Boolean = false;
+      /* if this building has it's npc units downloaded yet */
+      public function set unitsCached(value: Boolean): void
+      {
+         _unitsCached = value;
+         dispatchUnitsCachedChangeEvent();
+      }
+
+      public function get unitsCached(): Boolean
+      {
+         return _unitsCached;
+      }
+
       public var metaLevel: int = -1;
       public function get hasMetaLevel(): Boolean {
          return metaLevel > -1;
@@ -113,13 +126,16 @@ package models.building
             {'level': level});
       }
 
-
+      public static function getBuildingCooldownMod(type: String,  level: int): Number
+      {
+         return StringUtil.evalFormula(Config.getBuildingCooldownMod(
+            type), {'level': level});
+      }
 
       public static function getResourceTransporterCooldown(level: int,
          volume: int): int
       {
-         return Math.ceil(StringUtil.evalFormula(Config.getBuildingCooldownMod(
-            BuildingType.RESOURCE_TRANSPORTER), {'level': level}) * volume);
+         return Math.ceil(getBuildingCooldownMod(BuildingType.RESOURCE_TRANSPORTER, level) * volume);
       }
       
       /**
@@ -962,6 +978,14 @@ package models.building
          if (hasEventListener(BuildingEvent.EXPAND))
          {
             dispatchEvent(new BuildingEvent(BuildingEvent.EXPAND));
+         }
+      }
+
+      private function dispatchUnitsCachedChangeEvent(): void
+      {
+         if (hasEventListener(BuildingEvent.CACHED_UNITS_CHANGE))
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.CACHED_UNITS_CHANGE));
          }
       }
       

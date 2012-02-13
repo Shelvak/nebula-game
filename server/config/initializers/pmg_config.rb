@@ -1,49 +1,94 @@
-class PmgConfigInitializer < GameConfig::Initializer
-  def self.generate
-    LOGGER.block(
-      "Generating home solar system configuration", :level => :debug
-    ) { generate_ss_maps }
-    LOGGER.block(
-      "Generating planet map configurations", :level => :debug
-    ) { generate_planet_maps }
-  end
-
-  def self.generate_ss_maps
+# Convention requires us to name this lambda as generator.
+lambda do
+  generate_ss_maps = lambda do
     dirac = Unit::Dirac.to_s.demodulize
     thor = Unit::Thor.to_s.demodulize
     demosis = Unit::Demosis.to_s.demodulize
-    # TODO: replace BossShip with convoy unit
-    convoy_ship = Unit::BossShip.to_s.demodulize
+    convoy_ship = Unit::ConvoyShip.to_s.demodulize
 
-    w_re = /^w\[([\d\.]+)\]$/
-    w = lambda do |level|
-      level -= 1
-      [3750.0 * 2 ** level, 7500.0 * 2 ** level, 1250.0 * 2 ** level]
-    end
+    functions = {
+      # Wreckage functions
+      'w' => lambda do |level|
+        level -= 1
+        [3750.0 * 2 ** level, 7500.0 * 2 ** level, 1250.0 * 2 ** level]
+      end,
 
-    r_re = /^r\[([\d\.]+)\]$/
-    r = lambda do |level|
-      [2.0 * level, 2.0 * level, 2.0 * level]
-    end
+      # Resource functions
+      'r' => lambda do |level|
+        [2.0 * level, 2.0 * level, 2.0 * level]
+      end,
 
-    u_re = /^u\[([\d\.]+)\]$/
-    u = lambda do |arg|
-      units = [
-        [(0.8 * arg).round, dirac, 0, 1.0],
-        [arg.round, dirac, 1, 1.0],
-      ]
-      units += [
-        [(0.25 * arg).round, thor, 0, 1.0],
-        [(0.75 * arg).round, thor, 1, 1.0],
-      ] if arg >= 1.5
-      units += [
-        [(0.5 * arg).round, demosis, 0, 1.0]
-      ] if arg >= 3
-      units
-    end
+      # Unit functions
+      'u' => lambda do |arg|
+        units = [
+          [(0.8 * arg).round, dirac, 0, 1.0],
+          [arg.round, dirac, 1, 1.0],
+        ]
+        units += [
+          [(0.25 * arg).round, thor, 0, 1.0],
+          [(0.75 * arg).round, thor, 1, 1.0],
+        ] if arg >= 1.5
+        units += [
+          [(0.5 * arg).round, demosis, 0, 1.0]
+        ] if arg >= 3
+        units
+      end,
+      'ud' => lambda do |arg|
+        total = 5 * arg
+        [
+          [(0.35 * total).round, dirac, 0, 1.0],
+          [(0.65 * total).round, dirac, 1, 1.0],
+        ]
+      end,
+      'ut' => lambda do |arg|
+        total = 3 * arg
+        [
+          [(0.35 * total).round, thor, 0, 1.0],
+          [(0.65 * total).round, thor, 1, 1.0],
+        ]
+      end,
+      'uD' => lambda do |arg|
+        total = 1.5 * arg
+        [
+          [(0.35 * total).round, demosis, 0, 1.0],
+          [(0.65 * total).round, demosis, 1, 1.0],
+        ]
+      end,
+      'udt' => lambda do |arg|
+        dirac_total = 3.5 * arg
+        thor_total = 2 * arg
+        [
+          [(0.85 * dirac_total).round, dirac, 0, 1.0],
+          [(0.15 * dirac_total).round, dirac, 1, 1.0],
+          [(0.05 * thor_total).round, thor, 0, 1.0],
+          [(0.95 * thor_total).round, thor, 1, 1.0],
+        ]
+      end,
+      'udD' => lambda do |arg|
+        dirac_total = 3 * arg
+        demosis_total = 0.5 * arg
+        [
+          [(0.10 * dirac_total).round, dirac, 0, 1.0],
+          [(0.90 * dirac_total).round, dirac, 1, 1.0],
+          [(0.95 * demosis_total).round, demosis, 0, 1.0],
+          [(0.05 * demosis_total).round, demosis, 1, 1.0],
+        ]
+      end,
+      'utD' => lambda do |arg|
+        thor_total = 1.5 * arg
+        demosis_total = 0.5 * arg
+        [
+          [(0.05 * thor_total).round, thor, 0, 1.0],
+          [(0.95 * thor_total).round, thor, 1, 1.0],
+          [(0.90 * demosis_total).round, demosis, 0, 1.0],
+          [(0.10 * demosis_total).round, demosis, 1, 1.0],
+        ]
+      end
+    }
 
-    apply_functions = lambda do |data, functions|
-      functions.each do |regexp, function|
+    apply_functions = lambda do |data|
+      functions.each do |key, function|
+        regexp = /^#{key}\[([\d\.]+)\]$/
         match = data.match(regexp)
         return function.call(match[1].to_f) if match
       end
@@ -66,7 +111,7 @@ class PmgConfigInitializer < GameConfig::Initializer
             data["units"] = [data["units"]] unless data["units"].is_a?(Array)
             data["units"] = data["units"].inject([]) do |array, unit_def|
               if unit_def.is_a?(String)
-                array + apply_functions[unit_def, [[u_re, u]]]
+                array + apply_functions[unit_def]
               else
                 array << unit_def
                 array
@@ -74,12 +119,8 @@ class PmgConfigInitializer < GameConfig::Initializer
             end
           end
 
-          [
-            ["wreckage", [[w_re, w]]],
-            ["resources", [[r_re, r]]]
-          ].each do |type, functions|
-            data[type] = apply_functions[data[type], functions] \
-              if data[type].is_a?(String)
+          %w{wreckage resources}.each do |type|
+            data[type] = apply_functions[data[type]] if data[type].is_a?(String)
           end
 
           hash[position_str] = data
@@ -91,7 +132,7 @@ class PmgConfigInitializer < GameConfig::Initializer
     end
   end
 
-  def self.generate_planet_maps
+  generate_planet_maps = lambda do
     gnat = Unit::Gnat.to_s.demodulize
     gnat_flanks = [0.4, 0.6]
 
@@ -141,8 +182,8 @@ class PmgConfigInitializer < GameConfig::Initializer
       '%' => Tile::GEOTHERMAL,
       '$' => Tile::ZETIUM,
 
-      '1' => Tile::FOLLIAGE_2X4,
-      '2' => Tile::FOLLIAGE_2X3,
+      '1' => Tile::FOLLIAGE_2X3,
+      '2' => Tile::FOLLIAGE_2X4,
       '5' => Tile::FOLLIAGE_3X2,
       '3' => Tile::FOLLIAGE_3X3,
       '*' => Tile::FOLLIAGE_3X4,
@@ -169,7 +210,6 @@ class PmgConfigInitializer < GameConfig::Initializer
       'i' => Building::NpcInfantryFactory.to_s.demodulize,
       'n' => Building::NpcTankFactory.to_s.demodulize,
       'f' => Building::NpcSpaceFactory.to_s.demodulize,
-      't' => Building::NpcTechLab.to_s.demodulize,
     }
     npc_units = {}
 
@@ -283,6 +323,7 @@ class PmgConfigInitializer < GameConfig::Initializer
       CONFIG[key] = map_set.map do |map_parameters|
         map = map_parameters['map']
         map_data = {
+          'comment' => "Key: #{key}, index: #{map_index}",
           'size' => [map[0].length / 2, map.size],
           'name' => map_parameters['name'],
           'terrain' => map_parameters['terrain'],
@@ -319,7 +360,7 @@ class PmgConfigInitializer < GameConfig::Initializer
                 level = 1
               else
                 units = []
-                level = [level, 1].max
+                level = 10 if level == 0
               end
 
               map_data['buildings'][name] ||= []
@@ -333,4 +374,11 @@ class PmgConfigInitializer < GameConfig::Initializer
       end
     end
   end
-end
+
+  LOGGER.block(
+    "Generating home solar system configuration", :level => :debug
+  ) { generate_ss_maps.call }
+  LOGGER.block(
+    "Generating planet map configurations", :level => :debug
+  ) { generate_planet_maps.call }
+end.call

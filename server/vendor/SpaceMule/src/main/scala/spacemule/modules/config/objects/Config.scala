@@ -1,6 +1,5 @@
 package spacemule.modules.config.objects
 
-import java.math.BigDecimal
 import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.geom.Coords
@@ -13,6 +12,7 @@ import spacemule.modules.combat
 import spacemule.modules.pathfinder.{objects => pfo}
 import scala.collection.Map
 import spacemule.modules.combat.objects.{Combatant, Damage, Armor, Stance}
+import spacemule.modules.config.ScalaConfig
 
 object Config {
   /**
@@ -20,10 +20,16 @@ object Config {
    */
   val DefaultSet = "default"
 
-  /**
-   * Various game configuration sets.
-   */
-  var sets = Map[String, Map[String, Any]]()
+  var _data: ScalaConfig = null
+  def data: ScalaConfig = {
+    if (_data == null)
+      throw new UninitializedFieldError(
+        "data for config has not been set yet!"
+      )
+
+    _data
+  }
+  def data_=(value: ScalaConfig) { _data = value }
 
   /**
    * Current set from which to take configuration.
@@ -42,18 +48,10 @@ object Config {
   }
 
   private[this] def getOpt[T](key: String): Option[T] =
-    sets.getOrError(
-      currentSet,
-      "Config set '%s' not found!".format(currentSet)
-    ).get(key).asInstanceOf[Option[T]]
+    data.getOpt(key, currentSet)
 
   private[objects] def get[T](key: String): T =
-    getOpt[T](key) match {
-      case Some(value) => value
-      case None => throw new NoSuchElementException(
-        "Key '%s' not found in config set '%s'!".format(key, currentSet)
-      )
-    }
+    data.get(key, currentSet)
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper methods
@@ -93,14 +91,14 @@ object Config {
   )
 
   def formulaEval(key: String): Double =
-    FormulaEval.eval(get[Any](key).toString)
+    FormulaCalc.calc(get[Any](key).toString, speedMap)
 
   def formulaEval(key: String, vars: Map[String, Double]): Double =
-    FormulaEval.eval(get[Any](key).toString, vars)
+    FormulaCalc.calc(get[Any](key).toString, speedMap ++ vars)
 
   def formulaEval(key: String, default: Double): Double =
     getOpt[Any](key) match {
-      case Some(value) => FormulaEval.eval(value.toString)
+      case Some(value) => FormulaCalc.calc(value.toString, speedMap)
       case None => default
     }
 
@@ -108,7 +106,7 @@ object Config {
     key: String, vars: Map[String, Double], default: Double
   ): Double =
     getOpt[Any](key) match {
-      case Some(value) => FormulaEval.eval(value.toString, vars)
+      case Some(value) => FormulaCalc.calc(value.toString, speedMap ++ vars)
       case None => default
     }
 
@@ -123,9 +121,9 @@ object Config {
    */
   private def evalRange(key: String): Range = {
     val rangeData = seq[String](key)
-    val params = Map("speed" -> speed.toDouble)
-    val from = FormulaEval.eval(rangeData(0), params).toInt
-    val to = FormulaEval.eval(rangeData(1), params).toInt
+    val speedMap = this.speedMap
+    val from = FormulaCalc.calc(rangeData(0), speedMap).toInt
+    val to = FormulaCalc.calc(rangeData(1), speedMap).toInt
 
     Range.inclusive(from, to)
   }
@@ -148,11 +146,13 @@ object Config {
   private def cost(key: String) = double(key).ceil.toInt
   private def cost(key: String, level: Int) =
     formulaEval(key, Map("level" -> level.toDouble)).ceil.toInt
-  private def speed = int("speed")
 
   //////////////////////////////////////////////////////////////////////////////
   // Reader methods 
   //////////////////////////////////////////////////////////////////////////////
+
+  def speed = int("speed")
+  def speedMap = Map("speed" -> int("speed").toDouble)
 
   def zoneStartSlot = int("galaxy.zone.start_slot")
   def zoneDiameter = int("galaxy.zone.diameter")
@@ -161,7 +161,10 @@ object Config {
   // Number of seconds for first inactivity check.
   def playerInactivityCheck: Int = {
     try {
-      seq[Seq[Long]]("galaxy.player.inactivity_check")(0)(1).toInt
+      val formula = seq[Seq[Any]](
+        "galaxy.player.inactivity_check"
+      )(0)(1).asInstanceOf[String]
+      FormulaCalc.calc(formula, speedMap).toInt
     }
     catch {
       case e: Exception =>
@@ -178,7 +181,7 @@ object Config {
     positions("galaxy.free_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")
   lazy val miniBattlegrounds = positions("galaxy.mini_battlegrounds.positions")
-  def convoyTime = int("galaxy.convoy.time")
+  def convoyTime = formulaEval("galaxy.convoy.time").toInt
   def marketBotResourceCooldownRange = 
     evalRange("market.bot.resources.cooldown")
   def marketBotRandomResourceCooldown = marketBotResourceCooldownRange.random
@@ -208,6 +211,28 @@ object Config {
   lazy val energyVolume = double("units.transportation.volume.energy")
   lazy val zetiumVolume = double("units.transportation.volume.zetium")
 
+  def fairnessPoints(
+    economy: Int, science: Int, army: Int, war: Int, victory: Int
+  ): Int = FormulaCalc.calc(
+    string("combat.battle.fairness_points"),
+    Map(
+      "economy" -> economy.toDouble, "science" -> science.toDouble,
+      "army" -> army.toDouble, "war" -> war.toDouble,
+      "victory" -> victory.toDouble
+    )
+  ).round.toInt
+  def fairnessPoints(
+    economy: Long, science: Long, army: Long, war: Long, victory: Long
+  ): Int = fairnessPoints(
+    economy.toInt, science.toInt, army.toInt, war.toInt, victory.toInt
+  )
+  def fairnessPoints(points: combat.objects.Player.Points): Int =
+    fairnessPoints(
+      points.economy, points.science, points.army, points.war, points.victory
+    )
+  def fairnessPoints(player: combat.objects.Player): Int =
+    fairnessPoints(player.points)
+
   lazy val battleVpsMaxWeakness = double("combat.battle.max_weakness")
 
   // Seq of location kinds where combat gives victory points
@@ -224,7 +249,7 @@ object Config {
     val key = "%s.battle.victory_points".format(kind)
     (groundDamage: Int, spaceDamage: Int, fairnessMultiplier: Double) => {
       get[Any](key) match {
-        case formula: String => FormulaEval.eval(formula, Map(
+        case formula: String => FormulaCalc.calc(formula, Map(
           "damage_dealt_to_ground" -> groundDamage.toDouble,
           "damage_dealt_to_space" -> spaceDamage.toDouble,
           "fairness_multiplier" -> fairnessMultiplier
@@ -239,7 +264,7 @@ object Config {
     val key = "%s.battle.creds".format(kind)
     (victoryPoints: Double) => {
       get[Any](key) match {
-        case formula: String => FormulaEval.eval(formula, Map(
+        case formula: String => FormulaCalc.calc(formula, Map(
           "victory_points" -> victoryPoints
         ))
         case l: Long => l.toDouble
@@ -292,8 +317,9 @@ object Config {
     else 
       double("solar_system.regular.jump.multiplier")
 
-  def asteroidFirstSpawnCooldown = int(
-    "ss_object.asteroid.wreckage.time.first")
+  def asteroidFirstSpawnCooldown = formulaEval(
+    "ss_object.asteroid.wreckage.time.first"
+  ).toInt
 
   def ssObjectSize = range("ss_object.size")
 
@@ -328,10 +354,7 @@ object Config {
   def pulsarSsConfig = solarSystemMap("pulsar")
   def freeSsConfig = solarSystemMap("free")
 
-  def startingScientists: Int =
-    double("buildings.mothership.scientists").toInt
-  def startingPopulationMax: Int =
-    int("galaxy.player.population") + int("buildings.mothership.population")
+  def startingPopulationMax: Int = int("buildings.mothership.population")
 
   // Common combatant attributes
 

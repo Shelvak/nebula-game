@@ -85,24 +85,34 @@
                                              maxAmmount="{LS.getMaxStock(ResourceType.METAL)}"
                                              id="metalSelector" 
                                              selectedVal="{LS.metalSelectedVal}"
-                                             selectedResourcesChange="LS.metalSelectedVal = metalSelector.selectedVal;
-                                             LS.selectedResourcesChangeHandler(event)"/>
+                                             selectedResourcesChange="if (LS.metalSelectedVal != metalSelector.selectedVal)
+                                             {
+                                              LS.metalSelectedVal = metalSelector.selectedVal;
+                                              LS.selectedResourcesChangeHandler(event);
+                                             }
+                                             "/>
                </s:Group>
                <s:Group width="80%">
                   <base:ResourceSelectorComp resourceType="{ResourceType.ENERGY}" 
                                              maxAmmount="{LS.getMaxStock(ResourceType.ENERGY)}"
                                              id="energySelector"
                                              selectedVal="{LS.energySelectedVal}"
-                                             selectedResourcesChange="LS.energySelectedVal = energySelector.selectedVal;
-                                             LS.selectedResourcesChangeHandler(event)"/>
+                                             selectedResourcesChange="if (LS.energySelectedVal != energySelector.selectedVal)
+                                             {
+                                               LS.energySelectedVal = energySelector.selectedVal;
+                                               LS.selectedResourcesChangeHandler(event);
+                                             }"/>
                </s:Group>
                <s:Group width="80%">
                   <base:ResourceSelectorComp resourceType="{ResourceType.ZETIUM}"
                                              maxAmmount="{LS.getMaxStock(ResourceType.ZETIUM)}"
                                              id="zetiumSelector"
                                              selectedVal="{LS.zetiumSelectedVal}"
-                                             selectedResourcesChange="LS.zetiumSelectedVal = zetiumSelector.selectedVal;
-                                             LS.selectedResourcesChangeHandler(event)"/>
+                                             selectedResourcesChange="if (LS.zetiumSelectedVal != zetiumSelector.selectedVal)
+                                             {
+                                              LS.zetiumSelectedVal = zetiumSelector.selectedVal;
+                                              LS.selectedResourcesChangeHandler(event);
+                                             }"/>
                </s:Group>
                <base:Warning text="{LS.missingStorageString}" paddingTop="10" 
                              horizontalCenter="0" maxWidth="{storagePanel.width - 60}" 

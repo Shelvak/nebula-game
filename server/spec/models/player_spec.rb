@@ -339,30 +339,42 @@ describe Player do
   end
   
   describe "#daily_bonus_available?" do
+    def player(bonus=nil, opts={})
+      Factory.build(
+        :player, {
+          :daily_bonus_at => bonus,
+          :economy_points => Cfg.daily_bonus_start_points,
+          :science_points => 0,
+          :army_points => 0,
+          :war_points => 0
+        }.merge(opts)
+      )
+    end
+
     it "should return true if #daily_bonus_at is nil" do
-      Factory.build(:player, :daily_bonus_at => nil).daily_bonus_available?.
-        should be_true
+      player.daily_bonus_available?.should be_true
     end
     
     it "should return true if #daily_bonus_at is in past" do
-      Factory.build(:player, :daily_bonus_at => 10.seconds.ago).
-        daily_bonus_available?.should be_true
+      player(10.seconds.ago).daily_bonus_available?.should be_true
+    end
+
+    it "should return false if player does not have enough points" do
+      player(nil, :economy_points => Cfg.daily_bonus_start_points - 1).
+        daily_bonus_available?.should be_false
     end
 
     it "should return false if player does not have any planets" do
-      Factory.build(:player, :daily_bonus_at => nil,
-                    :planets_count => 0, :bg_planets_count => 0).
-        daily_bonus_available?.should be_false
-    end
-    
-    it "should return false if it's players first time" do
-      Factory.build(:player, :daily_bonus_at => nil, :first_time => true).
-        daily_bonus_available?.should be_false
+      # Player can have 0 planets only in apocalyptic galaxy.
+      galaxy = Factory.create(:galaxy, :apocalypse_start => 5.minutes.ago)
+      player = player(nil,
+        :galaxy => galaxy, :planets_count => 0, :bg_planets_count => 0
+      )
+      player.daily_bonus_available?.should be_false
     end
     
     it "should return false if #daily_bonus_at is in future" do
-      Factory.build(:player, :daily_bonus_at => 10.seconds.from_now).
-        daily_bonus_available?.should be_false
+      player(10.seconds.from_now).daily_bonus_available?.should be_false
     end
   end
   
@@ -795,16 +807,17 @@ describe Player do
 
     describe "when alliance id changes" do
       it "should update chat hub" do
-        player = Factory.create(:player,
-          :alliance => Factory.create(:alliance))
+        player = Factory.create(:player, :alliance => Factory.create(:alliance))
         player.alliance = Factory.create(:alliance)
-        Chat::Pool.instance.hub_for(player).should_receive(
-          :on_alliance_change).with(player)
+        hub = Chat::Pool.instance.hub_for(player)
+        hub.stub(:on_alliance_change)
+        hub.should_receive(:on_alliance_change).with(player)
         player.save!
       end
 
       it "should progress BeInAlliance objective if it is not nil" do
         player = Factory.create(:player)
+        Objective::BeInAlliance.stub(:progress)
         Objective::BeInAlliance.should_receive(:progress).with(player)
 
         player.alliance = Factory.create(:alliance)
@@ -850,8 +863,10 @@ describe Player do
 
   it "should not allow creating two players in same galaxy" do
     p1 = Factory.create(:player)
-    p2 = Factory.build(:player, :galaxy_id => p1.galaxy_id,
-      :web_user_id => p1.web_user_id)
+    p2 = Factory.build(
+      :player_no_home_ss, :galaxy_id => p1.galaxy_id,
+      :web_user_id => p1.web_user_id
+    )
     lambda do
       p2.save!
     end.should raise_error(ActiveRecord::RecordNotUnique)
@@ -869,7 +884,7 @@ describe Player do
 
     describe "normal mode" do
       required_fields = %w{id name scientists scientists_total xp
-        first_time economy_points army_points science_points war_points
+        economy_points army_points science_points war_points
         victory_points creds population population_cap
         alliance_id alliance_cooldown_ends_at alliance_cooldown_id
         free_creds vip_level vip_creds vip_until vip_creds_until
@@ -1298,14 +1313,13 @@ describe Player do
 
     describe "home solar system" do
       let(:player) { Factory.create(:player) }
-      let(:home_ss) { Factory.create(:solar_system, :player => player) }
-
-      before(:each) { home_ss() }
+      let(:home_ss) { player.home_solar_system }
 
       it "should destroy players home solar system" do
+        home_ss_id = home_ss.id
         player.destroy!
         lambda do
-          home_ss.reload
+          SolarSystem.find(home_ss_id)
         end.should raise_error(ActiveRecord::RecordNotFound)
       end
 
@@ -1588,10 +1602,7 @@ describe Player do
   describe "#relocatable?" do
     let(:galaxy) { Factory.create(:galaxy) }
     let(:player) { Factory.create(:player, :galaxy => galaxy) }
-    let(:home_ss) do
-      Factory.create(:solar_system, :player => player, :galaxy => galaxy,
-                     :x => 0, :y => 0)
-    end
+    let(:home_ss) { player.home_solar_system }
     let(:home_planet) do
       Factory.create(:planet, :player => player, :solar_system => home_ss)
     end
@@ -1656,7 +1667,7 @@ describe Player do
   end
 
   describe "#active?" do
-    let(:player) { Factory.build(:player) }
+    let(:player) { Factory.create(:player) }
 
     it "should return false if he has never logged in" do
       player.last_seen = nil
@@ -1672,7 +1683,7 @@ describe Player do
     end
 
     it "should return true if he is currently connected" do
-      Dispatcher.instance.should_receive(:connected?).with(player.id).
+      Dispatcher.instance.stub(:connected?).with(player.id).
         and_return(true)
       player.should be_active
     end
@@ -1768,6 +1779,7 @@ describe Player do
     let(:player) { Factory.create(:player) }
 
     it "should register a callback" do
+      player.register_check_activity!
       player.should have_callback(
         CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
         Cfg.player_inactivity_time(player.points).from_now
@@ -1778,8 +1790,7 @@ describe Player do
   describe "#attach!" do
     let(:player) { Factory.create(:player) }
     let(:home_solar_system) do
-      home_ss = Factory.create(:solar_system, :player => player,
-                               :galaxy => player.galaxy)
+      home_ss = player.home_solar_system
       Factory.create(:fse_player, :solar_system => home_ss, :player => player)
       home_ss
     end
@@ -1826,46 +1837,55 @@ describe Player do
 
   describe ".battle_vps_multiplier" do
     def player(economy_points=10, science_points=15, army_points=20,
-        war_points=25)
+        war_points=25, victory_points=30)
       Factory.create(:player, :economy_points => economy_points,
         :science_points => science_points, :army_points => army_points,
-        :war_points => war_points)
+        :war_points => war_points, :victory_points => victory_points)
     end
     
     def points(player)
-      (player.economy_points + player.science_points + player.army_points).to_f
+      Cfg::Java.fairnessPoints(
+        player.economy_points, player.science_points,
+        player.army_points, player.war_points, player.victory_points
+      ).to_f
     end
 
-    def multiplier(aggressor, defender)
+    def ratio(aggressor, defender)
       points(defender) / points(aggressor)
     end
 
-    it "should ignore war points" do
-      Player.battle_vps_multiplier(
-        player(10, 15, 20, 25).id, player(10, 15, 20, 250).id
-      ).should == 1
+    it "should use Cfg::Java.fairnessPoints" do
+      p1_args = [10, 20, 30, 40, 50]
+      p2_args = p1_args.reverse
+
+      Cfg::Java.should_receive(:fairnessPoints).with(*p1_args).and_return(10)
+      Cfg::Java.should_receive(:fairnessPoints).with(*p2_args).and_return(20)
+      player1 = player(*p1_args)
+      player2 = player(*p2_args)
+      Player.battle_vps_multiplier(player1.id, player2.id)
     end
 
     it "should return 1 if aggressor has no points" do
       Player.battle_vps_multiplier(
-        player(0, 0, 0, 0).id, player(10, 15, 20, 250).id
+        player(0, 0, 0, 0, 0).id, player().id
       ).should == 1
     end
 
     describe "if aggressor is stronger than defender" do
       it "should use proportional linear formula" do
-        aggressor = player(10, 10, 10, 10)
-        defender = player(9, 9, 9, 9)
-        Player.battle_vps_multiplier(aggressor.id, defender.id).
-          should == MathFormulas.line(
-            Cfg::Java.battleVpsMaxWeakness, 0, 1, 1
-          )[multiplier(aggressor, defender)]
+        aggressor = player(10, 10, 10, 10, 10)
+        defender = player(9, 9, 9, 9, 9)
+
+        formula = MathFormulas.line(Cfg::Java.battleVpsMaxWeakness, 0, 1, 1)
+        expected = formula.call(ratio(aggressor, defender))
+        Player.battle_vps_multiplier(aggressor.id, defender.id).should ==
+          expected
       end
 
       it "should return 0 if aggressor is too strong" do
-        aggressor = player(10, 10, 10, 10)
+        aggressor = player(10, 10, 10, 10, 10)
         d_points = 10 * (Cfg::Java.battleVpsMaxWeakness - 0.1)
-        defender = player(d_points, d_points, d_points, d_points)
+        defender = player(d_points, d_points, d_points, d_points, d_points)
         Player.battle_vps_multiplier(aggressor.id, defender.id).
           should == 0
       end
@@ -1873,9 +1893,9 @@ describe Player do
 
     describe "if aggressor is weaker than defender" do
       it "should use linear formula" do
-        aggressor = player(10, 10, 10, 10)
-        defender = player(20, 20, 20, 20)
-        Player.battle_vps_multiplier(aggressor.id, defender.id).should == 2
+        aggressor = player(10, 10, 10, 10, 10)
+        defender = player(30, 30, 30, 30, 30)
+        Player.battle_vps_multiplier(aggressor.id, defender.id).should == 3
       end
     end
   end

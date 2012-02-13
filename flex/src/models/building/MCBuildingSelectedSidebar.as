@@ -339,6 +339,11 @@ package models.building
                   UpgradeEvent.LEVEL_CHANGE,
                   refreshPriceOrientatedProperties
                );
+               if (_selectedBuilding.npc && !_selectedBuilding.unitsCached)
+               {
+                  new BuildingsCommand(BuildingsCommand.SHOW_GARRISON,
+                     _selectedBuilding).dispatch();
+               }
                if (_selectedBuilding.type != BuildingType.MOTHERSHIP
                   && !_selectedBuilding.npc)
                {

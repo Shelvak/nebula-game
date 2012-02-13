@@ -14,8 +14,8 @@ import spacemule.persistence.{DB, Row, RowObject}
 
 object PlayerRow extends RowObject {
   val columnsSeq = Seq(
-    "id", "galaxy_id", "web_user_id", "name", "scientists",
-    "scientists_total", "population_cap", "planets_count", "created_at"
+    "id", "galaxy_id", "web_user_id", "name", "population_cap",
+    "planets_count", "created_at"
   )
   val escapeRegexp = Pattern.compile("[\t\n\\\\]")
 }
@@ -29,8 +29,6 @@ case class PlayerRow(galaxyId: Int, player: Player) extends Row {
     galaxyId,
     player.webUserId,
     escape(player.name),
-    Config.startingScientists,
-    Config.startingScientists,
     Config.startingPopulationMax,
     1,
     DB.date(Calendar.getInstance())

@@ -111,10 +111,10 @@ package tests.planetmapeditor
       [Test]
       public function widthAndHeight(): void {
          assertThat(
-            "default width", editor.mapWidth, equals (editor.MIN_WIDTH)
+            "default width", editor.mapWidth, equals (30)
          );
          assertThat(
-            "default height", editor.mapHeight, equals (editor.MIN_HEIGHT)
+            "default height", editor.mapHeight, equals (30)
          );
 
          editor.mapWidth = 10;
