@@ -320,8 +320,10 @@
     <Technology_ZetiumExtraction-whos value="Zetiumo gavybos" />
     <Technology_Market value="Turgus" />
     <Technology_Market-whos value="Turgaus" />
-    <Technology_SpaceFactory-whos value="Laivų gamyklos" />
+    <Technology_GroundFactory value="Tankų gamykla" />
+    <Technology_GroundFactory-whos value="Tankų gamyklos" />
     <Technology_SpaceFactory value="Laivų gamykla" />
+    <Technology_SpaceFactory-whos value="Laivų gamyklos" />
     <Technology_FieryMelters value="Aukšto spaudimo lydymas" />
     <Technology_FieryMelters-whos value="aukšto spaudimo lydymo" />
     <Technology_SuperconductorTechnology value="Superlaidininkai" />
@@ -338,6 +340,8 @@
     <Technology_ShipStorage-whos value="Išorinių dokų" />
     <Technology_DefensivePortal ref="Building_DefensivePortal" />
     <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
+    <Technology_Radar value="Radaras" />
+    <Technology_Radar-whos value="Radaro" />
     <Technology_Alliances value="Sąjungos" />
     <Technology_Alliances-whos value="Sąjungų" />
     <Technology_BuildingRepair value="Taisymo robotai" />
@@ -2764,7 +2768,7 @@
     <p>Sveiki, Komandore.</p>
     <p>Kadangi jau turime funkcionuojančią laivų gamyklą, galime truputi
       patreniruoti savo pilotus. Nusiųskite juos sumedžioti keletos
-      [obj:2:Unit_Dirac:what:dc]. Mūsų laivynui tai neturėtų būti sunki
+      dirako klasės laivų. Mūsų laivynui tai neturėtų būti sunki
       užduotis.</p>
     </about.240>
 
@@ -2773,7 +2777,7 @@
     <p>Komandore,</p>
     <p>Jūsų aktyvumas šiame regione privertė ateivius būti atsargesniais.
       Sklinda gandai, kad jie netgi planuoja atsakomąjį smūgį! Sunaikinkite jų
-      galinguosius [obj:1:Unit_Thor:whos:dc] klasės laivus, parodykite jiems
+      galinguosius toro klasės laivus, parodykite jiems
       kas valdo šią galaktiką!</p>
     </about.250>
 
@@ -5447,8 +5451,8 @@
      <message.channelLeave value="[ {0} išėjo ]"/>
      <message.friendOffline value="Šis žaidėjas šiuo metu neprisijungęs"/>
      <message.silence>
-        Tu buvai nutildytas iki {0}, nes siuntei per daug žinučių.
-        Tu vėl galėsi šnekėtis už {1}.
+        Tu buvai nutildytas iki {0} dėl pokalbių teršimo.
+        Vėl galėsi šnekėti už {1}.
      </message.silence>
      <label.send value="Siųsti" />
      <label.mainChannel value="#galaktika"/>
@@ -5540,7 +5544,7 @@
     <label.fee value="Mokestis: {0}%" />
     <label.selectPlanet value="Pasirink planetą:" />
     <label.selectResources value="Pasirink resursus" />
-    <label.withoutFee value="Į planeta be mokesčių bus nusiųsta:" />
+    <label.withoutFee value="Atskaičiavus mokesčius į planetą bus nusiųsta:" />
     <!-- 0: cooldown as time string (10h 20m 15s) -->
     <warning.willSend
             value="Jei išsiųsi šiuos resursus, negalėsi siųsti kitų {0}." />
@@ -5549,7 +5553,7 @@
             value="Tu neturi kitos planetos į kurią galėtum siųsti resursus" />
     <message.noTransporter>
       <p>Planetoje, į kurią buvo siunčiami resursai, nėra siųstuvo.
-         Siuntimas buvo atšauktas, o resursai gražinti.</p>
+         Siuntimas buvo atšauktas, o resursai grąžinti.</p>
     </message.noTransporter>
   </ResourceTransporter>
   
