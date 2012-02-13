@@ -12,16 +12,6 @@ module Parts
     end
 
     module ClassMethods
-      def on_callback(id, event)
-        case event
-        when CallbackManager::EVENT_VIP_TICK
-          find(id).vip_tick!
-        when CallbackManager::EVENT_VIP_STOP
-          find(id).vip_stop!
-        else
-          raise CallbackManager::UnknownEvent.new(self, id, event)
-        end
-      end
     end
 
     module InstanceMethods

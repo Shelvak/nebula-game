@@ -1,6 +1,6 @@
 class Threading::Worker
   include Celluloid
-  include Log
+  include NamedLogMessages
 
   def initialize(director, syncer, name)
     @director = director
@@ -8,12 +8,19 @@ class Threading::Worker
     @name = name
   end
 
-  def work(player_ids, message)
-    log "--- starting work (#{player_ids.inspect}) for #{message} seconds ---"
-    Kernel.sleep message
-    log "--- done working (#{player_ids.inspect}) for #{message} seconds ---"
+  def to_s
+    "worker-#{@name}"
+  end
 
-    @director.done!(@name, player_ids)
+  def work(ids, klass, method, *args)
+    typesig binding, Array, Class, Symbol, Array
+
+    signature = "#{ids.inspect}: #{klass}.#{method}#{args.inspect}"
+    info "Doing work for #{signature}."
+    klass.send(method, *args)
+    info "Work for #{signature} done!"
+
+    @director.done!(@name, ids)
   end
 
   # Emit a sync with _token_.

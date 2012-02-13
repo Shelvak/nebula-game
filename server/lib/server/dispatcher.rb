@@ -23,6 +23,12 @@ class Dispatcher
 
   # Initialize the dispatcher.
   def initialize
+    @directors = {
+      :chat => Threading::Director.new("chat", 1),
+      :galaxy => Threading::Director.new("galaxy", 2),
+      :player => Threading::Director.new("player", 5),
+    }
+
     @controllers = {}
     Dir.glob(
       File.join(ROOT_DIR, 'lib', 'app', 'controllers', '*.rb')
@@ -127,6 +133,16 @@ class Dispatcher
     end
   end
 
+  def call(klass, method_name, *args)
+    scope_method = "#{method_name}_scope"
+    raise(
+      "#{klass} is missing scope resolver for method call ##{method_name}"
+    ) unless klass.respond_to?(scope_method)
+
+    scope = klass.send(scope_method, *args)
+    dispatch_work(scope, klass, method_name, *args)
+  end
+
   # Transmit _message_ to clients identified by _ids_.
   def transmit(message, *clients)
     clients.each do |client|
@@ -213,24 +229,44 @@ class Dispatcher
     ) unless controller_class.respond_to?(action_method)
 
     # Check options.
-    raise(
-      "#{controller_class} is missing options for action #{message.action}"
-    ) unless controller_class.respond_to?(options_method)
-    controller_class.send(options_method).check!(message.params)
+    unless controller_class.respond_to?(options_method)
+      error "#{message.full_action} is missing options method!"
+      raise UnhandledMessage
+    end
+    controller_class.send(options_method).check!(message)
 
-
-    raise(
-      "#{controller_class} is missing scope resolver for action #{
-        message.action}"
-    ) unless controller_class.respond_to?(scope_method)
-
+    unless controller_class.respond_to?(scope_method)
+      error "#{message.full_action} is missing scope resolver method!"
+      raise UnhandledMessage
+    end
     scope = controller_class.send(scope_method, message)
+
+    dispatch_work(scope, controller_class, action_method, message)
+  rescue ParamOpts::BadParams => e
+    # TODO
   rescue UnhandledMessage => e
-    disconnect(message['client_id'], DISCONNECT_UNHANDLED_MESSAGE, e.message)
+    disconnect(message.client, DISCONNECT_UNHANDLED_MESSAGE, e.message)
   end
 
-  def check_options
+  def dispatch_work(scope, klass, method, *args)
+    typesig binding, Scope, Class, Symbol, Array
 
+    if scope.chat?
+      name = :chat
+    elsif scope.galaxy?
+      name = :galaxy
+    elsif scope.player?
+      name = :player
+    else
+      raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
+    end
+
+    director = @directors[name]
+    raise "Unknown director #{name.inspect}!" if director.nil?
+
+    info "Dispatching work to director #{name}: #{
+      klass}.#{method}#{args.inspect}"
+    director.work!(scope.ids, klass, method, *args)
   end
 
   # Check if one of the given push filters match for current client.

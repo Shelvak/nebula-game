@@ -82,7 +82,7 @@ module Parts::Repairable
         super(id, event)
       else
         raise ArgumentError.new("Unknown event #{event} (#{
-          CallbackManager::STRING_NAMES[event]}) for #{self} ID #{id}!")
+          CallbackManager::METHOD_NAMES[event]}) for #{self} ID #{id}!")
       end
     end
   end

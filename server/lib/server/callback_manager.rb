@@ -1,7 +1,7 @@
 class CallbackManager
   class UnknownEvent < ArgumentError
     def initialize(klass, id, event)
-      super("Unrecognized event #{CallbackManager::STRING_NAMES[event]} (#{
+      super("Unrecognized event #{CallbackManager::METHOD_NAMES[event]} (#{
         event} for #{klass} ID #{id}")
     end
   end
@@ -40,22 +40,22 @@ class CallbackManager
   # Create system offer for creds -> zetium in galaxy.
   EVENT_CREATE_ZETIUM_SYSTEM_OFFER = 14
   
-  STRING_NAMES = {
-    EVENT_UPGRADE_FINISHED => 'upgrade finished',
-    EVENT_CONSTRUCTION_FINISHED => 'construction finished',
-    EVENT_ENERGY_DIMINISHED => 'energy diminished',
-    EVENT_MOVEMENT => 'movement',
-    EVENT_DESTROY => 'destroy',
-    EVENT_EXPLORATION_COMPLETE => "exploration complete",
-    EVENT_COOLDOWN_EXPIRED => "cooldown expired",
-    EVENT_RAID => "raid",
-    EVENT_CHECK_INACTIVE_PLAYER => "inactivity check",
-    EVENT_SPAWN => "spawn",
-    EVENT_VIP_TICK => "vip tick",
-    EVENT_VIP_STOP => "vip stop",
-    EVENT_CREATE_METAL_SYSTEM_OFFER => "create metal system offer",
-    EVENT_CREATE_ENERGY_SYSTEM_OFFER => "create energy system offer",
-    EVENT_CREATE_ZETIUM_SYSTEM_OFFER => "create zetium system offer",
+  METHOD_NAMES = {
+    EVENT_UPGRADE_FINISHED => :upgrade_finished,
+    EVENT_CONSTRUCTION_FINISHED => :construction_finished,
+    EVENT_ENERGY_DIMINISHED => :energy_diminished,
+    EVENT_MOVEMENT => :movement,
+    EVENT_DESTROY => :destroy,
+    EVENT_EXPLORATION_COMPLETE => :exploration_complete,
+    EVENT_COOLDOWN_EXPIRED => :cooldown_expired,
+    EVENT_RAID => :raid,
+    EVENT_CHECK_INACTIVE_PLAYER => :check_inactive_player,
+    EVENT_SPAWN => :spawn,
+    EVENT_VIP_TICK => :vip_tick,
+    EVENT_VIP_STOP => :vip_stop,
+    EVENT_CREATE_METAL_SYSTEM_OFFER => :create_metal_system_offer,
+    EVENT_CREATE_ENERGY_SYSTEM_OFFER => :create_energy_system_offer,
+    EVENT_CREATE_ZETIUM_SYSTEM_OFFER => :create_zetium_system_offer,
   }
 
   def to_s
@@ -112,7 +112,7 @@ class CallbackManager
       LOGGER.except(:debug) do
         row = self.class.get(sql, @connection)
         row = Callback.new(
-          row['id'], row['class'].constantize, row['object_id'], row['event'],
+          row['id'], row['class'], row['object_id'], row['event'],
           row['ruleset'], row['time']
         ) unless row.nil?
         row
@@ -131,10 +131,15 @@ class CallbackManager
           "UPDATE `callbacks` SET processed=1 WHERE id=#{callback.id}"
         )
       end
-      Actor[:dispatcher].callback!(callback)
+      dispatch(callback)
 
       callback = get_callback.call
     end
+  end
+
+  private
+  def dispatch(callback)
+    Actor[:dispatcher].call!(callback.klass, callback.method_name, callback)
   end
 
   class << self
@@ -153,7 +158,7 @@ class CallbackManager
 
       time ||= object.upgrade_ends_at
 
-      LOGGER.debug("Registering event '#{STRING_NAMES[event]
+      LOGGER.debug("Registering event '#{METHOD_NAMES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
       raise ArgumentError.new("object #{object} does not have id!") \
@@ -170,7 +175,7 @@ class CallbackManager
     def update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
       time ||= object.upgrade_ends_at
 
-      LOGGER.debug("Updating event '#{STRING_NAMES[event]
+      LOGGER.debug("Updating event '#{METHOD_NAMES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
       ActiveRecord::Base.connection.execute(
@@ -204,7 +209,7 @@ class CallbackManager
     end
 
     def unregister(object, event=EVENT_UPGRADE_FINISHED)
-      LOGGER.debug("unregistering event '#{STRING_NAMES[event]
+      LOGGER.debug("unregistering event '#{METHOD_NAMES[event]
         }' for #{object}", TAG)
 
       ActiveRecord::Base.connection.execute(

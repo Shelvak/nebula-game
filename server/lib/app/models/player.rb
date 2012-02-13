@@ -54,6 +54,8 @@ class Player < ActiveRecord::Base
   include Parts::Notifier
   include Parts::PlayerVip
 
+  DScope = Dispatcher::Scope
+
   include FlagShihTzu
   has_flags(
     1 => :first_time,
@@ -645,13 +647,16 @@ class Player < ActiveRecord::Base
     )
   end
 
-  def self.on_callback(id, event)
-    case event
-      when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
-        player = find(id)
-        player.check_activity!
-      else
-        raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
-  end
+  def self.vip_tick_scope(callback); DScope.player(callback.object_id); end
+  def self.vip_tick(player); player.vip_tick!; end
+
+  def self.vip_stop_scope(player); DScope.player(player); end
+  def self.vip_stop(player); player.vip_stop!; end
+
+  # Checking inactive player is only dependant on player, because his points
+  # might change. It is not dependent on the galaxy, because it only detaches
+  # player and will never reattach him, so condition where player is attached
+  # to taken spot will never occur.
+  def self.check_inactive_player_scope(player); DScope.player(player); end
+  def self.check_inactive_player(player); player.check_activity!; end
 end

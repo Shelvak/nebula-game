@@ -1,10 +1,14 @@
 class Threading::Syncer
-  include Log
+  include NamedLogMessages
   include Celluloid
 
-  def initialize
-    @name = 'syncer'
+  def initialize(name)
+    @name = name
     @tokens = Hash.new(0)
+  end
+
+  def to_s
+    "syncer-#{@name}"
   end
 
   def request_sync(name, count, token)

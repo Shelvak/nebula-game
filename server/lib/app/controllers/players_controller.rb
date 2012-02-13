@@ -19,9 +19,12 @@ class PlayersController < GenericController
     )
   end
 
+  # Player login depends on galaxy scope because logging him in might reattach
+  # him to the galaxy.
   def self.login_scope(message)
-    player = Player.find(message.params['server_player_id'])
-    scope.galaxy(player.galaxy_id)
+    player = Player.where(:id => message.params['server_player_id']).first
+    # There might not be such user.
+    scope.galaxy(player.try(:galaxy_id))
   end
 
   def self.login_action(m)
@@ -194,7 +197,7 @@ class PlayersController < GenericController
   # 
   # Response: None
   #
-  def action_convert_creds
+  def self.convert_creds_action(m)
     param_options :required => {:amount => Fixnum}
     
     player.vip_convert(params['amount'])

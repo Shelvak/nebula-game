@@ -2,8 +2,8 @@ class Dispatcher::Message
   # Controller/Action splitter.
   SPLITTER = "|"
 
-  attr_reader :id, :controller_name, :action, :params, :client, :player,
-    :pushed
+  attr_reader :id, :controller_name, :action, :params, :client, :player
+  def pushed?; @pushed; end
 
   def initialize(id, action, params, client, player, pushed)
     @id = id

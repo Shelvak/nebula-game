@@ -8,7 +8,7 @@ RSpec::Matchers.define :have_callback do |type, time|
   end
 
   def r(type)
-    CallbackManager::STRING_NAMES[type]
+    CallbackManager::METHOD_NAMES[type]
   end
   
   def time_str(time)
