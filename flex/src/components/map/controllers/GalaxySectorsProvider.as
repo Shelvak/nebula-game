@@ -7,7 +7,6 @@ package components.map.controllers
    import models.solarsystem.MSolarSystem;
 
    import mx.core.ClassFactory;
-
    import mx.core.IFactory;
 
    import utils.ArrayUtil;
@@ -22,6 +21,20 @@ package components.map.controllers
          _map = Objects.paramNotNull("map", map);
       }
 
+      public function sectorsCompareFunction(a: Sector,
+                                             b: Sector,
+                                             fields: Array = null): int {
+         Objects.paramNotNull("a", a);
+         Objects.paramNotNull("b", b);
+         if (a.hasObject && !b.hasObject) return -1;
+         if (!a.hasObject && b.hasObject) return +1;
+         if (a.hasObject && b.hasObject) {
+            if (!a.hasShips && b.hasShips) return -1;
+            if (a.hasShips && !b.hasShips) return +1;
+         }
+         return WatchedObjects.compareLocations(a.location, b.location);
+      }
+
       public function getSpaceSectors(): Array {
          var sectorsWithSolarSystems:Array = new Array();
          if (_map.solarSystems != null) {
@@ -33,7 +46,7 @@ package components.map.controllers
          var sectorsWithShips:Array = new Array();
          if (_map.squadrons != null) {
             var loc: LocationMinimal;
-            var sectorsHash: Object = new Object();
+            const sectorsHash: Object = new Object();
             for each (var squad: MSquadron in _map.squadrons) {
                if (squad.owner == Owner.PLAYER) {
                   loc = squad.currentHop.location;

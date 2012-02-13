@@ -2,6 +2,8 @@ package components.map.controllers
 {
    import interfaces.ICleanable;
 
+   import models.location.LocationMinimal;
+
    import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
    import models.map.events.MMapEvent;
@@ -14,23 +16,22 @@ package components.map.controllers
 
    public class WatchedObjects extends ArrayCollection implements ICleanable
    {
-      public function sectorsCompareFunction(a: Sector,
-                                             b: Sector,
-                                             fields:Array = null): int {
+      internal static function compareLocations(a: LocationMinimal,
+                                                b: LocationMinimal,
+                                                fields: Array = null): int {
          Objects.paramNotNull("a", a);
          Objects.paramNotNull("b", b);
-         if (a.hasObject && !b.hasObject) return -1;
-         if (!a.hasObject && b.hasObject) return +1;
-         if (a.location.x < b.location.x) return -1;
-         if (a.location.x > b.location.x) return +1;
-         if (a.location.y < b.location.y) return -1;
-         if (a.location.y > b.location.y) return +1;
-         throw new ArgumentError(
-            "Both sectors a=" + a + " and b=" + b + " define the same "
-               + "location and both contain either objects or ships "
-               + "which is illegal"
-         );
-         // unreachable
+         if (a.type != b.type) {
+            throw new Error(
+               "Both instances of LocationMinimal must be of the same type:\n"
+                  + "   a = " + a + "\n"
+                  + "   b = " + b
+            );
+         }
+         if (a.x < b.x) return -1;
+         if (a.x > b.x) return +1;
+         if (a.y < b.y) return -1;
+         if (a.y > b.y) return +1;
          return 0;
       }
 
@@ -63,7 +64,7 @@ package components.map.controllers
          addSquadronEventHandler(MMapEvent.SQUADRON_LEAVE);
          addSquadronEventHandler(MMapEvent.SQUADRON_MOVE);
          sort = new Sort();
-         sort.compareFunction = sectorsCompareFunction;
+         sort.compareFunction = sectorsProvider.sectorsCompareFunction;
          refresh();
          rebuild();
       }
