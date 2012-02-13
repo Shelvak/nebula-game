@@ -37,6 +37,9 @@ class PlayersController < GenericController
         # This must come before player.attach!
         push m, GameController::ACTION_CONFIG
 
+        # This must be pushed before player is attached.
+        push "game|config"
+
         player.attach! if player.detached?
 
         [
