@@ -135,11 +135,9 @@
       
       <objects:LevelDisplay currentLevel="{modelObj.upgradePart.level}" maxLevel="{modelObj.maxLevel}" 
                              right="0" bottom="0"/>
-      <s:Line xFrom="0" xTo="40" bottom="0" visible="{hasGroupElements}">
-        <s:stroke>
-          <mx:SolidColorStroke color="#eec500" weight="5"/>
-        </s:stroke>
-      </s:Line>
+      <s:BitmapImage visible="{hasGroupElements}"
+                     source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER +
+                  'technology_tree/open_context')}" left="-7" top="{imageSize - 15}"/>
    </s:Group>
    
 </base:BaseContainer>

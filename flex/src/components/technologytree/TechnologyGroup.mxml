@@ -6,12 +6,13 @@
          depth="5"
          visible="{shouldBeVisible(belongsTo,
           MCTechnologySelectedSidebar.getInstance().selectedTechnology)}">
-  <base:BorderedGroupBackground left="0" right="0" top="0" bottom="0"/>
   <s:Rect left="1" right="1" top="2" bottom="2">
-    <s:fill>
-      <s:SolidColor color="#000000"/>
-    </s:fill>
-  </s:Rect>
+  <s:fill>
+    <s:SolidColor color="#000000"/>
+  </s:fill>
+</s:Rect>
+  <base:BorderedGroupBackground left="0" right="0" top="0" bottom="0"/>
+
   <s:Group id="content" left="10" right="10" top="20" bottom="10">
 
   </s:Group>
