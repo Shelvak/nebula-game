@@ -18,8 +18,9 @@ package tests.chat.actions
    
    import utils.SingletonFactory;
    import utils.remote.rmo.ClientRMO;
-   
-   
+   import utils.remote.rmo.ServerRMO;
+
+
    public class TC_MessagePublicAction extends TC_BaseChatAction
    {
       public function TC_MessagePublicAction()
@@ -178,7 +179,10 @@ package tests.chat.actions
             "numIdle": 0
          }));
          
-         action.cancel(new ClientRMO(null, null, msg, null, null));
+         action.cancel(
+            new ClientRMO(null, null, msg, null, null),
+            new ServerRMO()
+         );
          
          // action should not touch message pool
          assertThat( MCHAT.messagePool, hasProperties ({
