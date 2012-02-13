@@ -225,6 +225,7 @@ public final class PlanetMapSerializer
                      const foliage: BlockingFolliage = new BlockingFolliage();
                      foliage.kind = tileKind;
                      foliage.moveTo(x, y);
+                     foliage.terrainType = ssObject.terrain;
                      BlockingFolliage.setSize(foliage);
                      planet.addObject(foliage);
                   }
