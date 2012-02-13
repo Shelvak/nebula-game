@@ -52,14 +52,14 @@ package models.chat
        */
       public function addMessage(element:FlowElement) : void {
          _text.addChild(element);
-         dispatchConentEvent(MChatChannelContentEvent.MESSAGE_ADD);
+         dispatchContentEvent(MChatChannelContentEvent.MESSAGE_ADD);
          if (_text.numChildren > ChatConstants.MAX_MESSAGES_IN_CHANNEL) {
             _text.removeChildAt(0);
-            dispatchConentEvent(MChatChannelContentEvent.MESSAGE_REMOVE);
+            dispatchContentEvent(MChatChannelContentEvent.MESSAGE_REMOVE);
          }
       }
       
-      private function dispatchConentEvent(type:String) : void {
+      private function dispatchContentEvent(type:String) : void {
          dispatchSimpleEvent(MChatChannelContentEvent, type);
       }
    }

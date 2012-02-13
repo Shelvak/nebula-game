@@ -798,9 +798,12 @@ package models.chat
       {
          Objects.paramNotNull("message", message);
          
-         var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(message.channel));
+         var channel:MChatChannelPublic =
+                MChatChannelPublic(_channels.getChannel(message.channel));
          if (channel == null)
-            throwChannelNotFoundError("Unable to process message " + message, message.channel);
+            throwChannelNotFoundError(
+               "Unable to process message " + message, message.channel
+            );
          
          var member:MChatMember = _members.getMember(message.playerId);
          if (member == null)
@@ -920,7 +923,7 @@ package models.chat
          if (channel == null)
          {
             /**
-             * This is probably not crtitical error since MChatChannel.messageSendFailure()
+             * This is probably not critical error since MChatChannel.messageSendFailure()
              * only returns message to the pool.
              */
             Log.getLogger(Objects.getClassName(this, true)).warn(
