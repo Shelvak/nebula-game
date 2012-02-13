@@ -161,7 +161,7 @@ package models.unit
       public function invertSelection(model: MCUnit, shiftPressed: Boolean): void
       {
          if (selectionMode == UNDEFINED_SELECTION || !shiftPressed
-         || model == lastUnit)
+         || model == lastUnit || flankUnits.getItemIndex(lastUnit) == -1)
          {
             if (model.selected)
             {

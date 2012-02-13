@@ -33,7 +33,7 @@ package controllers.objects.actions
             if (LS.oldProvider != null)
             {
                LS.oldProvider.refresh();
-               LS.refreshScreen();
+               //LS.refreshScreen();
             }
             // TODO: Find out why some filters don't refresh if you dont call 
             // refresh function on the list
@@ -41,7 +41,7 @@ package controllers.objects.actions
             if (US.units != null)
             {
                US.units.refresh();
-               US.refreshScreen();
+               //US.refreshScreen();
             }
          }
       }
