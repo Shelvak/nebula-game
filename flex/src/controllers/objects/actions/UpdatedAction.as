@@ -1,7 +1,8 @@
 package controllers.objects.actions
 {
    import controllers.objects.ObjectClass;
-   
+   import controllers.objects.UpdatedReason;
+
    import models.unit.MCLoadUnloadScreen;
    import models.unit.MCUnitScreen;
    
@@ -33,7 +34,10 @@ package controllers.objects.actions
             if (LS.oldProvider != null)
             {
                LS.oldProvider.refresh();
-               //LS.refreshScreen();
+               if (reason == UpdatedReason.TRANSPORTATION)
+               {
+                  LS.refreshScreen();
+               }
             }
             // TODO: Find out why some filters don't refresh if you dont call 
             // refresh function on the list
@@ -41,7 +45,10 @@ package controllers.objects.actions
             if (US.units != null)
             {
                US.units.refresh();
-               //US.refreshScreen();
+               if (reason == UpdatedReason.TRANSPORTATION)
+               {
+                  US.refreshScreen();
+               }
             }
          }
       }
