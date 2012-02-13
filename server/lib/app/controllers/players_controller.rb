@@ -23,9 +23,12 @@ class PlayersController < GenericController
           login_authorized?(player, params['web_player_id'])
         login player
 
+        # This must be pushed before player is attached.
+        push "game|config"
+
         player.attach! if player.detached?
 
-        ["game|config", "players|show", "planets|player_index",
+        ["players|show", "planets|player_index",
           "technologies|index", "quests|index", "notifications|index",
           RoutesController::ACTION_INDEX,
           ChatController::ACTION_INDEX,
