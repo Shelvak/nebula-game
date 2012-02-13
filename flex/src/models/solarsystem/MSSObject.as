@@ -217,7 +217,7 @@ package models.solarsystem
       [Required]
       /**
        * Size of the planet image in the solar system map compared with original image
-       * dimentions in percents.
+       * dimensions in percents.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [SkipProperty]<br/>
