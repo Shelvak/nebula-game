@@ -40,6 +40,8 @@ package models.technology
       public function createAllTechnologies(): void
       {
          coordsHash = new Object();
+         mods = {};
+         nullMods = null;
          for each (var tech: String in Config.getTechnologiesTypes())
          createTechnology(tech);
          new GTechnologiesEvent(GTechnologiesEvent.TECHNOLOGIES_CREATED);
@@ -66,6 +68,9 @@ package models.technology
          technologies.addItem(temp);
       }
       
+      private var mods: Object = {};
+      private var nullMods: Object;
+      
       [Bindable (event="technologyChanged")]
       /**
        * 
@@ -77,14 +82,30 @@ package models.technology
       public function getTechnologiesPropertyMod(property: String, applies: String = null): Number
       {
          var value: Number = 0;
-         var mods: Object = Config.getTechnologiesMods(applies);
-         for (var key: String in mods)
+         var _mods: Object;
+         if (applies == null)
          {
-            if (mods[key][property] != null)
+            if (nullMods == null)
+            {
+               nullMods = Config.getTechnologiesMods(applies);
+            }
+            _mods = nullMods;
+         }
+         else
+         {
+            if (mods[applies] == null)
+            {
+               mods[applies] = Config.getTechnologiesMods(applies);
+            }
+            _mods = mods[applies];
+         }
+         for (var key: String in _mods)
+         {
+            if (_mods[key][property] != null)
             {
                var currentTech: Technology = getTechnologyByType(StringUtil.underscoreToCamelCase(key));
                if (currentTech.level > 0)
-                  value += StringUtil.evalFormula(mods[key][property], {'level': currentTech.level});
+                  value += StringUtil.evalFormula(_mods[key][property], {'level': currentTech.level});
             }
          }
          return value;
@@ -162,6 +183,8 @@ package models.technology
       {
          if (hasEventListener(TechnologyEvent.TECHNOLOGY_CHANGED))
          {
+            mods = {};
+            nullMods = null;
             dispatchEvent(new TechnologyEvent(TechnologyEvent.TECHNOLOGY_CHANGED));
          }
       }
