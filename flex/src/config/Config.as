@@ -29,6 +29,7 @@ package config
       public static function setConfig(data:Object) : void
       {
          _data = data;
+         requirementsCache = {};
          
          _allUnitTypes = null;
          allUnitTypes;
@@ -138,6 +139,8 @@ package config
          
          return data;
       }
+
+      private static var requirementsCache: Object = {};
       
       /**
        * 
@@ -148,10 +151,13 @@ package config
        */      
       private static function getRequirements(type: String, name: String):Object
       {
+         if (requirementsCache[type + '||' + name] != null)
+         {
+            return requirementsCache[type + '||' + name];
+         }
          var requirementStringList: Object = grabPropertiesFromData(
             "^" + type + "\." + StringUtil.firstToLowerCase(name) + "\.requirement", 3
          );
-         
          var requirements:Object = new Object();
          
          for (var key: String in requirementStringList) {
@@ -166,7 +172,7 @@ package config
             
             requirements[unit][unitKey] = requirementStringList[key];
          }
-         
+         requirementsCache[type + '||' + name] = requirements;
          return requirements;
       }
       

@@ -9,50 +9,67 @@
    <fx:Binding source="MSSObject(staticObject)" destination="ssObject"/>
    <fx:Script>
       <![CDATA[
-         import models.location.LocationMinimal;
-         import models.solarsystem.MSSObject;
-         
-         import utils.locale.Localizer;
-         
-         
-         [Bindable]
-         private var ssObject:MSSObject;
-         
-         
-         private function getString(key:String,
-                                    parameters:Array = null) : String {
-            return Localizer.string("SSObjects", key, parameters);
-         }
-         
-         private function getLabel(labelName:String,
-                                   parameters:Array = null) : String {
-            return getString("label." + labelName, parameters);
-         }
-         
-         private function getTooltip(tooltipName:String,
-                                     parameters:Array = null) : String {
-            return getString("tooltip." + tooltipName, parameters);
-         }
-         
-         private function getMessage(messageName:String,
-                                     parameters:Array = null) : String {
-            return getString("message." + messageName, parameters);
-         }
-         
-         private function getSectorLabel(ssObject:MSSObject) : String {
-            return ssObject == null
-               ? "" : LocationMinimal.getSectorLabel(ssObject.currentLocation);
-         }
+     import controllers.players.PlayersCommand;
 
-         private function getPlanetAreaLabel(ssObject:MSSObject) : String {
-            return ssObject == null
-               ? ""
-               : Localizer.string(
-                    "SSObjects", "label.planetArea",
-                    [ssObject.width, ssObject.height]
-                 );
-         }
-      ]]>
+     import models.Owner;
+     import models.location.LocationMinimal;
+     import models.movement.MSquadKillReward;
+     import models.movement.events.MSquadronEvent;
+     import models.solarsystem.MSSObject;
+
+     import utils.locale.Localizer;
+
+
+     [Bindable]
+     private var ssObject: MSSObject;
+
+
+     private function getString(key: String, parameters: Array = null): String {
+       return Localizer.string("SSObjects", key, parameters);
+     }
+
+     private function getLabel(labelName: String, parameters: Array = null): String {
+       return getString("label." + labelName, parameters);
+     }
+
+     private function getTooltip(tooltipName: String, parameters: Array = null): String {
+       return getString("tooltip." + tooltipName, parameters);
+     }
+
+     private function getMessage(messageName: String, parameters: Array = null): String {
+       return getString("message." + messageName, parameters);
+     }
+
+     private function getSectorLabel(ssObject: MSSObject): String {
+       return ssObject == null
+         ? "" : LocationMinimal.getSectorLabel(ssObject.currentLocation);
+     }
+
+     private function getPlanetAreaLabel(ssObject: MSSObject): String {
+       return ssObject == null
+         ? ""
+         : Localizer.string(
+         "SSObjects", "label.planetArea",
+         [ssObject.width, ssObject.height]
+       );
+     }
+
+     private function showHonorCoef(e: MSquadronEvent): void
+     {
+       MKR.removeEventListener(MSquadronEvent.MULTIPLIER_CHANGE, showHonorCoef);
+       btnShowHonorCoef.toolTip = getTooltip('honorCoef', [(MKR.multiplier * 100).toFixed(2)]);
+     }
+
+     private var MKR: MSquadKillReward = MSquadKillReward.getInstance();
+
+     private function btnShowHonorCoef_clickHandler(event: MouseEvent): void {
+       MKR.addEventListener(MSquadronEvent.MULTIPLIER_CHANGE, showHonorCoef);
+       new PlayersCommand(PlayersCommand.BATTLE_VPS_MULTIPLIER,
+         {
+           'targetId': ssObject.player.id
+         }).dispatch();
+     }
+     ]]>
    </fx:Script>
    
    <!--- Full size planet image -->
@@ -104,6 +121,11 @@
                       ML.player.allianceFull &amp;&amp;
                       !ssObject.ownerIsAlly}"/>
       </s:Group>
+
+      <s:Button id="btnShowHonorCoef" visible="{ssObject.owner == Owner.ENEMY}"
+                label="{getLabel('showHonorCoef')}"
+                click="btnShowHonorCoef_clickHandler(event)"/>
+
       <!--- Button that lets view the object. Disabled if a player does not
             own the object. -->
       <s:Button id="btnEnter"
