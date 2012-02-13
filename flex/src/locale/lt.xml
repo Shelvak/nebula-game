@@ -4060,6 +4060,8 @@
     <label.planetArea value="Plotas: {0} x {1} langeliai"/>
     <label.totalVolume value="Bendra apimtis: {0}"/>
     <label.wreckageVolume value="(apimtis: {0})"/>
+    <label.showHonorCoef value="Rodyti garbės koef."/>
+    <tooltip.honorCoef value="Garbės koeficientas: {0}%"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
     <title.info 
       value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų] Cooldown[Pertraukos]} informacija" />
