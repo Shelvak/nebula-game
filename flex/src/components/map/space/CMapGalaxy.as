@@ -221,6 +221,7 @@ package components.map.space
                   if (object.currentLocation.equals(selectedLocation)) {
                      deselectSelectedLocation();
                   }
+                  sector.object = null;
                   _staticObjectsPool.returnObject(aggrComponent);
                   squadronsController.repositionAllSquadronsIn(object.currentLocation);
                }
