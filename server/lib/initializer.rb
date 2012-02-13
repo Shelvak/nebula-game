@@ -1,7 +1,14 @@
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
   unless defined?(ROOT_DIR)
 
-Thread.current[:name] = "main"
+require 'rubygems'
+require 'bundler'
+
+require "timeout"
+require "socket"
+require "erb"
+require "pp"
+require "thread"
 
 class App
   SERVER_STATE_INITIALIZING = :initializing
@@ -9,6 +16,8 @@ class App
   SERVER_STATE_SHUTDOWNING = :shutdowning
 
   class << self
+    @@mutex = Mutex.new
+
     def env
       @@environment ||= ENV['environment'] || 'development'
     end
@@ -22,16 +31,21 @@ class App
     def in_test?; env == 'test'; end
 
     def server_state
-      @@server_state ||= SERVER_STATE_INITIALIZING
+      synchronized { @@server_state ||= SERVER_STATE_INITIALIZING }
     end
 
     def server_state=(value)
-      @@server_state = value
+      synchronized { @@server_state = value }
     end
 
     def server_initializing?; server_state == SERVER_STATE_INITIALIZING; end
     def server_running?; server_state == SERVER_STATE_RUNNING; end
     def server_shutdowning?; server_state == SERVER_STATE_SHUTDOWNING; end
+
+    private
+    def synchronized
+      @@mutex.synchronize { yield }
+    end
   end
 end
 
@@ -44,14 +58,6 @@ class Exception
 end
 
 def rake?; File.basename($0) == 'rake'; end
-
-require 'rubygems'
-require 'bundler'
-
-require "timeout"
-require "socket"
-require "erb"
-require "pp"
 
 setup_groups = [:default, :setup, :"#{App.env}_setup"]
 setup_groups.push :run_setup unless App.in_test?
@@ -239,7 +245,10 @@ load_config
 
 # Establish database connection
 DB_CONFIG = read_config(CONFIG_DIR, 'database.yml')
-DB_CONFIG.each { |env, config| config["adapter"] = "jdbcmysql" }
+DB_CONFIG.each do |env, config|
+  config["adapter"] = "jdbcmysql"
+  config["pool"] = 30
+end
 USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
 DB_MIGRATIONS_DIR = File.expand_path(
   File.dirname(__FILE__) + '/../db/migrate'
@@ -412,4 +421,5 @@ lambda do
   SpaceMule.instance
 end.call
 
+# Ensure dispatcher is restarted if it crashes.
 Dispatcher.supervise_as :dispatcher

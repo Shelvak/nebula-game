@@ -1,5 +1,4 @@
 class ChatController < GenericController
-  ACTION_INDEX = 'chat|index'
   # Sends channels and their participants for the player.
   # 
   # Invocation: by server
@@ -9,12 +8,14 @@ class ChatController < GenericController
   # _player_ids_ is +Array+ of +Fixnum+.
   # - players (Hash): Hash of {player_id => player_name} pairs.
   #
-  def action_index
-    only_push!
+  ACTION_INDEX = 'chat|index'
 
-    hub = Chat::Pool.instance.hub_for(player)
+  def self.index_options; logged_in + only_push; end
+  def self.index_scope(message); scope.chat; end
+  def self.index_action(m)
+    hub = Chat::Pool.instance.hub_for(m.player)
     
-    channels = hub.channels(player.id).map_into_hash do |channel|
+    channels = hub.channels(m.player.id).map_into_hash do |channel|
       [channel.name, channel.players.map(&:id)]
     end
 
@@ -22,9 +23,8 @@ class ChatController < GenericController
       [player.id, player.name]
     end
 
-    respond :channels => channels, :players => players
-
-    hub.send_stored!(player)
+    respond m, :channels => channels, :players => players
+    hub.send_stored!(m.player)
   end
 
   # Action name used for channel message.

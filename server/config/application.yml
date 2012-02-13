@@ -3,14 +3,11 @@
 # Generic configuration. No ERB allowed here!
 ######
 
-# Game server listening port.
-game:
+server:
   port: 55345
 client:
   required_version: 2012-0122-2012
-# Control server listening port.
 control:
-  port: 55100
   token: "u8943hgf238huin&*%Tgbuyb67532fuybvyu3cg6FV#&@GV*IUI@#}234U(**UBCU{bbsjdgbaijgbdasc}"
   # %s will be replaced by Galaxy#callback_url
   web_url: "http://%s/manage"

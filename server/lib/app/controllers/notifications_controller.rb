@@ -8,10 +8,11 @@ class NotificationsController < GenericController
   # Response:
   # - notifications (Hash[]): Notification#as_json array
   #
-  def action_index
-    only_push!
-    
-    base = Notification.where(:player_id => player.id)
+  ACTION_INDEX = 'notifications|index'
+  def self.index_options; logged_in + only_push; end
+  def self.index_scope(message); scope.player(message.player); end
+  def self.index_action(m)
+    base = Notification.where(:player_id => m.player.id)
     main = base.where("`starred`=? OR `read`=? OR event=?",
       true, false, Notification::EVENT_ALLIANCE_INVITATION).all
     extras = base.where(:starred => false, :read => true).
@@ -20,7 +21,7 @@ class NotificationsController < GenericController
       (n1.created_at <=> n2.created_at) * -1
     end
     
-    respond :notifications => notifications.map(&:as_json)
+    respond m, :notifications => notifications.map(&:as_json)
   end
 
   # Marks notification as read.

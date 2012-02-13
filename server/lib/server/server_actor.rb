@@ -22,7 +22,7 @@ class ServerActor
     # client -> socket
     @sockets = {}
 
-    # We depend on dispatcher.
+    # We depend on dispatcher, if it crashes, we crash too.
     current_actor.link Actor[:dispatcher]
 
     run!
@@ -76,7 +76,7 @@ class ServerActor
             return
           end
 
-          info "Received message: #{message.inspect}", to_s(client)
+          info "Received message: \"#{message}\"", to_s(client)
 
           json = begin
             JSON.parse(message)

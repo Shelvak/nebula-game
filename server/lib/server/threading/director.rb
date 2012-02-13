@@ -1,19 +1,20 @@
-class Director
-  class WorkerEntry < Struct.new(:name, :worker); end
-
+class Threading::Director
   include NamedLogMessages
   include Celluloid
 
   def initialize(name, pool)
     @name = name
 
-    syncer = Syncer.new(name)
+    # Link to syncer, because if syncer dies then whole tracking goes down.
+    syncer = Threading::Syncer.new_link(name)
 
     @workers = {}
     @free_workers = []
     pool.times do |i|
       worker_name = "#{name}_#{i}"
-      worker = Worker.new(current_actor, syncer, worker_name)
+      # If any of the workers die, director should die too or we would have
+      # inconsistent state.
+      worker = Threading::Worker.new_link(current_actor, syncer, worker_name)
       entry = WorkerEntry.new(worker_name, worker)
 
       @workers[worker_name] = entry
@@ -27,16 +28,17 @@ class Director
   end
 
   def to_s
-    "Director-#{@name}"
+    "director-#{@name}"
   end
 
-  def work(ids, klass, method, *args)
-    typesig binding, Array, Class, Symbol, Array
+  def work(ids, task)
+    typesig binding, Array, Threading::Director::Task
 
-    info "Got work for #{ids.inspect}: #{klass}.#{method}#{args.inspect}"
+    info "Got work for #{ids.inspect}: #{task}"
     worker = reserve_worker(ids)
-    info "Reserved #{entry.name} for #{ids.inspect}."
-    worker.work!(ids, klass, method, *args)
+    worker.work!(ids, task)
+
+    report
   end
 
   def done(name, ids)
@@ -45,6 +47,8 @@ class Director
     @ids_tracker.unregister_ids(ids, name)
     jobs_left = @jobs[name] -= 1
     @free_workers << @workers[name] if jobs_left == 0
+
+    report
   end
 
   def finished?
@@ -52,6 +56,10 @@ class Director
   end
 
   private
+
+  def report
+    info "free workers: #{@free_workers.size} jobs: #{@jobs.inspect}"
+  end
 
   def reserve_worker(ids)
     currently_on = @ids_tracker.currently_working_on(ids).map do |name|
@@ -63,10 +71,10 @@ class Director
       entry = @free_workers.shift
 
       if entry.nil?
-        info "No free workers left! Taking busy one."
         name, entry = @workers.first
+        info "No free workers left! Taking busy worker: #{name}."
       else
-        info "Taking free worker."
+        info "Taking free worker #{entry.name}."
       end
     else
       entry = currently_on[0]

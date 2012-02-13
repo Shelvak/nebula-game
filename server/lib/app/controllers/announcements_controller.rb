@@ -44,7 +44,6 @@ class AnnouncementsController < GenericController
     end
   end
   
-  ACTION_NEW = 'announcements|new'
   # Send announcement to client.
   # 
   # Invocation: by server
@@ -56,10 +55,12 @@ class AnnouncementsController < GenericController
   # 
   # Response: Same as parameters.
   #
-  def action_new
-    only_push!
-    param_options :required => {:message => String, :ends_at => Time}
-    
-    respond :message => params['message'], :ends_at => params['ends_at']
+  ACTION_NEW = 'announcements|new'
+  def self.new_options
+    logged_in + only_push + required(:message => String, :ends_at => Time)
+  end
+  def self.new_scope(message); scope.player(message.player); end
+  def self.new_action(m)
+    respond m, :message => m.params['message'], :ends_at => m.params['ends_at']
   end
 end

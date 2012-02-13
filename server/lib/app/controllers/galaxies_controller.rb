@@ -1,5 +1,4 @@
 class GalaxiesController < GenericController
-  ACTION_SHOW = 'galaxies|show'
   # Show galaxy for current player.
   #
   # Invocation: by server
@@ -25,17 +24,18 @@ class GalaxiesController < GenericController
   # - wreckages (Wreckage[]): Wreckage#as_json
   # - cooldowns (Cooldown[]): Cooldown#as_json
   #
-  def action_show
-    only_push!
-    
-    player = self.player
+  ACTION_SHOW = 'galaxies|show'
+
+  def self.show_options; logged_in + only_push; end
+  def self.show_scope(message); scope.galaxy(message.player.galaxy_id); end
+  def self.show_action(m)
+    player = m.player
     fow_entries = FowGalaxyEntry.for(player)
     units = Galaxy.units(player, fow_entries)
 
-    route_hops = RouteHop.find_all_for_player(player,
-      player.galaxy, units)
+    route_hops = RouteHop.find_all_for_player(player, player.galaxy, units)
     resolver = StatusResolver.new(player)
-    respond \
+    respond m,
       :galaxy_id => player.galaxy_id,
       :solar_systems => SolarSystem.visible_for(player).as_json,
       :battleground_id => Galaxy.battleground_id(player.galaxy_id),

@@ -63,6 +63,10 @@ class CallbackManager
   end
 
   def initialize
+    # Crash if dispatcher crashes, because we might have sent some messages
+    # there that will never be processed if we don't restart.
+    current_actor.link Actor[:dispatcher]
+
     @connection = ActiveRecord::Base.connection_pool.checkout
     @running = false
     @pause = false
@@ -139,7 +143,9 @@ class CallbackManager
 
   private
   def dispatch(callback)
+    callback.object
     Actor[:dispatcher].call!(callback.klass, callback.method_name, callback)
+    rescue
   end
 
   class << self

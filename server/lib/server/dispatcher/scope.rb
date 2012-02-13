@@ -15,9 +15,13 @@ class Dispatcher::Scope
   def galaxy?; @scope == GALAXY; end
   def player?; @scope == PLAYER; end
 
+  def to_s
+    "<#{self.class} scope=#{@scope} ids=#{@ids.inspect}>"
+  end
+
   # This work only involves chat.
   def self.chat
-    new(CHAT, nil)
+    new(CHAT, [nil])
   end
 
   # This work involves whole galaxy, however its players should not be blocked.
@@ -36,5 +40,16 @@ class Dispatcher::Scope
   def self.players(player_ids)
     typesig binding, Array
     new(PLAYER, player_ids)
+  end
+
+  # This work involves planet, so it depends on every player that has units in
+  # that planet + owner and his alliance.
+  def self.planet(planet_id)
+    typesig binding, Fixnum
+
+    planet = SsObject::Planet.find(planet_id)
+    players(planet.observer_player_ids)
+  rescue ActiveRecord::RecordNotFound => e
+    raise Dispatcher::UnresolvableScope, e.message, e.backtrace
   end
 end

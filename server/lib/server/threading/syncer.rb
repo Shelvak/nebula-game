@@ -12,18 +12,18 @@ class Threading::Syncer
   end
 
   def request_sync(name, count, token)
-    log "#{name} requested sync (#{count}) for token #{token}."
+    info "#{name} requested sync (#{count}) for token #{token}."
     until @tokens[token] == count
       wait token
-      log "Sync token #{token} received, #{count - @tokens[token]
+      info "Sync token #{token} received, #{count - @tokens[token]
         } syncs remaining for #{name}."
     end
     @tokens.delete token
-    log "Sync done for #{name} with token #{token}."
+    info "Sync done for #{name} with token #{token}."
   end
 
   def sync(name, token)
-    log "#{name} syncing in with token #{token}."
+    info "#{name} syncing in with token #{token}."
     @tokens[token] += 1
     signal token
   end

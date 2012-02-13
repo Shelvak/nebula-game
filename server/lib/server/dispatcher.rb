@@ -2,8 +2,6 @@ class Dispatcher
   include NamedLogMessages
   include Celluloid
 
-  attr_reader :storage
-
   TAG = 'dispatcher'
   
   # Special key for message id. This is needed for client to do time
@@ -11,22 +9,21 @@ class Dispatcher
   MESSAGE_ID_KEY = 'id'
   # Disconnect action name.
   ACTION_DISCONNECT = 'players|disconnect'
-  
-  # Unhandled message was sent.
-  DISCONNECT_UNHANDLED_MESSAGE = "unhandled_message"
+
   # Other player has logged in as you.
   DISCONNECT_OTHER_LOGIN = "other_login"
   # Player was erased from server.
   DISCONNECT_PLAYER_ERASED = "player_erased"
   
   class UnhandledMessage < StandardError; end
+  class UnresolvableScope < StandardError; end
 
   # Initialize the dispatcher.
   def initialize
-    @directors = {
-      :chat => Threading::Director.new("chat", 1),
-      :galaxy => Threading::Director.new("galaxy", 2),
-      :player => Threading::Director.new("player", 5),
+    @director_supervisors = {
+      :chat => Threading::Director.supervise("chat", 1),
+      :galaxy => Threading::Director.supervise("galaxy", 2),
+      :player => Threading::Director.supervise("player", 5),
     }
 
     @controllers = {}
@@ -53,21 +50,20 @@ class Dispatcher
     client.nil? ? TAG : "#{TAG}-#{client}"
   end
 
-  # Register new client to dispatcher. This creates outgoing message queue.
+  # Register new client to dispatcher.
   def register(client)
     info "Registering.", to_s(client)
     @storage[client] = {}
   end
 
-  # Unregister connection from GameServer.
+  # Unregister client from dispatcher.
   def unregister(client)
     # Someone unregistered us before, probably from #disconnect
     return unless @storage.has_key?(client)
 
     info "Unregistering.", to_s(client)
 
-    # FIXME: not threadsafe
-    player = resolve_player(id)
+    player = resolve_player(client)
     unless player.nil?
       player.last_seen = Time.now
       player.save!
@@ -85,13 +81,13 @@ class Dispatcher
     @client_to_player.delete client
     @storage.delete client
   end
-  
+
   # Returns number of logged in players.
   def logged_in_count; @client_to_player.size; end
 
   # Change current player associated with current player id. Also register
   # this player to chat.
-  def change_player(client, player)
+  def set_player(client, player)
     typesig binding, ServerActor::Client, Player
     debug "Registering #{client} as #{player}.", to_s(client)
 
@@ -115,22 +111,17 @@ class Dispatcher
     end
   end
 
-  # Receive message from _client_. Confirm receiving. Pass message to all
-  # controllers.
-  def receive(client, message)
-    debug "Received message from [#{client}]: #{message.inspect}"
+  # Receive message hash from _client_.
+  def receive(client, message_hash)
+    log_tag = to_s(client)
 
-    message = message_object(client, message)
-    info "Client ID: %s, player: %s" % [
-      message.client_id,
-      message.player.to_s
-    ]
+    debug "Received message hash: #{message_hash.inspect}", log_tag
 
-    unless message.client_id.nil?
-      process_message(message)
-    else
-      info "Dropping message without client id.", to_s(client)
-    end
+    message = message_object(client, message_hash)
+    LOGGER.block(
+      "Received message. (player: #{message.player || "none"})",
+      :component => log_tag
+    ) { process_message(message) }
   end
 
   def call(klass, method_name, *args)
@@ -140,7 +131,44 @@ class Dispatcher
     ) unless klass.respond_to?(scope_method)
 
     scope = klass.send(scope_method, *args)
-    dispatch_work(scope, klass, method_name, *args)
+    signature = "#{TAG}.call: #{klass}.#{method_name}#{args.inspect}"
+    dispatch_task(scope, Threading::Director::Task.new(signature) do
+      klass.send(method_name, *args)
+    end)
+  end
+
+  # Confirm client of _message_ receiving. Set error to inform client
+  # that his last action has failed.
+  def confirm_receive(message, error=nil)
+    typesig binding, Message, [NilClass, Exception]
+
+    confirmation = {'reply_to' => message.id}
+    if error
+      confirmation['failed'] = true
+      confirmation['error'] = {
+        'type' => error.class.to_s,
+        'message' => error.message
+      }
+      info "Confirming #{message} with error.", to_s(message.client)
+    else
+      info "Confirming successful #{message}.", to_s(message.client)
+    end
+
+    transmit_to_client(message.client, confirmation)
+  end
+
+  # Disconnect client. Send message and close connection.
+  def disconnect(client_or_id, reason=nil, error_message=nil)
+    client = client_or_id.is_a?(Fixnum) \
+      ? @id_to_client[client_or_id] : client_or_id
+    return if client.nil?
+
+    transmit_to_client(client, {
+      "action" => ACTION_DISCONNECT,
+      "params" => {"reason" => reason, "error" => error_message}
+    })
+    unregister client
+    Actor[:server].disconnect!(client)
   end
 
   # Transmit _message_ to clients identified by _ids_.
@@ -149,6 +177,11 @@ class Dispatcher
       transmit_to_client(client, message)
     end
   end
+
+  # Threadsafe storage getter.
+  def storage_get(client, key); @storage[client][key]; end
+  # Threadsafe storage setter.
+  def storage_set(client, key, value); @storage[client][key] = value; end
 
   # Solar system ID which is currently viewed by client.
   def current_ss_id(client); @storage[client][:current_ss_id]; end
@@ -187,18 +220,9 @@ class Dispatcher
     end
   end
 
-  # Disconnect client. Send message and close connection.
-  def disconnect(client_or_id, reason=nil, error_message=nil)
-    client = client_or_id.is_a?(Fixnum) \
-      ? @id_to_client[client_or_id] : client_or_id
-    return if client.nil?
-
-    transmit_to_client(client, {
-      "action" => ACTION_DISCONNECT,
-      "params" => {"reason" => reason, "error" => error_message}
-    })
-    unregister client
-    Actor[:server].disconnect!(client)
+  # Is _client_ connected?
+  def client_connected?(client)
+    @storage.has_key?(client)
   end
 
   # Is player with _player_id_ connected?
@@ -214,7 +238,7 @@ class Dispatcher
   protected
 
   def process_message(message)
-    debug "Message: #{message.inspect}"
+    log_str = to_s(message.client)
 
     options_method = "#{message.action}_options"
     scope_method = "#{message.action}_scope"
@@ -222,34 +246,50 @@ class Dispatcher
 
     controller_class = @controllers[message.controller_name]
     raise UnhandledMessage.new(
-      "No such controller: #{message.controller_name}"
+      "No such controller: #{message}"
     ) if controller_class.nil?
     raise UnhandledMessage.new(
-      "No such action: #{message.action}"
+      "No such action: #{message}"
     ) unless controller_class.respond_to?(action_method)
 
     # Check options.
     unless controller_class.respond_to?(options_method)
-      error "#{message.full_action} is missing options method!"
-      raise UnhandledMessage
+      error_str = "#{message.full_action} is missing options method!"
+      error error_str, log_str
+      raise UnhandledMessage.new(error_str)
     end
     controller_class.send(options_method).check!(message)
 
     unless controller_class.respond_to?(scope_method)
-      error "#{message.full_action} is missing scope resolver method!"
-      raise UnhandledMessage
+      error_str = "#{message.full_action} is missing scope resolver method!"
+      error error_str, log_str
+      raise UnhandledMessage.new(error_str)
     end
-    scope = controller_class.send(scope_method, message)
 
-    dispatch_work(scope, controller_class, action_method, message)
-  rescue ParamOpts::BadParams => e
-    # TODO
-  rescue UnhandledMessage => e
-    disconnect(message.client, DISCONNECT_UNHANDLED_MESSAGE, e.message)
+    scope = resolve_scope(controller_class, scope_method, message)
+    task = ControllerTask.create(controller_class, action_method, message)
+    dispatch_task(scope, task)
+  rescue GenericController::ParamOpts::BadParams, UnhandledMessage,
+      UnresolvableScope => e
+    info "Cannot process #{message} - #{e.class}: #{e.message}", log_str
+    confirm_receive(message, e)
   end
 
-  def dispatch_work(scope, klass, method, *args)
-    typesig binding, Scope, Class, Symbol, Array
+  # Try to resolve scope and handle errors properly.
+  def resolve_scope(klass, method, *args)
+    klass.send(method, *args)
+  rescue UnresolvableScope => e
+    raise e
+  rescue Exception => e
+    error "Error while resolving scope with #{klass}.#{method}#{args.inspect
+      }!\n\n#{e.to_log_str}", log_str
+    raise UnresolvableScope, e.message, e.backtrace
+  end
+
+  # Dispatches a +Threading::Director::Task+ to appropriate
+  # +Threading::Director+ according to its +Dispatcher::Scope+.
+  def dispatch_task(scope, task)
+    typesig binding, Scope, Threading::Director::Task
 
     if scope.chat?
       name = :chat
@@ -261,12 +301,12 @@ class Dispatcher
       raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
     end
 
-    director = @directors[name]
-    raise "Unknown director #{name.inspect}!" if director.nil?
+    supervisor = @director_supervisors[name]
+    raise "Unknown director #{name.inspect}!" if supervisor.nil?
 
-    info "Dispatching work to director #{name}: #{
-      klass}.#{method}#{args.inspect}"
-    director.work!(scope.ids, klass, method, *args)
+    info "Dispatching to #{name} director: scope=#{scope} task=#{task}"
+    director = supervisor.actor
+    director.work!(scope.ids, task)
   end
 
   # Check if one of the given push filters match for current client.
@@ -314,26 +354,9 @@ class Dispatcher
     "%d" % (Time.now.to_f * 1000)
   end
 
-  # Confirm client of _message_ receiving. Set _failed_ to inform client
-  # that his last action has failed.
-  def confirm_receive_by_client(client, message, error=nil)
-    confirmation = {'reply_to' => message.id}
-    if error
-      confirmation['failed'] = true
-      confirmation['error'] = {
-        'type' => error.class.to_s,
-        'message' => error.message
-      }
-      info "Sending failure message."
-    else
-      info "Sending confirmation message."
-    end
-    transmit_to_client(client, confirmation)
-  end
-
   # Set message id and push it into outgoing messages stack for given IO.
-  def transmit_to_client(client, message)
-    message[MESSAGE_ID_KEY] = next_message_id
-    Actor[:server].write!(client, message)
+  def transmit_to_client(client, message_hash)
+    message_hash[MESSAGE_ID_KEY] = next_message_id
+    Actor[:server].write!(client, message_hash)
   end
 end

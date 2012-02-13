@@ -481,7 +481,7 @@ class Player < ActiveRecord::Base
   # row in DB.
   after_save do
     dispatcher = Celluloid::Actor[:dispatcher]
-    dispatcher.update_player(self) if dispatcher.connected?(id)
+    dispatcher.update_player(self) if dispatcher.player_connected?(id)
 
     Objective::BeInAlliance.progress(self) \
       if alliance_id_changed? && ! alliance_id.nil?

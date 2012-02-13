@@ -40,6 +40,8 @@ class Logging::Logger
       @block_buffer = data
       started_buffering = true
       @include_time = false
+      #puts data
+      #Celluloid::Actor[:log_writer].suspend!
     else
       @block_buffer += data
     end
@@ -65,10 +67,10 @@ class Logging::Logger
 
     if exception
       @block_buffer +=
-        "[END of #{end_name} with EXCEPTION] #{timing} #{exception.inspect}\n"
+        "[END of #{end_name} with EXCEPTION] #{timing} #{exception.inspect}\n\n"
       raise exception
     else
-      @block_buffer += "[END of #{end_name}] #{timing}\n"
+      @block_buffer += "[END of #{end_name}] #{timing}\n\n"
     end
 
     returned
@@ -79,6 +81,8 @@ class Logging::Logger
       # Clear block buffer if this was the call that started buffering.
       @block_buffer = nil
       @include_time = true
+      #puts data
+      #Celluloid::Actor[:log_writer].resume!
     end
   end
 

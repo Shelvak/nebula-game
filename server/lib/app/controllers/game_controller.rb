@@ -39,31 +39,37 @@ class GameController < GenericController
     tiles\..+?\.mod\.
   )/x
 
-  def initialize(*args)
-    super(*args)
-    @ruleset_configs = {}
-  end
+  # Ensure only one thread is modifying cached configs at one time.
+  @@ruleset_mutex = Mutex.new
+  @@ruleset_configs = {}
 
   ACTION_CONFIG = 'game|config'
-  def action_config
+  def self.config_options; no_options; end
+  def self.config_scope(message); scope.player(message.player); end
+  def self.config_action(m)
     # Planet map editor requires configuration but does not login to server.
-    ruleset = player.nil? ? 'default' : session[:ruleset]
+    ruleset = m.player.nil? ? GameConfig::DEFAULT_SET : ruleset(m)
 
     # Configuration tends to be huge - no need to litter logs with it.
     LOGGER.except(:traffic_debug) do
-      respond :config => get_config(ruleset)
+      respond m, :config => get_config(ruleset)
     end
   end
 
-  private
-  def get_config(ruleset)
-    # Config will be scoped to ruleset right here, so no harm done
-    # by not passing ruleset to it.
-    @ruleset_configs[ruleset] ||= cache_config(ruleset)
-  end
+  class << self
+    private
 
-  # Cache current configuration replacing speed with constant.
-  def cache_config(ruleset)
-    CONFIG.constantize_speed(CONFIG.filter(SENDABLE_RE, ruleset))
+    def get_config(ruleset)
+      @@ruleset_mutex.synchronize do
+        # Config will be scoped to ruleset right here, so no harm done
+        # by not passing ruleset to it.
+        @@ruleset_configs[ruleset] ||= cache_config(ruleset)
+      end
+    end
+
+    # Cache current configuration replacing speed with constant.
+    def cache_config(ruleset)
+      CONFIG.constantize_speed(CONFIG.filter(SENDABLE_RE, ruleset))
+    end
   end
 end

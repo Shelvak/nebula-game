@@ -21,22 +21,27 @@ class SolarSystemsController < GenericController
   # - wreckages (Wreckage[]): Wreckage#as_json
   # - cooldowns (Cooldown[]): Cooldown#as_json
   #
-  def action_show
-    param_options :required => %w{id}
+  ACTION_SHOW = 'solar_systems|show'
 
+  def self.show_options; logged_in + required(:id => Fixnum); end
+  def self.show_scope(m)
+    # TODO: actual implementation
+    scope.player(m.player)
+  end
+  def self.show_action(m)
     # Client needs solar system to determine it's variation
-    solar_system = SolarSystem.find_if_visible_for(params['id'], player)
-    solar_system = SolarSystem.galaxy_battleground(player.galaxy_id) \
+    solar_system = SolarSystem.find_if_visible_for(m.params['id'], m.player)
+    solar_system = SolarSystem.galaxy_battleground(m.player.galaxy_id) \
       if solar_system.wormhole?
 
     # Only change planet if client opened other solar system.
-    if self.current_planet_ss_id != solar_system.id
-      self.current_planet_id = nil
-      self.current_planet_ss_id = nil
+    if current_planet_ss_id(m) != solar_system.id
+      set_current_planet_id(m, nil)
+      set_current_planet_ss_id(m, nil)
     end
-    self.current_ss_id = solar_system.id
+    set_current_ss_id(m, solar_system.id)
 
-    resolver = StatusResolver.new(player)
+    resolver = StatusResolver.new(m.player)
 
     ss_objects = solar_system.ss_objects.includes(:player).map do
       |ss_object|
@@ -50,10 +55,11 @@ class SolarSystemsController < GenericController
 
     units = Unit.in_zone(solar_system)
     route_hops = RouteHop.find_all_for_player(
-      player, solar_system, units
+      m.player, solar_system, units
     )
 
-    respond :solar_system => solar_system,
+    respond m,
+      :solar_system => solar_system,
       :ss_objects => ss_objects,
       :units => units.map {
         |unit| unit.as_json(:perspective => resolver)
@@ -61,7 +67,7 @@ class SolarSystemsController < GenericController
       :players => Player.minimal_from_objects(units),
       :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
         Route.non_friendly_for_solar_system(
-          solar_system.id, player.friendly_ids
+          solar_system.id, m.player.friendly_ids
         )
       ),
       :route_hops => route_hops.map(&:as_json),

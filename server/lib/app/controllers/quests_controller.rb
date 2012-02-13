@@ -9,10 +9,12 @@ class QuestsController < GenericController
   # Response:
   # - quests (Hash): as returned by Quest#hash_all_for_player_id
   #
-  def action_index
-    only_push!
+  ACTION_INDEX = 'quests|index'
 
-    respond :quests => Quest.hash_all_for_player_id(player.id)
+  def self.index_options; logged_in + only_push; end
+  def self.index_scope(message); scope.player(message.player); end
+  def self.index_action(m)
+    respond m, :quests => Quest.hash_all_for_player_id(m.player.id)
   end
 
   # Claim rewards for given Quest into given SsObject.
@@ -25,10 +27,13 @@ class QuestsController < GenericController
   # 
   # Response: None
   #
-  def action_claim_rewards
-    param_options(:required => %w{id planet_id})
-
-    QuestProgress.claim_rewards!(player.id, params['id'],
-      params['planet_id'])
+  def self.claim_rewards_options
+    logged_in + required(:id => Fixnum, :planet_id => Fixnum)
+  end
+  def self.claim_rewards_scope(message); scope.player(message.player.id); end
+  def self.claim_rewards_action(m)
+    QuestProgress.claim_rewards!(
+      m.player.id, m.params['id'], m.params['planet_id']
+    )
   end
 end

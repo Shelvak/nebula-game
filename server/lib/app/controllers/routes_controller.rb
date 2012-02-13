@@ -2,7 +2,6 @@
 # Updated routes are sent via objects controller.
 #
 class RoutesController < GenericController
-  ACTION_INDEX = 'routes|index'
   # Return an array of all routes for current player and his alliance.
   #
   # Invocation: by server
@@ -14,12 +13,15 @@ class RoutesController < GenericController
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom routes belong.
   #
-  def action_index
-    only_push!
+  ACTION_INDEX = 'routes|index'
 
-    routes = Route.where(:player_id => player.friendly_ids).all
+  def self.index_options; logged_in + only_push; end
+  def self.index_scope(message); scope.players(message.player.friendly_ids); end
+  def self.index_action(m)
+    routes = Route.where(:player_id => m.player.friendly_ids).all
 
-    respond :routes => routes.map(&:as_json),
+    respond m,
+      :routes => routes.map(&:as_json),
       :players => Player.minimal_from_objects(routes)
   end
 

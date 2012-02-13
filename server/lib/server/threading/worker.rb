@@ -12,13 +12,15 @@ class Threading::Worker
     "worker-#{@name}"
   end
 
-  def work(ids, klass, method, *args)
-    typesig binding, Array, Class, Symbol, Array
+  def work(ids, task)
+    typesig binding, Array, Threading::Director::Task
 
-    signature = "#{ids.inspect}: #{klass}.#{method}#{args.inspect}"
-    info "Doing work for #{signature}."
-    klass.send(method, *args)
-    info "Work for #{signature} done!"
+    tag = to_s
+    exclusive do
+      LOGGER.block(
+        "Doing work for #{ids.inspect}: #{task}.", :component => tag
+      ) { task.run(tag) }
+    end
 
     @director.done!(@name, ids)
   end

@@ -1,5 +1,4 @@
 class PlayerOptionsController < GenericController
-  ACTION_SHOW = 'player_options|show'
   # Sends options for this player.
   #
   # Invocation: by server
@@ -8,10 +7,11 @@ class PlayerOptionsController < GenericController
   #
   # Response:
   # - options (Hash): PlayerOptions#as_json
-  def action_show
-    only_push!
-
-    respond :options => player.options.as_json
+  ACTION_SHOW = 'player_options|show'
+  def self.show_options; logged_in + only_push; end
+  def self.show_scope(message); scope.player(message.player); end
+  def self.show_action(m)
+    respond m, :options => m.player.options.as_json
   end
 
   # Set options for this player

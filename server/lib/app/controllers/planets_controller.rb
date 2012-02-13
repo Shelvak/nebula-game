@@ -1,5 +1,4 @@
 class PlanetsController < GenericController
-  ACTION_SHOW = 'planets|show'
   # Show planet map.
   #
   # Parameters:
@@ -18,44 +17,43 @@ class PlanetsController < GenericController
   # - npc_units (Unit[]): NPC units
   # - cooldown_ends_at (Time): date for cooldown for this planet or nil
   #
-  def action_show
-    param_options :required => {:id => Fixnum}
+  ACTION_SHOW = 'planets|show'
 
-    planet = SsObject::Planet.find(params['id'])
+  def self.show_options; logged_in + required(:id => Fixnum); end
+  def self.show_scope(message); scope.planet(message.params['id']); end
+  def self.show_action(m)
+    planet = SsObject::Planet.find(m.params['id'])
 
-    if planet.observer_player_ids.include?(player.id)
-      self.current_ss_id = nil if self.current_ss_id != planet.solar_system_id
-      self.current_planet_ss_id = planet.solar_system_id
-      self.current_planet_id = planet.id
+    if planet.observer_player_ids.include?(m.player.id)
+      set_current_ss_id(m, nil) if current_ss_id(m) != planet.solar_system_id
+      set_current_planet_ss_id(m, planet.solar_system_id)
+      set_current_planet_id(m, planet.id)
 
-      resolver = StatusResolver.new(player)
-      respond \
+      resolver = StatusResolver.new(m.player)
+      respond m,
         :planet => planet.as_json(
-          :owner => planet.player_id == player.id,
+          :owner => planet.player_id == m.player.id,
           :view => true,
-          :perspective => player
+          :perspective => m.player
         ),
         :tiles => Tile.fast_find_all_for_planet(planet),
         :folliages => Folliage.fast_find_all_for_planet(planet),
         :buildings => planet.buildings.map(&:as_json),
-        :npc_units => (planet.can_view_npc_units?(player.id) \
+        :npc_units => (planet.can_view_npc_units?(m.player.id) \
           ? Unit.garrisoned_npc_in(planet) \
           : []).map(&:as_json),
         :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
-          Route.non_friendly_for_ss_object(planet.id, player.friendly_ids)
+          Route.non_friendly_for_ss_object(planet.id, m.player.friendly_ids)
         ),
         :units => planet.units.map {
           |unit| unit.as_json(:perspective => resolver)},
         :players => Player.minimal_from_objects(planet.units),
         :cooldown_ends_at => Cooldown.for_planet(planet).as_json
     else
-      raise GameLogicError.new(
-        "Player #{player} cannot view this #{planet}!"
-      )
+      raise GameLogicError.new("Player #{m.player} cannot view this #{planet}!")
     end
   end
 
-  ACTION_UNSET_CURRENT = 'planets|unset_current'
   # Unsets currently viewed planet and planets solar system IDs.
   #
   # Invocation: by server
@@ -64,29 +62,32 @@ class PlanetsController < GenericController
   #
   # Response: None
   #
-  def action_unset_current
-    only_push!
-
-    self.current_planet_ss_id = nil
-    self.current_planet_id = nil
+  ACTION_UNSET_CURRENT = 'planets|unset_current'
+  def self.unset_current_options; logged_in + only_push; end
+  def self.unset_current_scope(message); scope.player(message.player); end
+  def self.unset_current_action(m)
+    set_current_planet_ss_id(m, nil)
+    set_current_planet_id(m, nil)
   end
 
-  ACTION_PLAYER_INDEX = 'planets|player_index'
   # Sends a list of planets player currently owns.
   #
-  # Invocation: Only push
-  # pushed after galaxies|select
+  # Invocation: by server
   #
   # Parameters: none
   #
   # Response:
   # - planets (SsObject::Planet[])
   #
-  def action_player_index
-    only_push!
-    planets = SsObject::Planet.for_player(player).
-      map { |planet| planet.as_json(:index => true, :view => true) }
-    respond :planets => planets
+  ACTION_PLAYER_INDEX = 'planets|player_index'
+  def self.player_index_options; logged_in + only_push; end
+  def self.player_index_scope(message); scope.player(message.player); end
+  def self.player_index_action(m)
+    planets = SsObject::Planet.for_player(m.player)
+    respond m,
+      :planets => planets.map { |planet|
+        planet.as_json(:index => true, :view => true)
+      }
   end
 
   # Sends an exploration mission to explore block foliage.
@@ -101,21 +102,27 @@ class PlanetsController < GenericController
   # - x (Fixnum): x of foliage start
   # - y (Fixnum): y of foliage end
   #
+  ACTION_EXPLORE = 'planets|explore'
+  def self.explore_options
+    logged_in + required(:planet_id => Fixnum, :x => Fixnum, :y => Fixnum)
+  end
+  # This only starts exploring which is only seen by current planet owner.
+  def self.explore_scope(message)
+    planet = SsObject::Planet.find(message.params['planet_id'])
+    scope.player(planet.owner_id)
+  rescue ActiveRecord::RecordNotFound => e
+    raise Dispatcher::UnresolvableScope, e.message, e.backtrace
+  end
   def action_explore
-    param_options :required => {:planet_id => Fixnum, :x => Fixnum,
-      :y => Fixnum}
-
-    planet = SsObject::Planet.where(:player_id => player.id).find(
-      params['planet_id'])
+    planet = SsObject::Planet.where(:player_id => player.id).
+      find(m.params['planet_id'])
 
     raise GameLogicError.new(
-      "You must have at least one research center or mothership to be able
-        to explore!"
-    ) if Building.where(
-      :planet_id => planet.id, :type => ["ResearchCenter", "Mothership"]
-    ).where("level > 0").count == 0
+      "You must have at least one research center to be able to explore!"
+    ) unless Building::ResearchCenter.where(:planet_id => planet.id).
+      where("level > 0").exists?
 
-    planet.explore!(params['x'], params['y'])
+    planet.explore!(m.params['x'], m.params['y'])
   end
 
   # Immediately finishes exploration mission for creds.
@@ -127,11 +134,13 @@ class PlanetsController < GenericController
   # 
   # Response: None
   #
-  def action_finish_exploration
-    param_options(:required => {:id => Fixnum})
-    
-    planet = SsObject::Planet.where(:player_id => player.id).
-      find(params['id'])
+  ACTION_FINISH_EXPLORATION = 'planets|finish_exploration'
+
+  def self.finish_exploration_options; logged_in + required(:id => Fixnum); end
+  def self.finish_exploration_scope(m); scope.planet(m.params['id']); end
+  def self.finish_exploration_action(m)
+    planet = SsObject::Planet.where(:player_id => m.player.id).
+      find(m.params['id'])
     planet.finish_exploration!(true)
   end
   

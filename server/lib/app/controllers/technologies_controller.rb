@@ -1,8 +1,11 @@
 class TechnologiesController < GenericController
-  # Returns a list of player technologies
-  def action_index
-    only_push!
-    respond :technologies => player.technologies.map(&:as_json)
+  # Returns a list of player technologies.
+  ACTION_INDEX = 'technologies|index'
+
+  def self.index_options; logged_in + only_push; end
+  def self.index_scope(message); scope.player(message.player); end
+  def self.index_action(m)
+    respond m, :technologies => m.player.technologies.map(&:as_json)
   end
 
   # Starts researching new technology (from level 0)

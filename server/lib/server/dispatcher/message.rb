@@ -17,4 +17,9 @@ class Dispatcher::Message
   def full_action
     "#{@controller_name}#{SPLITTER}#{@action}"
   end
+
+  def to_s
+    "<#{self.class} #{full_action}: id=#{@id} client=#{@client} player=#{@player
+      } pushed=#{@pushed} params=#{@params.inspect}>"
+  end
 end

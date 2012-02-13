@@ -381,7 +381,7 @@ Message was:
     galaxy_id = message['galaxy_id']
     web_user_id = message['web_user_id']
     name = message['name']
-    Celluloid::Actor[:dispatcher].call!(PlayersController, :create, )
+    Celluloid::Actor[:dispatcher].call!(Galaxy, :create_player)
 		response = Galaxy.create_player(galaxy_id, web_user_id, name)
 
 		io.send_message :success => true,
