@@ -332,6 +332,8 @@
     <Technology_PowderedZetium-whos value="zetiumo pjaustiklių" />
     <Technology_MetalStorage value="Skysčių suspaudimas" />
     <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
+    <Technology_MetalExtractorT2 value="MEX T-2"/>
+    <Technology_MetalExtractorT2-whos ref="Technology_MetalExtractorT2"/>
     <Technology_EnergyStorage value="Talpesnės baterijos" />
     <Technology_EnergyStorage-whos value="Talpesnių baterijų" />
     <Technology_ZetiumStorage value="Zetiumo kasetės" />
