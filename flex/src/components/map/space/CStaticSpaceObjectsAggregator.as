@@ -125,14 +125,7 @@ package components.map.space
          super.commitProperties();
 
          if (f_selectedChanged) {
-            var filters:Array = this.filters;
-            if (_selected) {
-               filters.push(_selectionFilter);
-            }
-            else {
-               filters.splice(0, filters.length);
-            }
-            this.filters = filters;
+            this.filters = _selected ? [_selectionFilter] : new Array();
          }
 
          if (f_staticObjectsAggregatorChanged) {
