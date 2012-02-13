@@ -1,13 +1,14 @@
 package models.location
 {
    import flash.errors.IllegalOperationError;
-   
+
    import models.BaseModel;
    import models.map.MMap;
    import models.solarsystem.SSKind;
-   
+
    import utils.locale.Localizer;
-   
+
+
    public class LocationMinimal extends BaseModel implements ILocation
    {
       /**
@@ -18,9 +19,10 @@ package models.location
          return loc == null ? "" : Localizer.string('Location', 'sector') + " " + loc.sectorName;
       }
       
-      
-      public function LocationMinimal(type:int = LocationType.GALAXY,
-                                      id:int = 0, x:int = 0, y:int = 0) {
+      public function LocationMinimal(type: int = LocationType.GALAXY,
+                                      id: int = 0,
+                                      x: int = 0,
+                                      y: int = 0) {
          super();
          this.id = id;
          _type = type;

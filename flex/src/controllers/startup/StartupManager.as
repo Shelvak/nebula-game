@@ -202,12 +202,16 @@ package controllers.startup
          var traceTarget:TraceTarget = new TraceTarget();   
          traceTarget.includeCategory = true;
          traceTarget.includeLevel = true;
+         traceTarget.includeDate = true;
+         traceTarget.includeTime = true;
          traceTarget.level = LogEventLevel.ALL;
          Log.addTarget(traceTarget);
          
          _inMemoryLog = new InMemoryTarget();   
          _inMemoryLog.includeCategory = true;
          _inMemoryLog.includeLevel = true;
+         _inMemoryLog.includeDate = true;
+         _inMemoryLog.includeTime = true;
          _inMemoryLog.maxEntries = 1000;
          _inMemoryLog.level = LogEventLevel.ALL;
          Log.addTarget(_inMemoryLog);

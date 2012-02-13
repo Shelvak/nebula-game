@@ -94,18 +94,21 @@ package components.map
       protected function createObjects(): void {
       }
       
-      private var f_childrenCreated:Boolean = false;
+      private var _f_childrenCreated:Boolean = false;
+      protected function get f_childrenCreated(): Boolean {
+         return _f_childrenCreated;
+      }
 
       protected override function createChildren(): void {
          super.createChildren();
-         if (f_childrenCreated) {
+         if (_f_childrenCreated) {
             return;
          }
 
          renderBackground();
          
          createObjects();
-         f_childrenCreated = true;
+         _f_childrenCreated = true;
       }
 
       public function cleanup(): void {

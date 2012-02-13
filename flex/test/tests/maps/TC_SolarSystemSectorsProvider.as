@@ -150,6 +150,47 @@ package tests.maps
          ));
       }
 
+      [Test]
+      public function sectorsCompareFunction(): void {
+         const sectorPlayerShips:SectorShips = new SectorShips(true);
+         function assertNotEquals(message_a_less_b: String,
+                                  message_b_greater_a: String,
+                                  a: Sector, b:Sector): void {
+            assertThat(
+               message_a_less_b,
+               getProvider(ssMap).sectorsCompareFunction(a, b),
+               equals (-1)
+            );
+            assertThat(
+               message_b_greater_a,
+               getProvider(ssMap).sectorsCompareFunction(b, a),
+               equals (+1)
+            );
+         }
+         assertNotEquals(
+            "sector with objects comes before sector with ships "
+               + "no matter what location it defines",
+            "sector with ships comes after sector with objects"
+               + "no matter what location it defines",
+            getSector(1, 1, getPlanet(1, 1, 1)),
+            getSector(0, 0, null, sectorPlayerShips)
+         );
+         assertNotEquals(
+            "sector on the left comes before sector on the right",
+            "sector on the right comes after sector on the left",
+            getSector(0, 1, null, sectorPlayerShips),
+            getSector(1, 0, null, sectorPlayerShips)
+         );
+         assertNotEquals(
+            "sector at the bottom comes before sector at the top "
+               + "when x coordinate is the same",
+            "sector at the top comes after sector at the bottom "
+               + "when x coordinate is the same",
+            getSector(0, 0, getPlanet(1, 0, 0)),
+            getSector(0, 1, getPlanet(2, 0, 1))
+         );
+      }
+
       
       /* ############### */
       /* ### HELPERS ### */
@@ -196,11 +237,11 @@ package tests.maps
          return squad;
       }
 
-      private function getSSObject(type:String,
-                                   id:int,
-                                   position:int,
-                                   angle:int): MSSObject {
-         var ssObject:MSSObject = new MSSObject();
+      private function getSSObject(type: String,
+                                   id: int,
+                                   position: int,
+                                   angle: int): MSSObject {
+         var ssObject: MSSObject = new MSSObject();
          ssObject.type = type;
          ssObject.id = id;
          ssObject.solarSystemId = SS_ID;

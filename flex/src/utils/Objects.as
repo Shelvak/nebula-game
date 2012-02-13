@@ -899,10 +899,12 @@ package utils
          }
       }
       
-      private static function createImpl(type:Class, object:Object, data:Object, itemType:Class = null,
-                                         rawCreation: Boolean = true) : Object {
+      private static function createImpl(type: Class,
+                                         object: Object,
+                                         data: Object,
+                                         itemType: Class = null,
+                                         rawCreation: Boolean = true): Object {
          paramNotNull("type", type);
-
 
          if (data == null)
             return null;
@@ -927,13 +929,11 @@ package utils
          
          // collections
          if (TypeChecker.isCollection(object)) {
-            if (object is IList)
-            {
+            if (object is IList) {
                IList(object).removeAll();
             }
-            else
-            {
-               object = [];
+            else {
+               object.splice(0, object.length);
             }
             fillCollection(object, itemType, data);
             // afterCreate() callback is not supported on the collections because including this feature
