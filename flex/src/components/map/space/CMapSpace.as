@@ -646,11 +646,19 @@ package components.map.space
       }
 
       private function model_objectAdd(event: MMapEvent): void {
-         createOrUpdateStaticObject(event.object);
+         // This may not be true if a message related with map objects is
+         // processed before the map has actually been created
+         if (f_childrenCreated) {
+            createOrUpdateStaticObject(event.object);
+         }
       }
 
       private function model_objectRemove(event: MMapEvent): void {
-         destroyOrUpdateStaticObject(event.object);
+         // This may not be true if a message related with map objects is
+         // processed before the map has actually been created
+         if (f_childrenCreated) {
+            destroyOrUpdateStaticObject(event.object);
+         }
       }
 
 
