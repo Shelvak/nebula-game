@@ -186,13 +186,15 @@
 
                <s:Group bottom="6" id="btnHeal" left="10" right="6"
                   toolTip="{getTime(HS.location.cooldownEndsAt) &lt; currentTime?'':Localizer.string ('Units', 'toolTip.healCooldown')}">
-                  <s:Button label="{getTime(HS.location.cooldownEndsAt) &lt; currentTime? Localizer.string ('Units', 'label.heal')
-                            :DateUtil.secondsToHumanString((getTime(HS.location.cooldownEndsAt) - currentTime)/1000)}"
-                            click="heal_clickHandler(event)"
-                            horizontalCenter="0"
-                            enabled="{getTime(HS.location.cooldownEndsAt) &lt; currentTime
-                            &amp;&amp; hasEnoughResources}"
-                            skinClass="components.skins.GreenButtonSkin"/>
+                  <s:Button label="{HS.location.cooldownEndsAt == null
+                    ||getTime(HS.location.cooldownEndsAt) &lt; currentTime
+                      ? Localizer.string ('Units', 'label.heal')
+                      : DateUtil.secondsToHumanString((getTime(HS.location.cooldownEndsAt) - currentTime)/1000)}"
+                      click="heal_clickHandler(event)"
+                      horizontalCenter="0"
+                      enabled="{getTime(HS.location.cooldownEndsAt) &lt; currentTime
+                      &amp;&amp; hasEnoughResources}"
+                      skinClass="components.skins.GreenButtonSkin"/>
                </s:Group>
             </base:Panel>
             

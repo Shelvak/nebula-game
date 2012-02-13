@@ -87,7 +87,7 @@
                                              selectedVal="{LS.metalSelectedVal}"
                                              selectedResourcesChange="if (LS.metalSelectedVal != metalSelector.selectedVal)
                                              {
-                                              LS.metalSelectedVal != metalSelector.selectedVal;
+                                              LS.metalSelectedVal = metalSelector.selectedVal;
                                               LS.selectedResourcesChangeHandler(event);
                                              }
                                              "/>
@@ -110,8 +110,8 @@
                                              selectedVal="{LS.zetiumSelectedVal}"
                                              selectedResourcesChange="if (LS.zetiumSelectedVal != zetiumSelector.selectedVal)
                                              {
+                                              LS.zetiumSelectedVal = zetiumSelector.selectedVal;
                                               LS.selectedResourcesChangeHandler(event);
-                                              LS.zetiumSelectedVal = zetiumSelector.selectedVal
                                              }"/>
                </s:Group>
                <base:Warning text="{LS.missingStorageString}" paddingTop="10" 

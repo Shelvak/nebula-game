@@ -4,6 +4,7 @@ package utils
    import flashx.textLayout.elements.Configuration;
    import flashx.textLayout.elements.TextFlow;
    import flashx.textLayout.formats.TextLayoutFormat;
+   import flashx.textLayout.formats.VerticalAlign;
 
    import styles.LinkState;
    import styles.LinkStyle;
@@ -67,6 +68,7 @@ package utils
          const layoutFormat:TextLayoutFormat = new TextLayoutFormat();
          layoutFormat.paragraphSpaceBefore = ParagraphStyle.SPACE_BEFORE;
          layoutFormat.paragraphSpaceAfter = ParagraphStyle.SPACE_AFTER;
+         layoutFormat.verticalAlign = VerticalAlign.MIDDLE;
          config.textFlowInitialFormat = layoutFormat;
          return getImporter(config).importToFlow(value);
       }
