@@ -35,16 +35,19 @@ package controllers.objects.actions.customcontrollers
       public override function objectDestroyed(objectSubclass:String,
                                                objectId:int,
                                                reason:String) : void {
-         var navCtrl:NavigationController = NavigationController.getInstance();
-         var ss:MSolarSystem = ML.latestGalaxy.getSSById(objectId);
+         const navCtrl:NavigationController = NavigationController.getInstance();
+         const ss:MSolarSystem = ML.latestGalaxy.getSSById(objectId);
          ML.latestGalaxy.removeObject(ss);
-         if (ML.activeMapType != MapType.GALAXY) {
-            navCtrl.toGalaxy();
-         }
          if (ML.latestPlanet != null && ML.latestPlanet.solarSystemId == ss.id) {
+            if (ML.activeMapType == MapType.PLANET) {
+               navCtrl.toGalaxy();
+            }
             ML.latestPlanet = null;
          }
          if (ML.latestSSMap != null && ML.latestSSMap.id == ss.id) {
+            if (ML.activeMapType == MapType.SOLAR_SYSTEM) {
+               navCtrl.toGalaxy();
+            }
             ML.latestSSMap = null;
          }
       }
