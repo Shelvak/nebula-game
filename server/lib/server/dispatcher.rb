@@ -17,6 +17,7 @@ class Dispatcher
   
   class UnhandledMessage < StandardError; end
   class UnresolvableScope < StandardError; end
+  class ClientDisconnected < StandardError; end
 
   # Initialize the dispatcher.
   def initialize
@@ -49,19 +50,16 @@ class Dispatcher
   def unregister(client)
     # Someone unregistered us before, probably from #disconnect
     return unless @storage.has_key?(client)
+    tag = to_s(client)
 
-    info "Unregistering.", to_s(client)
+    info "Unregistering.", tag
 
     player = resolve_player(client)
     unless player.nil?
-      player.last_seen = Time.now
-      player.save!
-
-      # There is no point of notifying about leaves if server is shutdowning.
-      # Also this generates NPE in buggy EM version.
-      unless App.server_shutdowning?
-        Chat::Pool.instance.hub_for(player).unregister(player)
-      end
+      # Dispatch player cleanup task if client has an associated player.
+      supervisor = @director_supervisors[:player]
+      task = PlayerUnregisterTask.create(tag, player)
+      supervisor.actor.work!([player.id].freeze, task)
     end
 
     # Clean up containers.
@@ -179,11 +177,17 @@ Methods: #{klass.methods.sort.inspect}"
 
   # Thread safe storage getter.
   def storage_get(client, key)
+    abort ClientDisconnected.new(
+      "#{client} has already disconnected, no storage available!"
+    ) unless client_connected?(client)
     client_storage = @storage[client]
     client_storage[key]
   end
   # Thread safe storage setter.
   def storage_set(client, key, value)
+    abort ClientDisconnected.new(
+      "#{client} has already disconnected, no storage available!"
+    ) unless client_connected?(client)
     client_storage = @storage[client]
     client_storage[key] = value
   end

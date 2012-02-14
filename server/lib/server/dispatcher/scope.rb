@@ -79,7 +79,7 @@ class Dispatcher::Scope
       typesig binding, [SsObject::Planet, Fixnum]
 
       planet = planet_or_id.is_a?(Fixnum) \
-        ? SsObject::Planet.find(planet_id) : planet_or_id
+        ? SsObject::Planet.find(planet_or_id) : planet_or_id
       players(planet.observer_player_ids)
     rescue ActiveRecord::RecordNotFound => e
       raise Dispatcher::UnresolvableScope, e.message, e.backtrace

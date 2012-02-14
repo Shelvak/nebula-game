@@ -1,5 +1,5 @@
 class ConsoleOutput < IO
-  CUTOFF_AT = 1000
+  CUTOFF_AT = 5000
 
   def initialize(output)
     @output = output

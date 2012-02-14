@@ -51,8 +51,10 @@ class CallbackManager
     EVENT_CREATE_ZETIUM_SYSTEM_OFFER => :create_zetium_system_offer,
   }
 
+  TAG = "callback_manager"
+
   def to_s
-    "callback_manager"
+    TAG
   end
 
   def initialize

@@ -17,6 +17,9 @@ module Dispatcher::ControllerTask
               controller_class.send(action_method, message)
             end
           end
+        rescue Dispatcher::ClientDisconnected => e
+          LOGGER.info "Dropping processing, client already disconnected.",
+            worker_name
         rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
             ActiveRecord::RecordNotDestroyed, GameError => e
           # Expected exceptions - notify client that his action failed.
@@ -28,8 +31,10 @@ module Dispatcher::ControllerTask
           exception = e
         ensure
           # Confirm that our task has been successfully processed unless we are
-          # pushing it.
-          dispatcher.confirm_receive!(message, exception) unless message.pushed?
+          # pushing it or client has already disconnected.
+          dispatcher.confirm_receive!(message, exception) \
+            unless message.pushed? ||
+              exception.is_a?(Dispatcher::ClientDisconnected)
         end
       end
     end
