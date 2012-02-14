@@ -1,5 +1,6 @@
 # Class that stores game config data.
 class GameConfig
+  require File.dirname(__FILE__) + '/game_config/creation'
   include GameConfig::Creation
 
   # Default config set name

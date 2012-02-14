@@ -106,7 +106,7 @@ class ServerActor
 
     debug "Sending message: #{json}", to_s(client)
     socket.write "#{json}\n"
-  rescue EOFError, IOError
+  rescue EOFError, IOError, Errno::EBADF
     # Our client has disconnected.
     client_disconnected(client)
   end

@@ -264,7 +264,7 @@ class AlliancesController < GenericController
 
   RATINGS_OPTIONS = logged_in
   def self.ratings_scope(m) end # TODO
-  def seld.ratings_action(m)
+  def self.ratings_action(m)
     respond m, :ratings => Alliance.ratings(m.player.galaxy_id)
   end
 

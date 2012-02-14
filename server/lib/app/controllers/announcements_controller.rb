@@ -1,7 +1,7 @@
 class AnnouncementsController < GenericController
-  class << self
-    @mutex = Mutex.new
+  @mutex = Mutex.new
 
+  class << self
     # Returns [ends_at, announcement]
     def get
       synchronized { [@ends_at, @announcement] }

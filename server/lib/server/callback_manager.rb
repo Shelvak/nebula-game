@@ -99,38 +99,44 @@ class CallbackManager
 
   # Run every callback that is not processed and should have happened by now.
   def tick(include_all=false)
-    now = Time.now.to_s(:db)
-    conditions = include_all \
-      ? "ends_at <= '#{now}'" \
-      : "ends_at <= '#{now}' AND processed=0 AND failed=0"
-    sql = "WHERE #{conditions} ORDER BY ends_at"
+    exclusive do
+      now = Time.now.to_s(:db)
+      conditions = include_all \
+        ? "ends_at <= '#{now}'" \
+        : "ends_at <= '#{now}' AND processing=0"
 
-    get_callback = lambda do
-      LOGGER.except(:debug) do
-        row = self.class.get(sql, @connection)
-        row = Callback.new(
-          row['id'], row['class'], row['object_id'], row['event'],
-          row['ruleset'], row['time']
-        ) unless row.nil?
-        row
+      get_callback = lambda do |last_id|
+        LOGGER.except(:debug) do
+          # Ensure we don't end up in an endless loop trying to execute same
+          # callback over and over again if it fails.
+          skip_failed = last_id.nil? ? "" : " AND id > #{last_id.to_i}"
+          sql = "WHERE #{conditions}#{skip_failed} ORDER BY ends_at"
+
+          row = self.class.get(sql, @connection)
+          row = Callback.new(
+            row['id'], row['class'], row['object_id'], row['event'],
+            row['ruleset'], row['ends_at']
+          ) unless row.nil?
+          row
+        end
       end
-    end
 
-    # Request unprocessed entries that have hit.
-    callback = get_callback.call
+      # Request unprocessed entries that have hit.
+      callback = get_callback.call(nil)
 
-    until callback.nil?
-      info callback.to_s
+      until callback.nil?
+        info callback.to_s
 
-      # Mark this row as sent to processing.
-      LOGGER.except(:debug) do
-        @connection.execute(
-          "UPDATE `callbacks` SET processed=1 WHERE id=#{callback.id}"
-        )
+        # Mark this row as sent to processing.
+        LOGGER.except(:debug) do
+          @connection.execute(
+            "UPDATE `callbacks` SET processing=1 WHERE id=#{callback.id}"
+          )
+        end
+        Actor[:dispatcher].callback!(callback)
+
+        callback = get_callback.call(callback.id)
       end
-      Actor[:dispatcher].callback!(callback)
-
-      callback = get_callback.call
     end
   end
 

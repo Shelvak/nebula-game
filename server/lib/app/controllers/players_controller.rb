@@ -27,14 +27,11 @@ class PlayersController < GenericController
     if ClientVersion.ok?(m.params['version'])
       player = Player.find(m.params['server_player_id'])
       if player.galaxy.dev? || ControlManager.instance.
-          login_authorized?(player, params['web_player_id'])
+          login_authorized?(player, m.params['web_player_id'])
         login m, player
 
         # This must come before player.attach!
         push m, GameController::ACTION_CONFIG
-
-        # This must be pushed before player is attached.
-        push "game|config"
 
         player.attach! if player.detached?
 

@@ -1,4 +1,24 @@
 class BuildingsController < GenericController
+  # Needs to be defined in top of class, otherwise is not found when setting
+  # constants.
+  class << self
+    private
+    def find_building_options; required(:id => Fixnum); end
+
+    def find_building(m)
+      building = Building.find(m.params['id'], :include => :planet)
+      raise ActiveRecord::RecordNotFound \
+        unless building.planet.player_id == m.player.id
+
+      building
+    end
+
+    def check_for_constructor!(building)
+      raise GameLogicError.new("#{building} is not an constructor!") \
+        unless building.constructor?
+    end
+  end
+
   # Show units garrisoned in building.
   #
   # Invocation: by client
@@ -416,23 +436,5 @@ class BuildingsController < GenericController
     end
   rescue Building::ResourceTransporter::NoTransporterError
     respond m, :error => "no_transporter"
-  end
-
-  class << self
-    private
-    def find_building_options; required(:id => Fixnum); end
-
-    def find_building(m)
-      building = Building.find(m.params['id'], :include => :planet)
-      raise ActiveRecord::RecordNotFound \
-        unless building.planet.player_id == m.player.id
-
-      building
-    end
-
-    def check_for_constructor!(building)
-      raise GameLogicError.new("#{building} is not an constructor!") \
-        unless building.constructor?
-    end
   end
 end

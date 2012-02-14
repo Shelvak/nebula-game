@@ -177,16 +177,6 @@ end
 ENV['db_environment'] ||= App.env
 ENV['configuration'] ||= App.env
 
-# Set up Rails autoloader
-(
-  ["#{ROOT_DIR}/lib/server"] + Dir["#{ROOT_DIR}/lib/app/**"]
-).each do |file_name|
-  if File.directory?(file_name)
-    ActiveSupport::Dependencies.autoload_paths <<
-      File.expand_path(file_name)
-  end
-end
-
 email_from = "server-#{Socket.gethostname}@nebula44.com"
 email_to = 'arturas@nebula44.com'
 
@@ -235,6 +225,7 @@ Logging::Writer.supervise_as :log_writer, log_writer_config.freeze
 LOGGER = Logging::ThreadRouter.instance
 
 # Set up config object
+require "#{ROOT_DIR}/lib/app/classes/game_config.rb"
 config_dir = File.expand_path(File.join(ROOT_DIR, 'config'))
 CONFIG = GameConfig.new
 CONFIG.setup!(config_dir, File.join(ROOT_DIR, 'run'))
@@ -280,33 +271,46 @@ unless rake?
   end
 end
 
-# Set up autoloader for troublesome classes.
+# Set up autoloader.
 #
 # This fixes scenarios when there is Alliance and Combat::Alliance and
 # referencing Combat::Alliance actually loads ::Alliance.
 #
+APP_MODULES = [] # This is used for preloading.
+# First register base classes for autoload. Then go deeper.
 [
   "#{ROOT_DIR}/lib/server",
   "#{ROOT_DIR}/lib/app/classes",
   "#{ROOT_DIR}/lib/app/models",
   "#{ROOT_DIR}/lib/app/controllers",
-].each do |dir|
-  Dir["#{dir}/**/*.rb"].each do |filename|
-    class_name = filename.sub(File.join(dir, ''), '').sub(
-      '.rb', '').camelcase
+].flat_map do |dir|
+  Dir["#{dir}/**/*.rb"].map do |filename|
+    class_name = filename.
+      sub(File.join(dir, ''), '').
+      sub(/\.rb$/, '').
+      camelcase
 
     parts = class_name.split("::")
-    base_module = parts[0..-2]
 
-    # Don't register on Kernel, Rails autoloader handles those fine.
-    unless base_module.blank?
-      # Determine base module to register autoload on.
-      base_module = base_module.join("::").constantize
-      mod = parts[-1].to_sym
-
-      base_module.autoload mod, filename
-    end
+    [class_name, parts, filename]
   end
+end.sort do |(a_cn, a_p, a_fn), (b_cn, b_p, b_fn)|
+  [a_p.size, a_cn] <=> [b_p.size, b_cn]
+end.each do |class_name, parts, filename|
+  base_module = parts[0..-2]
+  mod = parts[-1].to_sym
+
+  if base_module.blank?
+    #puts "Autoloading #{mod} -> #{filename}"
+    autoload mod, filename
+  else
+    # Determine base module to register autoload on.
+    base_module = base_module.join("::")
+    #puts "Autoloading on #{base_module} #{mod} -> #{filename}"
+    base_module.constantize.autoload mod, filename
+  end
+
+  APP_MODULES << filename
 end
 
 ActiveRecord::Base.include_root_in_json = false

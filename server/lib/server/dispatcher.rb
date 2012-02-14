@@ -27,18 +27,6 @@ class Dispatcher
       :player => Threading::Director.supervise("player", 5),
     }
 
-    @controllers = {}
-    Dir.glob(
-      File.join(ROOT_DIR, 'lib', 'app', 'controllers', '*.rb')
-    ).each do |file|
-      file_name = File.basename(file).sub(/\.rb$/, '')
-      class_name = file_name.camelcase
-
-      debug "Registering controller: #{class_name}"
-      controller_name = file_name.sub(/_controller$/, '')
-      @controllers[controller_name] = class_name.constantize
-    end
-
     @client_to_player = {}
     @player_id_to_client = {}
     # Session level storage to store data between controllers
@@ -127,6 +115,7 @@ class Dispatcher
 
   def callback(callback)
     typesig binding, Callback
+    info "Received #{callback}"
 
     klass = callback.klass
     method_name = callback.type
@@ -135,7 +124,10 @@ class Dispatcher
     callback_method = "#{method_name}_callback"
 
     raise(
-      "#{klass} is missing scope resolver for method call ##{method_name}"
+      "#{klass} is missing scope resolver: #{klass}.#{scope_method}.
+Superclass: #{klass.superclass}
+Methods: #{klass.methods.sort.inspect}"
+
     ) unless klass.respond_to?(scope_method)
 
     object = callback.object! or return
@@ -186,9 +178,15 @@ class Dispatcher
   end
 
   # Thread safe storage getter.
-  def storage_get(client, key); @storage[client][key]; end
+  def storage_get(client, key)
+    client_storage = @storage[client]
+    client_storage[key]
+  end
   # Thread safe storage setter.
-  def storage_set(client, key, value); @storage[client][key] = value; end
+  def storage_set(client, key, value)
+    client_storage = @storage[client]
+    client_storage[key] = value
+  end
 
   # Solar system ID which is currently viewed by client.
   def current_ss_id(client); @storage[client][:current_ss_id]; end
@@ -262,7 +260,27 @@ class Dispatcher
     @client_to_player[client]
   end
 
-  protected
+  private
+
+  def initialize_controllers!
+    return unless @controllers.nil?
+
+    LOGGER.block("Initializing controllers") do
+      @controllers = {}
+      Dir.glob(
+        File.join(ROOT_DIR, 'lib', 'app', 'controllers', '*.rb')
+      ).each do |file|
+        file_name = File.basename(file).sub(/\.rb$/, '')
+        class_name = file_name.camelcase
+
+        debug "Registering controller: #{class_name}"
+        controller_name = file_name.sub(/_controller$/, '')
+        @controllers[controller_name] = class_name.constantize
+      end
+
+      info "Registered controllers: #{@controllers.keys.sort}"
+    end
+  end
 
   def process_message(message)
     log_str = to_s(message.client)
@@ -271,6 +289,7 @@ class Dispatcher
     scope_method = "#{message.action}_scope"
     action_method = "#{message.action}_action"
 
+    initialize_controllers!
     controller_class = @controllers[message.controller_name]
     raise UnhandledMessage.new(
       "No such controller: #{message}"
@@ -389,3 +408,6 @@ class Dispatcher
     Actor[:server].write!(client, message_hash)
   end
 end
+
+# Preload some essentials.
+require File.dirname(__FILE__) + '/dispatcher/scope'

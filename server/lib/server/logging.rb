@@ -2,7 +2,7 @@
 module Logging; end
 
 # Manually require logging classes because autoloader hasn't been set up yet.
-dir = File.dirname(__FILE__)
-require dir + '/logging/thread_router.rb'
-require dir + '/logging/writer.rb'
-require dir + '/logging/logger.rb'
+require File.dirname(__FILE__) + '/console_output.rb'
+require File.dirname(__FILE__) + '/logging/thread_router.rb'
+require File.dirname(__FILE__) + '/logging/writer.rb'
+require File.dirname(__FILE__) + '/logging/logger.rb'

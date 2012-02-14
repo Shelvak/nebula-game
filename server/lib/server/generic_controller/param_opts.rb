@@ -18,7 +18,7 @@ class GenericController::ParamOpts
 
   # Returns new +ParamOpts+ representing sum of two +ParamOpts+.
   def +(param_opts)
-    merged = @data[:required].merge(param_opts.data[:required])
+    merged = @data.merge(param_opts.data)
 
     # Merge :required and :valid instead of overwriting.
     if @data[:required] && param_opts.data[:required]

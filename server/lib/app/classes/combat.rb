@@ -1,5 +1,8 @@
 # Class for combat simulation
 class Combat
+  require File.dirname(__FILE__) + '/combat/simulation'
+  require File.dirname(__FILE__) + '/combat/integration'
+
   extend Combat::Simulation
   extend Combat::Integration
 
