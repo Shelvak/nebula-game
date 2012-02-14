@@ -781,7 +781,7 @@
       pertrauka.</p>
     </property.mod.cooldown.tooltip>
     <property.healing.time.mod value="Sekundžių pagydyti 1 GT" />
-    <property.healing.time.format value="{0} s" />
+    <property.healing.time.mod.format value="{0} s" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
     <property.healing.cost.mod.tooltip>
       <p>Gydant karius/laivus gydymo kaina apskaičiuojama pagal 1 lygio kario
@@ -4250,7 +4250,8 @@
     <property.pulsars.required value="Reikiamas pulsarų kiekis" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
     <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
-    <property.healing.time.mod.format ref="Buildings/property.healing.time.mod.format" />
+    <property.healing.time.mod.format
+      ref="Buildings/property.healing.time.mod.format" />
     <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
