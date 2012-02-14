@@ -40,7 +40,7 @@ class GenericController
     def push(message, action, params={})
       typesig binding, Dispatcher::Message, String, Hash
 
-      dispatcher.push!(message.client, action, params)
+      dispatcher.push!(message.client, action, params.stringify_keys)
     end
 
     # Disconnect client who sent message.
