@@ -1,8 +1,7 @@
 require 'net/http'
 require 'uri'
 
-# Used to evaluate hotfixes in right binding.
-CM_ROOT_BINDING = binding
+
 
 # Monolithic class for controlling server.
 class ControlManager
@@ -13,127 +12,7 @@ class ControlManager
 
   include Singleton
 
-  # Reopens log files.
-  #
-  # Parameters: None
-  #
-  # Response:
-  # - success (Boolean)
-  #
-  ACTION_REOPEN_LOGS = 'reopen_logs'
 
-  # Applies hotfix. Only accepts this action if connected from localhost.
-  #
-  # Parameters:
-  # - hotfix (String): code to be evaluated
-  #
-  # Response:
-  # - success (Boolean)
-  # - error (String): Error - if any.
-  ACTION_APPLY_HOTFIX = 'apply_hotfix'
-
-  # Create a new galaxy.
-  #
-  # Parameters:
-  # - ruleset (String): ruleset for given galaxy
-  # - callback_url (String): URL for callback
-  #
-  # Response:
-  # - success (Boolean): Did creation succeeded?
-  # - galaxy_id (Fixnum): ID of created galaxy
-  #
-  ACTION_CREATE_GALAXY = 'create_galaxy'
-
-  # Destroy an existing galaxy.
-  #
-  # Parameters:
-  # - id (Fixnum): id of galaxy to be destroyed.
-  #
-  # Response:
-  # - success (Boolean)
-  #
-  ACTION_DESTROY_GALAXY = 'destroy_galaxy'
-
-  # Create a new player in galaxy.
-  # 
-  # Parameters:
-  # - galaxy_id (Fixnum)
-  # - web_user_id (Fixnum)
-  # - name (String): player name
-  #
-  # Response:
-  # - success (Boolean)
-  # - player_id (Fixnum): Player#id
-  #
-  ACTION_CREATE_PLAYER = 'create_player'
-
-  # Destroy an existing player.
-  #
-  # Parameters:
-  # - player_id (Fixnum): Player#id
-  #
-  # Response:
-  # - success (Boolean)
-  #
-  ACTION_DESTROY_PLAYER = 'destroy_player'
-
-  # Adds creds to player.
-  #
-  # Parameters:
-  # - player_id (Fixnum): Player#id
-  # - creds: (Fixnum): number of creds to add
-  #
-  # Response:
-  # - success (Boolean)
-  #
-  ACTION_ADD_CREDS = 'add_creds'
-
-  # Report usage statistics.
-  #
-  # Parameters: None
-  #
-  # Response:
-  # - current (Fixnum): no. of currently logged in players.
-  # - 24h (Fixnum): no. of players logged in 24 hours.
-  # - 48h (Fixnum): no. of players logged in 48 hours.
-  # - 1w (Fixnum): no. of players logged in 1 week.
-  # - 2w (Fixnum): no. of players logged in 2 weeks.
-  # - total (Fixnum): total no. of players
-  #
-  ACTION_STATS_PLAYERS = 'stats|players'
-
-  # Return market rate for given resource pair in different galaxies.
-  #
-  # Parameters:
-  # - from_kind (Fixnum)
-  # - to_kind (Fixnum)
-  #
-  # Response:
-  # - rates (Hash): +Hash+ of {galaxy_id => rate} pairs.
-  #
-  ACTION_STATS_MARKET_RATES = 'stats|market_rates'
-
-  # Return number of market offers for given resource pair in different galaxies.
-  #
-  # Parameters:
-  # - from_kind (Fixnum)
-  # - to_kind (Fixnum)
-  #
-  # Response:
-  # - counts (Hash): +Hash+ of {galaxy_id => count} pairs.
-  #
-  ACTION_STATS_MARKET_COUNTS = 'stats|market_counts'
-  
-  # Send announcement to all the connected players.
-  # 
-  # Parameters:
-  # - ends_at (Time): when should the announcement expire
-  # - message (String): announcement text
-  # 
-  # Response:
-  # - success (Boolean)
-  #
-  ACTION_ANNOUNCE = 'announce'
 
   def receive(io, message)
     if message[TOKEN_KEY] == Cfg.control_token
@@ -312,67 +191,13 @@ class ControlManager
     end
   end
 
-  def action_reopen_logs(io)
-    LOGGER.info "Got request to control manager, reopening log outputs."
-    Celluloid::Actor[:log_writer].reopen!
-    io.send_message :success => true
-  end
 
-  def action_apply_hotfix(io, message)
-    port, ip = Socket.unpack_sockaddr_in(io.get_peername)
-    unless ip == '127.0.0.1'
-      LOGGER.fatal(%Q{Somebody tried to apply hotfix not from localhost!
 
-Connection made from #{ip}:#{port}
 
-Message was:
-#{message.inspect}"})
-      io.send_message('success' => false, 'error' => "Please go away.")
-      return
-    end
 
-    message.ensure_options! :required => {'hotfix' => String}
 
-    LOGGER.fatal(%Q{Applying hotfix!
 
-==== HOTFIX CODE ====
 
-#{message['hotfix']}
-
-==== HOTFIX CODE ====
-})
-
-    begin
-      eval message['hotfix'], CM_ROOT_BINDING
-      io.send_message('success' => true)
-    rescue Exception => e
-      LOGGER.fatal("Applying hotfix failed!\n\n#{e.to_log_str}")
-      io.send_message('success' => false, 'error' => e.to_log_str)
-    end
-  end
-
-  def action_create_galaxy(io, message)
-    message.ensure_options! :required => {
-      'ruleset' => String, 'callback_url' => String
-    }
-    galaxy_id = Galaxy.create_galaxy(message['ruleset'], 
-      message['callback_url'])
-    io.send_message :success => true, :galaxy_id => galaxy_id
-  rescue Exception => e
-    io.send_message :success => false, :galaxy_id => nil
-    raise e
-  end
-
-  def action_destroy_galaxy(io, message)
-    message.ensure_options! :required => {'id' => Fixnum}
-    Galaxy.find(message['id']).destroy
-    io.send_message :success => true
-  rescue ActiveRecord::RecordNotFound
-    io.send_message :success => true
-  rescue Exception => e
-    io.send_message :success => false
-    raise e
-  end
 
   def action_create_player(io, message)
     message.ensure_options! :required => {

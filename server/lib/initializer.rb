@@ -335,3 +335,6 @@ QUEST_EVENT_HANDLER = QuestEventHandler.new
 
 # Ensure dispatcher is restarted if it crashes.
 Dispatcher.supervise_as :dispatcher
+
+# Used for hotfix evaluation and IRB sessions.
+ROOT_BINDING = binding

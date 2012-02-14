@@ -1,16 +1,4 @@
 class ServerActor
-  # Represents a connected client.
-  class Client
-    def initialize(host, port)
-      @host = host
-      @port = port
-    end
-
-    def to_s
-      "#{@host}:#{@port}"
-    end
-  end
-
   include NamedLogMessages
   include FlashPolicyHandler
   include Celluloid
@@ -87,7 +75,7 @@ class ServerActor
             return
           end
 
-          Actor[:dispatcher].receive! client, json
+          Actor[:dispatcher].receive_message! client, json
         end
       end
     end

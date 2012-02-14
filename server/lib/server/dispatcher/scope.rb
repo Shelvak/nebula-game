@@ -3,23 +3,30 @@ class Dispatcher::Scope
   CHAT   = :chat
   GALAXY = :galaxy
   PLAYER = :player
+  SERVER = :server
 
   attr_reader :ids
 
   def initialize(scope, ids)
     @scope = scope
-    @ids = ids
+    @ids = ids.freeze
   end
 
   def chat?; @scope == CHAT; end
   def galaxy?; @scope == GALAXY; end
   def player?; @scope == PLAYER; end
+  def server?; @scope == SERVER; end
 
   def to_s
     "<#{self.class} scope=#{@scope} ids=#{@ids.inspect}>"
   end
 
   class << self
+    # This work involves whole server.
+    def server
+      new(SERVER, [nil])
+    end
+
     # This work only involves chat.
     def chat
       new(CHAT, [nil])

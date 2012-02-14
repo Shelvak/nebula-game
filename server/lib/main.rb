@@ -5,13 +5,10 @@ require File.expand_path(
 
 LOGGER.info "Starting server..."
 
-if App.in_development?
-  # Initialize IRB support for drop-in development console.
-  require File.expand_path(
-    File.join(ROOT_DIR, 'lib', 'server', 'irb_session.rb')
-  )
-  root_binding = binding
-end
+# Initialize IRB support for drop-in development console.
+require File.expand_path(
+  File.join(ROOT_DIR, 'lib', 'server', 'irb_session.rb')
+) if App.in_development?
 
 # Initialize space mule.
 LOGGER.info "Initializing SpaceMule."
@@ -45,7 +42,7 @@ if App.in_development?
      puts "Pausing callback manager..."
      Celluloid::Actor[:callback_manager].pause
      puts "Starting IRB session..."
-     IRB.start_session(root_binding)
+     IRB.start_session(ROOT_BINDING)
      puts "\nIRB done. Server operation resumed.\n\n"
     end
   end

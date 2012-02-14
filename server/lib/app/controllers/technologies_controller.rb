@@ -20,15 +20,21 @@ class TechnologiesController < GenericController
   #
   # Response: None.
   #
-  def action_new
-    param_options :required => {:type => String, :planet_id => Fixnum,
-      :scientists => Fixnum, :speed_up => Boolean}
+  ACTION_NEW = 'technologies|new'
 
+  def self.new_options
+    logged_in + required(
+      :type => String, :planet_id => Fixnum, :scientists => Fixnum,
+      :speed_up => Boolean
+    )
+  end
+  def self.new_scope(m); scope.player(m.player); end
+  def self.new_action(m)
     technology = Technology.new_by_type(
-      params['type'],
-      :player => player, :planet_id => params['planet_id'], :level => 0,
-      :scientists => params['scientists'],
-      :speed_up => params['speed_up']
+      m.params['type'],
+      :player => m.player, :planet_id => m.params['planet_id'], :level => 0,
+      :scientists => m.params['scientists'],
+      :speed_up => m.params['speed_up']
     )
     technology.upgrade!
   end

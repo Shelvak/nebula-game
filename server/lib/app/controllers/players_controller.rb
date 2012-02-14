@@ -11,14 +11,11 @@ class PlayersController < GenericController
   # is refused because of the old version.
   ACTION_LOGIN = 'players|login'
 
-  def self.login_options
-    required(
-      :server_player_id => Fixnum,
-      :web_player_id => Fixnum,
-      :version => String
-    )
-  end
-
+  LOGIN_OPTIONS = required(
+    :server_player_id => Fixnum,
+    :web_player_id => Fixnum,
+    :version => String
+  )
   # Player login depends on galaxy scope because logging him in might reattach
   # him to the galaxy.
   def self.login_scope(message)
@@ -26,7 +23,6 @@ class PlayersController < GenericController
     # There might not be such player.
     scope.galaxy(player.try(:galaxy_id))
   end
-
   def self.login_action(m)
     if ClientVersion.ok?(m.params['version'])
       player = Player.find(m.params['server_player_id'])
@@ -79,7 +75,7 @@ class PlayersController < GenericController
   end
 
   ACTION_SHOW = 'players|show'
-  def self.show_options; logged_in + only_push; end
+  SHOW_OPTIONS = logged_in + only_push
   def self.show_scope(message); scope.player(message.player); end
   def self.show_action(m); respond m, :player => m.player.as_json; end
 
@@ -96,7 +92,7 @@ class PlayersController < GenericController
   #
   ACTION_SHOW_PROFILE = "players|show_profile"
 
-  def self.show_profile_options; logged_in + required(:id => Fixnum); end
+  SHOW_PROFILE_OPTIONS = logged_in + required(:id => Fixnum)
   def self.show_profile_scope(message); scope.player(message.player); end
   def self.show_profile_action(m)
     player_hash = Player.ratings(

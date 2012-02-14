@@ -22,6 +22,7 @@ class Dispatcher
   def initialize
     @director_supervisors = {
       :chat => Threading::Director.supervise("chat", 1),
+      :server => Threading::Director.supervise("server", 1),
       :galaxy => Threading::Director.supervise("galaxy", 2),
       :player => Threading::Director.supervise("player", 5),
     }
@@ -112,7 +113,7 @@ class Dispatcher
   end
 
   # Receive message hash from _client_.
-  def receive(client, message_hash)
+  def receive_message(client, message_hash)
     log_tag = to_s(client)
 
     debug "Received message hash: #{message_hash.inspect}", log_tag
@@ -240,7 +241,7 @@ class Dispatcher
   def process_message(message)
     log_str = to_s(message.client)
 
-    options_method = "#{message.action}_options"
+    options_const = "#{message.action.upcase}_OPTIONS"
     scope_method = "#{message.action}_scope"
     action_method = "#{message.action}_action"
 
@@ -253,12 +254,12 @@ class Dispatcher
     ) unless controller_class.respond_to?(action_method)
 
     # Check options.
-    unless controller_class.respond_to?(options_method)
-      error_str = "#{message.full_action} is missing options method!"
+    unless controller_class.const_defined?(options_const)
+      error_str = "#{message.full_action} is missing options constant!"
       error error_str, log_str
       raise UnhandledMessage.new(error_str)
     end
-    controller_class.send(options_method).check!(message)
+    controller_class.const_get(options_const).check!(message)
 
     unless controller_class.respond_to?(scope_method)
       error_str = "#{message.full_action} is missing scope resolver method!"
@@ -297,6 +298,8 @@ class Dispatcher
       name = :galaxy
     elsif scope.player?
       name = :player
+    elsif scope.server?
+      name = :server
     else
       raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
     end
