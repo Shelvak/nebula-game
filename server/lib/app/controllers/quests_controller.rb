@@ -11,7 +11,7 @@ class QuestsController < GenericController
   #
   ACTION_INDEX = 'quests|index'
 
-  def self.index_options; logged_in + only_push; end
+  INDEX_OPTIONS = logged_in + only_push
   def self.index_scope(message); scope.player(message.player); end
   def self.index_action(m)
     respond m, :quests => Quest.hash_all_for_player_id(m.player.id)
@@ -27,10 +27,12 @@ class QuestsController < GenericController
   # 
   # Response: None
   #
-  def self.claim_rewards_options
-    logged_in + required(:id => Fixnum, :planet_id => Fixnum)
-  end
-  def self.claim_rewards_scope(message); scope.player(message.player.id); end
+  ACTION_CLAIM_REWARDS = 'quests|claim_rewards'
+
+  CLAIM_REWARDS_OPTIONS = logged_in +
+    required(:id => Fixnum, :planet_id => Fixnum)
+  # Planet scope, because there might be units there.
+  def self.claim_rewards_scope(m); scope.planet(m.params['planet_id']); end
   def self.claim_rewards_action(m)
     QuestProgress.claim_rewards!(
       m.player.id, m.params['id'], m.params['planet_id']

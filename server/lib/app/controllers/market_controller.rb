@@ -12,11 +12,13 @@ class MarketController < GenericController
   #
   ACTION_AVG_RATE = 'market|avg_rate'
 
-  AVG_RATE_OPTIONS = logged_in + required(:from_kind => Fixnum, :to_kind => Fixnum)
-  def self.avg_rate_scope(m) end # TODO
+  AVG_RATE_OPTIONS = logged_in +
+    required(:from_kind => Fixnum, :to_kind => Fixnum)
+  def self.avg_rate_scope(m); market_scope(m); end
   def self.avg_rate_action(m)
-    avg_rate = MarketRate.average(m.player.galaxy_id, m.params['from_kind'],
-      m.params['to_kind'])
+    avg_rate = MarketRate.average(
+      m.player.galaxy_id, m.params['from_kind'], m.params['to_kind']
+    )
     
     respond m, :avg_rate => avg_rate
   end
@@ -37,7 +39,7 @@ class MarketController < GenericController
   ACTION_INDEX = 'market|index'
 
   INDEX_OPTIONS = logged_in + required(:planet_id => Fixnum)
-  def self.index_scope(m) end # TODO
+  def self.index_scope(m); market_scope(m); end
   def self.index_action(m)
     # Ensure that planet_id is valid.
     planet = m.player.planets.find(m.params['planet_id'])
@@ -69,17 +71,20 @@ class MarketController < GenericController
   #
   ACTION_NEW = 'market|new'
 
-  NEW_OPTIONS = logged_in + required(:market_id => Fixnum, 
-    :from_amount => Fixnum, :from_kind => Fixnum, :to_kind => Fixnum,
-    :to_rate => [Fixnum, Float])
-  def self.new_scope(m) end # TODO
+  NEW_OPTIONS = logged_in + required(
+    :market_id => Fixnum, :from_amount => Fixnum, :from_kind => Fixnum,
+    :to_kind => Fixnum, :to_rate => [Fixnum, Float]
+  )
+  def self.new_scope(m); market_scope(m); end
   def self.new_action(m)
     market = Building::Market.find(m.params['market_id'])
     raise GameLogicError.new("This planet does not belong to you!") \
       unless market.planet.player_id == m.player.id
     
-    offer = market.create_offer!(m.params['from_kind'],
-        m.params['from_amount'], m.params['to_kind'], m.params['to_rate'])
+    offer = market.create_offer!(
+      m.params['from_kind'], m.params['from_amount'], m.params['to_kind'],
+      m.params['to_rate']
+    )
     respond m, :offer => offer.as_json
   end
   
@@ -95,7 +100,7 @@ class MarketController < GenericController
   ACTION_CANCEL = 'market|cancel'
 
   CANCEL_OPTIONS = logged_in + required(:offer_id => Fixnum)
-  def self.cancel_scope(m) end # TODO
+  def self.cancel_scope(m); market_scope(m); end
   def self.cancel_action(m)
     offer = MarketOffer.find(m.params['offer_id'])
     raise GameLogicError.new(
@@ -121,9 +126,9 @@ class MarketController < GenericController
   #
   ACTION_BUY = 'market|buy'
 
-  BUY_OPTIONS = logged_in + required(:offer_id => Fixnum, :planet_id => Fixnum,
-      :amount => Fixnum)
-  def self.buy_scope(m) end # TODO
+  BUY_OPTIONS = logged_in +
+    required(:offer_id => Fixnum, :planet_id => Fixnum, :amount => Fixnum)
+  def self.buy_scope(m); market_scope(m); end
   def self.buy_action(m)
     offer = begin
       MarketOffer.find(m.params['offer_id'])
@@ -141,5 +146,10 @@ class MarketController < GenericController
     
     amount_bought = offer.buy!(buyer_planet, m.params['amount'])
     respond m, :amount => amount_bought
+  end
+
+  class << self
+    private
+    def market_scope(m); scope.galaxy(m.player.galaxy_id); end
   end
 end

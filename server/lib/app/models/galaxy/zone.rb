@@ -243,7 +243,7 @@ ORDER BY points_diff, quarter, slot
     slot = rows.last['slot'] + 1
     galaxy = Galaxy.find(galaxy_id)
 
-    SpaceMule.instance.create_zone(galaxy_id, galaxy.ruleset, slot, quarter)
+    Celluloid::Actor[:space_mule].create_zone(galaxy_id, galaxy.ruleset, slot, quarter)
 
     new(slot, quarter)
   end

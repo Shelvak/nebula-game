@@ -18,7 +18,7 @@ class PlanetsController < GenericController
   #
   ACTION_SHOW = 'planets|show'
 
-  def self.show_options; logged_in + required(:id => Fixnum); end
+  SHOW_OPTIONS = logged_in + required(:id => Fixnum)
   def self.show_scope(message); scope.planet(message.params['id']); end
   def self.show_action(m)
     planet = SsObject::Planet.find(m.params['id'])
@@ -59,7 +59,8 @@ class PlanetsController < GenericController
   # Response: None
   #
   ACTION_UNSET_CURRENT = 'planets|unset_current'
-  def self.unset_current_options; logged_in + only_push; end
+
+  UNSET_CURRENT_OPTIONS = logged_in + only_push
   def self.unset_current_scope(message); scope.player(message.player); end
   def self.unset_current_action(m)
     set_current_planet_ss_id(m, nil)
@@ -76,7 +77,8 @@ class PlanetsController < GenericController
   # - planets (SsObject::Planet[])
   #
   ACTION_PLAYER_INDEX = 'planets|player_index'
-  def self.player_index_options; logged_in + only_push; end
+
+  PLAYER_INDEX_OPTIONS = logged_in + only_push
   def self.player_index_scope(message); scope.player(message.player); end
   def self.player_index_action(m)
     planets = SsObject::Planet.for_player(m.player)
@@ -99,9 +101,9 @@ class PlanetsController < GenericController
   # - y (Fixnum): y of foliage end
   #
   ACTION_EXPLORE = 'planets|explore'
-  def self.explore_options
-    logged_in + required(:planet_id => Fixnum, :x => Fixnum, :y => Fixnum)
-  end
+
+  EXPLORE_OPTIONS = logged_in +
+    required(:planet_id => Fixnum, :x => Fixnum, :y => Fixnum)
   # This only starts exploring which is only seen by current planet owner.
   def self.explore_scope(m); scope.planet_owner(m.params['planet_id']); end
   def self.explore_action(m)
@@ -127,7 +129,7 @@ class PlanetsController < GenericController
   #
   ACTION_FINISH_EXPLORATION = 'planets|finish_exploration'
 
-  def self.finish_exploration_options; logged_in + required(:id => Fixnum); end
+  FINISH_EXPLORATION_OPTIONS = logged_in + required(:id => Fixnum)
   def self.finish_exploration_scope(m); scope.planet(m.params['id']); end
   def self.finish_exploration_action(m)
     planet = SsObject::Planet.where(:player_id => m.player.id).
@@ -146,12 +148,15 @@ class PlanetsController < GenericController
   # 
   # Response: None
   #
-  def action_remove_foliage
-    param_options(:required => {:id => Fixnum, :x => Fixnum, :y => Fixnum})
-    
-    planet = SsObject::Planet.where(:player_id => player.id).
-      find(params['id'])
-    planet.remove_foliage!(params['x'], params['y'])
+  ACTION_REMOVE_FOLIAGE = 'planets|remove_foliage'
+
+  REMOVE_FOLIAGE_OPTIONS = logged_in +
+    required(:id => Fixnum, :x => Fixnum, :y => Fixnum)
+  def self.remove_foliage_scope(m); scope.player(m.player); end
+  def self.remove_foliage_action(m)
+    planet = SsObject::Planet.where(:player_id => m.player.id).
+      find(m.params['id'])
+    planet.remove_foliage!(m.params['x'], m.params['y'])
   end
   
   # Edit planet properties.
@@ -169,24 +174,27 @@ class PlanetsController < GenericController
   #
   # Pushes: objects|updated with planet
   #
-  def action_edit
-    param_options :required => {:id => Fixnum}, :valid => %w{name}
+  ACTION_EDIT = 'planets|edit'
 
-    planet = SsObject::Planet.where(:player_id => player.id).find(
-      params['id'])
+  EDIT_OPTIONS = logged_in + required(:id => Fixnum) + valid(%w{name})
+  def self.edit_scope(m); scope.planet_owner(m.params['id']); end
+  def self.edit_action(m)
+    planet = SsObject::Planet.where(:player_id => m.player.id).
+      find(m.params['id'])
 
     raise GameLogicError.new(
       "You must have Mothership or Headquarters in this planet!"
-    ) if Building.where(
+    ) unless Building.where(
       :planet_id => planet.id, :type => ["Mothership", "Headquarters"]
-    ).where("level > 0").count == 0
+    ).where("level > 0").exists?
 
-    planet.name = params['name'] if params['name']
+    planet.name = m.params['name'] if m.params['name']
 
     if planet.changed?
       EventBroker.fire(planet, EventBroker::CHANGED)
-      EventBroker.fire(planet, EventBroker::CHANGED,
-                       EventBroker::REASON_OWNER_PROP_CHANGE)
+      EventBroker.fire(
+        planet, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
+      )
       planet.save!
     end
   end
@@ -203,13 +211,15 @@ class PlanetsController < GenericController
   #
   # Response: None
   #
-  def action_boost
-    param_options :required => {:id => Fixnum, :resource => String,
-      :attribute => String}
+  ACTION_BOOST = 'planets|boost'
 
-    planet = SsObject::Planet.where(:player_id => player.id).find(
-      params['id'])
-    planet.boost!(params['resource'], params['attribute'])
+  BOOST_OPTIONS = logged_in +
+    required(:id => Fixnum, :resource => String, :attribute => String)
+  def self.boost_scope(m); scope.planet_owner(m.params['id']); end
+  def self.boost_action(m)
+    planet = SsObject::Planet.where(:player_id => m.player.id).
+      find(m.params['id'])
+    planet.boost!(m.params['resource'], m.params['attribute'])
   end
 
   # Returns portal units that would come to defend this planet.
@@ -223,15 +233,18 @@ class PlanetsController < GenericController
   # - unit_counts (Hash): Building::DefensivePortal#portal_unit_counts_for
   # - teleport_volume (Fixnum): max volume of units that can be teleported
   #
-  def action_portal_units
-    param_options :required => {:id => Fixnum}
+  ACTION_PORTAL_UNITS = 'planets|portal_units'
 
-    planet = SsObject::Planet.where(:player_id => player.id).
-      find(params['id'])
+  PORTAL_UNITS_OPTIONS = logged_in + required(:id => Fixnum)
+  def self.portal_units_scope(m); scope.friendly_to_player(m.player); end
+  def self.portal_units_action(m)
+    planet = SsObject::Planet.where(:player_id => m.player.id).
+      find(m.params['id'])
 
-    respond \
+    respond m,
       :unit_counts => Building::DefensivePortal.portal_unit_counts_for(planet),
-      :teleport_volume => Building::DefensivePortal.teleported_volume_for(planet)
+      :teleport_volume =>
+        Building::DefensivePortal.teleported_volume_for(planet)
   end
   
   # Take ownership of a free planet. To take a planet, it must belong to 
@@ -245,17 +258,19 @@ class PlanetsController < GenericController
   # 
   # Response: None
   #
-  def action_take
-    param_options :required => {:id => Fixnum}
+  ACTION_TAKE = 'planets|take'
 
+  TAKE_OPTIONS = logged_in + required(:id => Fixnum)
+  def self.take_scope(m); scope.planet(m.params['id']); end
+  def self.take_action(m)
     raise GameLogicError.new("Cannot take planets during apocalypse!") \
-      if player.galaxy.apocalypse_started?
+      if m.player.galaxy.apocalypse_started?
     
-    planet = SsObject::Planet.where("player_id IS NULL").find(params['id'])
+    planet = SsObject::Planet.where("player_id IS NULL").find(m.params['id'])
     raise GameLogicError.new(
       "To take planet ownership you must have units in that planet!"
-    ) unless Unit.in_location(planet).where(:player_id => player.id).
-      limit(1).count > 0
+    ) unless Unit.in_location(planet).where("level > 0").
+      where(:player_id => m.player.id).exists?
     
     report = Combat::LocationChecker.check_for_enemies(planet.location_point)
     raise GameLogicError.new(
@@ -265,8 +280,8 @@ class PlanetsController < GenericController
     planet.player = player
     planet.save!
     
-    # Push planet show because player now needs garissoned units and other
+    # Push planet show because player now needs garrisoned units and other
     # owner-related stuff.
-    push ACTION_SHOW, 'id' => planet.id if current_planet_id == planet.id
+    push m, ACTION_SHOW, :id => planet.id if current_planet_id(m) == planet.id
   end
 end

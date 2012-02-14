@@ -27,7 +27,7 @@ class GalaxiesController < GenericController
   ACTION_SHOW = 'galaxies|show'
 
   SHOW_OPTIONS = logged_in + only_push
-  def self.show_scope(message); scope.galaxy(message.player.galaxy_id); end
+  def self.show_scope(m); scope.galaxy(m.player.galaxy_id); end
   def self.show_action(m)
     player = m.player
     fow_entries = FowGalaxyEntry.for(player)
@@ -63,7 +63,7 @@ class GalaxiesController < GenericController
   ACTION_APOCALYPSE = 'galaxies|apocalypse'
 
   APOCALYPSE_OPTIONS = logged_in + only_push + required(:start => Time)
-  def self.apocalypse_scope(m) end # TODO
+  def self.apocalypse_scope(m); scope.player(m.player); end
   def self.apocalypse_action(m)
     respond m, :start => m.params['start']
   end

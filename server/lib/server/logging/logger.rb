@@ -37,7 +37,7 @@ class Logging::Logger
 
     data = data_for(options[:component], options[:level], message)
     if @block_buffer.nil?
-      @block_buffer = data
+      @block_buffer = "\n#{data}"
       started_buffering = true
       @include_time = false
       #suspend_writer!

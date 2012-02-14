@@ -23,11 +23,10 @@ class SolarSystemsController < GenericController
   #
   ACTION_SHOW = 'solar_systems|show'
 
-  def self.show_options; logged_in + required(:id => Fixnum); end
-  def self.show_scope(m)
-    # TODO: actual implementation
-    scope.player(m.player)
-  end
+  SHOW_OPTIONS = logged_in + required(:id => Fixnum)
+  # Not sure what scope this action should use. However it doesn't write
+  # anything so it shouldn't be a big problem even if I am mistaken.
+  def self.show_scope(m); scope.player(m.player); end
   def self.show_action(m)
     # Client needs solar system to determine it's variation
     solar_system = SolarSystem.find_if_visible_for(m.params['id'], m.player)

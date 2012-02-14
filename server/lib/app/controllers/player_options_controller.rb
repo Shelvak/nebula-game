@@ -8,7 +8,8 @@ class PlayerOptionsController < GenericController
   # Response:
   # - options (Hash): PlayerOptions#as_json
   ACTION_SHOW = 'player_options|show'
-  def self.show_options; logged_in + only_push; end
+
+  SHOW_OPTIONS = logged_in + only_push
   def self.show_scope(message); scope.player(message.player); end
   def self.show_action(m)
     respond m, :options => m.player.options.as_json
@@ -21,17 +22,21 @@ class PlayerOptionsController < GenericController
   # Parameters: see PlayerOptions::Data for parameter names
   #
   # Response: None
-  def action_set
-    opts = player.options.data
+  ACTION_SET = 'player_options|set'
+
+  SET_OPTIONS = logged_in
+  def self.set_scope(m); scope.player(m.player); end
+  def self.set_action(m)
+    opts = m.player.options.data
 
     params.each do |property, value|
       begin
         opts.send("#{property}=", value)
       rescue NoMethodError, ArgumentError => e
-        raise GameLogicError.new(e.message)
+        raise GameLogicError, e.message, e.backtrace
       end
     end
 
-    player.options.save!
+    m.player.options.save!
   end
 end

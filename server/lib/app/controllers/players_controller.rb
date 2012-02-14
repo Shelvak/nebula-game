@@ -16,9 +16,9 @@ class PlayersController < GenericController
     :web_player_id => Fixnum,
     :version => String
   )
-  # Player login depends on galaxy scope because logging him in might reattach
-  # him to the galaxy.
   def self.login_scope(message)
+    # Player login depends on galaxy scope because logging him in might reattach
+    # him to the galaxy.
     player = Player.where(:id => message.params['server_player_id']).first
     # There might not be such player.
     scope.galaxy(player.try(:galaxy_id))
@@ -118,7 +118,8 @@ class PlayersController < GenericController
   # - ratings (Hash[]): Player#as_json array with :ratings
   #
   ACTION_RATINGS = "players|ratings"
-  def self.ratings_options; logged_in; end
+
+  RATINGS_OPTIONS = logged_in
   def self.ratings_scope(message); scope.galaxy(message.player.galaxy_id); end
   def self.ratings_action(m)
     respond m, :ratings => Player.ratings(m.player.galaxy_id)
@@ -135,7 +136,7 @@ class PlayersController < GenericController
   #
   ACTION_EDIT = "players|edit"
 
-  def self.edit_options; logged_in + valid(%w{portal_without_allies}); end
+  EDIT_OPTIONS = logged_in + valid(%w{portal_without_allies})
   def self.edit_scope(message); scope.player(message.player); end
   def self.edit_action(m)
     m.player.portal_without_allies = m.params['portal_without_allies'] \
@@ -154,13 +155,13 @@ class PlayersController < GenericController
   #
   ACTION_VIP = "players|vip"
 
-  def self.vip_options; logged_in + required(:vip_level => Fixnum); end
+  VIP_OPTIONS = logged_in + required(:vip_level => Fixnum)
   def self.vip_scope(message); scope.player(message.player); end
   def self.vip_action(player, params)
     player.vip_start!(params['vip_level'])
   rescue ArgumentError => e
     # VIP level was incorrect.
-    raise GameLogicError.new(e)
+    raise GameLogicError, e.message, e.backtrace
   end
 
 
@@ -178,12 +179,10 @@ class PlayersController < GenericController
   #
   ACTION_STATUS_CHANGE = 'players|status_change'
 
-  def self.status_change_options
-    logged_in + only_push + required(:changes => Array)
-  end
+  STATUS_CHANGE_OPTIONS = logged_in + only_push + required(:changes => Array)
   def self.status_change_scope(message); scope.player(message.player); end
-  def self.status_change_action(player, params)
-    respond player, :changes => params['changes']
+  def self.status_change_action(m)
+    respond m, :changes => m.params['changes']
   end
 
   # Convert creds from VIP creds to normal creds.
@@ -199,7 +198,7 @@ class PlayersController < GenericController
   #
   ACTION_CONVERT_CREDS = 'players|convert_creds'
 
-  def self.convert_creds_options; logged_in + required(:amount => Fixnum); end
+  CONVERT_CREDS_OPTIONS = logged_in + required(:amount => Fixnum)
   def self.convert_creds_scope(message); scope.player(message.player); end
   def self.convert_creds_action(m)
     m.player.vip_convert(m.params['amount'])
@@ -222,9 +221,7 @@ class PlayersController < GenericController
   #
   ACTION_BATTLE_VPS_MULTIPLIER = 'players|battle_vps_multiplier'
 
-  def self.battle_vps_multiplier_options
-    logged_in + required(:target_id => Fixnum)
-  end
+  BATTLE_VPS_MULTIPLIER_OPTIONS = logged_in + required(:target_id => Fixnum)
   def self.battle_vps_multiplier_scope(message)
     scope.players([message.player.id, message.params['target_id']])
   end

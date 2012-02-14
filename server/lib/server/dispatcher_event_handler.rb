@@ -1,18 +1,17 @@
 # Handles events that should push messages to Dispatcher.
 class DispatcherEventHandler
-  def initialize(dispatcher)
-    @dispatcher = dispatcher
+  def initialize
     EventBroker.register(self)
   end
 
   def fire(object, event_name, reason)
     case event_name
     when EventBroker::CREATED
-      Handler::Created.handle(@dispatcher, object, reason)
+      Handler::Created.handle(dispatcher, object, reason)
     when EventBroker::CHANGED
-      Handler::Changed.handle(@dispatcher, object, reason)
+      Handler::Changed.handle(dispatcher, object, reason)
     when EventBroker::DESTROYED
-      Handler::Destroyed.handle(@dispatcher, object, reason)
+      Handler::Destroyed.handle(dispatcher, object, reason)
     when EventBroker::MOVEMENT_PREPARE
       handle_movement_prepare(object)
     when EventBroker::MOVEMENT
@@ -49,7 +48,7 @@ class DispatcherEventHandler
         route_hops = [zone_route_hops[0]].compact
       end
 
-      @dispatcher.push_to_player(
+      dispatcher.push_to_player!(
         player_id,
         UnitsController::ACTION_MOVEMENT_PREPARE,
         {
@@ -155,7 +154,7 @@ class DispatcherEventHandler
       case reason
       when EventBroker::REASON_SS_ENTRY
         if fow_change_event.is_a?(Event::FowChange::SsDestroyed)
-          @dispatcher.push_to_player(player_id,
+          dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_DESTROYED,
             {
               'objects' => [fow_change_event.metadata],
@@ -164,7 +163,7 @@ class DispatcherEventHandler
           )
         elsif fow_change_event.is_a?(Event::FowChange::SsCreated)
           # Create single solar system
-          @dispatcher.push_to_player(player_id,
+          dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_CREATED,
             {
               'objects' => [fow_change_event.metadatas[player_id]],
@@ -173,7 +172,7 @@ class DispatcherEventHandler
           )
         else
           # Update single solar system
-          @dispatcher.push_to_player(player_id,
+          dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_UPDATED,
             {
               'objects' => [fow_change_event.metadatas[player_id]],
@@ -183,7 +182,7 @@ class DispatcherEventHandler
         end
       when EventBroker::REASON_GALAXY_ENTRY
         # Update galaxy map
-        @dispatcher.push_to_player(player_id,
+        dispatcher.push_to_player!(player_id,
           GalaxiesController::ACTION_SHOW)
       end
     end
@@ -203,13 +202,15 @@ class DispatcherEventHandler
 
   # Dispatches movement action to player
   def dispatch_movement(filter, player_id, units, route_hops, jumps_at)
-    @dispatcher.push_to_player(
+    dispatcher.push_to_player!(
       player_id,
       UnitsController::ACTION_MOVEMENT,
       {'units' => units, 'route_hops' => route_hops, 'jumps_at' => jumps_at},
       filter
     )
   end
+  
+  def dispatcher; Celluloid::Actor[:dispatcher]; end
 
   def debug(message, &block); self.class.debug(message, &block); end
 

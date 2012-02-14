@@ -330,11 +330,14 @@ ActiveSupport::JSON.backend = 'JSONGem'
 ActiveSupport.use_standard_json_time_format = true
 ActiveSupport::LogSubscriber.colorize_logging = false
 
-# Initialize event handlers
-QUEST_EVENT_HANDLER = QuestEventHandler.new
-
 # Ensure dispatcher is restarted if it crashes.
 Dispatcher.supervise_as :dispatcher
+# Ensure space mule is restarted if it crashes.
+SpaceMule.supervise_as :space_mule
+
+# Initialize event handlers
+QUEST_EVENT_HANDLER = QuestEventHandler.new
+DISPATCHER_EVENT_HANDLER = DispatcherEventHandler.new
 
 # Used for hotfix evaluation and IRB sessions.
 ROOT_BINDING = binding

@@ -9,8 +9,9 @@ class NotificationsController < GenericController
   # - notifications (Hash[]): Notification#as_json array
   #
   ACTION_INDEX = 'notifications|index'
-  def self.index_options; logged_in + only_push; end
-  def self.index_scope(message); scope.player(message.player); end
+
+  INDEX_OPTIONS = logged_in + only_push
+  def self.index_scope(m); notifications_scope(m); end
   def self.index_action(m)
     base = Notification.where(:player_id => m.player.id)
     main = base.where("`starred`=? OR `read`=? OR event=?",
@@ -31,25 +32,38 @@ class NotificationsController < GenericController
   #   - ids (Fixnum[]): notification ids to be read.
   # Response: None
   #
-  def action_read
-    param_options(:required => %w{ids})
-    Notification.update_all({:read => true},
-      {:player_id => player.id, :id => params['ids']})
+  ACTION_READ = 'notifications|read'
+
+  READ_OPTIONS = logged_in + required(:ids => Array)
+  def self.read_scope(m); notifications_scope(m); end
+  def self.read_action(m)
+    Notification.where(:player_id => m.player.id, :id => m.params['ids']).
+      update_all(:read => true)
   end
 
   # Marks notification as starred.
   #
-  # Invocation: by client after clicking star button
-  # Params:
-  #   - id: notification id
-  #   - mark (bool): should this notification be starred
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): notification id
+  # - mark (Boolean): should this notification be starred
+  #
   # Response: None
   #
-  def action_star
-    param_options(:required => %w{id mark})
-    notification = Notification.find(params['id'],
-      :conditions => {:player_id => player.id})
-    notification.starred = params['mark']
+  ACTION_STAR = 'notifications|star'
+
+  STAR_OPTIONS = logged_in + required(:id => Fixnum, :mark => Boolean)
+  def self.star_scope(m); notifications_scope(m); end
+  def self.star_action(m)
+    notification = Notification.where(:player_id => m.player.id).
+      find(m.params['id'])
+    notification.starred = m.params['mark']
     notification.save!
+  end
+
+  class << self
+    private
+    def notifications_scope(m); scope.player(m.player); end
   end
 end

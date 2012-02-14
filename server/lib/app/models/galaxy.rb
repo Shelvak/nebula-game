@@ -65,7 +65,7 @@ class Galaxy < ActiveRecord::Base
   end
 
   def self.create_galaxy(ruleset, callback_url)
-    SpaceMule.instance.create_galaxy(ruleset, callback_url)
+    Celluloid::Actor[:space_mule].create_galaxy(ruleset, callback_url)
   end
 
   def self.create_player(galaxy_id, web_user_id, name)
@@ -281,7 +281,7 @@ class Galaxy < ActiveRecord::Base
   def create_player(web_user_id, name)
     # To expand * speed things
     CONFIG.with_set_scope(ruleset) do
-      SpaceMule.instance.create_players(id, ruleset, {web_user_id => name})
+      Celluloid::Actor[:space_mule].create_players(id, ruleset, {web_user_id => name})
     end
   end
 

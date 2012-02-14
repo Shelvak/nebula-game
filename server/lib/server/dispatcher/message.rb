@@ -8,7 +8,7 @@ class Dispatcher::Message
   def initialize(id, action, params, client, player, pushed)
     @id = id
     @controller_name, @action = action.split(SPLITTER, 2)
-    @params = params
+    @params = params.freeze
     @client = client
     @player = player
     @pushed = pushed

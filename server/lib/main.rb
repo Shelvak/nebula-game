@@ -12,7 +12,7 @@ require File.expand_path(
 
 # Initialize space mule.
 LOGGER.info "Initializing SpaceMule."
-SpaceMule.instance
+Celluloid::Actor[:space_mule]
 
 # Ensure server and callback manager are restarted if they crash.
 LOGGER.info "Starting server actor..."

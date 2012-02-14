@@ -44,7 +44,7 @@ class Dispatcher
     # Session level storage to store data between controllers
     @storage = {}
 
-    #@event_handler = DispatcherEventHandler.new(self)
+    @event_handler = DispatcherEventHandler
   end
 
   def to_s(client=nil)
@@ -185,9 +185,9 @@ class Dispatcher
     end
   end
 
-  # Threadsafe storage getter.
+  # Thread safe storage getter.
   def storage_get(client, key); @storage[client][key]; end
-  # Threadsafe storage setter.
+  # Thread safe storage setter.
   def storage_set(client, key, value); @storage[client][key] = value; end
 
   # Solar system ID which is currently viewed by client.
@@ -204,6 +204,19 @@ class Dispatcher
     end
   end
 
+  # Pushes message to player if he is connected.
+  #
+  # @see #push
+  def push_to_player(player_id, action, params, filters=nil)
+    client = @player_id_to_client[player_id]
+    if client.nil?
+      debug "Push to player #{player_id} filtered: not connected."
+      return
+    end
+
+    push(client, action, params, filters)
+  end
+
   # Push message to client if he's connected.
   #
   # Filters can be:
@@ -214,17 +227,24 @@ class Dispatcher
   def push(client, action, params, filters=nil)
     log = "action #{action.inspect} with params #{params.inspect} and filters #{
       filters.inspect}."
-    if client_connected?(client) && push_filters_match?(client, filters)
-      debug "Pushing #{log}", to_s(client)
-      message = message_object(
-        client,
-        {"action" => action, "params" => params},
-        true
-      )
-      process_message(message)
-    else
-      debug "Pushing #{log}", to_s(client)
+
+    unless client_connected?(client)
+      debug "Pushing #{log} filtered: client not connected"
+      return
     end
+
+    unless push_filters_match?(client, filters)
+      debug "Pushing #{log} filtered: push filters do not match."
+      return
+    end
+
+    debug "Pushing #{log}.", to_s(client)
+    message = message_object(
+      client,
+      {"action" => action, "params" => params},
+      true
+    )
+    process_message(message)
   end
 
   # Is _client_ connected?
