@@ -332,6 +332,8 @@
     <Technology_PowderedZetium-whos value="zetiumo pjaustiklių" />
     <Technology_MetalStorage value="Skysčių suspaudimas" />
     <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
+    <Technology_MetalExtractorT2 value="MEX T-2"/>
+    <Technology_MetalExtractorT2-whos ref="Technology_MetalExtractorT2"/>
     <Technology_EnergyStorage value="Talpesnės baterijos" />
     <Technology_EnergyStorage-whos value="Talpesnių baterijų" />
     <Technology_ZetiumStorage value="Zetiumo kasetės" />
@@ -779,7 +781,7 @@
       pertrauka.</p>
     </property.mod.cooldown.tooltip>
     <property.healing.time.mod value="Sekundžių pagydyti 1 GT" />
-    <property.healing.time.format value="{0} s" />
+    <property.healing.time.mod.format value="{0} s" />
     <property.healing.cost.mod value="Gydymo kainos daugiklis" />
     <property.healing.cost.mod.tooltip>
       <p>Gydant karius/laivus gydymo kaina apskaičiuojama pagal 1 lygio kario
@@ -4060,6 +4062,8 @@
     <label.planetArea value="Plotas: {0} x {1} langeliai"/>
     <label.totalVolume value="Bendra apimtis: {0}"/>
     <label.wreckageVolume value="(apimtis: {0})"/>
+    <label.showHonorCoef value="Rodyti garbės koef."/>
+    <tooltip.honorCoef value="Garbės koeficientas: {0}%"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
     <title.info 
       value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų] Cooldown[Pertraukos]} informacija" />
@@ -4246,7 +4250,8 @@
     <property.pulsars.required value="Reikiamas pulsarų kiekis" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
     <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
-    <property.healing.time.mod.format ref="Buildings/property.healing.time.mod.format" />
+    <property.healing.time.mod.format
+      ref="Buildings/property.healing.time.mod.format" />
     <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>

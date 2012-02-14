@@ -245,6 +245,8 @@
     <Technology_PowderedZetium value="Zetium Cutters" />
     <Technology_HeavyFlight value="Gamma Thrusters" />
     <Technology_MetalStorage value="Liquid Compression" />
+    <Technology_MetalExtractorT2 value="MEX T-2"/>
+    <Technology_MetalExtractorT2-whos ref="Technology_MetalExtractorT2"/>
     <Technology_EnergyStorage value="Extended Batteries" />
     <Technology_ZetiumStorage value="Zetium Cartridges" />
     <Technology_ShipStorage value="External Cargo Decks" />
