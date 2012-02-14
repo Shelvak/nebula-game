@@ -1,4 +1,6 @@
 class Galaxy < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+
   include ::Zone
 
   # FK :dependent => :delete_all
@@ -74,37 +76,27 @@ class Galaxy < ActiveRecord::Base
     Dispatcher::Scope.galaxy(galaxy_id)
   end
 
-  def self.on_callback(id, event)
-    case event
-    when CallbackManager::EVENT_SPAWN
-      galaxy = find(id)
-      galaxy.spawn_convoy!
-
-      CallbackManager.register(galaxy, CallbackManager::EVENT_SPAWN,
-        CONFIG.evalproperty('galaxy.convoy.time').from_now)
-    when CallbackManager::EVENT_CREATE_METAL_SYSTEM_OFFER,
-        CallbackManager::EVENT_CREATE_ENERGY_SYSTEM_OFFER,
-        CallbackManager::EVENT_CREATE_ZETIUM_SYSTEM_OFFER
-      MarketOffer.create_system_offer(
-        id, MarketOffer::CALLBACK_MAPPINGS_FLIPPED[event]
-      ).save!
-    else
-      raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
+  def self.spawn_scope(galaxy); DScope.galaxy(galaxy); end
+  def self.spawn_callback(galaxy)
+    galaxy.spawn_convoy!
+    CallbackManager.register(
+      galaxy, CallbackManager::EVENT_SPAWN, Cfg.next_convoy_time
+    )
   end
-
-  def self.callback_scope(id, event)
-    case event
-    when CallbackManager::EVENT_SPAWN
-      # TODO: fixme
-      Dispatcher::Scope.player(nil)
-    when CallbackManager::EVENT_CREATE_METAL_SYSTEM_OFFER,
-        CallbackManager::EVENT_CREATE_ENERGY_SYSTEM_OFFER,
-        CallbackManager::EVENT_CREATE_ZETIUM_SYSTEM_OFFER
-      Dispatcher::Scope.galaxy(id)
-    else
-      raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
+  
+  def self.create_metal_system_offer_scope(galaxy); DScope.galaxy(galaxy); end
+  def self.create_metal_system_offer_callback(galaxy)
+    MarketOffer.create_system_offer(galaxy.id, MarketOffer::KIND_METAL).save!
+  end
+  
+  def self.create_energy_system_offer_scope(galaxy); DScope.galaxy(galaxy); end
+  def self.create_energy_system_offer_callback(galaxy)
+    MarketOffer.create_system_offer(galaxy.id, MarketOffer::KIND_ENERGY).save!
+  end
+  
+  def self.create_zetium_system_offer_scope(galaxy); DScope.galaxy(galaxy); end
+  def self.create_zetium_system_offer_callback(galaxy)
+    MarketOffer.create_system_offer(galaxy.id, MarketOffer::KIND_ZETIUM).save!
   end
 
   # Saves statistical galaxy data for when somebody wins the galaxy.
@@ -271,6 +263,9 @@ class Galaxy < ActiveRecord::Base
         Cfg.galaxy_convoy_units_definition, id, source, nil
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
+      # TODO: spec me
+      Cooldown.create_unless_exists(source, Cfg.after_spawn_cooldown)
+
       route = UnitMover.move(nil, units.map(&:id), source, target, false,
         CONFIG['galaxy.convoy.speed_modifier'])
 

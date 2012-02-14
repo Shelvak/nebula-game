@@ -125,17 +125,23 @@ class Dispatcher
     ) { process_message(message) }
   end
 
-  def call(klass, method_name, *args)
+  def callback(callback)
+    typesig binding, Callback
+
+    klass = callback.klass
+    method_name = callback.type
+
     scope_method = "#{method_name}_scope"
+    callback_method = "#{method_name}_callback"
+
     raise(
       "#{klass} is missing scope resolver for method call ##{method_name}"
     ) unless klass.respond_to?(scope_method)
 
-    scope = klass.send(scope_method, *args)
-    signature = "#{TAG}.call: #{klass}.#{method_name}#{args.inspect}"
-    dispatch_task(scope, Threading::Director::Task.new(signature) do
-      klass.send(method_name, *args)
-    end)
+    object = callback.object! or return
+    scope = resolve_scope(klass, scope_method, object)
+    task = Dispatcher::CallbackTask.create(klass, callback_method, callback)
+    dispatch_task(scope, task)
   end
 
   # Confirm client of _message_ receiving. Set error to inform client
@@ -305,7 +311,7 @@ class Dispatcher
     end
 
     supervisor = @director_supervisors[name]
-    raise "Unknown director #{name.inspect}!" if supervisor.nil?
+    raise "Missing director #{name.inspect}!" if supervisor.nil?
 
     info "Dispatching to #{name} director: scope=#{scope} task=#{task}"
     director = supervisor.actor

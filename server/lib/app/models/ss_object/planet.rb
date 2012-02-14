@@ -477,31 +477,26 @@ class SsObject::Planet < SsObject
   end
 
   class << self
-    # Called back by CallbackManager.
-    # 
-    # When we run out of energy it runs algorithm which disables energy
-    # using buildings in planet.
-    #
-    # When exploration is complete it rewards player and stops exploration.
-    #
-    def on_callback(id, event)
-      case event
-      when CallbackManager::EVENT_ENERGY_DIMINISHED
-        model = find(id)
-        changes = model.ensure_positive_energy_rate!
-        Notification.create_for_buildings_deactivated(
-          model, changes
-        ) unless changes.blank? || model.player_id.nil?
-        EventBroker.fire(model, EventBroker::CHANGED)
-      when CallbackManager::EVENT_RAID
-        model = find(id)
-        spawner = RaidSpawner.new(model)
-        spawner.raid!
-      when CallbackManager::EVENT_EXPLORATION_COMPLETE
-        find(id).finish_exploration!
-      else
-        raise CallbackManager::UnknownEvent.new(self, id, event)
-      end
+    def energy_diminished_scope(planet); DScope.planet_owner(planet); end
+    def energy_diminished_callback(planet)
+      changes = model.ensure_positive_energy_rate!
+      Notification.create_for_buildings_deactivated(
+        model, changes
+      ) unless changes.blank? || model.player_id.nil?
+      EventBroker.fire(model, EventBroker::CHANGED)
+    end
+
+    # Raid only spawns units and creates a cooldown.
+    def raid_scope(planet); DScope.planet(planet); end
+    def raid_callback(planet)
+      spawner = RaidSpawner.new(planet)
+      spawner.raid!
+    end
+
+    # Exploration might increase resources or give new units.
+    def exploration_complete_scope(planet); DScope.planet(planet); end
+    def exploration_complete_callback(planet)
+      planet.finish_exploration!
     end
 
     # Checks if any of the given _locations_ is a planet. If so it

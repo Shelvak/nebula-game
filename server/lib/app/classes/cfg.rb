@@ -57,6 +57,14 @@ class Cfg
       CONFIG.evalproperty('chat.antiflood.silence_for', {'counter' => counter})
     end
 
+    ### combat.yml ###
+
+    def max_flanks; CONFIG['combat.flanks.max']; end
+
+    def after_spawn_cooldown
+      CONFIG.evalproperty('combat.cooldown.after_spawn.duration').from_now
+    end
+
     ### daily_bonus.yml ###
 
     def daily_bonus_start_points
@@ -73,6 +81,53 @@ class Cfg
 
     def daily_bonus_range(name)
       CONFIG["daily_bonus.range.#{name}"]
+    end
+
+    ### galaxy.yml ###
+
+    def next_convoy_time
+      CONFIG.evalproperty('galaxy.convoy.time').from_now
+    end
+
+    def galaxy_zone_start_slot; CONFIG['galaxy.zone.start_slot']; end
+
+    def galaxy_zone_max_player_count; CONFIG['galaxy.zone.players']; end
+
+    def galaxy_zone_diameter; CONFIG['galaxy.zone.diameter']; end
+
+    def player_initial_population; CONFIG['galaxy.player.population']; end
+    def player_max_population; CONFIG['galaxy.player.population.max']; end
+
+    # Returns number of seconds player is required to be last seen ago to be
+    # considered active.
+    def player_inactivity_time(points)
+      data = CONFIG['galaxy.player.inactivity_check']
+      formula = nil
+      data.each do |points_required, seconds|
+        if points <= points_required
+          formula = seconds
+          break
+        end
+      end
+
+      formula = data.last[1] if formula.nil?
+      CONFIG.safe_eval(formula)
+    end
+
+    def player_referral_points_needed
+      CONFIG['galaxy.player.referral.points_needed']
+    end
+
+    def galaxy_convoy_units_definition
+      CONFIG["galaxy.convoy.units"]
+    end
+
+    def apocalypse_start_time
+      CONFIG.evalproperty('galaxy.apocalypse.quiet_time').from_now
+    end
+
+    def apocalypse_survival_bonus(death_day)
+      CONFIG.evalproperty('galaxy.apocalypse.survival_bonus', 'days' => death_day)
     end
 
     ### market.yml ###
@@ -164,10 +219,6 @@ class Cfg
       notification_expiration_time * 4
     end
 
-    ### combat.yml ###
-
-    def max_flanks; CONFIG['combat.flanks.max']; end
-
     ### raiding.yml ###
 
     def raiding_delay_range
@@ -198,49 +249,6 @@ class Cfg
       raise ArgumentError.new("Unknown raiding max_arg key #{key.inspect}!") \
         if max_arg.nil?
       max_arg
-    end
-
-    ### galaxy.yml ###
-
-    def galaxy_zone_start_slot; CONFIG['galaxy.zone.start_slot']; end
-
-    def galaxy_zone_max_player_count; CONFIG['galaxy.zone.players']; end
-
-    def galaxy_zone_diameter; CONFIG['galaxy.zone.diameter']; end
-
-    def player_initial_population; CONFIG['galaxy.player.population']; end
-    def player_max_population; CONFIG['galaxy.player.population.max']; end
-
-    # Returns number of seconds player is required to be last seen ago to be
-    # considered active.
-    def player_inactivity_time(points)
-      data = CONFIG['galaxy.player.inactivity_check']
-      formula = nil
-      data.each do |points_required, seconds|
-        if points <= points_required
-          formula = seconds
-          break
-        end
-      end
-
-      formula = data.last[1] if formula.nil?
-      CONFIG.safe_eval(formula)
-    end
-
-    def player_referral_points_needed
-      CONFIG['galaxy.player.referral.points_needed']
-    end
-
-    def galaxy_convoy_units_definition
-      CONFIG["galaxy.convoy.units"]
-    end
-
-    def apocalypse_start_time
-      CONFIG.evalproperty('galaxy.apocalypse.quiet_time').from_now
-    end
-
-    def apocalypse_survival_bonus(death_day)
-      CONFIG.evalproperty('galaxy.apocalypse.survival_bonus', 'days' => death_day)
     end
 
     ### tiles.yml ###

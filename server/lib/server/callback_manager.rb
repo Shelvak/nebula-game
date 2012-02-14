@@ -1,11 +1,4 @@
 class CallbackManager
-  class UnknownEvent < ArgumentError
-    def initialize(klass, id, event)
-      super("Unrecognized event #{CallbackManager::METHOD_NAMES[event]} (#{
-        event} for #{klass} ID #{id}")
-    end
-  end
-
   include Celluloid
   include NamedLogMessages
   
@@ -40,7 +33,7 @@ class CallbackManager
   # Create system offer for creds -> zetium in galaxy.
   EVENT_CREATE_ZETIUM_SYSTEM_OFFER = 14
   
-  METHOD_NAMES = {
+  TYPES = {
     EVENT_UPGRADE_FINISHED => :upgrade_finished,
     EVENT_CONSTRUCTION_FINISHED => :construction_finished,
     EVENT_ENERGY_DIMINISHED => :energy_diminished,
@@ -135,19 +128,21 @@ class CallbackManager
           "UPDATE `callbacks` SET processed=1 WHERE id=#{callback.id}"
         )
       end
-      dispatch(callback)
+      Actor[:dispatcher].callback!(callback)
 
       callback = get_callback.call
     end
   end
 
-  private
-  def dispatch(callback)
-    callback.object
-    Actor[:dispatcher].call!(callback.klass, callback.method_name, callback)
-    rescue
+  # This should be called when callback is processed.
+  def processed(callback)
+    info "#{callback} is processed."
+    LOGGER.except(:debug) do
+      @connection.execute("DELETE FROM `callbacks` WHERE id=#{callback.id}")
+    end
   end
 
+  private
   class << self
     def get_class(object)
       object.class.to_s
@@ -164,7 +159,7 @@ class CallbackManager
 
       time ||= object.upgrade_ends_at
 
-      LOGGER.debug("Registering event '#{METHOD_NAMES[event]
+      LOGGER.debug("Registering event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
       raise ArgumentError.new("object #{object} does not have id!") \
@@ -181,7 +176,7 @@ class CallbackManager
     def update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
       time ||= object.upgrade_ends_at
 
-      LOGGER.debug("Updating event '#{METHOD_NAMES[event]
+      LOGGER.debug("Updating event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
       ActiveRecord::Base.connection.execute(
@@ -215,7 +210,7 @@ class CallbackManager
     end
 
     def unregister(object, event=EVENT_UPGRADE_FINISHED)
-      LOGGER.debug("unregistering event '#{METHOD_NAMES[event]
+      LOGGER.debug("unregistering event '#{TYPES[event]
         }' for #{object}", TAG)
 
       ActiveRecord::Base.connection.execute(

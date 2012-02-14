@@ -1,4 +1,6 @@
 class Building < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+
   class BuildingInactiveError < GameLogicError; end
 
   STATE_INACTIVE = 0
@@ -439,6 +441,11 @@ class Building < ActiveRecord::Base
   end
 
   class << self
+    def upgrade_finished_scope(building); DScope.planet(building.planet); end
+    def upgrade_finished_callback(building)
+      building.on_upgrade_finished!
+    end
+
     def constructor?; ! property('constructor.items').nil?; end
 
     def width

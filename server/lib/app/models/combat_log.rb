@@ -3,6 +3,8 @@ require 'digest/sha1'
 # Dumb object for storing Combat logs. Main purpose of this object is to
 # send it to client for replays.
 class CombatLog < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+
   # Configuration keys embedded into replay info so it could be replayed
   # later.
   REPLAY_INFO_CONFIG_REGEXP = /^(
@@ -67,12 +69,6 @@ class CombatLog < ActiveRecord::Base
     log
   end
 
-  def self.on_callback(id, event)
-    case event
-      when CallbackManager::EVENT_DESTROY
-        where(:id => id).delete_all
-      else
-        raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
-  end
+  def self.destroy_scope(combat_log); DScope.server; end
+  def self.destroy_callback(combat_log); combat_log.destroy!; end
 end

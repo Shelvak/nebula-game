@@ -25,6 +25,8 @@ cooldown.planet.duration: <%= 90.minutes %> / speed
 # How much does cooldown last after jumping to location where battle should
 # start?
 cooldown.after_jump.duration: <%= 1.minute %>
+# Cooldown time after spawning units somewhere.
+cooldown.after_spawn.duration: <%= 5.minutes %> / speed
 
 ### Stance coefficients ###
 

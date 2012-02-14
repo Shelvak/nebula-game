@@ -17,6 +17,8 @@
 # * Notification#create_for_technologies_changed
 #
 class Notification < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+
   # These methods must be defined before the include.
   
   def self.notify_on_update?; false; end
@@ -73,14 +75,10 @@ class Notification < ActiveRecord::Base
     )
   end
 
-  def self.on_callback(id, event)
-    if event == CallbackManager::EVENT_DESTROY
-      model = find(id)
-      model.destroy!
-    else
-      raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
+  def self.destroy_scope(notification)
+    DScope.player(notification.player_id)
   end
+  def self.destroy_callback(notification); notification.destroy!; end
 
   def self.create_from_error(error)
     case error

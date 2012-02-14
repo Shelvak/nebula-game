@@ -67,7 +67,7 @@ class Threading::Director
     end
 
     if currently_on.size == 0
-      # No worker is working on any of the _player_ids_.
+      # No worker is working on any of the _ids_.
       entry = @free_workers.shift
 
       if entry.nil?

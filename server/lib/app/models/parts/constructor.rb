@@ -39,14 +39,11 @@ module Parts::Constructor
   # This must be always included because callbacks access base class instead
   # of subclass.
   module OnCallback
-    # Process events when upgrade manager
-    def on_callback(id, event)
-      if event == CallbackManager::EVENT_CONSTRUCTION_FINISHED
-        model = find(id)
-        model.send(:on_construction_finished!)
-      else
-        super(id, event)
-      end
+    def construction_finished_scope(constructor)
+      DScope.planet(constructor.planet)
+    end
+    def construction_finished_callback(constructor)
+      constructor.on_construction_finished!
     end
   end
 

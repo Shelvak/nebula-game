@@ -47,12 +47,22 @@ class Dispatcher::Scope
     # This work involves several players.
     def players(player_ids)
       typesig binding, Array
+
       new(PLAYER, player_ids)
     end
 
+    # This work involves everyone who is friendly to player.
+    def friendly_to_player(player)
+      typesig binding, [NilClass, Player]
+
+      player.nil? ? players([nil]) : players(player.friendly_ids)
+    end
+
     # This work involves only planet owner.
-    def planet_owner(planet_id)
-      typesig binding, Fixnum
+    def planet_owner(planet_or_id)
+      typesig binding, [Fixnum, SsObject::Planet]
+
+      planet_id = planet_or_id.is_a?(Fixnum) ? planet_or_id : planet_or_id.id
 
       player_id = SsObject::Planet.select(:player_id).where(:id => planet_id).
         c_select_value
@@ -65,10 +75,11 @@ class Dispatcher::Scope
 
     # This work involves planet, so it depends on every player that has units in
     # that planet + owner and his alliance.
-    def planet(planet_id)
-      typesig binding, Fixnum
+    def planet(planet_or_id)
+      typesig binding, [SsObject::Planet, Fixnum]
 
-      planet = SsObject::Planet.find(planet_id)
+      planet = planet_or_id.is_a?(Fixnum) \
+        ? SsObject::Planet.find(planet_id) : planet_or_id
       players(planet.observer_player_ids)
     rescue ActiveRecord::RecordNotFound => e
       raise Dispatcher::UnresolvableScope, e.message, e.backtrace
@@ -83,6 +94,14 @@ class Dispatcher::Scope
       ) if planet_id.nil?
 
       planet_owner(planet_id)
+    end
+
+    # This work involves combat in location, everybody who has combat units
+    # there should be touched.
+    def combat(location_point)
+      typesig binding, LocationPoint
+
+      players(Location.combat_player_ids(location_point))
     end
   end
 end

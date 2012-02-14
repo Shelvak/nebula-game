@@ -14,16 +14,26 @@ class Callback
     @class_name.constantize
   end
 
-  def object
-    klass.find(@object_id)
+  # Returns either object or nil if object cannot be found. If object cannot be
+  # found automatically marks this callback as processed.
+  def object!
+    object = klass.where(:id => @object_id).first
+
+    if object.nil?
+      LOGGER.info "Callback #{self} cannot find its object. It must have " +
+        "been destroyed. Marking callback as processed."
+      Celluloid::Actor[:callback_manager].processed!(self)
+    end
+
+    object
   end
 
-  def method_name
-    CallbackManager::METHOD_NAMES[@event]
+  def type
+    CallbackManager::TYPES[@event]
   end
 
   def to_s
-    "<Callback (#{@id}): #{method_name} on #{@klass} (#{@object_id}) @ #{
+    "<Callback (#{@id}): #{type} on #{@klass} (#{@object_id}) @ #{
       @ends_at_str} (ruleset: #{@ruleset})>"
   end
 end

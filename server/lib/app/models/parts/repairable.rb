@@ -75,15 +75,7 @@ module Parts::Repairable
   end
 
   module ClassMethods
-    def on_callback(id, event)
-      if event == CallbackManager::EVENT_COOLDOWN_EXPIRED
-        find(id).on_repairs_finished!
-      elsif defined?(super)
-        super(id, event)
-      else
-        raise ArgumentError.new("Unknown event #{event} (#{
-          CallbackManager::METHOD_NAMES[event]}) for #{self} ID #{id}!")
-      end
-    end
+    def cooldown_expired_scope(building); DScope.planet(building.planet); end
+    def cooldown_expired_callback(building); building.on_repairs_finished!; end
   end
 end

@@ -1,17 +1,8 @@
-# Reference SpaceMule to get our Java support loaded
-SpaceMule
-
 class BulkSql
-  # Checkout another connection for bulk-sql because DDL (CREATE TABLE)
-  # operations on MySQL releases savepoints and that crashes nested
-  # transactions.
   class Connection
-    include Singleton
-
     def initialize
       @connection = ActiveRecord::Base.
         connection. # We can't use savepoints when using this.
-        #connection_pool.checkout. # But this somehow deadlocks the mysql.
         jdbc_connection
     end
 
@@ -38,57 +29,71 @@ class BulkSql
 
   class << self
     # Saves a lot of objects really fast.
-    # WARNING: not thread safe!
     def save(objects, klass)
       return true if objects.blank?
 
-      LOGGER.block("Running bulk updates for #{self}", :level => :debug) do
-        primary_key = klass.primary_key.to_sym
-        last_pk = klass.maximum(primary_key) || 0
+      raise "You forgot to initialize subclass based mutex for #{self}!" \
+        if @mutex.nil?
 
-        # Create the data holders.
-        insert_objects = Java::java.util.LinkedList.new
-        insert_columns = Set.new([primary_key])
+      @mutex.synchronize do
+        LOGGER.block("Running bulk updates for #{self}", :level => :debug) do
+          connection = Connection.new
 
-        update_objects = Java::java.util.LinkedList.new
-        update_columns = Set.new([primary_key])
+          primary_key = klass.primary_key.to_sym
+          last_pk = klass.maximum(primary_key) || 0
 
-        # Gather the data.
-        objects.each do |object|
-          pk = object[primary_key]
+          # Create the data holders.
+          insert_objects = Java::java.util.LinkedList.new
+          insert_columns = Set.new([primary_key])
 
-          changes = object.changed
-          unless changes.blank?
+          update_objects = Java::java.util.LinkedList.new
+          update_columns = Set.new([primary_key])
 
-            if pk.nil?
-              # Simulate record save.
-              last_pk += 1
-              object[primary_key] = last_pk
-              object.instance_variable_set(:"@new_record", false)
+          # Gather the data.
+          objects.each do |object|
+            pk = object[primary_key]
 
-              changes.each { |column| insert_columns.add(column.to_sym) }
-              insert_objects.push object
-            else
-              changes.each { |column| update_columns.add(column.to_sym) }
-              update_objects.push object
+            changes = object.changed
+            unless changes.blank?
+
+              if pk.nil?
+                # Simulate record save.
+                last_pk += 1
+                object[primary_key] = last_pk
+                object.instance_variable_set(:"@new_record", false)
+
+                changes.each { |column| insert_columns.add(column.to_sym) }
+                insert_objects.push object
+              else
+                changes.each { |column| update_columns.add(column.to_sym) }
+                update_objects.push object
+              end
+
+              # Mark as saved.
+              object.changed_attributes.clear
             end
-
-            # Mark as saved.
-            object.changed_attributes.clear
           end
+
+          # Bulk insert/update.
+          LOGGER.block(
+            "Running updates for #{update_objects.size} objects",
+            :level => :debug
+          ) do
+            execute_updates(
+              connection, update_columns.to_a, update_objects, klass
+            )
+          end
+          LOGGER.block(
+            "Running inserts for #{insert_objects.size} objects",
+            :level => :debug
+          ) do
+            execute_inserts(
+              connection, insert_columns.to_a, insert_objects, klass
+            )
+          end
+
+          true
         end
-
-        # Bulk insert/update.
-        LOGGER.block(
-          "Running updates for #{update_objects.size} objects",
-          :level => :debug
-        ) { execute_updates(update_columns.to_a, update_objects, klass) }
-        LOGGER.block(
-          "Running inserts for #{insert_objects.size} objects",
-          :level => :debug
-        ) { execute_inserts(insert_columns.to_a, insert_objects, klass) }
-
-        true
       end
     end
 
@@ -110,7 +115,7 @@ class BulkSql
       end
     end
 
-    def execute_inserts(columns, objects, klass, table_name=nil)
+    def execute_inserts(connection, columns, objects, klass, table_name=nil)
       return if objects.size == 0
 
       table_name ||= klass.table_name
@@ -144,7 +149,7 @@ class BulkSql
       statement.execute(statement_text)
     end
 
-    def execute_updates(columns, objects, klass)
+    def execute_updates(connection, columns, objects, klass)
       return if objects.size == 0
 
       primary_key = klass.primary_key
@@ -191,10 +196,6 @@ class BulkSql
 
     def create_columns_str(columns)
       columns.map { |c| "`#{c}`" }.join(", ")
-    end
-
-    def connection
-      Connection.instance
     end
   end
 end

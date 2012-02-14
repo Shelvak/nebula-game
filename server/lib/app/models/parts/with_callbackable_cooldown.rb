@@ -1,5 +1,8 @@
 module Parts::WithCallbackableCooldown
   def self.included(receiver)
+    raise "I can only be included in Building, not #{receiver}!" \
+      unless receiver.is_a?(Building)
+
     receiver.send :include, Parts::WithCooldown
     receiver.send :include, InstanceMethods
     receiver.extend ClassMethods
@@ -14,12 +17,7 @@ module Parts::WithCallbackableCooldown
   end
 
   module ClassMethods
-    def on_callback(id, event)
-      if event == CallbackManager::EVENT_COOLDOWN_EXPIRED
-        find(id).cooldown_expired!
-      else
-        super(id, event)
-      end
-    end
+    def cooldown_expired_scope(building); DScope.planet(building.planet); end
+    def cooldown_expired_callback(building); building.cooldown_expired!; end
   end
 end

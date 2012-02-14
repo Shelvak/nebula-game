@@ -10,6 +10,8 @@
 # }
 #
 class RouteHop < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+
   belongs_to :route
   composed_of :location, :class_name => 'LocationPoint',
       :mapping => LocationPoint.attributes_mapping_for(:location)
@@ -169,13 +171,13 @@ class RouteHop < ActiveRecord::Base
     end
   end
 
-  def self.on_callback(id, event)
-    if event == CallbackManager::EVENT_MOVEMENT
-      hop = find(id)
-      hop.move!
-      Combat::LocationCheckerAj.check_location(hop.location)
-    else
-      raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
+  def self.movement_scope(route_hop)
+    # Route is updated for every friendly player. Combat is not ran, only
+    # cooldown is created.
+    DScope.friendly_to_player(route_hop.player)
+  end
+  def self.movement_callback(route_hop)
+    route_hop.move!
+    Combat::LocationCheckerAj.check_location(route_hop.location)
   end
 end

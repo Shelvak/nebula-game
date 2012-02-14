@@ -1,4 +1,6 @@
 class Unit < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+
   include Parts::WithProperties
   include Parts::UpgradableWithHp
   include Parts::NeedsTechnology
@@ -264,16 +266,14 @@ class Unit < ActiveRecord::Base
   end
 
   class << self
-    def on_callback(id, event)
-      case event 
-      when CallbackManager::EVENT_DESTROY
-        unit = find(id)
-        unit.destroy!
-        EventBroker.fire(unit, EventBroker::DESTROYED)
-      else
-        super(id, event)
-      end
+    def destroy_scope(unit); DScope.combat(unit.location); end
+    def destroy_callback(unit)
+      unit.destroy!
+      EventBroker.fire(unit, EventBroker::DESTROYED)
     end
+
+    def upgrade_finished_scope(unit); DScope.combat(unit.location); end
+    def upgrade_finished_callback(unit); unit.on_upgrade_finished!; end
     
     def update_combat_attributes(player_id, updates)
       updates.each do |unit_id, (flank, stance)|

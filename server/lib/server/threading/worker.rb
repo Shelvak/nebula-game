@@ -19,7 +19,9 @@ class Threading::Worker
     exclusive do
       LOGGER.block(
         "Doing work for #{ids.inspect}: #{task}.", :component => tag
-      ) { task.run(tag) }
+      ) do
+        task.run(tag)
+      end
     end
 
     @director.done!(@name, ids)

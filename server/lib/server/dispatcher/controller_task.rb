@@ -9,12 +9,13 @@ module Dispatcher::ControllerTask
         begin
           # Wrap our request in correct ruleset.
           ruleset = dispatcher.storage_get(message.client, :ruleset)
-          unless ruleset.nil?
-            CONFIG.with_set_scope(ruleset) do
+          ruleset ||= GameConfig::DEFAULT_SET
+
+          CONFIG.with_set_scope(ruleset) do
+            # Ensure that if anything bad happens it would be rollbacked.
+            ActiveRecord::Base.transaction(:joinable => false) do
               controller_class.send(action_method, message)
             end
-          else
-            controller_class.send(action_method, message)
           end
         rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
             ActiveRecord::RecordNotDestroyed, GameError => e

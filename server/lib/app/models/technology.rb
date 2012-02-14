@@ -323,4 +323,13 @@ class Technology < ActiveRecord::Base
   def self.new_by_type(type, *args)
     "Technology::#{type.camelcase}".constantize.new(*args)
   end
+
+  ### Callbacks ###
+
+  def upgrade_finished_scope(technology)
+    DScope.player(technology.player_id)
+  end
+  def upgrade_finished_callback(technology)
+    technology.on_upgrade_finished!
+  end
 end

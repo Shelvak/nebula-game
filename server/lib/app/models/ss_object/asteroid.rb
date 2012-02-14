@@ -43,12 +43,7 @@ class SsObject::Asteroid < SsObject
         "ss_object.asteroid.wreckage.time.spawn").from_now)
   end
 
-  def self.on_callback(id, event)
-    case event
-    when CallbackManager::EVENT_SPAWN
-      find(id).spawn_resources!
-    else
-      raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
-  end
+  # Because combat on that location can also create a wreckage.
+  def self.spawn_scope(asteroid); DScope.combat(asteroid.location_point); end
+  def self.spawn_callback(asteroid); asteroid.spawn_resources!; end
 end

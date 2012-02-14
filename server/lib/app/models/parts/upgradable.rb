@@ -270,6 +270,23 @@ module Parts
         @_register_upgrade_finished_callback = value
       end
 
+      ### finished ###
+
+      def on_upgrade_finished!
+        on_upgrade_finished
+        save!
+      end
+
+      def on_upgrade_finished
+        raise ArgumentError.new("Cannot finish because #{self.inspect
+          } is not upgrading!") unless upgrading?
+
+        self.pause_remainder = nil
+        self.upgrade_ends_at = nil
+        self.level += 1
+        @upgrade_status = :just_finished
+      end
+
       private
       # Calculates pause remainder when #pause is called.
       #
@@ -376,23 +393,6 @@ module Parts
         CallbackManager.unregister(self)
       end
 
-      ### finished ###
-
-      def on_upgrade_finished!
-        on_upgrade_finished
-        save!
-      end
-
-      def on_upgrade_finished
-        raise ArgumentError.new("Cannot finish because #{self.inspect
-          } is not upgrading!") unless upgrading?
-
-        self.pause_remainder = nil
-        self.upgrade_ends_at = nil
-        self.level += 1
-        @upgrade_status = :just_finished
-      end
-
       def on_upgrade_just_finished_before_save
       end
 
@@ -434,18 +434,6 @@ module Parts
         raise NotImplementedError.new(
           "You should override me to provide what kind of points I operate on!"
         )
-      end
-
-      def on_callback(id, event)
-        if event == CallbackManager::EVENT_UPGRADE_FINISHED
-          model = find(id)
-          # Callbacks are private
-          model.send(:on_upgrade_finished!)
-
-          model
-        else
-          super(id, event)
-        end
       end
     end
   end

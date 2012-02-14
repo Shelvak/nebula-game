@@ -19,7 +19,7 @@ LOGGER.info "Starting server actor..."
 ServerActor.supervise_as(:server, CONFIG['server']['port'])
 
 #LOGGER.info "Starting callback manager actor..."
-#CallbackManager.supervise_as(:callback_manager)
+CallbackManager.supervise_as(:callback_manager)
 
 # Set up signals.
 stop_server = proc do

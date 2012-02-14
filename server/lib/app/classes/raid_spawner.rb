@@ -15,8 +15,10 @@ class RaidSpawner
     raiders = units
     unless raiders.blank?
       Unit.save_all_units(raiders, nil, EventBroker::CREATED)
-      Combat::LocationChecker.check_location(@planet.location_point)
-      @planet.reload # Reload planet because raiders might have taken it.
+      # TODO: spec me
+      Cooldown.create_unless_exists(
+        @planet.location_point, Cfg.after_spawn_cooldown
+      )
     end
     register!
   end

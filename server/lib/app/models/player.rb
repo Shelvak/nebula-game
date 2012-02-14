@@ -48,14 +48,14 @@ class Player < ActiveRecord::Base
   # a planet.
   has_many :construction_queue_entries
 
+  DScope = Dispatcher::Scope
+
   def self.notify_on_create?; false; end
   def self.notify_on_destroy?; false; end
   # This must be array of strings.
   def self.ignore_update_notify_for; %w{last_seen}; end
   include Parts::Notifier
   include Parts::PlayerVip
-
-  DScope = Dispatcher::Scope
 
   include FlagShihTzu
   has_flags(
