@@ -97,8 +97,8 @@ class ChatController < GenericController
   #
   ACTION_JOIN = 'chat|join'
 
-  JOIN_OPTIONS = logged_in + only_push + required(:channel => String,
-      :player => Player)
+  JOIN_OPTIONS = logged_in + only_push +
+    required(:channel => String, :player => Player)
   def self.join_scope(m); scope.chat; end
   def self.join_action(m)
     respond m,
@@ -121,7 +121,7 @@ class ChatController < GenericController
   ACTION_LEAVE = 'chat|leave'
 
   LEAVE_OPTIONS = logged_in + only_push +
-      required(:channel => String, :player => Player)
+    required(:channel => String, :player => Player)
   def self.leave_scope(m); scope.chat; end
   def self.leave_action(m)
     respond m, :chan => m.params['channel'], :pid => m.params['player'].id
