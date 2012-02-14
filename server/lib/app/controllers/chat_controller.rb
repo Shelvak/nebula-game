@@ -10,7 +10,7 @@ class ChatController < GenericController
   #
   ACTION_INDEX = 'chat|index'
 
-  def self.index_options; logged_in + only_push; end
+  INDEX_OPTIONS = logged_in + only_push
   def self.index_scope(message); scope.chat; end
   def self.index_action(m)
     hub = Chat::Pool.instance.hub_for(m.player)
@@ -46,7 +46,7 @@ class ChatController < GenericController
   #
   CHANNEL_MESSAGE = 'chat|c'
 
-  def self.c_options; logged_in + required(:chan => String, :msg => String); end
+  C_OPTIONS = logged_in + required(:chan => String, :msg => String)
   def self.c_scope(m); scope.chat; end
   def self.c_action(m)
     hub = Chat::Pool.instance.hub_for(m.player)
@@ -74,7 +74,7 @@ class ChatController < GenericController
   #
   PRIVATE_MESSAGE = 'chat|m'
 
-  def self.m_options; logged_in + required(:pid => Fixnum, :msg => String); end
+  M_OPTIONS = logged_in + required(:pid => Fixnum, :msg => String)
   def self.m_scope(m); scope.chat; end
   def self.m_action(m)
     hub = Chat::Pool.instance.hub_for(m.player)
@@ -97,9 +97,8 @@ class ChatController < GenericController
   #
   ACTION_JOIN = 'chat|join'
 
-  def self.join_options
-    logged_in + only_push + required(:channel => String, :player => Player)
-  end
+  JOIN_OPTIONS = logged_in + only_push + required(:channel => String,
+      :player => Player)
   def self.join_scope(m); scope.chat; end
   def self.join_action(m)
     respond m,
@@ -121,9 +120,8 @@ class ChatController < GenericController
   #
   ACTION_LEAVE = 'chat|leave'
 
-  def self.leave_options
-    logged_in + only_push + required(:channel => String, :player => Player)
-  end
+  LEAVE_OPTIONS = logged_in + only_push +
+      required(:channel => String, :player => Player)
   def self.leave_scope(m); scope.chat; end
   def self.leave_action(m)
     respond m, :chan => m.params['channel'], :pid => m.params['player'].id
@@ -138,9 +136,7 @@ class ChatController < GenericController
   #
   ACTION_SILENCE = 'chat|silence'
 
-  def self.silence_options
-    logged_in + only_push + required(:until => Time)
-  end
+  SILENCE_OPTIONS = logged_in + only_push + required(:until => Time)
   def self.silence_scope(m); scope.chat; end
   def self.silence_action(m)
     respond m, :until => m.params['until']
