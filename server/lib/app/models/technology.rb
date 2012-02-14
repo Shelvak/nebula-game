@@ -197,7 +197,7 @@ class Technology < ActiveRecord::Base
   MODS.each do |name, property|
     define_method("#{name}_mod") { self.class.send("#{name}_mod", level) }
     self.class.send(:define_method, "#{name}_mod") do |level|
-      evalproperty(property, 0, 'level' => level).round
+      evalproperty(property, 0, 'level' => level)
     end
 
     define_method("#{name}_mod?") { self.class.send("#{name}_mod?") }
