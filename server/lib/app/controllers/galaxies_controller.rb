@@ -26,7 +26,7 @@ class GalaxiesController < GenericController
   #
   ACTION_SHOW = 'galaxies|show'
 
-  def self.show_options; logged_in + only_push; end
+  SHOW_OPTIONS = logged_in + only_push
   def self.show_scope(message); scope.galaxy(message.player.galaxy_id); end
   def self.show_action(m)
     player = m.player
@@ -51,7 +51,6 @@ class GalaxiesController < GenericController
       :cooldowns => Cooldown.by_fow_entries(fow_entries).map(&:as_json)
   end
 
-  ACTION_APOCALYPSE = 'galaxies|apocalypse'
   # Notifies client that the apocalypse has started.
   #
   # Invocation: by server
@@ -61,10 +60,11 @@ class GalaxiesController < GenericController
   # Response:
   # - start (Time): start date of apocalypse
   #
-  def action_apocalypse
-    param_options :required => {:start => Time}
+  ACTION_APOCALYPSE = 'galaxies|apocalypse'
 
-    only_push!
-    respond :start => params['start']
+  APOCALYPSE_OPTIONS = logged_in + only_push + required(:start => Time)
+  def self.apocalypse_scope(m) end # TODO
+  def self.apocalypse_action(m)
+    respond m, :start => m.params['start']
   end
 end

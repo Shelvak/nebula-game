@@ -12,24 +12,28 @@ class AlliancesController < GenericController
   # Response:
   # - id (Fixnum): alliance id or 0 if name is not unique.
   #
-  def action_new
-    param_options :required => %w{name}
+  ACTION_NEW = 'alliances|new'
 
+  NEW_OPTIONS = logged_in + required(:name => String)
+  def self.new_scope(m) end # TODO
+  def self.new_action(m)
     raise GameLogicError.new(
-      "Cannot create alliance if cooldown hasn't expired yet!") \
-      unless player.alliance_cooldown_expired?(nil)
+      "Cannot create alliance if cooldown hasn't expired yet!"
+    ) unless m.player.alliance_cooldown_expired?(nil)
     raise GameLogicError.new("Cannot create alliance without technology!") \
-      unless Technology::Alliances.exists?([
-        "player_id=? AND level > 0", player.id])
+      unless Technology::Alliances.where(:player_id => m.player.id).
+        where("level > 0").exists?
 
-    alliance = Alliance.new(:name => params['name'],
-      :galaxy_id => player.galaxy_id, :owner_id => player.id)
+    alliance = Alliance.new(
+      :name => m.params['name'], :galaxy_id => m.player.galaxy_id,
+      :owner_id => m.player.id
+    )
     alliance.save!
-    alliance.accept(player)
+    alliance.accept(m.player)
 
-    respond :id => alliance.id
+    respond m, :id => alliance.id
   rescue ActiveRecord::RecordNotUnique
-    respond :id => 0
+    respond m, :id => 0
   end
 
   # Invites a person to join alliance. You can only invite a person if you
@@ -45,21 +49,23 @@ class AlliancesController < GenericController
   #
   # Response: None
   #
-  def action_invite
-    param_options :required => {:player_id => Fixnum}
+  ACTION_INVITE = 'alliances|invite'
 
-    alliance = get_owned_alliance
+  INVITE_OPTIONS = logged_in + required(:player_id => Fixnum)
+  def self.invite_scope(m) end #TODO
+  def self.invite_action(m)
+    alliance = get_owned_alliance(m)
 
     visible_player_ids = Alliance.visible_enemy_player_ids(alliance.id)
     raise GameLogicError.new(
       "Cannot invite if you do not see that player!"
-    ) unless visible_player_ids.include?(params['player_id'])
-    
+    ) unless visible_player_ids.include?(m.params['player_id'])
+
     raise GameLogicError.new(
       "Cannot invite because alliance has max players!"
     ) if alliance.full?
 
-    player = Player.find(params['player_id'])
+    player = Player.find(m.params['player_id'])
     Notification.create_for_alliance_invite(alliance, player)
   end
 
@@ -76,25 +82,27 @@ class AlliancesController < GenericController
   # Response:
   # - success (Boolean): has a player successfully joined this alliance?
   #
-  def action_join
-    param_options :required => %w{notification_id}
+  ACTION_JOIN = 'alliances|join'
 
-    notification = Notification.where(:player_id => player.id).find(
-      params['notification_id'])
+  JOIN_OPTIONS = logged_in + required(:notification_id => Fixnum)
+  def self.join_scope(m) end #TODO
+  def self.join_action(m)
+    notification = Notification.where(:player_id => m.player.id).find(
+      m.params['notification_id'])
     alliance = Alliance.find(notification.params[:alliance]['id'])
 
     raise GameLogicError.new(
-      "Cannot join alliance if cooldown hasn't expired yet!") \
-      unless player.alliance_cooldown_expired?(alliance.id)
+      "Cannot join alliance if cooldown hasn't expired yet!"
+    ) unless m.player.alliance_cooldown_expired?(alliance.id)
 
     if alliance.full?
-      respond :success => false
+      respond m, :success => false
     else
-      alliance.accept(player)
+      alliance.accept(m.player)
       notification.destroy!
       EventBroker.fire(notification, EventBroker::DESTROYED)
-      Notification.create_for_alliance_joined(alliance, player)
-      respond :success => true
+      Notification.create_for_alliance_joined(alliance, m.player)
+      respond m, :success => true
     end
   end
 
@@ -112,8 +120,12 @@ class AlliancesController < GenericController
   #
   # Response: None
   #
-  def action_leave
-    player.leave_alliance!
+  ACTION_LEAVE = 'alliances|leave'
+
+  LEAVE_OPTIONS = logged_in
+  def self.leave_scope(m) end #TODO
+  def self.leave_action(m)
+    m.player.leave_alliance!
   end
 
   # Kicks player out of alliance.
@@ -129,19 +141,22 @@ class AlliancesController < GenericController
   #
   # Response: None
   #
-  def action_kick
-    param_options :required => {:player_id => Fixnum}
+  ACTION_KICK = 'alliances|kick'
 
-    alliance = get_owned_alliance
+  KICK_OPTIONS = logged_in + required(:player_id => Fixnum)
+  def self.kick_scope(m) end # TODO
+  def self.kick_action(m)
+    alliance = get_owned_alliance(m)
     raise GameLogicError.new("Current player is not in alliance!") \
       if alliance.nil?
 
-    member = Player.where(:alliance_id => alliance.id).find(params['player_id'])
-    raise GameLogicError.new("Cannot kick yourself!") if member.id == player.id
+    member = Player.where(:alliance_id => alliance.id).
+      find(m.params['player_id'])
+    raise GameLogicError.new("Cannot kick yourself!") \
+      if member.id == m.player.id
     alliance.kick(member)
   end
 
-  ACTION_SHOW = 'alliances|show'
   # Shows an alliance.
   #
   # Includes alliance and it's players with ratings.
@@ -161,10 +176,12 @@ class AlliancesController < GenericController
   # - invitable_players (Hash[]]): Player#ratings with players that you can
   # invite to alliance.
   #
-  def action_show
-    param_options :required => {:id => Fixnum}
-
-    alliance = Alliance.find(params['id'])
+  ACTION_SHOW = 'alliances|show'
+  
+  SHOW_OPTIONS = logged_in + required(:id => Fixnum)
+  def self.show_scope(m) end # TODO
+  def self.show_action(m)
+    alliance = Alliance.find(m.params['id'])
     response = {
       :name => alliance.name,
       :description => alliance.description,
@@ -172,11 +189,11 @@ class AlliancesController < GenericController
       :players => alliance.player_ratings,
       :victory_points => alliance.victory_points,
     }
-    if alliance.owner_id == player.id
+    if alliance.owner_id == m.player.id
       response[:invitable_players] = alliance.invitable_ratings
     end
 
-    respond response
+    respond m, response
   end
 
   # Edits an alliance.
@@ -190,27 +207,29 @@ class AlliancesController < GenericController
   #
   # Response:
   # - if successful: None
-  # - if failed: 
+  # - if failed:
   #
-  def action_edit
-    param_options :valid => %w{name}
+  ACTION_EDIT = 'alliances|edit'
 
-    alliance = get_owned_alliance
+  EDIT_OPTIONS = logged_in + valid(:name => String)
+  def self.edit_scope(m) end # TODO
+  def self.edit_action(m)
+    alliance = get_owned_alliance(m)
     creds_needed = CONFIG['creds.alliance.change']
     raise GameLogicError.new(
       "Player tried to change alliance, not enough creds! Needed: #{
-      creds_needed}, had: #{player.creds}"
-    ) if player.creds < creds_needed
+      creds_needed}, had: #{m.player.creds}"
+    ) if m.player.creds < creds_needed
 
-    stats = CredStats.alliance_change(player)
-    player.creds -= creds_needed
-    alliance.name = params['name'] if params['name']
+    stats = CredStats.alliance_change(m.player)
+    m.player.creds -= creds_needed
+    alliance.name = m.params['name'] if m.params['name']
 
     alliance.save!
-    player.save!
+    m.player.save!
     stats.save!
   rescue ActiveRecord::RecordNotUnique
-    respond :error => 'not_unique'
+    respond m, :error => 'not_unique'
   end
 
   # Edits an alliance description. Only owner can do this.
@@ -222,11 +241,13 @@ class AlliancesController < GenericController
   #
   # Response: None
   #
-  def action_edit_description
-    param_options :required => %w{description}
+  ACTION_EDIT_DESCRIPTION = 'alliances|edit_description'
 
-    alliance = get_owned_alliance
-    alliance.description = params['description']
+  EDIT_DESCRIPTION_OPTIONS = logged_in + required(:description => String)
+  def self.edit_description_scope(m) end #TODO
+  def self.edit_description_action(m)
+    alliance = get_owned_alliance(m)
+    alliance.description = m.params['description']
     alliance.save!
   end
 
@@ -239,8 +260,12 @@ class AlliancesController < GenericController
   # Response:
   # - ratings (Hash[]): Alliance#ratings
   #
-  def action_ratings
-    respond :ratings => Alliance.ratings(player.galaxy_id)
+  ACTION_RATINGS = 'alliances|ratings'
+
+  RATINGS_OPTIONS = logged_in
+  def self.ratings_scope(m) end # TODO
+  def seld.ratings_action(m)
+    respond m, :ratings => Alliance.ratings(m.player.galaxy_id)
   end
 
   # Takes over alliance control. You can only do this if:
@@ -255,15 +280,19 @@ class AlliancesController < GenericController
   #
   # Response: None
   #
-  def action_take_over
-    alliance = player.alliance
+  ACTION_TAKE_OVER = 'alliances|take_over'
+
+  TAKE_OVER_OPTIONS = logged_in
+  def self.take_over_scope(m) end # TODO
+  def self.take_over_action(m)
+    alliance = m.player.alliance
     raise GameLogicError.new(
       "You must be in alliance to take ownership of one!"
     ) if alliance.nil?
 
-    alliance.take_over!(player)
+    alliance.take_over!(m.player)
 
-    push ACTION_SHOW, 'id' => alliance.id
+    push m, ACTION_SHOW, :id => alliance.id
   end
 
   # Gives away alliance ownership to other player.
@@ -280,40 +309,44 @@ class AlliancesController < GenericController
   # Response:
   # - status (String): "success" | "technology_level_too_low"
   #
-  def action_give_away
-    param_options :required => {:player_id => Fixnum}
+  ACTION_GIVE_AWAY = 'alliances|give_away'
 
-    alliance = player.alliance
+  GIVE_AWAY_OPTIONS = logged_in + required(:player_id => Fixnum)
+  def self.give_away_scope(m) end # TODO
+  def self.give_away_action(m)
+    alliance = m.player.alliance
     raise GameLogicError.new(
       "You must be in alliance give away ownership of one!"
     ) if alliance.nil?
 
     raise GameLogicError.new(
       "You must be alliance owner to give away ownership!"
-    ) unless alliance.owner_id == player.id
+    ) unless alliance.owner_id == m.player.id
 
-    new_owner = Player.find(params['player_id'])
+    new_owner = Player.find(m.params['player_id'])
 
     alliance.transfer_ownership!(new_owner)
 
-    respond :status => 'success'
-    push ACTION_SHOW, 'id' => alliance.id
+    respond m, :status => 'success'
+    push m, ACTION_SHOW, :id => alliance.id
   rescue Alliance::TechnologyLevelTooLow
-    respond :status => 'technology_level_too_low'
+    respond m, :status => 'technology_level_too_low'
   end
 
-  private
-  def get_alliance
-    alliance = player.alliance
-    raise GameLogicError.new("Current player is not in alliance!") \
-      if alliance.nil?
-    alliance
-  end
+  class << self
+    private
+    def get_alliance(m)
+      alliance = m.player.alliance
+      raise GameLogicError.new("Current player is not in alliance!") \
+        if alliance.nil?
+      alliance
+    end
 
-  def get_owned_alliance
-    alliance = get_alliance
-    raise GameLogicError.new("Current player is not an alliance owner!") \
-      unless alliance.owner_id == player.id
-    alliance
+    def get_owned_alliance(m)
+      alliance = get_alliance(m)
+      raise GameLogicError.new("Current player is not an alliance owner!") \
+        unless alliance.owner_id == m.player.id
+      alliance
+    end
   end
 end

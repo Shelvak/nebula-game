@@ -10,13 +10,15 @@ class MarketController < GenericController
   # Response:
   # - avg_rate (Float): average market rate for that resource pair
   #
-  def action_avg_rate
-    param_options :required => {:from_kind => Fixnum, :to_kind => Fixnum}
+  ACTION_AVG_RATE = 'market|avg_rate'
+
+  AVG_RATE_OPTIONS = logged_in + required(:from_kind => Fixnum, :to_kind => Fixnum)
+  def self.avg_rate_scope(m) end # TODO
+  def self.avg_rate_action(m)
+    avg_rate = MarketRate.average(m.player.galaxy_id, m.params['from_kind'],
+      m.params['to_kind'])
     
-    avg_rate = MarketRate.average(player.galaxy_id, params['from_kind'],
-      params['to_kind'])
-    
-    respond :avg_rate => avg_rate
+    respond m, :avg_rate => avg_rate
   end
   
   # Send list of all market offers in the galaxy.
@@ -32,16 +34,18 @@ class MarketController < GenericController
   # - planet_offers (Hash[]): offers being offered by you in this planet.
   # - offer_count (Fixnum): total number of your offers.
   #
-  def action_index
-    param_options :required => {:planet_id => Fixnum}
-    
+  ACTION_INDEX = 'market|index'
+
+  INDEX_OPTIONS = logged_in + required(:planet_id => Fixnum)
+  def self.index_scope(m) end # TODO
+  def self.index_action(m)
     # Ensure that planet_id is valid.
-    planet = player.planets.find(params['planet_id'])
-    planet_ids = player.planets.select("id").c_select_values
+    planet = m.player.planets.find(m.params['planet_id'])
+    planet_ids = m.player.planets.select("id").c_select_values
     
-    respond \
+    respond m,
       :public_offers => MarketOffer.fast_offers(
-        "#{MarketOffer.table_name}.galaxy_id=?", player.galaxy_id), 
+        "#{MarketOffer.table_name}.galaxy_id=?", m.player.galaxy_id),
       :planet_offers => MarketOffer.fast_offers("planet_id=?", planet.id),
       :offer_count => MarketOffer.where(:planet_id => planet_ids).count
   end
@@ -63,18 +67,20 @@ class MarketController < GenericController
   # Response:
   # - offer (Hash): MarketOffer#as_json
   #
-  def action_new
-    param_options :required => {:market_id => Fixnum, 
-      :from_amount => Fixnum, :from_kind => Fixnum, :to_kind => Fixnum,
-      :to_rate => [Fixnum, Float]}
-    
-    market = Building::Market.find(params['market_id'])
+  ACTION_NEW = 'market|new'
+
+  NEW_OPTIONS = logged_in + required(:market_id => Fixnum, 
+    :from_amount => Fixnum, :from_kind => Fixnum, :to_kind => Fixnum,
+    :to_rate => [Fixnum, Float])
+  def self.new_scope(m) end # TODO
+  def self.new_action(m)
+    market = Building::Market.find(m.params['market_id'])
     raise GameLogicError.new("This planet does not belong to you!") \
-      unless market.planet.player_id == player.id
+      unless market.planet.player_id == m.player.id
     
-    offer = market.create_offer!(params['from_kind'], params['from_amount'], 
-      params['to_kind'], params['to_rate'])
-    respond :offer => offer.as_json
+    offer = market.create_offer!(m.params['from_kind'],
+        m.params['from_amount'], m.params['to_kind'], m.params['to_rate'])
+    respond m, :offer => offer.as_json
   end
   
   # Cancel given market offer. Return resources left on offer to planet.
@@ -86,13 +92,16 @@ class MarketController < GenericController
   # 
   # Response: None
   #
-  def action_cancel
-    param_options :required => {:offer_id => Fixnum}
-    
-    offer = MarketOffer.find(params['offer_id'])
-    raise GameLogicError.new("Cannot cancel offer that you do not own!") \
-      unless offer.planet.player_id == player.id
-    
+  ACTION_CANCEL = 'market|cancel'
+
+  CANCEL_OPTIONS = logged_in + required(:offer_id => Fixnum)
+  def self.cancel_scope(m) end # TODO
+  def self.cancel_action(m)
+    offer = MarketOffer.find(m.params['offer_id'])
+    raise GameLogicError.new(
+      "Cannot cancel offer that you do not own!"
+    ) unless offer.planet.player_id == m.player.id
+
     offer.cancel!
   end
   
@@ -110,25 +119,27 @@ class MarketController < GenericController
   # - amount (Fixnum): amount actually bought. If 0, offer was destroyed
   # and purchase was unsuccessful. If > 0 - purchase was successful.
   #
-  def action_buy
-    param_options :required => {:offer_id => Fixnum, :planet_id => Fixnum,
-      :amount => Fixnum}
-    
+  ACTION_BUY = 'market|buy'
+
+  BUY_OPTIONS = logged_in + required(:offer_id => Fixnum, :planet_id => Fixnum,
+      :amount => Fixnum)
+  def self.buy_scope(m) end # TODO
+  def self.buy_action(m)
     offer = begin
-      MarketOffer.find(params['offer_id'])
+      MarketOffer.find(m.params['offer_id'])
     rescue ActiveRecord::RecordNotFound
-      respond :amount => 0
+      respond m, :amount => 0
       return
     end
       
     raise GameLogicError.new("Cannot buy offer from other galaxy!") \
-      unless offer.galaxy_id == player.galaxy_id
+      unless offer.galaxy_id == m.player.galaxy_id
     raise GameLogicError.new("Cannot buy offer from self!") \
-      if ! offer.system? && offer.planet.player_id == player.id
+      if ! offer.system? && offer.planet.player_id == m.player.id
     
-    buyer_planet = player.planets.find(params['planet_id'])
+    buyer_planet = m.player.planets.find(m.params['planet_id'])
     
-    amount_bought = offer.buy!(buyer_planet, params['amount'])
-    respond :amount => amount_bought
+    amount_bought = offer.buy!(buyer_planet, m.params['amount'])
+    respond m, :amount => amount_bought
   end
 end

@@ -11,7 +11,7 @@ class BuildingsController < GenericController
   #
   ACTION_SHOW_GARRISON = 'buildings|show_garrison'
 
-  def self.show_garrison_options; logged_in + required(:id => Fixnum); end
+  SHOW_GARRISON_OPTIONS = logged_in + required(:id => Fixnum)
   def self.show_garrison_scope(m); scope.npc_building(m.params['id']); end
   def self.show_garrison_action(m)
     building = Building.find(m.params['id'])
@@ -23,7 +23,6 @@ class BuildingsController < GenericController
     respond m, :units => units.map(&:as_json)
   end
 
-  ACTION_NEW = 'buildings|new'
   # Start construction of new building in a planet that player owns.
   #
   # Parameters:
@@ -35,29 +34,30 @@ class BuildingsController < GenericController
   #
   # Response: None
   #
-  def action_new
-    param_options :required => {
-      :constructor_id => Fixnum, :x => Fixnum, :y => Fixnum,
-      :type => String, :prepaid => Boolean
-    }
+  ACTION_NEW = 'buildings|new'
 
+  NEW_OPTIONS = logged_in + required(
+    :constructor_id => Fixnum, :x => Fixnum, :y => Fixnum, :type => String,
+    :prepaid => Boolean
+  )
+  def self.new_scope(m) end #TODO
+  def self.new_action(m)
     raise GameLogicError.new(
       "Cannot build new building without resources unless VIP!"
-    ) unless params['prepaid'] || player.vip?
+    ) unless m.params['prepaid'] || m.player.vip?
 
-    constructor = Building.find(params['constructor_id'],
+    constructor = Building.find(m.params['constructor_id'],
       :include => :planet)
     check_for_constructor!(constructor)
     raise ActiveRecord::RecordNotFound \
-      if constructor.planet.player_id != player.id
+      if constructor.planet.player_id != m.player.id
 
     constructor.construct!(
-      "Building::#{params['type']}", params['prepaid'],
-      :x => params['x'], :y => params['y']
+      "Building::#{m.params['type']}", m.params['prepaid'],
+      :x => m.params['x'], :y => m.params['y']
     )
   end
 
-  ACTION_UPGRADE = 'buildings|upgrade'
   # Upgrade a building in planet.
   #
   # Params:
@@ -66,14 +66,17 @@ class BuildingsController < GenericController
   # Return:
   # - building (Hash): Building#as_json
   #
-  def action_upgrade
-    building = find_building
+  ACTION_UPGRADE = 'buildings|upgrade'
+
+  UPGRADE_OPTIONS = logged_in + find_building_options
+  def self.upgrade_scope(m) end #TODO
+  def self.upgrade_action(m)
+    building = find_building(m)
 
     building.upgrade!
-    respond :building => building.as_json
+    respond m, :building => building.as_json
   end
 
-  ACTION_ACTIVATE = 'buildings|activate'
   # Activate a building in planet.
   #
   # Parameters:
@@ -81,12 +84,15 @@ class BuildingsController < GenericController
   #
   # Response: None
   #
-  def action_activate
-    building = find_building
+  ACTION_ACTIVATE = 'buildings|activate'
+
+  ACTIVATE_OPTIONS = logged_in + find_building_options
+  def self.activate_scope(m) end #TODO
+  def self.activate_action(m)
+    building = find_building(m)
     building.activate!
   end
 
-  ACTION_DEACTIVATE = 'buildings|deactivate'
   # Deactivate a building in planet.
   #
   # Parameters:
@@ -94,8 +100,12 @@ class BuildingsController < GenericController
   #
   # Response: None
   #
-  def action_deactivate
-    building = find_building
+  ACTION_DEACTIVATE = 'buildings|deactivate'
+
+  DEACTIVATE_OPTIONS = logged_in + find_building_options
+  def self.deactivate_scope(m) end # TODO
+  def self.deactivate_action(m)
+    building = find_building(m)
     building.deactivate!
   end
 
@@ -106,8 +116,12 @@ class BuildingsController < GenericController
   #
   # Response: None
   #
-  def action_activate_overdrive
-    building = find_building
+  ACTION_ACTIVATE_OVERDRIVE = 'buildings|activate_overdrive'
+
+  ACTIVATE_OVERDRIVE_OPTIONS = logged_in + find_building_options
+  def self.activate_overdrive_scope(m) end # TODO
+  def self.activate_overdrive_action(m)
+    building = find_building(m)
     if building.is_a?(Trait::Overdriveable)
       building.activate_overdrive!
     else
@@ -122,8 +136,12 @@ class BuildingsController < GenericController
   #
   # Response: None
   #
-  def action_deactivate_overdrive
-    building = find_building
+  ACTION_DEACTIVATE_OVERDRIVE = 'buildings|deactivate_overdrive'
+
+  DEACTIVATE_OVERDRIVE_OPTIONS = logged_in + find_building_options
+  def self.deactivate_overdrive_scope(m) end # TODO
+  def self.deactivate_overdrive_action(m)
+    building = find_building(m)
     if building.is_a?(Trait::Overdriveable)
       building.deactivate_overdrive!
     else
@@ -131,7 +149,6 @@ class BuildingsController < GenericController
     end
   end
 
-  ACTION_SELF_DESTRUCT = 'buildings|self_destruct'
   # Initiates self-destruct on +Building+ in +SsObject::Planet+.
   #
   # You must check planets #can_destroy_building_at attribute (see how in
@@ -151,11 +168,14 @@ class BuildingsController < GenericController
   # - objects|updated with +SsObject::Planet+.
   # - objects|updated with +Player+. (if using creds)
   #
-  def action_self_destruct
-    param_options :required => {:id => Fixnum, :with_creds => Boolean}
+  ACTION_SELF_DESTRUCT = 'buildings|self_destruct'
 
-    building = find_building
-    building.self_destruct!(params['with_creds'])
+  SELF_DESTRUCT_OPTIONS = logged_in + find_building_options +
+      required(:id => Fixnum, :with_creds => Boolean)
+  def self.self_destruct_scope(m) end # TODO
+  def self.self_destruct_action(m)
+    building = find_building(m)
+    building.self_destruct!(m.params['with_creds'])
   end
 
   # Moves building to another spot in the planet. Requires credits.
@@ -173,11 +193,14 @@ class BuildingsController < GenericController
   # - objects|updated with +Building+
   # - objects|updated with +Player+
   #
-  def action_move
-    param_options :required => {:id => Fixnum, :x => Fixnum, :y => Fixnum}
+  ACTION_MOVE = 'buildings|move'
 
-    building = find_building
-    building.move!(params['x'].to_i, params['y'].to_i)
+  MOVE_OPTIONS = logged_in + find_building_options +
+      required(:id => Fixnum, :x => Fixnum, :y => Fixnum)
+  def self.move_scope(m) end # TODO
+  def self.move_action(m)
+    building = find_building(m)
+    building.move!(m.params['x'].to_i, m.params['y'].to_i)
   end
 
   # Accelerates whatever constructor is constructing.
@@ -188,12 +211,15 @@ class BuildingsController < GenericController
   # 
   # Response: None
   #
-  def action_accelerate_constructor
-    param_options :required => {:id => Fixnum, :index => Fixnum}
+  ACTION_ACCELERATE_CONSTRUCTOR = 'buildings|accelerate_constructor'
 
-    building = find_building
+  ACCELERATE_CONSTRUCTOR_OPTIONS = logged_in + find_building_options +
+      required(:id => Fixnum, :index => Fixnum)
+  def self.accelerate_constructor_scope(m) end # TODO
+  def self.accelerate_constructor_action(m)
+    building = find_building(m)
     check_for_constructor!(building)
-    Creds.accelerate_construction!(building, params['index'])
+    Creds.accelerate_construction!(building, m.params['index'])
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)
@@ -207,11 +233,14 @@ class BuildingsController < GenericController
   # - id (Fixnum): ID of the building that will be accelerated.
   # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
   #
-  def action_accelerate_upgrade
-    param_options :required => {:id => Fixnum, :index => Fixnum}
+  ACTION_ACCELERATE_UPGRADE = 'buildings|accelerate_upgrade'
 
-    building = find_building
-    Creds.accelerate!(building, params['index'])
+  ACCELERATE_UPGRADE_OPTIONS = logged_in + find_building_options +
+      required(:id => Fixnum, :index => Fixnum)
+  def self.accelerate_upgrade_scope(m) end # TODO
+  def self.accelerate_upgrade_action(m)
+    building = find_building(m)
+    Creds.accelerate!(building, m.params['index'])
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)
@@ -227,8 +256,12 @@ class BuildingsController < GenericController
   # 
   # Response: None
   #
-  def action_cancel_constructor
-    constructor = find_building
+  ACTION_CANCEL_CONSTRUCTOR = 'buildings|cancel_constructor'
+
+  CANCEL_CONSTRUCTOR_OPTIONS = logged_in + find_building_options
+  def self.cancel_constructor_scope(m) end # TODO
+  def self.cancel_constructor_action(m)
+    constructor = find_building(m)
     check_for_constructor!(constructor)
     constructor.cancel_constructable!
   end
@@ -243,8 +276,12 @@ class BuildingsController < GenericController
   # 
   # Response: None
   #
-  def action_cancel_upgrade
-    building = find_building
+  ACTION_CANCEL_UPGRADE = 'buildings|cancel_upgrade'
+
+  CANCEL_UPGRADE_OPTIONS = logged_in + find_building_options
+  def self.cancel_upgrade_scope(m) end # TODO
+  def self.cancel_upgrade_action(m)
+    building = find_building(m)
     building.cancel!
   end
 
@@ -256,12 +293,15 @@ class BuildingsController < GenericController
   # - id (Fixnum): ID of the constructor.
   # - enabled (Boolean):
   #
-  def action_set_build_in_2nd_flank
-    param_options :required => {:id => Fixnum, :enabled => Boolean}
+  ACTION_SET_BUILD_IN_2ND_FLANK = 'buildings|action_set_build_in_2nd_flank'
 
-    building = find_building
+  SET_BUILD_IN_2ND_FLANK_OPTIONS = logged_in + find_building_options +
+      required(:id => Fixnum, :enabled => Boolean)
+  def self.set_build_in_2nd_flank_scope(m) end # TODO
+  def self.set_build_in_2nd_flank_action(m)
+    building = find_building(m)
     check_for_constructor!(building)
-    building.build_in_2nd_flank = params['enabled']
+    building.build_in_2nd_flank = m.params['enabled']
     building.save!
   end
 
@@ -273,12 +313,15 @@ class BuildingsController < GenericController
   # - id (Fixnum): ID of the constructor.
   # - enabled (Boolean):
   #
-  def action_set_build_hidden
-    param_options :required => {:id => Fixnum, :enabled => Boolean}
+  ACTION_SET_BUILD_HIDDEN = 'buildings|set_build_hidden'
 
-    building = find_building
+  SET_BUILD_HIDDEN_OPTIONS = logged_in + find_building_options +
+      required(:id => Fixnum, :enabled => Boolean)
+  def self.set_build_hidden_scope(m) end # TODO
+  def self.set_build_hidden_action(m)
+    building = find_building(m)
     check_for_constructor!(building)
-    building.build_hidden = params['enabled']
+    building.build_hidden = m.params['enabled']
     building.save!
   end
 
@@ -290,8 +333,12 @@ class BuildingsController < GenericController
   # - id (Fixnum): ID of the repaired building.
   #
   # Response: None
-  def action_repair
-    building = find_building
+  ACTION_REPAIR = 'buildings|repair'
+
+  REPAIR_OPTIONS = logged_in + find_building_options
+  def self.repair_scope(m) end # TODO
+  def self.repair_action(m)
+    building = find_building(m)
     building.repair!
   end
 
@@ -314,37 +361,42 @@ class BuildingsController < GenericController
   #     - error (String): one of the
   #       "no_transporter" - if target planet didn't have active transporter
   #
-  def action_transport_resources
-    param_options :required => {:id => Fixnum, :target_planet_id => Fixnum,
-      :metal => Fixnum, :energy => Fixnum, :zetium => Fixnum}
-
-    building = find_building
+  ACTION_TRANSPORT_RESOURCES = 'buildings|transport_resources'
+  
+  TRANSPORT_RESOURCES_OPTIONS = logged_in + find_building_options +
+      required(:id => Fixnum, :target_planet_id => Fixnum, :metal => Fixnum,
+          :energy => Fixnum, :zetium => Fixnum)
+  def self.transport_resources_scope(m) end # TODO
+  def self.transport_resources_action(m)
+    building = find_building(m)
 
     if building.is_a?(Building::ResourceTransporter)
-      target = SsObject::Planet.find(params['target_planet_id'])
+      target = SsObject::Planet.find(m.params['target_planet_id'])
       building.transport!(
-        target, params['metal'], params['energy'], params['zetium']
+        target, m.params['metal'], m.params['energy'], m.params['zetium']
       )
     else
       raise GameLogicError.new("#{building} is not a resource transporter!")
     end
   rescue Building::ResourceTransporter::NoTransporterError
-    respond :error => "no_transporter"
-  end
-  
-  private
-  def find_building
-    param_options :required => {:id => Fixnum}
-
-    building = Building.find(params['id'], :include => :planet)
-    raise ActiveRecord::RecordNotFound \
-      unless building.planet.player_id == player.id
-
-    building
+    respond m, :error => "no_transporter"
   end
 
-  def check_for_constructor!(building)
-    raise GameLogicError.new("#{building} is not an constructor!") \
-      unless building.constructor?
+  class << self
+    private
+    def find_building_options; required(:id => Fixnum); end
+
+    def find_building(m)
+      building = Building.find(m.params['id'], :include => :planet)
+      raise ActiveRecord::RecordNotFound \
+        unless building.planet.player_id == m.player.id
+
+      building
+    end
+
+    def check_for_constructor!(building)
+      raise GameLogicError.new("#{building} is not an constructor!") \
+        unless building.constructor?
+    end
   end
 end

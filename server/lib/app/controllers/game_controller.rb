@@ -44,7 +44,8 @@ class GameController < GenericController
   @@ruleset_configs = {}
 
   ACTION_CONFIG = 'game|config'
-  def self.config_options; no_options; end
+
+  CONFIG_OPTIONS = no_options
   def self.config_scope(message); scope.player(message.player); end
   def self.config_action(m)
     # Planet map editor requires configuration but does not login to server.
