@@ -265,7 +265,7 @@ package controllers.units
          }
          squadToStop.id = 0;
          squadToStop.route = null;
-         var squadStationary:MSquadron = findSquad(0, squadToStop.player.id, squadToStop.currentHop.location);
+         var squadStationary:MSquadron = findSquad(0, squadToStop.playerId, squadToStop.currentHop.location);
          if (squadStationary != null)
          {
             squadStationary.units.refresh();

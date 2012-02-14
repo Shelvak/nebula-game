@@ -134,13 +134,25 @@ package models.galaxy
       }
       
       private function realToLogicalArea(area:Rectangle) : MapArea {
-         var bounds:MapArea = _galaxy.visibleBounds;
-         return new MapArea(
-            Math.max(bounds.xMin, _coordsTransform.realToLogical_X(area.left, 0)),
-            Math.min(bounds.xMax, _coordsTransform.realToLogical_X(area.right - 1, 0)),
-            Math.max(bounds.yMin, _coordsTransform.realToLogical_Y(0, area.bottom)),
-            Math.min(bounds.yMax, _coordsTransform.realToLogical_Y(0, area.top + 1))
+         const bounds: MapArea = _galaxy.visibleBounds;
+         const xMin: int = Math.max(
+            bounds.xMin, _coordsTransform.realToLogical_X(area.left, 0)
          );
+         const xMax: int = Math.min(
+            bounds.xMax, _coordsTransform.realToLogical_X(area.right - 1, 0)
+         );
+         const yMin: int = Math.max(
+            bounds.yMin, _coordsTransform.realToLogical_Y(0, area.bottom)
+         );
+         const yMax: int = Math.min(
+            bounds.yMax, _coordsTransform.realToLogical_Y(0, area.top + 1)
+         );
+         if (xMin > xMax || yMin > yMax) {
+            return null;
+         }
+         else {
+            return new MapArea(xMin, xMax, yMin, yMax);
+         }
       }
    }
 }

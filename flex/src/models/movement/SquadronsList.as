@@ -27,7 +27,7 @@ package models.movement
          return findFirst(
             function(squad:MSquadron) : Boolean
             {
-               return !squad.isMoving && squad.player.id == playerId && squad.currentHop.location.equals(location);
+               return !squad.isMoving && squad.playerId == playerId && squad.currentHop.location.equals(location);
             }
          );
       }
