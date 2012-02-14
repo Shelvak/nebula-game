@@ -2,6 +2,8 @@ package controllers.objects.actions.customcontrollers
 {
    import controllers.ui.NavigationController;
 
+   import globalevents.GResourcesEvent;
+
    import models.Owner;
 
    import models.factories.SSObjectFactory;
@@ -74,6 +76,8 @@ package controllers.objects.actions.customcontrollers
             // otherwise just update SSObject inside it
             else {
                planet.ssObject.copyProperties(planetNew);
+               // resources gets overwriten after update, so dispatch change event
+               new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
             }
          }
          
