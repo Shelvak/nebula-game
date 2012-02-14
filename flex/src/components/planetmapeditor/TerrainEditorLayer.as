@@ -202,7 +202,7 @@ class TerrainEditCommand extends MapEditCommand implements ICommand
       if (object != null) {
          if (object is Building) {
             const building: Building = Building(object);
-            if (!building.npc) {
+            if (!building.npc || building.isExtractor) {
                removeObjectToRestore(x, y);
             }
          }

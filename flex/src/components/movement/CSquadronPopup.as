@@ -298,7 +298,7 @@ package components.movement
              MKR.addEventListener(MSquadronEvent.MULTIPLIER_CHANGE, setReward);
              new PlayersCommand(PlayersCommand.BATTLE_VPS_MULTIPLIER,
                 {
-                   'targetId': _squadron.player.id
+                   'targetId': _squadron.playerId
                 }).dispatch();
          }
          else
