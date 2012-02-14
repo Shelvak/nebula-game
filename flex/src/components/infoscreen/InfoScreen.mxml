@@ -133,6 +133,16 @@
                                  <s:HorizontalLayout/>
                               </s:layout>
                            </s:Group>
+                           <s:Group visible="{!(INFO.model.objectType != 'building' || INFO.getTechArmorMod(INFO.model.type) == 0)
+                                     || !(INFO.model.objectType != 'unit' || INFO.getTechArmorMod(INFO.model.type) == 0)}">
+
+                             <s:Label text="{Localizer.string('InfoScreen', 'absorptionFromTechs')}"/>
+                             <s:Label text="{(INFO.getTechAbsorptionMod(INFO.model.type) > 0? '+':'') + INFO.getTechAbsorptionMod(INFO.model.type) + '%'}"
+                                      color="{INFO.getTechAbsorptionMod(INFO.model.type) > 0?0x00ff00 : 0xff0000}"/>
+                             <s:layout>
+                               <s:HorizontalLayout/>
+                             </s:layout>
+                           </s:Group>
                            <s:Label text="{INFO.model.description}" left="0" right="0"/>
                            
                            <s:Group visible="{INFO.deploysTo != null}">
@@ -175,6 +185,15 @@
                                  <s:layout>
                                     <s:HorizontalLayout/>
                                  </s:layout>
+                              </s:Group>
+                              <s:Group visible="{INFO.getTechCriticalMod(INFO.model.type) != 0}">
+
+                                <s:Label text="{Localizer.string('InfoScreen', 'criticalFromTechs')}"/>
+                                <s:Label text="{(INFO.getTechCriticalMod(INFO.model.type) > 0? '+':'') + INFO.getTechCriticalMod(INFO.model.type) + '%'}"
+                                         color="{INFO.getTechCriticalMod(INFO.model.type) > 0?0x00ff00 : 0xff0000}"/>
+                                <s:layout>
+                                  <s:HorizontalLayout/>
+                                </s:layout>
                               </s:Group>
                               <s:Group visible="{ML.player.population > ML.player.populationMax}">
                                  <s:Label text="{Localizer.string('Units', 'tooltip.overPopulation', [ML.player.overPopulationAntibonus])}"
