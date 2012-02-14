@@ -464,11 +464,11 @@ class Player < ActiveRecord::Base
     true
   end
 
-  attr_accessor :invoked_from_control_manager
+  attr_accessor :invoked_from_web
 
   # Destroy player in WEB unless this destroy was invoked from control
   # manager.
-  after_destroy :unless => :invoked_from_control_manager do
+  after_destroy :unless => :invoked_from_web do
     ControlManager.instance.player_destroyed(self) unless galaxy.dev?
     true
   end
