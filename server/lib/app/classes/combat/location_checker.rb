@@ -126,8 +126,9 @@ class Combat::LocationChecker
       units = Set.new(units)
       buildings = Set.new(buildings)
 
-      assets = Combat.run(location, players, check_report.nap_rules,
-        units, buildings)
+      assets = Combat.run(
+        location, players, check_report.nap_rules, units, buildings
+      )
 
       FowSsEntry.recalculate(location_point.id, true) \
         if ! assets.nil? && location_point.type == Location::SOLAR_SYSTEM

@@ -12,6 +12,7 @@ package models.objectives
       public static const REPAIR_HP: String = "RepairHp";
       public static const MOVE_BUILDING: String = "MoveBuilding";
       public static const SELF_DESTRUCT: String = "SelfDestruct";
+      public static const BE_IN_ALLIANCE: String = "BeInAlliance";
       public static const HAVE_UPGRADED_TO: String = "HaveUpgradedTo";
       public static const DESTROY: String = "Destroy";
       public static const UPGRADE_TO: String = "UpgradeTo";

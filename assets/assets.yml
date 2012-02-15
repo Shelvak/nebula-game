@@ -69,16 +69,15 @@ options:
   # swf:quality (i.e. swf:75 would make a SWF with 75 percent quality).
   save_as: ""
 targets:
-  # Workaround dues to jruby --1.9 mode bug:
-  # http://jira.codehaus.org/browse/JRUBY-6402
-  <%
-  flex = {
-    "path" => "flex/assets", "combine" => "swf:75", "save_as" => "swf:75"
-  }
-  flex_unbundled = flex.merge("path" => "flex/src/assets", "save_as" => "")
-  %>
-  flex: <%= JSON.generate(flex) %>
-  flex_unbundled: <%= JSON.generate(flex_unbundled) %>
+  # << is not standard YAML, so we can't use it.
+  flex:
+    path: flex/assets
+    combine: "swf:75"
+    save_as: "swf:75"
+  flex_unbundled:
+    path: flex/src/assets
+    combine: "swf:75"
+    save_as: ""
 # Optimize files by remote names. Match them with regexp and override global
 # and target options with given options. One file can be matched by multiple
 # rules.

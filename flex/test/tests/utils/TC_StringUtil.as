@@ -1,5 +1,8 @@
 package tests.utils
 {
+   import ext.hamcrest.object.equals;
+
+   import org.flexunit.assertThat;
    import org.flexunit.asserts.assertEquals;
    
    import utils.StringUtil;
@@ -239,6 +242,14 @@ package tests.utils
          assertEquals(
             "Should parse not only first line checksums.",
             '2ec45', parsed['cat.swf']
+         );
+      }
+
+      [Test]
+      public function escapeXML(): void {
+         assertThat(
+            StringUtil.escapeXML("& < > \" '"),
+            equals ("&amp; &lt; &gt; \" '")
          );
       }
    }

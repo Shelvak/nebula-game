@@ -1,5 +1,5 @@
 class PlayerOptions < ActiveRecord::Base
-  set_primary_key :player_id
+  self.primary_key = :player_id
   belongs_to :player
 
   custom_serialize :data,

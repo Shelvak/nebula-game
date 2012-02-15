@@ -334,6 +334,10 @@
     <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
     <Technology_MetalExtractorT2 value="MEX T-2"/>
     <Technology_MetalExtractorT2-whos ref="Technology_MetalExtractorT2"/>
+    <Technology_CollectorT2 value="Kolektorius" />
+    <Technology_CollectorT2-whos value="Kolektoriaus" />
+    <Technology_ZetiumExtractorT2 value="ZEX T-2" />
+    <Technology_ZetiumExtractorT2-whos ref="Technology_ZetiumExtractorT2" />
     <Technology_EnergyStorage value="Talpesnės baterijos" />
     <Technology_EnergyStorage-whos value="Talpesnių baterijų" />
     <Technology_ZetiumStorage value="Zetiumo kasetės" />
@@ -341,7 +345,7 @@
     <Technology_ShipStorage value="Išoriniai dokai" />
     <Technology_ShipStorage-whos value="Išorinių dokų" />
     <Technology_DefensivePortal ref="Building_DefensivePortal" />
-    <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
+    <Technology_DefensivePortal-whos ref="Building_DefensivePortal-whos" />
     <Technology_Radar value="Radaras" />
     <Technology_Radar-whos value="Radaro" />
     <Technology_Alliances value="Sąjungos" />
@@ -1763,12 +1767,12 @@
     <label.honorCoef value="Garbės koef."/>
     <tooltip.honorCoef>
       <p>
-          Garbės koeficientas yra suskaičiuojamas lyginant Tavo ir Tavo
-          puolamo žaidėjo jėgas.
+        Garbės koeficientas yra suskaičiuojamas lyginant tavo ir
+        puolamo žaidėjo jėgas.
       </p>
       <p>
-          Tu gausi daugiau taškų ir kredų jei esi silpnesnis nei Tavo puolamas
-          žaidėjas ir mažiau - jei esi stipresnis.
+        Jeigu esi silpnesnis už puolamą žaidėją, gausi daugiau pergalės taškų
+        ir kredų ir mažiau - jeigu esi stipresnis.
       </p>
     </tooltip.honorCoef>
     <label.showKillReward value="Atlygis"/>
@@ -2262,6 +2266,9 @@
       <p>{2 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
       [obj:{0}:{1}:what:dc]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
     </objectiveText.HaveUpgradedToTechClass>
+
+    <!-- BE_IN_ALLIANCE -->
+    <objectiveText.BeInAlliance value="Priklausyk sąjungai"/>
 
     <!-- UPGRADE_TO
     0: count of objects, 
@@ -4555,7 +4562,7 @@
       saugyklų talpą.</p>
     </FieryMelters.about>
 
-    <CollectorT2.name ref="Buildings/CollectorT2.name" />
+    <CollectorT2.name ref="Objects/Technology_CollectorT2" />
     <CollectorT2.about>
       <p>Leidžia statyti saulės jėgaines.</p>
       <p>[reference:Buildings/CollectorT2.common]</p>

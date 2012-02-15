@@ -130,6 +130,7 @@ describe PlayersController do
 
         it "should push daily_bonus|show if there is a bonus available" do
           @test_player.daily_bonus_at = 1.day.ago
+          @test_player.economy_points = Cfg.daily_bonus_start_points
           @test_player.save!
           invoke @action, @params
 
@@ -229,18 +230,10 @@ describe PlayersController do
       before(:each) do
         @action = "players|edit"
         @player = self.player
-        @player.first_time = true
         @player.portal_without_allies = true
         @player.save!
 
-        @params = {'first_time' => false, 'portal_without_allies' => false}
-      end
-
-      it "should change first_time" do
-        lambda do
-          invoke @action, @params
-          @player.reload
-        end.should change(@player, :first_time).from(true).to(false)
+        @params = {'portal_without_allies' => false}
       end
 
       it "should change portal_without_allies" do

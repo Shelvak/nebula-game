@@ -31,7 +31,9 @@ class Unit < ActiveRecord::Base
     CONFIG.each_matching(GUNS_REGEXP) do |key, guns|
       underscore_key = key.match(GUNS_REGEXP)[1]
       # All space units participate in combat.
-      is_ground = CONFIG["units.#{underscore_key}.kind"] == :ground
+      kind = CONFIG["units.#{underscore_key}.kind"]
+      raise "kind for unit #{underscore_key} is nil!" if kind.nil?
+      is_ground = kind == :ground
       types.push underscore_key.camelcase if guns.blank? && is_ground
     end
     types

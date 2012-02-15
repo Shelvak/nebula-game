@@ -18,17 +18,19 @@ class ConstructionQueue
   # @param constructable_type [String]
   # @param prepaid [TrueClass|FalseClass]
   # @param count [Fixnum]
-  # @param params [Hash|NilClass]
+  # @param params [Hash] Must always be a hash, even empty, because serialize
+  # will enforce the type and convert nil to {}.
   def self.push(
-    constructor_id, constructable_type, prepaid, count=1, params=nil
+    constructor_id, constructable_type, prepaid, count=1, params={}
   )
-    typesig binding,
-            Fixnum, String, Boolean, Fixnum, [Hash, NilClass]
+    typesig binding, Fixnum, String, Boolean, Fixnum, Hash
     raise ArgumentError.new("count must be greater than 0!") if count < 1
 
     # Find last entry in constructor queue.
-    model = ConstructionQueueEntry.where(:constructor_id => constructor_id).
-      except(:order).order("position DESC").first
+    model = ConstructionQueueEntry.unscoped {
+      ConstructionQueueEntry.where(:constructor_id => constructor_id).
+        order("position DESC").first
+    }
     position = model ? model.position + 1 : 0
 
     new_model = ConstructionQueueEntry.new(
@@ -40,7 +42,6 @@ class ConstructionQueue
       :params => params
     )
 
-    return_value = nil
     if model and model.can_merge?(new_model)
       model.reduce_resources!(count) if prepaid
       model.merge!(new_model)

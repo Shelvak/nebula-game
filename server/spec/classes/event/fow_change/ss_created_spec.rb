@@ -25,7 +25,7 @@ describe Event::FowChange::SsCreated do
     describe "metadatas" do
       %w{kind x y}.each do |attr|
         it "should have ##{attr} set" do
-          ss_created.metadatas.each do |_, metadata|
+          ss_created.metadatas.each do |player_id, metadata|
             metadata.send(attr).should == send(attr)
           end
         end
