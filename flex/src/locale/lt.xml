@@ -330,6 +330,8 @@
     <Technology_SuperconductorTechnology-whos value="superlaidininkų" />
     <Technology_PowderedZetium value="Zetiumo pjaustikliai" />
     <Technology_PowderedZetium-whos value="zetiumo pjaustiklių" />
+    <Technology_CollectorT2 value="Kolektorius" />
+    <Technology_CollectorT2-whos value="Kolektoriaus" />
     <Technology_MetalStorage value="Skysčių suspaudimas" />
     <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
     <Technology_MetalExtractorT2 value="MEX T-2"/>
@@ -4558,7 +4560,7 @@
       saugyklų talpą.</p>
     </FieryMelters.about>
 
-    <CollectorT2.name ref="Buildings/CollectorT2.name" />
+    <CollectorT2.name ref="Objects/Technology_CollectorT2" />
     <CollectorT2.about>
       <p>Leidžia statyti saulės jėgaines.</p>
       <p>[reference:Buildings/CollectorT2.common]</p>
