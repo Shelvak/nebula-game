@@ -263,7 +263,7 @@ package utils
        * Escapes special XML charaters in the given string and returns the
        * result.
        */
-      public static function escapeSpecialXML(value:String): String {
+      public static function escapeXML(value:String): String {
          return <xml>{value}</xml>.toXMLString()
                    .replace("<xml>", "")
                    .replace("</xml>", "");

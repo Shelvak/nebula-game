@@ -248,7 +248,7 @@ package tests.utils
       [Test]
       public function escapeXML(): void {
          assertThat(
-            StringUtil.escapeSpecialXML("& < > \" '"),
+            StringUtil.escapeXML("& < > \" '"),
             equals ("&amp; &lt; &gt; \" '")
          );
       }
