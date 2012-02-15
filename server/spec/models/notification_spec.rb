@@ -243,7 +243,7 @@ describe Notification do
     
     it "should set log_id" do
       Notification.send(@method, *@args).params['log_id'].should == \
-        @combat_log.id
+        @combat_log.sha1_id
     end
 
     it "should set params['outcome']" do
