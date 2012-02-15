@@ -133,18 +133,18 @@ package controllers.units
          {
             throw new ArgumentError("Illegal moving squadron id: " + id);
          }
-         logger.debug("Will try to destroy squad {0}", id);
+         logger.debug("@destroySquadron(): Will try to destroy squad {0}", id);
          var squad:MSquadron = SQUADS.remove(id, true);
          if (squad != null)
          {
-            logger.debug("Destroying squadron {0}", squad);
+            logger.debug("@destroySquadron(): Destroying squadron {0}", squad);
             var fromPlanet: Boolean = squad.currentHop.location.isSSObject;
             var unitIds:Array = squad.units.toArray().map(
                function(unit:Unit, index:int, array:Array) : int {
                   return unit.id;
                }
             );
-            logger.debug("   removing units {0}", unitIds);
+            logger.debug("@destroySquadron():    removing units {0}", unitIds);
             Collections.cleanListOfICleanables(squad.units);
             squad.cleanup();
             // If units navigate from planet we need to refresh some getters
@@ -251,13 +251,45 @@ package controllers.units
             // this squad is already in the map that it needs to be and jumpsAt is null when squad
             // needs to be stopped in that map. If it needs to be stopped just in another map in an
             // immediate sector after jump, squad has to be destroyed because that map is not cached.
-//            if (squadToStop.jumpPending && squadToStop.jumpsAtEvent.hasOccured) {
             if (squadToStop.jumpPending) {
                logger.debug(
-                  "stopSquadron(): the squad is waiting for a jump. "
-                  + "Cleaning up and returning."
+                  "@stopSquadron(): squad {0} is waiting for a jump. "
+                     + "Cleaning up:", squadToStop.id
                );
+               const units:Array = squadToStop.units.toArray();
+               if (units.length > 0) {
+                  logger.debug("   removing units: {0}", units.join(", "));
+               }
+               else {
+                  logger.error("   squad does not have any units!");
+               }
                Collections.cleanListOfICleanables(squadToStop.units);
+               // were those units removed from a map?
+               const squadLoc:LocationMinimal = squadToStop.currentHop.location;
+               const map:MMap = squadLoc.isGalaxy
+                                   ? ML.latestGalaxy
+                                   : squadLoc.isSSObject
+                                        ? ML.latestPlanet
+                                        : ML.latestSSMap;
+               if (map != null) {
+                  for each (var unit: Unit in units) {
+                     if (Collections.findFirstWithId(map.units,unit.id) != null) {
+                        logger.error(
+                           "   unit {0} has not been removed from map "
+                              + "units list!", unit
+                        );
+                     }
+                  }
+               }
+               // were those units removed from the global list?
+               for each (var unit: Unit in units) {
+                  if (ML.units.find(unit.id) != null) {
+                     logger.error(
+                        "   unit {0} has not been removed from global units list!",
+                        unit
+                     );
+                  }
+               }
                squadToStop.cleanup();
                refreshUnitsInUnitScreenModel();
                return;
