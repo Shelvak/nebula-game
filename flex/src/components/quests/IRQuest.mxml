@@ -27,7 +27,10 @@
                                    paddingBottom="18"/>
             </s:layout>
          </s:Group>
-         <base:AdvancedContainer>
+         <base:AdvancedContainer visible="{ML.player.planetsCount > 0
+                  || ML.player.bgPlanetsCount > 0}"
+           includeInLayout="{ML.player.planetsCount > 0
+                  || ML.player.bgPlanetsCount > 0}">
             <base:layout>
                <s:VerticalLayout horizontalAlign="center"/>
             </base:layout>
