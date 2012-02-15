@@ -330,6 +330,8 @@
     <Technology_SuperconductorTechnology-whos value="superlaidininkų" />
     <Technology_PowderedZetium value="Zetiumo pjaustikliai" />
     <Technology_PowderedZetium-whos value="zetiumo pjaustiklių" />
+    <Technology_CollectorT2 value="Kolektorius" />
+    <Technology_CollectorT2-whos value="Kolektoriaus" />
     <Technology_MetalStorage value="Skysčių suspaudimas" />
     <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
     <Technology_MetalExtractorT2 value="MEX T-2"/>
@@ -341,7 +343,7 @@
     <Technology_ShipStorage value="Išoriniai dokai" />
     <Technology_ShipStorage-whos value="Išorinių dokų" />
     <Technology_DefensivePortal ref="Building_DefensivePortal" />
-    <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
+    <Technology_DefensivePortal-whos ref="Building_DefensivePortal-whos" />
     <Technology_Radar value="Radaras" />
     <Technology_Radar-whos value="Radaro" />
     <Technology_Alliances value="Sąjungos" />
@@ -1585,7 +1587,9 @@
     <specialDamage value="Žala: {0} x {1} = {2}" />
     <damageCoef value="Žalos koeficientas: {0}" />
     <armorFromTechs value="Šarvai iš technologijų:" />
+    <absorptionFromTechs value="Šūvio sugėrimo tikimybė iš technologijų:" />
     <damageFromTechs value="Žala iš technologijų:" />
+    <criticalFromTechs value="Kritinio šūvio tikimybė iš technologijų:" />
     <forOne value="Vienam:" />
     <total value="Iš viso:" />
     <cost value="Kaina" />
@@ -2260,6 +2264,9 @@
       <p>{2 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
       [obj:{0}:{1}:what:dc]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
     </objectiveText.HaveUpgradedToTechClass>
+
+    <!-- BE_IN_ALLIANCE -->
+    <objectiveText.BeInAlliance value="Priklausyk sąjungai"/>
 
     <!-- UPGRADE_TO
     0: count of objects, 
@@ -4062,8 +4069,9 @@
     <label.planetArea value="Plotas: {0} x {1} langeliai"/>
     <label.totalVolume value="Bendra apimtis: {0}"/>
     <label.wreckageVolume value="(apimtis: {0})"/>
-    <label.showHonorCoef value="Rodyti garbės koef."/>
-    <tooltip.honorCoef value="Garbės koeficientas: {0}%"/>
+    <label.unknownHonorCoef value="nežinomas"/>
+    <label.honorCoef value="Garbės koeficientas:"/>
+    <tooltip.honorCoef ref="Movement/tooltip.honorCoef"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
     <title.info 
       value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų] Cooldown[Pertraukos]} informacija" />
@@ -4236,8 +4244,16 @@
     <property.mod.damage.format value="{0}%" />
     <property.mod.critical value="Kritinio šūvio tikimybė" />
     <property.mod.critical.format value="{0}%" />
+    <property.mod.critical.tooltip>
+      <p>Tikimybė, kad karinis vienetas šaus kritinį šūvį.</p>
+      <p>Kritinis šūvis - tai 2,5 karto daugiau žalos darantis šūvis.</p>
+    </property.mod.critical.tooltip>
     <property.mod.absorption value="Žalos sugėrimo tikimybė" />
     <property.mod.absorption.format value="{0}%" />
+    <property.mod.absorption.tooltip>
+      <p>Tikimybė, kad į karinį vienetą pataikytas šūvis padarys 2,5 karto
+        mažiau žalos.</p>
+    </property.mod.absorption.tooltip>
     <property.mod.speed value="Judėjimo trukmės daliklis" />
     <property.mod.speed.format value="{0}%" />
     <property.mod.speed.tooltip>
@@ -4544,7 +4560,7 @@
       saugyklų talpą.</p>
     </FieryMelters.about>
 
-    <CollectorT2.name ref="Buildings/CollectorT2.name" />
+    <CollectorT2.name ref="Objects/Technology_CollectorT2" />
     <CollectorT2.about>
       <p>Leidžia statyti saulės jėgaines.</p>
       <p>[reference:Buildings/CollectorT2.common]</p>

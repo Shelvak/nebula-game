@@ -122,11 +122,17 @@ package models.technology
       public function getUnitStorage(type: String, level: int): int
       {
          var formula: String = Config.getUnitStorage(type);
-         return formula == null ? 0
-            : Math.round(Math.round(StringUtil.evalFormula(formula,
-            {'level': level})) * ((100 +
-         getTechnologiesPropertyMod('storage', 
-            ObjectClass.UNIT + '/' + StringUtil.camelCaseToUnderscore(type))) / 100));
+         if (formula == null) return 0;
+
+         var rawStorage: Number = Math.round(
+            StringUtil.evalFormula(formula, {'level': level})
+         );
+         var mod: Number = 1.0 + getTechnologiesPropertyMod(
+            'storage',
+            ObjectClass.UNIT + '/' + StringUtil.camelCaseToUnderscore(type)
+         ) / 100.0;
+
+         return Math.round(rawStorage * mod);
       }
       
       private static function getCoordsAsString(x:int, y:int): String

@@ -68,7 +68,7 @@ package models.movement
                }
                else if (!unit.isMoving && currentHop != null) {
                   return unit.location.equals(currentHop.location)
-                            && unit.playerId == player.id;
+                            && unit.playerId == playerId;
                }
                return false;
             }
@@ -157,6 +157,14 @@ package models.movement
        */
       public function get player() : PlayerMinimal {
          return _player;
+      }
+
+      /**
+       * Null-safe access to <code>player.id</code>: if <code>player</code>
+       * is <code>null</code>, id of the NPC player is returned.
+       */
+      public function get playerId(): int {
+         return player != null ? player.id : PlayerMinimal.NPC_PLAYER.id;
       }
       
       

@@ -14,6 +14,7 @@ package models.notification.parts
    
    import utils.DateUtil;
    import utils.Objects;
+   import utils.StringUtil;
    import utils.locale.Localizer;
    
    
@@ -70,7 +71,7 @@ package models.notification.parts
               "message." + KEY_PART + (ML.player.canJoinAlliance(allianceId)
                                           ? '.long'
                                           : '.denied'),
-              [allianceName]
+              [StringUtil.escapeXML(allianceName)]
            );
        }
       

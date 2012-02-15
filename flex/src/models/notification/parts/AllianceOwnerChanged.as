@@ -13,6 +13,7 @@ package models.notification.parts
    import models.player.PlayerMinimal;
 
    import utils.Objects;
+   import utils.StringUtil;
    import utils.TextFlowUtil;
    import utils.locale.Localizer;
 
@@ -34,21 +35,24 @@ package models.notification.parts
          _oldOwner = Objects.create(PlayerMinimal, params["oldOwner"]);
 
          const propPrefix:String = "content.allianceOwnerChanged.";
+         const allianceName: String = StringUtil.escapeXML(_alliance.name);
+         const newOwnerName: String = StringUtil.escapeXML(_newOwner.name);
+         const oldOwnerName: String = StringUtil.escapeXML(_oldOwner.name);
          var contentString:String;
          if (player.equals(_oldOwner)) {
             contentString = getString(
-               propPrefix + "forOldOwner", [_alliance.name, _newOwner.name]
+               propPrefix + "forOldOwner", [allianceName, newOwnerName]
             )
          }
          else if (player.equals(_newOwner)) {
             contentString = getString(
-               propPrefix + "forNewOwner", [_alliance.name, _oldOwner.name]
+               propPrefix + "forNewOwner", [allianceName, oldOwnerName]
             );
          }
          else {
             contentString = getString(
                propPrefix + "forOthers",
-               [_alliance.name, _oldOwner.name, _newOwner.name]
+               [allianceName, oldOwnerName, newOwnerName]
             );
          }
          _content = TextFlowUtil.importFromString(contentString);

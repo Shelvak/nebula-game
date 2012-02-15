@@ -2,16 +2,22 @@ package utils.datastructures
 {
    import interfaces.ICleanable;
    import interfaces.IEqualsComparable;
-   
+
    import mx.collections.ICollectionView;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
 
    import utils.Objects;
 
 
    public class Collections
    {
+      private static function get logger(): ILogger {
+         return Log.getLogger("utils.datastructures.Collections");
+      }
+
       /**
        * Special method for removing all elements from <code>IList</code>,
        * <code>Array</code> or <code>Vector</code> and calling
@@ -19,12 +25,19 @@ package utils.datastructures
        * list.
        */
       public static function cleanListOfICleanables(items: *): void {
-         var length: int;
          var array: Array;
          if (items is IList) {
-            var list: IList = IList(items);
+            const list: IList = IList(items);
             array = list.toArray();
-            list.removeAll();
+            try {
+               list.removeAll();
+            }
+            catch (err: RangeError) {
+               logger.error(
+                  "@cleanListOfICleanables: Error while removing all items: {0}",
+                     err.message
+               );
+            }
          }
          else if (items is Array) {
             array = items as Array;

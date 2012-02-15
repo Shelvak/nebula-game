@@ -70,7 +70,18 @@ package utils
          layoutFormat.paragraphSpaceAfter = ParagraphStyle.SPACE_AFTER;
          layoutFormat.verticalAlign = VerticalAlign.MIDDLE;
          config.textFlowInitialFormat = layoutFormat;
-         return getImporter(config).importToFlow(value);
+         try {
+            const flow:TextFlow = getImporter(config).importToFlow(value);
+         }
+         catch (err:TypeError) {
+            throw new TypeError(StringUtil.substitute(
+               "Error importing String to TextFlow:"
+                  + "\n   string: {0}"
+                  + "\n   error: {1}",
+               value, err.message
+            ));
+         }
+         return flow;
       }
 
       private static function getImporter(config:Configuration): TextLayoutImporter {
