@@ -36,6 +36,7 @@ flex/target
 # Gemfile symlinks
 server/Gemfile
 server/Gemfile.lock
+server/.bundle
 # Configs
 server/config/database.yml
 # Temp output files
