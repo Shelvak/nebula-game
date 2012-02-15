@@ -124,6 +124,22 @@ class Exception
   end
 end
 
+# Create a string with local variables and message.
+def dump_environment(binding, message)
+  vars = binding.eval %Q{
+    (local_variables + instance_variables).map do |var_name|
+      [var_name, eval(var_name.to_s)]
+    end
+  }, __FILE__, __LINE__
+
+  message += "\n\nVariables:\n"
+  vars.each do |var_name, value|
+    message += "  #{var_name.inspect} => #{value.inspect}\n"
+  end
+
+  message
+end
+
 def rake?; File.basename($0) == 'rake'; end
 
 require 'rubygems'
