@@ -271,8 +271,9 @@ package controllers.units
                                    : squadLoc.isSSObject
                                         ? ML.latestPlanet
                                         : ML.latestSSMap;
+               var unit: Unit = null;
                if (map != null) {
-                  for each (var unit: Unit in units) {
+                  for each (unit in units) {
                      if (Collections.findFirstWithId(map.units,unit.id) != null) {
                         logger.error(
                            "   unit {0} has not been removed from map "
@@ -282,7 +283,7 @@ package controllers.units
                   }
                }
                // were those units removed from the global list?
-               for each (var unit: Unit in units) {
+               for each (unit in units) {
                   if (ML.units.find(unit.id) != null) {
                      logger.error(
                         "   unit {0} has not been removed from global units list!",
