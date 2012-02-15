@@ -1,6 +1,7 @@
 package utils
 {
-	import mx.utils.StringUtil;
+   import mx.controls.Alert;
+   import mx.utils.StringUtil;
 	
 	import utils.bkde.as3.parsers.CompiledObject;
 	import utils.bkde.as3.parsers.MathParser;
@@ -256,6 +257,16 @@ package utils
             throw new Error('cant parse checksum file ' + err.message);
          }
          return obj;
+      }
+
+      /**
+       * Escapes special XML charaters in the given string and returns the
+       * result.
+       */
+      public static function escapeSpecialXML(value:String): String {
+         return <xml>{value}</xml>.toXMLString()
+                   .replace("<xml>", "")
+                   .replace("</xml>", "");
       }
    }
 }
