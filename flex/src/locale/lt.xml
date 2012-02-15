@@ -341,7 +341,7 @@
     <Technology_ShipStorage value="Išoriniai dokai" />
     <Technology_ShipStorage-whos value="Išorinių dokų" />
     <Technology_DefensivePortal ref="Building_DefensivePortal" />
-    <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
+    <Technology_DefensivePortal-whos ref="Building_DefensivePortal-whos" />
     <Technology_Radar value="Radaras" />
     <Technology_Radar-whos value="Radaro" />
     <Technology_Alliances value="Sąjungos" />

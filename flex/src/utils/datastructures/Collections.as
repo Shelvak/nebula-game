@@ -6,12 +6,18 @@ package utils.datastructures
    import mx.collections.ICollectionView;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
 
    import utils.Objects;
 
 
    public class Collections
    {
+      private static function get logger(): ILogger {
+         return Log.getLogger("utils.datastructures.Collections");
+      }
+
       /**
        * Special method for removing all elements from <code>IList</code>,
        * <code>Array</code> or <code>Vector</code> and calling
@@ -19,11 +25,23 @@ package utils.datastructures
        * list.
        */
       public static function cleanListOfICleanables(items: *): void {
-         var length: int;
          var array: Array;
          if (items is IList) {
-            var list: IList = IList(items);
+            const list: IList = IList(items);
+            var index: int = 0;
             array = list.toArray();
+            while (list.length > 0) {
+               try {
+                  list.removeItemAt(0);
+               }
+               catch (err:RangeError) {
+                  logger.error(
+                     "@cleanListOfICleanables: Error while trying to remove "
+                        + "item at {0}: {1}", index, err.message
+                  );
+               }
+               index++;
+            }
             list.removeAll();
          }
          else if (items is Array) {
