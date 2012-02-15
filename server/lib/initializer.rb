@@ -336,7 +336,7 @@ class ActiveRecord::Relation
   end
 end
 
-ActiveSupport::JSON.backend = 'JSONGem'
+ActiveSupport::JSON.backend = :json_gem
 ActiveSupport.use_standard_json_time_format = true
 ActiveSupport::LogSubscriber.colorize_logging = false
 
