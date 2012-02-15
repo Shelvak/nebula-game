@@ -644,6 +644,20 @@ package models.infoscreen
          return Math.round(ML.technologies.getTechnologiesPropertyMod('armor', 
             model.objectType + '/' + StringUtil.camelCaseToUnderscore(applies)));
       }
+
+      [Bindable (event="technologyChanged")]
+      public function getTechAbsorptionMod(applies: String): Number
+      {
+         return Math.round(ML.technologies.getTechnologiesPropertyMod('absorption',
+            model.objectType + '/' + StringUtil.camelCaseToUnderscore(applies)));
+      }
+
+      [Bindable (event="technologyChanged")]
+      public function getTechCriticalMod(applies: String): Number
+      {
+         return Math.round(ML.technologies.getTechnologiesPropertyMod('critical',
+            model.objectType + '/' + StringUtil.camelCaseToUnderscore(applies)));
+      }
       
       [Bindable (event="technologyChanged")]
       public function getTechDamageMod(applies: String): Number

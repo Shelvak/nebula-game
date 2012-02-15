@@ -112,7 +112,7 @@ package models.unit
             resourcesSelected = true;
          }
          selectionClass.flanks = flanks;
-         refreshVolume();
+         deselectAllResources();
       }
       
       public function refreshScreen(): void
