@@ -2263,6 +2263,9 @@
       [obj:{0}:{1}:what:dc]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
     </objectiveText.HaveUpgradedToTechClass>
 
+    <!-- BE_IN_ALLIANCE -->
+    <objectiveText.BeInAlliance value="Priklausyk sąjungai"/>
+
     <!-- UPGRADE_TO
     0: count of objects, 
     1: Subclass or class to upgrade, 
