@@ -52,6 +52,8 @@ package models.objectives
                return new MoveBuilding(objective);
             case ObjectiveType.SELF_DESTRUCT:
                return new SelfDestruct(objective);
+            case ObjectiveType.BE_IN_ALLIANCE:
+               return new BeInAlliance(objective);
             default:
                throw new Error('objective type '+objective.type+' not yet suported');
          }
