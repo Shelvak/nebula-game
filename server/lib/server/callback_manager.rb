@@ -84,7 +84,7 @@ class CallbackManager
       end
 
       tick
-      Kernel.sleep(1) # Wait 1 second before next tick.
+      sleep 1 # Wait 1 second before next tick.
     end
   end
 
@@ -127,26 +127,16 @@ class CallbackManager
       callback = get_callback.call(nil)
 
       until callback.nil?
-        info callback.to_s
+        info "Fetched: #{callback}"
 
         # Mark this row as sent to processing.
-        LOGGER.except(:debug) do
-          @connection.execute(
-            "UPDATE `callbacks` SET processing=1 WHERE id=#{callback.id}"
-          )
-        end
+        @connection.execute(
+          "UPDATE `callbacks` SET processing=1 WHERE id=#{callback.id}"
+        )
         Actor[:dispatcher].callback!(callback)
 
         callback = get_callback.call(callback.id)
       end
-    end
-  end
-
-  # This should be called when callback is processed.
-  def processed(callback)
-    info "#{callback} is processed."
-    LOGGER.except(:debug) do
-      @connection.execute("DELETE FROM `callbacks` WHERE id=#{callback.id}")
     end
   end
 

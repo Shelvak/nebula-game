@@ -17,15 +17,26 @@ class Callback
   # Returns either object or nil if object cannot be found. If object cannot be
   # found automatically marks this callback as processed.
   def object!
+    LOGGER.debug "Resolving object.", tag
     object = klass.where(:id => @object_id).first
 
     if object.nil?
       LOGGER.info "Callback #{self} cannot find its object. It must have " +
-        "been destroyed. Marking callback as processed."
+        "been destroyed. Marking callback as processed.", tag
       Celluloid::Actor[:callback_manager].processed!(self)
+      return
     end
 
+    LOGGER.debug "Object resolved: #{object}", tag
+
     object
+  end
+
+  # Removes callback from the database.
+  def destroy!
+    ActiveRecord::Base.connection.execute(
+      "DELETE FROM `callbacks` WHERE id=#{@id}"
+    )
   end
 
   def type
@@ -33,7 +44,11 @@ class Callback
   end
 
   def to_s
-    "<Callback (#{@id}): #{type} on #{@class_name} (#{@object_id}) @ #{
+    "<#{tag}: #{type} on #{@class_name} (#{@object_id}) @ #{
       @ends_at_str} (ruleset: #{@ruleset})>"
+  end
+
+  def tag
+    "callback-#{@id}"
   end
 end

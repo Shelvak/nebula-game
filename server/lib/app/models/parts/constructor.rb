@@ -40,7 +40,7 @@ module Parts::Constructor
   # of subclass.
   module OnCallback
     def construction_finished_scope(constructor)
-      DScope.planet(constructor.planet)
+      Dispatcher::Scope.planet(constructor.planet)
     end
     def construction_finished_callback(constructor)
       constructor.on_construction_finished!

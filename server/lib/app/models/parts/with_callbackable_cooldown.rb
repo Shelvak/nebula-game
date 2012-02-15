@@ -17,7 +17,9 @@ module Parts::WithCallbackableCooldown
   end
 
   module ClassMethods
-    def cooldown_expired_scope(building); DScope.planet(building.planet); end
+    def cooldown_expired_scope(building)
+      Dispatcher::Scope.planet(building.planet)
+    end
     def cooldown_expired_callback(building); building.cooldown_expired!; end
   end
 end

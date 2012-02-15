@@ -55,11 +55,14 @@ class Dispatcher
     info "Unregistering.", tag
 
     player = resolve_player(client)
+    # This is safe because it is in same thread.
     unless player.nil?
-      # Dispatch player cleanup task if client has an associated player.
-      supervisor = @director_supervisors[:player]
-      task = PlayerUnregisterTask.create(tag, player)
-      supervisor.actor.work!([player.id].freeze, task)
+      dispatch_task(
+        Scope.player(player), PlayerUnregisterTask.player(tag, player)
+      )
+      # There is no point of notifying about leaves if server is shutdowning.
+      dispatch_task(Scope.chat, PlayerUnregisterTask.chat(tag, player)) \
+        unless App.server_shutdowning?
     end
 
     # Clean up containers.
@@ -76,7 +79,9 @@ class Dispatcher
   # this player to chat.
   def set_player(client, player)
     typesig binding, ServerActor::Client, Player
-    debug "Registering #{client} as #{player}.", to_s(client)
+    tag = to_s(client)
+
+    debug "Registering #{client} as #{player}.", tag
 
     if player_connected?(player.id)
       client = @player_id_to_client[player.id]
@@ -84,8 +89,8 @@ class Dispatcher
     end
 
     @client_to_player[client] = player
-    # FIXME: not threadsave!
-    Chat::Pool.instance.hub_for(player).register(player)
+    @player_id_to_client[player.id] = client
+    dispatch_task(Scope.player(player), PlayerRegisterTask.create(tag, player))
   end
 
   # Update player entry if player is connected.
@@ -94,44 +99,48 @@ class Dispatcher
     if client
       @client_to_player[client] = player
     else
-      raise "Cannot update player #{player} which is not registered!"
+      abort "Cannot update player #{player} which is not registered!"
     end
   end
 
   # Receive message hash from _client_.
   def receive_message(client, message_hash)
-    log_tag = to_s(client)
+    exclusive do
+      log_tag = to_s(client)
 
-    debug "Received message hash: #{message_hash.inspect}", log_tag
+      debug "Received message hash: #{message_hash.inspect}", log_tag
 
-    message = message_object(client, message_hash)
-    LOGGER.block(
-      "Received message. (player: #{message.player || "none"})",
-      :component => log_tag
-    ) { process_message(message) }
+      message = message_object(client, message_hash)
+      LOGGER.block(
+        "Received message. (player: #{message.player || "none"})",
+        :component => log_tag
+      ) { process_message(message) }
+    end
   end
 
   def callback(callback)
-    typesig binding, Callback
-    info "Received #{callback}"
+    exclusive do
+      typesig binding, Callback
+      info "Received: #{callback}"
 
-    klass = callback.klass
-    method_name = callback.type
+      klass = callback.klass
+      method_name = callback.type
 
-    scope_method = "#{method_name}_scope"
-    callback_method = "#{method_name}_callback"
+      scope_method = "#{method_name}_scope"
+      callback_method = "#{method_name}_callback"
 
-    raise(
-      "#{klass} is missing scope resolver: #{klass}.#{scope_method}.
-Superclass: #{klass.superclass}
-Methods: #{klass.methods.sort.inspect}"
+      unless klass.respond_to?(scope_method)
+        error "#{klass} is missing scope resolver: #{klass}.#{scope_method}"
+        return
+      end
 
-    ) unless klass.respond_to?(scope_method)
-
-    object = callback.object! or return
-    scope = resolve_scope(klass, scope_method, object)
-    task = Dispatcher::CallbackTask.create(klass, callback_method, callback)
-    dispatch_task(scope, task)
+      object = callback.object! or return
+      scope = resolve_scope(klass, scope_method, object)
+      task = Dispatcher::CallbackTask.create(klass, callback_method, callback)
+      dispatch_task(scope, task)
+    end
+  rescue UnresolvableScope => e
+    info "Cannot resolve scope for #{callback}: #{e.message}"
   end
 
   # Confirm client of _message_ receiving. Set error to inform client
@@ -209,7 +218,10 @@ Methods: #{klass.methods.sort.inspect}"
   # Pushes message to player if he is connected.
   #
   # @see #push
-  def push_to_player(player_id, action, params, filters=nil)
+  def push_to_player(player_id, action, params={}, filters=nil)
+    typesig binding, Fixnum, String, Hash,
+      [NilClass, Array, Dispatcher::PushFilter]
+
     client = @player_id_to_client[player_id]
     if client.nil?
       debug "Push to player #{player_id} filtered: not connected."
@@ -227,6 +239,9 @@ Methods: #{klass.methods.sort.inspect}"
   # through.
   #
   def push(client, action, params, filters=nil)
+    typesig binding, Client, String, Hash,
+      [NilClass, Array, Dispatcher::PushFilter]
+
     log = "action #{action.inspect} with params #{params.inspect} and filters #{
       filters.inspect}."
 

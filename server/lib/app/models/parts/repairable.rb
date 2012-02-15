@@ -75,7 +75,9 @@ module Parts::Repairable
   end
 
   module ClassMethods
-    def cooldown_expired_scope(building); DScope.planet(building.planet); end
+    def cooldown_expired_scope(building)
+      Dispatcher::Scope.planet(building.planet)
+    end
     def cooldown_expired_callback(building); building.on_repairs_finished!; end
   end
 end

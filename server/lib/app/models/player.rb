@@ -580,7 +580,7 @@ class Player < ActiveRecord::Base
 
   # Is this player active?
   def active?
-    Celluloid::Actor[:dispatcher].connected?(id) || (
+    Celluloid::Actor[:dispatcher].player_connected?(id) || (
       ! last_seen.nil? &&
         last_seen >= Cfg.player_inactivity_time(points).ago
     )
@@ -672,5 +672,5 @@ class Player < ActiveRecord::Base
   # player and will never reattach him, so condition where player is attached
   # to taken spot will never occur.
   def self.check_inactive_player_scope(player); DScope.player(player); end
-  def self.check_inactive_player(player); player.check_activity!; end
+  def self.check_inactive_player_callback(player); player.check_activity!; end
 end

@@ -1,4 +1,6 @@
 class SsObject::Asteroid < SsObject
+  DScope = Dispatcher::Scope
+
   def to_s
     (super + "Asteroid m: %3.4f, e: %3.4f, z: %3.4f>") % [
       metal_generation_rate, energy_generation_rate, zetium_generation_rate

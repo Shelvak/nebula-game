@@ -8,6 +8,8 @@
 #   building. If nil or in past, you can destroy next building.
 #
 class SsObject::Planet < SsObject
+  DScope = Dispatcher::Scope
+
   include Parts::PlanetExploration
   include Parts::PlanetBoosts
   include Parts::DelayedEventDispatcher

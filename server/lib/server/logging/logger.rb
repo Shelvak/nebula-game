@@ -95,12 +95,14 @@ class Logging::Logger
 
   private
   def data_for(component, type, message)
-    actor_id = Thread.current[:actor].try(:object_id).try(:to_s, 16)
+    Celluloid::Actor
+    name = Celluloid.actor? \
+      ? "Ax#{Celluloid.current_actor.object_id.to_s(16)}" \
+      : "main"
     "%s[%s%s|%s|%-5s] %s\n" % [
       ' ' * @indent,
       @include_time ? "#{Time.now.strftime(DATETIME_FORMAT)}|" : "",
-      actor_id ? "Ax#{actor_id}" : "main",
-      component, type, message
+      name, component, type, message
     ]
   end
 

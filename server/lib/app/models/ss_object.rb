@@ -1,7 +1,5 @@
 # Use SsObject::*SsObject* instead of this! This acts as a base class.
 class SsObject < ActiveRecord::Base
-  DScope = Dispatcher::Scope
-
   include Location
   include Parts::Object
   include Parts::DelayedEventDispatcher

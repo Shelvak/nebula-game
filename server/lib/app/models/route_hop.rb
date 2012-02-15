@@ -174,7 +174,7 @@ class RouteHop < ActiveRecord::Base
   def self.movement_scope(route_hop)
     # Route is updated for every friendly player. Combat is not ran, only
     # cooldown is created.
-    DScope.friendly_to_player(route_hop.player)
+    DScope.friendly_to_player(route_hop.route.player)
   end
   def self.movement_callback(route_hop)
     route_hop.move!
