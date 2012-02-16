@@ -13,9 +13,6 @@ gem "chronic", ">=0.6.2"
 # Gems that are needed but should never be activated.
 group :installation do
   gem 'rake', '~>0.9.0'
-  # 0.7.6 is buggy and cannot be installed.
-  # http://jira.codehaus.org/browse/JRUBY-6455
-  gem 'jruby-openssl', '>=0.7.6.1'
 end
 
 # Gems that are needed for running (not testing).
@@ -42,6 +39,10 @@ group :development_setup do
   # Needed for mediawiki-gateway, somehow not specified in mw-gw gemfile.
   gem "rest-client"
   gem "mediawiki-gateway"
+
+  # 0.7.6 is buggy and cannot be installed.
+  # http://jira.codehaus.org/browse/JRUBY-6455
+  gem 'jruby-openssl', '>=0.7.6.1'
   gem "net-ssh", :git => "git://github.com/arturaz/net-ssh.git"
   gem "net-sftp"#, :git => "git://github.com/net-ssh/net-sftp.git"
   gem "net-scp"#, :git => "git://github.com/net-ssh/net-scp.git"

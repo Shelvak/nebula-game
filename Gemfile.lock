@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: git://github.com/arturaz/net-ssh.git
-  revision: a3ac2399816fd1909f15a77ad853908c48ad99a9
+  revision: f1f9340498a6e8030b0b1feb084a20df98271037
   specs:
     net-ssh (2.3.1)
 
