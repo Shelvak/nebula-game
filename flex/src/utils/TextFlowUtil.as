@@ -73,8 +73,8 @@ package utils
          try {
             const flow:TextFlow = getImporter(config).importToFlow(value);
          }
-         catch (err:Error) {
-            throw new Error(StringUtil.substitute(
+         catch (err:TypeError) {
+            throw new TypeError(StringUtil.substitute(
                "Error importing String to TextFlow:"
                   + "\n   string: {0}"
                   + "\n   error: {1}",

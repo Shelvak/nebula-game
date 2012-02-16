@@ -2,7 +2,7 @@ package utils.datastructures
 {
    import interfaces.ICleanable;
    import interfaces.IEqualsComparable;
-   
+
    import mx.collections.ICollectionView;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
@@ -28,21 +28,16 @@ package utils.datastructures
          var array: Array;
          if (items is IList) {
             const list: IList = IList(items);
-            var index: int = 0;
             array = list.toArray();
-            while (list.length > 0) {
-               try {
-                  list.removeItemAt(0);
-               }
-               catch (err:RangeError) {
-                  logger.error(
-                     "@cleanListOfICleanables: Error while trying to remove "
-                        + "item at {0}: {1}", index, err.message
-                  );
-               }
-               index++;
+            try {
+               list.removeAll();
             }
-            list.removeAll();
+            catch (err: RangeError) {
+               logger.error(
+                  "@cleanListOfICleanables: Error while removing all items: {0}",
+                     err.message
+               );
+            }
          }
          else if (items is Array) {
             array = items as Array;

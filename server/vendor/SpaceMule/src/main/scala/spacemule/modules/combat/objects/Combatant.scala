@@ -18,6 +18,8 @@ object Combatant {
     case b: Building => if (b.guns.isEmpty) Kind.BuildingPassive
       else Kind.BuildingShooting
   }
+  
+  type AsJson = Map[String, Any]
 }
 
 /**
@@ -178,7 +180,7 @@ trait Combatant extends Trackable {
    *   "stance" -> Int
    * )
    */
-  def asJson = Map(
+  def asJson: Combatant.AsJson = Map(
     "id" -> id,
     "player_id" -> (player match {
       case Some(player) => player.id

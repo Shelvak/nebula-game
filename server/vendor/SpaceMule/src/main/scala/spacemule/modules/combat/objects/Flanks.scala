@@ -1,6 +1,6 @@
 package spacemule.modules.combat.objects
 
-import scala.collection.mutable
+import scala.{collection => sc}
 import scala.collection.immutable._
 import spacemule.helpers.Converters._
 import spacemule.helpers.Random
@@ -139,7 +139,8 @@ class Flanks(description: String, combatants: Set[Combatant]) {
    *   flankIndex: Int -> Seq[Combatant]
    * )
    */
-  def asJson = combatants.groupBy { _.flank }.mapValues { combatants =>
-    combatants.map { _.asJson }
-  }
+  def asJson: Map[Int, sc.Seq[Combatant.AsJson]] =
+    combatants.groupBy { _.flank }.mapValues { combatants =>
+      combatants.toSeq.map { _.asJson }
+    }
 }

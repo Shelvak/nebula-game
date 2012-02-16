@@ -2,8 +2,8 @@ source "http://rubygems.org"
 source "http://gems.github.com"
 
 # Gems that are necessary for correct functioning of the server.
-gem 'activesupport', '~>3.0.9', :require => 'active_support'
-gem 'activerecord', '~>3.0.9', :require => 'active_record'
+gem 'activesupport', '~>3.2.0', :require => 'active_support'
+gem 'activerecord', '~>3.2.0', :require => 'active_record'
 gem 'json', '>=1.4.6', :require => "json/ext"
 gem 'activerecord-jdbcmysql-adapter', '~>1.1'
 gem 'flag_shih_tzu', :git => "git://github.com/arturaz/flag_shih_tzu.git"
@@ -13,7 +13,9 @@ gem "chronic", ">=0.6.2"
 # Gems that are needed but should never be activated.
 group :installation do
   gem 'rake', '~>0.9.0'
-  gem 'jruby-openssl'
+  # 0.7.6 is buggy and cannot be installed.
+  # http://jira.codehaus.org/browse/JRUBY-6455
+  gem 'jruby-openssl', '>=0.7.6.1'
 end
 
 # Gems that are needed for running (not testing).

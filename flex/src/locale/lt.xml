@@ -330,12 +330,14 @@
     <Technology_SuperconductorTechnology-whos value="superlaidininkų" />
     <Technology_PowderedZetium value="Zetiumo pjaustikliai" />
     <Technology_PowderedZetium-whos value="zetiumo pjaustiklių" />
-    <Technology_CollectorT2 value="Kolektorius" />
-    <Technology_CollectorT2-whos value="Kolektoriaus" />
     <Technology_MetalStorage value="Skysčių suspaudimas" />
     <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
     <Technology_MetalExtractorT2 value="MEX T-2"/>
     <Technology_MetalExtractorT2-whos ref="Technology_MetalExtractorT2"/>
+    <Technology_CollectorT2 value="Kolektorius" />
+    <Technology_CollectorT2-whos value="Kolektoriaus" />
+    <Technology_ZetiumExtractorT2 value="ZEX T-2" />
+    <Technology_ZetiumExtractorT2-whos ref="Technology_ZetiumExtractorT2" />
     <Technology_EnergyStorage value="Talpesnės baterijos" />
     <Technology_EnergyStorage-whos value="Talpesnių baterijų" />
     <Technology_ZetiumStorage value="Zetiumo kasetės" />
@@ -1765,12 +1767,12 @@
     <label.honorCoef value="Garbės koef."/>
     <tooltip.honorCoef>
       <p>
-          Garbės koeficientas yra suskaičiuojamas lyginant Tavo ir Tavo
-          puolamo žaidėjo jėgas.
+        Garbės koeficientas yra suskaičiuojamas lyginant tavo ir
+        puolamo žaidėjo jėgas.
       </p>
       <p>
-          Tu gausi daugiau taškų ir kredų jei esi silpnesnis nei Tavo puolamas
-          žaidėjas ir mažiau - jei esi stipresnis.
+        Jeigu esi silpnesnis už puolamą žaidėją, gausi daugiau pergalės taškų
+        ir kredų ir mažiau - jeigu esi stipresnis.
       </p>
     </tooltip.honorCoef>
     <label.showKillReward value="Atlygis"/>

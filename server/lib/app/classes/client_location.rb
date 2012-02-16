@@ -6,9 +6,11 @@
 #    :id => location_id,
 #    :x => location_x,
 #    :y => location_y,
+#
+#    :kind => kind | nil,
+#
 #    :name => name | nil,
 #    :player => Player#minimal | nil
-#    :kind => kind | nil,
 #    :terrain => terrain | nil,
 #    :solar_system_id => solar_system_id | nil
 #    
@@ -30,31 +32,46 @@
 #   nil or Player#as_json(:mode => :minimal)
 #
 class ClientLocation < LocationPoint
-  ATTRIBUTES = %w{name kind terrain solar_system_id player}
-  attr_reader *ATTRIBUTES.map(&:to_sym)
+  SS_ATTRIBUTES = %w{kind}
+  SS_OBJECT_ATTRIBUTES = %w{name terrain solar_system_id player}
+  attr_reader *(SS_ATTRIBUTES + SS_OBJECT_ATTRIBUTES).map(&:to_sym)
 
-  def self.attributes_mapping_for(side)
-    super(side) + ATTRIBUTES.map do |attribute|
-      [:"#{side}_#{attribute}", attribute.to_sym]
+  def initialize(id, type, x, y)
+    super(id, type, x, y)
+
+    case type
+    when Location::GALAXY
+      # Do nothing
+    when Location::SOLAR_SYSTEM
+      @kind = SolarSystem.where(:id => @id).select("kind").c_select_value
+
+      raise ArgumentError.new("SolarSystem #{@id} does not exist!") \
+        if @kind.nil?
+    when Location::SS_OBJECT
+      row = SsObject.
+        select("name, terrain, solar_system_id, player_id, position, angle").
+        where(:id => @id).
+        c_select_one
+
+      raise ArgumentError.new("SsObject #{@id} does not exist!") if row.nil?
+
+      # Refer to +LocationPoint+ documentation.
+      @x = row['position']
+      @y = row['angle']
+
+      @name = row['name']
+      @terrain = row['terrain']
+      @solar_system_id = row['solar_system_id']
+      @player = Player.minimal(row['player_id'])
+    else
+      raise NotImplementedError.new("Unknown type #{@type}!")
     end
   end
 
-  def initialize(id, type, x, y, name, kind, terrain, solar_system_id, 
-  player)
-    super(id, type, x, y)
-    @name, @kind, @terrain, @solar_system_id, @player = \
-      name, kind, terrain, solar_system_id, player
-  end
+  def ==(other); eql?(other); end
 
   def eql?(other)
-    return false if other.nil? or ! other.is_a?(ClientLocation)
-
-    # We skip name because names of planets can be changed by players
-    # Same reason for players.
-    super(other) &&
-      @kind == other.kind &&
-      @terrain == other.terrain &&
-      @solar_system_id == other.solar_system_id
+    other.is_a?(self.class) && super(other)
   end
 
   def to_s
@@ -62,12 +79,12 @@ class ClientLocation < LocationPoint
   end
 
   def hash
-    super + @kind.hash * 7 + @terrain.hash * 7 + @solar_system_id.hash * 7
+    super
   end
 
   def as_json(options=nil)
     hash = super
-    ATTRIBUTES.each do |attribute|
+    (ATTRIBUTES + SS_ATTRIBUTES + SS_OBJECT_ATTRIBUTES).each do |attribute|
       hash[attribute.to_sym] = send(attribute)
     end
     hash
