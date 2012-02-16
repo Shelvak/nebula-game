@@ -1714,6 +1714,7 @@
   </Location>
 
   <MainMenu>
+    <label.preferences value="Nustatymai" />
     <label.vip value="VIP" />
     <label.quests value="Užduotys" />
     <!-- 0- Player flying squadrons count
@@ -5604,5 +5605,12 @@
      <title.npcBuildings value="Ateivių pastatai"/>
      <title.foliage value="Kalnai"/>
   </PlanetMapEditor>
+
+  <PlayerOptions>
+     <title.chatOptions value="Pokalbių kambario nustatymai" />
+     <title.afterLoginOptions value="Prisijungimo nustatymai" />
+     <title.genericOptions value="Pagrindiniai nustatymai" />
+     <label.save value="Išsaugoti" />
+  </PlayerOptions>
 
 </locale>
