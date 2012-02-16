@@ -427,27 +427,24 @@ package controllers.ui
                new controllers.planets.actions.ShowActionParams(planet.id, false)
             ).dispatch();
       }
-      
-      
-      public function selectBuilding(building:Building) : void
-      {
+
+
+      public function selectBuilding(building: Building): void {
          callAfterMapLoaded(
-            function(map:MMap) : void
-            {
-               map.selectLocation(map.getLocation(building.x, building.y), true);
+            function(map: MPlanet): void {
+               map.selectObject(building);
             },
             true
          );
-         var ssObject:MSSObject = ML.latestPlanet.ssObject;
-         if (!ssObject || ssObject.id != building.planetId)
-         {
+         var ssObject: MSSObject = ML.latestPlanet.ssObject;
+         if (ssObject == null || ssObject.id != building.planetId) {
             ssObject = new MSSObject();
             ssObject.player = ML.player;
             ssObject.id = building.planetId;
          }
          toPlanet(ssObject);
       }
-      
+
       
       public function showGalaxy(newGalaxy:Galaxy = null) : void
       {

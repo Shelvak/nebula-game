@@ -44,51 +44,44 @@ package models.planet
 
    /**
     * Dispatched when an object has been added to this planet.
-    * 
-    * @eventType models.planet.events.MPlanetEvent.OBJECT_ADD
     */
    [Event(name="objectAdd", type="models.planet.events.MPlanetEvent")]
    
-   
    /**
     * Dispatched when an object has been removed from this planet.
-    * 
-    * @eventType models.planet.events.MPlanetEvent.OBJECT_REMOVE
     */
    [Event(name="objectRemove", type="models.planet.events.MPlanetEvent")]
-   
    
    /**
     * Dispatched when building has been moved to another place. <code>object</code> property
     * is set to the building moved.
-    * 
-    * @eventType models.planet.events.MPlanetEvent.BUILDING_MOVE
     */
    [Event(name="buildingMove", type="models.planet.events.MPlanetEvent")]
-   
+
+   /**
+    * Dispatched when an interactive object should be selected by a map
+    * component.
+    */
+   [Event(name="selectObject", type="models.planet.events.MPlanetEvent")]
 
    [Event(name="unitUpgradeStarted", type="models.planet.events.MPlanetEvent")]
    [Event(name="unitRefreshNeeded", type="models.planet.events.MPlanetEvent")]
    [Event(name="buildingUpgraded", type="models.planet.events.MPlanetEvent")]
-   
    
    [Bindable]
    public class MPlanet extends MMap
    {
       private var _zIndexCalculator:ZIndexCalculator = null;
       
-      
       private var _foliageAnimator:PlanetFolliagesAnimator = null;
       private var _suppressFoliageAnimatorUpdate:Boolean = false;
-      private function updateFoliageAnimator() : void
-      {
-         if (_suppressFoliageAnimatorUpdate)
-         {
+
+      private function updateFoliageAnimator(): void {
+         if (_suppressFoliageAnimatorUpdate) {
             return;
          }
          _foliageAnimator.setFolliages(nonblockingFolliages);
       }
-      
       
       public function MPlanet(ssObject:MSSObject)
       {
@@ -809,7 +802,6 @@ package models.planet
       /* ### UNITS ### */
       /* ############# */
       
-      
       /**
        * Looks for and returns a unit with a given id.
        * 
@@ -1493,7 +1485,21 @@ package models.planet
             }
          }
       }
-      
+
+
+      /* ################### */
+      /* ### UI COMMANDS ### */
+      /* ################### */
+
+      public function selectObject(object: MPlanetObject): void {
+         Objects.paramNotNull("object", object);
+         if (hasEventListener(MPlanetEvent.UICMD_SELECT_OBJECT)) {
+            dispatchEvent(
+               new MPlanetEvent(MPlanetEvent.UICMD_SELECT_OBJECT, object)
+            );
+         }
+      }
+
       
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */

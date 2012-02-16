@@ -27,6 +27,8 @@ package components.map.space
 
    import mx.collections.ArrayCollection;
    import mx.events.FlexEvent;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
 
    import spark.components.Group;
    import spark.layouts.HorizontalAlign;
@@ -57,6 +59,10 @@ package components.map.space
        */
       internal static const OBJECT_POPUP_YSHIFT:int = 20;
 
+      private function get logger(): ILogger {
+         return Log.getLogger(Objects.getClassName(this, true));
+      }
+
 
       internal var grid:Grid;
       internal var squadronsController:SquadronsController;
@@ -85,7 +91,12 @@ package components.map.space
          return grid.getRealMapSize();
       }
 
+      private var f_cleanupCalled:Boolean = false;
       public override function cleanup(): void {
+         if (f_cleanupCalled) {
+            return;
+         }
+         f_cleanupCalled = true;
          if (model != null) {
             deselectSelectedLocation();
          }
@@ -681,6 +692,27 @@ package components.map.space
       }
 
       private function ordersController_uicmdShowSpeedUpPopupHandler(event: OrdersControllerEvent): void {
+         // Now this should be impossible, but in practice it sometimes happens:
+         // http://forum.nebula44.lt/topic/1544/siunciant-laivus/
+         // Judging from the log, this can't happen in the map which is open
+         // right now because units|move_meta would fail also and it didn't
+         // So that leaves some not completely destroyed map in the memory
+         // which somehow failed to unregister this listener in the cleanup()
+         // Is there anything that I don't know how EventDispatcher works?
+         if (targetLocationPopup == null) {
+            if (f_cleanupCalled) {
+               logger.warn(
+                  "@ordersController_uicmdShowSpeedUpPopupHandler(): "
+                     + "cleanup() has already been called but listener "
+                     + "has not been removed from OrdersController!"
+               );
+            }
+            logger.warn(
+               "@ordersController_uicmdShowSpeedUpPopupHandler(): "
+                  + "targetLocationPopup is null, returning."
+            );
+            return;
+         }
          /**
           * Save locationPlanet and locationSpace from targetLocationPopup so that we could restore the popup
           * if player decides to change target location instead of confirming the order.
