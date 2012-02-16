@@ -5611,6 +5611,9 @@
      <title.afterLoginOptions value="Prisijungimo nustatymai" />
      <title.genericOptions value="Pagrindiniai nustatymai" />
      <label.save value="Išsaugoti" />
+     <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
+     <label.showPopupsAfterLogin value="Atidaryti iššokančius langus prisijungus" />
+     <label.openFirstPlanet value="Automatiškai atidaryt pirmą planetą" />
   </PlayerOptions>
 
 </locale>

@@ -29,6 +29,14 @@ package models.player {
          }
       }
 
+      [Bindable]
+      public static var hasChanges: Boolean = false;
+      
+      public static function changed(): void
+      {
+         hasChanges = true;
+      }
+
       /*### Chat options ###*/
 
       public static var chatIgnoreType: String;

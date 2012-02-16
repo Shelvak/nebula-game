@@ -11,6 +11,8 @@
       import controllers.playeroptions.PlayerOptionsCommand;
       import controllers.ui.NavigationController;
 
+      import models.player.PlayerOptions;
+
       import utils.locale.Localizer;
 
       private var NC: NavigationController = NavigationController.getInstance();
@@ -31,11 +33,19 @@
       <s:Group width="100%">
          <s:Group width="100%">
             <s:Group width="50%">
-               <base:Panel title="{getString('title.afterLoginOptions')}">
-                  
-               </base:Panel>
                <base:Panel title="{getString('title.genericOptions')}">
-
+                  <s:CheckBox id="warnBeforeUnload"
+                              label="{getString('label.warnBeforeUnload')}"
+                              change="PlayerOptions.changed();
+                              PlayerOptions.warnBeforeUnload = warnBeforeUnload.selected"/>
+               </base:Panel>
+               <base:Panel title="{getString('title.afterLoginOptions')}">
+                  <s:CheckBox id="showPopups" label="{getString('label.showPopupsAfterLogin')}"
+                              change="PlayerOptions.changed();
+                              PlayerOptions.showPopupsAfterLogin = showPopups.selected"/>
+                  <s:CheckBox id="openPlanet" label="{getString('label.openFirstPlanet')}"
+                              change="PlayerOptions.changed();
+                              PlayerOptions.openFirstPlanetAfterLogin = openPlanet.selected"/>
                </base:Panel>
                <s:layout>
                   <s:VerticalLayout horizontalAlign="justify"
@@ -63,6 +73,7 @@
    <s:Group right="0" bottom="0">
       <s:Button skinClass="components.skins.GreenButtonSkin"
                 label="getString('label.save')"
+                enabled="{PlayerOptions.hasChages}"
                 click="saveClickHandler(event)"/>
       <screens:ScreenCloseButton label="{Localizer.string('Players', 'label.close')}"
                                  click="NC.showPreviousScreen()"
