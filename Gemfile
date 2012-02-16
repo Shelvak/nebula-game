@@ -30,7 +30,8 @@ group :development_require do
 end
 
 group :development_require, :test_require do
-  gem 'pry'
+  # Earlier versions fail on jruby/win32
+  gem 'pry', :git => "git://github.com/pry/pry.git"
 end
 
 # Gems that are only needed for development of the server. Setuped
@@ -39,9 +40,9 @@ group :development_setup do
   # Needed for mediawiki-gateway, somehow not specified in mw-gw gemfile.
   gem "rest-client"
   gem "mediawiki-gateway"
-  gem "net-ssh", "~>2.0"
-  gem "net-sftp", "~>2.0"
-  gem "net-scp", "~>1.0"
+  gem "net-ssh", :git => "git://github.com/arturaz/net-ssh.git"
+  gem "net-sftp"#, :git => "git://github.com/net-ssh/net-sftp.git"
+  gem "net-scp"#, :git => "git://github.com/net-ssh/net-scp.git"
   gem "xml-simple", "~>1.0"
 end
 
