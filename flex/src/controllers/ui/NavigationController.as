@@ -204,6 +204,9 @@ package controllers.ui
          _screenProperties[String (MainAreaScreens.VIP)] = new ScreenProperties(
             MainAreaScreens.VIP, null, false
          );
+         _screenProperties[String (MainAreaScreens.PREFERENCES)] = new ScreenProperties(
+            MainAreaScreens.PREFERENCES, null, false
+         );
          _screenProperties[String (MainAreaScreens.ALLY_RATINGS)] = new ScreenProperties(
             MainAreaScreens.ALLY_RATINGS, null, false
          );

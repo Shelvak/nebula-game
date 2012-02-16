@@ -84,14 +84,14 @@
             <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
             <s:Button id="btnPreferences" click="NAV_CTRL.showPreferences()"
                       left="22" right="0" top="5" bottom="5"
-                      label="{Localizer.string('MainMenu', 'label.preferences')}"
-                      skinClass="components.skins.CreditButtonSkin"/>
+                      label="{Localizer.string('MainMenu', 'label.preferences')}"/>
          </s:Group>
          <s:Group width="100%">
             <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
             <s:Button id="btnVip" click="NAV_CTRL.showVip()" 
                       left="22" right="0" top="5" bottom="5"
-                      label="{Localizer.string('MainMenu', 'label.vip')}"/>
+                      label="{Localizer.string('MainMenu', 'label.vip')}"
+                      skinClass="components.skins.CreditButtonSkin"/>
          </s:Group>
          <!--- Button for viewing alliance screen. -->
          <s:Group width="100%">
