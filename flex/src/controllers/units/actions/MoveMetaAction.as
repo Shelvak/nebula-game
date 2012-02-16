@@ -64,8 +64,10 @@ package controllers.units.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
-         ORDERS_CTRL.showSpeedUpPopup(DateUtil.parseServerDTF(
-            cmd.parameters.arrivalDate).time, cmd.parameters.hopCount);
+         ORDERS_CTRL.showSpeedUpPopup(
+            DateUtil.parseServerDTF(cmd.parameters.arrivalDate).time,
+            cmd.parameters.hopCount
+         );
       }
       
       

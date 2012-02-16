@@ -5607,13 +5607,17 @@
   </PlanetMapEditor>
 
   <PlayerOptions>
-     <title.chatOptions value="Pokalbių kambario nustatymai" />
+     <title.chatOptions value="Pokalbių kambario nustatymai (NEPABAIGTA)" />
      <title.afterLoginOptions value="Prisijungimo nustatymai" />
      <title.genericOptions value="Pagrindiniai nustatymai" />
      <label.save value="Išsaugoti" />
      <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
      <label.showPopupsAfterLogin value="Atidaryti iššokančius langus prisijungus" />
-     <label.openFirstPlanet value="Automatiškai atidaryt pirmą planetą" />
+     <label.openFirstPlanet value="Automatiškai atidaryti pirmąją planetą" />
+     <label.showJoinLeave value="Rodyti prisijungimo / atsijungimo pranešimus" />
+     <label.ignoredList value="Ignoruojami žaidėjai:" />
+     <label.ignoredListEmpty value="Nėra ignoruojamų žaidėjų" />
+     <label.addIgnoredPlayer value="Pridėti" />
   </PlayerOptions>
 
 </locale>

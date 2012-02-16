@@ -6,15 +6,19 @@
  * To change this template use File | Settings | File Templates.
  */
 package models.player {
+   import mx.collections.ArrayCollection;
+
    public class PlayerOptions {
       public static function loadOptions (options: Object): void
       {
          chatShowJoinLeave = options.chatShowJoinLeave;
          chatIgnoreType = options.chatIgnoreType;
          ignoredChatPlayers = options.ignoredChatPlayers;
+         ignoredPlayersDataProvider = new ArrayCollection(ignoredChatPlayers);
          showPopupsAfterLogin = options.showPopupsAfterLogin;
          openFirstPlanetAfterLogin = options.openFirstPlanetAfterLogin;
          warnBeforeUnload = options.warnBeforeUnload;
+         hasChanges = false;
       }
       
       public static function getOptions (): Object
@@ -37,19 +41,34 @@ package models.player {
          hasChanges = true;
       }
 
+      public static function addIgnoredPlayer(playerName: String): void
+      {
+         hasChanges = true;
+         ignoredChatPlayers.push(playerName);
+         ignoredPlayersDataProvider.addItem(playerName);
+      }
+
       /*### Chat options ###*/
 
+      [Bindable]
       public static var chatIgnoreType: String;
-      public static var ignoredChatPlayers: Array;
+      [Bindable]
+      public static var ignoredPlayersDataProvider: ArrayCollection;
+
+      private static var ignoredChatPlayers: Array;
+      [Bindable]
       public static var chatShowJoinLeave: Boolean;
 
       /*### After-login options ###*/
 
+      [Bindable]
       public static var showPopupsAfterLogin: Boolean;
+      [Bindable]
       public static var openFirstPlanetAfterLogin: Boolean;
 
       /*### Generic options ###*/
 
+      [Bindable]
       public static var warnBeforeUnload: Boolean;
    }
 }

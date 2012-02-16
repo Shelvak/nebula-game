@@ -29,8 +29,6 @@ group :development_require do
 end
 
 group :development_require, :test_require do
-  # Earlier versions fail on jruby/win32
-  gem 'pry', :git => "git://github.com/pry/pry.git"
 end
 
 # Gems that are only needed for development of the server. Setuped
@@ -53,4 +51,9 @@ end
 group :test_setup do
   gem "rspec", "~>2.7.0"
   gem "factory_girl", "~>2.1.2"
+end
+
+group :development_setup, :test_setup do
+  # Earlier versions fail on jruby/win32
+  gem 'pry', :git => "git://github.com/pry/pry.git"
 end

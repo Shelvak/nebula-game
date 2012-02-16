@@ -10,6 +10,8 @@ package controllers.playeroptions.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
 
+   import flash.external.ExternalInterface;
+
    import models.player.PlayerOptions;
 
    import utils.remote.rmo.ClientRMO;
@@ -18,6 +20,11 @@ package controllers.playeroptions.actions
    {
       public override function applyClientAction(cmd:CommunicationCommand):void {
          sendMessage(new ClientRMO(PlayerOptions.getOptions()));
+         if (ExternalInterface.available) {
+            ExternalInterface.call(
+               "setLeaveHandler", PlayerOptions.warnBeforeUnload
+            );
+         }
       }
    }
 }
