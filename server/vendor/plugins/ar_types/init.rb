@@ -19,7 +19,7 @@ def typesig(binding, *signatures)
     local_variables.map do |var_name|
       [var_name, eval(var_name.to_s)]
     end
-  }
+  }, __FILE__, __LINE__
 
   typesig_bindless(vars, *signatures)
 end

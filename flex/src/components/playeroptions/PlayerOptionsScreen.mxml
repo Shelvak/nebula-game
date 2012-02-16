@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:screens="components.screens.*"
+         xmlns:base="components.base.*"
+         width="100%" height="100%"
+         creationComplete="group1_creationCompleteHandler(event)">
+   <fx:Script>
+      <![CDATA[
+      import controllers.playeroptions.PlayerOptionsCommand;
+      import controllers.ui.NavigationController;
+
+      import models.player.PlayerOptions;
+
+      import utils.locale.Localizer;
+
+      private var NC: NavigationController = NavigationController.getInstance();
+      
+      private function getString(prop: String): String
+      {
+         return Localizer.string('PlayerOptions', prop);
+      }
+
+      private function saveClickHandler(e: MouseEvent): void
+      {
+         new PlayerOptionsCommand(PlayerOptionsCommand.SET).dispatch();
+      }
+      ]]>
+   </fx:Script>
+   <base:Scroller id="scroller" left="0" right="0" top="0" bottom="9" 
+                  stepMultiplier="15">
+      <s:Group width="100%">
+         <s:Group width="100%">
+            <s:Group width="50%">
+               <base:Panel title="{getString('title.genericOptions')}">
+                  <s:CheckBox id="warnBeforeUnload"
+                              label="{getString('label.warnBeforeUnload')}"
+                              change="PlayerOptions.changed();
+                              PlayerOptions.warnBeforeUnload = warnBeforeUnload.selected"/>
+               </base:Panel>
+               <base:Panel title="{getString('title.afterLoginOptions')}">
+                  <s:CheckBox id="showPopups" label="{getString('label.showPopupsAfterLogin')}"
+                              change="PlayerOptions.changed();
+                              PlayerOptions.showPopupsAfterLogin = showPopups.selected"/>
+                  <s:CheckBox id="openPlanet" label="{getString('label.openFirstPlanet')}"
+                              change="PlayerOptions.changed();
+                              PlayerOptions.openFirstPlanetAfterLogin = openPlanet.selected"/>
+               </base:Panel>
+               <s:layout>
+                  <s:VerticalLayout horizontalAlign="justify"
+                                    paddingTop="10"
+                                    paddingBottom="10"
+                                    gap="10"/>
+               </s:layout>
+            </s:Group>
+            <base:Panel width="50%" title="{getString('title.chatOptions')}">
+
+               <base:layout>
+                  <s:VerticalLayout paddingTop="10"
+                                    paddingBottom="10"
+                                    gap="10"/>
+               </base:layout>
+            </base:Panel>
+            <s:layout>
+               <s:HorizontalLayout paddingTop="10"
+                                   paddingBottom="10"
+                                   gap="10"/>
+            </s:layout>
+         </s:Group>
+      </s:Group>
+   </base:Scroller>
+   <s:Group right="0" bottom="0">
+      <s:Button skinClass="components.skins.GreenButtonSkin"
+                label="getString('label.save')"
+                enabled="{PlayerOptions.hasChages}"
+                click="saveClickHandler(event)"/>
+      <screens:ScreenCloseButton label="{Localizer.string('Players', 'label.close')}"
+                                 click="NC.showPreviousScreen()"
+                                 scroller="{scroller}" right="0" bottom="0"/>
+   </s:Group>
+</s:Group>

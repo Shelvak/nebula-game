@@ -34,6 +34,8 @@ package controllers.startup
    import controllers.objects.actions.*;
    import controllers.planets.PlanetsCommand;
    import controllers.planets.actions.*;
+   import controllers.playeroptions.PlayerOptionsCommand;
+   import controllers.playeroptions.actions.ShowAction;
    import controllers.players.AuthorizationManager;
    import controllers.players.PlayersCommand;
    import controllers.players.actions.*;
@@ -249,6 +251,7 @@ package controllers.startup
       {
          bindDailyBonusCommands();
          bindPlayersCommands();
+         bindPlayerOptionsCommands();
          bindAlliancesCommands();
          bindGalaxiesCommands();
          bindSolarSystemsCommands();
@@ -388,6 +391,11 @@ package controllers.startup
          bindPair(PlayersCommand.EDIT, new controllers.players.actions.EditAction());
          bindPair(PlayersCommand.VIP, new VipAction());
          bindPair(PlayersCommand.STATUS_CHANGE, new StatusChangeAction());
+      }
+      private static function bindPlayerOptionsCommands() : void
+      {
+         bindPair(PlayerOptionsCommand.SHOW, new controllers.playeroptions.actions.ShowAction());
+         bindPair(PlayerOptionsCommand.SET, new controllers.playeroptions.actions.SetAction());
       }
       private static function bindAlliancesCommands() : void
       {

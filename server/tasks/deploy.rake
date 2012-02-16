@@ -1,12 +1,5 @@
 STDOUT.sync = true
 
-begin
-  require 'net/sftp'
-rescue LoadError
-  puts "Warning: net/sftp gem could not be loaded, deploy:* " +
-    "tasks will not work."
-end
-
 PROJECT_ROOT = File.expand_path(
   File.join(File.dirname(__FILE__), '..', '..'))
 CLIENT_TARGET = File.join(PROJECT_ROOT, 'flex', 'target', 'dist')
@@ -112,7 +105,7 @@ class DeployHelpers; class << self
   def start(klass, server, &block)
     server, port = server.split(":")
     options = port ? {:port => port.to_i} : {}
-    
+
     klass.start(server, DEPLOY_CONFIG[:username], options, &block)
   end
 
@@ -273,9 +266,14 @@ class DeployHelpers; class << self
 end; end
 
 namespace :deploy do
+  task :environment do
+    Rake::Task["environment"].invoke
+    require 'net/sftp'
+  end
+
   namespace :client do
     desc "Deploy client locales to given environment"
-    task :locales, [:env] do |task, args|
+    task :locales, [:env] => "deploy:environment" do |task, args|
       env = DeployHelpers.get_env(args[:env])
       DeployHelpers.check_git_branch!(env)
       `cd #{PROJECT_ROOT}/flex && rake build:copy:locales`
@@ -297,7 +295,7 @@ namespace :deploy do
   end
 
   desc "Deploy client to given environment"
-  task :client, [:env] do |task, args|
+  task :client, [:env] => "deploy:environment" do |task, args|
     env = DeployHelpers.get_env(args[:env])
     DeployHelpers.check_git_branch!(env)
 
@@ -313,7 +311,7 @@ namespace :deploy do
 
   namespace :server do
     desc "Stop all servers belonging to environment"
-    task :start, [:env] do |task, args|
+    task :start, [:env] => "deploy:environment" do |task, args|
       env = DeployHelpers.get_env(args[:env])
       DEPLOY_CONFIG[:servers][env][:server].each do |server|
         DeployHelpers.info(env, "Starting server on #{server}") do
@@ -325,7 +323,7 @@ namespace :deploy do
     end
 
     desc "Stop all servers belonging to environment"
-    task :restart, [:env] do |task, args|
+    task :restart, [:env] => "deploy:environment" do |task, args|
       env = DeployHelpers.get_env(args[:env])
       DEPLOY_CONFIG[:servers][env][:server].each do |server|
         DeployHelpers.info(env, "Restarting server on #{server}") do
@@ -337,7 +335,7 @@ namespace :deploy do
     end
 
     desc "Stop all servers belonging to environment"
-    task :stop, [:env] do |task, args|
+    task :stop, [:env] => "deploy:environment" do |task, args|
       env = DeployHelpers.get_env(args[:env])
       DEPLOY_CONFIG[:servers][env][:server].each do |server|
         DeployHelpers.info(env, "Stopping server on #{server}") do
@@ -349,7 +347,7 @@ namespace :deploy do
     end
 
     desc "Check if server is running"
-    task :status, [:env] do |task, args|
+    task :status, [:env] => "deploy:environment" do |task, args|
       env = DeployHelpers.get_env(args[:env])
       DEPLOY_CONFIG[:servers][env][:server].each do |server|
         DeployHelpers.start(Net::SSH, server) do |ssh|
@@ -367,7 +365,7 @@ namespace :deploy do
         [:reset, "rake db:reset", "Reseting database", "Reset database"]
       ].each do |task_name, remote_cmd, running_msg, description|
         desc "#{description} on all servers belonging to environment"
-        task task_name, [:env] do |task, args|
+        task task_name, [:env] => "deploy:environment" do |task, args|
           env = DeployHelpers.get_env(args[:env])
           DEPLOY_CONFIG[:servers][env][:server].each do |server|
             DeployHelpers.info(env, "#{running_msg} on #{server}") do
@@ -381,7 +379,7 @@ namespace :deploy do
     end
 
     desc "Cold deploy server to given environment"
-    task :cold, [:env] do |task, args|
+    task :cold, [:env] => "deploy:environment" do |task, args|
       env = DeployHelpers.get_env(args[:env])
       DeployHelpers.check_git_branch!(env)
 
@@ -412,7 +410,7 @@ namespace :deploy do
   end
 
   desc "Deploy server to given environment"
-  task :server, [:env] do |task, args|
+  task :server, [:env] => "deploy:environment" do |task, args|
     env = DeployHelpers.get_env(args[:env])
     DeployHelpers.check_git_branch!(env)
 

@@ -594,6 +594,11 @@ package controllers.ui
       {
          showNonMapScreen(_screenProperties[MainAreaScreens.VIP]);
       }
+
+      public function showPreferences() :void
+      {
+         showNonMapScreen(_screenProperties[MainAreaScreens.PREFERENCES]);
+      }
       
       public function showMarket(market: Building) :void
       {

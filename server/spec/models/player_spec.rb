@@ -1373,11 +1373,9 @@ describe Player do
     end
 
     it "should leave alliance if he is in one" do
-      alliance = create_alliance
-      player = alliance.owner
+      player = create_alliance.owner
+      player.should_receive(:leave_alliance!)
       player.destroy!
-      player.reload
-      player.alliance.should be_nil
     end
 
     it "should not leave alliance if he not in one" do

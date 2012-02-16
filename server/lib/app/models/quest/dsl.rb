@@ -18,13 +18,11 @@ class Quest::DSL
 
   # Saves quest with it's objectives and returns Quest.
   def save!
-    quest = Quest.new(
-      :parent_id => @parent_id,
-      :main_quest_slides => @main_quest_slides.nil? \
-        ? nil : @main_quest_slides.join(","),
-      :rewards => @achievement ? nil : @rewards,
-      :achievement => @achievement
-    )
+    quest = Quest.new
+    quest.parent_id = @parent_id
+    quest.main_quest_slides = @main_quest_slides.try(:join, ","),
+    quest.rewards = @achievement ? nil : @rewards
+    quest.achievement = @achievement
     quest.id = @quest_id
     quest.save!
 

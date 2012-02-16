@@ -41,8 +41,8 @@ class ConstructionQueueEntry < ActiveRecord::Base
     player = get_player(planet, population_cost)
 
     raise GameLogicError.new(
-      "Insuffient resources for #{planet} && #{player}! Wanted to build #{count
-      } of #{constructable_type}, needed: metal: #{metal_cost}, energy: #{
+      "Insufficient resources for #{planet} && #{player}! Wanted to build #{
+      count} of #{constructable_type}, needed: metal: #{metal_cost}, energy: #{
       energy_cost}, zetium: #{zetium_cost}, population: #{population_cost}"
     ) if planet.metal < metal_cost || planet.energy < energy_cost ||
       planet.zetium < zetium_cost ||

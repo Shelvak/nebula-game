@@ -157,6 +157,20 @@ describe Combat::LocationChecker do
           Combat::LocationChecker.check_location(@location)
         end
 
+        # BUGFIX
+        it "should not include mobile_thunder units" do
+          unit = Factory.create!(
+            :u_mobile_thunder, :location => @location, :level => 1,
+            :player => @player1
+          )
+          Combat.stub!(:run).and_return do
+            |planet, alliances, nap_rules, units, buildings|
+            units.should_not include(unit)
+            @stubbed_assets
+          end
+          Combat::LocationChecker.check_location(@location)
+        end
+
         it "should not run combat if npc only has non-combat units" do
           planet = nil
           CombatDsl.new do

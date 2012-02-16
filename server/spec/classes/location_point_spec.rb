@@ -34,8 +34,7 @@ describe LocationPoint do
         x = 0
         y = 12
         LocationPoint.new(id, Location::GALAXY, x, y).client_location.
-          should == ClientLocation.new(id, Location::GALAXY, x, y, nil, nil,
-                                       nil, nil, nil)
+          should == ClientLocation.new(id, Location::GALAXY, x, y)
       end
     end
 
@@ -47,42 +46,22 @@ describe LocationPoint do
         angle = 90
         LocationPoint.new(
           id, Location::SOLAR_SYSTEM, position, angle
-        ).client_location.should == ClientLocation.new(id,
-          Location::SOLAR_SYSTEM, position, angle, nil, ss.kind, nil, nil, nil)
+        ).client_location.should == ClientLocation.new(
+          id, Location::SOLAR_SYSTEM, position, angle
+        )
       end
     end
 
     describe "when ss object" do
-      describe "with player" do
-        it "should return ClientLocation" do
-          position = 2
-          angle = 90
-          planet = Factory.create(:planet_with_player, :position => position,
-            :angle => angle)
-          planet.location_point.client_location.
-            should == ClientLocation.new(
-              planet.id,
-              Location::SS_OBJECT, planet.position, planet.angle, planet.name,
-              nil, planet.terrain, planet.solar_system_id,
-              planet.player.as_json(:mode => :minimal)
-          )
-        end
-      end
-
-      describe "without player" do
-        it "should return ClientLocation" do
-          position = 2
-          angle = 90
-          planet = Factory.create(:planet, :position => position,
-            :angle => angle)
-          planet.location_point.client_location.
-            should == ClientLocation.new(
-              planet.id,
-              Location::SS_OBJECT, planet.position, planet.angle, planet.name,
-              nil, planet.terrain, planet.solar_system_id,
-              nil
-          )
-        end
+      it "should return ClientLocation" do
+        position = 2
+        angle = 90
+        planet = Factory.create(
+          :planet_with_player, :position => position, :angle => angle
+        )
+        planet.location_point.client_location.should == ClientLocation.new(
+          planet.id, Location::SS_OBJECT, planet.position, planet.angle
+        )
       end
     end
   end

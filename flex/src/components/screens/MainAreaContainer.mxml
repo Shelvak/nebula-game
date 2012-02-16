@@ -48,6 +48,7 @@
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.PLAYER}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.DEFENSIVE_PORTAL}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.VIP}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.PREFERENCES}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLY_RATINGS}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLIANCE}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.CHAT}"/>

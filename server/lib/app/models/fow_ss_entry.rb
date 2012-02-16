@@ -4,10 +4,9 @@
 # systems in particular galaxy.
 #
 class FowSsEntry < ActiveRecord::Base
+  # FK :dependent => :destroy_all
   belongs_to :solar_system
-  belongs_to :alliance
-  belongs_to :player
-  
+
   include Parts::FowEntry
 
   custom_serialize :alliance_planet_player_ids, :alliance_ship_player_ids,
