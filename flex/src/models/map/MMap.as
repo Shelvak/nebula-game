@@ -29,13 +29,6 @@ package models.map
     * @eventType models.map.events.MMapEvent.UICMD_ZOOM_OBJECT
     */
    [Event(name="uicmdZoomObject", type="models.map.events.MMapEvent")]
-   
-   /**
-    * Signals component to select a given object.
-    * 
-    * @eventType models.map.events.MMapEvent.UICMD_SELECT_OBJECT
-    */
-   [Event(name="uicmdSelectObject", type="models.map.events.MMapEvent")]
 
    /**
     * Signals component to deselect selected object if one is selected.
