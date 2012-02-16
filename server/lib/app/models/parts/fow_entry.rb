@@ -1,7 +1,9 @@
 # Common features of fog of war classes.
 module Parts::FowEntry
   def self.included(receiver)
+    # FK :dependent => :destroy_all
     receiver.send :belongs_to, :player
+    # FK :dependent => :destroy_all
     receiver.send :belongs_to, :alliance
 
     # TODO: outfactor spec to shared from FowSsEntry spec.

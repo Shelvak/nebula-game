@@ -20,6 +20,8 @@ class SolarSystem < ActiveRecord::Base
   has_many :planets, :class_name => "SsObject::Planet"
   has_many :asteroids, :class_name => "SsObject::Asteroid"
   has_many :jumpgates, :class_name => "SsObject::Jumpgate"
+
+  # FK :dependent => :delete_all
   has_many :fow_ss_entries
 
   scope :in_galaxy, Proc.new { |galaxy|

@@ -2,6 +2,7 @@
 # units can be seen by +Player+ or +Alliance+.
 #
 class FowGalaxyEntry < ActiveRecord::Base
+  # FK :dependent => :destroy_all
   belongs_to :galaxy
 
   include Parts::FowEntry
