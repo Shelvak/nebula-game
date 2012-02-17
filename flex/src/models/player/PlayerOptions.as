@@ -6,23 +6,26 @@
  * To change this template use File | Settings | File Templates.
  */
 package models.player {
+   import com.adobe.utils.ArrayUtil;
+
    import mx.collections.ArrayCollection;
 
    public class PlayerOptions {
       public static const IGNORE_TYPE_COMPLETE: String = 'complete';
       public static const IGNORE_TYPE_FILTERED: String = 'filtered';
-      public static function loadOptions (options: Object, justRefreshOldData: Boolean = false): void
+      public static function loadOptions (options: Object, justRefreshOriginalData: Boolean = false): void
       {
          originalData = options;
          hasChanges = false;
-         if (justRefreshOldData)
+         if (justRefreshOriginalData)
          {
+            originalIgnoredPlayers = ArrayUtil.copyArray(ignoredChatPlayers);
             return;
          }
          chatShowJoinLeave = options.chatShowJoinLeave;
          chatIgnoreType = options.chatIgnoreType;
          ignoredChatPlayers = options.ignoredChatPlayers;
-         ignoredPlayersString = ignoredChatPlayers.join(',')
+         originalIgnoredPlayers = ArrayUtil.copyArray(ignoredChatPlayers);
          ignoredPlayersDataProvider = new ArrayCollection(ignoredChatPlayers);
          showPopupsAfterLogin = options.showPopupsAfterLogin;
          openFirstPlanetAfterLogin = options.openFirstPlanetAfterLogin;
@@ -30,6 +33,7 @@ package models.player {
       }
 
       private static var originalData: Object;
+      private static var originalIgnoredPlayers: Array;
       
       public static function getOptions (): Object
       {
@@ -43,7 +47,17 @@ package models.player {
          }
       }
 
-      private static var ignoredPlayersString: String;
+      public static function cancelChanges(): void
+      {
+         chatShowJoinLeave = originalData.chatShowJoinLeave;
+         chatIgnoreType = originalData.chatIgnoreType;
+         ignoredChatPlayers = ArrayUtil.copyArray(originalIgnoredPlayers);
+         ignoredPlayersDataProvider.source = ignoredChatPlayers;
+         showPopupsAfterLogin = originalData.showPopupsAfterLogin;
+         openFirstPlanetAfterLogin = originalData.openFirstPlanetAfterLogin;
+         warnBeforeUnload = originalData.warnBeforeUnload;
+         hasChanges = false;
+      }
       [Bindable]
       public static var hasChanges: Boolean = false;
       
@@ -51,7 +65,7 @@ package models.player {
       {
          hasChanges = !(chatShowJoinLeave == originalData.chatShowJoinLeave
          && chatIgnoreType == originalData.chatIgnoreType
-         && ignoredChatPlayers.join(',') == ignoredPlayersString
+         && ignoredChatPlayers.join(',') == originalIgnoredPlayers.join(',')
          && showPopupsAfterLogin == originalData.showPopupsAfterLogin
          && openFirstPlanetAfterLogin == originalData.openFirstPlanetAfterLogin
          && warnBeforeUnload == originalData.warnBeforeUnload);
@@ -59,7 +73,6 @@ package models.player {
 
       public static function addIgnoredPlayer(playerName: String): void
       {
-//         ignoredChatPlayers.push(playerName);
          ignoredPlayersDataProvider.addItem(playerName);
          changed();
       }
