@@ -12,6 +12,8 @@ package controllers.playeroptions.actions
 
    import flash.external.ExternalInterface;
 
+   import models.player.Player;
+
    import models.player.PlayerOptions;
 
    import utils.remote.rmo.ClientRMO;
@@ -19,7 +21,9 @@ package controllers.playeroptions.actions
    public class SetAction extends CommunicationAction
    {
       public override function applyClientAction(cmd:CommunicationCommand):void {
-         sendMessage(new ClientRMO(PlayerOptions.getOptions()));
+         var newOptions: Object = PlayerOptions.getOptions();
+         sendMessage(new ClientRMO(newOptions));
+         PlayerOptions.loadOptions(newOptions, true);
          if (ExternalInterface.available) {
             ExternalInterface.call(
                "setLeaveHandler", PlayerOptions.warnBeforeUnload

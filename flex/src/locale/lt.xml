@@ -5618,6 +5618,10 @@
      <label.ignoredList value="Ignoruojami žaidėjai:" />
      <label.ignoredListEmpty value="Nėra ignoruojamų žaidėjų" />
      <label.addIgnoredPlayer value="Pridėti" />
+     <label.removeIgnored value="Šalinti"/>
+     <label.ignoreComplete value="Pilnai ignoruoti"/>
+     <label.ignoreFiltered value="Uždengti žinutes"/>
+     <label.ignoreType value="Ignoravimo būdas:"/>
   </PlayerOptions>
 
 </locale>

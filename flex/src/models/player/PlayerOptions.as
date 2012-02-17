@@ -9,17 +9,27 @@ package models.player {
    import mx.collections.ArrayCollection;
 
    public class PlayerOptions {
-      public static function loadOptions (options: Object): void
+      public static const IGNORE_TYPE_COMPLETE: String = 'complete';
+      public static const IGNORE_TYPE_FILTERED: String = 'filtered';
+      public static function loadOptions (options: Object, justRefreshOldData: Boolean = false): void
       {
+         originalData = options;
+         hasChanges = false;
+         if (justRefreshOldData)
+         {
+            return;
+         }
          chatShowJoinLeave = options.chatShowJoinLeave;
          chatIgnoreType = options.chatIgnoreType;
          ignoredChatPlayers = options.ignoredChatPlayers;
+         ignoredPlayersString = ignoredChatPlayers.join(',')
          ignoredPlayersDataProvider = new ArrayCollection(ignoredChatPlayers);
          showPopupsAfterLogin = options.showPopupsAfterLogin;
          openFirstPlanetAfterLogin = options.openFirstPlanetAfterLogin;
          warnBeforeUnload = options.warnBeforeUnload;
-         hasChanges = false;
       }
+
+      private static var originalData: Object;
       
       public static function getOptions (): Object
       {
@@ -33,19 +43,37 @@ package models.player {
          }
       }
 
+      private static var ignoredPlayersString: String;
       [Bindable]
       public static var hasChanges: Boolean = false;
       
       public static function changed(): void
       {
-         hasChanges = true;
+         hasChanges = !(chatShowJoinLeave == originalData.chatShowJoinLeave
+         && chatIgnoreType == originalData.chatIgnoreType
+         && ignoredChatPlayers.join(',') == ignoredPlayersString
+         && showPopupsAfterLogin == originalData.showPopupsAfterLogin
+         && openFirstPlanetAfterLogin == originalData.openFirstPlanetAfterLogin
+         && warnBeforeUnload == originalData.warnBeforeUnload);
       }
 
       public static function addIgnoredPlayer(playerName: String): void
       {
-         hasChanges = true;
-         ignoredChatPlayers.push(playerName);
+//         ignoredChatPlayers.push(playerName);
          ignoredPlayersDataProvider.addItem(playerName);
+         changed();
+      }
+
+      public static function removeIgnoredPlayer(playerName: String): void
+      {
+         var idx: int = ignoredPlayersDataProvider.getItemIndex(playerName);
+         if (idx == -1)
+         {
+            throw new Error("Player with name: " + playerName + " was not found " +
+               "in ignored players list");
+         }
+         ignoredPlayersDataProvider.removeItemAt(idx);
+         changed();
       }
 
       /*### Chat options ###*/
