@@ -20,7 +20,7 @@ class Quest::DSL
   def save!
     quest = Quest.new
     quest.parent_id = @parent_id
-    quest.main_quest_slides = @main_quest_slides.try(:join, ","),
+    quest.main_quest_slides = @main_quest_slides.try(:join, ",")
     quest.rewards = @achievement ? nil : @rewards
     quest.achievement = @achievement
     quest.id = @quest_id

@@ -1852,6 +1852,18 @@ describe Player do
       points(defender) / points(aggressor)
     end
 
+    it "should fail if aggressor cannot be found" do
+      lambda do
+        Player.battle_vps_multiplier(0, player.id)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if defender cannot be found" do
+      lambda do
+        Player.battle_vps_multiplier(player.id, 0)
+      end.should raise_error(GameLogicError)
+    end
+
     it "should use Cfg::Java.fairnessPoints" do
       p1_args = [10, 20, 30, 40, 50]
       p2_args = p1_args.reverse

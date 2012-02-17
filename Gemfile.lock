@@ -7,9 +7,10 @@ GIT
 
 GIT
   remote: git://github.com/arturaz/net-ssh.git
-  revision: f1f9340498a6e8030b0b1feb084a20df98271037
+  revision: 5068e2bff0dde9ef94c9a3cbdbf9a2b2f504e2cb
   specs:
     net-ssh (2.3.1)
+      jruby-pageant (>= 1.0.1)
 
 GIT
   remote: git://github.com/pry/pry.git
@@ -52,6 +53,7 @@ GEM
     jdbc-mysql (5.1.13)
     jruby-openssl (0.7.6.1)
       bouncy-castle-java (>= 1.5.0146.1)
+    jruby-pageant (1.0.1-java)
     json (1.6.5-java)
     mail (2.4.1)
       i18n (>= 0.4.0)
