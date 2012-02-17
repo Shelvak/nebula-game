@@ -79,6 +79,7 @@ package controllers.startup
    import utils.StringUtil;
    import utils.logging.InMemoryTarget;
    import utils.logging.MessagesLogger;
+   import utils.remote.ServerProxyInstance;
 
 
    public final class StartupManager
@@ -182,7 +183,8 @@ package controllers.startup
        */
       public static function resetApp() : void {
          logger.info("-------------- APPLICATION RESET --------------");
-         new GlobalEvent(GlobalEvent.APP_RESET);         
+         new GlobalEvent(GlobalEvent.APP_RESET);
+         ServerProxyInstance.getInstance().reset();
          StringUtil.reset();
          ML.reset();
          MChat.getInstance().reset();
