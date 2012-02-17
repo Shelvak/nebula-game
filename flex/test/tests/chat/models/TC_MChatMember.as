@@ -51,10 +51,21 @@ package tests.chat.models
          mockRespository = null;
          SingletonFactory.clearAllSingletonInstances();
       }
-      
+
+      [Test]
+      public function isIgnored(): void {
+         assertThat(
+            function():void{ member.isIgnored = true },
+            causes (member) .toDispatchEvent (MChatMemberEvent.IS_IGNORED_CHANGE)
+         );
+         assertThat(
+            function():void{ member.isIgnored = false },
+            causes (member) .toDispatchEvent (MChatMemberEvent.IS_IGNORED_CHANGE)
+         );
+      }
       
       [Test]
-      public function should_dispatch_IS_ONLINE_CHANGE_event_when_isOnline_property_changes() : void {
+      public function isOnline() : void {
          assertThat(
             function():void{ member.isOnline = true },
             causes (member) .toDispatchEvent (MChatMemberEvent.IS_ONLINE_CHANGE)

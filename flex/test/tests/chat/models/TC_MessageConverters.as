@@ -11,7 +11,7 @@ package tests.chat.models
    import models.chat.MChatMessage;
    import models.chat.msgconverters.IChatMessageConverter;
    import models.chat.msgconverters.MemberMessageConverter;
-   
+
    import mx.resources.IResourceBundle;
    import mx.resources.IResourceManager;
    import mx.resources.ResourceBundle;
@@ -67,40 +67,40 @@ package tests.chat.models
          assertParagraphNumChildren(3);
          spanAssersions(2);
       }
-      
+
       [Test]
       public function messageParsing_onlyURL() : void {
          message.message = "http://nebula44.com/";
          convertToParagraph();
          assertParagraphNumChildren(3);
          linkAssertions(2);
-         
+
          message.message = "www.nebula44.lt";
          convertToParagraph();
          assertParagraphNumChildren(3);
          linkAssertions(2, "http://www.nebula44.lt");
-         
+
          message.message = "http://www.nebula44.com";
          convertToParagraph();
          assertParagraphNumChildren(3);
          linkAssertions(2, "http://www.nebula44.com");
-         
+
          message.message = "www.nebula44.com/list?user=mikism";
          convertToParagraph();
          assertParagraphNumChildren(3);
          linkAssertions(2, "http://www.nebula44.com/list?user=mikism");
       }
-      
+
       [Test]
       public function messageParsing_simpleTextBeforeURL() : void {
          message.message = "My website: http://nebula44.com/list?user=mikism";
          convertToParagraph();
-      
+
          assertParagraphNumChildren(4);
          spanAssersions(2, "My website: ");
          linkAssertions(3, "http://nebula44.com/list?user=mikism");
       }
-      
+
       [Test]
       public function messageParsing_URLEncodedUrls() : void {
          message.message = "My website: http://static.nebula44.lt/?server=" +
@@ -114,28 +114,28 @@ package tests.chat.models
             "game.nebula44.lt&web_host=nebula44.lt:80&assets_url=" +
             "http://static.nebula44.lt/&combat_log_id=" +
             "3e84b7f016b4cc19e7ad2d3da1e885cce956c98e&player_id=684&locale=lt");
-         
+
          message.message = "http://wiki.nebula44.lt/wiki/Galaktikos_tyrin%C4%97jimas";
          convertToParagraph();
          assertParagraphNumChildren(3);
          linkAssertions(2, "http://wiki.nebula44.lt/wiki/Galaktikos_tyrinėjimas");
       }
-      
+
       [Test]
       public function messageParsing_simpleTextAfterURL() : void {
          message.message = "http://nebula44.com/list?user=mikism is my website";
          convertToParagraph();
-         
+
          assertParagraphNumChildren(4);
          linkAssertions(2, "http://nebula44.com/list?user=mikism");
          spanAssersions(3, " is my website");
       }
-      
+
       [Test]
       public function messageParsing_simpleTextBlocksAndURLsMix() : void {
          message.message = "Hi! Check this out: http://nebula44.com/. And these also: http://one.com http://two.com";
          convertToParagraph();
-         
+
          assertParagraphNumChildren(8);
          spanAssersions(2, "Hi! Check this out: ");
          linkAssertions(3, "http://nebula44.com/.");
@@ -145,19 +145,19 @@ package tests.chat.models
          linkAssertions(7, "http://two.com");
       }
       
-      
+
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
+
       private function assertParagraphChildType(childIdx:int, CLASS:Class) : void {
          assertThat( "element " + childIdx + " type", paragraph.getChildAt(childIdx), isA (CLASS) );
       }
-      
+
       private function assertParagraphNumChildren(numChildren:int) : void {
          assertThat( "number of elements in paragraph", paragraph.numChildren, equals (numChildren) );
       }
-      
+
       private function spanAssersions(idx:int, text:String = null) : void {
          assertParagraphChildType(idx, SpanElement);
          if (text == null)
