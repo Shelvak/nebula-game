@@ -88,6 +88,32 @@ package models.healing
          deselectAllFlankSets();
          refreshPrice();
       }
+
+      public function refreshScreen(): void
+      {
+         buildFlanks();
+         deselectAllButtons();
+         if (getUnitCount(selfFlanks) > 0)
+         {
+            selfSelected = true;
+         }
+         else if (getUnitCount(allyFlanks) > 0)
+         {
+            napSelected = true;
+         }
+         else if (getUnitCount(napFlanks) > 0)
+         {
+            allySelected = true;
+         }
+         else
+         {
+            selfSelected = true;
+         }
+         selectionClass.flanks = currentFlanks;
+         selectionClass.allFlanks = [selfFlanks, allyFlanks, napFlanks];
+         deselectAllFlankSets();
+         refreshPrice();
+      }
       
       private function deselectAllFlankSets(): void
       {
@@ -359,6 +385,6 @@ package models.healing
       [Bindable]
       public var allyFlanks: ArrayCollection = new ArrayCollection();
       
-      private var oldProvider: ListCollectionView;
+      public var oldProvider: ListCollectionView;
    }
 }
