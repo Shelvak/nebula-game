@@ -7,27 +7,72 @@
          width="100%" height="100%">
    <fx:Script>
       <![CDATA[
-      import controllers.playeroptions.PlayerOptionsCommand;
-      import controllers.ui.NavigationController;
+     import components.popups.ActionConfirmationPopup;
 
-      import models.player.PlayerOptions;
+     import controllers.playeroptions.PlayerOptionsCommand;
+     import controllers.ui.NavigationController;
 
-      import mx.collections.ArrayCollection;
+     import models.player.PlayerOptions;
 
-      import utils.locale.Localizer;
+     import models.player.PlayerOptions;
 
-      private var NC: NavigationController = NavigationController.getInstance();
-      
-      private function getString(prop: String): String
-      {
-         return Localizer.string('PlayerOptions', prop);
-      }
+     import mx.collections.ArrayCollection;
+     import mx.events.FlexEvent;
 
-      private function saveClickHandler(e: MouseEvent): void
-      {
-         new PlayerOptionsCommand(PlayerOptionsCommand.SET).dispatch();
-      }
-      ]]>
+     import utils.locale.Localizer;
+
+     private var NC: NavigationController = NavigationController.getInstance();
+
+     private function getString(prop: String): String {
+       return Localizer.string('PlayerOptions', prop);
+     }
+
+     private function saveClickHandler(e: MouseEvent): void {
+       new PlayerOptionsCommand(PlayerOptionsCommand.SET).dispatch();
+     }
+
+     private function inpIgnoredPlayer_enterHandler(event: FlexEvent): void {
+       if (inpIgnoredPlayer.text.length > 0
+         && PlayerOptions.ignoredPlayersDataProvider.getItemIndex(
+         inpIgnoredPlayer.text) == -1) {
+         addIgnored();
+       }
+     }
+
+     private function addIgnored(): void {
+       PlayerOptions.addIgnoredPlayer(inpIgnoredPlayer.text);
+       inpIgnoredPlayer.text = ''
+     }
+
+     private function getPopupText(prop: String, params: Array = null): String
+     {
+       return Localizer.string('Popups', prop, params);
+     }
+
+     private function screenCloseButton1_clickHandler(event: MouseEvent): void {
+       if (!PlayerOptions.hasChanges)
+       {
+         NC.showPreviousScreen();
+       }
+       else
+       {
+         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         popUp.confirmButtonLabel = getPopupText('label.yes');
+         popUp.cancelButtonLabel = getPopupText('label.no');
+         var lbl: Label = new Label();
+         lbl.minWidth = 300;
+         lbl.text = getPopupText('message.cancelPlayerOptions');
+         popUp.addElement(lbl);
+         popUp.title = getPopupText('title.cancelPlayerOptions');
+         popUp.confirmButtonClickHandler = function (button: Button = null): void
+         {
+           PlayerOptions.cancelChanges();
+           NC.showPreviousScreen();
+         };
+         popUp.show();
+       }
+     }
+     ]]>
    </fx:Script>
    <fx:Declarations>
      <s:RadioButtonGroup id="ignoreType" selectedValue="{PlayerOptions.chatIgnoreType}"
@@ -103,11 +148,14 @@
                        includeInLayout="{
                             PlayerOptions.ignoredPlayersDataProvider.length == 0}"/>
               <s:Group>
-                <s:TextInput width="200" id="inpIgnoredPlayer"/>
+                <s:TextInput width="200" id="inpIgnoredPlayer"
+                  enter="inpIgnoredPlayer_enterHandler(event)"/>
                 <s:Button label="{getString('label.addIgnoredPlayer')}"
-                  enabled="{inpIgnoredPlayer.text.length > 0}"
-                  click="{PlayerOptions.addIgnoredPlayer(inpIgnoredPlayer.text);
-                          inpIgnoredPlayer.text = ''}"/>
+                  enabled="{inpIgnoredPlayer.text.length > 0
+                  &amp;&amp;
+                    PlayerOptions.ignoredPlayersDataProvider.getItemIndex(
+                      inpIgnoredPlayer.text) == -1}"
+                  click="{addIgnored()}"/>
                 <s:layout>
                   <s:HorizontalLayout/>
                 </s:layout>
@@ -147,7 +195,7 @@
                 enabled="{PlayerOptions.hasChanges}"
                 click="saveClickHandler(event)"/>
       <screens:ScreenCloseButton label="{Localizer.string('Players', 'label.close')}"
-                                 click="NC.showPreviousScreen()"
+                                 click="screenCloseButton1_clickHandler(event)"
                                  scroller="{scroller}"/>
    </s:Group>
 </s:Group>

@@ -2058,6 +2058,13 @@
     <title.cancelConstructor value="Atšaukti statybas" />
     <message.cancelConstructor 
     value="Ar tikrai nori atšaukti šio pastato statybas?"/>
+
+    <title.cancelPlayerOptions value="Yra neišsaugotų pakeitimų" />
+    <message.cancelPlayerOptions>
+      <p>Tu padarei pakeitimų nustatymuose. Jei uždarysi šį langą visi pakeitimai
+        bus atšaukti.</p>
+      <p>Ar esi tikras?</p>
+    </message.cancelPlayerOptions>
     
     <title.cancelOffer value="Atšaukti pasiūlymą" />
     <message.cancelOffer>
@@ -3798,7 +3805,7 @@
       <![CDATA[
       <p>Ęsant virš sektoriaus su nuolaužomis pasirink savo laivus, tada spausk
         mygtuką „[reference:Squadrons/label.manage]“.</p>
-      <p>Atsidariusiame ekrane paspausk įkrovimo mygtuką.<p>
+      <p>Atsidariusiame ekrane paspausk įkrovimo mygtuką.</p>
       ]]>
     </LoadWreckage1>
     <LoadWreckage2>
@@ -5607,7 +5614,7 @@
   </PlanetMapEditor>
 
   <PlayerOptions>
-     <title.chatOptions value="Pokalbių kambario nustatymai (NEPABAIGTA)" />
+     <title.chatOptions value="Pokalbių kambario nustatymai" />
      <title.afterLoginOptions value="Prisijungimo nustatymai" />
      <title.genericOptions value="Pagrindiniai nustatymai" />
      <label.save value="Išsaugoti" />
