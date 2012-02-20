@@ -802,6 +802,7 @@
     <property.height value="Pastato ilgis" />
     <property.vpsOnDamage value="PT už 1 žalos vienetą" />
     <property.credsForKilling value="Kredų už nužudymą" />
+    <property.teleportedVolume value="Perkeliamų karių apimtis" />
 
     <text.deactivated>
       <p>
