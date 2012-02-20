@@ -647,7 +647,7 @@
                               horizontalAlign="justify"/>
          </base:layout>
          <base:Warning text="{getString('notYourPlanet')}"/>
-         <s:Group visible="{(ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
+         <s:Group visible="{(ML.latestPlanet.hasAggressiveGroundUnits(Owner.ENEMY)
                   || ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
                   || ML.latestPlanet.hasBuildingsWithGuns)
                   &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
@@ -660,7 +660,7 @@
                      left="0" right="0"/>
          </s:Group>
          <s:Group visible="{ML.latestPlanet.ssObject.player == null
-             &amp;&amp; !ML.latestPlanet.hasAgressiveGroundUnits(Owner.ENEMY)
+             &amp;&amp; !ML.latestPlanet.hasAggressiveGroundUnits(Owner.ENEMY)
              &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
              &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
              &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}">
