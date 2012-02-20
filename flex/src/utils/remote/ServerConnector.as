@@ -211,8 +211,8 @@ package utils.remote
       }
       
       
-      public function reset() : void
-      {
+      public function reset() : void {
+         getUnprocessedMessages();
       }
       
       
