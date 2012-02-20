@@ -10,6 +10,7 @@ alien_cannon thor_ground
 zeus_cannon
 dart_laser
 boss_light boss_heavy
+convoyship_heavy convoyship_light
 } %>
 <% terrain_types = {
   0 => 'earth',
@@ -129,14 +130,14 @@ assets:
           image = CONFIG["technologies.#{base.underscore}.name"]
           if image.nil?
         %>
-        <%= "#{base}.jpg: #{base}Technology.jpg" %>
+        <%= "#{base}.png: #{base}Technology.png" %>
         <%
           else
             image_set.add image
           end
         end
         image_set.each do |image| %>
-        <%= "#{image}.jpg: #{image}Technology.jpg" %>
+        <%= "#{image}.png: #{image}Technology.png" %>
         <% end %>
         background.jpg:
           wiki_name: Technology_background.jpg

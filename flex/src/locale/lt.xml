@@ -1562,6 +1562,8 @@
     <gun.dart_laser value="Fazinė patranka" />
     <gun.boss_light value="Dvejinti fazeriai" />
     <gun.boss_heavy value="Šoko sviediniai" />
+    <gun.convoyship_light value="Fotonų greitintuvas" />
+    <gun.convoyship_heavy value="TR-3 leistuvas" />
     <armorType value="Šarvų tipas" />
     <damageInPercent value="Procentai" />
     <damage value="Žala" />

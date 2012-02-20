@@ -13,7 +13,6 @@
 
       import utils.assets.AssetNames;
 
-
       [Bindable(event="modelChange")]
       private function get myModel(): MSlideQuestWithImage {
          return MSlideQuestWithImage(model);
@@ -48,7 +47,7 @@
       </s:Group>
       <components:CenteredBitmapImage
          id="image"
-         width="130" height="130"
+         width="{myModel.width}" height="{myModel.height}"
          verticalCenter="0" horizontalCenter="0"
          smooth="true" source="{myModel.image}"/>
    </s:Group>
