@@ -45,6 +45,8 @@ package utils
                   '\n\n';
                message += "Exception data:\n";
                message += 'Error id: ' + err.errorID + '\n';
+               message += 'Error name: ' + err.name + '\n';
+               message += 'Error message: ' + err.message + '\n';
                message += 'Stack trace:\n' + err.getStackTrace() + '\n\n';
 
 //            message += "Global unit list:\n" + ML.units + "\n\n";
