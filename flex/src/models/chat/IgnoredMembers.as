@@ -9,8 +9,10 @@ package models.chat
    import models.player.PlayerOptions;
 
    import mx.collections.IList;
+   import mx.events.CollectionEvent;
+   import mx.events.CollectionEventKind;
 
-   
+
    /**
     * @see models.chat.events.IgnoredMembersEvent.ADD_TO_IGNORE
     */
@@ -23,23 +25,44 @@ package models.chat
 
    public class IgnoredMembers extends EventDispatcher
    {
-      private var _ignored: IList = PlayerOptions.ignoredPlayersDataProvider;
+      private function get ignoredList(): IList {
+         return PlayerOptions.ignoredPlayersDataProvider;
+      }
 
       public function IgnoredMembers() {
+         ignoredList.addEventListener(
+            CollectionEvent.COLLECTION_CHANGE,
+            ignoredList_collectionChangeHandler, false, 0, true
+         );
+      }
+
+      private function ignoredList_collectionChangeHandler(event: CollectionEvent): void {
+         switch (event.kind) {
+            case CollectionEventKind.ADD:
+               dispatchIgnoredMembersEvent(
+                  IgnoredMembersEvent.ADD_TO_IGNORE, event.items[0]
+               );
+               break;
+            case CollectionEventKind.REMOVE:
+               dispatchIgnoredMembersEvent(
+                  IgnoredMembersEvent.REMOVE_FROM_IGNORE, event.items[0]
+               );
+               break;
+         }
       }
 
       public function isIgnored(memberName: String): Boolean {
-         return _ignored.getItemIndex(memberName) >= 0;
+         return ignoredList.getItemIndex(memberName) >= 0;
       }
 
-      public function get completeIgnore(): Boolean {
-         return PlayerOptions.chatIgnoreType ==
-                   PlayerOptions.IGNORE_TYPE_COMPLETE;
+      public function isCompleteIgnored(memberName: String): Boolean {
+         return isIgnored(memberName) && PlayerOptions.chatIgnoreType ==
+                                            PlayerOptions.IGNORE_TYPE_COMPLETE;
       }
 
-      public function get filteredIgnore(): Boolean {
-         return PlayerOptions.chatIgnoreType ==
-                   PlayerOptions.IGNORE_TYPE_FILTERED;
+      public function isFilteredIgnored(memberName: String): Boolean {
+         return isIgnored(memberName) && PlayerOptions.chatIgnoreType ==
+                                            PlayerOptions.IGNORE_TYPE_FILTERED;
       }
 
       public function addToIgnoreList(memberName: String): void {

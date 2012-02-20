@@ -123,5 +123,18 @@ package models.chat
                    + ", isOnline: " + isOnline
                    + ", isIgnored: " + isIgnored + "]";
       }
+
+      public function setIsIgnored(ignored: Boolean): void {
+         if (isIgnored == ignored) {
+            return;
+         }
+         const chat:MChat = MChat.getInstance();
+         if (ignored) {
+            chat.IGNORED_MEMBERS.addToIgnoreList(name);
+         }
+         else {
+            chat.IGNORED_MEMBERS.removeFromIgnoreList(name);
+         }
+      }
    }
 }

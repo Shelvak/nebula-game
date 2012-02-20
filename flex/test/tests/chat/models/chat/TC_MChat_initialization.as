@@ -2,10 +2,10 @@ package tests.chat.models.chat
 {
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.object.equals;
-   
+
    import models.chat.MChat;
    import models.chat.MChatChannel;
-   
+
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.collection.hasItem;
@@ -14,16 +14,15 @@ package tests.chat.models.chat
    import org.hamcrest.object.hasProperty;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
-   import org.hamcrest.object.notNullValue;
    import org.hamcrest.text.startsWith;
-   
-   
+
+
    public class TC_MChat_initialization extends TC_BaseMChat
    {
       public function TC_MChat_initialization()
       {
          super();
-      };
+      }
       
       
       [Test]
@@ -46,7 +45,7 @@ package tests.chat.models.chat
             hasProperties ({"id": 2, "name": "jho"}),
             hasProperties ({"id": 3, "name": "arturaz"})
          ));
-      };
+      }
       
       
       [Test]
@@ -59,7 +58,7 @@ package tests.chat.models.chat
             hasProperties ({"name": "galaxy"}),
             hasProperties ({"name": "alliance"})
          ));
-      };
+      }
       
       
       [Test]
@@ -79,7 +78,7 @@ package tests.chat.models.chat
             chat.channels.getItemAt(MChat.MAIN_CHANNEL_INDEX),
             equals (chat.channels.getChannel(MChat.MAIN_CHANNEL_NAME))
          );
-      };
+      }
       
       
       [Test]
@@ -121,7 +120,7 @@ package tests.chat.models.chat
                )
             )
          })));
-      };
+      }
       
       
       [Test]
@@ -140,7 +139,7 @@ package tests.chat.models.chat
          );
          
          assertThat( chat.selectedChannel, equals (chat.channels.getItemAt(0)) );
-      };
+      }
       
       
       [Test]
@@ -149,7 +148,7 @@ package tests.chat.models.chat
          chat.initialize({}, {"galaxy": []});
          
          assertThat( chat.privateChannelOpen, isFalse() );
-      };
+      }
       
       
       [Test]
@@ -158,7 +157,7 @@ package tests.chat.models.chat
          chat.initialize({}, {"galaxy": []});
          
          assertThat( chat.allianceChannelOpen, isFalse() );
-      };
+      }
       
       
       [Test]
@@ -167,7 +166,7 @@ package tests.chat.models.chat
          chat.initialize({}, {"galaxy": [], "alliance-1": []});
          
          assertThat( chat.allianceChannelOpen, isTrue() );
-      };
+      }
       
       
       [Test]
@@ -179,6 +178,6 @@ package tests.chat.models.chat
             MChatChannel(chat.channels.getItemAt(MChat.ALLIANCE_CHANNEL_INDEX)).name,
             startsWith (MChat.ALLIANCE_CHANNEL_PREFIX)
          );
-      };
+      }
    }
 }

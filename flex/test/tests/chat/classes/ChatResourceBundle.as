@@ -22,6 +22,7 @@ package tests.chat.classes
          "format.time": "HH:NN:SS",
          "message.channelJoin": "{0} joined",
          "message.channelLeave": "{1} left",
+         "message.memberIgnored": "ignored",
          "label.privateChannel": "Private channel: {0}",
          "label.mainChannel": "Galaxy",
          "label.allianceChannel": "Alliance",

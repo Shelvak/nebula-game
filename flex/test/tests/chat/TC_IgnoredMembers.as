@@ -31,6 +31,7 @@ package tests.chat
       [After]
       public function tearDown(): void {
          PlayerOptions.ignoredPlayersDataProvider.removeAll();
+         ignoredMembers = null;
       }
 
       [Test]
@@ -46,25 +47,54 @@ package tests.chat
       }
 
       [Test]
-      public function ignoreType(): void {
+      public function isCompletelyOrFilteredIgnored_ignored(): void {
+         PlayerOptions.chatIgnoreType = PlayerOptions.IGNORE_TYPE_COMPLETE;
+         assertThat(
+            "member should be completely ignored when IGNORE_TYPE_COMPLETE",
+            ignoredMembers.isCompleteIgnored(IGNORED), isTrue()
+         );
+         assertThat(
+            "member should not be filtered ignored when IGNORE_TYPE_COMPLETE",
+            ignoredMembers.isFilteredIgnored(IGNORED), isFalse()
+         );
+
          PlayerOptions.chatIgnoreType = PlayerOptions.IGNORE_TYPE_FILTERED;
          assertThat(
-            "completeIgnore should be false when ignoreType is IGNORE_TYPE_FILTERED",
-            ignoredMembers.completeIgnore, isFalse()
+            "member should not be completely ignored when IGNORE_TYPE_FILTERED",
+            ignoredMembers.isCompleteIgnored(IGNORED), isFalse()
          );
          assertThat(
-            "filteredIgnore should be true when ignoreType is IGNORE_TYPE_FILTERED",
-            ignoredMembers.filteredIgnore, isTrue()
+            "member should be filtered ignored when IGNORE_TYPE_FILTERED",
+            ignoredMembers.isFilteredIgnored(IGNORED), isTrue()
          );
+      }
+
+      [Test]
+      public function isCompletelyOrFilteredIgnored_notIgnored(): void {
+         const name:String = "notIgnored";
 
          PlayerOptions.chatIgnoreType = PlayerOptions.IGNORE_TYPE_COMPLETE;
          assertThat(
-            "completeIgnore should be true when ignoreType is IGNORE_TYPE_COMPLETE",
-            ignoredMembers.completeIgnore, isTrue()
+            "member should not be completely ignored "
+               + "when IGNORE_TYPE_COMPLETE but he is not ignored",
+            ignoredMembers.isCompleteIgnored(name), isFalse()
          );
          assertThat(
-            "filteredIgnore should be true when ignoreType is IGNORE_TYPE_COMPLETE",
-            ignoredMembers.filteredIgnore, isFalse()
+            "member should not be filtered ignored when "
+               + "IGNORE_TYPE_COMPLETE but he is not ignored",
+            ignoredMembers.isFilteredIgnored(name), isFalse()
+         );
+
+         PlayerOptions.chatIgnoreType = PlayerOptions.IGNORE_TYPE_FILTERED;
+         assertThat(
+            "member should not be completely ignored when "
+               + "IGNORE_TYPE_FILTERED but he is not ignored",
+            ignoredMembers.isCompleteIgnored(name), isFalse()
+         );
+         assertThat(
+            "member should not be filtered ignored when "
+               + "IGNORE_TYPE_FILTERED but he is not ignored",
+            ignoredMembers.isFilteredIgnored(name), isFalse()
          );
       }
 
@@ -101,7 +131,7 @@ package tests.chat
       [Test]
       public function removeFromIgnoreList(): void {
          assertThat(
-            function(): void { ignoredMembers.removeFromIgnoreList(IGNORED) },
+            function():void{ ignoredMembers.removeFromIgnoreList(IGNORED) },
             causesGlobalEvent(
                PlayerOptionsCommand.SET,
                function(cmd: PlayerOptionsCommand): void {
@@ -116,7 +146,7 @@ package tests.chat
          const name:String = "player";
          ignoredMembers.addToIgnoreList(name);
          assertThat(
-            function(): void { ignoredMembers.removeFromIgnoreList(name) },
+            function():void{ ignoredMembers.removeFromIgnoreList(name) },
             causes (ignoredMembers) .toDispatchEvent(
                IgnoredMembersEvent.REMOVE_FROM_IGNORE,
                function (event: IgnoredMembersEvent): void {
@@ -124,6 +154,29 @@ package tests.chat
                      "event.member", event.memberName, equals(name)
                   )
                }
+            )
+         );
+      }
+
+      [Test]
+      public function backingIgnoredListModificationsCauseEvents(): void {
+         const name: String = "player";
+         function eventHandler(event: IgnoredMembersEvent): void {
+            assertThat( "event.member", event.memberName, equals (name) );
+         }
+
+         assertThat(
+            function():void{ PlayerOptions.addIgnoredPlayer(name) },
+            causes (ignoredMembers) .toDispatchEvent(
+               IgnoredMembersEvent.ADD_TO_IGNORE,
+               eventHandler
+            )
+         );
+         assertThat(
+            function():void{ PlayerOptions.removeIgnoredPlayer(name) },
+            causes(ignoredMembers) .toDispatchEvent(
+               IgnoredMembersEvent.REMOVE_FROM_IGNORE,
+               eventHandler
             )
          );
       }

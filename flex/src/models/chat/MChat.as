@@ -6,19 +6,22 @@ package models.chat
 
    import models.BaseModel;
    import models.ModelLocator;
+   import models.chat.MChatMember;
+   import models.chat.events.IgnoredMembersEvent;
    import models.chat.events.MChatEvent;
    import models.time.MTimeEventFixedMoment;
 
    import mx.logging.Log;
    import mx.utils.ObjectUtil;
-   
+
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
+   import utils.locale.Localizer;
    import utils.pool.IObjectPool;
    import utils.pool.impl.StackObjectPoolFactory;
-   
-   
+
+
    /**
     * @see MChatEvent#SELECTED_CHANNEL_CHANGE
     */
@@ -95,15 +98,55 @@ package models.chat
       private function get ML() : ModelLocator {
          return ModelLocator.getInstance();
       }
-      
-      
+
       public function MChat() {
          _messagePool = new StackObjectPoolFactory(new MChatMessageFactory()).createPool();
          _members  = new MChatMembersList();
          _channels = new MChatChannelsList();
+         IGNORED_MEMBERS.addEventListener(
+            IgnoredMembersEvent.REMOVE_FROM_IGNORE,
+            ignoredMembers_removeFromIgnoreHandler, false, 0, true
+         );
+         IGNORED_MEMBERS.addEventListener(
+            IgnoredMembersEvent.ADD_TO_IGNORE,
+            ignoredMembers_addToIgnoreHandler, false, 0, true
+         );
       }
-      
-      
+
+      public const IGNORED_MEMBERS: IgnoredMembers = new IgnoredMembers();
+
+      private function ignoredMembers_addToIgnoreHandler(event: IgnoredMembersEvent): void {
+         const member: MChatMember = members.getMemberByName(event.memberName);
+         if (member != null) {
+            member.isIgnored = true;
+         }
+      }
+
+      private function ignoredMembers_removeFromIgnoreHandler(event: IgnoredMembersEvent): void {
+         const member: MChatMember = members.getMemberByName(event.memberName);
+         if (member != null) {
+            member.isIgnored = false;
+         }
+      }
+
+      public function isIgnored(memberName: String): Boolean {
+         return IGNORED_MEMBERS.isIgnored(memberName);
+      }
+
+      private function isCompleteIgnored(memberName: String): Boolean {
+         return IGNORED_MEMBERS.isCompleteIgnored(memberName);
+      }
+
+      private function isFilteredIgnored(memberName: String): Boolean {
+         return IGNORED_MEMBERS.isFilteredIgnored(memberName);
+      }
+
+      private function filterMessage(message:MChatMessage): void {
+         if (isFilteredIgnored(message.playerName)) {
+            message.message = getString("message.memberIgnored");
+         }
+      }
+
       private var _messagePool:IObjectPool = null;
       /**
        * Returns <code>MChatMessage</code> pool for the chat.
@@ -150,49 +193,48 @@ package models.chat
        * 
        * @see controllers.chat.actions.IndexAction
        */
-      public function initialize(members:Object, channels:Object) : void
-      {
-         for (var chatMemberId:String in members)
-         {
-            _members.addMember(new MChatMember(int(chatMemberId), members[chatMemberId], true));
+      public function initialize(members: Object, channels: Object): void {
+         for (var chatMemberId: String in members) {
+            const memberId:int = int(chatMemberId);
+            const memberName:String = members[chatMemberId];
+            _members.addMember(new MChatMember(
+               memberId, memberName, true, IGNORED_MEMBERS.isIgnored(memberName)
+            ));
          }
-         
-         var channel:MChatChannelPublic;
-         
-         for (var channelName:String in channels)
-         {
+
+         var channel: MChatChannelPublic;
+
+         for (var channelName: String in channels) {
             channel = new MChatChannelPublic(channelName);
             addMembersToChannel(channel, channels[channelName]);
             _channels.addChannel(channel);
-            if (channel.isAlliance)
-            {
+            if (channel.isAlliance) {
                setAllianceChannelOpen(true);
             }
          }
-         
+
          // main channel must be first in the list
          channel = MChatChannelPublic(_channels.getChannel(MAIN_CHANNEL_NAME));
-         if (channel == null)
-         {
+         if (channel == null) {
             throw new Error(
-               "Unable to initialize chat: main channel '" + MAIN_CHANNEL_NAME + "' not found in " +
-               "channels list \n" + ObjectUtil.toString(channels)
+               "Unable to initialize chat: main channel '" + MAIN_CHANNEL_NAME
+                  + "' not found in channels list \n"
+                  + ObjectUtil.toString(channels)
             );
          }
          _channels.moveChannel(channel.name, MAIN_CHANNEL_INDEX);
-         
+
          // alliance channel should go second in the list, if present
-         channel = Collections.findFirst(_channels,
-            function(chan:MChatChannel) : Boolean
-            {
+         channel = Collections.findFirst(
+            _channels,
+            function (chan: MChatChannel): Boolean {
                return chan.isPublic && MChatChannelPublic(chan).isAlliance;
             }
          );
-         if (channel != null)
-         {
+         if (channel != null) {
             _channels.moveChannel(channel.name, ALLIANCE_CHANNEL_INDEX);
          }
-         
+
          selectChannel(MChatChannel(_channels.getItemAt(0)).name);
       }
       
@@ -449,7 +491,9 @@ package models.chat
        * 
        * @see mx.collections.Sort#compareFunction
        */
-      public static function compareFunction_members(m1:MChatMember, m2:MChatMember, fields:Array = null) : int {
+      public static function compareFunction_members(m1: MChatMember,
+                                                     m2: MChatMember,
+                                                     fields: Array = null) : int {
          var compareResult:int = ObjectUtil.stringCompare(m1.name, m2.name, true);
          if (compareResult != 0)
             return compareResult;
@@ -464,24 +508,23 @@ package models.chat
        *        <b>Not null</b>.
        * @param member a member who has joined the channel.
        */
-      public function channelJoin(channelName:String, member:MChatMember) : void
-      {
+      public function channelJoin(channelName: String,
+                                  member: MChatMember): void {
          Objects.paramNotNull("channelName", channelName);
-         
-         var existingMember:MChatMember = _members.getMember(member.id);
-         if (existingMember == null)
-         {
+
+         var existingMember: MChatMember = _members.getMember(member.id);
+         if (existingMember == null) {
             _members.addMember(member);
             existingMember = member;
          }
-         
-         var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(channelName));
-         if (channel == null)
-         {
+
+         var channel: MChatChannelPublic =
+                MChatChannelPublic(_channels.getChannel(channelName));
+         if (channel == null) {
             channel = createPublicChannel(channelName);
          }
          channel.memberJoin(existingMember);
-         
+
          existingMember.isOnline = true;
       }
       
@@ -633,25 +676,26 @@ package models.chat
        * @param memberName name of a member to open private channel to. You need to provide this only if
        * this mnember is not present in any of public channels (is offline).
        */
-      public function openPrivateChannel(memberId:int, memberName:String = null) : void
-      {
-         var member:MChatMember = members.getMember(memberId);
-         if (member == null)
-         {
-            if (memberName == null)
-            {
+      public function openPrivateChannel(memberId: int,
+                                         memberName: String = null): void {
+         var member: MChatMember = members.getMember(memberId);
+         if (member == null) {
+            if (memberName == null) {
                throw new ArgumentError(
                   "Unable to open private channel: member with id " + memberId + " not found and " +
-                  "[param memberName] was null" 
+                     "[param memberName] was null"
                );
+            }
+            // ignore players that are in ignore list
+            if (isCompleteIgnored(memberName)) {
+               return;
             }
             member = new MChatMember(memberId, memberName);
             members.addMember(member);
          }
-         
-         // ignore self lovers
-         if (member == player)
-         {
+
+         // ignore self lovers and ignored players
+         if (member == player || isCompleteIgnored(member.name)) {
             return;
          }
          
@@ -794,33 +838,41 @@ package models.chat
        *                <code>MChatChannelContent</code>.
        *                <b>Not null.</b>
        */
-      public function receivePublicMessage(message:MChatMessage) : void
-      {
+      public function receivePublicMessage(message: MChatMessage): void {
          Objects.paramNotNull("message", message);
-         
-         var channel:MChatChannelPublic =
+
+         var channel: MChatChannelPublic =
                 MChatChannelPublic(_channels.getChannel(message.channel));
-         if (channel == null)
+         if (channel == null) {
             throwChannelNotFoundError(
                "Unable to process message " + message, message.channel
             );
-         
-         var member:MChatMember = _members.getMember(message.playerId);
-         if (member == null)
+         }
+
+         var member: MChatMember = _members.getMember(message.playerId);
+         if (member == null) {
             throw new Error(
-               "Unable to process message " + message + ": member with id " + message.playerId +
-               " is not joined to chat"
+               "Unable to process message " + message + ": member with id "
+                  + message.playerId + " is not joined to chat"
             );
-         
+         }
+
          message.playerName = member.name;
          message.time = new Date();
-         
+
+         if (isCompleteIgnored(member.name)) {
+            return;
+         }
+         filterMessage(message);
+
          channel.receiveMessage(message);
-         
-         if (channel.isAlliance)
+
+         if (channel.isAlliance) {
             setHasUnreadAllianceMsg(channel.hasUnreadMessages);
-         else
+         }
+         else {
             setHasUnreadMainMsg(channel.hasUnreadMessages);
+         }
       }
       
       
@@ -838,41 +890,45 @@ package models.chat
        *                <code>MChatChannelContent</code>.
        *                <b>Not null.</b>
        */
-      public function receivePrivateMessage(message:MChatMessage) : void
-      {
+      public function receivePrivateMessage(message: MChatMessage): void {
          Objects.paramNotNull("message", message);
-         
-         var member:MChatMember = _members.getMember(message.playerId);
-         if (member == null)
-         {
+
+         var member: MChatMember = _members.getMember(message.playerId);
+         if (member == null) {
             // message from the player who is offline
-            if (message.playerName == null)
-            {
+            if (message.playerName == null) {
                // server should have sent us playerName
                throw new Error(
-                  "Unable to process message: received message " + message + " from offline player but " +
-                  "[prop playerName] is missing."
+                  "Unable to process message: received message " + message
+                     + " from offline player but [prop playerName] is missing."
                );
             }
-            member = new MChatMember();
-            member.id = message.playerId;
-            member.name = message.playerName;
+            if (isCompleteIgnored(message.playerName)) {
+               return;
+            }
+            member = new MChatMember(message.playerId, message.playerName);
             _members.addMember(member);
          }
-         
+
          message.channel = member.name;
          message.playerName = member.name;
-         
-         var channel:MChatChannelPrivate = MChatChannelPrivate(_channels.getChannel(message.channel));
-         if (channel == null)
-         {
+
+         if (isCompleteIgnored(member.name)) {
+            return;
+         }
+         filterMessage(message);
+
+         var channel: MChatChannelPrivate =
+                MChatChannelPrivate(_channels.getChannel(message.channel));
+         if (channel == null) {
             // conversation initiated by another player
             channel = createPrivateChannel(member);
          }
-         
+
          channel.receiveMessage(message);
-         if (!channel.visible)
+         if (!channel.visible) {
             setHasUnreadPrivateMsg(true);
+         }
       }
       
       
@@ -942,7 +998,11 @@ package models.chat
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
+
+      private function getString(property: String): String {
+         return Localizer.string("Chat", property);
+      }
+
       public function dispatchChatEvent(type:String) : void {
          dispatchSimpleEvent(MChatEvent, type);
       }
