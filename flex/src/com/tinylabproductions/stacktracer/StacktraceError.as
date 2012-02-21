@@ -2,43 +2,44 @@ package com.tinylabproductions.stacktracer {
    import flash.utils.getQualifiedClassName;
 
    public class StacktraceError extends Error {
-      private var _cause: Error;
-      private var _stacktrace: Vector.<StacktraceEntry> =
+      private var cause: Error;
+      private var stacktrace: Vector.<StacktraceEntry> =
          new Vector.<StacktraceEntry>();
       
       public function StacktraceError(cause: Error, entry: StacktraceEntry) {
-         _cause = cause;
-         _stacktrace.push(entry);
-         super(cause.message, cause.errorID);
+         this.cause = cause;
+         
+         message = cause.message;
+         name = cause.name;
+         
+         stacktrace.push(entry);
       }
 
-      public function get cause(): Error {
-         return _cause;
-      }
-
-      public function get stacktrace(): Vector.<StacktraceEntry> {
-         return _stacktrace;
+      override public function get errorID(): int {
+         return cause.errorID;
       }
 
       override public function getStackTrace(): String {
-         return toString();
-      }
-
-      public function toString(): String {
-         return getQualifiedClassName(_cause) +
-            " (error id " + _cause.errorID + "): " + _cause.message + "\n\n" +
-            "Stacktrace (without variables):\n" + generateStacktrace(false) +
+         return "Stacktrace (without variables):\n" +
+            generateStacktrace(false) +
             "\nStacktrace (with variables):\n" + generateStacktrace(true) +
             "\n";
       }
+
+      public function toString(): String {
+         return getQualifiedClassName(cause) +
+            " (error id " + cause.errorID + "): " + cause.message + "\n\n" +
+            getStackTrace();
+      }
       
-      private function generateStacktrace(showVars: Boolean): String {
+      public function generateStacktrace(showVars: Boolean): String {
          var msg: String = "";
          
-         var length: uint = _stacktrace.length;
-         // index must be int, because otherwise it would never turn to -1.
+         var length: uint = stacktrace.length;
+         // index must be int, not uint, because otherwise it would never turn
+         // to -1.
          for (var index: int = length - 1; index >= 0; index--) {
-            var entry: StacktraceEntry = _stacktrace[length - index - 1];
+            var entry: StacktraceEntry = stacktrace[length - index - 1];
 
             msg += "- [" + index + "] @ " + entry.currentFunction + "\n";
             if (showVars) {
@@ -63,6 +64,10 @@ package com.tinylabproductions.stacktracer {
          return msg;
       }
 
+      private function push(entry: StacktraceEntry): void {
+         stacktrace.push(entry);
+      }
+
       public static function trace(
          e: Error, currentFunction: String, variables: Object
       ): Error {
@@ -71,7 +76,7 @@ package com.tinylabproductions.stacktracer {
 
          if (e is StacktraceError) {
             var ste: StacktraceError = e as StacktraceError;
-            ste.stacktrace.push(entry);
+            ste.push(entry);
             return ste;
          }
          else {
@@ -89,5 +94,25 @@ package com.tinylabproductions.stacktracer {
          }
          return result;
       }
+   }
+}
+
+class StacktraceEntry {
+   private var _currentFunction: String;
+   private var _variables: Object;
+
+   public function StacktraceEntry(
+      currentFunction: String, variables: Object
+   ) {
+      _currentFunction = currentFunction;
+      _variables = variables;
+   }
+
+   public function get currentFunction(): String {
+      return _currentFunction;
+   }
+
+   public function get variables(): Object {
+      return _variables;
    }
 }
