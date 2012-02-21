@@ -85,6 +85,7 @@ package models.player
          super();
          planets = new ArrayCollection();
          planets.sort = new Sort();
+         planets.sort.fields = new Array();
          planets.sort.compareFunction = compareFunction_planets;
          planets.refresh();
          _allianceCooldown = new MTimeEventFixedMoment();
