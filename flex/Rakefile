@@ -21,7 +21,6 @@ namespace :build do
   FCSH = "#{FLEX_HOME}/bin/fcsh"
   FCSHD_PORT = "53000"
   FCSHD = "#{basedir}/vendor/FlexShellScript.jar"
-  FCSHD_CLASSPATH = "#{basedir}/vendor/FlexShellScript/"
   src_dir = "#{basedir}/src"
   src_pp_dir = "#{basedir}/src-pp"
   html_extras_dir = "#{basedir}/html-extras"
@@ -94,7 +93,7 @@ namespace :build do
   end
 
   def fcsh_run(*args)
-    run("java", "-cp", FCSHD_CLASSPATH, "-jar", FCSHD, *args)
+    run("java", "-jar", FCSHD, *args)
   end
 
   # Compiles _source_mxml_ to _output_swf_.
