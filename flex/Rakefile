@@ -19,8 +19,9 @@ namespace :build do
   )
   as3_st = "#{basedir}/vendor/as3_st.jar"
   FCSH = "#{FLEX_HOME}/bin/fcsh"
-  FCSHD_PORT = 53000
+  FCSHD_PORT = "53000"
   FCSHD = "#{basedir}/vendor/FlexShellScript.jar"
+  FCSHD_CLASSPATH = "#{basedir}/vendor/FlexShellScript/"
   src_dir = "#{basedir}/src"
   src_pp_dir = "#{basedir}/src-pp"
   html_extras_dir = "#{basedir}/html-extras"
@@ -89,7 +90,11 @@ namespace :build do
 
     fcsh_cmd = args.join(" ")
     info "Running %s" % fcsh_cmd
-    run("java", "-jar", FCSHD, "client", fcsh_cmd)
+    fcsh_run("client", fcsh_cmd)
+  end
+
+  def fcsh_run(*args)
+    run("java", "-cp", FCSHD_CLASSPATH, "-jar", FCSHD, *args)
   end
 
   # Compiles _source_mxml_ to _output_swf_.
@@ -180,7 +185,7 @@ namespace :build do
     end
 
     puts "Launching FCSHD..."
-    run("java", "-jar", FCSHD, "server", FCSH)
+    fcsh_run("server", FCSH, FCSHD_PORT)
   end
 
   namespace :compile do
