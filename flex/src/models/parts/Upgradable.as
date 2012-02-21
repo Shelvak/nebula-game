@@ -73,7 +73,7 @@ package models.parts
                                                    upgradableSubtype: String,
                                                    property: String,
                                                    params: Object,
-                                                   errorOnFail: Boolean = true): Number {
+                                                   errorOnFail: Boolean = false): Number {
          var key: String = upgradableType + "." +
                               StringUtil.firstToLowerCase(upgradableSubtype)
                               + "." + property;
@@ -125,8 +125,7 @@ package models.parts
             upgradableType,
             upgradableSubtype,
             resourceType + ".cost",
-            params,
-            false
+            params
          ));
       }
       

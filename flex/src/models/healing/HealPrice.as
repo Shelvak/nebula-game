@@ -51,10 +51,12 @@ package models.healing
                                                    type: String = BuildingType.HEALING_CENTER): HealPrice
       {
          var price: HealPrice = new HealPrice();
-         var priceMod : Number = Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, type, 
-                                 'healing.cost.mod', {'level': level});
-         var cooldownMod: Number = Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, type,
-                        'healing.time.mod', {'level': level});
+         var priceMod : Number = Upgradable.evalUpgradableFormula(
+            UpgradableType.BUILDINGS, type, 'healing.cost.mod', {'level': level}
+         );
+         var cooldownMod: Number = Upgradable.evalUpgradableFormula(
+            UpgradableType.BUILDINGS, type, 'healing.time.mod', {'level': level}
+         );
          for each (var mUnit: MCUnit in units)
          {
             var unit: Unit = mUnit.unit;
