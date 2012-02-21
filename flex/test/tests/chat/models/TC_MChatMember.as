@@ -104,14 +104,14 @@ package tests.chat.models
          assertThat( "should be ignored", member.isIgnored, isTrue() );
          assertThat(
             "should be in ignore list",
-            MCHAT.IGNORED_MEMBERS.isIgnored(member.name), isTrue()
+            MCHAT.ignoredMembers.isIgnored(member.name), isTrue()
          );
 
          member.setIsIgnored(false);
          assertThat( "should not be ignored", member.isIgnored, isFalse() );
          assertThat(
             "should not be in ignore list",
-            MCHAT.IGNORED_MEMBERS.isIgnored(member.name), isFalse()
+            MCHAT.ignoredMembers.isIgnored(member.name), isFalse()
          );
       }
    }

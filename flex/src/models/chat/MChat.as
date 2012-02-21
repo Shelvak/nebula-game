@@ -6,7 +6,6 @@ package models.chat
 
    import models.BaseModel;
    import models.ModelLocator;
-   import models.chat.MChatMember;
    import models.chat.events.IgnoredMembersEvent;
    import models.chat.events.MChatEvent;
    import models.time.MTimeEventFixedMoment;
@@ -103,17 +102,23 @@ package models.chat
          _messagePool = new StackObjectPoolFactory(new MChatMessageFactory()).createPool();
          _members  = new MChatMembersList();
          _channels = new MChatChannelsList();
-         IGNORED_MEMBERS.addEventListener(
-            IgnoredMembersEvent.REMOVE_FROM_IGNORE,
-            ignoredMembers_removeFromIgnoreHandler, false, 0, true
-         );
-         IGNORED_MEMBERS.addEventListener(
-            IgnoredMembersEvent.ADD_TO_IGNORE,
-            ignoredMembers_addToIgnoreHandler, false, 0, true
-         );
       }
 
-      public const IGNORED_MEMBERS: IgnoredMembers = new IgnoredMembers();
+      private var _ignoredMembers: IgnoredMembers = null;
+      public function get ignoredMembers(): IgnoredMembers {
+         if (_ignoredMembers == null) {
+            _ignoredMembers = new IgnoredMembers();
+            _ignoredMembers.addEventListener(
+               IgnoredMembersEvent.REMOVE_FROM_IGNORE,
+               ignoredMembers_removeFromIgnoreHandler, false, 0, true
+            );
+            _ignoredMembers.addEventListener(
+               IgnoredMembersEvent.ADD_TO_IGNORE,
+               ignoredMembers_addToIgnoreHandler, false, 0, true
+            );
+         }
+         return _ignoredMembers;
+      }
 
       private function ignoredMembers_addToIgnoreHandler(event: IgnoredMembersEvent): void {
          const member: MChatMember = members.getMemberByName(event.memberName);
@@ -129,16 +134,12 @@ package models.chat
          }
       }
 
-      public function isIgnored(memberName: String): Boolean {
-         return IGNORED_MEMBERS.isIgnored(memberName);
-      }
-
       private function isCompleteIgnored(memberName: String): Boolean {
-         return IGNORED_MEMBERS.isCompleteIgnored(memberName);
+         return ignoredMembers.isCompleteIgnored(memberName);
       }
 
       private function isFilteredIgnored(memberName: String): Boolean {
-         return IGNORED_MEMBERS.isFilteredIgnored(memberName);
+         return ignoredMembers.isFilteredIgnored(memberName);
       }
 
       private function filterMessage(message:MChatMessage): void {
@@ -147,7 +148,7 @@ package models.chat
          }
       }
 
-      private var _messagePool:IObjectPool = null;
+      private var _messagePool: IObjectPool = null;
       /**
        * Returns <code>MChatMessage</code> pool for the chat.
        */
@@ -195,10 +196,10 @@ package models.chat
        */
       public function initialize(members: Object, channels: Object): void {
          for (var chatMemberId: String in members) {
-            const memberId:int = int(chatMemberId);
-            const memberName:String = members[chatMemberId];
+            const memberId: int = int(chatMemberId);
+            const memberName: String = members[chatMemberId];
             _members.addMember(new MChatMember(
-               memberId, memberName, true, IGNORED_MEMBERS.isIgnored(memberName)
+               memberId, memberName, true, ignoredMembers.isIgnored(memberName)
             ));
          }
 

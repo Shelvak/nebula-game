@@ -130,10 +130,10 @@ package models.chat
          }
          const chat:MChat = MChat.getInstance();
          if (ignored) {
-            chat.IGNORED_MEMBERS.addToIgnoreList(name);
+            chat.ignoredMembers.addToIgnoreList(name);
          }
          else {
-            chat.IGNORED_MEMBERS.removeFromIgnoreList(name);
+            chat.ignoredMembers.removeFromIgnoreList(name);
          }
       }
    }
