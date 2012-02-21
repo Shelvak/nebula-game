@@ -143,6 +143,7 @@
                                && (building.upgradePart.upgradeEndsAt == null);
                     });
             _buildingFacilities.sort = new Sort();
+            _buildingFacilities.sort.fields = new Array();
             _buildingFacilities.sort.compareFunction = constructorModSort;
             _buildingFacilities.refresh();
             _buildingFacilities.addEventListener(CollectionEvent.COLLECTION_CHANGE,

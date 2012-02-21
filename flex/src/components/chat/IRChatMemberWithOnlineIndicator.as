@@ -16,7 +16,7 @@ package components.chat
 
    public class IRChatMemberWithOnlineIndicator extends IRChatMember
    {
-      private static const ICON_KEY_ONLINE:String = "online";
+      private static const ICON_KEY_ONLINE: String = "online";
       private static const ICON_KEY_OFFLINE: String = "offline";
 
 

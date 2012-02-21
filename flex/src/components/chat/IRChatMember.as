@@ -118,7 +118,8 @@ package components.chat
                _model.setIsIgnored(false);
             }
             else {
-               const popup:ActionConfirmationPopup = new ActionConfirmationPopup();
+               const popup: ActionConfirmationPopup =
+                        new ActionConfirmationPopup();
                const message: Label = new Label();
                message.left = 0;
                message.right = 0;
