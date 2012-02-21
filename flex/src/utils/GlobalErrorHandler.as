@@ -65,12 +65,11 @@ package utils
       private static function crash(
          head: String, body: String, slowClient: Boolean=false
       ): void {
-         ExternalInterface.call(
-            "clientError",
-            head.replace("\\", "\\\\"),
-            body.replace("\\", "\\\\"),
-            slowClient
-         );
+         // Double escape backslashes, because strings somehow get "evaluated"
+         // when they are passed to javascript.
+         head = head.replace(/\\/g, "\\\\");
+         body = body.replace(/\\/g, "\\\\");
+         ExternalInterface.call("clientError", head, body, slowClient);
       }
    }
 }
