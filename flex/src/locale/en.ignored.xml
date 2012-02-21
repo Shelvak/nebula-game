@@ -4649,6 +4649,7 @@
      <message.channelJoin  value="[ {0} joined ]"/>
      <message.channelLeave value="[ {0} left ]"/>
      <message.friendOffline value="This player is currently offline."/>
+     <message.memberIgnored value="... ignored ..."/>
      <message.silence>
         You have been silenced for flooding until {0}.
         You will be able to chat in {1}.
