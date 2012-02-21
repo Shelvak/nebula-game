@@ -43,17 +43,13 @@ package components.popups
       
       public function BasePopup() : void {
          super();
-         if (this is ClientCrashPopup)
-            setStyle("skinClass", CrashPopupSkin);
-         else
-            setStyle("skinClass", BasePopupSkin);
+         setStyle("skinClass", BasePopupSkin);
          addEventListener(MouseEvent.CLICK, this_clickHandler);
          addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
       }
       
       private function this_creationCompleteHandler(event:FlexEvent) : void {
-         if (!(this is ClientCrashPopup))
-            PopUpManager.centerPopUp(this);
+         PopUpManager.centerPopUp(this);
       }
       
       /**
