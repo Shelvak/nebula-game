@@ -4660,6 +4660,8 @@
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
      <label.generateJoinLeaveMsgs value="Show join / leave messages"/>
+     <ignorePopup.title value="Ignore?"/>
+     <ignorePopup.message value="Are you sure you want to ignore player {0}?"/>
   </Chat>
   
   <Market>

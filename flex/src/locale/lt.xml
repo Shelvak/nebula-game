@@ -5495,6 +5495,8 @@
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Žaidėjai"/>
      <label.generateJoinLeaveMsgs value="Rodyti prisijungimo / išėjimo žinutes"/>
+     <ignorePopup.title value="Ignoruoti?"/>
+     <ignorePopup.message value="Ar tikrai nori ignoruoti žaidėją {0}?"/>
   </Chat>
   
   <Market>

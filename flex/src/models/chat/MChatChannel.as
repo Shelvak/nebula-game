@@ -1,7 +1,9 @@
 package models.chat
 {
+   import components.chat.IRChatMember;
+
    import flash.errors.IllegalOperationError;
-   
+
    import models.BaseModel;
    import models.ModelLocator;
    import models.chat.events.MChatChannelEvent;
@@ -14,12 +16,10 @@ package models.chat
 
    import mx.core.ClassFactory;
    import mx.core.IFactory;
-   
-   import spark.skins.spark.DefaultItemRenderer;
-   
+
    import utils.Objects;
-   
-   
+
+
    /**
     * @see models.chat.events.MChatChannelEvent#HAS_UNREAD_MESSAGES_CHANGE
     * @eventType models.chat.events.MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE
@@ -140,7 +140,8 @@ package models.chat
          }
       }
       
-      private var _membersListIRFactory:ClassFactory = new ClassFactory(DefaultItemRenderer);
+      private var _membersListIRFactory:ClassFactory =
+                     new ClassFactory(IRChatMember);
       /**
        * Item renderer function to use by <code>MChatMembersList</code>.
        * <code>MChatChannel.membersListIRFunction</code> returns the same <code>ClassFactory</code> instance
