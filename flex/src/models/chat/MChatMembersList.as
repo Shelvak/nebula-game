@@ -7,8 +7,9 @@ package models.chat
    import mx.utils.ObjectUtil;
    
    import utils.Objects;
-   
-   
+   import utils.datastructures.Collections;
+
+
    /**
     * List of chat members. Provides fast member lookup operation when <code>id</code> is given.
     * For modifications of this list use <code>addMember()</code> and <code>removeMember()</code>
@@ -71,15 +72,36 @@ package models.chat
       
       
       /**
-       * Returns instance of <code>MChatMember</code> with the given <code>id</code>. O(1) complexity.
+       * Returns instance of <code>MChatMember</code> with the given
+       * <code>id</code>. O(1) complexity.
        * 
        * @param id ID of a member to look for.
        * 
-       * @return instance of <code>MChatMember</code> with the given <code>id</code> or <code>null</code>
-       * if there is no such <code>MChatMember</code>.
+       * @return instance of <code>MChatMember</code> with the given
+       * <code>id</code> or <code>null</code> if there is no such
+       * <code>MChatMember</code>.
        */
       public function getMember(id:int) : MChatMember {
          return _membersHash[id];
+      }
+
+      /**
+       * Returns instance of <code>MChatMember</code> with the given
+       * <code>name</code>. O(n) complexity.
+       *
+       * @param name Name of a chat member to look for
+       *
+       * @return instance of <code>MChatMember</code> with the given
+       * <code>name</code> or <code>null</code> if there is no such
+       * <code>MChatMember</code>.
+       */
+      public function getMemberByName(name: String): MChatMember {
+         for each (var member:MChatMember in _membersHash) {
+            if (member.name == name) {
+               return member;
+            }
+         }
+         return null;
       }
       
       /**
@@ -95,23 +117,26 @@ package models.chat
        * player's profile (if channel is private). O(1) complexity.
        */
       public function openMember(id:int) : void {
-         if (_channel == null)
+         if (_channel == null) {
             throw new IllegalStateError(
                "Unable to perform this operation. [param channel] was not provided for the constructor " +
-               "when this instance was created."
+                  "when this instance was created."
             );
-            
-         if (containsMember(id)) {
-            if (getMember(id).isPlayer || !_channel.isPublic)
-               getMember(id).showPlayer();
-            else
-               MCHAT.openPrivateChannel(id);
          }
-         else
+         if (containsMember(id)) {
+            if (getMember(id).isPlayer || !_channel.isPublic) {
+               getMember(id).showPlayer();
+            }
+            else {
+               MCHAT.openPrivateChannel(id);
+            }
+         }
+         else {
             throw new Error(
-               "Unable to open private channel or show player profile of member with id " + id + 
-               ": this member is not in the list. The list is:\n" + ObjectUtil.toString(this)
+               "Unable to open private channel or show player profile of member with id " + id +
+                  ": this member is not in the list. The list is:\n" + ObjectUtil.toString(this)
             );
+         }
       }
       
       /**

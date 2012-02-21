@@ -1,8 +1,8 @@
 class MarketOfferCancellation < ActiveRecord::Migration
   def self.up
     change_table :market_offers do |t|
-      t.change :to_rate, 'double unsigned', :null => false
-      t.column :cancellation_shift, 'double', :null => false
+      t.change :to_rate, 'double(16, 4) unsigned', :null => false
+      t.column :cancellation_shift, 'double(16, 4)', :null => false
       t.column :cancellation_amount, 'int(9) unsigned', :null => false
       t.column :cancellation_total_amount, 'int(9) unsigned', :null => false
     end

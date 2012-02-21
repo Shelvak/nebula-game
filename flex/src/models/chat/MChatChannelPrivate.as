@@ -1,23 +1,23 @@
 package models.chat
 {
-   import components.chat.IRChatMember;
-   
+   import components.chat.IRChatMemberWithOnlineIndicator;
+
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePrivateActionParams;
-   
+
    import flash.errors.IllegalOperationError;
-   
+
    import interfaces.ICleanable;
-   
+
    import models.chat.events.MChatChannelEvent;
    import models.chat.events.MChatMemberEvent;
-   
+
    import mx.core.ClassFactory;
    import mx.core.IFactory;
-   
+
    import utils.locale.Localizer;
-   
-   
+
+
    /**
     * @see models.chat.events.MChatChannelEvent#IS_FRIEND_ONLINE_CHANGE
     */
@@ -58,7 +58,8 @@ package models.chat
       }
       
       
-      private var _friendIRFactory:ClassFactory = new ClassFactory(IRChatMember);
+      private var _friendIRFactory:ClassFactory =
+                     new ClassFactory(IRChatMemberWithOnlineIndicator);
       /**
        * Returns factory of <code>IRChatMember</code> for friend and factory of
        * <code>DefaultItemRenderer</code> for player.

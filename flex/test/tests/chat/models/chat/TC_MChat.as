@@ -1,12 +1,11 @@
 package tests.chat.models.chat
 {
-   import models.chat.MChat;
    import models.chat.events.MChatEvent;
-   import models.player.Player;
-   
+
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
+
 
    public class TC_MChat extends TC_BaseMChat
    {
@@ -34,14 +33,14 @@ package tests.chat.models.chat
                "galaxy": [1, 2, 3, 4]
             }
          );
-      };
+      }
       
       
       [After]
       public override function tearDown() : void
       {
          super.tearDown();
-      };
+      }
       
       
       [Test]
@@ -54,7 +53,7 @@ package tests.chat.models.chat
          chat.openPrivateChannel(4);   // tommy
          
          assertThat( chat.privateChannelOpen, isTrue() );
-      };
+      }
       
       
       [Test]
@@ -70,7 +69,7 @@ package tests.chat.models.chat
          chat.closePrivateChannel("tommy");
          
          assertThat( chat.privateChannelOpen, isFalse() );
-      };
+      }
       
       
       [Test]
@@ -79,7 +78,7 @@ package tests.chat.models.chat
          chat.channelJoin("alliance-1", chat.members.getMember(ML.player.id));
          
          assertThat( chat.allianceChannelOpen, isTrue() );
-      };
+      }
       
       
       [Test]
@@ -89,7 +88,7 @@ package tests.chat.models.chat
          chat.channelLeave("alliance-1", ML.player.id);
          
          assertThat( chat.allianceChannelOpen, isFalse() );
-      };
+      }
       
       
       [Test]
@@ -113,7 +112,7 @@ package tests.chat.models.chat
          chat.closePrivateChannel("jho");
          
          assertThat( eventDispatched, isTrue() );
-      };
+      }
       
       
       [Test]
@@ -135,6 +134,6 @@ package tests.chat.models.chat
          
          eventDispatched = false;
          chat.channelLeave("alliance-1", ML.player.id);
-      };
+      }
    }
 }

@@ -10,5 +10,6 @@ package tests.chat
    {
       public var ts_ChatActions:TS_ChatActions;
       public var ts_ChatModels:TS_ChatModels;
+      public var tc_IgnoredMembers:TC_IgnoredMembers;
    }
 }

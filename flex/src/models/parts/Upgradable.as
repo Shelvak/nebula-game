@@ -61,23 +61,30 @@ package models.parts
        * @param upgradableSubtype subtype (type of unit, technology or building in most cases) of the upgradable
        * @param property the rest of the property to be evaluated
        * @param params parameters specific to the given upgradable type and property to be calculated
+       * @param errorOnFail of <code>true</code>, will throw
+       *        <code>ArgumentError</code> when formula can't be found in config
+       *        and will return 0 if this parameter is <code>false</code>
        * 
        * @return result of formula evaluation
        * 
        * @throws ArgumentError if formula could not be found
        */
-      public static function evalUpgradableFormula(upgradableType:String,
-                                                   upgradableSubtype:String,
-                                                   property:String,
-                                                   params:Object) : Number
-      {
-         var key:String = upgradableType + "." +
-            StringUtil.firstToLowerCase(upgradableSubtype) + "." +
-            property;
-         var formula:String = Config.getValue(key);
-         if (!formula)
-         {
-            throw new ArgumentError("Property of an upgradable not found: " + key);
+      public static function evalUpgradableFormula(upgradableType: String,
+                                                   upgradableSubtype: String,
+                                                   property: String,
+                                                   params: Object,
+                                                   errorOnFail: Boolean = true): Number {
+         var key: String = upgradableType + "." +
+                              StringUtil.firstToLowerCase(upgradableSubtype)
+                              + "." + property;
+         var formula: String = Config.getValue(key);
+         if (formula == null) {
+            if (errorOnFail) {
+               throw new ArgumentError("Property of an upgradable not found: " + key);
+            }
+            else {
+               return 0;
+            }
          }
          return StringUtil.evalFormula(formula, params);
       }
@@ -101,29 +108,26 @@ package models.parts
        * 
        * @see #calculateUpgradeTime()
        * 
-       * @throws ArgumentErrror if given <code>resourceType<code> is not supported
+       * @throws ArgumentError if given <code>resourceType<code> is not supported
        */
-      public static function calculateCost(upgradableType:String,
-                                           upgradableSubtype:String,
-                                           resourceType:String,
-                                           params:Object) : Number
-      {
+      public static function calculateCost(upgradableType: String,
+                                           upgradableSubtype: String,
+                                           resourceType: String,
+                                           params: Object): Number {
          if (resourceType == ResourceType.SCIENTISTS ||
-            resourceType == ResourceType.TIME)
-         {
-            throw new ArgumentError("Resource type " + resourceType + " is not supported by this method");
+                resourceType == ResourceType.TIME) {
+            throw new ArgumentError(
+               "Resource type " + resourceType + " is not supported by "
+                  + "this method"
+            );
          }
-         try
-         {
-            return Math.ceil(evalUpgradableFormula(upgradableType, upgradableSubtype,
-               resourceType + ".cost", params));
-         }
-         // An upgradable may not have cost defined. In that case, the cost is 0. 
-         catch (err:ArgumentError)
-         {
-            return 0;
-         }
-         return 0;   // unreachable
+         return Math.ceil(evalUpgradableFormula(
+            upgradableType,
+            upgradableSubtype,
+            resourceType + ".cost",
+            params,
+            false
+         ));
       }
       
       

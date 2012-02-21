@@ -7,14 +7,19 @@ package tests.chat.models
    import controllers.ui.NavigationController;
    
    import ext.hamcrest.events.causes;
-   
+
+   import models.chat.MChat;
+
    import models.chat.MChatMember;
    import models.chat.events.MChatMemberEvent;
-   
+   import models.player.PlayerOptions;
+
    import namespaces.client_internal;
    
    import org.hamcrest.assertThat;
-   
+   import org.hamcrest.object.isFalse;
+   import org.hamcrest.object.isTrue;
+
    import utils.SingletonFactory;
    
    
@@ -22,6 +27,10 @@ package tests.chat.models
    {
       private function get NAV_CTRL() : NavigationController {
          return NavigationController.getInstance();
+      }
+
+      private function get MCHAT(): MChat {
+         return MChat.getInstance();
       }
       
       [Rule]
@@ -38,6 +47,7 @@ package tests.chat.models
       
       [Before]
       public function setUp() : void {
+         PlayerOptions.loadOptions({"ignoredChatPlayers": []});
          mockRespository = new MockRepository();
          SingletonFactory.client_internal::registerSingletonInstance
             (NavigationController, mockRespository.createStrict(NavigationController));
@@ -51,10 +61,21 @@ package tests.chat.models
          mockRespository = null;
          SingletonFactory.clearAllSingletonInstances();
       }
-      
+
+      [Test]
+      public function isIgnored(): void {
+         assertThat(
+            function():void{ member.isIgnored = true },
+            causes (member) .toDispatchEvent (MChatMemberEvent.IS_IGNORED_CHANGE)
+         );
+         assertThat(
+            function():void{ member.isIgnored = false },
+            causes (member) .toDispatchEvent (MChatMemberEvent.IS_IGNORED_CHANGE)
+         );
+      }
       
       [Test]
-      public function should_dispatch_IS_ONLINE_CHANGE_event_when_isOnline_property_changes() : void {
+      public function isOnline() : void {
          assertThat(
             function():void{ member.isOnline = true },
             causes (member) .toDispatchEvent (MChatMemberEvent.IS_ONLINE_CHANGE)
@@ -71,6 +92,27 @@ package tests.chat.models
          mockRespository.replayAll();
          member.showPlayer();
          mockRespository.verifyAll();
+      }
+
+      [Test]
+      public function setIsIgnored():void {
+         const chat:MChat = MCHAT;
+         chat.initialize({"2": "test"}, {"galaxy": [2]});
+         member = chat.members.getMember(2);
+
+         member.setIsIgnored(true);
+         assertThat( "should be ignored", member.isIgnored, isTrue() );
+         assertThat(
+            "should be in ignore list",
+            MCHAT.ignoredMembers.isIgnored(member.name), isTrue()
+         );
+
+         member.setIsIgnored(false);
+         assertThat( "should not be ignored", member.isIgnored, isFalse() );
+         assertThat(
+            "should not be in ignore list",
+            MCHAT.ignoredMembers.isIgnored(member.name), isFalse()
+         );
       }
    }
 }

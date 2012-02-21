@@ -787,7 +787,7 @@ package models.planet
       
       
       /**
-       * Foliage currently beeing explored or <code>null</code> if exploration is not underway.
+       * Foliage currently being explored or <code>null</code> if exploration is not underway.
        */
       public function get exploredFoliage() : BlockingFolliage {
          if (_ssObject.explorationEndsAt != null &&
@@ -938,12 +938,12 @@ package models.planet
       }
       
       [Bindable(event="unitRefresh")]
-      public function hasAgressiveGroundUnits(owner: int = Owner.PLAYER): Boolean
+      public function hasAggressiveGroundUnits(owner: int = Owner.PLAYER): Boolean
       {
-         return getAgressiveGroundUnits(owner).length > 0;
+         return getAggressiveGroundUnits(owner).length > 0;
       }
       
-      public function getAgressiveGroundUnits(owner: int = Owner.PLAYER): ListCollectionView
+      public function getAggressiveGroundUnits(owner: int = Owner.PLAYER): ListCollectionView
       {
          return Collections.filter(ML.units, function(unit: Unit): Boolean
          {

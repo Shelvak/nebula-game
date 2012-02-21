@@ -4649,6 +4649,7 @@
      <message.channelJoin  value="[ {0} joined ]"/>
      <message.channelLeave value="[ {0} left ]"/>
      <message.friendOffline value="This player is currently offline."/>
+     <message.memberIgnored value="... ignored ..."/>
      <message.silence>
         You have been silenced for flooding until {0}.
         You will be able to chat in {1}.
@@ -4659,6 +4660,8 @@
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
      <label.generateJoinLeaveMsgs value="Show join / leave messages"/>
+     <ignorePopup.title value="Ignore?"/>
+     <ignorePopup.message value="Are you sure you want to ignore player {0}?"/>
   </Chat>
   
   <Market>

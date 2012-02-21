@@ -7,10 +7,13 @@ package models.chat.events
    {
       /**
        * Dispatched when <code>MChatMember.isOnline</code> property changes.
-       * 
-       * @eventType isOnlineChange
        */
       public static const IS_ONLINE_CHANGE:String = "isOnlineChange";
+
+      /**
+       * Dispatched when <code>MChatMember.isIgnored</code> property changes.
+       */
+      public static const IS_IGNORED_CHANGE: String = "isIgnoredChange";
       
       
       public function MChatMemberEvent(type:String)
