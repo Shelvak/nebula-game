@@ -40,6 +40,10 @@ def run(*args)
   status
 end
 
+def windows?
+  ENV['os'] =~ /win/i
+end
+
 class File
   def self.modify(name)
     modified = yield File.read(name)
