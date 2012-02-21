@@ -802,6 +802,7 @@
     <property.height value="Pastato ilgis" />
     <property.vpsOnDamage value="PT už 1 žalos vienetą" />
     <property.credsForKilling value="Kredų už nužudymą" />
+    <property.teleportedVolume value="Perkeliamų karių apimtis" />
 
     <text.deactivated>
       <p>
@@ -1562,6 +1563,8 @@
     <gun.dart_laser value="Fazinė patranka" />
     <gun.boss_light value="Dvejinti fazeriai" />
     <gun.boss_heavy value="Šoko sviediniai" />
+    <gun.convoyship_light value="Fotonų greitintuvas" />
+    <gun.convoyship_heavy value="TR-3 leistuvas" />
     <armorType value="Šarvų tipas" />
     <damageInPercent value="Procentai" />
     <damage value="Žala" />
