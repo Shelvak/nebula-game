@@ -27,9 +27,8 @@ package com.tinylabproductions.stacktracer {
       }
 
       public function toString(): String {
-         return getQualifiedClassName(cause) +
-            " (error id " + cause.errorID + "): " + cause.message + "\n\n" +
-            getStackTrace();
+         return "<StacktraceError " + name + " (error id " + errorID + "): " +
+            message + " (" + stacktrace.length + " entries)>";
       }
       
       public function generateStacktrace(showVars: Boolean): String {
@@ -89,9 +88,9 @@ package com.tinylabproductions.stacktracer {
          if (vars2 == null) return vars1;
          
          var result: Object = new Object();
-         for (var name: String in vars1) {
-            result[name] = vars2[name] ? vars2[name] : vars1[name];
-         }
+         var name: String;
+         for (name in vars1) { result[name] = vars1[name]; }
+         for (name in vars2) { result[name] = vars2[name]; }
          return result;
       }
    }
