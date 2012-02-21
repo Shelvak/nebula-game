@@ -2,6 +2,7 @@ require 'rubygems'
 require 'rake'
 require 'fileutils'
 require 'digest/sha1'
+require 'socket'
 
 basedir = File.dirname(__FILE__)
 load basedir + '/../Rakefile'
@@ -17,6 +18,9 @@ namespace :build do
     "FLEX_HOME environment variable is not set!"
   )
   as3_st = "#{basedir}/vendor/as3_st.jar"
+  FCSH = "#{FLEX_HOME}/bin/fcsh"
+  FCSHD_PORT = 53000
+  FCSHD = "#{basedir}/vendor/FlexShellScript.jar"
   src_dir = "#{basedir}/src"
   src_pp_dir = "#{basedir}/src-pp"
   html_extras_dir = "#{basedir}/html-extras"
@@ -54,6 +58,40 @@ namespace :build do
     end
   end
 
+  def fcsh_running?
+    socket = TCPSocket.open("127.0.0.1", FCSHD_PORT)
+    socket.close
+    true
+  rescue Errno::ECONNREFUSED
+    false
+  rescue Exception => e
+    puts e.class
+    raise e
+  end
+
+  def fcsh(*args)
+    puts fcsh_running?
+    unless fcsh_running?
+      puts
+      puts "  ERROR: fcsh is not running, please launch it with"
+      puts "         `rake build:fcsh` first!"
+      puts
+      exit
+    end
+
+    if args.find { |a| a.include?(" ") }
+      puts
+      puts "  ERROR: Cannot use this from a directory that contains spaces!"
+      puts "         FCSH does not support it!"
+      puts
+      exit
+    end
+
+    fcsh_cmd = args.join(" ")
+    info "Running %s" % fcsh_cmd
+    run("java", "-jar", FCSHD, "client", fcsh_cmd)
+  end
+
   # Compiles _source_mxml_ to _output_swf_.
   def mxmlc(source_mxml, output_swf, options={})
     args = []
@@ -86,8 +124,7 @@ namespace :build do
     args += %W{-output #{File.expand_path(output_swf)}
       #{File.expand_path(source_mxml)}}
 
-    info "Running %s" % args.map(&:inspect).join(" ")
-    run(*args)
+    fcsh(*args)
   end
 
   # Calculates and returns SHA1 checksum of file contents.
@@ -133,6 +170,17 @@ namespace :build do
         Rake::Task['wiki:files:sync'].invoke
       end
     end
+  end
+
+  desc "Launches FCSH daemon."
+  task :fcsh do
+    if fcsh_running?
+      puts "FCSHD is already running."
+      return
+    end
+
+    puts "Launching FCSHD..."
+    run("java", "-jar", FCSHD, "server", FCSH)
   end
 
   namespace :compile do
@@ -183,7 +231,7 @@ namespace :build do
           warn-number-from-string-changes warn-slow-text-field-addition
           warn-unlikely-function-value
         }
-        compiler_flags.push "debug" if ENV['debug'] || ENV['DEBUG']
+        compiler_flags.push "debug" unless ENV['no_debug'] || ENV['NO_DEBUG']
 
         build = Time.now.strftime("%Y-%m%d-%H%M")
         version_file = "#{src_pp_dir}/application/Version.as"
