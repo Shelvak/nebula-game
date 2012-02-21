@@ -79,6 +79,7 @@ package components.map.space
                      return goesToSameSection(squadC.squadronOwner, ownerType);
                   };
                squads.sort = new Sort();
+               squads.sort.fields = new Array();
                squads.sort.compareFunction = cf_squadComponents;
                squads.refresh();
                var slot:int = 0;
