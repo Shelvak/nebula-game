@@ -65,7 +65,12 @@ package utils
       private static function crash(
          head: String, body: String, slowClient: Boolean=false
       ): void {
-         ExternalInterface.call("clientError", head, body, slowClient);
+         ExternalInterface.call(
+            "clientError",
+            head.replace("\\", "\\\\"),
+            body.replace("\\", "\\\\"),
+            slowClient
+         );
       }
    }
 }
