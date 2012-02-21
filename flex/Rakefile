@@ -18,7 +18,7 @@ namespace :build do
     "FLEX_HOME environment variable is not set!"
   )
   as3_st = "#{basedir}/vendor/as3_st.jar"
-  FCSH = "#{FLEX_HOME}/bin/fcsh"
+  FCSH = File.join(FLEX_HOME, "bin", windows? ? "fcsh.exe" : "fcsh")
   FCSHD_PORT = "53000"
   FCSHD = "#{basedir}/vendor/FlexShellScript.jar"
   src_dir = "#{basedir}/src"
