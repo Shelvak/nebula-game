@@ -193,16 +193,15 @@
       dispatchRefreshMaxStorageEvent();
     }
 
-    private function getPlanets(from: ArrayCollection): ListCollectionView {
-      var provider: ListCollectionView = Collections.filter(from,
-        function (item: MSSObject): Boolean {
-          return ML.latestPlanet == null || item.id != ML.latestPlanet.ssObject.id;
-        });
-      return provider;
-    }
+    [Bindable]
+    private var planetsProvider: ListCollectionView;
 
     private function addedToStageHandler(event: Event): void {
       GlobalEvent.subscribe_TIMED_UPDATE(timedUpdate);
+      planetsProvider = Collections.filter(ML.player.planets,
+         function (item: MSSObject): Boolean {
+          return ML.latestPlanet != null && item.id != ML.latestPlanet.ssObject.id;
+        });
     }
 
     private function removedFromStageHandler(event: Event): void {
@@ -247,7 +246,7 @@
             <s:Label text="{getString('label.selectPlanet')}" fontSize="16" fontWeight="bold"
                      color="#eec500"/>
             <base:PlanetSelector id="planetSelector" change="planetSelector_changeHandler(event)"
-                                 minWidth="180" dataProvider="{getPlanets(ML.player.planets)}"
+                                 minWidth="180" dataProvider="{planetsProvider}"
                                  itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
             <s:layout>
               <s:HorizontalLayout verticalAlign="middle" paddingLeft="10" paddingTop="20"
