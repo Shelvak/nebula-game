@@ -500,8 +500,9 @@ assets:
         <% end %>
 
       "units":
+        <% non_combat_types = Unit.non_combat_types %>
         <% each_model('unit') do |base| %>
-        <% unless CONFIG["units.#{base.underscore}.guns"].blank? %>
+        <% unless non_combat_types.include?(base) %>
         <%= "#{base}.tar.gz: #{base}BattlefieldUnit.tar.gz" %>
         <% end %>
         <% end %>
@@ -617,15 +618,6 @@ assets:
         overdrive.png: Overdrive.png
         hide.png: Hide_icon.png
         unhide.png: Unhide_icon.png
-
-      "notifications":
-        outcome_loose.jpg:          Outcome_loose.jpg
-        outcome_win.jpg:            Outcome_win.jpg
-        outcome_tie.jpg:            Outcome_tie.jpg
-        ring.png:                   Ziedas.png
-        ring_top.png:               Ziedas_virus.png
-        ring_bottom.png:            Ziedas_apacia.png
-        ring_repeat.png:            Ziedas_repeat.png
 
       "player_screen":
         left.png:                   Pinfo_left.png
@@ -1079,6 +1071,13 @@ assets:
         head_time_left.png:          Notifications_title_time_left.png
         head_time_center.png:        Notifications_title_time_center.png
         head_time_right.png:         Notifications_title_time_right.png
+        outcome_loose.jpg:           Outcome_loose.jpg
+        outcome_win.jpg:             Outcome_win.jpg
+        outcome_tie.jpg:             Outcome_tie.jpg
+        ring.png:                    Ziedas.png
+        ring_top.png:                Ziedas_virus.png
+        ring_bottom.png:             Ziedas_apacia.png
+        ring_repeat.png:             Ziedas_repeat.png
 
       "movement":
         order_bottom_left.png:            Locator_bottom_left.png
