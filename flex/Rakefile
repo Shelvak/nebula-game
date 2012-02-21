@@ -16,7 +16,9 @@ namespace :build do
   FLEX_HOME = ENV["FLEX_HOME"] or raise(
     "FLEX_HOME environment variable is not set!"
   )
+  as3_st = "#{basedir}/vendor/as3_st.jar"
   src_dir = "#{basedir}/src"
+  src_pp_dir = "#{basedir}/src-pp"
   html_extras_dir = "#{basedir}/html-extras"
   html_files = %W{
     #{src_dir}/index.template.html
@@ -148,6 +150,10 @@ namespace :build do
         FileUtils.mkdir_p dir
       end
 
+      info "Preprocessing with stacktracer" do
+        run "java", "-jar", as3_st, src_dir, src_pp_dir
+      end
+
       info "Compiling SpaceGame..." do
         compiler_flags = %w{
           as3 strict incremental optimize
@@ -175,7 +181,7 @@ namespace :build do
         compiler_flags.push "debug" if ENV['debug'] || ENV['DEBUG']
 
         build = Time.now.strftime("%Y-%m%d-%H%M")
-        version_file = "#{src_dir}/application/Version.as"
+        version_file = "#{src_pp_dir}/application/Version.as"
         old_version = nil
         begin
           File.modify(version_file) do |contents|
@@ -194,7 +200,7 @@ namespace :build do
           File.open(bin_version, "w") { |f| f.write(build + "\n") }
 
           mxmlc(
-            "#{src_dir}/SpaceGame.mxml",
+            "#{src_pp_dir}/SpaceGame.mxml",
             bin_swf,
             :libraries => Dir["#{lib_dir}/*.swc"],
             :keep_metadata => %w{Required Optional ArrayElementType SkipProperty},

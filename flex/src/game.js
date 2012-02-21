@@ -298,6 +298,47 @@ if (! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId)) {
 }
 // }}}
 
+function clientError(head, body, slowClient) {
+	var container = $('<div/>');
+
+	$('<h1/>', {
+		text: "Client error"
+	}).appendTo(container);
+
+	if (slowClient) {
+		$('<pre/>', {
+			text: "Slow client: true"
+		}).appendTo(container);
+	} else {
+		$('<pre/>', {
+			text: "Slow client: false"
+		}).appendTo(container);
+	}
+
+	$('<h1/>', {
+		text: "Head"
+	}).appendTo(container);
+
+
+	$('<pre/>', {
+		text:head
+	}).appendTo(container);
+
+	$('<br/>').appendTo(container);
+
+	$('<h1/>', {
+		text: "Body"
+	}).appendTo(container);
+
+
+	$('<pre/>', {
+		text:body
+	}).appendTo(container);
+
+	$('body').attr('id', 'client-error');
+	$('body').html(container.html());
+}
+
 // Load our swf {{{
 $(document).ready(function() {
   var flashvars = {};
