@@ -112,7 +112,7 @@ function notificationsOpened() { // {{{
 function setUnreadNotifications(count) { // {{{
   notificationsOpened();  
   notificationOldTitle = document.title;
-  
+
   notificationTimerId = setInterval(function() {
     if (notificationToggle) {
       document.title = notificationOldTitle;
@@ -120,7 +120,7 @@ function setUnreadNotifications(count) { // {{{
     else {
       document.title = "* " + count + " unread notifications *";
     }
-    
+
     notificationToggle = ! notificationToggle;
   }, 1000);
 } // }}}
@@ -217,7 +217,7 @@ function getGameOptions() { // {{{
         return null;
       }
     }
-    
+
     return {mode: 'game', server: server, webPlayerId: webPlayerId,
       serverPlayerId: serverPlayerId, locale: locale, webHost: webHost,
       assetsUrl: assetsUrl};
@@ -298,45 +298,49 @@ if (! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId)) {
 }
 // }}}
 
+// Called from flash when it crashes.
 function clientError(head, body, slowClient) {
-	var container = $('<div/>');
+  // No leave confirmation upon crash.
+  setLeaveHandler(false);
 
-	$('<h1/>', {
-		text: "Client error"
-	}).appendTo(container);
+  var container = $('<div/>');
 
-	if (slowClient) {
-		$('<pre/>', {
-			text: "Slow client: true"
-		}).appendTo(container);
-	} else {
-		$('<pre/>', {
-			text: "Slow client: false"
-		}).appendTo(container);
-	}
+  $('<h1/>', {
+    text: "Client error"
+  }).appendTo(container);
 
-	$('<h1/>', {
-		text: "Head"
-	}).appendTo(container);
+  if (slowClient) {
+    $('<pre/>', {
+      text: "Slow client: true"
+    }).appendTo(container);
+  } else {
+    $('<pre/>', {
+      text: "Slow client: false"
+    }).appendTo(container);
+  }
 
-
-	$('<pre/>', {
-		text:head
-	}).appendTo(container);
-
-	$('<br/>').appendTo(container);
-
-	$('<h1/>', {
-		text: "Body"
-	}).appendTo(container);
+  $('<h1/>', {
+    text: "Head"
+  }).appendTo(container);
 
 
-	$('<pre/>', {
-		text:body
-	}).appendTo(container);
+  $('<pre/>', {
+    text:head
+  }).appendTo(container);
 
-	$('body').attr('id', 'client-error');
-	$('body').html(container.html());
+  $('<br/>').appendTo(container);
+
+  $('<h1/>', {
+    text: "Body"
+  }).appendTo(container);
+
+
+  $('<pre/>', {
+    text:body
+  }).appendTo(container);
+
+  $('body').attr('id', 'client-error');
+  $('body').html(container.html());
 }
 
 // Load our swf {{{
