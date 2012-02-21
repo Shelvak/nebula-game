@@ -1,6 +1,6 @@
 package spacemule.modules.combat.objects
 
-import scala.collection.mutable
+import scala.{collection => sc}
 import scala.collection.immutable._
 import spacemule.helpers.Converters._
 import spacemule.helpers.{StdErrLog => L}
@@ -74,7 +74,7 @@ class Alliance(val id: Long,
    *   "name" -> String | null,
    *   "players" -> Seq[Seq(id: Int, name: String) | null],
    *   "flanks" -> Map(flankIndex: Int, flank: Map(
-   *     "ground" -> Seq[Combatant], "space" -> Seq[Combatant]
+   *     "ground" -> Seq[Combatant.AsJson], "space" -> Seq[Combatant.AsJson]
    *   ))
    * )
    */
@@ -82,13 +82,14 @@ class Alliance(val id: Long,
     val groundFlanksMap = groundFlanks.asJson
     val spaceFlanksMap = spaceFlanks.asJson
 
-    val flanks = (groundFlanksMap.keySet ++ spaceFlanksMap.keySet).map {
-      case flankIndex =>
-        flankIndex -> Map(
-          "ground" -> groundFlanksMap.getOrElse(flankIndex, Set.empty),
-          "space" -> spaceFlanksMap.getOrElse(flankIndex, Set.empty)
-        )
-    }.toMap
+    val flanks: Map[Int, Map[String, sc.Seq[Combatant.AsJson]]] =
+      (groundFlanksMap.keySet ++ spaceFlanksMap.keySet).map {
+        case flankIndex =>
+          flankIndex -> Map(
+            "ground" -> groundFlanksMap.getOrElse(flankIndex, Seq.empty),
+            "space" -> spaceFlanksMap.getOrElse(flankIndex, Seq.empty)
+          )
+      }.toMap
 
     Map(
       "name" -> (name match {
@@ -103,7 +104,7 @@ class Alliance(val id: Long,
   /**
    * Seq[Seq(id: Int, name: String) | null]
    */
-  def playersAsMapData = players.map { _ match {
+  def playersAsMapData: sc.Seq[sc.Seq[Any]] = players.map { _ match {
     case Some(player) => Seq(player.id, player.name)
     case None => null
   } }.toSeq

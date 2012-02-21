@@ -1,6 +1,6 @@
 package models.map
 {
-   
+
    import models.BaseModel;
    import models.map.events.MMapEvent;
    import models.movement.MSquadron;
@@ -9,7 +9,6 @@ package models.map
    import mx.collections.ListCollectionView;
 
    import utils.Objects;
-
    import utils.datastructures.Collections;
 
 
@@ -148,16 +147,6 @@ package models.map
          var sectorObjects:SectorObjects = _staticObjectsHash.getObjects(x, y);
          return sectorObjects != null ? sectorObjects.natural : null;
       }
-      
-      protected function getWreckageObjectAt(x:int, y:int) : IMStaticSpaceObject {
-         var sectorObjects:SectorObjects = _staticObjectsHash.getObjects(x, y);
-         return sectorObjects != null ? sectorObjects.wreckage : null;
-      }
-      
-      protected function getCooldownObjectAt(x:int, y:int) : IMStaticSpaceObject {
-         var sectorObjects:SectorObjects = _staticObjectsHash.getObjects(x, y);
-         return sectorObjects != null ? sectorObjects.cooldown : null;
-      }
    }
 }
 
@@ -167,9 +156,6 @@ import flash.utils.Dictionary;
 import models.map.IMStaticSpaceObject;
 import models.map.MMapSpace;
 
-import mx.logging.ILogger;
-
-import mx.logging.Log;
 
 class SectorObjects
 {
@@ -192,19 +178,11 @@ class StaticObjectsHash
    public function StaticObjectsHash() {
    }
 
-   public static function getLogger() : ILogger {
-      return Log.getLogger("models.map.MMapSpace");
-   }
-
    public function put(object:IMStaticSpaceObject) : void {
       var hashCode:String = computeHashCode(
          object.currentLocation.x,
          object.currentLocation.y
       );
-      getLogger().debug(
-         "Putting " + object + " to StaticObjectsHash (hashcode: " + hashCode + ")"
-      );
-
       var objects:SectorObjects = _hash[hashCode];
       if (objects == null) {
          objects = new SectorObjects();
@@ -232,10 +210,6 @@ class StaticObjectsHash
          object.currentLocation.x,
          object.currentLocation.y
       );
-      getLogger().debug(
-         "Removing " + object + " from StaticObjectsHash (hashcode: "
-         + hashCode + ")."
-      );
 
       var objects:SectorObjects = _hash[hashCode];
       switch (object.objectType) {
@@ -255,9 +229,6 @@ class StaticObjectsHash
       }
       
       if (!objects.hasObjects) {
-         getLogger().debug(
-            "No objects found for hashcode: " + hashCode + ", deleting from hash."
-         );
          delete _hash[hashCode];
       }
    }

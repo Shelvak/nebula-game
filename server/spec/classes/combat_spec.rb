@@ -280,10 +280,10 @@ describe Combat do
 
     dsl.run
 
-    p1 = p2 = u1_overpop = u2_overpop = player = nil
+    p1 = p2 = u1_overpop = u2_overpop = nil
     dsl = CombatDsl.new do
       location :planet
-      p1 = player(:population => 30, :population_cap => 10) do
+      p1 = player(:population => 40, :population_cap => 10) do
         units { u1_overpop = scorpion }
       end.player
       p2 = player { units { u2_overpop = scorpion } }.player
@@ -301,13 +301,21 @@ describe Combat do
     dmg_dealt_u1_normal = u2_normal.hit_points - u2_normal.hp
     dmg_dealt_u1_overpop = u2_overpop.hit_points - u2_overpop.hp
 
-    (dmg_dealt_u1_overpop.to_f / dmg_dealt_u1_normal).should be_within(0.01).
-                                                               of(mod)
     dmg_dealt_u2_normal = u1_normal.hit_points - u1_normal.hp
     dmg_dealt_u2_overpop = u1_overpop.hit_points - u1_overpop.hp
 
-    (dmg_dealt_u2_normal.to_f / dmg_dealt_u2_overpop).should be_within(0.01).
-                                                               of(mod)
+    expected = {
+      # Should give out less damage
+      "given" => be_within(0.01).of(mod),
+      # And should take more damage
+      "taken" => be_within(0.01).of(1.0 / mod),
+    }
+    actual = {
+      "given" => dmg_dealt_u1_overpop.to_f / dmg_dealt_u1_normal,
+      "taken" => dmg_dealt_u2_overpop.to_f / dmg_dealt_u2_normal,
+    }
+
+    actual.should equal_to_hash(expected)
   end
   
   it "should not crash if planet owner does not have any assets" do

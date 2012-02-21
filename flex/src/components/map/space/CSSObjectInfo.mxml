@@ -54,10 +54,13 @@
        );
      }
 
+     [Bindable]
+     private var honorCoefLabel: String = null;
+
      private function showHonorCoef(e: MSquadronEvent): void
      {
        MKR.removeEventListener(MSquadronEvent.MULTIPLIER_CHANGE, showHonorCoef);
-       btnShowHonorCoef.toolTip = getTooltip('honorCoef', [(MKR.multiplier * 100).toFixed(2)]);
+       honorCoefLabel = (MKR.multiplier * 100).toFixed(2) + '%';
      }
 
      private var MKR: MSquadKillReward = MSquadKillReward.getInstance();
@@ -102,6 +105,22 @@
          <ui:PlayerProfileButton id="btnOwner" player="{ssObject.player}" 
                                  visible="{ssObject.isOwned}"/>
       </base:AdvancedContainer>
+
+      <s:Group visible="{ssObject.owner == Owner.ENEMY
+                || ssObject.owner == Owner.NAP}"
+               toolTip="{getTooltip('honorCoef')}">
+        <s:layout>
+          <s:HorizontalLayout verticalAlign="middle" gap="5"/>
+        </s:layout>
+        <s:Label text="{getLabel('honorCoef')}"/>
+        <s:Button id="btnShowHonorCoef"
+                  label="{honorCoefLabel == null
+                    ? getLabel('unknownHonorCoef')
+                    : honorCoefLabel}"
+                  click="btnShowHonorCoef_clickHandler(event)"
+                  skinClass="components.skins.LinkButtonSkin"/>
+      </s:Group>
+
       <!--- Allows player to invite the owner of this planet to the alliance -->
       <s:Button id="btnInviteToAlliance"
                 label="{getLabel('inviteToAlliance')}"
@@ -121,10 +140,6 @@
                       ML.player.allianceFull &amp;&amp;
                       !ssObject.ownerIsAlly}"/>
       </s:Group>
-
-      <s:Button id="btnShowHonorCoef" visible="{ssObject.owner == Owner.ENEMY}"
-                label="{getLabel('showHonorCoef')}"
-                click="btnShowHonorCoef_clickHandler(event)"/>
 
       <!--- Button that lets view the object. Disabled if a player does not
             own the object. -->

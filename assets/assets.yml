@@ -10,6 +10,7 @@ alien_cannon thor_ground
 zeus_cannon
 dart_laser
 boss_light boss_heavy
+convoyship_heavy convoyship_light
 } %>
 <% terrain_types = {
   0 => 'earth',
@@ -69,19 +70,15 @@ options:
   # swf:quality (i.e. swf:75 would make a SWF with 75 percent quality).
   save_as: ""
 targets:
-  flex: &flex
-    # Disable me
-    # disabled: true
+  # << is not standard YAML, so we can't use it.
+  flex:
     path: flex/assets
-    # Options can be defined here
-    combine: swf:75
-    save_as: swf:75
+    combine: "swf:75"
+    save_as: "swf:75"
   flex_unbundled:
-    # Override path for unbundled assets.
-    <<:
-      path: flex/src/assets
-      save_as: ""
-    <<: *flex
+    path: flex/src/assets
+    combine: "swf:75"
+    save_as: ""
 # Optimize files by remote names. Match them with regexp and override global
 # and target options with given options. One file can be matched by multiple
 # rules.
@@ -133,14 +130,14 @@ assets:
           image = CONFIG["technologies.#{base.underscore}.name"]
           if image.nil?
         %>
-        <%= "#{base}.jpg: #{base}Technology.jpg" %>
+        <%= "#{base}.png: #{base}Technology.png" %>
         <%
           else
             image_set.add image
           end
         end
         image_set.each do |image| %>
-        <%= "#{image}.jpg: #{image}Technology.jpg" %>
+        <%= "#{image}.png: #{image}Technology.png" %>
         <% end %>
         background.jpg:
           wiki_name: Technology_background.jpg
@@ -503,8 +500,9 @@ assets:
         <% end %>
 
       "units":
+        <% non_combat_types = Unit.non_combat_types %>
         <% each_model('unit') do |base| %>
-        <% unless CONFIG["units.#{base.underscore}.guns"].blank? %>
+        <% unless non_combat_types.include?(base) %>
         <%= "#{base}.tar.gz: #{base}BattlefieldUnit.tar.gz" %>
         <% end %>
         <% end %>
@@ -620,15 +618,6 @@ assets:
         overdrive.png: Overdrive.png
         hide.png: Hide_icon.png
         unhide.png: Unhide_icon.png
-
-      "notifications":
-        outcome_loose.jpg:          Outcome_loose.jpg
-        outcome_win.jpg:            Outcome_win.jpg
-        outcome_tie.jpg:            Outcome_tie.jpg
-        ring.png:                   Ziedas.png
-        ring_top.png:               Ziedas_virus.png
-        ring_bottom.png:            Ziedas_apacia.png
-        ring_repeat.png:            Ziedas_repeat.png
 
       "player_screen":
         left.png:                   Pinfo_left.png
@@ -1082,6 +1071,13 @@ assets:
         head_time_left.png:          Notifications_title_time_left.png
         head_time_center.png:        Notifications_title_time_center.png
         head_time_right.png:         Notifications_title_time_right.png
+        outcome_loose.jpg:           Outcome_loose.jpg
+        outcome_win.jpg:             Outcome_win.jpg
+        outcome_tie.jpg:             Outcome_tie.jpg
+        ring.png:                    Ziedas.png
+        ring_top.png:                Ziedas_virus.png
+        ring_bottom.png:             Ziedas_apacia.png
+        ring_repeat.png:             Ziedas_repeat.png
 
       "movement":
         order_bottom_left.png:            Locator_bottom_left.png

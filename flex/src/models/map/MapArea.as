@@ -74,20 +74,7 @@ package models.map
       public function get xMax() : int {
          return getXMax(_rect);
       }
-      
-      /**
-       * Sets <code>xMin</code> and <code>xMax</code> properties to <code>min</code>
-       * and <code>max</code> respectively.
-       * 
-       * @param min | <b>&lt;= <code>max</code></b>
-       * @param max | <b>&gt;= <code>min</code></b>
-       */
-      public function setX(min:int, max:int) : void {
-         validateRange(min, "min", max, "max");
-         _rect.x = min;
-         _rect.width = getEdgeLength(min, max);
-      }
-      
+
       public function get yMin() : int {
          return _rect.y;
       }
@@ -95,20 +82,7 @@ package models.map
       public function get yMax() : int {
          return getYMax(_rect);
       }
-      
-      /**
-       * Sets <code>yMin</code> and <code>yMax</code> properties to <code>min</code>
-       * and <code>max</code> respectively.
-       * 
-       * @param min | <b>&lt;= <code>max</code></b>
-       * @param max | <b>&gt;= <code>min</code></b>
-       */
-      public function setY(min:int, max:int) : void {
-         validateRange(min, "min", max, "max");
-         _rect.y = min;
-         _rect.height = getEdgeLength(min, max);
-      }
-      
+
       public function get width() : int {
          return _rect.width;
       }
@@ -174,12 +148,12 @@ package models.map
       private function validateRange(min:int, minName:String,
                                      max:int, maxName:String) : void {
          if (min > max) {
-            StringUtil.substitute(
+            throw new ArgumentError(StringUtil.substitute(
                "[param {0}] must be less that [param {1}] but"
-               + "\n   [param {0}] was equal to {2}"
-               + "\n   [param {1}] was equal to {3}",
+                  + "\n   [param {0}] was equal to {2}"
+                  + "\n   [param {1}] was equal to {3}",
                minName, maxName, min, max
-            );
+            ));
          }
       }
    }

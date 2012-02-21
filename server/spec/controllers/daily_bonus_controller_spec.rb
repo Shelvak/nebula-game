@@ -7,6 +7,7 @@ describe DailyBonusController do
 
   before(:each) do
     init_controller DailyBonusController, :login => true
+    player.stub!(:daily_bonus_available?).and_return(true)
   end
   
   describe "daily_bonus|show" do

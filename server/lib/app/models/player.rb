@@ -653,9 +653,13 @@ class Player < ActiveRecord::Base
     end
 
     aggressor_row = condition.where(:id => aggressor_id).c_select_one
+    raise GameLogicError, "cannot find aggressor with id #{aggressor_id}" \
+      if aggressor_row.nil?
     aggressor_points = points[aggressor_row]
 
     defender_row = condition.where(:id => defender_id).c_select_one
+    raise GameLogicError, "cannot find defender with id #{defender_id}" \
+      if defender_row.nil?
     defender_points = points[defender_row]
 
     Java::spacemule.modules.combat.post_combat.Statistics.fairnessMultiplier(

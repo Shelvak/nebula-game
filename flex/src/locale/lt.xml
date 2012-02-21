@@ -334,6 +334,10 @@
     <Technology_MetalStorage-whos value="Skysčių suspaudimo" />
     <Technology_MetalExtractorT2 value="MEX T-2"/>
     <Technology_MetalExtractorT2-whos ref="Technology_MetalExtractorT2"/>
+    <Technology_CollectorT2 value="Kolektorius" />
+    <Technology_CollectorT2-whos value="Kolektoriaus" />
+    <Technology_ZetiumExtractorT2 value="ZEX T-2" />
+    <Technology_ZetiumExtractorT2-whos ref="Technology_ZetiumExtractorT2" />
     <Technology_EnergyStorage value="Talpesnės baterijos" />
     <Technology_EnergyStorage-whos value="Talpesnių baterijų" />
     <Technology_ZetiumStorage value="Zetiumo kasetės" />
@@ -341,7 +345,7 @@
     <Technology_ShipStorage value="Išoriniai dokai" />
     <Technology_ShipStorage-whos value="Išorinių dokų" />
     <Technology_DefensivePortal ref="Building_DefensivePortal" />
-    <Technology_DefensivePortal-whos value="Building_DefensivePortal-whos" />
+    <Technology_DefensivePortal-whos ref="Building_DefensivePortal-whos" />
     <Technology_Radar value="Radaras" />
     <Technology_Radar-whos value="Radaro" />
     <Technology_Alliances value="Sąjungos" />
@@ -798,6 +802,7 @@
     <property.height value="Pastato ilgis" />
     <property.vpsOnDamage value="PT už 1 žalos vienetą" />
     <property.credsForKilling value="Kredų už nužudymą" />
+    <property.teleportedVolume value="Perkeliamų karių apimtis" />
 
     <text.deactivated>
       <p>
@@ -1558,6 +1563,8 @@
     <gun.dart_laser value="Fazinė patranka" />
     <gun.boss_light value="Dvejinti fazeriai" />
     <gun.boss_heavy value="Šoko sviediniai" />
+    <gun.convoyship_light value="Fotonų greitintuvas" />
+    <gun.convoyship_heavy value="TR-3 leistuvas" />
     <armorType value="Šarvų tipas" />
     <damageInPercent value="Procentai" />
     <damage value="Žala" />
@@ -1585,7 +1592,9 @@
     <specialDamage value="Žala: {0} x {1} = {2}" />
     <damageCoef value="Žalos koeficientas: {0}" />
     <armorFromTechs value="Šarvai iš technologijų:" />
+    <absorptionFromTechs value="Šūvio sugėrimo tikimybė iš technologijų:" />
     <damageFromTechs value="Žala iš technologijų:" />
+    <criticalFromTechs value="Kritinio šūvio tikimybė iš technologijų:" />
     <forOne value="Vienam:" />
     <total value="Iš viso:" />
     <cost value="Kaina" />
@@ -1708,6 +1717,7 @@
   </Location>
 
   <MainMenu>
+    <label.preferences value="Nustatymai" />
     <label.vip value="VIP" />
     <label.quests value="Užduotys" />
     <!-- 0- Player flying squadrons count
@@ -1761,12 +1771,12 @@
     <label.honorCoef value="Garbės koef."/>
     <tooltip.honorCoef>
       <p>
-          Garbės koeficientas yra suskaičiuojamas lyginant Tavo ir Tavo
-          puolamo žaidėjo jėgas.
+        Garbės koeficientas yra suskaičiuojamas lyginant tavo ir
+        puolamo žaidėjo jėgas.
       </p>
       <p>
-          Tu gausi daugiau taškų ir kredų jei esi silpnesnis nei Tavo puolamas
-          žaidėjas ir mažiau - jei esi stipresnis.
+        Jeigu esi silpnesnis už puolamą žaidėją, gausi daugiau pergalės taškų
+        ir kredų ir mažiau - jeigu esi stipresnis.
       </p>
     </tooltip.honorCoef>
     <label.showKillReward value="Atlygis"/>
@@ -2051,6 +2061,13 @@
     <title.cancelConstructor value="Atšaukti statybas" />
     <message.cancelConstructor 
     value="Ar tikrai nori atšaukti šio pastato statybas?"/>
+
+    <title.cancelPlayerOptions value="Yra neišsaugotų pakeitimų" />
+    <message.cancelPlayerOptions>
+      <p>Tu padarei pakeitimų nustatymuose. Jei uždarysi šį langą visi pakeitimai
+        bus atšaukti.</p>
+      <p>Ar esi tikras?</p>
+    </message.cancelPlayerOptions>
     
     <title.cancelOffer value="Atšaukti pasiūlymą" />
     <message.cancelOffer>
@@ -2260,6 +2277,9 @@
       <p>{2 one[Išrask] 1sts[Ištobulink] tens[Ištobulink] many[Ištobulink]} 
       [obj:{0}:{1}:what:dc]{2 one[] 1sts[ iki ? lygio] tens[ iki ? lygio] many[ iki ? lygio]}</p>
     </objectiveText.HaveUpgradedToTechClass>
+
+    <!-- BE_IN_ALLIANCE -->
+    <objectiveText.BeInAlliance value="Priklausyk sąjungai"/>
 
     <!-- UPGRADE_TO
     0: count of objects, 
@@ -3788,7 +3808,7 @@
       <![CDATA[
       <p>Ęsant virš sektoriaus su nuolaužomis pasirink savo laivus, tada spausk
         mygtuką „[reference:Squadrons/label.manage]“.</p>
-      <p>Atsidariusiame ekrane paspausk įkrovimo mygtuką.<p>
+      <p>Atsidariusiame ekrane paspausk įkrovimo mygtuką.</p>
       ]]>
     </LoadWreckage1>
     <LoadWreckage2>
@@ -4062,8 +4082,9 @@
     <label.planetArea value="Plotas: {0} x {1} langeliai"/>
     <label.totalVolume value="Bendra apimtis: {0}"/>
     <label.wreckageVolume value="(apimtis: {0})"/>
-    <label.showHonorCoef value="Rodyti garbės koef."/>
-    <tooltip.honorCoef value="Garbės koeficientas: {0}%"/>
+    <label.unknownHonorCoef value="nežinomas"/>
+    <label.honorCoef value="Garbės koeficientas:"/>
+    <tooltip.honorCoef ref="Movement/tooltip.honorCoef"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
     <title.info 
       value="{0 Planet[Planetos] Jumpgate[Šuolio vartų] Asteroid[Asteroido] Wreckage[Nuolaužų] Cooldown[Pertraukos]} informacija" />
@@ -4236,8 +4257,16 @@
     <property.mod.damage.format value="{0}%" />
     <property.mod.critical value="Kritinio šūvio tikimybė" />
     <property.mod.critical.format value="{0}%" />
+    <property.mod.critical.tooltip>
+      <p>Tikimybė, kad karinis vienetas šaus kritinį šūvį.</p>
+      <p>Kritinis šūvis - tai 2,5 karto daugiau žalos darantis šūvis.</p>
+    </property.mod.critical.tooltip>
     <property.mod.absorption value="Žalos sugėrimo tikimybė" />
     <property.mod.absorption.format value="{0}%" />
+    <property.mod.absorption.tooltip>
+      <p>Tikimybė, kad į karinį vienetą pataikytas šūvis padarys 2,5 karto
+        mažiau žalos.</p>
+    </property.mod.absorption.tooltip>
     <property.mod.speed value="Judėjimo trukmės daliklis" />
     <property.mod.speed.format value="{0}%" />
     <property.mod.speed.tooltip>
@@ -4544,7 +4573,7 @@
       saugyklų talpą.</p>
     </FieryMelters.about>
 
-    <CollectorT2.name ref="Buildings/CollectorT2.name" />
+    <CollectorT2.name ref="Objects/Technology_CollectorT2" />
     <CollectorT2.about>
       <p>Leidžia statyti saulės jėgaines.</p>
       <p>[reference:Buildings/CollectorT2.common]</p>
@@ -5586,5 +5615,23 @@
      <title.npcBuildings value="Ateivių pastatai"/>
      <title.foliage value="Kalnai"/>
   </PlanetMapEditor>
+
+  <PlayerOptions>
+     <title.chatOptions value="Pokalbių kambario nustatymai" />
+     <title.afterLoginOptions value="Prisijungimo nustatymai" />
+     <title.genericOptions value="Pagrindiniai nustatymai" />
+     <label.save value="Išsaugoti" />
+     <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
+     <label.showPopupsAfterLogin value="Atidaryti iššokančius langus prisijungus" />
+     <label.openFirstPlanet value="Automatiškai atidaryti pirmąją planetą" />
+     <label.showJoinLeave value="Rodyti prisijungimo / atsijungimo pranešimus" />
+     <label.ignoredList value="Ignoruojami žaidėjai:" />
+     <label.ignoredListEmpty value="Nėra ignoruojamų žaidėjų" />
+     <label.addIgnoredPlayer value="Pridėti" />
+     <label.removeIgnored value="Šalinti"/>
+     <label.ignoreComplete value="Pilnai ignoruoti"/>
+     <label.ignoreFiltered value="Uždengti žinutes"/>
+     <label.ignoreType value="Ignoravimo būdas:"/>
+  </PlayerOptions>
 
 </locale>

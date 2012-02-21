@@ -50,7 +50,13 @@ class Event::FowChange::SolarSystem < Event::FowChange
 
     fow_ss_entries.each do |fse|
       if fse.alliance_id
-        alliance_players[fse.alliance_id].each do |player_id|
+        alliance_player_ids = alliance_players[fse.alliance_id]
+        if alliance_player_ids.nil?
+          LOGGER.error dump_environment(
+            binding, "alliance_player_ids is not supposed to be nil!"
+          )
+        end
+        alliance_player_ids.each do |player_id|
           player_ids.add(player_id)
           metadatas[player_id] ||= {}
           metadatas[player_id][:alliance] = fse

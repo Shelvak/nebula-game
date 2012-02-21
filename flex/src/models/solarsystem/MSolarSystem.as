@@ -173,9 +173,7 @@ package models.solarsystem
        * @inheritDoc
        */
       public function get isNavigable(): Boolean {
-         return !isShielded
-                   || ML.player.equals(_player)
-                   || metadata.alliancePlanets;
+         return !isShielded || ML.player.equals(_player);
       }
 
       public function navigateTo(): void {

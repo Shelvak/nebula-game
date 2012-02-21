@@ -270,6 +270,13 @@ function loginSuccessful() {
   _gaq.push(['_trackPageview', '/play/game/success']);
 }
 
+// Ensure player does not close the game accidentally.
+function setLeaveHandler(enabled) {
+  window.onbeforeunload = enabled
+    ? function() { return locales.navigateAwayMessage(locale); }
+    : null;
+}
+
 // Get combat log URL for log with given ID.
 function getCombatLogUrl(combatLogId, playerId) { // {{{
   var clAssetsUrl = assetsUrl == ""
@@ -355,12 +362,5 @@ $(document).ready(function() {
       "100%", "100%", minVersion, assetsUrl + "playerProductInstall.swf", 
       flashvars, params, attributes);
   swfobject.createCSS("#flashContent", "display:block;text-align:left;");
-
-  // Ensure player does not close the game accidentally.
-  if (! inLocalComputer() && ! inDeveloperMode()) {
-    window.onbeforeunload = function() {
-      return locales.navigateAwayMessage(locale);
-    }
-  }
 });
 // }}}

@@ -163,38 +163,41 @@ package components.movement
 
       private function get isVpZone(): Boolean
       {
+         if (_squadron == null) {
+            return false;
+         }
          return vpZones.indexOf(_squadron.currentHop.location.type) != -1;
       }
       
       private function get hasShipsWithBonus(): Boolean
       {
-         for each (var unit: Unit in _squadron.units)
-         {
-            if (Config.getUnitVictoryPointsBonus(unit.type) > 0
-               || Config.getUnitCredsBonus(unit.type) > 0)
-            {
-               return true;
+         if (_squadron != null) {
+            for each (var unit: Unit in _squadron.units) {
+               if (Config.getUnitVictoryPointsBonus(unit.type) > 0
+                      || Config.getUnitCredsBonus(unit.type) > 0) {
+                  return true;
+               }
             }
          }
          return false;
       }
-      
-      private function get bonusVictoryPoints(): Number
-      {
+
+      private function get bonusVictoryPoints(): Number {
          var total: Number = 0;
-         for each (var unit: Unit in _squadron.units)
-         {
-             total += Config.getUnitVictoryPointsBonus(unit.type) * unit.hp;
+         if (_squadron != null) {
+            for each (var unit: Unit in _squadron.units) {
+               total += Config.getUnitVictoryPointsBonus(unit.type) * unit.hp;
+            }
          }
          return total;
       }
 
-      private function get bonusCreds(): Number
-      {
+      private function get bonusCreds(): Number {
          var total: int = 0;
-         for each (var unit: Unit in _squadron.units)
-         {
-            total += Config.getUnitCredsBonus(unit.type);
+         if (_squadron != null) {
+            for each (var unit: Unit in _squadron.units) {
+               total += Config.getUnitCredsBonus(unit.type);
+            }
          }
          return total;
       }
@@ -226,6 +229,9 @@ package components.movement
 
       private function setReward(e: MSquadronEvent = null): void
       {
+         if (_squadron == null) {
+            return;
+         }
          var totalVps: Number = 0;
          var totalCreds: Number = 0;
          totalVps += bonusVictoryPoints;
@@ -293,6 +299,9 @@ package components.movement
 
       private function showKillReward(e: MouseEvent): void
       {
+         if (_squadron == null) {
+            return;
+         }
          if (_squadron.owner != Owner.NPC)
          {
              MKR.addEventListener(MSquadronEvent.MULTIPLIER_CHANGE, setReward);
@@ -517,6 +526,9 @@ package components.movement
       }
       
       private function unitsManagementButton_clickHandler(event:MouseEvent) : void {
+         if (_squadron == null) {
+            return;
+         }
          var unitIDs:Array = _squadron.units.toArray().map(
             function(unit:Unit, idx:int, array:Array) : int { return unit.id }
          );
@@ -527,18 +539,30 @@ package components.movement
       }
       
       private function moveButton_clickHandler(event:MouseEvent) : void {
+         if (_squadron == null) {
+            return;
+         }
          OrdersController.getInstance().issueOrder(_squadron.units, _squadron);
       }
       
       private function stopButton_clickHandler(event:MouseEvent) : void {
+         if (_squadron == null) {
+            return;
+         }
          new RoutesCommand(RoutesCommand.DESTROY, _squadron).dispatch();
       }
       
       private function btnOpenSourceLoc_clickHandler(event:MouseEvent) : void {
+         if (_squadron == null) {
+            return;
+         }
          _squadron.route.sourceLocation.navigateTo();
       }
       
       private function btnOpenDestLoc_clickHandler(event:MouseEvent) : void {
+         if (_squadron == null) {
+            return;
+         }
          _squadron.route.targetLocation.navigateTo();
       }
       

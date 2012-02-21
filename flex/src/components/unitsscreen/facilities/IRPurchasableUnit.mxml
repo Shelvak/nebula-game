@@ -33,6 +33,8 @@
       import controllers.ui.NavigationController;
       import controllers.units.UnitsCommand;
 
+      import globalevents.GBuildingEvent;
+
       import globalevents.GObjectEvent;
       import globalevents.GPlanetEvent;
       import globalevents.GResourcesEvent;
@@ -117,6 +119,7 @@
                                           dispatchRefreshValidEvent);
          EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE,
                                dispatchRefreshValidEvent);
+         EventBroker.subscribe(GBuildingEvent.MOVE_CONFIRM, buildingMovedHandler);
          EventBroker.subscribe(GlobalEvent.APP_RESET, removeEventListeners);
          dispatchRefreshValidEvent();
          var temp: String = type;
@@ -137,8 +140,18 @@
          }
          EventBroker.unsubscribe(GPlanetEvent.BUILDINGS_CHANGE,
                                  dispatchRefreshValidEvent);
+         EventBroker.unsubscribe(GBuildingEvent.MOVE_CONFIRM,
+                                 buildingMovedHandler);
          EventBroker.unsubscribe(GlobalEvent.APP_RESET, removeEventListeners);
          purchasePending = false;
+      }
+
+      private function buildingMovedHandler(e: GBuildingEvent): void
+      {
+        if (e.building == facility)
+        {
+          recalculateCosts();
+        }
       }
 
       private static const imageSize: int = 132;
@@ -290,6 +303,7 @@
 
       protected function basecontainer1_mouseDownHandler(event: MouseEvent): void {
          facility.selectedCount = isValid ? selector.value : -1;
+        // TODO: wtf
          recalculateCosts();
       }
 

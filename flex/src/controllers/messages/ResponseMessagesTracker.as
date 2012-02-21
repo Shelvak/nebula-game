@@ -161,21 +161,18 @@ package controllers.messages
       /**
        * Checks if any messages have not received response in time and if that is true, takes appropriate
        * action (shows error popup and so on).
-       */      
-      public function checkWaitingMessages() : void
-      {
-         // Don't do anything if we are disconnected or user might bump into a situation like this: while
-         // deciding wether to try roconnecting or not user gets also a response timeout popup.
-         if (!CONN_MANAGER.connected)
-         {
+       */
+      public function checkWaitingMessages(): void {
+         // Don't do anything if we are disconnected or user might bump into a
+         // situation like this: while deciding whether to try reconnecting or
+         // not user gets also a response timeout popup.
+         if (!CONN_MANAGER.connected) {
             return;
          }
-         
-         var nowDate:Date = new Date();
-         for each (var record:PendingRMORecord in pendingRMOs)
-         {
-            if (record.endTime < nowDate.time)
-            {
+
+         var nowDate: Date = new Date();
+         for each (var record: PendingRMORecord in pendingRMOs) {
+            if (record.endTime < nowDate.time) {
                reset();
                CONN_MANAGER.responseTimeout();
             }

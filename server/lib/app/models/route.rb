@@ -11,13 +11,10 @@
 # - source_type (Fixnum)
 # - source_x (Fixnum)
 # - source_y (Fixnum)
-# - source_name (String)
-# - source_variation (Fixnum)
-# - source_solar_system_id (Fixnum)
 #
 # All of the source_* attributes are documented in Location#client_attrs.
 #
-# Route also has current_* and target_* attributes analoguous to source_*
+# Route also has current_* and target_* attributes analogous to source_*
 # attributes.
 #
 # When sending to client +Route+ looks like this:

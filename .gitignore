@@ -25,17 +25,22 @@ flex/assets/*
 flex/src/assets/*
 flex/catalyst
 flex/temp
-# Text flex apps
+# Preprocessed flex sources
+flex/src-pp
+# Test flex apps
 flex/Test.mxml
 flex/src/flex.mxml
 # Compilation targets.
 flex/bin-debug
 flex/target
+# Flex unit app
+flex/test/FlexUnitApplication.mxml
 
 # Server ignores
 # Gemfile symlinks
 server/Gemfile
 server/Gemfile.lock
+server/.bundle
 # Configs
 server/config/database.yml
 # Temp output files

@@ -1373,11 +1373,9 @@ describe Player do
     end
 
     it "should leave alliance if he is in one" do
-      alliance = create_alliance
-      player = alliance.owner
+      player = create_alliance.owner
+      player.should_receive(:leave_alliance!)
       player.destroy!
-      player.reload
-      player.alliance.should be_nil
     end
 
     it "should not leave alliance if he not in one" do
@@ -1852,6 +1850,18 @@ describe Player do
 
     def ratio(aggressor, defender)
       points(defender) / points(aggressor)
+    end
+
+    it "should fail if aggressor cannot be found" do
+      lambda do
+        Player.battle_vps_multiplier(0, player.id)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if defender cannot be found" do
+      lambda do
+        Player.battle_vps_multiplier(player.id, 0)
+      end.should raise_error(GameLogicError)
     end
 
     it "should use Cfg::Java.fairnessPoints" do

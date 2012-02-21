@@ -19,6 +19,7 @@ package controllers.galaxies.actions
    import models.map.MapArea;
    import models.map.MapType;
    import models.movement.MHop;
+   import models.player.PlayerOptions;
    import models.quest.MMainQuestLine;
    import models.quest.MMainQuestLine;
    import models.solarsystem.MSSObject;
@@ -113,26 +114,16 @@ package controllers.galaxies.actions
             }
          }
          else {
-            // If you only have one planet and don't have any units in galaxy -
-            // then open first player planet.
+            // If player has set openFirstPlanet parameter and has any planet
+            // we open first planet
             var deepOpen:Boolean =
-               (ML.player.planetsCountAll == 1 &&
-               ! galaxy.hasMoreThanOneObject && ! galaxy.hasUnits)
-                       && ML.player.planets.length > 0;
+               (ML.player.planets.length > 0
+                  && PlayerOptions.openFirstPlanetAfterLogin);
             if (deepOpen) {
                NAV_CTRL.toGalaxy(galaxy,
                   function() : void {
                      new GlobalEvent(GlobalEvent.APP_READY);
-
-                     NAV_CTRL.toPlanet(
-                        MSSObject(ML.player.planets.getItemAt(0)),
-                        function() : void {
-                           var instance: MMainQuestLine = MMainQuestLine.
-                              getInstance();
-                           if (instance.hasUncompletedMainQuest())
-                              instance.openCurrentUncompletedQuest();
-                        }
-                     );
+                     NAV_CTRL.toPlanet(MSSObject(ML.player.planets.getItemAt(0)));
                   }
                );
             }
@@ -151,6 +142,13 @@ package controllers.galaxies.actions
                      }
                   }
                );
+            }
+
+            var instance: MMainQuestLine = MMainQuestLine.getInstance();
+            if (instance.hasUncompletedMainQuest()
+                  && PlayerOptions.showPopupsAfterLogin)
+            {
+               instance.openCurrentUncompletedQuest();
             }
          }
       }

@@ -88,6 +88,37 @@ package tests.maps
             definesPoint (1, -1)
          ));
       }
+
+      [Test]
+      public function visibleAreaCompletelyLeavesVisibleGalaxyArea(): void {
+         init(new MapArea(0, 1, -1, 0));
+         const initialVisibleArea:Rectangle = new Rectangle(
+            2 * SECTOR_W, 2 * SECTOR_H,
+            2 * SECTOR_W, 2 * SECTOR_H
+         );
+         area.visibleAreaChange(
+            initialVisibleArea,
+            areaVector(),
+            areaVector([initialVisibleArea])
+         );
+         client.clear();
+
+         area.visibleAreaChange(
+            new Rectangle(-1000, -1000, 20, 20),
+            areaVector([initialVisibleArea]),
+            areaVector()
+         );
+
+         assertThat( "visibleArea does not exist", area.visibleArea, nullValue() );
+         assertThat( "sectorShown not called", client.sectorShownCalls, equals(0) );
+         assertThat( "sectorHidden called 4 times", client.sectorHiddenCalls, equals (4) );
+         assertThat( "hidden sectors", client.sectorHiddenParams, hasItems(
+            definesPoint (0,  0),
+            definesPoint (0, -1),
+            definesPoint (1,  0),
+            definesPoint (1, -1)
+         ));
+      }
       
       [Test]
       public function completeVisibleAreaChange() : void {
