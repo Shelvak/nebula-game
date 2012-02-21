@@ -64,6 +64,7 @@ package components.map.controllers
          addSquadronEventHandler(MMapEvent.SQUADRON_LEAVE);
          addSquadronEventHandler(MMapEvent.SQUADRON_MOVE);
          sort = new Sort();
+         sort.fields = new Array();
          sort.compareFunction = sectorsProvider.sectorsCompareFunction;
          refresh();
          rebuild();

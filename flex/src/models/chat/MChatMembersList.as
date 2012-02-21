@@ -32,6 +32,7 @@ package models.chat
          _channel = channel;
          _membersHash = new Object();
          sort = new Sort();
+         sort.fields = new Array();
          sort.compareFunction = MChat.compareFunction_members;
          refresh();
       }

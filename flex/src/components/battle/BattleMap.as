@@ -790,6 +790,7 @@ package components.battle
          if (_battle.isDefenderVsOffender)
          {
             _battle.alliances.sort = new Sort();
+            _battle.alliances.sort.fields = new Array();
             _battle.alliances.sort.compareFunction = function (a:Object, b:Object, fields:Array = null):int
             {
                if (a.status > b.status)
@@ -940,6 +941,7 @@ package components.battle
          var flankUnits: ModelsCollection = isGround?flank.groundUnits:flank.spaceUnits;
          
          flankUnits.sort = new Sort();
+         flankUnits.sort.fields = new Array();
          flankUnits.sort.compareFunction = function (a:Object, b:Object, fields:Array = null):int
          {
             if (BUnit(a).willAppear == BUnit(b).willAppear)
@@ -970,6 +972,7 @@ package components.battle
             }
          }
          distinctUnits.sort = new Sort();
+         distinctUnits.sort.fields = new Array();
          distinctUnits.sort.compareFunction = function (a:Object, b:Object, fields:Array = null):int
          {
             if (a.box.width > b.box.width)
@@ -1016,6 +1019,7 @@ package components.battle
             
             Profiler.start("sort distinct buildings");
             distinctBuildings.sort = new Sort();
+            distinctBuildings.sort.fields = new Array();
             distinctBuildings.sort.compareFunction = function (a:Object, b:Object, fields:Array = null):int
             {
                if (a.box.width > b.box.width)

@@ -298,17 +298,12 @@ package models.building
       [Bindable (event="levelChange")]
       public function get leveledConstructionMod(): int
       {
-         var cMod: int;
-         try
-         {
-            cMod = Upgradable.evalUpgradableFormula(UpgradableType.BUILDINGS, type, 
-               'mod.construction', {'level': level});
-         }
-         catch (e: ArgumentError)
-         {
-            cMod = 0;
-         }
-         return cMod;
+         return Upgradable.evalUpgradableFormula(
+            UpgradableType.BUILDINGS,
+            type,
+            'mod.construction',
+            {'level': level}
+         );
       }
       
       [Bindable (event="levelChange")]

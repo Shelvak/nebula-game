@@ -108,6 +108,7 @@
          protected function panel1_creationCompleteHandler(event:FlexEvent):void
          {
             toKinds.sort = new Sort();
+            toKinds.sort.fields = new Array();
             toKinds.sort.compareFunction = function (a:String, b:String, fields: Array = null):int
             {
                if (a == b)
