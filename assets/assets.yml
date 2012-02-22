@@ -956,6 +956,9 @@ assets:
         point_inactive.png: Techtree_point_inactive.png
         clock.png:          Technology_tree_clock.png
         open_context.png: Tach_context_menu.png
+        additional_group_left.png: Additional_technology_left.png
+        additional_group_repeat.png: Additional_technology_center.png
+        additional_group_right.png: Additional_technology_right.png
 
       "panel":
         bottom_center.png: Panel_bottom_center.png
