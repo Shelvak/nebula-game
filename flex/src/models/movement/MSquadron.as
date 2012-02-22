@@ -464,10 +464,10 @@ package models.movement
          }
          
          if (hasUnits) {
-            var loc:Location = currentHop.location.toLocation();
-            var fromPlanet: Boolean = Unit(units.getItemAt(0)).location.isSSObject;
+            const loc:LocationMinimal = currentHop.location;
+            const fromPlanet: Boolean = Unit(units.getItemAt(0)).location.isSSObject;
             // for debugging
-            var unitIds:Array = units.toArray().map(
+            const unitIds:Array = units.toArray().map(
                function(unit:Unit, index:int, array:Array) : int {
                   return unit.id;
                }
