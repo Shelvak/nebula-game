@@ -443,8 +443,10 @@ module Parts
           model.send(:on_upgrade_finished!)
 
           model
-        else
+        elsif defined?(super)
           super(id, event)
+        else
+          raise CallbackManager::UnknownEvent.new(self, id, event)
         end
       end
     end

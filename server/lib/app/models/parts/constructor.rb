@@ -1,6 +1,7 @@
 module Parts::Constructor
 	def self.included(receiver)
     receiver.extend ConditionalExtender
+    receiver.extend BaseClassMethods
 	end
 
   # Extend subclass with functionality if that subclass is a constructor.
@@ -29,6 +30,22 @@ module Parts::Constructor
             true
           end
         end
+      end
+    end
+  end
+
+  # Class methods for base class.
+  module BaseClassMethods
+    def constructor?; ! property('constructor.items').nil?; end
+
+    def on_callback(id, event)
+      if event == CallbackManager::EVENT_CONSTRUCTION_FINISHED
+        model = find(id)
+        model.send(:on_construction_finished!)
+      elsif defined?(super)
+        super(id, event)
+      else
+        raise CallbackManager::UnknownEvent.new(self, id, event)
       end
     end
   end

@@ -440,17 +440,14 @@ class Building < ActiveRecord::Base
 
   class << self
     def on_callback(id, event)
-      if event == CallbackManager::EVENT_CONSTRUCTION_FINISHED
-        model = find(id)
-        model.send(:on_construction_finished!)
+      if event == CallbackManager::EVENT_COOLDOWN_EXPIRED
+        find(id).cooldown_expired!
       elsif defined?(super)
         super(id, event)
       else
         raise CallbackManager::UnknownEvent.new(self, id, event)
       end
     end
-
-    def constructor?; ! property('constructor.items').nil?; end
 
     def width
       value = property('width')

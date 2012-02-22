@@ -6,7 +6,6 @@ module Parts::Repairable
     ) if receiver.include?(Parts::WithCooldown)
 
     receiver.send :include, InstanceMethods
-    receiver.extend ClassMethods
   end
 
   module InstanceMethods
@@ -72,18 +71,10 @@ module Parts::Repairable
       save!
       EventBroker.fire(self, EventBroker::CHANGED)
     end
-  end
 
-  module ClassMethods
-    def on_callback(id, event)
-      if event == CallbackManager::EVENT_COOLDOWN_EXPIRED
-        find(id).on_repairs_finished!
-      elsif defined?(super)
-        super(id, event)
-      else
-        raise ArgumentError.new("Unknown event #{event} (#{
-          CallbackManager::STRING_NAMES[event]}) for #{self} ID #{id}!")
-      end
+    # Delegate to #on_repairs_finished!
+    def cooldown_expired!
+      on_repairs_finished!
     end
   end
 end
