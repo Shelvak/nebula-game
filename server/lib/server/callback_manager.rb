@@ -57,11 +57,38 @@ class CallbackManager
 
   # Maximum time for callback
   MAX_TIME = 5
+  
+  CLASS_TO_COLUMN = {
+    Player => :player_id,
+    Technology => :technology_id,
+    Galaxy => :galaxy_id,
+    SolarSystem => :solar_system_id,
+    SsObject => :ss_object_id,
+    Building => :building_id,
+    Unit => :unit_id,
+    RouteHop => :route_hop_id,
+    Cooldown => :cooldown_id,
+    Notification => :notification_id,
+    Nap => :nap_id,
+    CombatLog => :combat_log_id,
+  }
 
   class << self
+    def get_column(object)
+      CLASS_TO_COLUMN.each do |klass, column|
+        return column if object.is_a?(klass)
+      end
 
-    def get_class(object)
-      object.class.to_s
+      raise ArgumentError, "Unknown column type for #{object.inspect}!"
+    end
+
+    def parse_row(row)
+      CLASS_TO_COLUMN.each do |klass, column|
+        id = row[column.to_s]
+        return [klass, column, id] unless id.nil?
+      end
+
+      raise ArgumentError, "Cannot determine class/column/id for #{row.inspect}!"
     end
 
     # Register _event_ that will happen at _time_ on _object_. It will
@@ -81,10 +108,11 @@ class CallbackManager
       raise ArgumentError.new("object #{object} does not have id!") \
         if object.id.nil?
 
+      column = get_column(object)
       ActiveRecord::Base.connection.execute(
-        "INSERT INTO callbacks SET class='#{get_class(object)
-          }', ruleset='#{CONFIG.set_scope}', object_id=#{object.id
-          }, event=#{event}, ends_at='#{time.to_s(:db)}'"
+        "INSERT INTO callbacks SET #{column}='#{object.id.to_i
+          }', ruleset='#{CONFIG.set_scope}', event=#{event
+          }, ends_at='#{time.to_s(:db)}'"
       )
     end
 
@@ -95,9 +123,10 @@ class CallbackManager
       LOGGER.debug("CM: updating event '#{STRING_NAMES[event]
         }' at #{time.to_s(:db)} for #{object}")
 
+      column = get_column(object)
       ActiveRecord::Base.connection.execute(
-        "UPDATE callbacks SET ends_at='#{time.to_s(:db)}' WHERE class='#{
-          get_class(object)}' AND object_id=#{object.id} AND event=#{event}"
+        "UPDATE callbacks SET ends_at='#{time.to_s(:db)}' WHERE #{
+        column}=#{object.id} AND event=#{event}"
       )
     end
 
@@ -118,10 +147,10 @@ class CallbackManager
         "ends_at='#{time.to_s(:db)}'"
       end
 
+      column = get_column(object)
       ! ActiveRecord::Base.connection.select_value(
-        "SELECT 1 FROM callbacks WHERE class='#{get_class(object)
-         }' AND object_id=#{object.id} AND event=#{event} AND #{time_condition
-        } LIMIT 1"
+        "SELECT 1 FROM callbacks WHERE #{column}=#{object.id} AND event=#{event
+        } AND #{time_condition} LIMIT 1"
       ).nil?
     end
 
@@ -129,16 +158,15 @@ class CallbackManager
       LOGGER.debug("CM: unregistering event '#{STRING_NAMES[event]
         }' for #{object}")
 
+      column = get_column(object)
       ActiveRecord::Base.connection.execute(
-        "DELETE FROM callbacks WHERE class='#{get_class(object)
-          }' AND object_id=#{object.id} AND event=#{event}"
+        "DELETE FROM callbacks WHERE #{column}=#{object.id} AND event=#{event}"
       )
     end
 
     def get(sql)
       ActiveRecord::Base.connection.select_one(
-        "SELECT class, ruleset, object_id, event, ends_at FROM callbacks
-          #{sql} LIMIT 1"
+        "SELECT * FROM callbacks #{sql} LIMIT 1"
       )
     end
 
@@ -193,9 +221,11 @@ class CallbackManager
     private
 
     def process_callback(row)
-      title = "Callback @ #{row['ends_at']} for #{row['class']} (evt: '#{
-        STRING_NAMES[row['event'].to_i]}', obj id: #{
-        row['object_id']}, ruleset: #{row['ruleset']})"
+      klass, column, obj_id = parse_row(row)
+
+      title = "Callback @ #{row['ends_at']} for #{klass.to_s} (evt: '#{
+        STRING_NAMES[row['event'].to_i]}', obj id: #{obj_id}, ruleset: #{
+        row['ruleset']})"
       LOGGER.block(title, :level => :info) do
         time = Benchmark.realtime do
           ActiveRecord::Base.transaction(:joinable => false) do
@@ -213,21 +243,12 @@ class CallbackManager
             ActiveRecord::Base.connection.execute(
               # Ugly formatting to fit SQL query to one line.
               %Q{DELETE FROM callbacks WHERE ends_at='#{
-                row['ends_at'].gsub("'", "")}' AND class='#{
-                row['class'].gsub("'", "")}' AND object_id=#{
-                row['object_id'].to_i} AND event=#{row['event']} LIMIT 1}
+                row['ends_at'].gsub("'", "")}' AND #{column}=#{obj_id
+                } AND event=#{row['event']} LIMIT 1}
             )
 
-            begin
-              CONFIG.with_set_scope(row['ruleset']) do
-                row['class'].constantize.on_callback(
-                  row['object_id'].to_i, row['event'].to_i
-                )
-              end
-            rescue ActiveRecord::RecordNotFound
-              LOGGER.info(
-                "Record was not found. It may have been destroyed."
-              )
+            CONFIG.with_set_scope(row['ruleset']) do
+              klass.on_callback(obj_id, row['event'].to_i)
             end
           end
         end

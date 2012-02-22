@@ -477,33 +477,6 @@ class SsObject::Planet < SsObject
   end
 
   class << self
-    # Called back by CallbackManager.
-    # 
-    # When we run out of energy it runs algorithm which disables energy
-    # using buildings in planet.
-    #
-    # When exploration is complete it rewards player and stops exploration.
-    #
-    def on_callback(id, event)
-      case event
-      when CallbackManager::EVENT_ENERGY_DIMINISHED
-        model = find(id)
-        changes = model.ensure_positive_energy_rate!
-        Notification.create_for_buildings_deactivated(
-          model, changes
-        ) unless changes.blank? || model.player_id.nil?
-        EventBroker.fire(model, EventBroker::CHANGED)
-      when CallbackManager::EVENT_RAID
-        model = find(id)
-        spawner = RaidSpawner.new(model)
-        spawner.raid!
-      when CallbackManager::EVENT_EXPLORATION_COMPLETE
-        find(id).finish_exploration!
-      else
-        raise CallbackManager::UnknownEvent.new(self, id, event)
-      end
-    end
-
     # Checks if any of the given _locations_ is a planet. If so it
     # calculates observer ids before and after block execution. If they are
     # changed - dispatches changed event for that planet.

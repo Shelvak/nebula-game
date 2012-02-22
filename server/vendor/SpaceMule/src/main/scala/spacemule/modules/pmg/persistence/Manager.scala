@@ -232,7 +232,6 @@ WHERE
 //    dumpTable(solarSystemsTable, SolarSystemRow.columns, solarSystems)
 
     saveBuffer(galaxiesTable, GalaxyRow.columns, galaxies)
-    saveBuffer(callbacksTable, CallbackRow.columns, callbacks)
     saveBuffer(playersTable, PlayerRow.columns, players)
     saveBuffer(solarSystemsTable, SolarSystemRow.columns, solarSystems)
     saveBuffer(ssObjectsTable, SSObjectRow.columns, ssObjects)
@@ -246,6 +245,9 @@ WHERE
     saveBuffer(objectiveProgressesTable, ObjectiveProgressRow.columns,
                objectiveProgresses)
     saveBuffer(wreckagesTable, WreckageRow.columns, wreckages)
+
+    // Last because of FKs
+    saveBuffer(callbacksTable, CallbackRow.columns, callbacks)
   }
 
   private def saveBuffer(tableName: String, columns: String,

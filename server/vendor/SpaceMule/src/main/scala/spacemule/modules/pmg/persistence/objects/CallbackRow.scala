@@ -7,8 +7,6 @@ import spacemule.persistence.{DB, RowObject, Row}
 import ss_object.{PlanetRow, AsteroidRow}
 
 object CallbackRow extends RowObject {
-  val columnsSeq = List("class", "object_id", "event", "ends_at", "ruleset")
-
   object Events extends Enumeration {
     type Event = Value
     
@@ -54,6 +52,11 @@ object CallbackRow extends RowObject {
     // Spawn units in pulsars immediately
     Calendar.getInstance
   }
+  
+  val columnsSeq = List(
+    "event", "ends_at", "ruleset",
+    "galaxy_id", "ss_object_id", "solar_system_id", "player_id"
+  )
 }
 
 case class CallbackRow(
@@ -65,16 +68,13 @@ case class CallbackRow(
   val companion = CallbackRow
 
   val valuesSeq = Seq[Any](
-    row match {
-      case galaxy: GalaxyRow => "Galaxy"
-      case aRow: AsteroidRow => "SsObject::Asteroid"
-      case pRow: PlanetRow => "SsObject::Planet"
-      case ssRow: SolarSystemRow => "SolarSystem"
-      case pRow: PlayerRow => "Player"
-    },
-    row.id,
     event.id,
     DB.date(time),
-    ruleset
+    ruleset,
+    if (row.isInstanceOf[GalaxyRow]) row.id else DB.loadInFileNull,
+    if (row.isInstanceOf[AsteroidRow] || row.isInstanceOf[PlanetRow])
+      row.id else DB.loadInFileNull,
+    if (row.isInstanceOf[SolarSystemRow]) row.id else DB.loadInFileNull,
+    if (row.isInstanceOf[PlayerRow]) row.id else DB.loadInFileNull
   )
 }
