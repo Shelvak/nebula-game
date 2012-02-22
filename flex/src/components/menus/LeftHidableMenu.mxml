@@ -3,7 +3,10 @@
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:base="components.base.*"
          xmlns:announcement="components.announcement.*"
-         currentState="visible">
+         currentState="visible"
+         visible="{ML.player.dailyBonus != null
+         || MQL.showButton
+         || announcementButton.visible}">
    <fx:Script>
       <![CDATA[
       import components.dailybonus.DailyBonusComp;
@@ -104,7 +107,7 @@
       click="btnShow_clickHandler()"
       visible.visible="false"
       visible.hidden="true"/>
-   <base:AdvancedContainer id="grpItems" y="40" x="{ITEMS_X_VISIBLE}"
+   <base:AdvancedContainer id="grpItems" y="45" x="{ITEMS_X_VISIBLE}"
       width="100" height="100">
       <base:layout>
          <s:VerticalLayout gap="10" horizontalAlign="left"/>
@@ -113,7 +116,7 @@
          skinClass="components.skins.DailyBonusButtonSkin"
          visible="{ML.player.dailyBonus != null}"
          click="showDailyBonus()"/>
-      <announcement:AnnouncementButton/>
+      <announcement:AnnouncementButton id="announcementButton"/>
       <s:Button
         skinClass="components.skins.MainQuestButtonSkin"
         id="btnTutorial" label="Tutorial" visible="{MQL.showButton}"
