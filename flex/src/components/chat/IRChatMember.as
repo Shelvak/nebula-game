@@ -10,6 +10,7 @@ package components.chat
    import mx.core.IVisualElement;
 
    import spark.components.Button;
+   import spark.components.Group;
    import spark.components.Label;
    import spark.components.supportClasses.ItemRenderer;
    import spark.layouts.HorizontalLayout;
@@ -61,16 +62,14 @@ package components.chat
       protected function modelCommit(): void {
          if (_model != null) {
             lblName.text = _model.name;
-
-            const buttonVisible: Boolean = !_model.isPlayer;
-            btnIgnore.visible = buttonVisible;
-            btnIgnore.includeInLayout = buttonVisible;
+            grpIgnoreButtons.visible =
+            grpIgnoreButtons.includeInLayout = !_model.isPlayer;
          }
-         updateBtnIgnoreLabel();
+         updateIgnoreButtons();
       }
 
       private function model_isIgnoredChange(event: MChatMemberEvent): void {
-         updateBtnIgnoreLabel();
+         updateIgnoreButtons()
       }
 
 
@@ -99,48 +98,49 @@ package components.chat
       /* ################ */
 
       private var lblName: Label;
-      private var btnIgnore: Button;
+      private var grpIgnoreButtons: Group;
+      private var btnDoIgnore: Button;
+      private var btnDoUnignore: Button;
 
-      private function updateBtnIgnoreLabel(): void {
-         if (btnIgnore != null && _model != null) {
-            if (_model.isIgnored) {
-               btnIgnore.label = "UI";
-            }
-            else {
-               btnIgnore.label = "I";
-            }
+      private function updateIgnoreButtons(): void {
+         if (_model == null) {
+            return;
+         }
+         if (btnDoIgnore != null) {
+            btnDoIgnore.visible = !_model.isIgnored
+         }
+         if (btnDoUnignore != null) {
+            btnDoUnignore.visible = _model.isIgnored;
          }
       }
 
-      private function btnIgnore_clickHandler(event: MouseEvent): void {
+      private function btnDoIgnore_clickHandler(event: MouseEvent): void {
          if (_model != null) {
-            if (_model.isIgnored) {
-               _model.setIsIgnored(false);
-            }
-            else {
-               const popup: ActionConfirmationPopup =
-                        new ActionConfirmationPopup();
-               const message: Label = new Label();
-               message.left = 0;
-               message.right = 0;
-               message.text = getString("message", [_model.name]);
-               popup.addElement(message);
-               popup.cancelButtonVisible = true;
-               popup.confirmButtonVisible = true;
-               popup.title = getString("title");
-               popup.confirmButtonClickHandler = ignoreConfirmed;
-               popup.show();
-            }
+            const popup: ActionConfirmationPopup = new ActionConfirmationPopup();
+            const message: Label = new Label();
+            message.left = 0;
+            message.right = 0;
+            message.text = getString("message", [_model.name]);
+            popup.addElement(message);
+            popup.cancelButtonVisible = true;
+            popup.confirmButtonVisible = true;
+            popup.title = getString("title");
+            popup.confirmButtonClickHandler = ignoreConfirmed;
+            popup.show();
          }
+      }
+
+      private function ignoreConfirmed(button: Button): void {
+         _model.setIsIgnored(true);
+      }
+
+      private function btnDoUnignore_clickHandler(event: MouseEvent): void {
+         _model.setIsIgnored(false);
       }
 
       private function getString(property: String,
                                  parameters: Array = null): String {
          return Localizer.string("Chat", "ignorePopup." + property, parameters);
-      }
-
-      private function ignoreConfirmed(button: Button): void {
-         _model.setIsIgnored(true);
       }
 
       protected function createOnlineIcon(): IVisualElement {
@@ -157,10 +157,16 @@ package components.chat
          layout.paddingBottom = 4;
          this.layout = layout;
 
-         btnIgnore = new Button();
-         btnIgnore.addEventListener(MouseEvent.CLICK, btnIgnore_clickHandler);
-         updateBtnIgnoreLabel();
-         addElement(btnIgnore);
+         grpIgnoreButtons = new Group();
+         addElement(grpIgnoreButtons);
+         btnDoIgnore = new Button();
+         btnDoIgnore.setStyle("skinClass", DoIgnoreButtonSkin);
+         btnDoIgnore.addEventListener(MouseEvent.CLICK, btnDoIgnore_clickHandler);
+         grpIgnoreButtons.addElement(btnDoIgnore);
+         btnDoUnignore = new Button();
+         btnDoUnignore.setStyle("skinClass", DoUnignoreButtonSkin);
+         btnDoUnignore.addEventListener(MouseEvent.CLICK, btnDoUnignore_clickHandler);
+         grpIgnoreButtons.addElement(btnDoUnignore);
 
          const icon: IVisualElement = createOnlineIcon();
          if (icon != null) {

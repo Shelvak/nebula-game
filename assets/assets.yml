@@ -771,6 +771,12 @@ assets:
         btn_chan_private_down.png:      Chat_b3_down.png
         btn_chan_private_disabled.png:  Chat_b3_disabled.png
         friend_offline_background.png:  W_bg.png
+        btn_ignore_green_up.png:          Ignore_button_green_up.png
+        btn_ignore_green_over.png:        Ignore_button_green_over.png
+        btn_ignore_green_down.png:        Ignore_button_green_down.png
+        btn_ignore_red_up.png:            Ignore_button_red_up.png
+        btn_ignore_red_over.png:          Ignore_button_red_over.png
+        btn_ignore_red_down.png:          Ignore_button_red_down.png
 
       "left_hidable_menu":
         show_button_up.png:      Bonusbar_unhide_up.png
