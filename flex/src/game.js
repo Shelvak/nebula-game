@@ -38,6 +38,38 @@ var locales = { // {{{
     if (locale == "lt") return "Ar tikrai nori uždaryti Nebula 44?";
     if (locale == "lv") return "LOCALE: fixme";
     return "Are you sure you want to close Nebula 44?";
+  },
+  clientError: {
+    title: function(locale) {
+      if (locale == "lt") return "Nebula 44 įvyko kritinė klaida!";
+      return "Nebula 44 has encountered a fatal error!";
+    },
+    info: function(locale) {
+      if (locale == "lt") return [
+        "Būtų labai gerai, jeigu nukopijavęs visą tekstą (CTRL+A, CTRL+C) " +
+          "įkeltum į forumą :)",
+        "Tai padėtų mums ištaisyti šią klaidą ir padaryti Nebula 44 " +
+          "geresniu žaidimu."
+      ];
+      return ["LOCALE: fixme"];
+    },
+    pasteLink: function(locale) {
+      if (locale == "lt")
+        return "Dideles klaidas gali įkelti naudodamas Pastebin";
+      return "LOCALE: fixme";
+    },
+    forumLink: function(locale) {
+      if (locale == "lt") return "Testinės galaktikos klaidų forumas"
+      return "LOCALE: fixme";
+    },
+    headTitle: function(locale) {
+      if (locale == "lt") return "Trumpa informacija";
+      return "Short information";
+    },
+    bodyTitle: function(locale) {
+      if (locale == "lt") return "Ilga informacija";
+      return "Long information";
+    }
   }
 } // }}}
 
@@ -298,46 +330,39 @@ if (! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId)) {
 }
 // }}}
 
+function pLink(container, props) {
+  var p = $('<p/>');
+  $('<a/>', props).appendTo(p);
+  p.appendTo(container);
+}
+
 // Called from flash when it crashes.
 function clientError(head, body, slowClient) {
   // No leave confirmation upon crash.
   setLeaveHandler(false);
 
+  var loc = locales.clientError;
+
   var container = $('<div/>');
 
-  $('<h1/>', {
-    text: "Client error"
-  }).appendTo(container);
+  $('<h1/>', {text: loc.title(locale)}).appendTo(container);
+  $.each(loc.info(locale), function(index, value) {
+    $('<p/>', {text: value}).appendTo(container);
+  });
+  pLink(container, {
+    href: "http://pastebin.com/",
+    text: loc.pasteLink(locale)
+  });
+  pLink(container, {
+    href: "http://forum.nebula44.lt/forum/104/klaidos-testineje-galaktikoje/",
+    text: loc.forumLink(locale)
+  });
 
-  if (slowClient) {
-    $('<pre/>', {
-      text: "Slow client: true"
-    }).appendTo(container);
-  } else {
-    $('<pre/>', {
-      text: "Slow client: false"
-    }).appendTo(container);
-  }
+  $('<h1/>', {text: loc.headTitle(locale)}).appendTo(container);
+  $('<pre/>', {text: head}).appendTo(container);
 
-  $('<h1/>', {
-    text: "Head"
-  }).appendTo(container);
-
-
-  $('<pre/>', {
-    text:head
-  }).appendTo(container);
-
-  $('<br/>').appendTo(container);
-
-  $('<h1/>', {
-    text: "Body"
-  }).appendTo(container);
-
-
-  $('<pre/>', {
-    text:body
-  }).appendTo(container);
+  $('<h1/>', {text: loc.bodyTitle(locale)}).appendTo(container);
+  $('<pre/>', {text: body}).appendTo(container);
 
   $('body').attr('id', 'client-error');
   $('body').html(container.html());
