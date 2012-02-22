@@ -115,16 +115,17 @@ class Galaxy(val id: Int, val ruleset: String) {
    */
   def addZone(zone: Zone) {
     zones(zone.coords) = zone
-    /**
-     * Only add additional solar systems if it is first player in that zone.
-     */
-    if (! zone.hasPlayers) {
-      wormholes.foreach { coords =>
-        zone.addSolarSystem(new Wormhole(), coords, false) }
-      freeSystems.foreach { coords =>
-        zone.addSolarSystem(new SolarSystem(Config.freeSsConfig), coords, false) }
-      miniBattlegrounds.foreach { coords =>
-        zone.addSolarSystem(new Pulsar(), coords, false) }
+
+    wormholes.foreach { coords =>
+      zone.addSolarSystem(new Wormhole(), coords, skipExisting = true)
+    }
+    freeSystems.foreach { coords =>
+      zone.addSolarSystem(
+        new SolarSystem(Config.freeSsConfig), coords, skipExisting = true
+      )
+    }
+    miniBattlegrounds.foreach { coords =>
+      zone.addSolarSystem(new Pulsar(), coords, skipExisting = true)
     }
   }
 }

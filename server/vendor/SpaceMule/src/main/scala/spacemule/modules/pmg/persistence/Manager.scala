@@ -140,10 +140,10 @@ WHERE
       case None => ()
     }
 
-    if (System.getenv("environment") == "production")
-      speedup { () => saveBuffers() }
-    else
-      saveBuffers()
+//    if (System.getenv("environment") == "production")
+//      speedup { () => saveBuffers() }
+//    else
+    saveBuffers()
   }
 
   def save(beforeSave: () => Unit) { save(Some(beforeSave)) }
@@ -231,38 +231,32 @@ WHERE
 
 //    dumpTable(solarSystemsTable, SolarSystemRow.columns, solarSystems)
 
-    saveBuffer(galaxiesTable, GalaxyRow.columns, galaxies)
-    saveBuffer(playersTable, PlayerRow.columns, players)
-    saveBuffer(solarSystemsTable, SolarSystemRow.columns, solarSystems)
-    saveBuffer(ssObjectsTable, SSObjectRow.columns, ssObjects)
-    saveBuffer(tilesTable, TileRow.columns, tiles)
-    saveBuffer(foliagesTable, TileRow.columns, foliages)
-    saveBuffer(buildingsTable, BuildingRow.columns, buildings)
-    saveBuffer(unitsTable, UnitRow.columns, units)
-    saveBuffer(fowSsEntriesTable, FowSsEntryRow.columns, fowSsEntries)
-    saveBuffer(questProgressesTable, QuestProgressRow.columns,
-               questProgresses)
-    saveBuffer(objectiveProgressesTable, ObjectiveProgressRow.columns,
-               objectiveProgresses)
-    saveBuffer(wreckagesTable, WreckageRow.columns, wreckages)
+    DB.transaction { () =>
+      saveBuffer(galaxiesTable, GalaxyRow.columns, galaxies)
+      saveBuffer(playersTable, PlayerRow.columns, players)
+      saveBuffer(solarSystemsTable, SolarSystemRow.columns, solarSystems)
+      saveBuffer(ssObjectsTable, SSObjectRow.columns, ssObjects)
+      saveBuffer(tilesTable, TileRow.columns, tiles)
+      saveBuffer(foliagesTable, TileRow.columns, foliages)
+      saveBuffer(buildingsTable, BuildingRow.columns, buildings)
+      saveBuffer(unitsTable, UnitRow.columns, units)
+      saveBuffer(fowSsEntriesTable, FowSsEntryRow.columns, fowSsEntries)
+      saveBuffer(questProgressesTable, QuestProgressRow.columns,
+                 questProgresses)
+      saveBuffer(objectiveProgressesTable, ObjectiveProgressRow.columns,
+                 objectiveProgresses)
+      saveBuffer(wreckagesTable, WreckageRow.columns, wreckages)
 
-    // Last because of FKs
-    saveBuffer(callbacksTable, CallbackRow.columns, callbacks)
+      // Last because of FKs
+      saveBuffer(callbacksTable, CallbackRow.columns, callbacks)
+    }
   }
 
   private def saveBuffer(tableName: String, columns: String,
                          items: Seq[String]) {
     if (items.size == 0) return
 
-    try {
-      DB.loadInFile(tableName, columns, items)
-    }
-    catch {
-      case ex: Exception => {
-          System.err.println("Error while insert into `%s`".format(tableName))
-          throw ex;
-      }
-    }
+    DB.loadInFile(tableName, columns, items)
   }
 
   private def readGalaxy(galaxy: Galaxy) {
@@ -276,6 +270,7 @@ WHERE
 
     zone.solarSystems.foreach { 
       case (coords, entry) =>
+        println("%s %s".format(zone.absolute(coords), entry))
         entry match {
           case Zone.SolarSystem.New(solarSystem) => {
             val absoluteCoords = zone.absolute(coords)

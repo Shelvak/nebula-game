@@ -6,15 +6,32 @@
 package spacemule.persistence
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
-import java.sql.{Connection, DriverManager, ResultSet}
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import scala.collection.mutable.ListBuffer
+import java.sql.{SQLException, Connection, DriverManager, ResultSet}
 import org.apache.commons.io.{FileUtils, IOUtils}
 import java.io.File
 
 object DB {
+  class LoadInFileException(
+    tableName: String, columns: String, data: String, cause: Throwable
+  ) extends RuntimeException(
+    """Error while LOAD DATA INFILE to %s
+
+Data was:
+%s
+%s
+
+Original exception:
+%s
+""".format(
+      tableName, columns, data, cause.toString
+    ),
+    cause
+  )
+  
   /**
    * Use this instead of NULL if you're using loadInFile()
    */
@@ -63,9 +80,27 @@ object DB {
   def close() = if (connection != null) connection.close
 
   def exec(sql: String): Int = {
-    reconnecting { () =>
-      val statement = connection.createStatement
-      statement.executeUpdate(sql)
+//    reconnecting { () =>
+    val statement = connection.createStatement
+    statement.executeUpdate(sql)
+//    }
+  }
+
+  def transaction(func: () => Unit) {
+    val autocommit = connection.getAutoCommit
+    
+    try {
+      connection.setAutoCommit(false)
+      func()
+      connection.commit()
+    }
+    catch {
+      case e: Exception =>
+        connection.rollback()
+        throw e
+    }
+    finally {
+      connection.setAutoCommit(autocommit)
     }
   }
 
@@ -96,8 +131,8 @@ object DB {
       builder.append(entry)
       builder.append('\n')
     }
-    
-    // Debugging material
+
+//    // Debugging material
 //    def fileName(table: String, counter: Int=0): File = {
 //      val file = new File("%s-%03d.tabFile".format(table, counter))
 //      if (file.exists()) fileName(table, counter + 1) else file
@@ -110,28 +145,35 @@ object DB {
     // Create stream from String Builder
     val inputStream = IOUtils.toInputStream(builder);
 
-    reconnecting { () =>
-      // First create a statement off the connection
-      val statement = connection.createStatement.asInstanceOf[
-        com.mysql.jdbc.Statement]
+    // First create a statement off the connection
+    val statement = connection.createStatement.asInstanceOf[
+      com.mysql.jdbc.Statement]
 
-      // Setup our input stream as the source for the local infile
-      statement.setLocalInfileInputStream(inputStream);
+    // Setup our input stream as the source for the local infile
+    statement.setLocalInfileInputStream(inputStream);
 
+    try {
       // Execute the load infile
       statement.execute(statementText);
+    }
+    catch {
+      case ex: Exception =>
+        throw new LoadInFileException(tableName, columns, builder.toString, ex)
+    }
+    finally {
+      statement.close()
     }
   }
 
   def query(sql: String): ResultSet = {
-    reconnecting { () =>
-      // Configure to be Read Only
-      val statement = connection.createStatement(
-        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
-      )
+//    reconnecting { () =>
+    // Configure to be Read Only
+    val statement = connection.createStatement(
+      ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
+    )
 
-      statement.executeQuery(sql)
-    }
+    statement.executeQuery(sql)
+//    }
   }
 
   def getOne[T](sql: String): Option[T] = {
@@ -154,20 +196,20 @@ object DB {
   
   private val MaxReconnects = 3
 
-  private def reconnecting[T](code: () => T, reconnect: Int=0): T = {
-    try {
-      code()
-    }
-    catch {
-      case e: CommunicationsException =>
-        System.err.println(
-          "Error @ reconnect %d:\n%s".format(reconnect, e.getMessage)
-        )
-        if (reconnect == MaxReconnects) throw e
-        else {
-          this.reconnect
-          reconnecting(code, reconnect + 1)
-        }
-    }
-  }
+//  private def reconnecting[T](code: () => T, reconnect: Int=0): T = {
+//    try {
+//      code()
+//    }
+//    catch {
+//      case e: CommunicationsException =>
+//        System.err.println(
+//          "Error @ reconnect %d:\n%s".format(reconnect, e.getMessage)
+//        )
+//        if (reconnect == MaxReconnects) throw e
+//        else {
+//          this.reconnect
+//          reconnecting(code, reconnect + 1)
+//        }
+//    }
+//  }
 }

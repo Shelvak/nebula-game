@@ -106,7 +106,16 @@ class Zone(_x: Int, _y: Int, val diameter: Int) extends WithCoords {
    * Adds new solar system to given coords. Also initializes it.
    */
   def addSolarSystem(solarSystem: SolarSystem, coords: Coords,
-                     playerSystem: Boolean) {
+                     playerSystem: Boolean=false, skipExisting: Boolean=false) {
+    if (solarSystems.contains(coords)) {
+      if (skipExisting) return
+      else throw new IllegalArgumentException(
+        "Trying to add %s: %s already contains %s @ %s!".format(
+          solarSystem, this, solarSystems(coords), coords
+        )
+      )
+    }
+
     solarSystems(coords) = Zone.SolarSystem.New(solarSystem)
     solarSystem.createObjects()
 
@@ -119,13 +128,20 @@ class Zone(_x: Int, _y: Int, val diameter: Int) extends WithCoords {
    */
   def addSolarSystem(homeworld: Homeworld) {
     var spot = findFreeSpot()
-    addSolarSystem(homeworld, spot, true)
+    addSolarSystem(homeworld, spot, playerSystem = true)
   }
 
   /**
    * Marks spot as taken.
    */
   def markAsTaken(coords: Coords, playerSystem: Boolean) {
+    require(
+      coords.x >= 0 && coords.x <= diameter - 1 &&
+      coords.y >= 0 && coords.y <= diameter - 1,
+      "Both x and y for %s are required to be in [0..%d]".format(
+        coords, diameter - 1
+      )
+    )
     solarSystems(coords) = Zone.SolarSystem.Existing
     if (playerSystem) playerCount += 1
   }
