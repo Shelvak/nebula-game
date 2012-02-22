@@ -908,7 +908,7 @@
       To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
     </Mothership.about>
 
-    <ResourceTransporter.name value="[obj:1:Building_ResourceTransporter]" />
+    <ResourceTransporter.name value="Res. siųstuvas" />
     <ResourceTransporter.tooltip value="Leidžia teleportuoti resursus" />
     <ResourceTransporter.about>
       <p>
@@ -1766,6 +1766,8 @@
     <label.hop.jumpsIn value="Šoks po:"/>
     <label.hop.landsIn value="Leisis po:"/>
     <title.killBonus value="Sunaikinus šį laivyną Tu gausi:"/>
+    <title.noKillBonus
+      value="Sunaikinus šį laivyna Tu negausi jokio papildomo priedo."/>
     <label.credsKillBonus value="Kredai "/>
     <label.vpsKillBonus value="Pergalės taškai "/>
     <label.honorCoef value="Garbės koef."/>

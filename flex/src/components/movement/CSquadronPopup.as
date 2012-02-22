@@ -224,6 +224,7 @@ package components.movement
                btnRewardInfo.visible = true;
             }
             killRewardContainer.visible = false;
+            noRewardContainer.visible = false;
          }
       }
 
@@ -280,6 +281,7 @@ package components.movement
          }
          if (totalCreds > 0 || totalVps > 0)
          {
+            noRewardContainer.visible = false;
             killRewardContainer.visible = true;
             lblKillCreds.text = totalCreds.toFixed();
             lblKillVps.text = totalVps.toFixed();
@@ -292,6 +294,7 @@ package components.movement
          else
          {
             killRewardContainer.visible = false;
+            noRewardContainer.visible = true;
          }
       }
       
@@ -328,6 +331,10 @@ package components.movement
 
       [SkinPart(required="true")]
       public var killRewardContainer:Group;
+
+      [SkinPart(required="true")]
+      public var noRewardContainer:Group;
+
       [SkinPart(required="true")]
       public var credsGroup:Group;
       [SkinPart(required="true")]
