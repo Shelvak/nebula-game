@@ -5154,8 +5154,7 @@
     </warning.noFleets>
     
     <btnLabel.cancel value="Atšaukti" />
-    <label.cancelTraining
-    value="Atšaukęs kario apmokymą gautum:" />
+    <label.cancelTraining value="Atšaukęs gautum:" />
 
     <stored.short>
       <p>R: {0}%<br/>K: {1}%</p>
