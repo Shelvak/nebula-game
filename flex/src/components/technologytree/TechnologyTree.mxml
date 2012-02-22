@@ -18,7 +18,9 @@
          
          import controllers.navigation.MCSidebar;
          import controllers.screens.SidebarScreens;
-         
+
+         import globalevents.GPlanetEvent;
+
          import globalevents.GResourcesEvent;
          import globalevents.GTechnologiesEvent;
          import globalevents.GlobalEvent;
@@ -83,6 +85,7 @@
             {
                EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
                EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+               EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, refreshPurchasableState);
                ML.player.addEventListener(PlayerEvent.SCIENTISTS_CHANGE, refreshPurchasableState);
                ML.technologies.addEventListener(TechnologyEvent.TECHNOLOGY_CHANGED, refreshPurchasableState);
                ML.player.addEventListener(PlayerEvent.PLANET_COUNT_CHANGE, refreshPurchasableState);
@@ -108,6 +111,7 @@
                ML.player.removeEventListener(PlayerEvent.PLANET_COUNT_CHANGE, refreshPurchasableState);
             }
             EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshPurchasableState);
+            EventBroker.unsubscribe(GPlanetEvent.PLANET_CHANGE, refreshPurchasableState);
             EventBroker.unsubscribe(GlobalEvent.APP_RESET, reset);
             tSidebar.removeEventListener(TechnologySidebarEvent.SELECTED_CHANGE,
              selectedTechChangeHandler);
@@ -573,7 +577,7 @@
          
       ]]>
    </fx:Script>
-   
+
    <!-- black background -->
    <s:Rect left="0" right="0" top="0" bottom="0">
       <s:fill>
