@@ -270,7 +270,6 @@ WHERE
 
     zone.solarSystems.foreach { 
       case (coords, entry) =>
-        println("%s %s".format(zone.absolute(coords), entry))
         entry match {
           case Zone.SolarSystem.New(solarSystem) => {
             val absoluteCoords = zone.absolute(coords)
