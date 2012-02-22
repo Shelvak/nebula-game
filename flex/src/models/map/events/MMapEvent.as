@@ -53,6 +53,11 @@ package models.map.events
        */
       public static const OBJECT_REMOVE: String = "objectRemove";
 
+      /**
+       * @see MMap
+       */
+      public static const OBJECTS_UPDATE: String = "objectsUpdate";
+
       public function MMapEvent(type: String) {
          super(type);
       }

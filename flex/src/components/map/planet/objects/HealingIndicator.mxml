@@ -23,23 +23,20 @@
       [Bindable]
       private var timeLeft: String;
 
-      private function refreshRepairTime(e: GlobalEvent): void
-      {
-         if (_building != null)
-         {
+      private function refreshRepairTime(e: GlobalEvent): void {
+         if (_building != null) {
             var tNow: Number = new Date().time;
-            if (tNow < _building.cooldownEndsAt.time)
-            {
-               timeLeft = DateUtil.secondsToHumanString((
-                       _building.cooldownEndsAt.time - tNow)/1000, 2);
+            if (_building.cooldownEndsAt != null
+                   && tNow < _building.cooldownEndsAt.time) {
+               timeLeft = DateUtil.secondsToHumanString(
+                  (_building.cooldownEndsAt.time - tNow) / 1000, 2
+               );
             }
-            else
-            {
+            else {
                timeLeft = null;
             }
          }
-         else
-         {
+         else {
             GlobalEvent.unsubscribe_TIMED_UPDATE(refreshRepairTime);
          }
       }

@@ -5,8 +5,7 @@
          xmlns:base="components.base.*" 
          xmlns:location="components.location.*" 
          xmlns:unitsscreen="components.unitsscreen.*"
-         xmlns:squadronsscreen="components.squadronsscreen.*" 
-         xmlns:flanks="components.unitsscreen.flanks.*" 
+         xmlns:squadronsscreen="components.squadronsscreen.*"
          xmlns:simple="components.unitsscreen.simple.*"
          width="100%" height="100%">
    <fx:Script>

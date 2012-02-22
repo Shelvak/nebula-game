@@ -4,8 +4,6 @@ package models.galaxy
 
    import interfaces.IUpdatable;
 
-   import models.BaseModel;
-
    import models.galaxy.events.GalaxyEvent;
    import models.location.Location;
    import models.location.LocationMinimal;
@@ -13,6 +11,7 @@ package models.galaxy
    import models.map.MMapSpace;
    import models.map.MapArea;
    import models.map.MapType;
+   import models.map.events.MMapEvent;
    import models.solarsystem.MSolarSystem;
    import models.time.MTimeEventFixedMoment;
    import models.time.events.MTimeEventEvent;
@@ -20,21 +19,18 @@ package models.galaxy
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
-   
+   import mx.events.CollectionEventKind;
+
    import utils.datastructures.Collections;
-   
-   
+
+
    /**
     * Dispatched when galaxy dimensions have changed.
-    * 
-    * @eventType models.events.GalaxyEvent.RESIZE
     */
    [Event(name="resize", type="models.galaxy.events.GalaxyEvent")]
    
    /**
     * Dispatched when <code>hasWormholes</code> property have changed.
-    * 
-    * @eventType models.events.GalaxyEvent.RESIZE
     */
    [Event(name="hasWormholesChange", type="models.galaxy.events.GalaxyEvent")]
 
@@ -42,6 +38,12 @@ package models.galaxy
     * @see models.galaxy.events.GalaxyEvent#APOCALYPSE_START_EVENT_CHANGE
     */
    [Event(name="apocalypseStartEventChange", type="models.galaxy.events.GalaxyEvent")]
+
+   /**
+    * Dispatched when a solar system has been added to or removed from the list
+    * of solar systems with player.
+    */
+   [Event(name="objectsUpdate", type="models.map.events.MMapEvent")]
    
    public class Galaxy extends MMapSpace implements IUpdatable
    {
@@ -53,6 +55,10 @@ package models.galaxy
          _wormholes.addEventListener(CollectionEvent.COLLECTION_CHANGE, wormholes_collectionChangeHandler);
          _solarSystems = Collections.filter(naturalObjects, ff_solarSystems);
          _solarSystemsWithPlayer = Collections.filter(naturalObjects, ff_solarSystemsWithPlayer);
+         _solarSystemsWithPlayer.addEventListener(
+            CollectionEvent.COLLECTION_CHANGE,
+            solarSystemsWithPlayer_collectionChangeHandler, false, 0, true
+         );
       }
       
       public override function get cached() : Boolean {
@@ -118,7 +124,7 @@ package models.galaxy
          return _solarSystems;
       }
       
-      private var _solarSystemsWithPlayer:ListCollectionView = new ListCollectionView();
+      private var _solarSystemsWithPlayer:ListCollectionView;
       private function ff_solarSystemsWithPlayer(ss:MSolarSystem) : Boolean {
          return ss.metadata != null &&
                 ss.metadata.playerAssets;
@@ -135,6 +141,12 @@ package models.galaxy
        */
       public function refreshSolarSystemsWithPlayer() : void {
          _solarSystemsWithPlayer.refresh();
+      }
+
+      private function solarSystemsWithPlayer_collectionChangeHandler(event: CollectionEvent) : void {
+         if (event.kind == CollectionEventKind.REFRESH) {
+            dispatchSimpleEvent(MMapEvent, MMapEvent.OBJECTS_UPDATE);
+         }
       }
       
       private var _wormholes:ListCollectionView;
