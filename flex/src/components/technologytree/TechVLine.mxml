@@ -47,8 +47,8 @@
          private var baseTechs: ModelsCollection = new ModelsCollection();
       ]]>
    </fx:Script>
-   <s:BitmapImage fillMode="repeat" source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 
-                  'technology_tree/v_line_' + (valid ? 'active':'inactive'))}"
+   <s:BitmapImage fillMode="repeat" source="{IMG.getImage(AssetNames.TECH_TREE_IMAGES_FOLDER +
+                  'v_line_' + (valid ? 'active':'inactive'))}"
                   top="0" bottom="0" left="-5"/>
 </base:BaseContainer>
 
