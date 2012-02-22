@@ -1,9 +1,6 @@
 module Parts::Constructor
 	def self.included(receiver)
     receiver.extend ConditionalExtender
-    # This must be always included because callbacks access base class
-    # instead of subclass.
-    receiver.extend OnCallback
 	end
 
   # Extend subclass with functionality if that subclass is a constructor.
@@ -32,20 +29,6 @@ module Parts::Constructor
             true
           end
         end
-      end
-    end
-  end
-
-  # This must be always included because callbacks access base class instead
-  # of subclass.
-  module OnCallback
-    # Process events when upgrade manager
-    def on_callback(id, event)
-      if event == CallbackManager::EVENT_CONSTRUCTION_FINISHED
-        model = find(id)
-        model.send(:on_construction_finished!)
-      else
-        super(id, event)
       end
     end
   end
