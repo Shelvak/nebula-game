@@ -92,11 +92,15 @@
 
       private var unitsLoading: Boolean;
 
+      /* ensure to open the same unit as requested */
+      private var unitToOpen: Unit;
+
       private function show_inside(load: Boolean): void {
          unitsLoading = load;
+         unitToOpen = model.unit;
          if (model.unit.stored > 0) {
             EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-            new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
+            new UnitsCommand(UnitsCommand.SHOW, unitToOpen).dispatch();
          }
          else {
             openUnit();
@@ -112,7 +116,7 @@
          if (unitsLoading) {
             NavigationController.getInstance().showLoadUnload(
                planet.toLocation(),
-               model.unit,
+               unitToOpen,
                Collections.filter(
                   planet
                      .units,
@@ -127,7 +131,7 @@
          }
          else {
             NavigationController.getInstance().showLoadUnload(
-               model.unit,
+               unitToOpen,
                planet.toLocation(),
                Collections.filter(
                   ModelLocator.getInstance().units,
@@ -140,6 +144,7 @@
                )
             );
          }
+         unitToOpen = null;
       }
 
       [Bindable]
