@@ -17,8 +17,9 @@ package controllers.objects.actions.customcontrollers
          ML.quests.addItem(quest);
          quest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
          /* open tutorial if quest is main quest */
-         if (quest.isMainQuest)
+         if (quest.isMainQuest && quest.status == Quest.STATUS_STARTED) {
             MMainQuestLine.getInstance().openCurrentUncompletedQuest();
+         }
          return quest;
       }
    }
