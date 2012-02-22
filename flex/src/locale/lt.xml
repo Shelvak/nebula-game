@@ -2202,16 +2202,8 @@
     </message.disconnect.jsonError>
 
     <crash>
-      <p>Gelbėkitės kas galit! Galingieji Kosmoso Vabalai įsibrovė į mūsų 
-      žaidimą, o jis, kad ir kaip bebūtų gaila, dar nėra jiems visiškai 
-      atsparus! (bent jau kol kas). Na nieko, nesijaudink, visuomet gali 
-      paleisti žaidimą iš naujo ir viskas turėtų (greičiausiai) būti gerai.</p>
+      <p></p>
     </crash>
-
-    <message.slowClient>
-      Tavo kompiuteris yra nepakankamai našus atlikti šią operaciją.
-      Tačiau jei manai, jog tai klaida, gali mums apie tai pranešti forume.
-    </message.slowClient>
     
     <title.log value="Derinimo žurnalas" />
     <message.log.general>
@@ -2235,16 +2227,6 @@
       sunkų darbą bus atlyginta. Mes pažadam. Kosminis mažojo pirštelio pažadas.
       O taip...</p>
     </message.clientCrash.general>
-
-    <message.clientCrash.debugPlayer>
-      <p>[reference:crash]</p>
-      <p>Mes, ko gero, galėtume tai pataisyti, tačiau deja tu neturi Flash 
-      grotuvo versijos skirtos derinimui, tad mes negalime surinkti naudingos
-      informacijos, kuri praverstų ištaisant šią klaidą. Jeigu tu vis gi NORI,
-      kad ši klaida daugiau nepasikartotų, tada spausk ant 
-      „[reference:label.clientCrash.wiki]“ mygtuko, kad sužinotum kaip tu gali
-      mums padėti ;) Mes visuomet dėkingi už pagalbą ir skolingi neliekam!</p>
-    </message.clientCrash.debugPlayer>
 
     <label.clientCrash.copy value="Kopijuoti" />
     <label.clientCrash.forum value="Pranešti klaidą" />

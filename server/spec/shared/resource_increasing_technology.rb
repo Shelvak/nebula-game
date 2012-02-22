@@ -19,14 +19,14 @@ shared_examples_for "resource increasing technology" do |model|
         ["", "generate"],
         ["_storage", "store"]
       ].each do |type, config_name|
-        it "should round #{resource}#{type}" do
+        it "should return #{resource}#{type}" do
           with_config_values(
             "technologies.#{model.class.to_s.demodulize.underscore
               }.mod.#{resource}.#{config_name}" => "3.56 * level"
           ) do
-            model.class.resource_modifiers(1)[
+            model.class.resource_modifiers(2)[
               :"#{resource}#{type}"
-            ].should == 4
+            ].should == 3.56 * 2
           end
         end
       end

@@ -42,13 +42,4 @@ class SsObject::Asteroid < SsObject
       CONFIG.eval_rangerand(
         "ss_object.asteroid.wreckage.time.spawn").from_now)
   end
-
-  def self.on_callback(id, event)
-    case event
-    when CallbackManager::EVENT_SPAWN
-      find(id).spawn_resources!
-    else
-      raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
-  end
 end

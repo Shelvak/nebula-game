@@ -54,15 +54,17 @@ package components.map.controllers
        */
       public function WatchedObjects(map:MMapSpace,
                                      sectorsProvider:ISectorsProvider) {
-         this._map =
-            Objects.paramNotNull("map", map);
-         this._sectorsProvider =
+         _map = Objects.paramNotNull("map", map);
+         _sectorsProvider =
             Objects.paramNotNull("sectorsProvider", sectorsProvider);
          addObjectEventHandler(MMapEvent.OBJECT_ADD);
          addObjectEventHandler(MMapEvent.OBJECT_REMOVE);
          addSquadronEventHandler(MMapEvent.SQUADRON_ENTER);
          addSquadronEventHandler(MMapEvent.SQUADRON_LEAVE);
          addSquadronEventHandler(MMapEvent.SQUADRON_MOVE);
+         _map.addEventListener(
+            MMapEvent.OBJECTS_UPDATE, map_objectsUpdateHandler, false, 0, true
+         );
          sort = new Sort();
          sort.fields = new Array();
          sort.compareFunction = sectorsProvider.sectorsCompareFunction;
@@ -78,11 +80,15 @@ package components.map.controllers
          f_cleanupCalled = true;
          removeObjectEventHandler(MMapEvent.OBJECT_ADD);
          removeObjectEventHandler(MMapEvent.OBJECT_REMOVE);
+         removeObjectEventHandler(MMapEvent.OBJECTS_UPDATE);
          removeSquadronEventHandler(MMapEvent.SQUADRON_ENTER);
          removeSquadronEventHandler(MMapEvent.SQUADRON_LEAVE);
          removeSquadronEventHandler(MMapEvent.SQUADRON_MOVE);
-         this._map = null;
-         this._sectorsProvider = null;
+         _map.removeEventListener(
+            MMapEvent.OBJECTS_UPDATE, map_objectsUpdateHandler, false
+         );
+         _map = null;
+         _sectorsProvider = null;
       }
 
       public function get itemRendererFunction(): Function {
@@ -117,6 +123,10 @@ package components.map.controllers
          _map.removeEventListener(
             eventType, map_objectEventHandler, false
          );
+      }
+
+      private function map_objectsUpdateHandler(event: MMapEvent): void {
+         rebuild();
       }
 
       private function map_objectEventHandler(event: MMapEvent): void {
