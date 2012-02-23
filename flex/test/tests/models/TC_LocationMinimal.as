@@ -1,4 +1,4 @@
-package tests.movement
+package tests.models
 {
    import models.BaseModel;
    import models.location.LocationMinimal;

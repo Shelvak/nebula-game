@@ -545,18 +545,17 @@ package controllers.units
       /* ################################## */
       /* ### SQUADS MOVEMENT AUTOMATION ### */
       /* ################################## */
-      
-      private function global_timedUpdateHandler(event:GlobalEvent) : void {
-         var currentTime:Number = DateUtil.now;
-         var squadId:int;
-         for each (var squad:MSquadron in SQUADS.toArray()) {
+
+      private function global_timedUpdateHandler(event: GlobalEvent): void {
+         const currentTime: Number = DateUtil.now;
+         for each (var squad: MSquadron in SQUADS.toArray()) {
             if (squad.isMoving && !squad.pending) {
-               squadId = squad.id;
+               const squadId: int = squad.id;
                if (squad.hasHopsRemaining) {
                   squad.moveToNextHop(currentTime + MOVE_EFFECT_DURATION);
-                  var loc:LocationMinimal = squad.currentHop.location;
+                  const loc: LocationMinimal = squad.currentHop.location;
                   if (!loc.isObserved &&
-                        (squad.isHostile || squad.isFriendly && !loc.isGalaxy)) {
+                         (squad.isHostile || squad.isFriendly && !loc.isGalaxy)) {
                      destroySquadron(squadId);
                   }
                }
