@@ -83,6 +83,14 @@ class Unit < ActiveRecord::Base
     ).symbolize_keys.merge(additional).as_json
   end
 
+  def cancel!(*args)
+    raise GameError, "#cancel! on #{self} does not make any sense!" \
+      if level != 0
+    super(*args) do
+      EventBroker.fire(self, EventBroker::DESTROYED)
+    end
+  end
+
   # Wraps standard #destroy in SsObject::Planet#changing_viewable.
   def destroy
     SsObject::Planet.changing_viewable(location) do

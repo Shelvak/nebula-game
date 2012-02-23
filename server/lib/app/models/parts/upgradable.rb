@@ -130,11 +130,12 @@ module Parts
         self.upgrade_ends_at = nil
         CallbackManager.
           unregister(self, CallbackManager::EVENT_UPGRADE_FINISHED)
+        # Invoked by Unit/Building#cancel!
+        yield if block_given?
+
         if level == 0
           destroy!
         else
-          # Invoked by Building#cancel!
-          yield if block_given?
           save!
         end
         planet.save!

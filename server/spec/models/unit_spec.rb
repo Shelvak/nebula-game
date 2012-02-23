@@ -504,6 +504,27 @@ describe Unit do
     end
   end
 
+  describe "#cancel!" do
+    before(:each) do
+      @model = Factory.create(:unit, opts_upgrading)
+      CallbackManager.register(@model, CallbackManager::EVENT_UPGRADE_FINISHED,
+        @model.upgrade_ends_at)
+    end
+
+    it "should raise error if level != 0" do
+      lambda do
+        @model.level = 1
+        @model.cancel!
+      end.should raise_error(GameError)
+    end
+
+    it "should fire destroyed" do
+      should_fire_event(@model, EventBroker::DESTROYED) do
+        @model.cancel!
+      end
+    end
+  end
+
   describe ".save_all_units" do
     before(:each) do
       @route = Factory.create(:route)
