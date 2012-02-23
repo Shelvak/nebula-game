@@ -65,29 +65,6 @@ package tests.movement
       
       
       [Test]
-      public function speed_modifier_should_respect_limits() : void
-      {
-         scpModel.speedModifier = 3.0;
-         assertThat(
-            "too great value should be substituted with max",
-            scpModel.speedModifier, equals (scpModel.speedModifierMax)
-         );
-         
-         scpModel.speedModifier = 0.0;
-         assertThat(
-            "too little value should be substituted with min",
-            scpModel.speedModifier, equals (scpModel.speedModifierMin)
-         );
-         
-         scpModel.speedModifier = 1.0;
-         assertThat(
-            "value in range should not be changed",
-            scpModel.speedModifier, equals (1.0)
-         );
-      };
-      
-      
-      [Test]
       public function changing_speed_modifier_should_dispatch_events() : void
       {
          assertThat(
