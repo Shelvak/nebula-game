@@ -361,10 +361,11 @@ describe Galaxy do
       end
       
       it "should use speed modifier" do
-        UnitMover.should_receive(:move).with(nil, an_instance_of(Array),
-          anything, anything, false, 
-          CONFIG['galaxy.convoy.speed_modifier']).and_return(
-          Factory.create(:route))
+        UnitMover.should_receive(:move).
+          with(
+            nil, an_instance_of(Array), anything, anything, false,
+            Cfg.convoy_speed_modifier
+          ).and_return(Factory.create(:route))
         @galaxy.spawn_convoy!
       end
       
@@ -387,8 +388,11 @@ describe Galaxy do
       
       it "should have callbacks for units which destroys them upon arrival" do
         Unit.in_location(@route.source).each do |unit|
-          unit.should have_callback(CallbackManager::EVENT_DESTROY, 
-            @route.arrives_at)
+          unit.should have_callback(
+            CallbackManager::EVENT_DESTROY,
+            # See code for explanation for +1.
+            @route.arrives_at + 1
+          )
         end
       end
     end
