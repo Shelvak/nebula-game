@@ -17,10 +17,17 @@
                 background-color: white; }   
          object:focus { outline:none; }
          #flashContent { display:none; }
+
          #client-error {
            padding: 0 20px;
            text-align: left;
+           display: none;
          }
+
+         #client-error label, #client-error textarea {
+           display: block;
+         }
+
          #client-error pre {
            margin-top: 20px;
            display: block;
@@ -99,6 +106,19 @@ include(gameJs);
          </script> 
         </div>
          
-       <noscript>You need Javascript enabled to play Nebula 44.</noscript>      
+       <noscript>You need Javascript enabled to play Nebula 44.</noscript>
+
+      <div id="client-error">
+        <h1></h1>
+        <h2></h2>
+
+        <form action="">
+          <label for="message"></label>
+          <textarea name="message" id="message" cols="60" rows="10"></textarea>
+
+          <input type="submit" value="" />
+        </form>
+      </div>
+
    </body>
 </html>
