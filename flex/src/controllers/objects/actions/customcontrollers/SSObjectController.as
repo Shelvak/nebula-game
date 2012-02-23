@@ -87,6 +87,7 @@ package controllers.objects.actions.customcontrollers
             allLocUsers.addAll(ML.squadrons);
             allLocUsers.addAll(ML.routes);
             allLocUsers.addAll(ML.notifications);
+            allLocUsers.addAll(ML.additionalLocationUsers);
             for each (var locUser:ILocationUser in allLocUsers) {
                locUser.updateLocationName(planetNew.id, planetNew.name);
             }

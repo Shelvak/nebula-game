@@ -5,6 +5,8 @@ package models.unit
    import components.unitsscreen.events.LoadUnloadEvent;
    import components.unitsscreen.events.UnitsScreenEvent;
 
+   import models.location.ILocationUser;
+
    import models.solarsystem.MSSObject;
 
    import utils.ApplicationLocker;
@@ -38,12 +40,28 @@ package models.unit
    import utils.SingletonFactory;
    import utils.locale.Localizer;
    
-   public class MCLoadUnloadScreen extends EventDispatcher
+   public class MCLoadUnloadScreen extends EventDispatcher implements ILocationUser
    {
       public function MCLoadUnloadScreen()
       {
          super();
          EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, dispatchRefreshMaxStorageEvent);
+         ML.additionalLocationUsers.addItem(this);
+      }
+
+      public function updateLocationName(id: int, name: String): void {
+         if (location is Location
+            && Location(location).isSSObject
+            && location.id == id)
+         {
+            Location(location).name = name;
+         }
+         if (target is Location
+            && Location(target).isSSObject
+            && target.id == id)
+         {
+            Location(target).name = name;
+         }
       }
       
       private static const MAX_FLANKS: int = 2;

@@ -8,8 +8,6 @@
          <s:Group visible="{location != null}" includeInLayout="{location != null}">
             <fx:Script>
                <![CDATA[
-                  import flash.display.BitmapData;
-                  
                   [Bindable] public var location:*;
                   [Bindable] public var label:String;
                   [Bindable] public var image:BitmapData;
