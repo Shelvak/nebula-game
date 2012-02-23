@@ -46,7 +46,7 @@ var locales = { // {{{
     },
     info: function(locale) {
       if (locale == "lt") return [
-        "Informacija apie klaidą buvo automatiškai nusiųsta mums. Ją " +
+        "Informacija apie klaidą bus automatiškai nusiųsta mums. Ją " +
           "peržiūrėję pasistengsime klaidą ištaisyti."
 //        "Jeigu gali, parašyk papildomą informaciją - kokius veiksmus darei, " +
 //          "kokiame ekrane buvai ir t.t. Kartais tokia informacija labai " +
