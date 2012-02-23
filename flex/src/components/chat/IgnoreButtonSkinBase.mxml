@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark">
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata>
+   <s:states>
+      <s:State name="up"/>
+      <s:State name="over"/>
+      <s:State name="down"/>
+      <s:State name="disabled"/>
+   </s:states>
+   <fx:Script>
+      <![CDATA[
+      import utils.Objects;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+
+      protected function get imageType(): String {
+         Objects.throwAbstractPropertyError();
+         return null;
+      }
+
+      private function getImage(name:String): BitmapData {
+         return ImagePreloader.getInstance().getImage(
+            AssetNames.CHAT_IMAGES_FOLDER + "btn_ignore_" + imageType
+               + "_" + name
+         );
+      }
+      ]]>
+   </fx:Script>
+   <s:BitmapImage
+      source.up="{getImage('up')}"
+      source.over="{getImage('over')}"
+      source.down="{getImage('down')}"/>
+</s:Skin>

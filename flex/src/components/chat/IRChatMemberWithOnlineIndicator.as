@@ -60,9 +60,9 @@ package components.chat
 
 
       override protected function createOnlineIcon(): IVisualElement {
-         const icon: BitmapImage = new BitmapImage();
+         bmpOnlineIndicator = new BitmapImage();
          updateBmpOnlineIndicatorSource();
-         return icon;
+         return bmpOnlineIndicator;
       }
 
       private function updateBmpOnlineIndicatorSource(): void {

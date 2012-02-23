@@ -1766,6 +1766,8 @@
     <label.hop.jumpsIn value="Šoks po:"/>
     <label.hop.landsIn value="Leisis po:"/>
     <title.killBonus value="Sunaikinus šį laivyną Tu gausi:"/>
+    <title.noKillBonus
+      value="Sunaikinus šį laivyna Tu negausi jokio papildomo priedo."/>
     <label.credsKillBonus value="Kredai "/>
     <label.vpsKillBonus value="Pergalės taškai "/>
     <label.honorCoef value="Garbės koef."/>
