@@ -152,6 +152,7 @@
             energy:energySelector.selectedVal,
             zetium:zetiumSelector.selectedVal
           }).dispatch();
+        selectNone();
       }
     }
 
