@@ -62,6 +62,11 @@ var locales = { // {{{
       if (locale == "lt") return "Išsiųsta! Ačiū!";
       return "Sent! Thanks!";
     },
+    failed: function(locale) {
+      if (locale == "lt")
+        return "Išsiųsti nepavyko. Na, gal kitą kartą pavyks...";
+      return "Failed. Well, perhaps we'll have better luck next time...";
+    },
     submit: function(locale) {
       if (locale == "lt") return "Siųsti";
       return "Send";
@@ -356,6 +361,9 @@ function crashLocal(summary, description, body) {
 }
 
 function crashRemote(summary, description, body) {
+  // Ensure player does not turn off window while request is being sent.
+  setLeaveHandler(true);
+
   var ce = locales.clientError;
 
   // Show error message.
@@ -380,9 +388,11 @@ function crashRemote(summary, description, body) {
       error_body: body
     }
   }).done(function(msg) {
-    // No leave confirmation upon crash.
     setLeaveHandler(false);
     ajaxStatus.html(ce.sent(locale));
+  }).error(function(msg) {
+    setLeaveHandler(false);
+    ajaxStatus.html(ce.failed(locale));
   });
 }
 
