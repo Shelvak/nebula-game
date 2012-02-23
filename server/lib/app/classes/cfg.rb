@@ -243,6 +243,10 @@ class Cfg
       CONFIG.evalproperty('galaxy.apocalypse.survival_bonus', 'days' => death_day)
     end
 
+    def convoy_speed_modifier
+      CONFIG['galaxy.convoy.speed_modifier']
+    end
+
     ### tiles.yml ###
 
     # Initializes exploration rewards and returns possible rewards.

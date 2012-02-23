@@ -255,11 +255,18 @@ class Galaxy < ActiveRecord::Base
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
       route = UnitMover.move(nil, units.map(&:id), source, target, false,
-        CONFIG['galaxy.convoy.speed_modifier'])
+        Cfg.convoy_speed_modifier)
 
       units.each do |unit|
-        CallbackManager.register(unit, CallbackManager::EVENT_DESTROY,
-          route.arrives_at)
+        CallbackManager.register(
+          unit, CallbackManager::EVENT_DESTROY,
+          # If we destroy units at same time as they arrive to their
+          # destination then callback execution order is not determined and
+          # units can be destroyed before they make their final hop. This
+          # causes problems in the client, therefore we ensure that destroy
+          # callbacks will be executed after last hop.
+          route.arrives_at + 1
+        )
       end
 
       route
@@ -282,12 +289,6 @@ class Galaxy < ActiveRecord::Base
   def current_day
     ((Time.now - created_at) / 1.day).round
   end
-
-  ## Should we create dead starts when detaching players fron the galaxy?
-  #def create_dead_stars?(zone_diagonal)
-  #  death_age = Cfg.galaxy_zone_death_age(zone_diagonal)
-  #  created_at + death_age < Time.now
-  #end
 
   def as_json(options=nil)
     attributes
