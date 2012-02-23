@@ -74,7 +74,8 @@ namespace :build do
     unless fcsh_running?
       puts
       puts "  ERROR: fcsh is not running, please launch it with"
-      puts "         `rake build:fcsh` first!"
+      puts "         `rake build:fcsh` or use fcsh=0 env var to "
+      puts "         disable fcsh!"
       puts
       exit
     end
@@ -128,7 +129,13 @@ namespace :build do
     args += %W{-output #{File.expand_path(output_swf)}
       #{File.expand_path(source_mxml)}}
 
-    fcsh(*args)
+    if ENV['fcsh'] == "0"
+      cmd = args.map(&:inspect).join(" ")
+      info "Running %s" % cmd
+      run(*cmd)
+    else
+      fcsh(*args)
+    end
   end
 
   # Calculates and returns SHA1 checksum of file contents.
