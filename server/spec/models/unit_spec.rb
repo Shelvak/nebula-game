@@ -933,21 +933,25 @@ describe Unit do
       ]
     end
 
-    it "should update only that player units" do
+    it "should fire changed for those units" do
+      should_fire_event([@unit1, @unit3], EventBroker::CHANGED) do
+        Unit.update_combat_attributes(@player.id,
+          @unit1.id => [1, Combat::STANCE_AGGRESSIVE],
+          @unit3.id => [1, Combat::STANCE_DEFENSIVE]
+        )
+      end
+    end
+
+    it "should raise error if not all units can be found" do
       @unit1.player = Factory.create :player
       @unit1.save!
 
-      Unit.update_combat_attributes(@player.id,
-        @unit1.id => [1, Combat::STANCE_AGGRESSIVE],
-        @unit3.id => [1, Combat::STANCE_AGGRESSIVE]
-      )
-      [@unit1, @unit3].map do |u|
-        u.reload
-        [u.flank, u.stance]
-      end.should == [
-        [0, Combat::STANCE_NEUTRAL],
-        [1, Combat::STANCE_AGGRESSIVE]
-      ]
+      lambda do
+        Unit.update_combat_attributes(@player.id,
+          @unit1.id => [1, Combat::STANCE_AGGRESSIVE],
+          @unit3.id => [1, Combat::STANCE_AGGRESSIVE]
+        )
+      end.should raise_error(GameLogicError)
     end
 
     it "should not update unaffected units" do
@@ -1019,6 +1023,12 @@ describe Unit do
     it "should change flag for given units" do
       Unit.mass_set_hidden(player.id, planet.id, unit_ids, true)
       units.each { |u| u.reload.should be_hidden }
+    end
+
+    it "should dispatch changed for units" do
+      should_fire_event(units, EventBroker::CHANGED) do
+        Unit.mass_set_hidden(player.id, planet.id, unit_ids, true)
+      end
     end
   end
 
