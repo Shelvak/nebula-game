@@ -382,17 +382,17 @@ function crashRemote(summary, description, body) {
   $.ajax({
     url: 'http://' + webHost + '/client/error_handler',
     type: 'POST',
-    data:{
+    data: {
       summary: summary,
       error_description: description,
       error_body: body
     }
-  }).done(function(msg) {
-    setLeaveHandler(false);
+  }).done(function() {
     ajaxStatus.html(ce.sent(locale));
-  }).error(function(msg) {
-    setLeaveHandler(false);
+  }).fail(function() {
     ajaxStatus.html(ce.failed(locale));
+  }).always(function() {
+    setLeaveHandler(false);
   });
 }
 
