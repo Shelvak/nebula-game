@@ -1,20 +1,4 @@
 var locales = { // {{{
-  clientErrorHeader: function(locale) {
-    if (locale == "lt") return "Kliento klaida";
-    return "Client has encountered error";
-  },
-  clientErrorInfo: function(locale) {
-    if (locale == "lt") return "Jei turite ką pridurti apie įvykusią klaidą, parašykite apačioje";
-    return "We would appreciate any additional information you could provide";
-  },
-  clientErrorLabel: function(locale) {
-    if (locale == "lt") return "Žinutė";
-    return "Message";
-  },
-  clientErrorSubmit: function(locale) {
-    if (locale == "lt") return "Siųsti";
-    return "Send";
-  },
   loadingTitle: function(locale) {
     if (locale == "lt") return "Nebula 44 kraunasi...";
     if (locale == "lv") return "LOCALE: Nebula 44 is loading...";
@@ -62,29 +46,25 @@ var locales = { // {{{
     },
     info: function(locale) {
       if (locale == "lt") return [
-        "Būtų labai gerai, jeigu nukopijavęs visą tekstą (CTRL+A, CTRL+C) " +
-          "įkeltum į forumą :)",
-        "Tai padėtų mums ištaisyti šią klaidą ir padaryti Nebula 44 " +
-          "geresniu žaidimu."
+        "Informacija apie klaidą buvo automatiškai nusiųsta mums. Ją " +
+          "peržiūrėję pasistengsime klaidą ištaisyti."
+//        "Jeigu gali, parašyk papildomą informaciją - kokius veiksmus darei, " +
+//          "kokiame ekrane buvai ir t.t. Kartais tokia informacija labai " +
+//          "padeda išspręsti klaidas :)"
       ];
       return ["LOCALE: fixme"];
     },
-    pasteLink: function(locale) {
-      if (locale == "lt")
-        return "Dideles klaidas gali įkelti naudodamas Pastebin";
-      return "LOCALE: fixme";
+    sending: function(locale) {
+      if (locale == "lt") return "Siunčiama... Prašome palaukti ;)";
+      return "Sending... Please wait a minute ;)";
     },
-    forumLink: function(locale) {
-      if (locale == "lt") return "Testinės galaktikos klaidų forumas"
-      return "LOCALE: fixme";
+    sent: function(locale) {
+      if (locale == "lt") return "Išsiųsta! Ačiū!";
+      return "Sent! Thanks!";
     },
-    headTitle: function(locale) {
-      if (locale == "lt") return "Trumpa informacija";
-      return "Short information";
-    },
-    bodyTitle: function(locale) {
-      if (locale == "lt") return "Ilga informacija";
-      return "Long information";
+    submit: function(locale) {
+      if (locale == "lt") return "Siųsti";
+      return "Send";
     }
   }
 } // }}}
@@ -340,43 +320,70 @@ function getCombatLogUrl(combatLogId, playerId) { // {{{
 
 // Setup google analytics {{{
 var _gaq = _gaq || [];
-if (! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId)) {
+if (
+    ! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId) &&
+    ! defined(planetMapEditor)
+  ) {
   _gaq.push(['_setAccount', gaAccountId], ['_trackPageview']);
   include("http://www.google-analytics.com/ga.js", 'async="true"');
 }
 // }}}
 
-function pLink(container, props) {
-  var p = $('<p/>');
-  $('<a/>', props).appendTo(p);
-  p.appendTo(container);
+// Called from flash when it crashes.
+function clientError(summary, description, body) {
+  // Remove flash client to stop it.
+  $('#' + appName).remove();
+
+  if (inLocalComputer() || inDeveloperMode()) {
+    crashLocal(summary, description, body);
+  }
+  else {
+    crashRemote(summary, description, body)
+  }
 }
 
-// Called from flash when it crashes.
-function clientError(summary, head, body, slowClient) {
-  // No leave confirmation upon crash.
-  setLeaveHandler(false);
-  $("#client-error h1").html(locales.clientErrorHeader(locale));
-  $("#client-error h2").html(locales.clientErrorInfo(locale));
-  $("#client-error label").html(locales.clientErrorLabel(locale));
-  $('#client-error input[type="submit"]').attr('value', locales.clientErrorSubmit(locale));
+function crashLocal(summary, description, body) {
+  $("#client-error").remove();
+  var error = $('<div/>', {style: "margin: 10px"});
+
+  $('<h1/>', {text: summary}).appendTo(error);
+  $('<h2/>', {text: "Description"}).appendTo(error);
+  $('<pre/>', {text: description}).appendTo(error);
+  $('<h2/>', {text: "Body"}).appendTo(error);
+  $('<pre/>', {text: body}).appendTo(error);
+
+  error.appendTo($("body"));
+}
+
+function crashRemote(summary, description, body) {
+  var ce = locales.clientError;
+
+  // Show error message.
+  $("#client-error h1").html(ce.title(locale));
+  var explanation = $("#client-error .content");
+  $.each(ce.info(locale), function(index, text) {
+    var p = $('<p/>', {text: text});
+    p.appendTo(explanation);
+  });
+  var ajaxStatus = $("#client-error #ajax-status");
+  ajaxStatus.html(ce.sending(locale));
+  //$('#client-error input[type="submit"]').
+  //  attr('value', locales.clientErrorSubmit(locale));
+  $("#client-error").show();
 
   $.ajax({
-    url:'http://localhost:3000/client/error_handler',
+    url: 'http://' + webHost + '/client/error_handler',
+    type: 'POST',
     data:{
-      summary:summary,
-      head:head,
-      body:body,
-      slow_client:slowClient
+      summary: summary,
+      description: description,
+      body: body
     }
-  }).done(function (msg) {
-      $('body *').hide();
-      $('#client-error').show();
-    });
-}
-
-function clientErrorMsg(msg) {
-
+  }).done(function(msg) {
+    // No leave confirmation upon crash.
+    setLeaveHandler(false);
+    ajaxStatus.html(ce.sent(locale));
+  });
 }
 
 // Load our swf {{{
