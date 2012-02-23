@@ -376,8 +376,8 @@ function crashRemote(summary, description, body) {
     type: 'POST',
     data:{
       summary: summary,
-      description: description,
-      body: body
+      error_description: description,
+      error_body: body
     }
   }).done(function(msg) {
     // No leave confirmation upon crash.
