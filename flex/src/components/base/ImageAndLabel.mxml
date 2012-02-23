@@ -20,7 +20,10 @@
          public function set labelStyleName(value: String): void
          {
             customStyle = value;
+            customStyleSet = true;
          }
+
+         private var customStyleSet: Boolean = false;
          
          [Bindable]
          private var customStyle: String = null;
@@ -35,6 +38,10 @@
                else if (_textToDisplay.charAt() == '+')
                {
                   customStyle = 'positive';
+               }
+               else if (!customStyleSet)
+               {
+                 customStyle = null;
                }
          }
          
