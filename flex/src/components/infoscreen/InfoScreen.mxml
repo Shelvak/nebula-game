@@ -375,7 +375,7 @@
                            <s:Label horizontalCenter="0" text="{int(lvlSelector.value)}"  styleName="h3"/>
                            
                            <s:Group width="100%">
-                              <s:Label text="{(INFO.model.usefulLevel).toString()}" left="0" styleName="h3"/>
+                              <s:Label text="1" left="0" styleName="h3"/>
                               <base:AdvancedHSlider dataTipPrecision="0" id="lvlSelector" left="20" right="20"
                                                     minimum="1"
                                                     maximum="{INFO.model.maxLevel}"
@@ -391,7 +391,9 @@
                            </s:layout>
                         </s:Group>
                         
-                        <base:Panel visible="{!((INFO.model.currentLevel == INFO.model.maxLevel) || (INFO.isNpc) || (lvlSelector.value == INFO.model.currentLevel))}"  
+                        <base:Panel visible="{!((INFO.model.currentLevel == INFO.model.maxLevel)
+                                              || (INFO.isNpc)
+                                              || (lvlSelector.value &lt;= INFO.model.currentLevel))}"
                                     title="{Localizer.string('InfoScreen', 'cost')}" width="100%">
                            <base:AdvancedContainer width="100%">
                               
