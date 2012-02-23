@@ -46,8 +46,7 @@ package utils
             summary = Version.VERSION + "|" + summaryErr
             
             description =
-               'Client error! Version ' + Version.VERSION + '\n\n' +
-               "!!! EXCEPTION !!!\n" + summaryErr +
+               summaryErr +
                "\n\nStacktrace (without vars):\n" +
                stWoVars + "\n";
 
