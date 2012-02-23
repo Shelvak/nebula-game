@@ -1,4 +1,20 @@
 var locales = { // {{{
+  clientErrorHeader: function(locale) {
+    if (locale == "lt") return "Kliento klaida";
+    return "Client has encountered error";
+  },
+  clientErrorInfo: function(locale) {
+    if (locale == "lt") return "Jei turite ką pridurti apie įvykusią klaidą, parašykite apačioje";
+    return "We would appreciate any additional information you could provide";
+  },
+  clientErrorLabel: function(locale) {
+    if (locale == "lt") return "Žinutė";
+    return "Message";
+  },
+  clientErrorSubmit: function(locale) {
+    if (locale == "lt") return "Siųsti";
+    return "Send";
+  },
   loadingTitle: function(locale) {
     if (locale == "lt") return "Nebula 44 kraunasi...";
     if (locale == "lv") return "LOCALE: Nebula 44 is loading...";
@@ -337,35 +353,30 @@ function pLink(container, props) {
 }
 
 // Called from flash when it crashes.
-function clientError(head, body, slowClient) {
+function clientError(summary, head, body, slowClient) {
   // No leave confirmation upon crash.
   setLeaveHandler(false);
+  $("#client-error h1").html(locales.clientErrorHeader(locale));
+  $("#client-error h2").html(locales.clientErrorInfo(locale));
+  $("#client-error label").html(locales.clientErrorLabel(locale));
+  $('#client-error input[type="submit"]').attr('value', locales.clientErrorSubmit(locale));
 
-  var loc = locales.clientError;
+  $.ajax({
+    url:'http://localhost:3000/client/error_handler',
+    data:{
+      summary:summary,
+      head:head,
+      body:body,
+      slow_client:slowClient
+    }
+  }).done(function (msg) {
+      $('body *').hide();
+      $('#client-error').show();
+    });
+}
 
-  var container = $('<div/>');
+function clientErrorMsg(msg) {
 
-  $('<h1/>', {text: loc.title(locale)}).appendTo(container);
-  $.each(loc.info(locale), function(index, value) {
-    $('<p/>', {text: value}).appendTo(container);
-  });
-  pLink(container, {
-    href: "http://pastebin.com/",
-    text: loc.pasteLink(locale)
-  });
-  pLink(container, {
-    href: "http://forum.nebula44.lt/forum/104/klaidos-testineje-galaktikoje/",
-    text: loc.forumLink(locale)
-  });
-
-  $('<h1/>', {text: loc.headTitle(locale)}).appendTo(container);
-  $('<pre/>', {text: head}).appendTo(container);
-
-  $('<h1/>', {text: loc.bodyTitle(locale)}).appendTo(container);
-  $('<pre/>', {text: body}).appendTo(container);
-
-  $('body').attr('id', 'client-error');
-  $('body').html(container.html());
 }
 
 // Load our swf {{{

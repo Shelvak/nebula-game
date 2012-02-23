@@ -137,7 +137,8 @@ describe UnitsController do
         2 => [0, Combat::STANCE_AGGRESSIVE],
         3 => [1, Combat::STANCE_AGGRESSIVE]
       }
-      @params = {'updates' => @updates}
+      # JSON hashes must have keys as strings.
+      @params = {'updates' => @updates.map_keys { |k, v| k.to_s }}
     end
 
     it_behaves_like "with param options", %w{updates}
