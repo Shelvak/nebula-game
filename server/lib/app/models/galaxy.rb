@@ -253,12 +253,16 @@ class Galaxy < ActiveRecord::Base
         target = get_wormhole.call
       end
 
+
       # Create units.
       units = UnitBuilder.from_random_ranges(
         Cfg.galaxy_convoy_units_definition, id, source, nil
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
-      route = UnitMover.move(nil, units.map(&:id), source, target, false,
+      unit_ids = units.map(&:id)
+      LOGGER.debug "Launching convoy #{source} -> #{target} with unit ids #{
+        unit_ids.inspect}"
+      route = UnitMover.move(nil, unit_ids, source, target, false,
         Cfg.convoy_speed_modifier)
 
       units.each do |unit|
