@@ -83,6 +83,14 @@ class Unit < ActiveRecord::Base
     ).symbolize_keys.merge(additional).as_json
   end
 
+  def cancel!(*args)
+    raise GameError, "#cancel! on #{self} does not make any sense!" \
+      if level != 0
+    super(*args) do
+      EventBroker.fire(self, EventBroker::DESTROYED)
+    end
+  end
+
   # Wraps standard #destroy in SsObject::Planet#changing_viewable.
   def destroy
     SsObject::Planet.changing_viewable(location) do
@@ -278,7 +286,17 @@ class Unit < ActiveRecord::Base
     end
     
     def update_combat_attributes(player_id, updates)
-      updates.each do |unit_id, (flank, stance)|
+      unit_ids = updates.keys
+      units = where(:id => unit_ids, :player_id => player_id).all
+
+      raise GameLogicError,
+        "#{unit_ids.size} units of player #{player_id} requested, but only #{
+        units.size} were found. Missing ids: #{
+        (unit_ids - units.map(&:id)).inspect}" if unit_ids.size != units.size
+
+      units.each do |unit|
+        flank, stance = updates[unit.id]
+
         raise ArgumentError.new(
           "flank #{flank} is invalid (too large)!"
         ) unless flank_valid?(flank)
@@ -286,10 +304,13 @@ class Unit < ActiveRecord::Base
           "stance #{stance} is invalid!"
         ) unless stance_valid?(stance)
 
-        where(:id => unit_id, :player_id => player_id).update_all(
-          "flank=#{flank.to_i}, stance=#{stance.to_i}"
-        )
+        unit.flank = flank
+        unit.stance = stance
       end
+
+      save_all_units(units)
+
+      true
     end
 
     # Massively set hidden flag for player units in player planet.
@@ -299,17 +320,19 @@ class Unit < ActiveRecord::Base
       ) unless SsObject::Planet.
         where(:id => planet_id, :player_id => player_id).exists?
 
-      updated = Unit.where(
-        :player_id => player_id,
-        :location_type => Location::SS_OBJECT,
-        :location_id => planet_id,
-        :id => unit_ids
-      ).update_all Unit.set_flag_sql(:hidden, value)
+      units = where(
+        :id => unit_ids, :player_id => player_id,
+        :location_type => Location::SS_OBJECT, :location_id => planet_id
+      ).all
+      raise GameLogicError,
+        "#{unit_ids.size} units of player #{player_id} requested, but only #{
+        units.size} were found. Missing ids: #{
+        (unit_ids - units.map(&:id)).inspect}" if unit_ids.size != units.size
 
-      raise GameLogicError.new("Not all requested units updated! Requested: #{
-        unit_ids.size}, updated: #{updated}") if unit_ids.size > updated
+      units.each { |unit| unit.hidden = value }
+      save_all_units(units)
 
-      updated
+      true
     end
 
     # Return distinct player ids which have completed units for given
