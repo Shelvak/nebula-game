@@ -377,7 +377,7 @@
                            <s:Group width="100%">
                               <s:Label text="{(INFO.model.usefulLevel).toString()}" left="0" styleName="h3"/>
                               <base:AdvancedHSlider dataTipPrecision="0" id="lvlSelector" left="20" right="20"
-                                                    minimum="{INFO.model.usefulLevel}" 
+                                                    minimum="1"
                                                     maximum="{INFO.model.maxLevel}"
                                                     showDataTip="false" change="
                                                     INFO.sliderMoved = true;
