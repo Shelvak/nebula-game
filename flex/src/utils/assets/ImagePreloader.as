@@ -228,6 +228,11 @@ package utils.assets
             ModuleEvent.ERROR,
             function(event:ModuleEvent) : void {
                 failedBundle = 'AssetsConfig';
+                if (STARTUP_INFO.assetsSums == null)
+                {
+                   throw new ArgumentError("Bundle '" + failedBundle + "' not found, " +
+                      "and checksums are not available");
+                }
                 failedChecksumResult = moduleName;
                 reloadChecksums();
             }
@@ -317,6 +322,11 @@ package utils.assets
             ModuleEvent.ERROR,
             function(event:ModuleEvent) : void {
                failedBundle = _currentModule;
+               if (STARTUP_INFO.assetsSums == null)
+               {
+                  throw new ArgumentError("Bundle '" + failedBundle + "' not found, " +
+                     "and checksums are not available");
+               }
                failedChecksumResult = moduleName;
                reloadChecksums();
             }
