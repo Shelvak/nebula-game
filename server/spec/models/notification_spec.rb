@@ -660,4 +660,22 @@ describe Notification do
       ).params[:paused].should == @paused_techs.map { |t| t[:type] }
     end
   end
+
+  describe ".create_for_player_attached" do
+    before(:all) do
+      @player_id = Factory.create(:player).id
+
+      @event = Notification::EVENT_PLAYER_ATTACHED
+      @method = :create_for_player_attached
+      @args = [@player_id]
+    end
+
+    it_behaves_like "create for"
+
+    it "should not dispatch created event" do
+      notification = Notification.send(@method, *@args)
+      SPEC_EVENT_HANDLER.fired?(notification, EventBroker::CREATED).
+        should == 0
+    end
+  end
 end

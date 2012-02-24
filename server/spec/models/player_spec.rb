@@ -1826,6 +1826,11 @@ describe Player do
         player.attach!
       end
 
+      it "should create notification" do
+        Notification.should_receive(:create_for_player_attached).with(player.id)
+        player.attach!
+      end
+
       it "should work" do
         player.attach!
         player.should_not be_detached

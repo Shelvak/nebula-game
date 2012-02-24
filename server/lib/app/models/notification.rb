@@ -15,6 +15,7 @@
 # * Notification#create_for_vps_to_creds_conversion
 # * Notification#create_for_alliance_owner_changed
 # * Notification#create_for_technologies_changed
+# * Notification#create_for_player_attached
 #
 class Notification < ActiveRecord::Base
   # These methods must be defined before the include.
@@ -22,6 +23,13 @@ class Notification < ActiveRecord::Base
   def self.notify_on_update?; false; end
   def self.notify_on_destroy?; false; end
   include Parts::Notifier
+
+  # Allow user to skip dispatching of the created notification.
+  attr_accessor :skip_dispatch
+  def notify_broker_create
+    super unless skip_dispatch
+  end
+
   include Parts::Object
 
   belongs_to :player
@@ -54,6 +62,8 @@ class Notification < ActiveRecord::Base
   EVENT_ALLIANCE_OWNER_CHANGED = 13
   # Technologies had their scientists modified or were paused.
   EVENT_TECHNOLOGIES_CHANGED = 14
+  # Player has been attached to the galaxy.
+  EVENT_PLAYER_ATTACHED = 15
 
   # custom_serialize converts all :symbols to 'symbols'
   serialize :params
@@ -535,6 +545,23 @@ class Notification < ActiveRecord::Base
         :paused => paused
       }
     )
+    model.save!
+
+    model
+  end
+
+  # EVENT_PLAYER_ATTACHED = 15
+  #
+  # params => {}
+  def self.create_for_player_attached(player_id)
+    model = new(
+      :event => EVENT_PLAYER_ATTACHED,
+      :player_id => player_id,
+      :params => {}
+    )
+    # Skip dispatch because this notification is created when player is logging
+    # in, before initialization.
+    model.skip_dispatch = true
     model.save!
 
     model
