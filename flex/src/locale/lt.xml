@@ -1860,6 +1860,18 @@
     <label.combatLog.showLog value="Peržiūrėti įrašą" />
     <label.combatLog.copyToClipboard value="Kopijuoti į iškarpinę" />
 
+    <message.playerAttached value="Tu buvai perkeltas" />
+    <title.playerAttached value="Sveikas sugrįžęs!" />
+    <insideMessage.playerAttached>
+      <p>
+        Tu kurį laiką buvai neaktyvus, todėl buvai perkeltas į naują galaktikos
+        vietą, kuri labiau tinka tavo dabartinei situacijai.
+      </p>
+      <p>
+        Įsikurk, apsidairyk ir susipažink su naujais savo kaimynais! Sekmės!
+      </p>
+    </insideMessage.playerAttached>
+
     <title.questCompleted value="Užduotis įvykdyta" />
     <message.questCompleted value="Užduotis „{0}“ buvo įvykdyta." />
     <message.newQuests value="Tu pradėjai vykdyti šias užduotis:" />
@@ -1867,10 +1879,10 @@
     <title.technologiesChanged value="Įvyko pasikeitimai technologijose" />
     <message.technologiesChanged value="Pasikeitimai technologijose." />
     <insideMessage.technologiesChanged>
-        <p>
-            Dėl nepakankamo mokslininkų arba planetų kiekio buvo atlikti šie
-            pakeitimai technologijoms:
-        </p>
+      <p>
+        Dėl nepakankamo mokslininkų arba planetų kiekio buvo atlikti šie
+        pakeitimai technologijoms:
+      </p>
     </insideMessage.technologiesChanged>
 
     <title.kickedFromAlliance value="Buvai pašalintas iš sąjungos" />

@@ -27,6 +27,7 @@ package models.notification
       TYPE_TO_CLASS[NotificationType.VPS_CONVERTED_TO_CREDS] = CredsConverted;
       TYPE_TO_CLASS[NotificationType.ALLIANCE_OWNER_CHANGED] = AllianceOwnerChanged;
       TYPE_TO_CLASS[NotificationType.TECHNOLOGIES_CHANGED] = TechnologiesChanged;
+      TYPE_TO_CLASS[NotificationType.PLAYER_ATTACHED] = PlayerAttached;
       
       /**
        * Creates concrete instance of <code>INotificationPart</code> and returns it.
