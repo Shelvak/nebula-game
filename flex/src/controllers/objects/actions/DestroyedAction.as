@@ -42,39 +42,40 @@ package controllers.objects.actions
             {
                ML.latestPlanet.units.refresh();
                ML.latestPlanet.dispatchUnitRefreshEvent();
-               // TODO: Find out why some filters don't refresh if you dont call
-               // refresh function on the list
-               var HS: MCHealingScreen = MCHealingScreen.getInstance();
-               if (HS.oldProvider != null)
+            }
+            // TODO: Find out why some filters don't refresh if you dont call
+            // refresh function on the list
+            var HS: MCHealingScreen = MCHealingScreen.getInstance();
+            if (HS.oldProvider != null)
+            {
+               HS.oldProvider.refresh();
+               HS.refreshScreen();
+            }
+            // TODO: Find out why some filters don't refresh if you dont call
+            // refresh function on the list
+            var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
+            if (LS.oldProvider != null)
+            {
+               LS.oldProvider.refresh();
+               LS.refreshScreen();
+            }
+            // TODO: Find out why some filters don't refresh if you dont call
+            // refresh function on the list
+            var US: MCUnitScreen = MCUnitScreen.getInstance();
+            if (US.units != null)
+            {
+               US.units.refresh();
+               if (reason == UpdatedReason.COMBAT)
                {
-                  HS.oldProvider.refresh();
-                  HS.refreshScreen();
-               }
-               // TODO: Find out why some filters don't refresh if you dont call 
-               // refresh function on the list
-               var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
-               if (LS.oldProvider != null)
-               {
-                  LS.oldProvider.refresh();
-                  LS.refreshScreen();
-               }
-               // TODO: Find out why some filters don't refresh if you dont call 
-               // refresh function on the list
-               var US: MCUnitScreen = MCUnitScreen.getInstance();
-               if (US.units != null)
-               {
-                  US.units.refresh();
-                  if (reason == UpdatedReason.COMBAT)
+                  if (MCMainArea.getInstance().currentName == MainAreaScreens.UNITS)
                   {
-                     if (MCMainArea.getInstance().currentName == MainAreaScreens.UNITS)
+                     if (US.hasChanges)
                      {
-                        if (US.hasChanges)
-                        {
-                           Messenger.show(Localizer.string('Units', 'message.changesCanceled'),
-                              Messenger.MEDIUM);
-                        }
-                        US.refreshScreen();
+                        Messenger.show(Localizer.string('Units', 'message.changesCanceled'),
+                           Messenger.MEDIUM);
                      }
+                     US.refreshScreen();
+                     US.cancel();
                   }
                }
             }
