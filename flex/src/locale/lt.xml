@@ -2058,11 +2058,18 @@
     <title.defaultError value="Klaida!" />
 
     <label.reconnect value="Jungtis vėl" />
+    <label.refresh value="Perkrauti" />
     <label.cancel value="Atšaukti" />
     <label.confirm value="Patvirtinti" />
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+
+    <title.outdatedClient value="Žaidimo versija pasenusi" />
+    <message.outdatedClient>
+      <p>Kol žaidei buvo atnaujinta žaidimo versija.</p>
+      <p>Tam, kad žaidimas veiktų be spragų turi perkrauti puslapį.</p>
+    </message.outdatedClient>
     
     <title.cancelUnitTraining value="Atšaukti kario apmokymus" />
     <message.cancelUnitTraining 
