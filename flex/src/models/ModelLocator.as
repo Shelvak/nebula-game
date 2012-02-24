@@ -8,6 +8,7 @@ package models
    import controllers.ui.NavigationController;
 
    import flash.events.EventDispatcher;
+   import flash.system.Capabilities;
 
    import globalevents.GPlanetEvent;
 
@@ -58,6 +59,11 @@ package models
       {
          var message:String = 'Debug log! Version ' + Version.VERSION +
             '\n\n';
+         message += "FP version: " + Capabilities.version + "\n";
+         message += "FP debug: " + Capabilities.isDebugger + "\n";
+         message += "FP type: " + Capabilities.playerType + "\n";
+         message += "OS: " + Capabilities.os + "\n";
+         message += "CPU Arch: " + Capabilities.cpuArchitecture + "\n\n";
          message += 'Log (last ' + StartupManager.inMemoryLog.maxEntries + ' entries):\n';
          message += StartupManager.inMemoryLog.getContent("\n") + "\n\n";
          message += 'Player:\n' + player + '\n\n';
