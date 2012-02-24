@@ -229,6 +229,23 @@ describe FowSsEntry do
       end
     end
 
+    describe "when ships are flying into non-visible solar system" do
+      it "should fire created for that solar system" do
+        FowSsEntry.increase(@solar_system_id, @player, 1)
+
+        # Create event after incrementation because there is no fow ss entries
+        # until that.
+        event = Event::FowChange::SsCreated.new(
+          @solar_system_id, @solar_system.x, @solar_system.y,
+          @solar_system.kind, Player.minimal(@solar_system.player_id)
+        )
+
+        SPEC_EVENT_HANDLER.
+          fired?(event, EventBroker::FOW_CHANGE, @event_reason).
+          should == 1
+      end
+    end
+
     describe "when i have ships and alliance has planet in same ss" do
       it "should fire updated instead of destroyed when i fly out of that ss" do
         Factory.create(:fse_alliance,

@@ -241,11 +241,10 @@ class FowSsEntry < ActiveRecord::Base
     end
 
     # Create an entry for _player_ at _solar_system_id_. Increase counter
-    # by _increasement_.
+    # by _increment_.
     #
     # This also creates entry for +Alliance+ if _player_ is in one.
-    def increase(solar_system_id, player, increasement=1,
-        should_dispatch=true)
+    def increase(solar_system_id, player, increment=1, should_dispatch=true)
       return if solar_system_id == Galaxy.battleground_id(player.galaxy_id)
 
       # Player and alliance ids which saw destroyed SS.
@@ -253,30 +252,44 @@ class FowSsEntry < ActiveRecord::Base
       destroyed_alliance_id = nil
 
       status = increase_for_kind(solar_system_id, 'player_id',
-        player.id, increasement, 
+        player.id, increment,
         lambda { |id| destroyed_player_id = id })
       alliance_status = increase_for_kind(solar_system_id, 'alliance_id',
-        player.alliance_id, increasement,
+        player.alliance_id, increment,
         lambda { |id| destroyed_alliance_id = id }) \
         unless player.alliance_id.nil?
 
-      dispatch_event = status == :created || status == :destroyed
+      status_is = lambda do |wanted|
+        status == wanted &&
+          (player.alliance_id.nil? || alliance_status == wanted)
+      end
+
+      dispatch_event = status_is[:created] || status_is[:destroyed]
       dispatch_event = recalculate(solar_system_id, false) || dispatch_event
       dispatch_event = dispatch_event && should_dispatch
 
-      # Only dispatch destroyed if both alliance and player records has been
-      # destroyed
-      if status == :destroyed && alliance_status == :destroyed
+      if status_is[:destroyed]
+        # Only dispatch destroyed if both alliance and player records has been
+        # destroyed
         EventBroker.fire(
-          Event::FowChange::SsDestroyed.by_player_and_ally(solar_system_id,
-            destroyed_player_id, destroyed_alliance_id),
+          Event::FowChange::SsDestroyed.by_player_and_ally(
+            solar_system_id, destroyed_player_id, destroyed_alliance_id
+          ),
           EventBroker::FOW_CHANGE,
-          EventBroker::REASON_SS_ENTRY)
+          EventBroker::REASON_SS_ENTRY
+        )
+      elsif status_is[:created]
+        ss = SolarSystem.find(solar_system_id)
+        event = Event::FowChange::SsCreated.new(
+          ss.id, ss.x, ss.y, ss.kind, Player.minimal(ss.player_id)
+        )
+        EventBroker.fire(
+          event, EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+        )
       else
         EventBroker.fire(
           Event::FowChange::SolarSystem.new(solar_system_id),
-          EventBroker::FOW_CHANGE,
-          EventBroker::REASON_SS_ENTRY
+          EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
         )
       end if dispatch_event
 

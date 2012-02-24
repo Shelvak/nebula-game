@@ -5,9 +5,12 @@ class Event::FowChange::SsCreated < Event::FowChange::SolarSystem
   # @param y [Fixnum] SolarSystem#y
   # @param kind [Fixnum] SolarSystem#kind
   # @param player_minimal [Hash] Player#minimal | nil
-  # @param fow_ss_entries [Array]
-  def initialize(solar_system_id, x, y, kind, player_minimal, fow_ss_entries)
+  # @param fow_ss_entries [Array] Can be nil, then fetches changes itself.
+  def initialize(
+    solar_system_id, x, y, kind, player_minimal, fow_ss_entries=nil
+  )
     @solar_system_id = solar_system_id
+    fow_ss_entries ||= FowSsEntry.where(:solar_system_id => solar_system_id)
     process_changes(fow_ss_entries, [x, y], kind, player_minimal)
   end
 
