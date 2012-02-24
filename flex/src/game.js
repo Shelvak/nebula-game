@@ -348,6 +348,7 @@ function clientError(summary, description, body) {
 }
 
 function crashLocal(summary, description, body) {
+  setLeaveHandler(false);
   $("#client-error").remove();
   var error = $('<div/>', {style: "margin: 10px"});
 
