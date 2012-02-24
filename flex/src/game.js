@@ -334,6 +334,12 @@ if (
 }
 // }}}
 
+// Called from flash when page refresh is needed.
+function refresh() {
+  setLeaveHandler(false);
+  window.location.reload();
+}
+
 // Called from flash when it crashes.
 function clientError(summary, description, body) {
   // Remove flash client to stop it.
