@@ -5128,6 +5128,7 @@
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
     <label.cancelPrepaid value="Tu gausi"/>
+    <message.changesCanceled value="Pakeitimai buvo atšaukti dėl įvykusio mūšio"/>
     <!-- 0 - resources string, 1 - 'is' or 'are' 
     in lt we dont use parameter 1 -->
     <label.planetFull>
