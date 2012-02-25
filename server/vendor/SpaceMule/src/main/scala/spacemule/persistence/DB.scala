@@ -75,18 +75,38 @@ Original exception:
     connect(host, 3306, user, password, dbName)
   }
 
-  private def reconnect = connect(connStr)
+  private[this] def reconnect() {
+    connect(connStr)
+  }
+
+  /**
+   * This prevents dreaded
+   *
+   * "com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: The last packet
+   * successfully received from the server was 88,235,472 milliseconds ago.
+   * The last packet sent successfully to the server was 88,235,472
+   * milliseconds ago. is longer than the server configured value of
+   * 'wait_timeout'. You should consider either expiring and/or testing
+   * connection validity before use in your application, increasing the server
+   * configured values for client timeouts, or using the Connector/J
+   * connection property 'autoReconnect=true' to avoid this problem."
+   *
+   * exception by ensuring we have a live connection.
+   */
+  private[this] def ensureConnection() {
+    if (! connection.isValid(1)) reconnect()
+  }
 
   def close() = if (connection != null) connection.close
 
   def exec(sql: String): Int = {
-//    reconnecting { () =>
     val statement = connection.createStatement
     statement.executeUpdate(sql)
-//    }
   }
 
   def transaction(func: () => Unit) {
+    ensureConnection()
+
     val autocommit = connection.getAutoCommit
     
     try {
@@ -145,6 +165,8 @@ Original exception:
     // Create stream from String Builder
     val inputStream = IOUtils.toInputStream(builder);
 
+    ensureConnection()
+
     // First create a statement off the connection
     val statement = connection.createStatement.asInstanceOf[
       com.mysql.jdbc.Statement]
@@ -157,8 +179,9 @@ Original exception:
       statement.execute(statementText);
     }
     catch {
-      case ex: Exception =>
-        throw new LoadInFileException(tableName, columns, builder.toString, ex)
+      case ex: Exception => throw new LoadInFileException(
+        tableName, columns, builder.toString, ex
+      )
     }
     finally {
       statement.close()
@@ -166,14 +189,14 @@ Original exception:
   }
 
   def query(sql: String): ResultSet = {
-//    reconnecting { () =>
+    ensureConnection()
+
     // Configure to be Read Only
     val statement = connection.createStatement(
       ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
     )
 
     statement.executeQuery(sql)
-//    }
   }
 
   def getOne[T](sql: String): Option[T] = {
@@ -193,23 +216,4 @@ Original exception:
 
     return list.toList
   }
-  
-  private val MaxReconnects = 3
-
-//  private def reconnecting[T](code: () => T, reconnect: Int=0): T = {
-//    try {
-//      code()
-//    }
-//    catch {
-//      case e: CommunicationsException =>
-//        System.err.println(
-//          "Error @ reconnect %d:\n%s".format(reconnect, e.getMessage)
-//        )
-//        if (reconnect == MaxReconnects) throw e
-//        else {
-//          this.reconnect
-//          reconnecting(code, reconnect + 1)
-//        }
-//    }
-//  }
 }
