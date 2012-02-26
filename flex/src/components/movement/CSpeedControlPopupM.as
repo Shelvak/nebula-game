@@ -39,14 +39,11 @@ package components.movement
    
    public class CSpeedControlPopupM extends EventDispatcher implements IUpdatable, ICleanable
    {
-      private function get ORDERS_CTRL() : OrdersController
-      {
+      private function get ORDERS_CTRL(): OrdersController {
          return OrdersController.getInstance();
       }
-      
-      
-      private function get ML() : ModelLocator
-      {
+
+      private function get ML(): ModelLocator {
          return ModelLocator.getInstance();
       }
       
@@ -59,60 +56,52 @@ package components.movement
        * @param hopCount int total hops to complete the trip 
        *                 <b>Must be positive non-zero integer.</b>
        */
-      public function CSpeedControlPopupM(baseTripTime:Number, hopCount: int)
-      {
-         if (baseTripTime <= 0)
-         {
-            throw new ArgumentError("[param tripTime] must be positive non-zero mumber");
-         }
-         if (hopCount <= 0)
-         {
-            throw new ArgumentError("[param hopCount] must be positive non-zero int");
-         }
+      public function CSpeedControlPopupM(baseTripTime: Number, hopCount: int) {
+         Objects.paramPositiveNumber("baseTripTime", baseTripTime, false);
+         Objects.paramPositiveNumber("hopCount", hopCount, false);
          _baseTripTime = baseTripTime;
          _arrivalDate = new MTimeEventFixedInterval();
          _arrivalDate.occuresIn = _baseTripTime;
          _hopCount = hopCount;
-         ML.player.addEventListener(PlayerEvent.CREDS_CHANGE, player_credsChangeHandler, false, 0, true);
+         ML.player.addEventListener(
+            PlayerEvent.CREDS_CHANGE, player_credsChangeHandler, false, 0, true
+         );
       }
-      
-      
-      public function cleanup() : void
-      {
-         if (ML.player != null)
-         {
-            ML.player.removeEventListener(PlayerEvent.CREDS_CHANGE, player_credsChangeHandler, false);
+
+      public function cleanup(): void {
+         if (ML.player != null) {
+            ML.player.removeEventListener(
+               PlayerEvent.CREDS_CHANGE, player_credsChangeHandler, false
+            );
          }
          onCancel = null;
          onConfirm = null;
       }
       
       private var _hopCount: int;
-      
+
       /**
-       * for test cases 
-       */      
-      public function get hopCount(): int
-      {
+       * for test cases
+       */
+      public function get hopCount(): int {
          return _hopCount;
       }
+
+
       /* ############ */
       /* ### TIME ### */
       /* ############ */
       
-      
       private var _baseTripTime:Number;
       /**
        * Time needed for a squad to reach its destination. The value for this property must be passed
-       * to the contructor.
+       * to the constructor.
        */
-      public function get baseTripTime() : Number
-      {
+      public function get baseTripTime(): Number {
          return _baseTripTime;
       }
-      
-      
-      private var _arrivalDate:MTimeEventFixedInterval;
+
+      private var _arrivalDate: MTimeEventFixedInterval;
       [Bindable(event="willNotChange")]
       /**
        * Squad arrival to its destination date. The object returns values with speed modifier applied.
@@ -121,8 +110,7 @@ package components.movement
        * 
        * <p>Never null.</p>
        */
-      public function get arrivalDate() : MTimeEventFixedInterval
-      {
+      public function get arrivalDate(): MTimeEventFixedInterval {
          return _arrivalDate;
       }
       
@@ -130,7 +118,6 @@ package components.movement
       /* ############ */
       /* ### COST ### */
       /* ############ */
-      
       
       [Bindable(event="speedModifierChange")]
       /**
@@ -141,53 +128,45 @@ package components.movement
        * [Bindable(event="speedModifierChange")]
        * </p>
        */
-      public function get speedUpCost() : int
-      {
-         return speedModifier < 1?Unit.getMovementSpeedUpCredsCost(
-            1.0 - speedModifier, _hopCount):0;
+      public function get speedUpCost(): int {
+         return speedModifier < 1 ? Unit.getMovementSpeedUpCredsCost(
+            1.0 - speedModifier, _hopCount) : 0;
       }
-      
-      
+
       [Bindable(event="speedModifierChange")]
       /**
        * Should the speed up cost be shown to the player. Property changes when <code>speedModifier</code>
        * changes.
-       * 
+       *
        * <p>
        * [Bindable(event="speedModifierChange")]
        * </p>
        */
-      public function get showSpeedUpCost() : Boolean
-      {
+      public function get showSpeedUpCost(): Boolean {
          return _speedModifier < 1.0;
       }
-      
-      
+
       [Bindable(event="playerCredsChange")]
       /**
        * Indicates if player has enough creds to speed up squad movement. This property changes when
        * <code>speedModifier</code> or <code>ModelLocator.player.creds</code> changes.
-       * 
+       *
        * <p>
        * [Bindable(event="playerCredsChange")]
        * </p>
        */
-      public function get playerHasEnoughCreds() : Boolean
-      {
+      public function get playerHasEnoughCreds(): Boolean {
          return ML.player.creds >= speedUpCost;
       }
-      
-      
-      private function player_credsChangeHandler(event:PlayerEvent) : void
-      {
+
+      private function player_credsChangeHandler(event: PlayerEvent): void {
          dispatchPlayerCredsChangeEvent();
       }
-      
-      
-      private function dispatchPlayerCredsChangeEvent() : void
-      {
+
+      private function dispatchPlayerCredsChangeEvent(): void {
          Events.dispatchSimpleEvent(
-            this, CSpeedControlPopupMEvent, CSpeedControlPopupMEvent.PLAYER_CREDS_CHANGE
+            this, CSpeedControlPopupMEvent,
+            CSpeedControlPopupMEvent.PLAYER_CREDS_CHANGE
          );
       }
       
@@ -195,9 +174,8 @@ package components.movement
       /* ###################### */
       /* ### SPEED MODIFIER ### */
       /* ###################### */
-      
-      
-      private var _speedModifier:Number = 1.0;
+
+      private var _speedModifier: Number = 1.0;
       [Bindable(event="speedModifierChange")]
       /**
        * Squad speed modifier. The lesser this value is, the faster squadron will reach its destination.
@@ -208,22 +186,19 @@ package components.movement
        * [Bindable(event="speedModifierChange")]
        * </p>
        */
-      public function set speedModifier(value:Number) : void
-      {
-         if (_speedModifier != value)
-         {
-            if (value < speedModifierMin)
-            {
+      public function set speedModifier(value: Number): void {
+         if (_speedModifier != value) {
+            if (value < speedModifierMin) {
                value = speedModifierMin;
             }
-            else if (value > speedModifierMax)
-            {
+            else if (value > speedModifierMax) {
                value = speedModifierMax;
             }
             _speedModifier = value;
             _arrivalDate.occuresIn = Math.floor(_baseTripTime * value);
             Events.dispatchSimpleEvent(
-               this, CSpeedControlPopupMEvent, CSpeedControlPopupMEvent.SPEED_MODIFIER_CHANGE
+               this, CSpeedControlPopupMEvent,
+               CSpeedControlPopupMEvent.SPEED_MODIFIER_CHANGE
             );
             dispatchPlayerCredsChangeEvent();
          }
@@ -231,28 +206,23 @@ package components.movement
       /**
        * @private
        */
-      public function get speedModifier() : Number
-      {
+      public function get speedModifier(): Number {
          return _speedModifier;
       }
-      
-      
+
       [Bindable(event="willNotChange")]
       /**
        * @see config.Config#getMinMovementSpeedModifier()
        */
-      public function get speedModifierMin() : Number
-      {
+      public function get speedModifierMin(): Number {
          return Config.getMinMovementSpeedModifier();
       }
-      
-      
+
       [Bindable(event="willNotChange")]
-      /** 
+      /**
        * @see config.Config#getMaxMovementSpeedModifier()
        */
-      public function get speedModifierMax() : Number
-      {
+      public function get speedModifierMax(): Number {
          return Config.getMaxMovementSpeedModifier();
       }
       
@@ -261,7 +231,6 @@ package components.movement
       /* ### ACTIONS ### */
       /* ############### */
       
-      
       /**
        * Additional callback to invoke when <code>confirm()</code> is called.
        * 
@@ -269,74 +238,59 @@ package components.movement
        */
       public var onConfirm:Function = null;
       
-      
       /**
-       * Additional callback to ivoke when <code>cancel()</code> is called.
+       * Additional callback to invoke when <code>cancel()</code> is called.
        */
       public var onCancel:Function = null;
-      
       
       /**
        * Confirms speedup of squad: calls <code>OrdersController.commitOrder()</code>.
        */
-      public function confirm() : void
-      {
+      public function confirm(): void {
          invokeIfNotNull(onConfirm);
          ORDERS_CTRL.commitOrder(speedModifier);
       }
       
-      
       /**
        * Navigates to a page where player can buy credits.
        */
-      public function buyCreds() : void
-      {
+      public function buyCreds(): void {
          UrlNavigate.getInstance().showBuyCreds();
       }
-      
-      
+
       /**
        * Resets speed modifier to default value.
        */
-      public function reset() : void
-      {
+      public function reset(): void {
          speedModifier = 1.0;
       }
-      
-      
+
       /**
        * Cancels speed up step and allows user to select another destination: calls
        * <code>OrdersController.cancelLocation()</code>.
        */
-      public function cancel() : void
-      {
+      public function cancel(): void {
          invokeIfNotNull(onCancel);
          ORDERS_CTRL.cancelTargetLocation();
       }
-      
-      
+
       /**
        * Opens up a wiki page with pre-battle cooldown information.
        */
-      public function openPreBattleCooldownInfo() : void
-      {
+      public function openPreBattleCooldownInfo(): void {
          UrlNavigate.getInstance().showInfo('after-jump-cooldown');
       }
-      
-      
+
+
       /* ###################### */
       /* ### IMSelfUpdating ### */
       /* ###################### */
-      
-      
-      public function update() : void
-      {
+
+      public function update(): void {
          _arrivalDate.update();
       }
-      
-      
-      public function resetChangeFlags() : void
-      {
+
+      public function resetChangeFlags(): void {
          _arrivalDate.resetChangeFlags();
       }
       
@@ -344,56 +298,42 @@ package components.movement
       /* ##################### */
       /* ### STATIC LABELS ### */
       /* ##################### */
-      
-      
+
       [Bindable(event="willNotChange")]
-      public function get label_confirmButton() : String
-      {
+      public function get label_confirmButton(): String {
          return getString("label.confirm");
       }
-      
-      
+
       [Bindable(event="willNotChange")]
-      public function get label_buyCredsButton() : String
-      {
+      public function get label_buyCredsButton(): String {
          return getString("label.buyCreds");
       }
-      
-      
+
       [Bindable(event="willNotChange")]
-      public function get label_resetButton() : String
-      {
+      public function get label_resetButton(): String {
          return getString("label.reset");
       }
-      
-      
+
       [Bindable(event="willNotChange")]
-      public function get label_cancelButton() : String
-      {
+      public function get label_cancelButton(): String {
          return getString("label.cancel");
       }
-      
-      
+
       [Bindable(event="willNotChange")]
-      public function get label_cooldownInfoButton() : String
-      {
+      public function get label_cooldownInfoButton(): String {
          return getString("label.learnMore");
       }
-      
-      
+
       [Bindable(event="willNotChange")]
-      public function get text_cooldownInfoLabel() : String
-      {
+      public function get text_cooldownInfoLabel(): String {
          return getString(
             "message.combatCooldownInfo",
             [DateUtil.secondsToHumanString(Config.getPreBattleCooldownDuration())]
          );
       }
-      
-      
+
       [Bindable(event="willNotChange")]
-      public function get label_changeSpeed() : String
-      {
+      public function get label_changeSpeed(): String {
          return getString("label.changeSpeed");
       }
       
@@ -401,24 +341,21 @@ package components.movement
       /* ###################### */
       /* ### DYNAMIC LABELS ### */
       /* ###################### */
-      
-      
-      public function text_arrivesAtLabel(occuresAt:Date) : String
-      {
-         return getString("label.arrivesAt", [DateUtil.formatShortDateTime(occuresAt)]); 
+
+      public function text_arrivesAtLabel(occuresAt: Date): String {
+         return getString("label.arrivesAt",
+                          [DateUtil.formatShortDateTime(occuresAt)]);
       }
-      
-      
+
       [Bindable(event="speedModifierChange")]
-      public function get text_arrivesInLabel() : String
-      {
-         return getString("label.flightTime", [DateUtil.secondsToHumanString(_arrivalDate.occuresIn)]);
+      public function get text_arrivesInLabel(): String {
+         return getString("label.flightTime", [
+            DateUtil.secondsToHumanString(_arrivalDate.occuresIn)
+         ]);
       }
-      
-      
+
       [Bindable(event="speedModifierChange")]
-      public function get text_speedUpCostLabel() : String
-      {
+      public function get text_speedUpCostLabel(): String {
          return getString("message.speedUpCost", [speedUpCost]);
       }
       
@@ -426,34 +363,28 @@ package components.movement
       /* ############## */
       /* ### Object ### */
       /* ############## */
-      
-      
-      public override function toString() : String
-      {
+
+      public override function toString(): String {
          return "[class: " + Objects.getClassName(this) +
-            ", baseTripTime: " + _baseTripTime +
-            ", speedMod: " + _speedModifier +
-            ", speedModMin: " + speedModifierMin +
-            ", speedModMax: " + speedModifierMax +
-            ", arrivalDate: " + _arrivalDate + "]";
+                   ", baseTripTime: " + _baseTripTime +
+                   ", speedMod: " + _speedModifier +
+                   ", speedModMin: " + speedModifierMin +
+                   ", speedModMax: " + speedModifierMax +
+                   ", arrivalDate: " + _arrivalDate + "]";
       }
       
       
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
-      
-      private function getString(property:String, parameters:Array = null) : String
-      {
+
+      private function getString(property: String,
+                                 parameters: Array = null): String {
          return Localizer.string("Movement", property, parameters);
       }
-      
-      
-      private function invokeIfNotNull(fun:Function) : void
-      {
-         if (fun != null)
-         {
+
+      private function invokeIfNotNull(fun: Function): void {
+         if (fun != null) {
             fun.call();
          }
       }

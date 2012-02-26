@@ -57,14 +57,6 @@ package tests.movement
       
       
       [Test]
-      public function should_use_configuration_values() : void
-      {
-         assertThat( scpModel.speedModifierMin, equals (Config.getMinMovementSpeedModifier()) );
-         assertThat( scpModel.speedModifierMax, equals (Config.getMaxMovementSpeedModifier()) );
-      };
-      
-      
-      [Test]
       public function changing_speed_modifier_should_dispatch_events() : void
       {
          assertThat(
