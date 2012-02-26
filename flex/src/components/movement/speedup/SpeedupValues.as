@@ -1,13 +1,22 @@
 package components.movement.speedup
 {
+   import components.movement.speedup.events.SpeedControlEvent;
+
    import config.Config;
+
+   import flash.events.EventDispatcher;
 
    import models.unit.Unit;
 
+   import utils.Events;
    import utils.Objects;
 
 
-   public class SpeedupValues
+   [Event(
+      name="speedModifierChange",
+      type="components.movement.speedup.events.SpeedControlEvent")]
+
+   public class SpeedupValues extends EventDispatcher
    {
       private var _baseValues: BaseTripValues;
 
@@ -23,15 +32,19 @@ package components.movement.speedup
       }
 
       private var _speedModifier: Number = 1;
+      [Bindable(event="speedModifierChange")]
       public function set speedModifier(value: Number): void {
+         if (value < speedModifierMin) {
+            value = speedModifierMin;
+         }
+         else if (value > speedModifierMax) {
+            value = speedModifierMax;
+         }
          if (_speedModifier != value) {
-            if (value < speedModifierMin) {
-               value = speedModifierMin;
-            }
-            else if (value > speedModifierMax) {
-               value = speedModifierMax;
-            }
             _speedModifier = value;
+            Events.dispatchSimpleEvent(
+               this, SpeedControlEvent, SpeedControlEvent.SPEED_MODIFIER_CHANGE
+            );
          }
       }
       public function get speedModifier(): Number {
@@ -46,7 +59,7 @@ package components.movement.speedup
          return Config.getMaxMovementSpeedModifier();
       }
 
-      public function reset() {
+      public function reset(): void {
          speedModifier = 1;
       }
    }
