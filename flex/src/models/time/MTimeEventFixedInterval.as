@@ -26,7 +26,7 @@ package models.time
       [Bindable(event="occuresInChange")]
       /**
        * A fixed time interval between now and some future time. This property does not change over time but
-       * <code>occuresAt</code> does. If you try to set this property to negative value it will be set to 0
+       * <code>occursAt</code> does. If you try to set this property to negative value it will be set to 0
        * instead.
        * 
        * @see IMTimeEvent#occuresIn

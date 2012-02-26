@@ -42,7 +42,7 @@ package models.time
       function get hasOccured() : Boolean;
       
       /**
-       * Number of seconds that this event will occure after. Always greater or equal to 0. When this
+       * Number of seconds that this event will occur after. Always greater or equal to 0. When this
        * property changes <code>models.time.event.MTimeEventEvent.OCCURES_IN_CHANGE</code> event is dispatched.
        */
       function get occuresIn() : Number;
@@ -53,7 +53,7 @@ package models.time
       function get occuresInString() : String;
       
       /**
-       * Point in time when this event will occure (or already has occured). When this property changes
+       * Point in time when this event will occur (or already has occurred). When this property changes
        * <code>models.time.event.MTimeEventEvent.OCCURES_AT_CHANGE</code> event is dispatched. Default is
        * <code>null</code>. 
        */
