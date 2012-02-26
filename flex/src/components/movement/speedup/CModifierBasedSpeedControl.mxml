@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Declarations>
+      <mx:NumberFormatter id="fmtSliderDataTip" precision="1"/>
+   </fx:Declarations>
+   <fx:Script>
+      <![CDATA[
+      [Bindable]
+      public var model: ModifierBasedSpeedControl;
+
+      private function dataTipFormatFunction(value: Number): String {
+         return fmtSliderDataTip.format(value * 100) + "%";
+      }
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="center"/>
+   </s:layout>
+   <s:Label id="lblArrivesAt" text="{model.label_arrivesAt}"/>
+   <s:Group>
+      <s:layout>
+         <s:HorizontalLayout gap="5" verticalAlign="middle"/>
+      </s:layout>
+      <s:Label id="lblSpeedMin"
+               text="{dataTipFormatFunction(model.speedModifierMin)}"/>
+      <s:HSlider id="slider" width="100%"
+                 minimum="{model.speedModifierMin}"
+                 maximum="{model.speedModifierMax}"
+                 value="@{model.speedModifier}"
+                 stepSize="0.001"
+                 dataTipFormatFunction="dataTipFormatFunction"/>
+      <s:Label id="lblSpeedMax"
+               text="{dataTipFormatFunction(model.speedModifierMax)}"/>
+   </s:Group>
+</s:Group>

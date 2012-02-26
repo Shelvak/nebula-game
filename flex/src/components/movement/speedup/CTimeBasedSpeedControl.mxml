@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/mx">
+   <fx:Script>
+      <![CDATA[
+      [Bindable]
+      public var model: TimeBasedSpeedControl;
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="center" gap="5"/>
+   </s:layout>
+   <s:Group>
+      <s:layout>
+         <s:HorizontalLayout gap="5" horizontalAlign="center" verticalAlign="middle"/>
+      </s:layout>
+      <s:Spinner id="spnYear" value="@{model.arrivalYear}"
+                 minimum="{model.YEAR_MIN}" maximum="{model.YEAR_MAX}"/>
+      <s:Label text="-"/>
+      <s:Spinner id="spnMonth" value="@{model.arrivalMonth}"
+                 minimum="{model.MONTH_MIN}" maximum="{model.MONTH_MAX}"/>
+      <s:Label text="-"/>
+      <s:Spinner id="spnDay" value="@{model.arrivalDay}"
+                 minimum="{model.DAY_MIN}" maximum="{model.DAY_MAX}"/>
+   </s:Group>
+   <s:Group>
+      <s:layout>
+         <s:HorizontalLayout gap="8" horizontalAlign="center" verticalAlign="middle"/>
+      </s:layout>
+      <s:Spinner id="spnHours" value="@{model.arrivalHours}"
+                 minimum="{model.HOURS_MIN}" maximum="{model.HOURS_MAX}"/>
+      <s:Label text=":"/>
+      <s:Spinner id="spnMinutes" value="@{model.arrivalMinutes}"
+                 minimum="{model.MINUTES_MIN}" maximum="{model.MINUTES_MAX}"/>
+      <s:Label text=":"/>
+      <s:Spinner id="spnSeconds" value="@{model.arrivalSeconds}"
+                 minimum="{model.SECONDS_MIN}" maximum="{model.SECONDS_MAX}"/>
+   </s:Group>
+   <s:Label id="lblSpeedup" text="{model.label_speedModifier}"/>
+</s:Group>
