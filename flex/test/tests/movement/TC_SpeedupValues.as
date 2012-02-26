@@ -2,8 +2,9 @@ package tests.movement
 {
    import components.movement.speedup.BaseTripValues;
    import components.movement.speedup.SpeedupValues;
+   import components.movement.speedup.events.SpeedControlEvent;
 
-   import config.Config;
+   import ext.hamcrest.events.causes;
 
    import ext.hamcrest.object.equals;
 
@@ -16,20 +17,13 @@ package tests.movement
 
       [Before]
       public function setUp(): void {
-         Config.setConfig(
-            {
-               "units.move.modifier.min":    0.1,
-               "units.move.modifier.max":    2.0,
-               "creds.move.speedUp":         "100 * percentage * hop_count",
-               "creds.move.speedUp.maxCost": 500
-            }
-         );
-         speedupValues = new SpeedupValues(new BaseTripValues(10000, 10));
+         MovementTestUtil.setUp();
+         speedupValues = new SpeedupValues(new BaseTripValues(10, 10));
       }
 
       [After]
       public function tearDown(): void {
-         Config.setConfig(new Object());
+         MovementTestUtil.tearDown();
       }
 
 
@@ -94,6 +88,15 @@ package tests.movement
          assertThat(
             "speedup cost should not exceed maximum",
             speedupValues.cost, equals(500)
+         );
+      }
+
+      [Test]
+      public function events(): void {
+         assertThat(
+            function():void{ speedupValues.speedModifier = 0.5 },
+            causes (speedupValues) .toDispatchEvent
+               (SpeedControlEvent.SPEED_MODIFIER_CHANGE)
          );
       }
    }
