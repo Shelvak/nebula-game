@@ -61,7 +61,7 @@ package components.movement.speedup
                        new MTimeEventFixedInterval();
       private function recalculateTripTime(): void {
          _arrivalEventFixedInterval.occuresIn =
-            _baseValues.tripTime * _speedupValues.speedModifier;
+            _baseValues.tripTime * speedModifier;
          const oldDate: Date = _arrivalEvent.occuresAt;
          oldDate.milliseconds = 0;
          const newDate: Date = _arrivalEventFixedInterval.occuresAt;
@@ -73,6 +73,9 @@ package components.movement.speedup
       }
 
       [Bindable(event="speedModifierChange")]
+      public function set speedModifier(value: Number): void {
+         _speedupValues.speedModifier = value;
+      }
       public function get speedModifier(): Number {
          return _speedupValues.speedModifier;
       }
@@ -81,7 +84,7 @@ package components.movement.speedup
          if (newTripTime < 1) {
             newTripTime = 1;
          }
-         _speedupValues.speedModifier = newTripTime / _baseValues.tripTime;
+         speedModifier = newTripTime / _baseValues.tripTime;
       }
 
       private function recalculateModifier(newArrivalDate: Date): void {
@@ -121,7 +124,7 @@ package components.movement.speedup
       }
 
       [Bindable(event="arrivalTimeChange")]
-      public function set arrivalMonth(value: int) {
+      public function set arrivalMonth(value: int): void {
          timePartParamInRange(MONTH_MIN, MONTH_MAX, value);
          const date: Date = cloneArrivalDate();
          date.month = value - 1;
@@ -196,6 +199,11 @@ package components.movement.speedup
 
       public function reset(): void {
          _speedupValues.reset();
+      }
+
+      [Bindable(event="speedModifierChange")]
+      public function get speedupCost(): int {
+         return _speedupValues.cost;
       }
 
 

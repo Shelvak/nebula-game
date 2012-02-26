@@ -85,6 +85,11 @@ package components.movement.speedup
          _speedupValues.reset();
       }
 
+      [Bindable(event="speedModifierChange")]
+      public function get speedupCost(): int {
+         return _speedupValues.cost;
+      }
+
 
       /* ################## */
       /* ### IUpdatable ### */
