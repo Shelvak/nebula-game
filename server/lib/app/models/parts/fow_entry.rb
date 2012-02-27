@@ -56,8 +56,7 @@ module Parts::FowEntry
     # Returns :destroyed if record was destroyed.
     # Returns false if nothing was done.
     #
-    def update_record(check_params, create_params, incrementation,
-        before_destroy=nil)
+    def update_record(check_params, create_params, incrementation)
       incrementation = incrementation.to_i
       count = connection.select_value(
         "SELECT `counter` FROM `#{table_name}` WHERE #{
@@ -84,16 +83,7 @@ module Parts::FowEntry
         else
           # Destroy record
           conditions = sanitize_sql_for_conditions(check_params)
-          connection.select_all(
-            "SELECT player_id, alliance_id FROM `#{table_name
-            }` WHERE #{conditions}"
-          ).each do |row|
-            pid = row["player_id"].nil? ? nil : row["player_id"].to_i
-            aid = row["alliance_id"].nil? ? nil : row["alliance_id"].to_i
-            before_destroy.call(pid || aid)
-          end unless before_destroy.nil?
-          connection.execute("DELETE FROM `#{table_name}` WHERE #{
-            conditions}")
+          connection.execute("DELETE FROM `#{table_name}` WHERE #{conditions}")
           return :destroyed
         end
       end

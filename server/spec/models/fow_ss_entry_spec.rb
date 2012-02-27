@@ -192,7 +192,7 @@ describe FowSsEntry do
     end
 
     it "should recalculate for given ss" do
-      @klass.should_receive(:recalculate).with(@solar_system_id, false)
+      @klass.should_receive(:recalculate).with(@solar_system_id, true)
       @klass.increase(@solar_system_id, @player)
     end
 
@@ -231,6 +231,29 @@ describe FowSsEntry do
 
     describe "when ships are flying into non-visible solar system" do
       it "should fire created for that solar system" do
+        FowSsEntry.increase(@solar_system_id, @player, 1)
+
+        # Create event after incrementation because there is no fow ss entries
+        # until that.
+        event = Event::FowChange::SsCreated.new(
+          @solar_system_id, @solar_system.x, @solar_system.y,
+          @solar_system.kind, Player.minimal(@solar_system.player_id),
+          FowSsEntry.where(
+            :solar_system_id => @solar_system_id,
+            :player_id => @player.friendly_ids
+          )
+        )
+
+        SPEC_EVENT_HANDLER.events.each { |e| puts e.inspect }
+        puts event.inspect
+        SPEC_EVENT_HANDLER.
+          fired?(event, EventBroker::FOW_CHANGE, @event_reason).
+          should == 1
+      end
+
+      it "should dispatch updated for other player that is looking into it" do
+        p2 = Factory.create(:player)
+        FowSsEntry.increase(@solar_system_id, p2, 1)
         FowSsEntry.increase(@solar_system_id, @player, 1)
 
         # Create event after incrementation because there is no fow ss entries
