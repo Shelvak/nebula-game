@@ -72,33 +72,25 @@ package components.map.space
       /* ########################### */
       /* ### SELF EVENT HANDLERS ### */
       /* ########################### */
-      
-      
-      private function addSelfEventHandlers() : void
-      {
+
+      private function addSelfEventHandlers(): void {
          addEventListener(MouseEvent.CLICK, this_mouseEventHandler);
+         addEventListener(MouseEvent.DOUBLE_CLICK, this_mouseEventHandler);
          addEventListener(MouseEvent.MOUSE_MOVE, this_mouseEventHandler);
          addEventListener(MouseEvent.ROLL_OVER, this_rollOverEvent);
          addEventListener(MouseEvent.ROLL_OUT, this_rollOutEvent);
       }
-      
-      
-      private function this_mouseEventHandler(event:MouseEvent) : void
-      {
+
+      private function this_mouseEventHandler(event: MouseEvent): void {
          event.stopImmediatePropagation();
       }
-      
-      
-      private function this_rollOverEvent(event:MouseEvent) : void
-      {
+
+      private function this_rollOverEvent(event: MouseEvent): void {
          underMouse = true;
       }
-      
-      
-      private function this_rollOutEvent(event:MouseEvent) : void
-      {
-         if (event.target == this)
-         {
+
+      private function this_rollOutEvent(event: MouseEvent): void {
+         if (event.target == this) {
             underMouse = false;
          }
       }

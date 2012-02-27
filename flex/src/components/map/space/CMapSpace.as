@@ -379,7 +379,10 @@ package components.map.space
          speedControlPopup.includeInLayout = false;
       }
 
-      private function activateSpeedControlPopup(model: CSpeedControlPopupM): void {
+      protected function activateSpeedControlPopup(model: CSpeedControlPopupM): void {
+         if (!getModel().definesLocation(ORDERS_CTRL.locationTarget)) {
+            return;
+         }
          Objects.notNull(
             speedControlPopup, "[prop speedControlPopup] can't be null"
          );
@@ -809,12 +812,14 @@ package components.map.space
             );
          }
          else if (ORDERS_CTRL.issuingOrders) {
-            var staticObject: CStaticSpaceObjectsAggregator =
-                   grid.getStaticObjectInSector(
-                      grid.getSectorLocation(new Point(mouseX, mouseY))
-                   );
-            if (staticObject) {
-               staticObject_doubleClickHandler(staticObject);
+            const mouseLocation:LocationMinimal =
+                     grid.getSectorLocation(new Point(mouseX, mouseY));
+            if (mouseLocation != null) {
+               const staticObject: CStaticSpaceObjectsAggregator =
+                        grid.getStaticObjectInSector(mouseLocation);
+               if (staticObject != null) {
+                  staticObject_doubleClickHandler(staticObject);
+               }
             }
          }
       }
