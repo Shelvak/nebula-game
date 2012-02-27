@@ -134,7 +134,8 @@
                      top="0" left="0" visible="{modelObj.pauseRemainder > 0}"/>
       
       <objects:LevelDisplay currentLevel="{modelObj.upgradePart.level}" maxLevel="{modelObj.maxLevel}" 
-                             right="0" bottom="0"/>
+                             right="0" bottom="0"
+                             fillColorYellow="{modelObj.upgradePart.level == modelObj.maxLevel}"/>
       <s:BitmapImage visible="{hasGroupElements}"
                      source="{IMG.getImage(AssetNames.UI_IMAGES_FOLDER +
                   'technology_tree/open_context')}" left="-7" top="{imageSize - 15}"/>

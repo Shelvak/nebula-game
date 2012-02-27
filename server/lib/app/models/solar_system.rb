@@ -275,9 +275,8 @@ class SolarSystem < ActiveRecord::Base
       )
     end
 
-    # Activate radars.
-    Building::Radar.for_player(player_id).inactive.not_upgrading.
-      each(&:activate!)
+    # Don't activate radars after attaching because this dispatches events
+    # that should not be dispatched while logging in.
 
     true
   end

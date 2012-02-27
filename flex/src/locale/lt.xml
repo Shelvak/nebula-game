@@ -1863,6 +1863,18 @@
     <label.combatLog.showLog value="Peržiūrėti įrašą" />
     <label.combatLog.copyToClipboard value="Kopijuoti į iškarpinę" />
 
+    <message.playerAttached value="Tu buvai perkeltas" />
+    <title.playerAttached value="Sveikas sugrįžęs!" />
+    <insideMessage.playerAttached>
+      <p>
+        Tu kurį laiką buvai neaktyvus, todėl buvai perkeltas į naują galaktikos
+        vietą, kuri labiau tinka tavo dabartinei situacijai.
+      </p>
+      <p>
+        Įsikurk, apsidairyk ir susipažink su naujais savo kaimynais! Sekmės!
+      </p>
+    </insideMessage.playerAttached>
+
     <title.questCompleted value="Užduotis įvykdyta" />
     <message.questCompleted value="Užduotis „{0}“ buvo įvykdyta." />
     <message.newQuests value="Tu pradėjai vykdyti šias užduotis:" />
@@ -1870,10 +1882,10 @@
     <title.technologiesChanged value="Įvyko pasikeitimai technologijose" />
     <message.technologiesChanged value="Pasikeitimai technologijose." />
     <insideMessage.technologiesChanged>
-        <p>
-            Dėl nepakankamo mokslininkų arba planetų kiekio buvo atlikti šie
-            pakeitimai technologijoms:
-        </p>
+      <p>
+        Dėl nepakankamo mokslininkų arba planetų kiekio buvo atlikti šie
+        pakeitimai technologijoms:
+      </p>
     </insideMessage.technologiesChanged>
 
     <title.kickedFromAlliance value="Buvai pašalintas iš sąjungos" />
@@ -2049,11 +2061,18 @@
     <title.defaultError value="Klaida!" />
 
     <label.reconnect value="Jungtis vėl" />
+    <label.refresh value="Perkrauti" />
     <label.cancel value="Atšaukti" />
     <label.confirm value="Patvirtinti" />
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+
+    <title.outdatedClient value="Žaidimo versija pasenusi" />
+    <message.outdatedClient>
+      <p>Kol žaidei buvo atnaujinta žaidimo versija.</p>
+      <p>Tam, kad žaidimas veiktų be spragų turi perkrauti puslapį.</p>
+    </message.outdatedClient>
     
     <title.cancelUnitTraining value="Atšaukti kario apmokymus" />
     <message.cancelUnitTraining 
@@ -5131,6 +5150,7 @@
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
     <label.cancelPrepaid value="Tu gausi"/>
+    <message.changesCanceled value="Pakeitimai buvo atšaukti dėl įvykusio mūšio"/>
     <!-- 0 - resources string, 1 - 'is' or 'are' 
     in lt we dont use parameter 1 -->
     <label.planetFull>

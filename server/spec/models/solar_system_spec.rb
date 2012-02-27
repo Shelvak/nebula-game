@@ -480,34 +480,12 @@ describe SolarSystem do
       end
     end
 
-    it "should activate inactive radars that belong to player" do
+    it "should not activate radars that belong to player" do
       radars = [
         Factory.create(:planet, :player => player, :position => 0),
         Factory.create(:planet, :player => player, :position => 1),
       ].map do |planet|
         Factory.create!(:b_radar, opts_inactive + {:planet => planet})
-      end
-      solar_system.attach!(x, y)
-      radars.each { |r| r.reload.should be_active }
-    end
-
-    it "should not activate inactive non-player radars" do
-      radars = [
-        Factory.create(:planet, :position => 0),
-        Factory.create(:planet, :position => 1),
-      ].map do |planet|
-        Factory.create!(:b_radar, opts_inactive + {:planet => planet})
-      end
-      solar_system.attach!(x, y)
-      radars.each { |r| r.reload.should be_inactive }
-    end
-
-    it "should not fail if player radar is upgrading" do
-      radars = [
-        Factory.create(:planet, :player => player, :position => 0),
-        Factory.create(:planet, :player => player, :position => 1),
-      ].map do |planet|
-        Factory.create!(:b_radar, opts_upgrading + {:planet => planet})
       end
       solar_system.attach!(x, y)
       radars.each { |r| r.reload.should be_inactive }

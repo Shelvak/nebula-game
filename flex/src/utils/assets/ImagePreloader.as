@@ -4,6 +4,8 @@ package utils.assets
 
    import config.Config;
 
+   import controllers.startup.ChecksumsLoader;
+
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupMode;
 
@@ -15,6 +17,7 @@ package utils.assets
    import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.events.IOErrorEvent;
+   import flash.external.ExternalInterface;
    import flash.utils.ByteArray;
    import flash.utils.Dictionary;
    import flash.utils.getQualifiedClassName;
@@ -23,6 +26,7 @@ package utils.assets
    import mx.formatters.NumberFormatter;
    import mx.logging.ILogger;
    import mx.logging.Log;
+   import mx.modules.IModuleInfo;
    import mx.modules.IModuleInfo;
    import mx.modules.ModuleManager;
 
@@ -205,8 +209,9 @@ package utils.assets
       public function startDownload () :void
       {
          var _assetsModuleInfo: IModuleInfo;
+         var moduleName: String = getModuleFileName('AssetsConfig');
          _assetsModuleInfo = ModuleManager.getModule(
-            STARTUP_INFO.assetsUrl + "assets/" + getModuleFileName('AssetsConfig')
+            STARTUP_INFO.assetsUrl + "assets/" + moduleName
          );
          
          _assetsModuleInfo.addEventListener(
@@ -218,9 +223,58 @@ package utils.assets
                downloadNextModule();
             }
          );
+
+         _assetsModuleInfo.addEventListener(
+            ModuleEvent.ERROR,
+            function(event:ModuleEvent) : void {
+                failedBundle = 'AssetsConfig';
+                if (STARTUP_INFO.assetsSums == null)
+                {
+                   throw new ArgumentError("Bundle '" + failedBundle + "' not found, " +
+                      "and checksums are not available");
+                }
+                failedChecksumResult = moduleName;
+                reloadChecksums();
+            }
+         );
+
          _assetsModuleInfo.load();
          
       }
+
+      /* ######################### */
+      /* ### REFRESH CHECKSUMS ### */
+      /* ######################### */
+      
+      private var failedBundle: String;
+      private var failedChecksumResult: String;
+
+      private var _checksumsLoader: ChecksumsLoader;
+
+      private function reloadChecksums(): void {
+         _checksumsLoader = new ChecksumsLoader(STARTUP_INFO);
+         _checksumsLoader.addEventListener(Event.COMPLETE,
+            checksumsLoader_completeHandler,
+            false, 0, true);
+         _checksumsLoader.load();
+      }
+
+      private function checksumsLoader_completeHandler(event: Event): void {
+         _checksumsLoader.removeEventListener(Event.COMPLETE,
+            checksumsLoader_completeHandler,
+            false);
+         _checksumsLoader = null;
+         if (STARTUP_INFO.assetsSums[failedBundle + '.swf'] != failedChecksumResult)
+         {
+            ExternalInterface.call("refresh");
+         }
+         else
+         {
+            throw new ArgumentError("Bundle '" + failedBundle + "' not found in: "
+            + failedChecksumResult);
+         }
+      }
+
       private function getModuleFileName(moduleName:String): String {
          var fileName:String = moduleName + ".swf";
          if (STARTUP_INFO.assetsSums != null)
@@ -243,8 +297,9 @@ package utils.assets
          
          _currentModule = getModules().pop();
          setCurrentModuleLabel();
+         var moduleName: String = getModuleFileName(_currentModule);
          _moduleInfo = ModuleManager.getModule(
-            STARTUP_INFO.assetsUrl + "assets/" + getModuleFileName(_currentModule)
+            STARTUP_INFO.assetsUrl + "assets/" + moduleName
          );
          _moduleInfo.addEventListener(
             ModuleEvent.READY,
@@ -261,6 +316,19 @@ package utils.assets
             {
                setCurrentModuleLabel(event);
                dispatchProgressEvent(event);
+            }
+         );
+         _moduleInfo.addEventListener(
+            ModuleEvent.ERROR,
+            function(event:ModuleEvent) : void {
+               failedBundle = _currentModule;
+               if (STARTUP_INFO.assetsSums == null)
+               {
+                  throw new ArgumentError("Bundle '" + failedBundle + "' not found, " +
+                     "and checksums are not available");
+               }
+               failedChecksumResult = moduleName;
+               reloadChecksums();
             }
          );
          _moduleInfo.load();

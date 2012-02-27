@@ -2,7 +2,10 @@ package models.unit
 {
    import components.popups.ActionConfirmationPopup;
    import components.unitsscreen.events.UnitsScreenEvent;
-   
+
+   import models.location.ILocationUser;
+   import models.location.LocationType;
+
    import utils.ApplicationLocker;
    import controllers.ui.NavigationController;
    import controllers.units.OrdersController;
@@ -35,15 +38,31 @@ package models.unit
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
    
-   public class MCUnitScreen extends EventDispatcher
+   public class MCUnitScreen extends EventDispatcher implements ILocationUser
    {
+      
+      public function MCUnitScreen(): void
+      {
+         super();
+         ML.additionalLocationUsers.addItem(this);
+      }
+      
       private static const MAX_FLANKS: int = 2;
       
       public static function getInstance(): MCUnitScreen
       {
          return SingletonFactory.getSingletonInstance(MCUnitScreen);
       }
-      
+
+      public function updateLocationName(id: int, name: String): void {
+         if (location is Location
+            && Location(location).isSSObject
+            && location.id == id)
+         {
+            Location(location).name = name;
+         }
+      }
+
       private var ML: ModelLocator = ModelLocator.getInstance();
       
       [Bindable]

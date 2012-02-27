@@ -46,29 +46,30 @@ var locales = { // {{{
     },
     info: function(locale) {
       if (locale == "lt") return [
-        "Būtų labai gerai, jeigu nukopijavęs visą tekstą (CTRL+A, CTRL+C) " +
-          "įkeltum į forumą :)",
-        "Tai padėtų mums ištaisyti šią klaidą ir padaryti Nebula 44 " +
-          "geresniu žaidimu."
+        "Informacija apie klaidą bus automatiškai nusiųsta mums. Ją " +
+          "peržiūrėję pasistengsime klaidą ištaisyti."
+//        "Jeigu gali, parašyk papildomą informaciją - kokius veiksmus darei, " +
+//          "kokiame ekrane buvai ir t.t. Kartais tokia informacija labai " +
+//          "padeda išspręsti klaidas :)"
       ];
       return ["LOCALE: fixme"];
     },
-    pasteLink: function(locale) {
+    sending: function(locale) {
+      if (locale == "lt") return "Siunčiama... Prašome palaukti ;)";
+      return "Sending... Please wait a minute ;)";
+    },
+    sent: function(locale) {
+      if (locale == "lt") return "Išsiųsta! Ačiū!";
+      return "Sent! Thanks!";
+    },
+    failed: function(locale) {
       if (locale == "lt")
-        return "Dideles klaidas gali įkelti naudodamas Pastebin";
-      return "LOCALE: fixme";
+        return "Išsiųsti nepavyko. Na, gal kitą kartą pavyks...";
+      return "Failed. Well, perhaps we'll have better luck next time...";
     },
-    forumLink: function(locale) {
-      if (locale == "lt") return "Testinės galaktikos klaidų forumas"
-      return "LOCALE: fixme";
-    },
-    headTitle: function(locale) {
-      if (locale == "lt") return "Trumpa informacija";
-      return "Short information";
-    },
-    bodyTitle: function(locale) {
-      if (locale == "lt") return "Ilga informacija";
-      return "Long information";
+    submit: function(locale) {
+      if (locale == "lt") return "Siųsti";
+      return "Send";
     }
   }
 } // }}}
@@ -324,48 +325,82 @@ function getCombatLogUrl(combatLogId, playerId) { // {{{
 
 // Setup google analytics {{{
 var _gaq = _gaq || [];
-if (! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId)) {
+if (
+    ! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId) &&
+    ! defined(planetMapEditor)
+  ) {
   _gaq.push(['_setAccount', gaAccountId], ['_trackPageview']);
   include("http://www.google-analytics.com/ga.js", 'async="true"');
 }
 // }}}
 
-function pLink(container, props) {
-  var p = $('<p/>');
-  $('<a/>', props).appendTo(p);
-  p.appendTo(container);
+// Called from flash when page refresh is needed.
+function refresh() {
+  setLeaveHandler(false);
+  window.location.reload();
 }
 
 // Called from flash when it crashes.
-function clientError(head, body, slowClient) {
-  // No leave confirmation upon crash.
+function clientError(summary, description, body) {
+  // Remove flash client to stop it.
+  $('#' + appName).remove();
+
+  if (inLocalComputer() || inDeveloperMode()) {
+    crashLocal(summary, description, body);
+  }
+  else {
+    crashRemote(summary, description, body)
+  }
+}
+
+function crashLocal(summary, description, body) {
   setLeaveHandler(false);
+  $("#client-error").remove();
+  var error = $('<div/>', {style: "margin: 10px"});
 
-  var loc = locales.clientError;
+  $('<h1/>', {text: summary}).appendTo(error);
+  $('<h2/>', {text: "Description"}).appendTo(error);
+  $('<pre/>', {text: description}).appendTo(error);
+  $('<h2/>', {text: "Body"}).appendTo(error);
+  $('<pre/>', {text: body}).appendTo(error);
 
-  var container = $('<div/>');
+  error.appendTo($("body"));
+}
 
-  $('<h1/>', {text: loc.title(locale)}).appendTo(container);
-  $.each(loc.info(locale), function(index, value) {
-    $('<p/>', {text: value}).appendTo(container);
+function crashRemote(summary, description, body) {
+  // Ensure player does not turn off window while request is being sent.
+  setLeaveHandler(true);
+
+  var ce = locales.clientError;
+
+  // Show error message.
+  $("#client-error h1").html(ce.title(locale));
+  var explanation = $("#client-error .content");
+  $.each(ce.info(locale), function(index, text) {
+    var p = $('<p/>', {text: text});
+    p.appendTo(explanation);
   });
-  pLink(container, {
-    href: "http://pastebin.com/",
-    text: loc.pasteLink(locale)
+  var ajaxStatus = $("#client-error #ajax-status");
+  ajaxStatus.html(ce.sending(locale));
+  //$('#client-error input[type="submit"]').
+  //  attr('value', locales.clientErrorSubmit(locale));
+  $("#client-error").show();
+
+  $.ajax({
+    url: 'http://' + webHost + '/client/error_handler',
+    type: 'POST',
+    data: {
+      summary: summary,
+      error_description: description,
+      error_body: body
+    }
+  }).done(function() {
+    ajaxStatus.html(ce.sent(locale));
+  }).fail(function() {
+    ajaxStatus.html(ce.failed(locale));
+  }).always(function() {
+    setLeaveHandler(false);
   });
-  pLink(container, {
-    href: "http://forum.nebula44.lt/forum/104/klaidos-testineje-galaktikoje/",
-    text: loc.forumLink(locale)
-  });
-
-  $('<h1/>', {text: loc.headTitle(locale)}).appendTo(container);
-  $('<pre/>', {text: head}).appendTo(container);
-
-  $('<h1/>', {text: loc.bodyTitle(locale)}).appendTo(container);
-  $('<pre/>', {text: body}).appendTo(container);
-
-  $('body').attr('id', 'client-error');
-  $('body').html(container.html());
 }
 
 // Load our swf {{{

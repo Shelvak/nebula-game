@@ -633,6 +633,7 @@ class Player < ActiveRecord::Base
     home_solar_system.attach!(x, y)
 
     register_check_activity!
+    Notification.create_for_player_attached(id)
 
     true
   end

@@ -265,6 +265,13 @@ package models
        * @default empty collection
        */
       public var squadrons:SquadronsList = new SquadronsList();
+
+      /**
+       * List of all additional location users. Hold for updating location comps.
+       *
+       * @default empty collection
+       */
+      public var additionalLocationUsers:ArrayCollection = new ArrayCollection();
       
       
       /* ###################### */

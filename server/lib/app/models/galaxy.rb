@@ -231,35 +231,50 @@ class Galaxy < ActiveRecord::Base
     end
   end
 
-  # Spawns convoy traveling from one random wormhole to other.
-  def spawn_convoy!
-    total = solar_systems.wormhole.count
-    return if total < 2
+  # Spawns moving convoy. If source or target are not given, picks random
+  # wormholes in the galaxy.
+  def spawn_convoy!(source=nil, target=nil)
+    if source.nil? && target.nil?
+      total = solar_systems.wormhole.count
+      return if total < 2
+    end
 
     CONFIG.with_set_scope(ruleset) do
-      source = target = nil
-      while source == target
-        coords = (0...2).map do
-          row = solar_systems.wormhole.select("x, y").
-            limit("#{rand(total)}, 1").c_select_one
+      get_wormhole = lambda do
+        row = solar_systems.wormhole.select("x, y").limit("#{rand(total)}, 1").
+          c_select_one
 
-          GalaxyPoint.new(id, row["x"], row["y"])
-        end
-
-        source, target = coords
+        GalaxyPoint.new(id, row["x"], row["y"])
       end
+
+      # Get two wormholes.
+      while source == target
+        source ||= get_wormhole.call
+        target = get_wormhole.call
+      end
+
 
       # Create units.
       units = UnitBuilder.from_random_ranges(
         Cfg.galaxy_convoy_units_definition, id, source, nil
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
-      route = UnitMover.move(nil, units.map(&:id), source, target, false,
-        CONFIG['galaxy.convoy.speed_modifier'])
+      unit_ids = units.map(&:id)
+      LOGGER.debug "Launching convoy #{source} -> #{target} with unit ids #{
+        unit_ids.inspect}"
+      route = UnitMover.move(nil, unit_ids, source, target, false,
+        Cfg.convoy_speed_modifier)
 
       units.each do |unit|
-        CallbackManager.register(unit, CallbackManager::EVENT_DESTROY,
-          route.arrives_at)
+        CallbackManager.register(
+          unit, CallbackManager::EVENT_DESTROY,
+          # If we destroy units at same time as they arrive to their
+          # destination then callback execution order is not determined and
+          # units can be destroyed before they make their final hop. This
+          # causes problems in the client, therefore we ensure that destroy
+          # callbacks will be executed after last hop.
+          route.arrives_at + 1
+        )
       end
 
       route
@@ -282,12 +297,6 @@ class Galaxy < ActiveRecord::Base
   def current_day
     ((Time.now - created_at) / 1.day).round
   end
-
-  ## Should we create dead starts when detaching players fron the galaxy?
-  #def create_dead_stars?(zone_diagonal)
-  #  death_age = Cfg.galaxy_zone_death_age(zone_diagonal)
-  #  created_at + death_age < Time.now
-  #end
 
   def as_json(options=nil)
     attributes

@@ -21,6 +21,11 @@ package utils
    public class GlobalErrorHandler implements GlobalExceptionHandlerAction
    {
       public function handle(error: Object) : void {
+         var summary: String;
+         var description: String;
+         var body: String;
+         var slowClient: Boolean = false;
+
          if (error is Error) {
             var err: Error = error as Error;
 
@@ -35,41 +40,43 @@ package utils
             else {
                stWoVars = err.getStackTrace();
             }
+
+            var summaryErr: String =
+               err.name + " (error id " + error.errorID + "): " + err.message;
+            summary = Version.VERSION + "|" + summaryErr
             
-            var head: String =
-               'Client error! Version ' + Version.VERSION + '\n\n' +
-               "!!! EXCEPTION !!!\n" +
-               err.name + " (error id " + error.errorID + "): " +
-               err.message + "\n\nStacktrace (without vars):\n" +
+            description =
+               summaryErr +
+               "\n\nStacktrace (without vars):\n" +
                stWoVars + "\n";
 
             var ML:ModelLocator = ModelLocator.getInstance();
-            var body:String = "Stacktrace (with vars):\n" + stWVars + "\n" +
+            body = "Stacktrace (with vars):\n" + stWVars + "\n" +
                ML.debugLog;
 
             // Error #1502: A script has executed for longer than the default
             // timeout period of 15 seconds.
-            var slowClient: Boolean = err.errorID == 1502;
-            
-            crash(head, body, slowClient)
+            slowClient = err.errorID == 1502;
          }
          else {
-            crash(
-               "Error was not an Error but " + Objects.getClassName(error) +
-                  "?!",
-               "String representation:\n" + error
-            );
+            summary = "Error was " + Objects.getClassName(error) + "!";
+            description = summary;
+            body = "String representation:\n" + error;
          }
+
+         crash(summary, description, body, slowClient)
       }
          
       private static function crash(
-         head: String, body: String, slowClient: Boolean=false
+         summary: String, description: String, body: String,
+         slowClient: Boolean=false
       ): void {
          // Double escape backslashes, because strings somehow get "evaluated"
          // when they are passed to javascript.
-         head = head.replace(/\\/g, "\\\\");
+         summary = summary.replace(/\\/g, "\\\\");
+         description = description.replace(/\\/g, "\\\\");
          body = body.replace(/\\/g, "\\\\");
-         ExternalInterface.call("clientError", head, body, slowClient);
+         ExternalInterface.call("clientError", summary, description, body);
       }
    }
 }

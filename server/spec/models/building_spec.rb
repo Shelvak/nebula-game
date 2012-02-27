@@ -1085,6 +1085,13 @@ describe Building do
       end.should change(@model, :state).from(Building::STATE_INACTIVE).
         to(Building::STATE_ACTIVE)
     end
+
+    it "should not return to active if level == 0" do
+      lambda do
+        @model.level = 0
+        @model.cancel!
+      end.should_not change(@model, :state)
+    end
   end
 
   describe "#on_upgrade_finished" do

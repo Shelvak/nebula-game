@@ -32,6 +32,23 @@
          }
       }
 
+      private var _fillColorYellow: Boolean = false;
+      public function set fillColorYellow(value: Boolean): void {
+        if (_fillColorYellow != value) {
+          _fillColorYellow = value;
+          if (_fillColorYellow) {
+            _fillFilters = [new ColorMatrixFilter([
+              2, 0, 0, 0, 0, // r
+              0, 1.8, 0, 0, 0, // g
+              0, 0, 0.5, 0, 0, // b
+              0, 0, 0, 1, 0  // a
+            ])];
+          }
+          else {
+            _fillFilters = null;
+          }
+        }
+      }
       private static const emptyName: String = "level_empty";
       private static const fillName: String = "level_full";
       private static const spaceName: String = "level_space";

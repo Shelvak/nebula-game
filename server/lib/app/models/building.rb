@@ -210,7 +210,9 @@ class Building < ActiveRecord::Base
   def y_end; y ? y + height - 1 : nil; end
 
   def cancel!(*args)
-    super(*args) { activate }
+    super(*args) do
+      activate if level != 0
+    end
   end
 
   def upgrade

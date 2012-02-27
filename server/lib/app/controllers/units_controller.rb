@@ -45,7 +45,9 @@ class UnitsController < GenericController
   #
   def action_update
     param_options :required => {:updates => Hash}
-    Unit.update_combat_attributes(player.id, params['updates'])
+    # Map JSON string keys to integer keys.
+    updates = params['updates'].map_keys { |key, value| key.to_i }
+    Unit.update_combat_attributes(player.id, updates)
 
     true
   end
