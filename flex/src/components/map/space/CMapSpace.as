@@ -767,7 +767,9 @@ package components.map.space
       }
 
       protected function this_creationCompleteHandler(event: FlexEvent): void {
-         squadronsController.updateOrderSourceLocIndicator();
+         if (squadronsController != null) {
+            squadronsController.updateOrderSourceLocIndicator();
+         }
       }
 
       /**
