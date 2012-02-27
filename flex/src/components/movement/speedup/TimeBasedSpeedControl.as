@@ -179,10 +179,10 @@ package components.movement.speedup
       }
 
       [Bindable(event="speedModifierChange")]
-            public function get label_speedModifier(): String {
+      public function get label_speedModifier(): String {
          return Localizer.string(
             "Movement", "speedup.label.speedupValue",
-            [(speedModifier * 100).toPrecision(2)]
+            [(speedModifier * 100).toFixed(1)]
          );
       }
 

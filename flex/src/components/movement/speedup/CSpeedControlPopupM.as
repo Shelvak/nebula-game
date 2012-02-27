@@ -56,8 +56,16 @@ package components.movement.speedup
 
 
       private var _baseTripValues: BaseTripValues;
+
       private var _modifierBasedControl: ModifierBasedSpeedControl;
+      internal function get modifierBasedControl(): ModifierBasedSpeedControl {
+         return _modifierBasedControl;
+      }
+
       private var _timeBasedControl: TimeBasedSpeedControl;
+      internal function get timeBasedControl(): TimeBasedSpeedControl {
+         return _timeBasedControl;
+      }
       
       public function CSpeedControlPopupM(baseTripTime: Number, hopCount: int) {
          _baseTripValues = new BaseTripValues(
@@ -70,6 +78,7 @@ package components.movement.speedup
          _timeBasedControl = new TimeBasedSpeedControl(
             _baseTripValues, new SpeedupValues(_baseTripValues)
          );
+         addControlInstanceEventHandlers();
          PLAYER.addEventListener(
             PlayerEvent.CREDS_CHANGE, player_credsChangeHandler, false, 0, true
          );
@@ -92,18 +101,21 @@ package components.movement.speedup
 
       private function setMode(value: int): void {
          if (_mode != value) {
-            controlInstance.removeEventListener(
-               SpeedControlEvent.SPEED_MODIFIER_CHANGE,
-               controlInstance_speedModifierChangeHandler
-            );
+            removeControlInstanceEventHandlers();
             const currentModifierValue: Number = this.speedModifier;
             _mode = value;
             controlInstance.speedModifier = currentModifierValue;
-            controlInstance.addEventListener(
-               SpeedControlEvent.SPEED_MODIFIER_CHANGE,
-               controlInstance_speedModifierChangeHandler
-            );
+            addControlInstanceEventHandlers();
             dispatchSpeedControlEvent(SpeedControlEvent.MODE_CHANGE);
+         }
+      }
+
+      public function toggleMode(): void {
+         if (modifierBasedControlsActive) {
+            setTimeBasedMode();
+         }
+         else {
+            setModifierBasedMode();
          }
       }
 
@@ -129,6 +141,20 @@ package components.movement.speedup
          return modifierBasedControlsActive
                    ? _modifierBasedControl
                    : _timeBasedControl;
+      }
+
+      private function addControlInstanceEventHandlers(): void {
+         controlInstance.addEventListener(
+            SpeedControlEvent.SPEED_MODIFIER_CHANGE,
+            controlInstance_speedModifierChangeHandler
+         );
+      }
+
+      private function removeControlInstanceEventHandlers(): void {
+         controlInstance.removeEventListener(
+            SpeedControlEvent.SPEED_MODIFIER_CHANGE,
+            controlInstance_speedModifierChangeHandler
+         );
       }
 
       private function controlInstance_speedModifierChangeHandler(event: SpeedControlEvent): void {
@@ -260,15 +286,15 @@ package components.movement.speedup
          return getString("label.learnMore");
       }
 
-      public function get text_cooldownInfoLabel(): String {
+      public function get label_cooldownInfo(): String {
          return getString(
-            "message.combatCooldownInfo",
+            "speedup.message.combatCooldownInfo",
             [DateUtil.secondsToHumanString(Config.getPreBattleCooldownDuration())]
          );
       }
 
       public function get label_changeSpeed(): String {
-         return getString("label.changeSpeed");
+         return getString("speedup.label.changeSpeed");
       }
       
       
@@ -277,15 +303,15 @@ package components.movement.speedup
       /* ###################### */
 
       [Bindable(event="speedModifierChange")]
-      public function get text_arrivesInLabel(): String {
-         return getString("label.flightTime", [
+      public function get label_arrivesIn(): String {
+         return getString("speedup.label.arrivesIn", [
             controlInstance.arrivalEvent.occuresInString
          ]);
       }
 
       [Bindable(event="speedModifierChange")]
-      public function get text_speedUpCostLabel(): String {
-         return getString("message.speedUpCost", [speedUpCost]);
+      public function get label_speedupCost(): String {
+         return getString("speedup.message.cost", [speedUpCost]);
       }
       
       

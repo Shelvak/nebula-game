@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<space:CSpaceMapPopup xmlns:fx="http://ns.adobe.com/mxml/2009"
+                      xmlns:s="library://ns.adobe.com/flex/spark"
+                      xmlns:space="components.map.space.*"
+                      xmlns:speedup="components.movement.speedup.*"
+                      transparentWhenNotUnderMouse="false"
+                      skinClass="components.map.space.skins.CStaticSpaceObjectsPopupSkin">
+   
+   <fx:Script>
+      <![CDATA[
+      [Bindable]
+      public var model: CSpeedControlPopupM;
+      ]]>
+   </fx:Script>
+   
+   <space:layout>
+      <s:VerticalLayout paddingLeft="2" paddingRight="2" paddingTop="5" paddingBottom="5"
+                        horizontalAlign="center"/>
+   </space:layout>
+
+   <s:Label id="lblChangeSpeed" text="{model.label_changeSpeed}"
+            paddingTop="8" fontWeight="bold"/>
+   <s:Group width="100%">
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="center"/>
+      </s:layout>
+      <speedup:CModifierBasedSpeedControl
+         model="{model.modifierBasedControl}"
+         visible="{model.modifierBasedControlsActive}"
+         includeInLayout="{model.modifierBasedControlsActive}"/>
+      <speedup:CTimeBasedSpeedControl
+         model="{model.timeBasedControl}"
+         visible="{model.timeBasedControlsActive}"
+         includeInLayout="{model.timeBasedControlsActive}"/>
+   </s:Group>
+   <s:Label id="lblArrivesIn" text="{model.label_arrivesIn}"/>
+   <!-- TODO: change this to appropriate button when Tomas makes skin for it -->
+   <s:Button id="btnMode"
+             click="model.toggleMode()"
+             label="{model.timeBasedControlsActive ? 'Speed' : 'Time'}"/>
+   <s:Button id="btnReset" width="100%" click="model.reset()"
+             label="{model.label_resetButton}" />
+   <s:Group width="100%">
+      <s:layout>
+         <s:VerticalLayout paddingTop="12" gap="10"/>
+      </s:layout>
+      <s:Group width="100%"
+               visible="{model.showSpeedUpCost}"
+               includeInLayout="{model.showSpeedUpCost}">
+         <s:Label id="lblSpeedUpCost" left="0" right="0"
+                  lineBreak="toFit" textAlign="center"
+                  text="{model.label_speedupCost}"/>
+      </s:Group>
+      <s:Group width="100%">
+         <s:layout>
+            <s:VerticalLayout horizontalAlign="center"/>
+         </s:layout>
+         <s:Group width="100%">
+            <s:Label id="lblCooldownInfo" textAlign="center" lineBreak="toFit" 
+                     left="0" right="0" text="{model.label_cooldownInfo}"/>
+         </s:Group>
+         <s:Button id="btnCooldownInfo" 
+                   label="{model.label_cooldownInfoButton}"
+                   skinClass="components.skins.LinkButtonSkin"
+                   click="model.openPreBattleCooldownInfo()"/>
+      </s:Group>
+   </s:Group>
+   <s:Group width="100%">
+      <s:layout>
+         <s:VerticalLayout paddingTop="5" horizontalAlign="justify"/>
+      </s:layout>
+      <s:Button id="btnConfirm"
+                visible="{model.playerHasEnoughCreds}"
+                includeInLayout="{model.playerHasEnoughCreds}"
+                label="{model.label_confirmButton}" click="model.confirm()"/>
+      <s:Button id="btnBuyCreds"
+                visible="{!model.playerHasEnoughCreds}"
+                includeInLayout="{!model.playerHasEnoughCreds}"
+                label="{model.label_buyCredsButton}" click="model.buyCreds()"/>
+      <s:Button id="btnCancel"
+                label="{model.label_cancelButton}" click="model.cancel()"/>
+   </s:Group>
+   
+</space:CSpaceMapPopup>
