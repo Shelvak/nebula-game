@@ -110,15 +110,6 @@ package components.movement.speedup
          }
       }
 
-      public function toggleMode(): void {
-         if (modifierBasedControlsActive) {
-            setTimeBasedMode();
-         }
-         else {
-            setModifierBasedMode();
-         }
-      }
-
       public function setModifierBasedMode(): void {
          setMode(MODE_MODIFIER_BASED);
       }

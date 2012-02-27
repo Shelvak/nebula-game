@@ -18,6 +18,16 @@
                         horizontalAlign="center"/>
    </space:layout>
 
+   <s:Group>
+      <s:Button
+         visible="{model.timeBasedControlsActive}"
+         skinClass="components.movement.speedup.CSwitchModifierModeButtonSkin"
+         click="model.setModifierBasedMode()"/>
+      <s:Button
+         visible="{model.modifierBasedControlsActive}"
+         skinClass="components.movement.speedup.CSwitchTimeModeButtonSkin"
+         click="model.setTimeBasedMode()"/>
+   </s:Group>
    <s:Label id="lblChangeSpeed" text="{model.label_changeSpeed}"
             paddingTop="8" fontWeight="bold"/>
    <s:Group width="100%">
@@ -34,10 +44,6 @@
          includeInLayout="{model.timeBasedControlsActive}"/>
    </s:Group>
    <s:Label id="lblArrivesIn" text="{model.label_arrivesIn}"/>
-   <!-- TODO: change this to appropriate button when Tomas makes skin for it -->
-   <s:Button id="btnMode"
-             click="model.toggleMode()"
-             label="{model.timeBasedControlsActive ? 'Speed' : 'Time'}"/>
    <s:Button id="btnReset" width="100%" click="model.reset()"
              label="{model.label_resetButton}" />
    <s:Group width="100%">

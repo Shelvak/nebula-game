@@ -99,8 +99,8 @@ package components.map.space
             _fowContainer.graphics
          );
       }
-      
-      
+
+
       /* ################################# */
       /* ### IVisibleGalaxyAreaTracker ### */
       /* ################################# */

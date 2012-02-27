@@ -1121,6 +1121,13 @@ assets:
         routeir_btn_left.png:             Fleets_button_left.png
         routeir_btn_center.png:           Fleets_button_center.png
         routeir_btn_right.png:            Fleets_button_right.png
+        speedup_time_box.png:                Time_box.png
+        speedup_mode_modifier_btn_up.png:    Btn_standard_up.png
+        speedup_mode_modifier_btn_over.png:  Btn_standard_over.png
+        speedup_mode_modifier_btn_down.png:  Btn_standard_down.png
+        speedup_mode_time_btn_up.png:        Btn_expert_up.png
+        speedup_mode_time_btn_over.png:      Btn_expert_over.png
+        speedup_mode_time_btn_down.png:      Btn_expert_down.png
 
       "maps/space/static_object":
         popup_top_left.png:            Sp_top_left.png
