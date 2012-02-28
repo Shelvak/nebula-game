@@ -435,7 +435,8 @@ function onNoteSubmit() {
   setLeaveHandler(true);
   var ce = locales.clientError;
 
-  var note = $.trim($('#client-error textarea').val());
+  var textarea = $('#client-error textarea');
+  var note = $.trim(textarea.val());
   if (note == "") return false;
 
   ajaxStatus.html(ce.sending(locale));
@@ -453,6 +454,9 @@ function onNoteSubmit() {
     ajaxStatus.html(ce.sent(locale));
     noteLabel.html(ce.noteSent(locale));
     noteHolder.hide();
+    // Prevent value from persisting across refreshs. Yeah, it does that if you
+    // don't clean it manually.
+    textarea.val("");
   }).fail(function() {
     ajaxStatus.html(ce.failed(locale));
   }).always(function() {
