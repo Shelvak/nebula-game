@@ -14,7 +14,9 @@ package components.quests.slides
    import flash.display.Bitmap;
    import flash.display.BitmapData;
    import flash.events.Event;
+   import flash.events.TimerEvent;
    import flash.external.ExternalInterface;
+   import flash.utils.Timer;
 
    import models.quest.events.MMainQuestSlideEvent;
    import models.quest.slides.MSlide;
@@ -137,19 +139,30 @@ package components.quests.slides
                   imageUrl + "!\n\n" + e.name + "\n\n" + e.message);
             }
          }
-         const loader:LoaderMax = new LoaderMax(
+         activeLoaderChilds = getImageUrlsToLoad().length;
+         loader = new LoaderMax(
             new LoaderMaxVars()
-                  .loaders(imageLoaders)
-                  .onComplete(loader_completeHandler)
-                  .onFail(loader_failHandler)
+               .loaders(imageLoaders)
+               .onChildComplete(loader_childCompleteHandler)
+               .onFail(loader_failHandler)
+               .onChildFail(loader_childFailHandler)
          );
          _model.loading = true;
          loader.autoDispose = true;
-         loader.load();
+         loader.load(true);
       }
 
-      private function loader_completeHandler(event:LoaderEvent): void {
-         const loader:LoaderMax = LoaderMax(event.target);
+      private var activeLoaderChilds: int = 0;
+      private var failedCount: int = 0;
+      private static const MAX_FAILED_COUNT: int = 10;
+      private var loader: LoaderMax;
+
+      private function loader_completeHandler(failed: Boolean = false): void {
+         activeLoaderChilds--;
+         if (activeLoaderChilds > 0 && !failed)
+         {
+            return;
+         }
          const images:Object = new Object();
          for each (var imageLoader:ImageLoader in loader.getChildren()) {
             try {
@@ -165,6 +178,7 @@ package components.quests.slides
             }
          }
          imagesLoaded(images);
+         loader = null;
          _model.loading = false;
       }
       
@@ -243,6 +257,29 @@ package components.quests.slides
       private function loader_failHandler(event:LoaderEvent): void {
          _model.loading = false;
          trace("LoaderMax failed:", event.text);
+      }
+      
+      private function loader_childCompleteHandler(event:LoaderEvent): void {
+         loader_completeHandler();
+      }
+
+      private function loader_childFailHandler(event:LoaderEvent): void {
+         failedCount++;
+         if (failedCount != MAX_FAILED_COUNT)
+         {
+            var t: Timer = new Timer(1000, 1);
+            function reloadLoader(e: TimerEvent): void
+            {
+               loadImages();
+               t.removeEventListener(TimerEvent.TIMER, reloadLoader);
+            }
+            t.addEventListener(TimerEvent.TIMER, reloadLoader);
+            t.start();
+         }
+         else
+         {
+            loader_completeHandler(true);
+         }
       }
 
       protected function imagesLoaded(images:Object): void {
