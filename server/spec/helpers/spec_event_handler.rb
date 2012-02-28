@@ -3,29 +3,19 @@ class RSpecEventHandler
 
   def initialize
     EventBroker.register(self)
-    clear_events!
-    @traces = []
+    @events = []
   end
 
   def clear_events!
-    @events = []
+    @events.clear
   end
 
   def fire(object, event_name, reason)
     @events.push [object, event_name, reason]
-    if count(@traces, object, event_name, reason) > 0
-      puts "FIRE on #{object} (#{event_name}, #{reason})"
-      stacktrace!
-    end
   end
 
   def fired?(object, event_name, reason=nil)
     count(@events, object, event_name, reason)
-  end
-
-  def trace!(object, event_name, reason=nil)
-    object = EventBroker.prepare(object, event_name)
-    @traces.push [object, event_name, reason]
   end
 
   private
