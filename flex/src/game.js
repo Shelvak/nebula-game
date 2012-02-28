@@ -426,7 +426,9 @@ function crashRemote(summary, description, body) {
 
   $.ajax({
 //    url:'http://n44.lh:3000/client/add_issue',
-    url: 'http://' + webHost + '/client/add_issue',
+// TODO: change address to preferred uri
+//    url: 'http://' + webHost + '/client/add_issue', // preferred uri
+    url: 'http://' + webHost + '/client/error_handler',
     type: 'POST',
     dataType: 'script',
     data: {
