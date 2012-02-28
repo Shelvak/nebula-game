@@ -72,8 +72,13 @@ var locales = { // {{{
       return "Your note";
     },
     pleaseWait: function(locale) {
-      if (locale == "lt") return "Prašome palaukti, kol klaida bus išsiųsta";
-      return "Please wait until bug report is sent";
+      if (locale == "lt") return "Prieš rašant pastabas prašome palaukti, " +
+        "kol klaida bus išsiųsta";
+      return "Please wait until bug report is sent before writing your notes.";
+    },
+    noteSent: function(locale) {
+      if (locale == "lt") return "Tavo pastaba sėkmingai išsiųsta. Ačiū!";
+      return "Your note has been successfully sent. Thanks!";
     },
     submit: function(locale) {
       if (locale == "lt") return "Siųsti";
@@ -383,9 +388,10 @@ function crashRemote(summary, description, body) {
 
   // Set up error message labels.
   $("#client-error h1").html(ce.title(locale));
-  $('#client-error label').attr('value', ce.label(locale));
-  var submit = $('#client-error input[type="submit"]');
-  submit.attr('value', ce.pleaseWait(locale));
+  window.noteHolder = $('#client-error #submit-note-holder');
+  window.noteLabel = $('#client-error label');
+  noteLabel.html(ce.pleaseWait(locale));
+  $('#client-error input[type="submit"]').attr('value', ce.submit(locale));;
 
   var explanation = $("#client-error .content");
   $.each(ce.info(locale), function(index, text) {
@@ -419,8 +425,8 @@ function crashRemote(summary, description, body) {
     ajaxStatus.html(ce.failed(locale));
   }).always(function() {
     setLeaveHandler(false);
-    submit.attr('value', ce.submit(locale));
-    submit.removeAttr("disabled");
+    noteLabel.html(ce.label(locale));
+    noteHolder.show();
   });
 }
 
@@ -445,6 +451,8 @@ function onNoteSubmit() {
     }
   }).done(function() {
     ajaxStatus.html(ce.sent(locale));
+    noteLabel.html(ce.noteSent(locale));
+    noteHolder.hide();
   }).fail(function() {
     ajaxStatus.html(ce.failed(locale));
   }).always(function() {

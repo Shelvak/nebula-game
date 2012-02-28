@@ -28,7 +28,7 @@
          outline: none;
       }
 
-      #flashContent {
+      #flashContent, #submit-note-holder {
          display: none;
       }
 
@@ -131,8 +131,10 @@ include(gameJs);
 
        <form id="error-form" action="">
          <label for="message"></label>
-         <textarea name="message" id="message" cols="60" rows="10"></textarea>
-         <input type="submit" disabled="disabled" value=""/>
+         <div id="submit-note-holder">
+            <textarea name="message" id="message" cols="60" rows="10"></textarea>
+            <input type="submit" value=""/>
+         </div>
        </form>
     </div>
 
