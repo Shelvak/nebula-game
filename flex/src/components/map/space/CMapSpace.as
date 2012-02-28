@@ -380,7 +380,7 @@ package components.map.space
       }
 
       protected function activateSpeedControlPopup(model: CSpeedControlPopupM): void {
-         if (!getModel().definesLocation(ORDERS_CTRL.locationTarget)) {
+         if (!getModel().definesLocation(_targetLocationPopup_locationSpace)) {
             return;
          }
          Objects.notNull(

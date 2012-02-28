@@ -174,14 +174,7 @@ package controllers.units
       public var units:ListCollectionView = null;
       private var _unitIds:Array = null;
       private var _squad:MSquadron = null;
-
       private var _locTarget:LocationMinimal = null;
-      /**
-       * Location that defines destination for squadron. This may be null.
-       */
-      public function get locationTarget(): LocationMinimal {
-         return _locTarget;
-      }
 
       
       /* ######################### */
