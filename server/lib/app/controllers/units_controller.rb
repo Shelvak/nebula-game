@@ -215,8 +215,9 @@ class UnitsController < GenericController
 
     sm = MoveSpeedModifier.new(params['speed_modifier'])
     
-    sm.deduct_creds!(player, params['unit_ids'], source, target,
-      params['avoid_npc'])
+    sm.deduct_creds!(
+      player, params['unit_ids'], source, target, params['avoid_npc']
+    )
 
     UnitMover.move(
       player.id, params['unit_ids'], source, target, params['avoid_npc'],
