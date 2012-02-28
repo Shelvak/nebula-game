@@ -65,18 +65,18 @@ package controllers.objects.actions
             if (US.units != null)
             {
                US.units.refresh();
-               if (reason == UpdatedReason.COMBAT)
+               if (MCMainArea.getInstance().currentName == MainAreaScreens.UNITS)
                {
-                  if (MCMainArea.getInstance().currentName == MainAreaScreens.UNITS)
+                  if (reason == UpdatedReason.COMBAT)
                   {
-                     if (US.hasChanges)
-                     {
-                        Messenger.show(Localizer.string('Units', 'message.changesCanceled'),
-                           Messenger.MEDIUM);
-                     }
-                     US.refreshScreen();
-                     US.cancel();
+                        if (US.hasChanges)
+                        {
+                           Messenger.show(Localizer.string('Units', 'message.changesCanceled'),
+                              Messenger.MEDIUM);
+                        }
                   }
+                  US.refreshScreen();
+                  US.cancel();
                }
             }
          }
