@@ -165,9 +165,11 @@ package models.galaxy
       public function get wormholes() : ListCollectionView {
          return _wormholes;
       }
-      
-      public function get hasMoreThanOneObject() : Boolean {
-         return objects.length > 1;
+
+      public function addSolarSystemAndResize(ss: MSolarSystem): void {
+         addObject(ss);
+         _fowMatrixBuilder.rebuild();
+         dispatchResizeEvent();
       }
       
       /**
@@ -283,7 +285,7 @@ package models.galaxy
       }
       
       /**
-       * Basicly does the same as <code>definesLocation()</code> but takes fog of war into account.
+       * Basically does the same as <code>definesLocation()</code> but takes fog of war into account.
        */
       public function locationIsVisible(location:LocationMinimal) : Boolean {
          if (definesLocation(location)) { 

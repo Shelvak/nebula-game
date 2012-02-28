@@ -63,7 +63,7 @@ package controllers.objects.actions.customcontrollers
          ss.y = object["y"];
          ss.kind = object["kind"];
          ss.player = Objects.create(PlayerMinimal, object["player"]);
-         ML.latestGalaxy.addObject(ss);
+         ML.latestGalaxy.addSolarSystemAndResize(ss);
       }
    }
 }

@@ -27,11 +27,11 @@ package models.galaxy
          _fowEntries = fowEntries;
          _solarSystems = solarSystems;
          _units = units;
-         build();
+         rebuild();
       }
       
       
-      private function build() : void {
+      internal function rebuild() : void {
          findBounds();
          initializeMatrix();
          setVisibleTiles();

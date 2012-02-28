@@ -5,6 +5,7 @@ package components.map.space
    import models.ModelLocator;
    import models.galaxy.Galaxy;
    import models.galaxy.IVisibleGalaxyAreaClient;
+   import models.galaxy.events.GalaxyEvent;
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.map.IMStaticSpaceObject;
@@ -58,11 +59,16 @@ package components.map.space
       
       public function CMapGalaxy(model:Galaxy) {
          super(model);
+         getGalaxy().addEventListener(
+            GalaxyEvent.RESIZE, model_resizeHandler, false, 0, true
+         );
       }
       
       public override function cleanup() : void {
+         getGalaxy().removeEventListener(
+            GalaxyEvent.RESIZE, model_resizeHandler, false
+         );
          super.cleanup();
-         
          for each (var sectorObject:SectorsHashItem in _staticObjectsHash.getAllItems()) {
             if (sectorObject.object != null) {
                _staticObjectsPool.returnObject(sectorObject.object);
@@ -131,7 +137,7 @@ package components.map.space
                aggrComponent = _staticObjectsPool.borrowObject();
                if (aggrComponent.model.length > 0) {
                   logger.warn(
-                     "sectorShown(): Got invalid object {0} from "
+                     "@sectorShown(): Got invalid object {0} from "
                         + "_staticObjectsPool."
                         + "\nNOT returning it to the pool. Will try getting "
                         + "another one."
@@ -187,23 +193,21 @@ package components.map.space
       }
       
       protected override function createOrUpdateStaticObject(object:IMStaticSpaceObject) : void {
-         var sector:SectorsHashItem = getTmpSector(
-            object.currentLocation.x,
-            object.currentLocation.y
-         );
-         var aggrComponent:CStaticSpaceObjectsAggregator;
-         var aggrModel:MStaticSpaceObjectsAggregator;
-         if (_staticObjectsHash.has(sector)) {
-            sector = _staticObjectsHash.getItem(sector);
-            if (!sector.hasObject) {               
-               sector.object = _staticObjectsPool.borrowObject();
-            }
-            aggrComponent = sector.object;
-            aggrModel = aggrComponent.model;
-            aggrModel.addItem(object);
-            grid.positionStaticObjectInSector(object.currentLocation);
-            squadronsController.repositionAllSquadronsIn(object.currentLocation);
+         const x: int = object.currentLocation.x;
+         const y: int = object.currentLocation.y;
+         var sector: SectorsHashItem = getTmpSector(x, y);
+         if (!_staticObjectsHash.has(sector)) {
+            sectorShown(x, y);
          }
+         sector = _staticObjectsHash.getItem(sector);
+         if (!sector.hasObject) {
+            sector.object = _staticObjectsPool.borrowObject();
+         }
+         const aggrComponent: CStaticSpaceObjectsAggregator = sector.object;
+         const aggrModel: MStaticSpaceObjectsAggregator = aggrComponent.model;
+         aggrModel.addItem(object);
+         grid.positionStaticObjectInSector(object.currentLocation);
+         squadronsController.repositionAllSquadronsIn(object.currentLocation);
       }
       
       protected override function destroyOrUpdateStaticObject(object:IMStaticSpaceObject) : void {
@@ -240,6 +244,12 @@ package components.map.space
       /* ############### */
       /* ### VISUALS ### */
       /* ############### */
+
+      private function model_resizeHandler(event: GalaxyEvent): void {
+         f_galaxySizeChanged = true;
+         invalidateSize();
+         invalidateDisplayList();
+      }
       
       private var f_galaxySizeChanged:Boolean = true;
       
