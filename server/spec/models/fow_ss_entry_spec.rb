@@ -159,18 +159,38 @@ describe FowSsEntry do
   end
 
   describe "fow entry" do
+    let(:solar_system) { Factory.create(:solar_system) }
+    let(:klass) { FowSsEntry }
+    let(:player) { Factory.create(:player) }
+    let(:player_w_alliance) { Factory.create(:player, :alliance => alliance) }
+    let(:alliance) { Factory.create(:alliance) }
+    let(:event_reason) { EventBroker::REASON_SS_ENTRY }
+
+    let(:increase) do
+      lambda do |player, count=1|
+        klass.increase(solar_system.id, player, count)
+      end
+    end
+    let(:decrease) do
+      lambda do |player, count=1|
+        klass.decrease(solar_system.id, player, count)
+      end
+    end
+    let(:lookup) do
+      lambda do |opts={}|
+        klass.where(opts.merge(:solar_system_id => solar_system.id))
+      end
+    end
+
     before(:each) do
       @short_factory_name = :fse
       @alliance = Factory.create(:alliance)
-      @player = Factory.create(:player, :alliance => @alliance)
-      @player_id = @player.id
       @solar_system = Factory.create(:solar_system)
       @solar_system_id = @solar_system.id
 
       @klass = FowSsEntry
       @first_arg = @solar_system_id
       @conditions = {:solar_system_id => @solar_system_id}
-      @event_reason = EventBroker::REASON_SS_ENTRY
     end
 
     describe "fow entry" do
@@ -238,14 +258,10 @@ describe FowSsEntry do
         event = Event::FowChange::SsCreated.new(
           @solar_system_id, @solar_system.x, @solar_system.y,
           @solar_system.kind, Player.minimal(@solar_system.player_id),
-          FowSsEntry.where(
-            :solar_system_id => @solar_system_id,
-            :player_id => @player.friendly_ids
-          )
+          FowSsEntry.where(:solar_system_id => @solar_system_id).
+            where("player_id=? OR alliance_id=?", @player.id, @alliance.id)
         )
 
-        SPEC_EVENT_HANDLER.events.each { |e| puts e.inspect }
-        puts event.inspect
         SPEC_EVENT_HANDLER.
           fired?(event, EventBroker::FOW_CHANGE, @event_reason).
           should == 1

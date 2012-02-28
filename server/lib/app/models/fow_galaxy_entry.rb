@@ -72,17 +72,17 @@ class FowGalaxyEntry < ActiveRecord::Base
     end
 
     # Create an entry for _player_ at zone _rectangle_. Increase counter
-    # by _increasement_.
+    # by _increment_.
     #
     # This also creates entry for +Alliance+ if _player_ is in one.
-    def increase(rectangle, player, increasement=1)
+    def increase(rectangle, player, increment=1)
       status = increase_for_kind(
-        rectangle, player.galaxy_id, 'player_id', player.id,
-        increasement)
+        rectangle, player.galaxy_id, 'player_id', player.id, increment
+      )
       increase_for_kind(
         rectangle, player.galaxy_id, 'alliance_id',
-        player.alliance_id, increasement) \
-        unless player.alliance_id.nil?
+        player.alliance_id, increment
+      ) unless player.alliance_id.nil?
 
       should_dispatch = status == :created || status == :destroyed
 
