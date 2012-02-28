@@ -19,6 +19,11 @@ class FowGalaxyEntry < ActiveRecord::Base
 
   composed_of :rectangle, :mapping => Rectangle::MAPPING
 
+  validate do
+    errors.add :base, "Either player or alliance id must be set." \
+      if alliance_id.nil? && player_id.nil?
+  end
+
   def inspect
     "<FowGalaxyEntry id: #{id}, galaxy_id: #{galaxy_id}, #{
       alliance_id \

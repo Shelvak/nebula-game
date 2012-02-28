@@ -3,14 +3,14 @@ shared_examples_for "fow entry" do
     describe "player is not in alliance" do
       it "should return player entries" do
         increase[player]
-        klass.for(model.player).should == lookup.call.all
+        klass.for(player).sort.should == lookup.call.all.sort
       end
     end
 
     describe "player is in alliance" do
       it "should return player & alliance entries" do
         increase[player_w_alliance]
-        klass.for(model.player).should == lookup.call.all
+        klass.for(player_w_alliance).sort.should == lookup.call.all.sort
       end
     end
   end
@@ -21,7 +21,7 @@ shared_examples_for "fow entry" do
         Event::FowChange.new(player_w_alliance, alliance),
         EventBroker::FOW_CHANGE, event_reason
       ) do
-        increase[player]
+        increase[player_w_alliance]
       end
     end
 
@@ -46,7 +46,6 @@ shared_examples_for "fow entry" do
 
     it "should create new record if one doesn't exist" do
       increase[player]
-      klass.increase(@first_arg, player)
       lookup.call(:player_id => player.id).first.counter.should == 1
     end
 

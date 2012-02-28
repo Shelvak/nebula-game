@@ -245,17 +245,29 @@ class FowSsEntry < ActiveRecord::Base
     # This also creates entry for +Alliance+ if _player_ is in one.
     def increase(solar_system_id, player, increment=1, should_dispatch=true)
       return if solar_system_id == Galaxy.battleground_id(player.galaxy_id)
+      raise ArgumentError,
+        "invalid increment 0 for ss #{solar_system_id}, player #{player}!" \
+        if increment == 0
 
       # Recalculate, because if visibility increased/decreased there probably
       # were some changes that we need to send to other players who are also
       # spectating this solar system.
-      recalculate(solar_system_id, should_dispatch)
+      #
+      # This happens before increasing to prevent updates for player for whom
+      # ss created will be dispatched.
+      recalculate(solar_system_id, should_dispatch) if increment > 0
 
       # Actually increase visibility.
-      status = increase_for_kind(solar_system_id, 'player_id',
-        player.id, increment)
-      alliance_status = increase_for_kind(solar_system_id, 'alliance_id',
-        player.alliance_id, increment) unless player.alliance_id.nil?
+      status = increase_for_kind(
+        solar_system_id, 'player_id', player.id, increment
+      )
+      alliance_status = increase_for_kind(
+        solar_system_id, 'alliance_id', player.alliance_id, increment
+      ) unless player.alliance_id.nil?
+
+      # Or after if, to prevent updates for those, to whom destroyed would be
+      # sent.
+      recalculate(solar_system_id, should_dispatch) if increment < 0
 
       status_is = lambda do |wanted|
         status == wanted &&

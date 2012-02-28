@@ -70,7 +70,7 @@ describe FowGalaxyEntry do
   end
 
   describe "as json" do
-    it_behaves_like "as json", Factory.create(:fow_galaxy_entry), nil,
+    it_behaves_like "as json", Factory.create(:fse_player), nil,
                     %w{x y x_end y_end},
                     %w{id player_id alliance_id counter}
   end
@@ -85,28 +85,21 @@ describe FowGalaxyEntry do
     let(:rectangle) { Rectangle.new(0, 0, 4, 4) }
 
     let(:increase) do
-      lambda do |*args|
-        player, count = args
-        count ||= 1
-        klass.increase(rectangle, player, count)
-      end
+      lambda { |*args| klass.increase(rectangle, *args) }
     end
     let(:decrease) do
-      lambda do |*args|
-        player, count = args
-        count ||= 1
-        klass.decrease(rectangle, player, count)
-      end
+      lambda { |*args| klass.decrease(rectangle, *args) }
     end
     let(:lookup) do
       lambda do |*args|
-        opts = args[0] || {}
-        klass.where(opts.merge(
+        scope = klass.where(
           :x => rectangle.x,
           :x_end => rectangle.x_end,
           :y => rectangle.y,
           :y_end => rectangle.y_end
-        ))
+        )
+        scope = scope.where(*args) unless args.blank?
+        scope
       end
     end
 
@@ -180,36 +173,36 @@ describe FowGalaxyEntry do
 
       before(:each) do
         # Alliance SS
-        Factory.create(:fow_galaxy_entry, :rectangle => @rect1,
-          :alliance => @player1.alliance, :counter => 1)
-        Factory.create(:fow_galaxy_entry, :rectangle => @rect2,
-          :alliance => @player1.alliance, :counter => 2)
-        Factory.create(:fow_galaxy_entry, :rectangle => @rect3,
-          :alliance => @player1.alliance, :counter => 1)
+        Factory.create(:fow_galaxy_entry, :rectangle => rect1,
+          :alliance => alliance, :counter => 1)
+        Factory.create(:fow_galaxy_entry, :rectangle => rect2,
+          :alliance => alliance, :counter => 2)
+        Factory.create(:fow_galaxy_entry, :rectangle => rect3,
+          :alliance => alliance, :counter => 1)
 
         # P2 SS
-        Factory.create(:fow_galaxy_entry, :rectangle => @rect2,
-          :player => @player2, :counter => 1)
-        Factory.create(:fow_galaxy_entry, :rectangle => @rect3,
-          :player => @player2, :counter => 1)
+        Factory.create(:fow_galaxy_entry, :rectangle => rect2,
+          :player => player2, :counter => 1)
+        Factory.create(:fow_galaxy_entry, :rectangle => rect3,
+          :player => player2, :counter => 1)
       end
 
       it "should remove all player entries from alliance pool" do
-        FowGalaxyEntry.throw_out_player(@player1.alliance, @player2)
+        FowGalaxyEntry.throw_out_player(alliance, player2)
 
-        count_for_alliance(@player1.alliance_id).should == {
-          @rect1.as_json => 1,
-          @rect2.as_json => 1
+        count_for_alliance(alliance.id).should == {
+          rect1 => 1,
+          rect2 => 1
         }
       end
 
       it "should fire event" do
         should_fire_event(
-          Event::FowChange.new(@player2, @player1.alliance),
+          Event::FowChange.new(player2, alliance),
           EventBroker::FOW_CHANGE,
           EventBroker::REASON_GALAXY_ENTRY
         ) do
-          FowGalaxyEntry.throw_out_player(@player1.alliance, @player2)
+          FowGalaxyEntry.throw_out_player(alliance, player2)
         end
       end
     end
