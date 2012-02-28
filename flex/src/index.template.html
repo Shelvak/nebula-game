@@ -122,7 +122,7 @@ include(gameJs);
     </div>
     <noscript>You need Javascript enabled to play Nebula 44.</noscript>
 
-    <!-- Only shown when client crashes-->
+    <!-- Only shown when client crashes, filled in by game.js -->
     <div id="client-error">
        <h1></h1>
        <div class="content"></div>
@@ -132,7 +132,7 @@ include(gameJs);
        <form id="error-form" action="">
          <label for="message"></label>
          <textarea name="message" id="message" cols="60" rows="10"></textarea>
-          <input type="submit" value=""/>
+         <input type="submit" disabled="disabled" value=""/>
        </form>
     </div>
 

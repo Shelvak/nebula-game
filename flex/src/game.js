@@ -47,10 +47,10 @@ var locales = { // {{{
     info: function(locale) {
       if (locale == "lt") return [
         "Informacija apie klaidą bus automatiškai nusiųsta mums. Ją " +
-          "peržiūrėję pasistengsime klaidą ištaisyti."
-//        "Jeigu gali, parašyk papildomą informaciją - kokius veiksmus darei, " +
-//          "kokiame ekrane buvai ir t.t. Kartais tokia informacija labai " +
-//          "padeda išspręsti klaidas :)"
+          "peržiūrėję pasistengsime klaidą ištaisyti.",
+        "Jeigu gali, parašyk papildomą informaciją - kokius veiksmus darei, " +
+          "kokiame ekrane buvai ir t.t. Kartais tokia informacija labai " +
+          "padeda išspręsti klaidas :)"
       ];
       return ["LOCALE: fixme"];
     },
@@ -66,6 +66,14 @@ var locales = { // {{{
       if (locale == "lt")
         return "Išsiųsti nepavyko. Na, gal kitą kartą pavyks...";
       return "Failed. Well, perhaps we'll have better luck next time...";
+    },
+    label: function(locale) {
+      if (locale == "lt") return "Tavo pastabos";
+      return "Your note";
+    },
+    pleaseWait: function(locale) {
+      if (locale == "lt") return "Prašome palaukti, kol klaida bus išsiųsta";
+      return "Please wait until bug report is sent";
     },
     submit: function(locale) {
       if (locale == "lt") return "Siųsti";
@@ -113,7 +121,7 @@ if (! Array.prototype.indexOf) { // {{{
   };
 } // }}}
 
-function inLocalComputer() { 
+function inLocalComputer() {
   return location.href.indexOf("file://") == 0; 
 }
 function inDeveloperMode() { return urlParams['dev'] == '1'; }
@@ -367,68 +375,37 @@ function crashLocal(summary, description, body) {
   error.appendTo($("body"));
 }
 
-function errorMessage() {
-  setLeaveHandler(true);
-  var ce = locales.clientError;
-
-  var ajaxStatus = $("#client-error #ajax-status");
-  ajaxStatus.html(ce.sending(locale));
-
-  $.ajax({
-//    url:'http://n44.lh:3000/client/add_note',
-    url: 'http://' + webHost + '/client/error_handler',
-    type:'POST',
-    dataType: "script",
-    data: {
-      summary: window.summary,
-      error_description: window.description,
-      note: $('#client-error textarea').val()
-    }
-  }).done(function() {
-      ajaxStatus.html(ce.sent(locale));
-    }).fail(function() {
-      ajaxStatus.html(ce.failed(locale));
-    }).always(function() {
-      setLeaveHandler(false);
-    });
-
-  return false;
-}
-
 function crashRemote(summary, description, body) {
   // Ensure player does not turn off window while request is being sent.
   setLeaveHandler(true);
 
   var ce = locales.clientError;
 
-  // Show error message.
+  // Set up error message labels.
   $("#client-error h1").html(ce.title(locale));
-  $('#client-error input[type="submit"]').attr('value', ce.submit(locale));
+  $('#client-error label').attr('value', ce.label(locale));
+  var submit = $('#client-error input[type="submit"]');
+  submit.attr('value', ce.pleaseWait(locale));
 
   var explanation = $("#client-error .content");
-
   $.each(ce.info(locale), function(index, text) {
     var p = $('<p/>', {text: text});
     p.appendTo(explanation);
   });
 
-  var ajaxStatus = $("#client-error #ajax-status");
+  window.ajaxStatus = $("#client-error #ajax-status");
   ajaxStatus.html(ce.sending(locale));
 
-  //$('#client-error input[type="submit"]').
-  //  attr('value', locales.clientErrorSubmit(locale));
+  // Register handler for custom note form.
+  $('#client-error form').submit(onNoteSubmit);
+  window.errorSummary = summary;
+  window.errorDescription = description;
+
+  // Show error message.
   $("#client-error").show();
 
-  window.summary = summary;
-  window.description = description;
-
-  $('#client-error form').submit(errorMessage);
-
   $.ajax({
-//    url:'http://n44.lh:3000/client/add_issue',
-// TODO: change address to preferred uri
-//    url: 'http://' + webHost + '/client/add_issue', // preferred uri
-    url: 'http://' + webHost + '/client/error_handler',
+    url: 'http://' + webHost + '/client/add_issue',
     type: 'POST',
     dataType: 'script',
     data: {
@@ -442,7 +419,39 @@ function crashRemote(summary, description, body) {
     ajaxStatus.html(ce.failed(locale));
   }).always(function() {
     setLeaveHandler(false);
+    submit.attr('value', ce.submit(locale));
+    submit.removeAttr("disabled");
   });
+}
+
+// Called when player submits custom note.
+function onNoteSubmit() {
+  setLeaveHandler(true);
+  var ce = locales.clientError;
+
+  var note = $.trim($('#client-error textarea').val());
+  if (note == "") return false;
+
+  ajaxStatus.html(ce.sending(locale));
+
+  $.ajax({
+    url: 'http://' + webHost + '/client/add_note',
+    type: 'POST',
+    dataType: "script",
+    data: {
+      summary: errorSummary,
+      error_description: errorDescription,
+      note: note
+    }
+  }).done(function() {
+    ajaxStatus.html(ce.sent(locale));
+  }).fail(function() {
+    ajaxStatus.html(ce.failed(locale));
+  }).always(function() {
+    setLeaveHandler(false);
+  });
+
+  return false;
 }
 
 // Load our swf {{{
