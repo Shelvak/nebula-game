@@ -367,6 +367,34 @@ function crashLocal(summary, description, body) {
   error.appendTo($("body"));
 }
 
+function errorMessage() {
+  setLeaveHandler(true);
+  var ce = locales.clientError;
+
+  var ajaxStatus = $("#client-error #ajax-status");
+  ajaxStatus.html(ce.sending(locale));
+
+  $.ajax({
+//    url:'http://n44.lh:3000/client/add_note',
+    url: 'http://' + webHost + '/client/error_handler',
+    type:'POST',
+    dataType: "script",
+    data: {
+      summary: window.summary,
+      error_description: window.description,
+      note: $('#client-error textarea').val()
+    }
+  }).done(function() {
+      ajaxStatus.html(ce.sent(locale));
+    }).fail(function() {
+      ajaxStatus.html(ce.failed(locale));
+    }).always(function() {
+      setLeaveHandler(false);
+    });
+
+  return false;
+}
+
 function crashRemote(summary, description, body) {
   // Ensure player does not turn off window while request is being sent.
   setLeaveHandler(true);
@@ -375,20 +403,32 @@ function crashRemote(summary, description, body) {
 
   // Show error message.
   $("#client-error h1").html(ce.title(locale));
+  $('#client-error input[type="submit"]').attr('value', ce.submit(locale));
+
   var explanation = $("#client-error .content");
+
   $.each(ce.info(locale), function(index, text) {
     var p = $('<p/>', {text: text});
     p.appendTo(explanation);
   });
+
   var ajaxStatus = $("#client-error #ajax-status");
   ajaxStatus.html(ce.sending(locale));
+
   //$('#client-error input[type="submit"]').
   //  attr('value', locales.clientErrorSubmit(locale));
   $("#client-error").show();
 
+  window.summary = summary;
+  window.description = description;
+
+  $('#client-error form').submit(errorMessage);
+
   $.ajax({
-    url: 'http://' + webHost + '/client/error_handler',
+//    url:'http://n44.lh:3000/client/add_issue',
+    url: 'http://' + webHost + '/client/add_issue',
     type: 'POST',
+    dataType: 'script',
     data: {
       summary: summary,
       error_description: description,
