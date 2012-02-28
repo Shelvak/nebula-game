@@ -173,9 +173,9 @@ package controllers.units
       
       public var units:ListCollectionView = null;
       private var _unitIds:Array = null;
-      private var _locTarget:LocationMinimal = null;
       private var _squad:MSquadron = null;
-      
+      private var _locTarget:LocationMinimal = null;
+
       
       /* ######################### */
       /* ### INTERFACE METHODS ### */

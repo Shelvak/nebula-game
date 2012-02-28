@@ -90,19 +90,17 @@ package models.unit
          return Math.round(StringUtil.evalFormula(Config.getUnitXpNeeded(type),
             {'level': level}));
       }
-      
-      public static function getMovementSpeedUpCredsCost(
-         percentage: Number, hopCount: int): int
-      {
+
+      public static function getMovementSpeedUpCredsCost(percentage: Number,
+                                                         hopCount: int): int {
          return Math.max(
-            0, 
+            0,
             Math.min(
                Math.round(
-                  StringUtil.evalFormula(Config.getMovementSpeedUpCredsCost(),
-                     {
-                        'percentage': percentage,
-                        'hop_count': hopCount
-                     })
+                  StringUtil.evalFormula(
+                     Config.getMovementSpeedUpCredsCost(),
+                     {'percentage': percentage, 'hop_count':  hopCount}
+                  )
                ),
                Config.getMovementSpeedUpMaxCredsCost()
             )
