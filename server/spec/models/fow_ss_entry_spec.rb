@@ -2,9 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb
 
 def count_for_alliance(alliance_id)
   solar_system_counters = {}
-  FowSsEntry.find(:all,
-    :conditions => {:alliance_id => alliance_id}
-  ).each do |entry|
+  FowSsEntry.where(:alliance_id => alliance_id).all.each do |entry|
     solar_system_counters[entry.solar_system_id] = entry.counter
   end
 
@@ -159,18 +157,25 @@ describe FowSsEntry do
   end
 
   describe "fow entry" do
-    before(:each) do
-      @short_factory_name = :fse
-      @alliance = Factory.create(:alliance)
-      @player = Factory.create(:player, :alliance => @alliance)
-      @player_id = @player.id
-      @solar_system = Factory.create(:solar_system)
-      @solar_system_id = @solar_system.id
+    let(:solar_system) { Factory.create(:solar_system) }
+    let(:klass) { FowSsEntry }
+    let(:player) { Factory.create(:player) }
+    let(:player_w_alliance) { Factory.create(:player, :alliance => alliance) }
+    let(:alliance) { Factory.create(:alliance) }
+    let(:event_reason) { EventBroker::REASON_SS_ENTRY }
 
-      @klass = FowSsEntry
-      @first_arg = @solar_system_id
-      @conditions = {:solar_system_id => @solar_system_id}
-      @event_reason = EventBroker::REASON_SS_ENTRY
+    let(:increase) do
+      lambda { |*args| klass.increase(solar_system.id, *args) }
+    end
+    let(:decrease) do
+      lambda { |*args| klass.decrease(solar_system.id, *args) }
+    end
+    let(:lookup)  do
+      lambda do |*args|
+        scope = klass.where(:solar_system_id => solar_system.id)
+        scope = scope.where(*args) unless args.blank?
+        scope
+      end
     end
 
     describe "fow entry" do
@@ -181,179 +186,208 @@ describe FowSsEntry do
       it_behaves_like "fow entry"
 
       it "should dispatch destroyed for that solar system when decreasing" do
-        @klass.increase(@first_arg, @player, 2)
+        increase[player, 2]
         should_fire_event(kind_of(Event::FowChange::SsDestroyed),
           EventBroker::FOW_CHANGE,
           EventBroker::REASON_SS_ENTRY
         ) do
-          @klass.decrease(@first_arg, @player, 2)
+          decrease[player, 2]
         end
       end
     end
 
-    it "should recalculate for given ss" do
-      @klass.should_receive(:recalculate).with(@solar_system_id, false)
-      @klass.increase(@solar_system_id, @player)
+    describe "recalculate" do
+      it "should recalculate before modifying when increasing" do
+        klass.should_receive(:recalculate).with(solar_system.id, true).
+          and_return { lookup.call().should_not exist }
+        increase[player]
+      end
+
+      it "should recalculate after modifying when decreasing" do
+        increase[player]
+        klass.should_receive(:recalculate).with(solar_system.id, true).
+          and_return { lookup.call().should_not exist }
+        decrease[player]
+      end
     end
 
     describe "battleground" do
-      before(:each) do
-        @battleground = Factory.create(:battleground,
-          :galaxy => @player.galaxy)
+      let(:battleground) do
+        Factory.create(:battleground, :galaxy => player.galaxy)
       end
 
       it "should return false" do
-        @klass.increase(@battleground.id, @player).should be_false
+        klass.increase(battleground.id, player).should be_false
       end
 
       it "should not dispatch event" do
         EventBroker.should_not_receive(:fire)
-        @klass.increase(@battleground.id, @player)
+        klass.increase(battleground.id, player)
       end
 
       it "should not create fow ss entry" do
-        @klass.increase(@battleground.id, @player)
-        FowSsEntry.where(:solar_system_id => @battleground.id).first.
-          should be_nil
+        klass.increase(battleground.id, player)
+        FowSsEntry.where(:solar_system_id => battleground.id).should_not exist
       end
     end
 
-    it "should fire event if updated but recalculate returned true" do
-      @klass.increase(@first_arg, @player)
-      should_fire_event(
-        Event::FowChange::SolarSystem.new(@solar_system_id),
-        EventBroker::FOW_CHANGE, @event_reason
-      ) do
-        @klass.stub!(:recalculate).and_return(true)
-        @klass.increase(@first_arg, @player)
+    describe "when ships are flying into non-visible solar system" do
+      it "should fire created for that solar system" do
+        increase[player_w_alliance]
+
+        # Create event after incrementation because there is no fow ss entries
+        # until that.
+        event = Event::FowChange::SsCreated.new(
+          solar_system.id, solar_system.x, solar_system.y,
+          solar_system.kind, Player.minimal(solar_system.player_id),
+          lookup[
+            "player_id=? OR alliance_id=?", player_w_alliance.id, alliance.id
+          ]
+        )
+
+        SPEC_EVENT_HANDLER.
+          fired?(event, EventBroker::FOW_CHANGE, event_reason).
+          should == 1
+      end
+
+      it "should dispatch updated for other player that can see it it" do
+        p2 = Factory.create(:player)
+        increase[p2]
+
+        event = Event::FowChange::SolarSystem.new(solar_system.id)
+        should_fire_event(event, EventBroker::FOW_CHANGE, event_reason) do
+          increase[player]
+        end
       end
     end
 
     describe "when i have ships and alliance has planet in same ss" do
       it "should fire updated instead of destroyed when i fly out of that ss" do
-        Factory.create(:fse_alliance,
-          :solar_system => @solar_system, :counter => 2, :alliance => @alliance)
+        fse_a = Factory.create(:fse_alliance,
+          :solar_system => solar_system, :counter => 2, :alliance => alliance
+        )
+        player_w_alliance() # Pre-create player so event would get right ids.
 
         # Create event before adding player fse, because when we are going to
         # destroy it, metadata will be reset to this state.
-        event = Event::FowChange::SolarSystem.new(@solar_system_id)
+        event = Event::FowChange::SolarSystem.new(solar_system.id)
 
-        Factory.create(:fse_player, :solar_system => @solar_system,
-          :counter => 1, :player => @player)
+        # Force recalculate to dispatch event because metadata has changed.
+        fse_a.enemy_ships = true
+        fse_a.save!
 
-        should_fire_event(event, EventBroker::FOW_CHANGE, @event_reason) do
-          # I'm not sure why, but this is necessary.
-          @klass.stub!(:recalculate).and_return(true)
-          FowSsEntry.decrease(@solar_system_id, @player, 1)
+        Factory.create(:fse_player,
+          :solar_system => solar_system, :counter => 1,
+          :player => player_w_alliance,
+          :enemy_ships => true # Force recalculate to dispatch event.
+        )
+
+        should_fire_event(event, EventBroker::FOW_CHANGE, event_reason) do
+          decrease[player_w_alliance]
         end
       end
     end
 
-    it "should not fire event if created but asked not to do so" do
-      should_not_fire_event(
-        Event::FowChange::SolarSystem.new(@solar_system_id),
-        EventBroker::FOW_CHANGE, @event_reason) do
-        @klass.increase(@solar_system_id, @player, 1, false)
-      end
+    it "should not fire event if ss created but asked not to dispatch" do
+      EventBroker.should_not_receive(:fire)
+      increase[player, 1, false]
     end
 
-    it "should not fire event if deleted but asked not to do so" do
-      @klass.increase(@solar_system_id, @player)
-
-      should_not_fire_event(
-        Event::FowChange::SolarSystem.new(@solar_system_id),
-        EventBroker::FOW_CHANGE, @event_reason) do
-        @klass.decrease(@solar_system_id, @player, 1, false)
-      end
+    it "should not fire event if ss deleted but asked not to dispatch" do
+      increase[player]
+      EventBroker.should_not_receive(:fire)
+      decrease[player, 1, false]
     end
 
     describe ".assimilate_player" do
+      let(:ss1) { Factory.create(:solar_system) }
+      let(:ss2) { Factory.create(:solar_system) }
+      let(:ss3) { Factory.create(:solar_system) }
+
+      let(:player1) { player_w_alliance }
+      let(:player2) { Factory.create(:player) }
+
       before(:each) do
-        @ss1 = Factory.create(:solar_system)
-        @ss2 = Factory.create(:solar_system)
-        @ss3 = Factory.create(:solar_system)
-
-        @player1 = @player
-        @player2 = Factory.create(:player)
-
         # Alliance 1 SS
-        FowSsEntry.increase(@ss1.id, @player1)
-        FowSsEntry.increase(@ss2.id, @player1)
+        FowSsEntry.increase(ss1.id, player1)
+        FowSsEntry.increase(ss2.id, player1)
 
         # Player 2 SS
-        FowSsEntry.increase(@ss2.id, @player2)
-        FowSsEntry.increase(@ss3.id, @player2)
+        FowSsEntry.increase(ss2.id, player2)
+        FowSsEntry.increase(ss3.id, player2)
       end
 
       it "should add all player entries to alliance pool" do
-        FowSsEntry.assimilate_player(@player1.alliance, @player2)
+        FowSsEntry.assimilate_player(alliance, player2)
 
-        count_for_alliance(@player1.alliance_id).should == {
-          @ss1.id => 1,
-          @ss2.id => 2,
-          @ss3.id => 1
+        count_for_alliance(alliance.id).should == {
+          ss1.id => 1,
+          ss2.id => 2,
+          ss3.id => 1
         }
       end
 
       it "should not recalculate metadata for existing alliance SSs" do
-        FowSsEntry.should_not_receive(:recalculate).with(@ss1.id, false)
+        FowSsEntry.should_not_receive(:recalculate).with(ss1.id, false)
 
-        FowSsEntry.assimilate_player(@player1.alliance, @player2)
+        FowSsEntry.assimilate_player(alliance, player2)
       end
 
       it "should recalculate metadata of players solar systems" do
-        [@ss2, @ss3].each do |ss|
+        [ss2, ss3].each do |ss|
           FowSsEntry.should_receive(:recalculate).with(ss.id, false)
         end
         
-        FowSsEntry.assimilate_player(@player1.alliance, @player2)
+        FowSsEntry.assimilate_player(alliance, player2)
       end
 
       it "should not dispatch event" do
-        should_not_fire_event(anything,
-            EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
-          FowSsEntry.assimilate_player(@alliance, @player2)
+        should_not_fire_event(
+          anything, EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+        ) do
+          FowSsEntry.assimilate_player(alliance, player2)
         end
       end
     end
 
     describe ".throw_out_player" do
+      let(:ss1) { Factory.create(:solar_system) }
+      let(:ss2) { Factory.create(:solar_system) }
+      let(:ss3) { Factory.create(:solar_system) }
+
+      let(:player1) { player_w_alliance }
+      let(:player2) { Factory.create(:player) }
+
       before(:each) do
-        @ss1 = Factory.create(:solar_system)
-        @ss2 = Factory.create(:solar_system)
-        @ss3 = Factory.create(:solar_system)
-
-        @player1 = @player
-        @player2 = Factory.create(:player)
-
         # Alliance SS
-        Factory.create(:fow_ss_entry, :solar_system => @ss1,
-          :alliance => @player1.alliance, :counter => 1)
-        Factory.create(:fow_ss_entry, :solar_system => @ss2,
-          :alliance => @player1.alliance, :counter => 2)
-        Factory.create(:fow_ss_entry, :solar_system => @ss3,
-          :alliance => @player1.alliance, :counter => 1)
+        Factory.create(:fow_ss_entry, :solar_system => ss1,
+          :alliance => alliance, :counter => 1)
+        Factory.create(:fow_ss_entry, :solar_system => ss2,
+          :alliance => alliance, :counter => 2)
+        Factory.create(:fow_ss_entry, :solar_system => ss3,
+          :alliance => alliance, :counter => 1)
 
         # P2 SS
-        Factory.create(:fow_ss_entry, :solar_system => @ss2,
-          :player => @player2, :counter => 1)
-        Factory.create(:fow_ss_entry, :solar_system => @ss3,
-          :player => @player2, :counter => 1)
+        Factory.create(:fow_ss_entry, :solar_system => ss2,
+          :player => player2, :counter => 1)
+        Factory.create(:fow_ss_entry, :solar_system => ss3,
+          :player => player2, :counter => 1)
       end
 
       it "should remove all player entries from alliance pool" do
-        FowSsEntry.throw_out_player(@player1.alliance, @player2)
+        FowSsEntry.throw_out_player(alliance, player2)
 
-        count_for_alliance(@player1.alliance_id).should == {
-          @ss1.id => 1,
-          @ss2.id => 1
+        count_for_alliance(alliance.id).should == {
+          ss1.id => 1,
+          ss2.id => 1
         }
       end
 
       it "should not fire event" do
-        should_not_fire_event(anything,
-            EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY) do
-          FowSsEntry.throw_out_player(@player1.alliance, @player2)
+        should_not_fire_event(
+          anything, EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+        ) do
+          FowSsEntry.throw_out_player(alliance, player2)
         end
       end
     end

@@ -25,11 +25,15 @@ class Rectangle
   def width; @x_end - @x + 1; end
   def height; @y_end - @y + 1; end
 
-  def ==(other)
-    return false unless other.is_a?(self.class)
+  def ==(other); eql?(other); end
 
-    @x == other.x && @y == other.y && @x_end == other.x_end &&
-      @y_end == other.y_end
+  def eql?(other)
+    other.is_a?(self.class) && @x == other.x && @y == other.y &&
+      @x_end == other.x_end && @y_end == other.y_end
+  end
+
+  def hash
+    @x * 7 + @y * 7 + @x_end * 7 + @y_end * 13
   end
 
   def as_json(options=nil)

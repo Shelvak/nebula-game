@@ -193,8 +193,7 @@ class DispatcherEventHandler
         end
       when EventBroker::REASON_GALAXY_ENTRY
         # Update galaxy map
-        @dispatcher.push_to_player(player_id,
-          GalaxiesController::ACTION_SHOW)
+        @dispatcher.push_to_player(player_id, GalaxiesController::ACTION_SHOW)
       end
     end
   end
