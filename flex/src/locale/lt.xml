@@ -1752,8 +1752,6 @@
     <label.unitsManagement value="Tvarkyti" />
     <label.showUnits value="Rodyti" />
     <label.move value="Judinti" />
-    <label.changeSpeed value="Skrydžio laiko valdymas" />
-    <label.flightTime value="Skrydžio laikas: {0}" />
     <label.arrivesIn value="Atvyks po: {0}" />
     <label.arrivesAt value="Atvyks: {0}" />
     <label.owner value="Žaidėjo:" />
@@ -1782,10 +1780,6 @@
       </p>
     </tooltip.honorCoef>
     <label.showKillReward value="Atlygis"/>
-    <message.combatCooldownInfo 
-      value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
-    <message.speedUpCost
-      value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
     <message.orderComplete value="Laivai sėkmingai išsiųsti." />
     <label.avoidNpc value="Vengti mūšių su ateiviais" />
     <description.avoidNpc>
@@ -1794,6 +1788,15 @@
       <p>Nepažymėta: tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
       esančiais jo kelyje.</p>
     </description.avoidNpc>
+
+     <speedup.message.combatCooldownInfo
+        value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
+     <speedup.message.cost
+        value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
+     <speedup.label.changeSpeed value="Skrydžio laiko valdymas" />
+     <speedup.label.arrivesAt value="Atvyks: {0}"/>
+     <speedup.label.arrivesIn value="Skrydžio laikas: {0}"/>
+     <speedup.label.speedupValue value="{0}%"/>
   </Movement>
 
   <Navigator>
@@ -2058,11 +2061,18 @@
     <title.defaultError value="Klaida!" />
 
     <label.reconnect value="Jungtis vėl" />
+    <label.refresh value="Perkrauti" />
     <label.cancel value="Atšaukti" />
     <label.confirm value="Patvirtinti" />
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+
+    <title.outdatedClient value="Žaidimo versija pasenusi" />
+    <message.outdatedClient>
+      <p>Kol žaidei buvo atnaujinta žaidimo versija.</p>
+      <p>Tam, kad žaidimas veiktų be spragų turi perkrauti puslapį.</p>
+    </message.outdatedClient>
     
     <title.cancelUnitTraining value="Atšaukti kario apmokymus" />
     <message.cancelUnitTraining 

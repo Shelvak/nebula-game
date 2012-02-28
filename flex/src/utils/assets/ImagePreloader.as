@@ -4,6 +4,8 @@ package utils.assets
 
    import config.Config;
 
+   import controllers.startup.ChecksumsLoader;
+
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupMode;
 
@@ -15,8 +17,11 @@ package utils.assets
    import flash.events.Event;
    import flash.events.EventDispatcher;
    import flash.events.IOErrorEvent;
+   import flash.events.TimerEvent;
+   import flash.external.ExternalInterface;
    import flash.utils.ByteArray;
    import flash.utils.Dictionary;
+   import flash.utils.Timer;
    import flash.utils.getQualifiedClassName;
 
    import mx.events.ModuleEvent;
@@ -24,9 +29,12 @@ package utils.assets
    import mx.logging.ILogger;
    import mx.logging.Log;
    import mx.modules.IModuleInfo;
+   import mx.modules.IModuleInfo;
    import mx.modules.ModuleManager;
 
    import namespaces.client_internal;
+
+   import utils.ApplicationLocker;
 
    import utils.Events;
    import utils.Objects;
@@ -195,6 +203,7 @@ package utils.assets
       
       
       private var _currentModule:String = "";
+      private var currentChecksumResult:String = "";
       private var _modulesTotal:int;
       private var _moduleInfo:IModuleInfo = null;
       
@@ -204,23 +213,128 @@ package utils.assets
        */ 
       public function startDownload () :void
       {
-         var _assetsModuleInfo: IModuleInfo;
-         _assetsModuleInfo = ModuleManager.getModule(
-            STARTUP_INFO.assetsUrl + "assets/" + getModuleFileName('AssetsConfig')
+         _currentModule = 'AssetsConfig';
+         var moduleName: String = getModuleFileName(_currentModule);
+         _moduleInfo = ModuleManager.getModule(
+            STARTUP_INFO.assetsUrl + "assets/" + moduleName
          );
-         
-         _assetsModuleInfo.addEventListener(
-            ModuleEvent.READY,
-            function(event:ModuleEvent) : void {
-               Config.assetsConfig =
-                  PropertiesTransformer.objectToCamelCase(_assetsModuleInfo.factory.create().config);
-               _modulesTotal = getModules().length;
-               downloadNextModule();
-            }
-         );
-         _assetsModuleInfo.load();
+
+         _moduleInfo.addEventListener(ModuleEvent.READY, assetsConfigReadyHandler);
+
+         currentChecksumResult = moduleName;
+         addFailHandler(_moduleInfo);
+
+         _moduleInfo.load();
          
       }
+      
+      private function assetsConfigReadyHandler(e: ModuleEvent): void
+      {
+         _moduleInfo.removeEventListener(ModuleEvent.READY, assetsConfigReadyHandler);
+         Config.assetsConfig =
+            PropertiesTransformer.objectToCamelCase(_moduleInfo.factory.create().config);
+         _modulesTotal = getModules().length;
+         downloadNextModule();
+      }
+
+      private function addFailHandler(module: IModuleInfo): void
+      {
+         if (failedTimes == TIMES_TO_RETRY)
+         {
+            module.addEventListener(ModuleEvent.ERROR, maxDownloadFailedHandler);
+         }
+         else
+         {
+            module.addEventListener(ModuleEvent.ERROR, moduleErrorHandler);
+         }
+      }
+
+      private function maxDownloadFailedHandler(e: ModuleEvent): void
+      {
+         _moduleInfo.removeEventListener(ModuleEvent.ERROR, maxDownloadFailedHandler);
+         failedTimes = 0;
+         errorText = e.errorText;
+         if (STARTUP_INFO.assetsSums == null)
+         {
+            throwModuleDownloadFailedError();
+         }
+         reloadChecksums();
+      }
+      
+      private function moduleErrorHandler(e: ModuleEvent): void
+      {
+         _moduleInfo.removeEventListener(ModuleEvent.ERROR, moduleErrorHandler);
+         failedTimes++;
+         errorText = e.errorText;
+         var t: Timer = new Timer(1000, 1);
+         t.addEventListener(TimerEvent.TIMER, reloadModule);
+         t.start();
+      }
+      
+      private function reloadModule(e: TimerEvent): void
+      {
+         e.currentTarget.removeEventListener(TimerEvent.TIMER, reloadModule);
+         var moduleName: String = getModuleFileName(_currentModule);
+         _moduleInfo.removeEventListener(ModuleEvent.PROGRESS, progressHandler);
+         _moduleInfo.removeEventListener(ModuleEvent.READY, moduleReadyHandler);
+         _moduleInfo.removeEventListener(ModuleEvent.READY, assetsConfigReadyHandler);
+         _moduleInfo.release();
+         _moduleInfo = ModuleManager.getModule(
+            STARTUP_INFO.assetsUrl + "assets/" + moduleName
+         );
+         if (_currentModule == "AssetsConfig")
+         {
+            _moduleInfo.addEventListener(ModuleEvent.READY, assetsConfigReadyHandler);
+         }
+         else
+         {
+            _moduleInfo.addEventListener(ModuleEvent.READY, moduleReadyHandler);
+            _moduleInfo.addEventListener(ModuleEvent.PROGRESS, progressHandler);
+         }
+         addFailHandler(_moduleInfo);
+         _moduleInfo.load();
+      }
+
+      /* ######################### */
+      /* ### REFRESH CHECKSUMS ### */
+      /* ######################### */
+
+      private var errorText: String;
+      private var failedTimes: int = 0;
+      private static const TIMES_TO_RETRY: int = 10;
+
+      private var _checksumsLoader: ChecksumsLoader;
+
+      private function reloadChecksums(): void {
+         _checksumsLoader = new ChecksumsLoader(STARTUP_INFO);
+         _checksumsLoader.addEventListener(Event.COMPLETE,
+            checksumsLoader_completeHandler,
+            false, 0, true);
+         _checksumsLoader.load();
+      }
+
+      private function checksumsLoader_completeHandler(event: Event): void {
+         _checksumsLoader.removeEventListener(Event.COMPLETE,
+            checksumsLoader_completeHandler,
+            false);
+         _checksumsLoader = null;
+         if (STARTUP_INFO.assetsSums[_currentModule + '.swf'] != currentChecksumResult)
+         {
+            ExternalInterface.call("refresh");
+         }
+         else
+         {
+            throwModuleDownloadFailedError();
+         }
+      }
+
+      private function throwModuleDownloadFailedError(): void
+      {
+         throw new ArgumentError("Bundle '" + _currentModule + "' not found in: "
+            + currentChecksumResult + "\n" +
+            "Module download error: " + errorText);
+      }
+
       private function getModuleFileName(moduleName:String): String {
          var fileName:String = moduleName + ".swf";
          if (STARTUP_INFO.assetsSums != null)
@@ -229,7 +343,7 @@ package utils.assets
       }
       private function downloadNextModule() : void
       {
-         
+         failedTimes = 0;
          if (_moduleInfo != null)
          {
             _moduleInfo.unload();
@@ -243,27 +357,29 @@ package utils.assets
          
          _currentModule = getModules().pop();
          setCurrentModuleLabel();
+         var moduleName: String = getModuleFileName(_currentModule);
          _moduleInfo = ModuleManager.getModule(
-            STARTUP_INFO.assetsUrl + "assets/" + getModuleFileName(_currentModule)
+            STARTUP_INFO.assetsUrl + "assets/" + moduleName
          );
-         _moduleInfo.addEventListener(
-            ModuleEvent.READY,
-            function(event:ModuleEvent) : void
-            {
-               _moduleInfo.removeEventListener(ModuleEvent.PROGRESS, dispatchProgressEvent);
-               dispatchProgressEvent(event);
-               unpackModule(_moduleInfo);
-            }
-         );
-         _moduleInfo.addEventListener(
-            ModuleEvent.PROGRESS,
-            function(event:ModuleEvent) : void
-            {
-               setCurrentModuleLabel(event);
-               dispatchProgressEvent(event);
-            }
-         );
+         _moduleInfo.addEventListener(ModuleEvent.READY, moduleReadyHandler);
+         _moduleInfo.addEventListener(ModuleEvent.PROGRESS, progressHandler);
+         currentChecksumResult = moduleName;
+         addFailHandler(_moduleInfo);
          _moduleInfo.load();
+      }
+      
+      private function progressHandler(e: ModuleEvent): void
+      {
+         setCurrentModuleLabel(e);
+         dispatchProgressEvent(e);
+      }
+      
+      private function moduleReadyHandler(e: ModuleEvent): void
+      {
+         e.module.removeEventListener(ModuleEvent.PROGRESS, progressHandler);
+         e.module.removeEventListener(ModuleEvent.READY, moduleReadyHandler);
+         dispatchProgressEvent(e);
+         unpackModule(e.module);
       }
       /**
        * Called when all modules have been downloaded and unpacked.

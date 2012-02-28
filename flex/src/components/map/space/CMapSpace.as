@@ -3,8 +3,8 @@ package components.map.space
    import components.base.viewport.ViewportZoomable;
    import components.base.viewport.events.ViewportEvent;
    import components.map.CMap;
-   import components.movement.CSpeedControlPopup;
-   import components.movement.CSpeedControlPopupM;
+   import components.movement.speedup.CSpeedControlPopup;
+   import components.movement.speedup.CSpeedControlPopupM;
    import components.movement.CSquadronMapIcon;
    import components.movement.CSquadronPopup;
    import components.movement.CTargetLocationPopup;
@@ -360,7 +360,7 @@ package components.map.space
       /**
        * Allows to speed up or slow down movement of a squad.
        */
-      private var speedControlPopup:CSpeedControlPopup;
+      private var speedControlPopup: CSpeedControlPopup;
 
       /**
        * Hides <code>speedControlPopup</code>
@@ -379,7 +379,10 @@ package components.map.space
          speedControlPopup.includeInLayout = false;
       }
 
-      private function activateSpeedControlPopup(model: CSpeedControlPopupM): void {
+      protected function activateSpeedControlPopup(model: CSpeedControlPopupM): void {
+         if (!getModel().definesLocation(_targetLocationPopup_locationSpace)) {
+            return;
+         }
          Objects.notNull(
             speedControlPopup, "[prop speedControlPopup] can't be null"
          );
@@ -617,20 +620,6 @@ package components.map.space
          return DisplayListUtil.getChildren(_staticObjectsCont);
       }
 
-      /**
-       * Returns a list of route objects on the map.
-       */
-      public function getRouteObjects(): ArrayCollection {
-         return DisplayListUtil.getChildren(routeObjectsCont);
-      }
-
-      /**
-       * Returns list of <code>CSquadronsMapIcon</code> objects on the map.
-       */
-      public function getSquadronObjects(): ArrayCollection {
-         return DisplayListUtil.getChildren(squadronObjectsCont);
-      }
-
 
       /* ############################ */
       /* ### MODEL EVENT HANDLERS ### */
@@ -723,7 +712,9 @@ package components.map.space
 
          activateSpeedControlPopup(
             new CSpeedControlPopupM(
-               (event.arrivalTime - DateUtil.now) / 1000, event.hopCount)
+               Math.floor(event.arrivalTime - DateUtil.now) / 1000,
+               event.hopCount
+            )
          );
       }
 
@@ -776,7 +767,9 @@ package components.map.space
       }
 
       protected function this_creationCompleteHandler(event: FlexEvent): void {
-         squadronsController.updateOrderSourceLocIndicator();
+         if (squadronsController != null) {
+            squadronsController.updateOrderSourceLocIndicator();
+         }
       }
 
       /**
@@ -821,12 +814,14 @@ package components.map.space
             );
          }
          else if (ORDERS_CTRL.issuingOrders) {
-            var staticObject: CStaticSpaceObjectsAggregator =
-                   grid.getStaticObjectInSector(
-                      grid.getSectorLocation(new Point(mouseX, mouseY))
-                   );
-            if (staticObject) {
-               staticObject_doubleClickHandler(staticObject);
+            const mouseLocation:LocationMinimal =
+                     grid.getSectorLocation(new Point(mouseX, mouseY));
+            if (mouseLocation != null) {
+               const staticObject: CStaticSpaceObjectsAggregator =
+                        grid.getStaticObjectInSector(mouseLocation);
+               if (staticObject != null) {
+                  staticObject_doubleClickHandler(staticObject);
+               }
             }
          }
       }
