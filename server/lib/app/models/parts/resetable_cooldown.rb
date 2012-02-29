@@ -5,16 +5,11 @@ module Parts::ResetableCooldown
   
   # Resets cooldown for this building.
   def reset_cooldown!
-    cooldown_registered = ! cooldown_expired?
     self.cooldown_ends_at = cooldowns_at
 
-    event = CallbackManager::EVENT_COOLDOWN_EXPIRED
-
-    if cooldown_registered
-      CallbackManager.update(self, event, cooldown_ends_at)
-    else
-      CallbackManager.register(self, event, cooldown_ends_at)
-    end
+    CallbackManager.register_or_update(
+      self, CallbackManager::EVENT_COOLDOWN_EXPIRED, cooldown_ends_at
+    )
 
     save!
     EventBroker.fire(self, EventBroker::CHANGED)
