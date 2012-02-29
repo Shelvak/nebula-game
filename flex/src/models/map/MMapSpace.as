@@ -125,7 +125,8 @@ package models.map
       }
       
       public override function removeObject(object:BaseModel, silent:Boolean = false) : * {
-         var removedObject:IMStaticSpaceObject = super.removeObject(object, silent);
+         const removedObject: IMStaticSpaceObject =
+                  super.removeObject(object, silent);
          if (removedObject != null) {
             _staticObjectsHash.removeObject(removedObject);
          }

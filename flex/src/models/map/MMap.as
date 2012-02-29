@@ -88,7 +88,6 @@ package models.map
             }
          );
          addSquadronsCollectionEventHandlers(_squadrons);
-         addObjectsCollectionEventHandlers(_objects);
       }
       
       /**
@@ -245,6 +244,7 @@ package models.map
        */
       public function addObject(object:BaseModel) : void {
          _objects.addItem(Objects.paramNotNull("object", object));
+         dispatchObjectAddEvent(object);
       }
       
       /**
@@ -265,10 +265,15 @@ package models.map
        * @throws IllegalOperationError if object to remove could not be found and <code>silent</code>
        * is <code>false</code>
        */
-      public function removeObject(object:BaseModel, silent:Boolean = false) : * {
-         var objectIdx:int = Collections.findFirstIndexEqualTo(_objects, object);
+      public function removeObject(object: BaseModel,
+                                   silent: Boolean = false): * {
+         const objectIdx: int = Collections.findFirstIndexEqualTo(
+            _objects, object
+         );
          if (objectIdx >= 0) {
-            return _objects.removeItemAt(objectIdx);
+            const removed: * = _objects.removeItemAt(objectIdx);
+            dispatchObjectRemoveEvent(removed);
+            return removed;
          }
          else if (!silent) {
             throw new IllegalOperationError(
@@ -424,37 +429,6 @@ package models.map
          }
       }
 
-
-      /* ######################################### */
-      /* ### OBJECTS COLLECTION EVENT HANDLERS ### */
-      /* ######################################### */
-
-
-      private function addObjectsCollectionEventHandlers(objects:ListCollectionView) : void {
-         objects.addEventListener(
-            CollectionEvent.COLLECTION_CHANGE, objects_collectionChangeHandler,
-            false, int.MIN_VALUE, true
-         );
-      }
-
-
-      private function objects_collectionChangeHandler(event:CollectionEvent) : void {
-         if (event.kind != CollectionEventKind.ADD &&
-             event.kind != CollectionEventKind.REMOVE) {
-            return;
-         }
-         for each (var object:* in event.items) {
-            switch (event.kind) {
-               case CollectionEventKind.ADD:
-                  dispatchObjectAddEvent(object);
-                  break;
-               case CollectionEventKind.REMOVE:
-                  dispatchObjectRemoveEvent(object);
-                  break;
-            }
-         }
-      }
-      
       
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
