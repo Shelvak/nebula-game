@@ -201,6 +201,9 @@ package controllers.units
                "jumpsAt {2} was cleared. Forcing the jump (removing squad) before update.",
                jumpsAt, squad, squad.jumpsAtEvent.occuresAt
             );
+            UnitJumps.setPreJumpLocations(
+               squad.units, squad.currentHop.location
+            );
             destroySquadron(squad.id);
          }
          SquadronFactory.attachJumpsAt(route, jumpsAtString);
@@ -560,6 +563,9 @@ package controllers.units
                   }
                }
                else if (squad.jumpPending && squad.jumpsAtEvent.hasOccured) {
+                  UnitJumps.setPreJumpLocations(
+                     squad.units, squad.currentHop.location
+                  );
                   destroySquadron(squadId);
                }
             }

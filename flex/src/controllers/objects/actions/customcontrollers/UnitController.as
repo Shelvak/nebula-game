@@ -3,6 +3,7 @@ package controllers.objects.actions.customcontrollers
    import controllers.objects.UpdatedReason;
    import controllers.units.OrdersController;
    import controllers.units.SquadronsController;
+   import controllers.units.UnitJumps;
 
    import models.factories.UnitFactory;
    import models.player.PlayerMinimal;
@@ -31,21 +32,35 @@ package controllers.objects.actions.customcontrollers
          super();
          NPC_PLAYER.name = Localizer.string("Players", "npc");
       }
-      
-      
-      public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
-         var unit:Unit = UnitFactory.fromObject(object);
-         if (unit.playerId == 0)
+
+
+      public override function objectCreated(objectSubclass: String,
+                                             object: Object,
+                                             reason: String): * {
+         var unit: Unit = UnitFactory.fromObject(object);
+         if (unit.playerId == 0) {
             unit.player = NPC_PLAYER;
-         else if (unit.playerId == ML.player.id)
+         }
+         else if (unit.playerId == ML.player.id) {
             unit.player = ML.player;
-         if (unit.level == 0)
+         }
+         if (unit.level == 0) {
             unit.upgradePart.startUpgrade();
+         }
          ML.units.addItem(unit);
          return unit;
       }
-      
-      public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
+
+      public override function objectUpdated(objectSubclass: String,
+                                             object: Object,
+                                             reason: String): void {
+         const locData: Object = object["location"];
+         const locString: String = UnitJumps.buildLocationString(
+            locData["type"], locData["id"], locData["x"], locData["y"]
+         );
+         if (UnitJumps.preJumpLocationMatches(object["id"], locString)) {
+            return;
+         }
          if (reason == UpdatedReason.COMBAT ||
              reason == UpdatedReason.TRANSPORTATION) {
             ML.units.addOrUpdate(object, Unit);
@@ -54,11 +69,10 @@ package controllers.objects.actions.customcontrollers
             ML.units.update(object);
          }
       }
-      
-      public function unitsDestroyed(unitIds:Array, reason:String) : void {
-         var destroyedUnits:ArrayCollection = ML.units.removeWithIDs(unitIds,
-                 (reason == UpdatedReason.COMBAT
-                         || reason == UpdatedReason.DEPLOYMENT));
+
+      public function unitsDestroyed(unitIds: Array, reason: String): void {
+         const destroyedUnits: ArrayCollection =
+                  ML.units.removeWithIDs(unitIds, true);
          SQUADS_CTRL.destroyEmptySquadrons(destroyedUnits);
          ORDERS_CTRL.cancelOrderIfInvolves(destroyedUnits);
       }
