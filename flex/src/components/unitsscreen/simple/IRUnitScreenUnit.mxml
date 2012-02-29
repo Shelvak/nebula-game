@@ -100,9 +100,10 @@
 
       private function show_inside(load: Boolean): void {
          unitsLoading = load;
-         if (model.unit.stored > 0) {
+         unitToOpen = model.unit;
+         if (unitToOpen.stored > 0) {
             EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-            new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
+            new UnitsCommand(UnitsCommand.SHOW, unitToOpen).dispatch();
          }
          else {
             openUnit();
@@ -118,7 +119,7 @@
          if (unitsLoading) {
             NavigationController.getInstance().showLoadUnload(
                planet.toLocation(),
-               model.unit,
+               unitToOpen,
                Collections.filter(
                   planet.units,
                   function (unit: Unit): Boolean {
@@ -132,24 +133,26 @@
          }
          else {
             NavigationController.getInstance().showLoadUnload(
-               model.unit,
+               unitToOpen,
                planet.toLocation(),
                Collections.filter(
                   ModelLocator.getInstance().units,
                   function (unit: Unit): Boolean {
                      return (unit.level > 0)
                                && (unit.location.type == LocationType.UNIT)
-                               && (model.unit != null)
-                               && (unit.location.id == model.unit.id);
+                               && (unitToOpen != null)
+                               && (unit.location.id == unitToOpen.id);
                   }
                )
             );
          }
       }
 
+      private var unitToOpen: Unit;
 
       protected function showStorage(): void {
          if (model.unit != null && !model.unit.pending) {
+            unitToOpen = model.unit;
             EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
             new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
          }
@@ -160,7 +163,7 @@
       private function switchToStorage(e: GUnitEvent): void {
          EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
          NavigationController.getInstance().enableActiveButton();
-         uScreen.switchToStorage(model.unit);
+         uScreen.switchToStorage(unitToOpen);
       }
 
       [Bindable]
