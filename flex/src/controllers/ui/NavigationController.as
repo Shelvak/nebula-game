@@ -42,7 +42,6 @@ package controllers.ui
    import models.galaxy.Galaxy;
    import models.healing.MCHealingScreen;
    import models.infoscreen.MCInfoScreen;
-   import models.location.LocationMinimal;
    import models.map.MMap;
    import models.map.MMapSolarSystem;
    import models.map.MapType;
@@ -69,6 +68,7 @@ package controllers.ui
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
+
 
    /**
     * <p>
@@ -1156,6 +1156,7 @@ import flash.events.Event;
 import models.map.MMap;
 
 import spark.components.Button;
+
 
 internal class ScreenProperties
 {

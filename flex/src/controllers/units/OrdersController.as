@@ -214,13 +214,15 @@ package controllers.units
       /* ################## */
       
       /**
-       * Initiates process of giving order to units. This is the firsts step of this process: method
-       * must be called after user has selected units he wants to give orders to.
+       * Initiates process of giving order to units. This is the firsts step of
+       * this process: method must be called after user has selected units he
+       * wants to give orders to.
        * 
        * @param units List of units you want to give order to
-       * @param squad pass the suqadron model if units to be moved are already moving
+       * @param squad pass the squadron model if units to be moved are
+       *        already moving
        */
-      public function issueOrder(units:IList, squad:MSquadron = null) : void {
+      public function issueOrder(units: IList, squad: MSquadron = null): void {
          Objects.paramNotNull("units", units);
          if (units.length == 0)
             throw new IllegalOperationError(
@@ -236,7 +238,9 @@ package controllers.units
             function(unit:Unit, idx:int, array:Array) : int { return unit.id }
          );
          this.units = Collections.filter(ML.units,
-            function(unit:Unit) : Boolean { return _unitIds != null ? _unitIds.indexOf(unit.id) >= 0 : false }
+            function(unit:Unit) : Boolean {
+               return _unitIds != null ? _unitIds.indexOf(unit.id) >= 0 : false;
+            }
          );
          addUnitsListEventHandlers(this.units);
          setSourceLocations();
