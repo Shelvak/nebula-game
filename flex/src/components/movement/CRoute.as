@@ -15,6 +15,10 @@ package components.movement
    import models.movement.MSquadron;
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
+   import models.solarsystem.MSSObject;
+
+   import mx.logging.ILogger;
+   import mx.logging.Log;
 
    import spark.components.Group;
 
@@ -24,6 +28,10 @@ package components.movement
 
    public class CRoute extends Group implements ICleanable
    {
+      private function get logger():ILogger {
+         return Log.getLogger(Objects.getClassName(this, true));
+      }
+
       public function get squadron() : MSquadron {
          return _squadM;
       }
@@ -130,20 +138,30 @@ package components.movement
             const loc: LocationMinimal = _squadM.hasHopsRemaining
                                             ? _squadM.lastHop.location
                                             : _squadM.currentHop.location;
+            coords = _grid.getSectorRealCoordinates(loc);
+            hopInfo = _hopsEndpoints[_hopsEndpoints.length - 1];
+            hopInfo.x = coords.x;
+            hopInfo.y = coords.y;
             if (loc.isSolarSystem) {
                const ss: MMapSolarSystem = ModelLocator.getInstance().latestSSMap;
+               const ssObject: MSSObject = ss.getSSObjectAt(loc.x, loc.y);
+               // TODO: Not a real fix for 0001221. Find out whats going on here!
+               if (ssObject == null) {
+                  logger.error(
+                     "@updateHopEndpoints() | unable to set landsAt label "
+                        + "for hop at {0}. There is no planet at that location!"
+                        + "\n solarSystem: {1}", loc, ss
+                  );
+                  return;
+               }
             }
-            hopInfo = _hopsEndpoints[_hopsEndpoints.length - 1];
             hopInfo.jumpsInVisible = true;
+            hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occuresInString;
             hopInfo.jumpsInLabelText = getLabel(
-               loc.isSolarSystem && ss.getSSObjectAt(loc.x, loc.y).isPlanet
+               loc.isSolarSystem && ssObject.isPlanet
                   ? "landsIn"
                   : "jumpsIn"
             );
-            coords = _grid.getSectorRealCoordinates(loc);
-            hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occuresInString;
-            hopInfo.x = coords.x;
-            hopInfo.y = coords.y;
          }
 //         if (_hopsEndpoints.length > 0
 //             && _squadM.jumpPending
