@@ -434,6 +434,7 @@ package models.movement
             return currentHop;
          
          hop = null;
+         // TODO: is this actually ever executed?
          // jump between maps: don't need dispatching any events
          if (endHop.location.type != startHop.location.type ||
              endHop.location.id   != startHop.location.id) {
