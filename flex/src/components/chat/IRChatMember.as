@@ -28,6 +28,7 @@ package components.chat
       public function IRChatMember() {
          super();
          autoDrawBackground = true;
+         minHeight = 30;
       }
 
 
@@ -157,17 +158,6 @@ package components.chat
          layout.paddingBottom = 4;
          this.layout = layout;
 
-         grpIgnoreButtons = new Group();
-         addElement(grpIgnoreButtons);
-         btnDoIgnore = new Button();
-         btnDoIgnore.setStyle("skinClass", DoIgnoreButtonSkin);
-         btnDoIgnore.addEventListener(MouseEvent.CLICK, btnDoIgnore_clickHandler);
-         grpIgnoreButtons.addElement(btnDoIgnore);
-         btnDoUnignore = new Button();
-         btnDoUnignore.setStyle("skinClass", DoUnignoreButtonSkin);
-         btnDoUnignore.addEventListener(MouseEvent.CLICK, btnDoUnignore_clickHandler);
-         grpIgnoreButtons.addElement(btnDoUnignore);
-
          const icon: IVisualElement = createOnlineIcon();
          if (icon != null) {
             addElement(icon);
@@ -175,6 +165,20 @@ package components.chat
 
          lblName = new Label();
          addElement(lblName);
+
+         grpIgnoreButtons = new Group();
+         grpIgnoreButtons.percentWidth = 100;
+         addElement(grpIgnoreButtons);
+         btnDoIgnore = new Button();
+         btnDoIgnore.right = 0;
+         btnDoIgnore.setStyle("skinClass", DoIgnoreButtonSkin);
+         btnDoIgnore.addEventListener(MouseEvent.CLICK, btnDoIgnore_clickHandler);
+         grpIgnoreButtons.addElement(btnDoIgnore);
+         btnDoUnignore = new Button();
+         btnDoUnignore.right = 0;
+         btnDoUnignore.setStyle("skinClass", DoUnignoreButtonSkin);
+         btnDoUnignore.addEventListener(MouseEvent.CLICK, btnDoUnignore_clickHandler);
+         grpIgnoreButtons.addElement(btnDoUnignore);
       }
    }
 }
