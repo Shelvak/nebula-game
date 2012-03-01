@@ -319,58 +319,70 @@ lambda do
     # }
     #
     CONFIG.filter(/^planet\.map\./).each do |key, map_set|
-      map_index = 0
-      CONFIG[key] = map_set.map do |map_parameters|
-        map = map_parameters['map']
-        map_data = {
-          'comment' => "Key: #{key}, index: #{map_index}",
-          'size' => [map[0].length / 2, map.size],
-          'name' => map_parameters['name'],
-          'terrain' => map_parameters['terrain'],
-          'weight' => map_parameters['weight'],
-          'resources' => map_parameters['resources'],
-          'tiles' => {},
-          'buildings' => {},
-          'units' => map_parameters['units']
-        }
+      begin
+        map_index = 0
+        CONFIG[key] = map_set.map do |map_parameters|
+          map = map_parameters['map']
+          width = map[0].length / 2
+          height = map.size
+          map_data = {
+            'comment' => "Key: #{key}, index: #{map_index}",
+            'size' => [width, height],
+            'name' => map_parameters['name'],
+            'terrain' => map_parameters['terrain'],
+            'weight' => map_parameters['weight'],
+            'resources' => map_parameters['resources'],
+            'tiles' => {},
+            'buildings' => {},
+            'units' => map_parameters['units']
+          }
 
-        map.reverse.each_with_index do |line, y|
-          chars = line.split('')
-          0.step(chars.size - 1, 2) do |index|
-            x = index / 2
-            tile = chars[index]
-            building = chars[index + 1]
-            coords_str = "#{x},#{y} in #{key} map #{map_index}"
+          map.reverse.each_with_index do |line, y|
+            chars = line.split('')
+            line_width = line.size / 2
+            raise "line #{y} should have width #{width} but had #{line_width}!" \
+              if line_width != width
+            0.step(chars.size - 1, 2) do |index|
+              x = index / 2
+              tile = chars[index]
+              building = chars[index + 1]
+              coords_str = "#{x},#{y} in #{key} map #{map_index}"
 
-            raise "Unknown tile signature #{tile.inspect} @ #{coords_str}!" \
-              unless tile_signatures.has_key?(tile)
+              raise "Unknown tile signature #{tile.inspect} @ #{coords_str}!" \
+                unless tile_signatures.has_key?(tile)
 
-            kind = tile_signatures[tile]
-            map_data['tiles'][kind] ||= []
-            map_data['tiles'][kind] << [x, y]
+              kind = tile_signatures[tile]
+              map_data['tiles'][kind] ||= []
+              map_data['tiles'][kind] << [x, y]
 
-            raise "Unknown building signature #{building.inspect} @ #{
-              coords_str}!" unless building_signatures.has_key?(building)
+              raise "Unknown building signature #{building.inspect} @ #{
+                coords_str}!" unless building_signatures.has_key?(building)
 
-            name = building_signatures[building]
-            unless name.nil?
-              level = chars[index + 3].to_i
-              if npc_units.has_key?(name)
-                units = npc_units[name][level.to_i]
-                level = 1
-              else
-                units = []
-                level = 10 if level == 0
+              name = building_signatures[building]
+              unless name.nil?
+                level = chars[index + 3].to_i
+                if npc_units.has_key?(name)
+                  units = npc_units[name][level.to_i]
+                  level = 1
+                else
+                  units = []
+                  level = 10 if level == 0
+                end
+
+                map_data['buildings'][name] ||= []
+                map_data['buildings'][name] << [x, y, level, units]
               end
-
-              map_data['buildings'][name] ||= []
-              map_data['buildings'][name] << [x, y, level, units]
             end
           end
-        end
 
-        map_index += 1
-        map_data
+          map_index += 1
+          map_data
+        end
+      rescue Exception => e
+        raise e.class,
+          "Error while extracting map #{map_index} from key #{key}\n#{
+            e.message}",
+          e.backtrace
       end
     end
   end

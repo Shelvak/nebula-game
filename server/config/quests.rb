@@ -264,7 +264,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
       [10330, Technology::Vulcan,                   1, 0.4 ],
       [10335, Technology::Screamer,                 1, 0.35],
       [10340, Technology::Thunder,                  1, 0.3 ],
-      [10345, Technology::BuildingRepair            1, 0.25],
+      [10345, Technology::BuildingRepair,           1, 0.25],
       [10350, Technology::ShipStorage,              3, 0.2 ],
       [10355, Technology::DefensivePortal,          1, nil ],
     ]
