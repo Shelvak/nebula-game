@@ -179,6 +179,16 @@ package config
       /* ############################ */
       /* ### OTHER CONFIG GETTERS ### */
       /* ############################ */
+       
+      public static function getAbsorptionDivider(): Number
+      {
+          return getValue('combat.absorption.divider');
+      }
+
+      public static function getCriticalMultiplier(): Number
+      {
+          return getValue('combat.critical.multiplier');
+      }
 
       /* returns a formula */
       public static function getBattlegroundCreds(): String

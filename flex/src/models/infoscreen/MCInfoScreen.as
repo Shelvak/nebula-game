@@ -79,6 +79,8 @@ package models.infoscreen
       private static const MOD_CONSTRUCTION: String = 'mod.construction';
       private static const MOD_COOLDOWN: String = 'mod.cooldown';
       private static const MAX_VOLUME: String = 'maxVolume';
+      private static const ABSORPTION: String = 'mod.absorption';
+      private static const CRITICAL: String = 'mod.critical';
       
       //properties that dont need to be displayed in difference column of datagrid
       private static const diffIgnorableProperties: Array =
@@ -434,11 +436,20 @@ package models.infoscreen
                         bundle = 'Units';
                         break;
                   }
+                  var params: Array = null;
+                  if (element == ABSORPTION)  
+                  {
+                     params = [Config.getAbsorptionDivider()];
+                  }
+                  else if (element == CRITICAL)
+                  {
+                     params = [Config.getCriticalMultiplier()];
+                  }
                   var label: String = Localizer.string(bundle, 'property.' + element);
                   var tooltip: String = Localizer.hasProperty(
                      bundle, 'property.' + element + '.tooltip')
                         ? Localizer.string(
-                           bundle, 'property.' + element + '.tooltip') : '';
+                           bundle, 'property.' + element + '.tooltip', params) : '';
                   
                   var newValueString: String;
                   var currentValueString: String;

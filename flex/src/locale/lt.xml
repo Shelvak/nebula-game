@@ -4265,12 +4265,12 @@
     <property.mod.critical.format value="{0}%" />
     <property.mod.critical.tooltip>
       <p>Tikimybė, kad karinis vienetas šaus kritinį šūvį.</p>
-      <p>Kritinis šūvis - tai 2,5 karto daugiau žalos darantis šūvis.</p>
+      <p>Kritinis šūvis - tai {0} karto daugiau žalos darantis šūvis.</p>
     </property.mod.critical.tooltip>
     <property.mod.absorption value="Žalos sugėrimo tikimybė" />
     <property.mod.absorption.format value="{0}%" />
     <property.mod.absorption.tooltip>
-      <p>Tikimybė, kad į karinį vienetą pataikytas šūvis padarys 2,5 karto
+      <p>Tikimybė, kad į karinį vienetą pataikytas šūvis padarys {0} karto
         mažiau žalos.</p>
     </property.mod.absorption.tooltip>
     <property.mod.speed value="Judėjimo trukmės daliklis" />
