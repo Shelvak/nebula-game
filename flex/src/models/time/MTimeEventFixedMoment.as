@@ -8,14 +8,14 @@ package models.time
    import utils.Objects;
 
 
-   [Event(name="occuredBefore", type="models.time.events.MTimeEventEvent")]
+   [Event(name="occurredBeforeChange", type="models.time.events.MTimeEventEvent")]
 
    /**
     * Marks a fixed moment in time.
     * 
-    * <p>You set <code>occuresAt</code> to some <code>Date</code>
+    * <p>You set <code>occursAt</code> to some <code>Date</code>
     * (<code>null</code> is not allowed) and this values remains the same
-    * until you set it again. Meanwhile <code>occuresIn</code> and
+    * until you set it again. Meanwhile <code>occursIn</code> and
     * <code>occurredBefore</code> is updated when time advances.
     */
    public class MTimeEventFixedMoment extends MTimeEvent
@@ -69,7 +69,7 @@ package models.time
             occuresAtUpdated();
             occuresInUpdated();
             hasOccuredUpdated();
-            occuredBeforeUpdated();
+            occurredBeforeUpdated();
             _hasOccuredDispatched = false;
          }
       }
@@ -124,7 +124,7 @@ package models.time
             occuresInUpdated();
          }
          if (_occuresAt.time <= DateUtil.now) {
-            occuredBeforeUpdated();
+            occurredBeforeUpdated();
          }
       }
 
@@ -138,7 +138,7 @@ package models.time
       /* ### HELPERS ### */
       /* ############### */
 
-      private function occuredBeforeUpdated(): void {
+      private function occurredBeforeUpdated(): void {
          change_flag::occuredBefore = true;
          dispatchSimpleEvent(
             MTimeEventEvent,
