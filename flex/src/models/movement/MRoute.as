@@ -154,25 +154,8 @@ package models.movement
        * @default empty collection
        */
       public var cachedUnits: ArrayCollection = new ArrayCollection();
-      
-      
-      /**
-       * Looks for and returns <code>UnitBuildingEntry</code> which has <code>type</code> equal to <code>unitType</code>.
-       * 
-       * @param unitType type of a unit in a squadron
-       * 
-       * @return instance of <code>UnitBuildingEntry</code> or <code>null</code> if search has failed
-       * 
-       * @throws ArgumentError if <code>unitType</code> is <code>null</code>
-       */
-      public function findEntryByType(unitType:String) : UnitBuildingEntry {
-         return Collections.findFirst(cachedUnits,
-            function(entry:UnitBuildingEntry) : Boolean {
-               return entry.type == unitType;
-            }
-         );
-      }
-      
+
+
       /* ################## */
       /* ### IUpdatable ### */
       /* ################## */
