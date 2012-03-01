@@ -2835,15 +2835,14 @@
     <about.280>
       <p>Sveiki, Komandore.</p>
       <p>
-        Pastačius [obj:1:Building_Radar:what:dc] pamatėme, jog už mūsų saulės
+        Pastačius radarą pamatėme, jog už mūsų saulės
         sistemos ribų egzistuoja kitos saulės sistemos su laisvomis planetomis.
         Mūsų analitikai sako, jog mums labai praverstų dar viena planeta. O tam,
         jog ją kolonizuotume, mums reikia tam tikrų įrenginių, kuriuos galime
-        pagaminti tik [obj:1:Building_GroundFactory:where:dc].
+        pagaminti tik tankų gamykloje.
       </p>
       <p>
-        Tad nedelskite, pradėkite išradinėti ir statyti
-        [obj:1:Building_GroundFactory:what:dc]!
+        Tad nedelskite, pradėkite išradinėti ir statyti tankų gamyklą!
       </p>
     </about.280>
 
@@ -2858,7 +2857,7 @@
         laimingas atsitiktinumas.
       </p>
       <p>
-        [obj:1:Unit_Mdh] mums pravers norint kolonizuoti trečiąją planetą. Vis
+        Mobilus štabas mums pravers norint kolonizuoti trečiąją planetą. Vis
         gi kelias ilgas ir nesinorėtų ten nuskridus likti it musę kandus.
       </p>
     </about.290>
@@ -2867,12 +2866,12 @@
     <about.300>
       <p>Komandore.</p>
       <p>
-        Išradome [obj:1:Technology_Mdh:whos] technologiją - beliko tik nuskristi
+        Išradome mobilaus štabo technologiją - beliko tik nuskristi
         ir užimti tą trečiąją planetą.
       </p>
       <p>
-        Tankų gamykloje pastatykime savo [obj:1:Unit_Mdh:what:dc], įkraukime jį
-        į [obj:1:Unit_Mule:what:dc] ir su palyda nusiųskime jį į trečiąją
+        Tankų gamykloje pastatykime savo mobilų štabą, įkraukime jį
+        į mulo klasės laivą ir su palyda nusiųskime jį į trečiąją
         planetą. Nepamirškite nusivežti ir žemės karių - greičiausiai planeta
         bus saugoma ateivių.
       </p>
@@ -3364,13 +3363,12 @@
       </p>
     </about.10425>
 
-    <title.10450 value="Pirmasis atlygis" />
+    <title.10450 value="Galios kumštis" />
     <about.10450>
       <p>Komandore.</p>
       <p>
-        Užtikrinkite, jog mes turime pakankamai kasyklų, jog patenkinti mūsų
-        būtiniausius poreikius. Kažkas man kužda, jog greitai mums prireiks
-        žymiai daugiau...
+        Užtikrinkite, jog mes turime pakankamai karių, jog galėtume lengvai
+        apsiginti ar netgi smogti pirmi! Mes turime būti tvirti!
       </p>
     </about.10450>
 
