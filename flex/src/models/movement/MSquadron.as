@@ -496,11 +496,7 @@ package models.movement
             moveToNextHop(new Date(2200, 0, 1).time);
          }
       }
-      
-      public function removeAllHops() : void {
-         hops.removeAll();
-      }
-      
+
       public function removeAllHopsButNext() : void {
          var nextHop:MHop = this.nextHop;
          hops.removeAll();

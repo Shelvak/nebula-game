@@ -166,10 +166,6 @@ package models.galaxy
          return _wormholes;
       }
       
-      public function get hasMoreThanOneObject() : Boolean {
-         return objects.length > 1;
-      }
-      
       /**
        * Determines if a solar system with given id, if exists, is a wormhole. If there is not such solar
        * system returns <code>false</code>.
