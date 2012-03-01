@@ -562,6 +562,7 @@ package components.map.space
          VerticalLayout(sectorPopups.layout).paddingTop = OBJECT_POPUP_YSHIFT;
          staticObject.selected = true;
          if (ORDERS_CTRL.issuingOrders) {
+            passivateSpeedControlPopup();
             grid.issueOrderToLocationUnderMouse(location);
          }
       }
