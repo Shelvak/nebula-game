@@ -317,7 +317,69 @@ describe Combat do
 
     actual.should equal_to_hash(expected)
   end
-  
+
+  it "should calculate critical mod techs into account" do
+    unit = nil
+    CombatDsl.new do
+      location :solar_system
+      player { units { crow } }
+      player { units { unit = crow } }
+    end.run
+
+    p1 = unit_crit = nil
+    dsl = CombatDsl.new do
+      location :solar_system
+      p1 = player { units { crow } }.player
+      player { units { unit_crit = crow } }
+    end
+
+    Factory.create!(:t_space_critical, :player => p1, :level => 1)
+
+    with_config_values("technologies.space_critical.mod.critical" => 100) do
+      dsl.run
+    end
+
+    [unit, unit_crit].each(&:reload)
+
+    dmg_dealt_normal = unit.hit_points - unit.hp
+    dmg_dealt_teched = unit_crit.hit_points - unit_crit.hp
+
+    dmg_dealt_teched.should be_within(5).of(
+      dmg_dealt_normal * Cfg::Java.critical_multiplier
+    )
+  end
+
+  it "should calculate absorption mod techs into account" do
+    unit = nil
+    CombatDsl.new do
+      location :solar_system
+      player { units { unit = crow } }
+      player { units { crow } }
+    end.run
+
+    p1 = unit_abs = nil
+    dsl = CombatDsl.new do
+      location :solar_system
+      p1 = player { units { unit_abs = crow } }.player
+      player { units { crow } }
+    end
+
+    Factory.create!(:t_space_absorption, :player => p1, :level => 1)
+
+    with_config_values("technologies.space_absorption.mod.absorption" => 100) do
+      dsl.run
+    end
+
+    [unit, unit_abs].each(&:reload)
+
+    dmg_received_normal = unit.hit_points - unit.hp
+    dmg_received_teched = unit_abs.hit_points - unit_abs.hp
+
+    dmg_received_teched.should be_within(5).of(
+      dmg_received_normal / Cfg::Java.absorption_divider
+    )
+  end
+
   it "should not crash if planet owner does not have any assets" do
     CombatDsl.new do
       location :planet
