@@ -131,18 +131,22 @@ package components.map.space
        */
       internal function issueOrderToLocationUnderMouse(locationUnderMouse:LocationMinimal = null) : void
       {
-         if (!sectorIndicator.visible)
+         if (!sectorIndicator.visible) {
             return;
-         if (locationUnderMouse == null)
+         }
+         if (locationUnderMouse == null) {
             locationUnderMouse = this.locationUnderMouse;
-         else
+         }
+         else {
             this.locationUnderMouse = locationUnderMouse;
+         }
          
          // Somehow a map which is cached but not currently visible sometimes gets to this point
          // and since it is not active, the call to getSectorRealCoordinates() bellow fails. So for now we
          // just ignore such calls as they seem to be very rare.
-         if (locationUnderMouse == null)
+         if (locationUnderMouse == null) {
             return;
+         }
          
          var position:Point = getSectorRealCoordinates(locationUnderMouse);
          _map.positionSectorPopups(position);
@@ -151,8 +155,7 @@ package components.map.space
             null :
             objectsAggregator.model.findObjectOfType(MMapSpace.STATIC_OBJECT_NATURAL);
          ORDERS_CTRL.updateTargetLocationPopup(locationUnderMouse, _map.targetLocationPopup, staticObject);
-         if (_map.targetLocationPopup.visible)
-         {
+         if (_map.targetLocationPopup.visible) {
             VerticalLayout(_map.sectorPopups.layout).paddingTop = 0;
          }
       }
