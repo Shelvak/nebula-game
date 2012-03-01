@@ -26,8 +26,6 @@ class GalaxiesController < GenericController
   # - cooldowns (Cooldown[]): Cooldown#as_json
   #
   def action_show
-    only_push!
-    
     player = self.player
     fow_entries = FowGalaxyEntry.for(player)
     units = Galaxy.units(player, fow_entries)
