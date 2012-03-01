@@ -87,14 +87,14 @@ package components.planetmapeditor
             return;
          }
          const tileKindAtMouse:int = planet.getTileKind(object.x, object.y);
-         if (tileKindAtMouse == tile.tileKind
+         if (!event.altKey
+                && tileKindAtMouse == tile.tileKind
                 && !TileKind.isResourceKind(tileKindAtMouse)) {
             return;
          }
-         _currentCommand.addTile(tile.tileKind, object.x, object.y);
+         addTileOrRemoveObject(event, tile, object);
          commitCurrentCommand();
          startNewCommand();
-         map.renderBackground(false);
       }
 
       override protected function mouseMoveHandler(event: MouseEvent): void {
@@ -107,8 +107,21 @@ package components.planetmapeditor
                 || planet.getTileKind(object.x, object.y) == tile.tileKind) {
             return;
          }
-         _currentCommand.addTile(tile.tileKind, object.x, object.y);
-         map.renderBackground(false);
+         addTileOrRemoveObject(event, tile, object);
+      }
+
+      private function addTileOrRemoveObject(event: MouseEvent,
+                                             tile: IRTileKindM,
+                                             tileObject: MPlanetObject): void {
+         if (event.altKey) {
+            _currentCommand.removeObject(tileObject.x, tileObject.y);
+            commitCurrentCommand();
+            startNewCommand();
+         }
+         else {
+            _currentCommand.addTile(tile.tileKind, tileObject.x, tileObject.y);
+            map.renderBackground(false);
+         }
       }
 
 
@@ -187,6 +200,10 @@ class TerrainEditCommand extends MapEditCommand implements ICommand
    private var _valid: Boolean = false;
    public function get valid(): Boolean {
       return _valid;
+   }
+
+   public function removeObject(x: int, y: int): void {
+      _valid ||= removeObjectToRestore(x, y);
    }
 
    public function addTile(kind:int, x: int, y: int): void {
