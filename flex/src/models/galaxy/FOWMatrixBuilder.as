@@ -12,26 +12,28 @@ package models.galaxy
    internal class FOWMatrixBuilder
    {
       private static const INVISIBLE_BORDER_SIZE:int = 2;
-      
-      private var _fowEntries:Vector.<MapArea>,
-                  _solarSystems:IList,
-                  _units:IList,
-                  _matrix:Vector.<Vector.<Boolean>>,
-                  _xMin:int,
-                  _xMax:int,
-                  _yMax:int,
-                  _yMin:int;
-      
-      
-      public function FOWMatrixBuilder(fowEntries:Vector.<MapArea>, solarSystems:IList, units:IList) {
+
+      private var _fowEntries: Vector.<MapArea>;
+      private var _solarSystems: IList;
+      private var _units: IList;
+      private var _matrix: Vector.<Vector.<Boolean>>;
+      private var _xMin: int;
+      private var _xMax: int;
+      private var _yMax: int;
+      private var _yMin: int;
+
+
+      public function FOWMatrixBuilder(fowEntries: Vector.<MapArea>,
+                                       solarSystems: IList,
+                                       units: IList) {
          _fowEntries = fowEntries;
          _solarSystems = solarSystems;
          _units = units;
-         build();
+         rebuild();
       }
       
       
-      private function build() : void {
+      public function rebuild() : void {
          findBounds();
          initializeMatrix();
          setVisibleTiles();

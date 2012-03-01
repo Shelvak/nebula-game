@@ -27,10 +27,13 @@ package models
    import models.unit.UnitsList;
 
    import mx.collections.ArrayCollection;
+   import mx.formatters.DateFormatter;
 
    import namespaces.prop_name;
 
+   import utils.DateUtil;
    import utils.SingletonFactory;
+   import utils.StringUtil;
    import utils.datastructures.Collections;
 
 
@@ -43,7 +46,7 @@ package models
     * A class that implements "model locator" pattern (idea more precisely) from the
     * Cairngom microarchitecture framework. 
     * 
-    * <p>This class should be treaded as a singleton and instance of it should
+    * <p>This class should be treated as a singleton and instance of it should
     * be retrieved either using static method <code>getInstance()</code> or
     * using <code>utils.SingletonFactory</code>.</p>
     */   
@@ -66,10 +69,27 @@ package models
          message += "CPU Arch: " + Capabilities.cpuArchitecture + "\n\n";
          message += 'Log (last ' + StartupManager.inMemoryLog.maxEntries + ' entries):\n';
          message += StartupManager.inMemoryLog.getContent("\n") + "\n\n";
-         message += 'Player:\n' + player + '\n\n';
+
+         const dateNow: Date = new Date();
+         const dateFmt: DateFormatter = new DateFormatter();
+         dateFmt.formatString = "YYYY-MM-DD JJ:NN:SS";
+         message += StringUtil.substitute(
+            "Time diff (serverTime - clientTime): {0}\n", DateUtil.timeDiff
+         );
+         message += StringUtil.substitute(
+            "Local machine timezone offset: {0}\n", dateNow.timezoneOffset
+         );
+         message += StringUtil.substitute(
+            "Local machine time: {0}\n", dateFmt.format(dateNow)
+         );
+         message += StringUtil.substitute(
+            "Server machine time: {0}\n",
+            dateFmt.format(DateUtil.getServerTime(dateNow))
+         );
+
+         message += "Player:\n" + player + "\n\n";
          message += "Active map type:\n" + activeMapType + "\n\n";
          message += "Current galaxy:\n" + latestGalaxy + "\n\n";
-//         message += "Solar systems in current galaxy:\n" + latestGalaxy.solarSystems.toArray().join("\n") + "\n\n";
          message += "Current solar system:\n" + latestSSMap + "\n\n";
          message += "Current planet:\n" + latestPlanet + "\n\n";
          return message;

@@ -21,13 +21,15 @@ package models.galaxy
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
 
+   import utils.Objects;
    import utils.datastructures.Collections;
 
 
    /**
-    * Dispatched when galaxy dimensions have changed.
+    * Dispatched when new location becomes visible inside the bounds of
+    * currently visible galaxy area.
     */
-   [Event(name="resize", type="models.galaxy.events.GalaxyEvent")]
+   [Event(name="newVisibleLocation", type="models.galaxy.events.GalaxyEvent")]
    
    /**
     * Dispatched when <code>hasWormholes</code> property have changed.
@@ -166,10 +168,6 @@ package models.galaxy
          return _wormholes;
       }
       
-      public function get hasMoreThanOneObject() : Boolean {
-         return objects.length > 1;
-      }
-      
       /**
        * Determines if a solar system with given id, if exists, is a wormhole. If there is not such solar
        * system returns <code>false</code>.
@@ -232,7 +230,6 @@ package models.galaxy
       
       public function setFOWEntries(fowEntries:Vector.<MapArea>, units:IList) : void {
          _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, naturalObjects, units);
-         dispatchResizeEvent();
       }
       
       /**
@@ -264,6 +261,34 @@ package models.galaxy
       public function getStaticObjectsAt(x:int, y:int) : Array {
          return getAllStaticObjectsAt(x, y);
       }
+
+      /**
+       * Will add solar system to this galaxy only if it is inside of the visible
+       * visible galaxy area bounds (<code>visibleBounds</code>).
+       *
+       * @param ss solar system to add
+       *
+       * @return <code>true</code> if the solar system has been added or
+       * <code>false</code> if it was outside of visible area bounds.
+       */
+      public function addSSToVisibleBounds(ss: MSolarSystem): Boolean {
+         Objects.paramNotNull("ss", ss);
+         const location: LocationMinimal = ss.currentLocation;
+         if (visibleBounds.contains(location.x, location.y)) {
+            const dispatchNewVisibleLocation: Boolean =
+                     !locationIsVisible(location)
+                        && hasEventListener(GalaxyEvent.NEW_VISIBLE_LOCATION);
+            addObject(ss);
+            _fowMatrixBuilder.rebuild();
+            if (dispatchNewVisibleLocation) {
+               dispatchEvent(
+                  new GalaxyEvent(GalaxyEvent.NEW_VISIBLE_LOCATION, location)
+               );
+            }
+            return true;
+         }
+         return false;
+      }
       
       [Bindable(event="willNotChange")]
       /**
@@ -283,7 +308,8 @@ package models.galaxy
       }
       
       /**
-       * Basicly does the same as <code>definesLocation()</code> but takes fog of war into account.
+       * Basically does the same as <code>definesLocation()</code> but takes
+       * fog of war into account.
        */
       public function locationIsVisible(location:LocationMinimal) : Boolean {
          if (definesLocation(location)) { 
@@ -316,10 +342,6 @@ package models.galaxy
          dispatchSimpleEvent(
             GalaxyEvent, GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE
          );
-      }
-      
-      private function dispatchResizeEvent() : void {
-         dispatchSimpleEvent(GalaxyEvent, GalaxyEvent.RESIZE);
       }
 
       public function update(): void {

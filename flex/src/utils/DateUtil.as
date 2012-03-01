@@ -70,15 +70,13 @@ package utils
          }
          return serverTime;
       }
-      
-      /**
-       * Does the opposite to <code>getServerTime()</code>: returns time of the local machine at a
-       * specified moment of server machine. This returns local time rounded to lower second.
-       * 
-       * @param serverTime Time of local machine.
-       * 
-       * @return Time of the local machine.  
-       */
+
+      public static function getServerTime(localTime: Date): Date {
+         return new Date(
+            Math.floor((localTime.time + timeDiff) / 1000) * 1000
+         );
+      }
+
       public static function getLocalTime(serverTime: Date): Date {
          return new Date(
             Math.floor((serverTime.time - timeDiff) / 1000) * 1000

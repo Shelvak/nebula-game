@@ -200,8 +200,8 @@ package models.planet
       }
       
       
-      private var f_cleanupStarted:Boolean = false,
-         f_cleanupComplete:Boolean = false;
+      private var f_cleanupStarted:Boolean = false;
+      private var f_cleanupComplete:Boolean = false;
       
       
       /**
