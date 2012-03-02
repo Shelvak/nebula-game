@@ -8,7 +8,6 @@ package models.galaxy.events
 
    public class GalaxyEvent extends Event
    {
-      public static const RESIZE: String = "resize";
       public static const GALAXY_READY: String = "galaxyReady";
       public static const HAS_WORMHOLES_CHANGE: String = "hasWormholesChange";
       public static const APOCALYPSE_START_EVENT_CHANGE: String =
@@ -22,7 +21,7 @@ package models.galaxy.events
          return Galaxy(target);
       }
 
-      private var _location;
+      private var _location: LocationMinimal;
       /**
        * A location that became visible in the galaxy. Relevant only for
        * <code>NEW_VISIBLE_LOCATION</code> event.

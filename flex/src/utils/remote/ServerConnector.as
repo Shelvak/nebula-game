@@ -11,17 +11,19 @@ package utils.remote
    import flash.events.ProgressEvent;
    import flash.events.SecurityErrorEvent;
    import flash.net.Socket;
-   
+
    import mx.logging.ILogger;
    import mx.logging.Log;
-   
-   import utils.DateUtil;
+
+   import namespaces.client_internal;
+
+   import utils.Events;
    import utils.Objects;
    import utils.logging.MessagesLogger;
    import utils.remote.events.ServerProxyEvent;
    import utils.remote.rmo.*;
-   
-   
+
+
    /**
     * @see IServerProxy#connect()
     * 
@@ -60,12 +62,6 @@ package utils.remote
     */
    public class ServerConnector extends EventDispatcher implements IServerProxy
    {
-      /**
-       * How many messages are stored in <code>communicationHistory</code> array.
-       */
-      private static const HISTORY_SIZE:int = 20;
-      
-      
       private function get log() : ILogger {
          return Log.getLogger(Objects.getClassName(this, true));
       }
@@ -73,17 +69,19 @@ package utils.remote
       private function get msgLog() : MessagesLogger {
          return MessagesLogger.getInstance();
       }
-      
-      
-      private var _socket: Socket = new Socket ();
+
+      private const _timeSynchronizer:TimeSynchronizer = new TimeSynchronizer();
+      private const _socket: Socket = new Socket();
       private var _connecting: Boolean = false;
-      
+
+      client_internal function get lowestObservedLatency(): int {
+         return _timeSynchronizer.lowestObservedLatency;
+      }
       
       /**
        * Don't instantiate this class. Use <code>ServerProxyInstance.getInstance()</code>.
        */
-      public function ServerConnector()
-      {
+      public function ServerConnector() {
          _socket.timeout = ResponseMessagesTracker.MAX_WAIT_TIME;
          addSocketEventHandlers();
       }
@@ -92,96 +90,75 @@ package utils.remote
       // ############################# //
       // ### SOCKET EVENT HANDLERS ### //
       // ############################# //
-      
-      
-      private function addSocketEventHandlers() : void
-      {
-         with (_socket)
-         {
-            addEventListener(Event.CLOSE,                       socket_closeHandler);
-            addEventListener(Event.CONNECT,                     socket_connectHandler);
-            addEventListener(ProgressEvent.SOCKET_DATA,         socket_socketDataHandler);
-            addEventListener(IOErrorEvent.IO_ERROR,             socket_ioErrorHandler);
+
+      private function addSocketEventHandlers(): void {
+         with (_socket) {
+            addEventListener(Event.CLOSE, socket_closeHandler);
+            addEventListener(Event.CONNECT, socket_connectHandler);
+            addEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
+            addEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
             addEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
          }
       }
-      
-      
-      private function socket_connectHandler(event:Event) : void 
-      {
-         // normally there should not be anything in the buffer when connection has been established but
-         // clear it just in case
+
+      private function socket_connectHandler(event: Event): void {
+         // normally there should not be anything in the buffer when
+         // connection has been established but clear it just in case
          _buffer = "";
-         
          _connecting = false;
-         dispatchConnectionEstablishedEvent();
+         dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_ESTABLISHED);
       }
-      
-      
-      private function socket_closeHandler(event:Event) : void
-      {
-         // once the connection has been lost, clear the buffer
+
+      private function socket_closeHandler(event: Event): void {
          _buffer = "";
-         
          _connecting = false;
-         if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR)
-         dispatchConnectionLostEvent();
+         if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
+            dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST)
+         }
       }
-      
       
       /**
        * As messages may be very long (<code>galaxies|show</code> for example) needed to implement a buffer. 
        */
       private var _buffer:String = "";
-      
-      
-      private function socket_socketDataHandler(event:ProgressEvent) : void
-      {
+
+      private function socket_socketDataHandler(event: ProgressEvent): void {
          _buffer += _socket.readUTFBytes(_socket.bytesAvailable);
-         
-         var index:int = _buffer.indexOf("\n");
-         while (index != -1)
-         {
-            var msg:String = _buffer.substring(0, index);
+         var index: int = _buffer.indexOf("\n");
+         while (index != -1) {
+            const msg: String = _buffer.substring(0, index);
             msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
-            var rmo:ServerRMO = ServerRMO.parse(msg);
-            DateUtil.updateTimeDiff(rmo.id, new Date());
+            const rmo: ServerRMO = ServerRMO.parse(msg);
+            _timeSynchronizer.synchronize(rmo);
             _unprocessedMessages.push(rmo);
             _buffer = _buffer.substr(index + 1);
-            index   = _buffer.indexOf("\n");
+            index = _buffer.indexOf("\n");
          }
       }
-      
-      
-      private function socket_ioErrorHandler(event:IOErrorEvent) : void
-      {
+
+      private function socket_ioErrorHandler(event: IOErrorEvent): void {
          log.error(event.text);
-         dispatchIOErrorEvent();
+         dispatchServerProxyEvent(ServerProxyEvent.IO_ERROR);
       }
-      
-      private function socket_securityErrorHandler(event:SecurityErrorEvent) : void
-      {
-         // This will be thrown when timout is reached and connection could not be established
-         if (connected || _connecting)
-         {
-            dispatchConnectionTimeoutEvent();
+
+      private function socket_securityErrorHandler(event: SecurityErrorEvent): void {
+         // This will be thrown when timeout is reached and connection could
+         // not be established
+         if (connected || _connecting) {
+            dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_TIMEOUT);
          }
-         
          // Apparently the famous #2048 error is thrown every time connection is closed so just ignore it.
-         else
-         {
+         else {
             log.debug("Expected security error after disconnect: {0}", event.text);
          }
       }
-      
-      
+
+
       // ################# //
       // ## PROPERTIES ### //
       // ################# //
-      
-      
-      public function get connected() : Boolean
-      {
+
+      public function get connected(): Boolean {
          return _socket.connected;
       }
       
@@ -189,100 +166,92 @@ package utils.remote
       // ######################### //
       // ### INTERFACE METHODS ### //
       // ######################### //
-      
-      
-      public function connect(host:String, port:int) : void
-      {
+
+      public function connect(host: String, port: int): void {
          _connecting = true;
          _socket.connect(host, port);
       }
-      
-      
-      public function disconnect() : void
-      {
+
+      public function disconnect(): void {
          _connecting = false;
-         // the method migh be called event if the socket is not open
-         try
-         {
+         // the method might be called event if the socket is not open
+         try {
             _socket.close();
          }
-         // well we can't do much about the error, can we?
-         catch (error:IOError) {}
+            // well we can't do much about the error, can we?
+         catch (error: IOError) {
+         }
       }
-      
-      
-      public function reset() : void {
+
+      public function reset(): void {
+         _timeSynchronizer.reset();
          getUnprocessedMessages();
       }
-      
-      
-      public function sendMessage(rmo:ClientRMO) : void
-      {
-         if (_socket.connected)
-         {
-            var msg:String = rmo.toJSON();
+
+      public function sendMessage(rmo: ClientRMO): void {
+         if (_socket.connected) {
+            var msg: String = rmo.toJSON();
             msgLog.logMessage(msg, "<-~ | Outgoing message: {0}", [msg]);
             _socket.writeUTFBytes(msg + "\n");
             _socket.flush();
          }
       }
-      
-      
-      private var _unprocessedMessages:Vector.<ServerRMO> = new Vector.<ServerRMO>();
-      public function getUnprocessedMessages() : Vector.<ServerRMO>
-      {
-         if (_unprocessedMessages.length == 0)
-         {
+
+      private var _unprocessedMessages: Vector.<ServerRMO> = new Vector.<ServerRMO>();
+
+      public function getUnprocessedMessages(): Vector.<ServerRMO> {
+         if (_unprocessedMessages.length == 0) {
             return null;
          }
          return _unprocessedMessages.splice(0, _unprocessedMessages.length);
       }
-      
-      
-      public function get unprocessedMessages() : Vector.<ServerRMO>
-      {
+
+      public function get unprocessedMessages(): Vector.<ServerRMO> {
          return _unprocessedMessages;
       }
-      
-      
-      /* ################################## */
-      /* ### EVENTS DISPATCHING METHODS ### */
-      /* ################################## */
-      
-      
-      private function dispatchConnectionEstablishedEvent() : void
-      {
-         if (hasEventListener(ServerProxyEvent.CONNECTION_ESTABLISHED))
-         {
-            dispatchEvent(new ServerProxyEvent(ServerProxyEvent.CONNECTION_ESTABLISHED));
-         }
+
+
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+
+      private function dispatchServerProxyEvent(type: String): void {
+         Events.dispatchSimpleEvent(this, ServerProxyEvent, type);
       }
-      
-      
-      private function dispatchConnectionTimeoutEvent() : void
-      {
-         if (hasEventListener(ServerProxyEvent.CONNECTION_TIMEOUT))
-         {
-            dispatchEvent(new ServerProxyEvent(ServerProxyEvent.CONNECTION_TIMEOUT));
-         }
+   }
+}
+
+import utils.DateUtil;
+import utils.remote.rmo.ServerRMO;
+
+
+class TimeSynchronizer
+{
+   public function TimeSynchronizer(): void {
+      reset();
+   }
+
+   private var _lowestObservedLatency: int;
+   public function get lowestObservedLatency(): int {
+      return _lowestObservedLatency;
+   }
+
+   public function synchronize(rmo:ServerRMO): void {
+      if (!rmo.isReply) {
+         return;
       }
-      
-      
-      private function dispatchConnectionLostEvent() : void
-      {
-         if (hasEventListener(ServerProxyEvent.CONNECTION_LOST))
-         {
-            dispatchEvent(new ServerProxyEvent(ServerProxyEvent.CONNECTION_LOST));
-         }
+      const requestTime: Number = Number(rmo.replyTo);
+      const serverTime: Number = Number(rmo.id);
+      const currentTime: Number = new Date().time;
+      const latency: int = Math.round((currentTime - requestTime) / 2);
+      if (latency < _lowestObservedLatency) {
+         _lowestObservedLatency = latency;
+         DateUtil.timeDiff = serverTime - currentTime + latency;
       }
-      
-      
-      private function dispatchIOErrorEvent() : void
-      {
-         if (hasEventListener(ServerProxyEvent.IO_ERROR))
-         {
-            dispatchEvent(new ServerProxyEvent(ServerProxyEvent.IO_ERROR));
-         }
-      }
+   }
+
+   public function reset(): void {
+      DateUtil.timeDiff = 0;
+      _lowestObservedLatency = int.MAX_VALUE;
    }
 }

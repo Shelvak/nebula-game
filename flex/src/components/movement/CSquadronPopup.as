@@ -536,10 +536,10 @@ package components.movement
          if (_squadron == null) {
             return;
          }
-         var unitIDs:Array = _squadron.units.toArray().map(
+         const unitIDs: Array = _squadron.units.toArray().map(
             function(unit:Unit, idx:int, array:Array) : int { return unit.id }
          );
-         var units:ListCollectionView = Collections.filter(_squadron.units,
+         const units: ListCollectionView = Collections.filter(_squadron.units,
             function(unit:Unit) : Boolean { return unitIDs.indexOf(unit.id) >= 0 }
          );
          NAV_CTRL.showUnits(units, _squadron.currentHop.location.toLocation(), null, null, _squadron.owner);
