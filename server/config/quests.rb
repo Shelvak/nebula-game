@@ -551,8 +551,10 @@ QUESTS = QuestDefinition.define(:debug => false) do
     achievement(20000 + index) { explore_any_object :count => count }
   end
 
-  [100, 250, 500, 1000, 2500, 5000, 10000, 25000].each_with_index do
-    |count, index|
+  [
+    100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 10000, 25000, 50000,
+    100000, 250000, 500000, 1_000000
+  ].each_with_index do |count, index|
     achievement(20020 + index) { destroy Unit, :count => count }
   end
 
@@ -611,8 +613,21 @@ QUESTS = QuestDefinition.define(:debug => false) do
   end
 
   [1, 2, 3].each_with_index do |count, index|
-    achievement(20290 + index) { upgrade_to Building::Radar,
-      :count => count, :level => 2 }
+    achievement(20290 + index) {
+      upgrade_to Building::Radar, :count => count, :level => 2
+    }
+  end
+
+  [1, 2].each_with_index do |count, index|
+    achievement(20293 + index) {
+      upgrade_to Building::Radar, :count => count, :level => 3
+    }
+  end
+
+  [1].each_with_index do |count, index|
+    achievement(20295 + index) {
+      upgrade_to Building::Radar, :count => count, :level => 4
+    }
   end
 
   [25, 50, 100].each_with_index do |count, index|
