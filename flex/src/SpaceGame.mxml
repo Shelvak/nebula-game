@@ -115,7 +115,7 @@
        * handled by any models, components, controllers (or whatever other objects) that need to get their
        * properties updated periodically like building upgrade times, squad positions and similar stuff.
        * All accompanied code (in controllers, components and all sorts of other objects) is executed. If
-       * any of that code needs current time, <code>DateUtil.now</code> and static property are just for
+       * any of that code needs current time, <code>DateUtil.now</code> static property are just for
        * that.</p>
        *
        * <p>Then <code>MessagesProcessor.process()</code> is called to process all messages received from

@@ -3,6 +3,7 @@ package models
    import application.Version;
 
    import controllers.battle.BattleController;
+   import controllers.messages.ResponseMessagesTracker;
    import controllers.screens.MainAreaScreens;
    import controllers.startup.StartupManager;
    import controllers.ui.NavigationController;
@@ -29,6 +30,8 @@ package models
    import mx.collections.ArrayCollection;
    import mx.formatters.DateFormatter;
 
+   import namespaces.client_internal;
+
    import namespaces.prop_name;
 
    import utils.DateUtil;
@@ -44,7 +47,7 @@ package models
    
    /**
     * A class that implements "model locator" pattern (idea more precisely) from the
-    * Cairngom microarchitecture framework. 
+    * Cairngom micro-architecture framework.
     * 
     * <p>This class should be treated as a singleton and instance of it should
     * be retrieved either using static method <code>getInstance()</code> or
@@ -53,8 +56,7 @@ package models
    [Bindable]
    public class ModelLocator extends EventDispatcher
    {
-      public static function getInstance() : ModelLocator
-      {
+      public static function getInstance(): ModelLocator {
          return SingletonFactory.getSingletonInstance(ModelLocator);
       }
       
@@ -74,6 +76,10 @@ package models
          const dateFmt: DateFormatter = new DateFormatter();
          dateFmt.formatString = "YYYY-MM-DD JJ:NN:SS";
          message += StringUtil.substitute(
+            "Lowest observed communications latency: {0}\n",
+            ResponseMessagesTracker.getInstance().client_internal::lowestObservedLatency
+         );
+         message += StringUtil.substitute(
             "Time diff (serverTime - clientTime): {0}\n", DateUtil.timeDiff
          );
          message += StringUtil.substitute(
@@ -83,7 +89,7 @@ package models
             "Local machine time: {0}\n", dateFmt.format(dateNow)
          );
          message += StringUtil.substitute(
-            "Server machine time: {0}\n",
+            "Server machine time: {0}\n\n",
             dateFmt.format(DateUtil.getServerTime(dateNow))
          );
 
