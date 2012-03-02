@@ -9,14 +9,19 @@ DEPLOY_CONFIG = {
   # Number of releases kept in server (including current)
   :releases_kept => 6,
   :release_branch => {
-    :stable => "master",
+    :stable1 => "master",
+    :stable => "stable2",
     :beta => "stable2"
   },
 
   :servers => {
-    :stable => {
+    :stable1 => {
       :client => ["morpheus.nebula44.lt"],
       :server => ["morpheus.nebula44.lt"],
+    },
+    :stable => {
+      :client => ["nexar.nebula44.lt"],
+      :server => ["nexar.nebula44.lt"],
     },
     :beta => {
       :client => ["static-beta.nebula44.com"],

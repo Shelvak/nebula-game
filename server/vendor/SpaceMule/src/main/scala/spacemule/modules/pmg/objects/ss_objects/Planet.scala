@@ -25,8 +25,19 @@ object Planet {
      * Extract a map set from ruby config.
      */
     def extract(data: sc.Seq[Any]) = {
-      val maps = data.map { mapData =>
-        Map.extract(mapData.asInstanceOf[sc.Map[String, Any]])
+      val maps = data.mapWithIndex { case (rawMapData, index) =>
+        val mapData = rawMapData.asInstanceOf[sc.Map[String, Any]]
+        val extracted = try {
+          Map.extract(mapData)
+        }
+        catch {
+          case e: Exception => throw new IllegalArgumentException(
+            "Error while extracting mapset entry %d:\n%s".format(
+              index, e.getMessage
+            ), e
+          )
+        }
+        extracted
       }.toIndexedSeq
       new MapSet(maps)
     }
@@ -78,10 +89,11 @@ object Planet {
             }
             catch {
               case e: Exception =>
-                System.err.println(
-                  "Error while setting %s at %s!".format(tile, coord)
+                throw new IllegalArgumentException(
+                  "Error while setting %s at %s:\n%s".format(
+                    tile, coord, e.getMessage
+                  ), e
                 )
-                throw e
             }
           }
         }
@@ -119,12 +131,11 @@ object Planet {
       }
       catch {
         case e: Exception =>
-          System.err.println(
-            "Error while extracting planet map definition from:\n\n%s".format(
-              data
-            )
+          throw new IllegalArgumentException(
+            "Error while extracting planet map definition from:\n\n%s\n\n%s".
+              format(data, e.getMessage),
+            e
           )
-          throw e
       }
     }
   }

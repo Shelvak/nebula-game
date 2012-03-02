@@ -479,9 +479,10 @@
        EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGIES_CREATED, drawTree);
        drawTree();
        MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, checkScreen);
+       checkScreen();
      }
 
-     private function checkScreen(e: ScreensSwitchEvent): void
+     private function checkScreen(e: ScreensSwitchEvent = null): void
      {
          if (MCMainArea.getInstance().currentName == MainAreaScreens.TECH_TREE)
          {

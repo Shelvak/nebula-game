@@ -508,9 +508,18 @@ object Config {
   
   def mapSet(key: String): ss_objects.Planet.MapSet = {
     if (! planetMapSetCache.contains(key)) {
-      val mapSet = ss_objects.Planet.MapSet.extract(
-        get[Seq[Any]]("planet.map.%s".format(key))
-      )
+      val mapSet = try {
+        ss_objects.Planet.MapSet.extract(
+          get[Seq[Any]]("planet.map.%s".format(key))
+        )
+      }
+      catch {
+        case e: Exception =>
+          throw new IllegalArgumentException(
+            "Error while extracting mapset %s:\n%s".format(key, e.getMessage),
+            e
+          )
+      }
       planetMapSetCache(key) = mapSet
       mapSet
     }
