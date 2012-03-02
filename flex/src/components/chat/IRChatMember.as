@@ -172,11 +172,13 @@ package components.chat
          btnDoIgnore = new Button();
          btnDoIgnore.right = 0;
          btnDoIgnore.setStyle("skinClass", DoIgnoreButtonSkin);
+         btnDoIgnore.toolTip = Localizer.string('Chat', 'tooltip.btnDoIgnore');
          btnDoIgnore.addEventListener(MouseEvent.CLICK, btnDoIgnore_clickHandler);
          grpIgnoreButtons.addElement(btnDoIgnore);
          btnDoUnignore = new Button();
          btnDoUnignore.right = 0;
          btnDoUnignore.setStyle("skinClass", DoUnignoreButtonSkin);
+         btnDoUnignore.toolTip = Localizer.string('Chat', 'tooltip.btnDoUnignore');
          btnDoUnignore.addEventListener(MouseEvent.CLICK, btnDoUnignore_clickHandler);
          grpIgnoreButtons.addElement(btnDoUnignore);
       }

@@ -5493,6 +5493,12 @@
         Tu buvai nutildytas iki {0} dėl pokalbių teršimo.
         Vėl galėsi šnekėti už {1}.
      </message.silence>
+     <tooltip.btnDoIgnore>
+       <p>Žaidėjas nėra ignoruojamas</p>
+     </tooltip.btnDoIgnore>
+     <tooltip.btnDoUnignore>
+       <p>Žaidėjas ignoruojamas</p>
+     </tooltip.btnDoUnignore>
      <label.send value="Siųsti" />
      <label.mainChannel value="#galaktika"/>
      <label.allianceChannel value="#sąjunga"/>
