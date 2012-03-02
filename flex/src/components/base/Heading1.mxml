@@ -17,7 +17,7 @@
          }
       ]]>
    </fx:Script>
-   <s:BitmapImage source="{getImg('line_end')}" rotation="180"/>
+   <s:BitmapImage source="{getImg('line_end')}" scaleX="-1"/>
    <s:BitmapImage source="{getImg('line')}" width="100%"/>
    <s:Label text="{text}" fontSize="24" color="#eec500" fontWeight="bold"
             paddingLeft="10" paddingRight="10"/>
