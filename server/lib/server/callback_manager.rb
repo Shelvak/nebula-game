@@ -102,7 +102,7 @@ class CallbackManager
 
       time ||= object.upgrade_ends_at
 
-      LOGGER.debug("CM: registering event '#{STRING_NAMES[event]
+      LOGGER.info("CM: registering event '#{STRING_NAMES[event]
         }' at #{time.to_s(:db)} for #{object}")
 
       raise ArgumentError.new("object #{object} does not have id!") \
@@ -120,7 +120,7 @@ class CallbackManager
     def update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
       time ||= object.upgrade_ends_at
 
-      LOGGER.debug("CM: updating event '#{STRING_NAMES[event]
+      LOGGER.info("CM: updating event '#{STRING_NAMES[event]
         }' at #{time.to_s(:db)} for #{object}")
 
       column = get_column(object)
