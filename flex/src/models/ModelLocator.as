@@ -3,7 +3,6 @@ package models
    import application.Version;
 
    import controllers.battle.BattleController;
-   import controllers.messages.ResponseMessagesTracker;
    import controllers.screens.MainAreaScreens;
    import controllers.startup.StartupManager;
    import controllers.ui.NavigationController;
@@ -31,13 +30,14 @@ package models
    import mx.formatters.DateFormatter;
 
    import namespaces.client_internal;
-
    import namespaces.prop_name;
 
    import utils.DateUtil;
    import utils.SingletonFactory;
    import utils.StringUtil;
    import utils.datastructures.Collections;
+   import utils.remote.ServerConnector;
+   import utils.remote.ServerProxyInstance;
 
 
    /**
@@ -77,7 +77,7 @@ package models
          dateFmt.formatString = "YYYY-MM-DD JJ:NN:SS";
          message += StringUtil.substitute(
             "Lowest observed communications latency: {0}\n",
-            ResponseMessagesTracker.getInstance().client_internal::lowestObservedLatency
+            ServerConnector(ServerProxyInstance.getInstance()).client_internal::lowestObservedLatency
          );
          message += StringUtil.substitute(
             "Time diff (serverTime - clientTime): {0}\n", DateUtil.timeDiff

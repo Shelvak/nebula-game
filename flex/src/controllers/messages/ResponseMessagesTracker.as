@@ -8,8 +8,6 @@ package controllers.messages
 
    import mx.utils.ObjectUtil;
 
-   import namespaces.client_internal;
-
    import utils.SingletonFactory;
    import utils.logging.MessagesLogger;
    import utils.remote.rmo.ClientRMO;
@@ -43,23 +41,15 @@ package controllers.messages
       }
 
 
-      private const _timeSynchronizer: TimeSynchronizer = new TimeSynchronizer();
       private var _pendingRMOs: Object = new Object();
-
 
       public function ResponseMessagesTracker() {
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
 
-
       private function global_appResetHandler(event: GlobalEvent): void {
          reset();
       }
-
-      client_internal function get lowestObservedLatency():int {
-         return _timeSynchronizer.lowestObservedLatency;
-      }
-
 
       /**
        * Removes all RMOs currently being tracked.
@@ -71,7 +61,6 @@ package controllers.messages
             }
          }
          _pendingRMOs = new Object();
-         _timeSynchronizer.reset();
       }
 
 
@@ -122,7 +111,6 @@ package controllers.messages
        */
       public function removeRMO(sRMO: ServerRMO): ClientRMO {
          if (_pendingRMOs[sRMO.replyTo]) {
-            _timeSynchronizer.synchronize(Number(sRMO.replyTo), Number(sRMO.id));
             const record: PendingRMORecord = PendingRMORecord(_pendingRMOs[sRMO.replyTo]);
             const rmo: ClientRMO = record.rmo;
             delete _pendingRMOs[record.key];
@@ -176,7 +164,6 @@ package controllers.messages
 }
 
 
-import utils.DateUtil;
 import utils.remote.rmo.ClientRMO;
 
 
@@ -213,32 +200,5 @@ class PendingRMORecord
 
    public function PendingRMORecord(rmo: ClientRMO) {
       this.rmo = rmo;
-   }
-}
-
-
-class TimeSynchronizer
-{
-   public function TimeSynchronizer(): void {
-      reset();
-   }
-
-   private var _lowestObservedLatency: int;
-   public function get lowestObservedLatency(): int {
-      return _lowestObservedLatency;
-   }
-
-   public function synchronize(requestTime: Number, serverTime: Number): void {
-      const currentTime: Number = new Date().time;
-      const latency: int = Math.round((currentTime - requestTime) / 2);
-      if (latency < _lowestObservedLatency) {
-         _lowestObservedLatency = latency;
-         DateUtil.timeDiff = serverTime - currentTime + latency;
-      }
-   }
-
-   public function reset(): void {
-      DateUtil.timeDiff = 0;
-      _lowestObservedLatency = int.MAX_VALUE;
    }
 }

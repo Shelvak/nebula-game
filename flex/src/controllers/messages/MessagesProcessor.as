@@ -20,8 +20,12 @@ package controllers.messages
          return SingletonFactory.getSingletonInstance(MessagesProcessor);
       }
 
-      private function get SERVER_PROXY(): IServerProxy {
+      private function get serverProxy(): IServerProxy {
          return ServerProxyInstance.getInstance();
+      }
+
+      private function get respMsgTracker(): ResponseMessagesTracker {
+         return ResponseMessagesTracker.getInstance();
       }
 
       private function get msgLog(): MessagesLogger {
@@ -37,13 +41,16 @@ package controllers.messages
        * this method.
        */
       public function process(): void {
-         var messages: Vector.<ServerRMO> = SERVER_PROXY.getUnprocessedMessages();
+         var messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
          if (messages == null) {
             return;
          }
          for each (var rmo: ServerRMO in messages) {
             var keyword: String = rmo.action != null ? rmo.action : "";
-            if (!rmo.isReply) {
+            if (rmo.isReply) {
+               respMsgTracker.removeRMO(rmo);
+            }
+            else {
                msgLog.logMessage(keyword, "Processing message {0}", [rmo.id]);
                new CommunicationCommand
                   (rmo.action, rmo.parameters, true, false, rmo)
@@ -56,7 +63,8 @@ package controllers.messages
        * Sends a message to the server via <code>IServerProxy</code>.
        */
       public function sendMessage(rmo: ClientRMO): void {
-         SERVER_PROXY.sendMessage(rmo);
+         respMsgTracker.addRMO(rmo);
+         serverProxy.sendMessage(rmo);
       }
    }
 }

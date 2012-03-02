@@ -15,6 +15,8 @@ package utils.remote
    import mx.logging.ILogger;
    import mx.logging.Log;
 
+   import namespaces.client_internal;
+
    import utils.Events;
    import utils.Objects;
    import utils.logging.MessagesLogger;
@@ -68,13 +70,13 @@ package utils.remote
          return MessagesLogger.getInstance();
       }
 
-      private function get responseMsgTracker(): ResponseMessagesTracker {
-         return ResponseMessagesTracker.getInstance();
-      }
-      
-      private var _socket: Socket = new Socket ();
+      private const _timeSynchronizer:TimeSynchronizer = new TimeSynchronizer();
+      private const _socket: Socket = new Socket();
       private var _connecting: Boolean = false;
-      
+
+      client_internal function get lowestObservedLatency(): int {
+         return _timeSynchronizer.lowestObservedLatency;
+      }
       
       /**
        * Don't instantiate this class. Use <code>ServerProxyInstance.getInstance()</code>.
@@ -124,10 +126,10 @@ package utils.remote
          _buffer += _socket.readUTFBytes(_socket.bytesAvailable);
          var index: int = _buffer.indexOf("\n");
          while (index != -1) {
-            var msg: String = _buffer.substring(0, index);
+            const msg: String = _buffer.substring(0, index);
             msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
-            var rmo: ServerRMO = ServerRMO.parse(msg);
-            responseMsgTracker.removeRMO(rmo);
+            const rmo: ServerRMO = ServerRMO.parse(msg);
+            _timeSynchronizer.synchronize(rmo);
             _unprocessedMessages.push(rmo);
             _buffer = _buffer.substr(index + 1);
             index = _buffer.indexOf("\n");
@@ -140,7 +142,8 @@ package utils.remote
       }
 
       private function socket_securityErrorHandler(event: SecurityErrorEvent): void {
-         // This will be thrown when timout is reached and connection could not be established
+         // This will be thrown when timeout is reached and connection could
+         // not be established
          if (connected || _connecting) {
             dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_TIMEOUT);
          }
@@ -171,7 +174,7 @@ package utils.remote
 
       public function disconnect(): void {
          _connecting = false;
-         // the method migh be called event if the socket is not open
+         // the method might be called event if the socket is not open
          try {
             _socket.close();
          }
@@ -181,12 +184,12 @@ package utils.remote
       }
 
       public function reset(): void {
+         _timeSynchronizer.reset();
          getUnprocessedMessages();
       }
 
       public function sendMessage(rmo: ClientRMO): void {
          if (_socket.connected) {
-            responseMsgTracker.addRMO(rmo);
             var msg: String = rmo.toJSON();
             msgLog.logMessage(msg, "<-~ | Outgoing message: {0}", [msg]);
             _socket.writeUTFBytes(msg + "\n");
@@ -215,5 +218,40 @@ package utils.remote
       private function dispatchServerProxyEvent(type: String): void {
          Events.dispatchSimpleEvent(this, ServerProxyEvent, type);
       }
+   }
+}
+
+import utils.DateUtil;
+import utils.remote.rmo.ServerRMO;
+
+
+class TimeSynchronizer
+{
+   public function TimeSynchronizer(): void {
+      reset();
+   }
+
+   private var _lowestObservedLatency: int;
+   public function get lowestObservedLatency(): int {
+      return _lowestObservedLatency;
+   }
+
+   public function synchronize(rmo:ServerRMO): void {
+      if (!rmo.isReply) {
+         return;
+      }
+      const requestTime: Number = Number(rmo.replyTo);
+      const serverTime: Number = Number(rmo.id);
+      const currentTime: Number = new Date().time;
+      const latency: int = Math.round((currentTime - requestTime) / 2);
+      if (latency < _lowestObservedLatency) {
+         _lowestObservedLatency = latency;
+         DateUtil.timeDiff = serverTime - currentTime + latency;
+      }
+   }
+
+   public function reset(): void {
+      DateUtil.timeDiff = 0;
+      _lowestObservedLatency = int.MAX_VALUE;
    }
 }
