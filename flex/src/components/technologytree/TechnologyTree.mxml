@@ -5,8 +5,6 @@
                       xmlns:viewport="components.base.viewport.*"
                       mouseEnabled="false"
                       width="100%" height="100%"
-                      addedToStage="addListeners()"
-                      removedFromStage="removeListeners()"
                       creationComplete="techTree_creationCompleteHandler(event)">
    <fx:Script>
       <![CDATA[
@@ -16,7 +14,10 @@
 
      import config.Config;
 
+     import controllers.navigation.MCMainArea;
+
      import controllers.navigation.MCSidebar;
+     import controllers.screens.MainAreaScreens;
      import controllers.screens.SidebarScreens;
 
      import globalevents.GPlanetEvent;
@@ -24,6 +25,8 @@
      import globalevents.GResourcesEvent;
      import globalevents.GTechnologiesEvent;
      import globalevents.GlobalEvent;
+
+     import models.events.ScreensSwitchEvent;
 
      import models.player.events.PlayerEvent;
      import models.solarsystem.MSSObject;
@@ -475,6 +478,23 @@
      protected function techTree_creationCompleteHandler(event: FlexEvent): void {
        EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGIES_CREATED, drawTree);
        drawTree();
+       MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, checkScreen);
+     }
+
+     private function checkScreen(e: ScreensSwitchEvent): void
+     {
+         if (MCMainArea.getInstance().currentName == MainAreaScreens.TECH_TREE)
+         {
+             addListeners();
+             refreshPurchasableState();
+         }
+         else
+         {
+             if (eventsSubscribed)
+             {
+                 removeListeners();
+             }
+         }
      }
 
      private function get SD(): MCSidebar {
