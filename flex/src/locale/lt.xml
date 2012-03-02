@@ -5624,6 +5624,7 @@
   </PlanetMapEditor>
 
   <PlayerOptions>
+     <title.options value="Nustatymai" />
      <title.chatOptions value="Pokalbių kambario nustatymai" />
      <title.afterLoginOptions value="Prisijungimo nustatymai" />
      <title.genericOptions value="Pagrindiniai nustatymai" />
