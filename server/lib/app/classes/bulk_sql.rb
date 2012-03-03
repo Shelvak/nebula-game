@@ -2,37 +2,6 @@
 SpaceMule
 
 class BulkSql
-  # Checkout another connection for bulk-sql because DDL (CREATE TABLE)
-  # operations on MySQL releases savepoints and that crashes nested
-  # transactions.
-  class Connection
-    include Singleton
-
-    def initialize
-      @connection = ActiveRecord::Base.
-        connection. # We can't use savepoints when using this.
-        #connection_pool.checkout. # But this somehow deadlocks the mysql.
-        jdbc_connection
-    end
-
-    def create_statement
-      @connection.create_statement
-    end
-
-    def execute(sql)
-      #STDERR.puts sql
-      create_statement.execute(sql)
-    end
-
-    def select_value(sql, key)
-      #STDERR.puts sql
-      statement = create_statement
-      record_set = statement.execute_query(sql)
-      record_set.next
-      record_set.get_object(key)
-    end
-  end
-
   # This marks NULL when using LOAD DATA INFILE.
   NULL = "\\N"
 
@@ -126,22 +95,22 @@ class BulkSql
         builder.append "\n"
       end
 
-      input_stream = Java::org.apache.commons.io.IOUtils.
-        to_input_stream(builder)
+      tempfile = Tempfile.new("bulk_sql-ruby")
+      begin
+        tempfile.write(builder.to_s)
+        tempfile.flush # Ensure file is fully written.
+        File.chmod(0644, tempfile.path) # Ensure mysql daemon can read it.
 
-      # First create a statement off the connection
-      statement = connection.create_statement
-
-      # Setup our input stream as the source for the local infile
-      statement.set_local_infile_input_stream(input_stream)
-
-      # Execute the load infile
-      statement_text = "LOAD DATA LOCAL INFILE 'file.txt' INTO TABLE `#{
-        table_name}` (#{columns_str})"
-      #STDERR.puts table_name
-      #STDERR.puts columns_str
-      #STDERR.puts builder.to_s
-      statement.execute(statement_text)
+        # Execute the load infile. Use file version, because stream version
+        sql = "LOAD DATA INFILE '#{tempfile.path}' INTO TABLE `#{table_name
+          }` (#{columns_str})"
+        #STDERR.puts table_name
+        #STDERR.puts columns_str
+        #STDERR.puts builder.to_s
+        connection.execute(sql)
+      ensure
+        tempfile.close!
+      end
     end
 
     def execute_updates(columns, objects, klass)
@@ -156,9 +125,8 @@ class BulkSql
 
       # Create temporary table from original table definition and changed
       # fields.
-      create_table = connection.select_value(
-        "SHOW CREATE TABLE `#{table_name}`", "Create Table"
-      )
+      create_table = connection.
+        select_one("SHOW CREATE TABLE `#{table_name}`")["Create Table"]
 
       create_tmp_table = "CREATE TEMPORARY TABLE `#{tmp_table_name}` (\n"
       columns.each do |column|
@@ -194,7 +162,7 @@ class BulkSql
     end
 
     def connection
-      Connection.instance
+      ActiveRecord::Base.connection
     end
   end
 end

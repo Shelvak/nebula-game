@@ -61,7 +61,7 @@ abstract class SSObjectRow(
   val size = Config.ssObjectSize.random
   val terrain = 0
   val playerId = DB.loadInFileNull
-  val name = DB.loadInFileNull
+  val name = "" // not null!
   val resources = SSObjectRow.Resources(
     SSObjectRow.Resources.Resource(0, 0, 0, 0),
     SSObjectRow.Resources.Resource(0, 0, 0, 0),

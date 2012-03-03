@@ -22,7 +22,7 @@ object Manager {
   val questProgresses = ListBuffer[String]()
   val objectiveProgresses = ListBuffer[String]()
   val wreckages = ListBuffer[String]()
-  val callbacks = ListBuffer[String]()
+  val callbacks = new ListBuffer[String]()
 
   val galaxiesTable = "galaxies"
   val solarSystemsTable = "solar_systems"
@@ -174,16 +174,6 @@ WHERE
     ).foreach(_.clear())
   }
 
-  private def speedup(block: () => Unit) {
-    DB.exec("SET UNIQUE_CHECKS=0")
-    DB.exec("SET FOREIGN_KEY_CHECKS=0")
-    DB.exec("BEGIN")
-    block()
-    DB.exec("COMMIT")
-    DB.exec("SET UNIQUE_CHECKS=1")
-    DB.exec("SET FOREIGN_KEY_CHECKS=1")
-  }
-
 // Only for debugging.
 //  private def checkFks(
 //    childCols: String, childKey: String, childRows: Seq[String],
@@ -253,10 +243,12 @@ WHERE
   }
 
   private def saveBuffer(tableName: String, columns: String,
-                         items: Seq[String]) {
+                         items: ListBuffer[String]) {
     if (items.size == 0) return
 
     DB.loadInFile(tableName, columns, items)
+    // Ensure items are cleared for the next run.
+    items.clear()
   }
 
   private def readGalaxy(galaxy: Galaxy) {

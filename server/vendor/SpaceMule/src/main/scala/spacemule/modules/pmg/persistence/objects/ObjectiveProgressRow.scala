@@ -13,7 +13,7 @@ object ObjectiveProgressRow {
 
 case class ObjectiveProgressRow(objectiveId: Int, playerId: Int) {
   val id = TableIds.objectiveProgresses.next
-  val values = "%d\t%d\t%d\t0".format(
+  val values = "%d\t%d\t%d".format(
     id, objectiveId, playerId
   )
 }
