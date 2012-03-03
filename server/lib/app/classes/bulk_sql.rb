@@ -28,7 +28,6 @@ class BulkSql
 
           changes = object.changed
           unless changes.blank?
-
             if pk.nil?
               # Simulate record save.
               last_pk += 1
@@ -41,10 +40,10 @@ class BulkSql
               changes.each { |column| update_columns.add(column.to_sym) }
               update_objects.push object
             end
-
-            # Mark as saved.
-            object.changed_attributes.clear
           end
+
+          # Mark as saved.
+          object.changed_attributes.clear
         end
 
         # Bulk insert/update.
@@ -72,14 +71,14 @@ class BulkSql
 
     def encode_value(value)
       case value
-        when nil then NULL
-        when true then "1"
-        when false then "0"
-        else value.to_s
+      when nil then NULL
+      when true then "1"
+      when false then "0"
+      else value.to_s
       end
     end
 
-    def execute_inserts(columns, objects, klass, table_name=nil)
+    def execute_inserts(columns, objects, klass, table_name=nil, update=false)
       return if objects.size == 0
 
       table_name ||= klass.table_name
@@ -87,27 +86,37 @@ class BulkSql
 
       builder = Java::java.lang.StringBuilder.new
       objects.each do |object|
-        columns.each_with_index do |column, index|
-          value = object[column]
-          builder.append "\t" unless index == 0
-          builder.append encode_value(value)
+        # Run callbacks to simulate proper save.
+        object.run_callbacks(update ? :update : :create) do
+          object.run_callbacks(:save) do
+            columns.each_with_index do |column, index|
+              value = object[column]
+              builder.append "\t" unless index == 0
+              builder.append encode_value(value)
+            end
+            builder.append "\n"
+          end
         end
-        builder.append "\n"
       end
 
       tempfile = Tempfile.new("bulk_sql-ruby")
       begin
-        tempfile.write(builder.to_s)
+        content = builder.to_s
+        tempfile.write(content)
         tempfile.flush # Ensure file is fully written.
         File.chmod(0644, tempfile.path) # Ensure mysql daemon can read it.
 
         # Execute the load infile. Use file version, because stream version
+        # silently ignores errors.
         sql = "LOAD DATA INFILE '#{tempfile.path}' INTO TABLE `#{table_name
           }` (#{columns_str})"
         #STDERR.puts table_name
         #STDERR.puts columns_str
         #STDERR.puts builder.to_s
         connection.execute(sql)
+      rescue Exception => e
+        raise ArgumentError,
+          "#{e.message}\nData was:\n#{columns_str}\n#{content}", e.backtrace
       ensure
         tempfile.close!
       end
@@ -139,7 +148,7 @@ class BulkSql
       connection.execute(create_tmp_table)
 
       # Use bulk insert to add data to temporary table
-      execute_inserts(columns, objects, klass, tmp_table_name)
+      execute_inserts(columns, objects, klass, tmp_table_name, true)
 
       # Execute mass update from temporary table to the original table.
       # Exclude first column that is always ID.

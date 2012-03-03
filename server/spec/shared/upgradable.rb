@@ -345,7 +345,9 @@ shared_examples_for "upgradable" do
   end
 
   it "should unregister from CallbackManager on #pause!" do
-    CallbackManager.should_receive(:unregister).with(@model)
+    CallbackManager.should_receive(:unregister).with(
+      @model, CallbackManager::EVENT_UPGRADE_FINISHED
+    )
     @model.upgrade_ends_at = 5.minutes.since
     @model.pause!
   end
@@ -367,14 +369,18 @@ shared_examples_for "upgradable" do
   describe "#resume" do
     it "should register to CallbackManager" do
       @model.pause_remainder = 100
-      CallbackManager.should_receive(:register_or_update).with(@model)
+      CallbackManager.should_receive(:register_or_update).with(
+        @model, CallbackManager::EVENT_UPGRADE_FINISHED, @model.upgrade_ends_at
+      )
       @model.resume!
     end
 
     it "should not register to CallbackManager if told to" do
       @model.pause_remainder = 100
       @model.register_upgrade_finished_callback = false
-      CallbackManager.should_not_receive(:register_or_update).with(@model)
+      CallbackManager.should_not_receive(:register_or_update).with(
+        @model, CallbackManager::EVENT_UPGRADE_FINISHED, @model.upgrade_ends_at
+      )
       @model.resume!
     end
 

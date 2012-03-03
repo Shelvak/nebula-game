@@ -1,6 +1,5 @@
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects._
 import spacemule.helpers.Converters._
@@ -9,10 +8,12 @@ import spacemule.modules.config.objects.Config
 import spacemule.persistence.{DB, RowObject, Row}
 import java.util.Calendar
 import ss_object._
+import spacemule.modules.pmg.persistence.manager.Buffer
 
 object SSObjectRow extends RowObject {
+  val pkColumn = Some("id")
   val columnsSeq = List(
-    "id", "type", "solar_system_id", "angle", "position", "width", "height",
+    "type", "solar_system_id", "angle", "position", "width", "height",
     "terrain", "player_id", "name", "size", "owner_changed",
     "metal", "metal_generation_rate", "metal_usage_rate", "metal_storage",
     "energy", "energy_generation_rate", "energy_usage_rate", "energy_storage",
@@ -52,16 +53,17 @@ object SSObjectRow extends RowObject {
 }
 
 abstract class SSObjectRow(
-  solarSystemRow: SolarSystemRow, coord: Coords, ssObject: SSObject
+  solarSystemRow: SolarSystemRow, coord: Coords,
+  ssObject: SSObject
 ) extends Row {
   val companion = SSObjectRow
-  val id = TableIds.ssObject.next
   val width = 0
   val height = 0
   val size = Config.ssObjectSize.random
   val terrain = 0
   val playerId = DB.loadInFileNull
-  val name = "" // not null!
+  // Initialize this lazily, to allow subclasses to have lazy eval too.
+  lazy val name = "" // not null!
   val resources = SSObjectRow.Resources(
     SSObjectRow.Resources.Resource(0, 0, 0, 0),
     SSObjectRow.Resources.Resource(0, 0, 0, 0),
@@ -72,7 +74,7 @@ abstract class SSObjectRow(
 
   // Initialize this lazily, because this abstract class is subclassed.
   lazy val valuesSeq = List(
-    id, ssObject.name, solarSystemRow.id, coord.angle, coord.position,
+    ssObject.name, solarSystemRow.id, coord.angle, coord.position,
     width, height, terrain, playerId, name, size, DB.date(ownerChanged)
   ) ++ resources.toSeq :+ (nextRaidAt match {
     case Some(time) => DB.date(time)

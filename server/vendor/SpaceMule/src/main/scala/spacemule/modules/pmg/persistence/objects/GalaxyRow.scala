@@ -5,20 +5,21 @@
 
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.modules.pmg.persistence.TableIds
+import spacemule.persistence.{Row, RowObject}
 
-object GalaxyRow {
-  val columns = "`id`, `ruleset`, `callback_url`, `created_at`"
+object GalaxyRow extends RowObject {
+  val pkColumn = Some("id")
+  val columnsSeq = List("ruleset", "callback_url", "created_at")
 }
 
-class GalaxyRow(ruleset: String, callbackUrl: String, createdAt: String) {
-  val id = TableIds.galaxy.next
-  val values = (
-    "%d\t%s\t%s\t%s".format(
-      id,
-      ruleset,
-      callbackUrl,
-      createdAt
-    )
+class GalaxyRow(
+  ruleset: String, callbackUrl: String, createdAt: String
+) extends Row {
+  val companion = GalaxyRow
+
+  val valuesSeq = List(
+    ruleset,
+    callbackUrl,
+    createdAt
   )
 }

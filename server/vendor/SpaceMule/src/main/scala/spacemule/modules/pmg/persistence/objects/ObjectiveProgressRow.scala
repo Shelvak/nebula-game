@@ -5,15 +5,20 @@
 
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.modules.pmg.persistence.TableIds
+import spacemule.persistence.{Row, RowObject}
+import spacemule.modules.pmg.persistence.manager.Buffer
 
-object ObjectiveProgressRow {
-  val columns = "`id`, `objective_id`, `player_id`"
+object ObjectiveProgressRow extends RowObject {
+  val pkColumn = Some("id")
+  val columnsSeq = List("objective_id", "player_id")
 }
 
-case class ObjectiveProgressRow(objectiveId: Int, playerId: Int) {
-  val id = TableIds.objectiveProgresses.next
-  val values = "%d\t%d\t%d".format(
-    id, objectiveId, playerId
+case class ObjectiveProgressRow(objectiveId: Int, playerId: Int)
+  extends Row
+{
+  val companion = ObjectiveProgressRow
+
+  val valuesSeq = List(
+    objectiveId, playerId
   )
 }

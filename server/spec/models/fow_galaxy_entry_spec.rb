@@ -7,9 +7,9 @@ describe FowGalaxyEntry do
     end
 
     it "should return conditions joined by OR" do
-      fge1 = Factory.create(:fow_galaxy_entry, :x => 0, :x_end => 3,
+      fge1 = Factory.create(:fge_player, :x => 0, :x_end => 3,
         :y => 0, :y_end => 6)
-      fge2 = Factory.create(:fow_galaxy_entry, :x => -3, :x_end => 3,
+      fge2 = Factory.create(:fge_player, :x => -3, :x_end => 3,
         :y => -2, :y_end => 6, :galaxy => fge1.galaxy)
 
       FowGalaxyEntry.conditions([fge1, fge2]).should == \
@@ -61,7 +61,7 @@ describe FowGalaxyEntry do
       ["bottom-right", [-10, 10, -30, 30], [-10, 10]],
     ].each do |corner, rectangle, coords|
       it "should get by #{corner} corner" do
-        model = Factory.create :fow_galaxy_entry,
+        model = Factory.create :fge_player,
           :rectangle => Rectangle.new(*rectangle)
         FowGalaxyEntry.by_coords(*coords).scoped_by_galaxy_id(
           model.galaxy_id).first.should == model
@@ -70,7 +70,7 @@ describe FowGalaxyEntry do
   end
 
   describe "as json" do
-    it_behaves_like "as json", Factory.create(:fse_player), nil,
+    it_behaves_like "as json", Factory.create(:fge_player), nil,
                     %w{x y x_end y_end},
                     %w{id player_id alliance_id counter}
   end
@@ -173,17 +173,17 @@ describe FowGalaxyEntry do
 
       before(:each) do
         # Alliance SS
-        Factory.create(:fow_galaxy_entry, :rectangle => rect1,
+        Factory.create(:fge_player, :rectangle => rect1,
           :alliance => alliance, :counter => 1)
-        Factory.create(:fow_galaxy_entry, :rectangle => rect2,
+        Factory.create(:fge_player, :rectangle => rect2,
           :alliance => alliance, :counter => 2)
-        Factory.create(:fow_galaxy_entry, :rectangle => rect3,
+        Factory.create(:fge_player, :rectangle => rect3,
           :alliance => alliance, :counter => 1)
 
         # P2 SS
-        Factory.create(:fow_galaxy_entry, :rectangle => rect2,
+        Factory.create(:fge_player, :rectangle => rect2,
           :player => player2, :counter => 1)
-        Factory.create(:fow_galaxy_entry, :rectangle => rect3,
+        Factory.create(:fge_player, :rectangle => rect3,
           :player => player2, :counter => 1)
       end
 
