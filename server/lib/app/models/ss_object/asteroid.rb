@@ -38,8 +38,10 @@ class SsObject::Asteroid < SsObject
     zetium = zetium_generation_rate * CONFIG.rangerand(
       "ss_object.asteroid.wreckage.zetium.spawn") * zetium_mod
     Wreckage.add(solar_system_point, metal, energy, zetium)
-    CallbackManager.register(self, CallbackManager::EVENT_SPAWN,
-      CONFIG.eval_rangerand(
-        "ss_object.asteroid.wreckage.time.spawn").from_now)
+    CallbackManager.register(
+      self, CallbackManager::EVENT_SPAWN, CONFIG.eval_rangerand(
+        "ss_object.asteroid.wreckage.time.spawn
+      ").from_now
+    )
   end
 end

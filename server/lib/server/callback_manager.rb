@@ -94,13 +94,8 @@ class CallbackManager
     # Register _event_ that will happen at _time_ on _object_. It will
     # be scoped in _ruleset_. Beware that ruleset is not considered when
     # updating or checking for object existence.
-    def register(object, event=EVENT_UPGRADE_FINISHED, time=nil)
-      raise ArgumentError.new("object was nil!") if object.nil?
-      raise ArgumentError.new("object was not a ActiveRecord::Base, but #{
-        object.class} with superclass #{object.class.superclass}!") \
-        unless object.is_a?(ActiveRecord::Base)
-
-      time ||= object.upgrade_ends_at
+    def register(object, event, time)
+      typesig binding, ActiveRecord::Base, Fixnum, Time
 
       LOGGER.info("CM: registering event '#{STRING_NAMES[event]
         }' at #{time.to_s(:db)} for #{object}")
@@ -117,8 +112,8 @@ class CallbackManager
     end
 
     # Update existing record.
-    def update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
-      time ||= object.upgrade_ends_at
+    def update(object, event, time)
+      typesig binding, ActiveRecord::Base, Fixnum, Time
 
       LOGGER.info("CM: updating event '#{STRING_NAMES[event]
         }' at #{time.to_s(:db)} for #{object}")
@@ -130,7 +125,9 @@ class CallbackManager
       )
     end
 
-    def register_or_update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
+    def register_or_update(object, event, time)
+      typesig binding, ActiveRecord::Base, Fixnum, Time
+
       register(object, event, time)
     rescue ActiveRecord::RecordNotUnique
       update(object, event, time)
@@ -154,8 +151,10 @@ class CallbackManager
       ).nil?
     end
 
-    def unregister(object, event=EVENT_UPGRADE_FINISHED)
-      LOGGER.debug("CM: unregistering event '#{STRING_NAMES[event]
+    def unregister(object, event)
+      typesig binding, ActiveRecord::Base, Fixnum
+
+      LOGGER.info("CM: unregistering event '#{STRING_NAMES[event]
         }' for #{object}")
 
       column = get_column(object)

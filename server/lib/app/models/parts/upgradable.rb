@@ -362,8 +362,9 @@ module Parts
       end
       
       def on_upgrade_just_resumed_after_save
-        CallbackManager.register_or_update(self) \
-          if register_upgrade_finished_callback?
+        CallbackManager.register_or_update(
+          self, CallbackManager::EVENT_UPGRADE_FINISHED, upgrade_ends_at
+        ) if register_upgrade_finished_callback?
 
         true
       end
@@ -374,7 +375,9 @@ module Parts
       end
 
       def on_upgrade_just_paused_after_save
-        CallbackManager.unregister(self)
+        CallbackManager.unregister(
+          self, CallbackManager::EVENT_UPGRADE_FINISHED
+        )
       end
 
       ### finished ###
@@ -400,10 +403,12 @@ module Parts
       def on_upgrade_just_finished_after_save
         increase_player_points(points_on_upgrade)
         # Unregister just finished in case we accelerated upgrading.
-        CallbackManager.unregister(self,
-          CallbackManager::EVENT_UPGRADE_FINISHED)
-        EventBroker.fire(self, EventBroker::CHANGED,
-          EventBroker::REASON_UPGRADE_FINISHED)
+        CallbackManager.unregister(
+          self, CallbackManager::EVENT_UPGRADE_FINISHED
+        )
+        EventBroker.fire(
+          self, EventBroker::CHANGED, EventBroker::REASON_UPGRADE_FINISHED
+        )
       end
 
       # This is called as a before_destroy callback.
