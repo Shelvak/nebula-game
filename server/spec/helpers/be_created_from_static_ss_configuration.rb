@@ -214,16 +214,29 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
         } but it did not." \
         unless CallbackManager.has?(asteroid, CallbackManager::EVENT_SPAWN,
                                     spawn_time.to_range(SPEC_TIME_PRECISION))
+
+      @errors << "#{exp_to} not have #next_raid_at but it did." \
+        unless asteroid.next_raid_at.nil?
+
+      @errors << "#{exp_to} not have raid callback but it did." \
+        if CallbackManager.has?(asteroid, CallbackManager::EVENT_RAID)
     end
   end
 
   def check_jumpgate(position_str, ss_conditions)
-    row = SsObject::Jumpgate.where(ss_conditions).select("id").
-      c_select_value
+    jumpgate = SsObject::Jumpgate.where(ss_conditions).first
 
-    if row.nil?
+    if jumpgate.nil?
       @errors << "Expected jumpgate to exist @ #{position_str
         } but it did not."
+    else
+      exp_to = "Expected jumpgate (#{jumpgate.id}) @ #{position_str} to"
+
+      @errors << "#{exp_to} not have #next_raid_at but it did." \
+        unless jumpgate.next_raid_at.nil?
+
+      @errors << "#{exp_to} not have raid callback but it did." \
+        if CallbackManager.has?(jumpgate, CallbackManager::EVENT_RAID)
     end
   end
 
