@@ -19,14 +19,14 @@ end
 
 # Initialize space mule.
 LOGGER.info "Initializing SpaceMule."
-SpaceMule.supervise_as(:space_mule)
+SpaceMule.instance
 
 # Ensure server and callback manager are restarted if they crash.
 LOGGER.info "Starting server actor..."
-ServerActor.supervise_as(:server, CONFIG['server']['port'])
+Celluloid::Actor[:server] = ServerActor.new(CONFIG['server']['port'])
 
 LOGGER.info "Starting callback manager actor..."
-CallbackManager.supervise_as(:callback_manager)
+Celluloid::Actor[:callback_manager] = CallbackManager.new
 
 # Set up signals.
 stop_server = proc do

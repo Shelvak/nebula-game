@@ -75,7 +75,7 @@ module Dev
     end
 
     player = Player.find(player_id)
-    Celluloid::Actor[:space_mule].create_players(player.galaxy_id,
+    SpaceMule.instance.create_players(player.galaxy_id,
       player.galaxy.ruleset, players)
 
     players.keys

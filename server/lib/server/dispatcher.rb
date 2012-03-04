@@ -22,18 +22,21 @@ class Dispatcher
   # Initialize the dispatcher.
   def initialize
     @director_supervisors = {
-      :chat => Threading::Director.supervise("chat", 1),
-      :server => Threading::Director.supervise("server", 1),
-      :galaxy => Threading::Director.supervise("galaxy", 2),
-      :player => Threading::Director.supervise("player", 5),
+      :chat => Threading::Director.new("chat", 1),
+      :server => Threading::Director.new("server", 1),
+      :galaxy => Threading::Director.new("galaxy", 2),
+      :player => Threading::Director.new("player", 5),
     }
+    @director_supervisors.each do |name, director|
+      current_actor.link director
+    end
 
     @client_to_player = {}
     @player_id_to_client = {}
     # Session level storage to store data between controllers
     @storage = {}
 
-    @event_handler = DispatcherEventHandler
+    @event_handler = DispatcherEventHandler.new
   end
 
   def to_s(client=nil)

@@ -354,14 +354,13 @@ ActiveSupport::JSON.backend = :json_gem
 ActiveSupport.use_standard_json_time_format = true
 ActiveSupport::LogSubscriber.colorize_logging = false
 
-# Ensure dispatcher is restarted if it crashes.
-Dispatcher.supervise_as :dispatcher
-# Ensure space mule is restarted if it crashes.
-SpaceMule.supervise_as :space_mule
+unless rake?
+  Celluloid::Actor[:dispatcher] = Dispatcher.new
 
-# Initialize event handlers
-QUEST_EVENT_HANDLER = QuestEventHandler.new
-DISPATCHER_EVENT_HANDLER = DispatcherEventHandler.new
+  # Initialize event handlers
+  QUEST_EVENT_HANDLER = QuestEventHandler.new
+  DISPATCHER_EVENT_HANDLER = DispatcherEventHandler.new
 
-# Used for hotfix evaluation and IRB sessions.
-ROOT_BINDING = binding
+  # Used for hotfix evaluation and IRB sessions.
+  ROOT_BINDING = binding
+end

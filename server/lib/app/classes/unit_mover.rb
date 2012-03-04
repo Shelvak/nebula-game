@@ -103,7 +103,7 @@ class UnitMover
       route.player_id = player_id
       route.cached_units = units
 
-      path = Celluloid::Actor[:space_mule].find_path(source, target, avoid_npc)
+      path = SpaceMule.instance.find_path(source, target, avoid_npc)
       first_hop = nil
       last_hop = nil
       index = 0

@@ -16,7 +16,7 @@ module Combat::Simulation
         location, units, location.is_a?(SsObject::Planet)
       )
       # Invoke simulation.
-      response = Celluloid::Actor[:space_mule].
+      response = SpaceMule.instance.
         combat(location, players, nap_rules, units, loaded_units,
                unloaded_unit_ids, buildings)
 
