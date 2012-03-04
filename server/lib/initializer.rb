@@ -359,5 +359,3 @@ ActiveSupport::LogSubscriber.colorize_logging = false
 
 # Initialize event handlers
 QUEST_EVENT_HANDLER = QuestEventHandler.new
-
-SpaceMule.instance
