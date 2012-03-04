@@ -156,7 +156,6 @@ class ControlManager
       check_response(response)
     end
   rescue Error => e
-    LOGGER.warn("Login authorization for #{player_str} failed:\n\n#{e.message}")
     false
   end
 
