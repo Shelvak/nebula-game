@@ -61,7 +61,12 @@ trap("TERM", &stop_server)
 # Sleep forever while other threads do the dirty work.
 App.server_state = App::SERVER_STATE_RUNNING
 LOGGER.info "Server initialized."
-sleep 1 until App.server_state == App::SERVER_STATE_SHUTDOWNING
+sleep 1 until (
+  # Normal server shutdown.
+  App.server_state == App::SERVER_STATE_SHUTDOWNING ||
+  # Server crashed.
+  ! Celluloid::Actor[:server].alive?
+)
 
 LOGGER.info "Server stopped."
 sleep 1 # Allow last messages to be written to the logfile.

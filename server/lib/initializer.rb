@@ -237,8 +237,11 @@ if App.in_production?
   ]
 end
 
-Logging::Writer.supervise_as :log_writer, log_writer_config.freeze
+Logging::Writer.instance.config = log_writer_config
 LOGGER = Logging::ThreadRouter.instance
+ActiveRecord::Base.logger = LOGGER
+ActiveSupport::LogSubscriber.colorize_logging = false
+Celluloid.logger = LOGGER
 
 # Set up config object
 require "#{ROOT_DIR}/lib/app/classes/game_config.rb"
@@ -335,7 +338,6 @@ end
 
 ActiveRecord::Base.include_root_in_json = false
 ActiveRecord::Base.store_full_sti_class = false
-ActiveRecord::Base.logger = LOGGER
 
 class ActiveRecord::Relation
   # Add c_select_* methods.
@@ -352,13 +354,15 @@ end
 
 ActiveSupport::JSON.backend = :json_gem
 ActiveSupport.use_standard_json_time_format = true
-ActiveSupport::LogSubscriber.colorize_logging = false
 
 unless rake?
+  LOGGER.info "Creating dispatcher."
   Celluloid::Actor[:dispatcher] = Dispatcher.new
 
   # Initialize event handlers
+  LOGGER.info "Creating quest event handler."
   QUEST_EVENT_HANDLER = QuestEventHandler.new
+  LOGGER.info "Creating dispatcher event handler."
   DISPATCHER_EVENT_HANDLER = DispatcherEventHandler.new
 
   # Used for hotfix evaluation and IRB sessions.

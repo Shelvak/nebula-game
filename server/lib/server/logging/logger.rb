@@ -16,8 +16,7 @@ class Logging::Logger
   # Define logging methods
   Logging::Writer::TYPE_TO_LEVEL.each do |type, level|
     define_method(:"#{type}?") do
-      ! @except_types.include?(type) &&
-        Celluloid::Actor[:log_writer].write?(type)
+      ! @except_types.include?(type) && writer.write?(type)
     end
     define_method(type) do |message, component=DEFAULT_COMPONENT|
       data = data_for(component, type, message)
@@ -40,7 +39,6 @@ class Logging::Logger
       @block_buffer = "\n#{data}"
       started_buffering = true
       @include_time = false
-      #suspend_writer!
     else
       @block_buffer += data
     end
@@ -80,7 +78,6 @@ class Logging::Logger
       # Clear block buffer if this was the call that started buffering.
       @block_buffer = nil
       @include_time = true
-      #resume_writer!
     end
   end
 
@@ -99,15 +96,13 @@ class Logging::Logger
     name = Celluloid.actor? \
       ? "Ax#{Celluloid.current_actor.object_id.to_s(16)}" \
       : "main"
-    "%s[%s%s|%s|%-5s] %s\n" % [
+    "%s[%s%s|%s|%dt|%-5s] %s\n" % [
       ' ' * @indent,
       @include_time ? "#{Time.now.strftime(DATETIME_FORMAT)}|" : "",
-      name, component, type, message
+      name, component, Thread.list.size, type, message
     ]
   end
 
-  def suspend_writer!; writer.suspend!; end
-  def resume_writer!; writer.resume!; end
-  def write(type, data); writer.write!(type, data); end
-  def writer; Celluloid::Actor[:log_writer]; end
+  def write(type, data); writer.write(type, data); end
+  def writer; Logging::Writer.instance; end
 end

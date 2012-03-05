@@ -21,13 +21,13 @@ class Dispatcher
 
   # Initialize the dispatcher.
   def initialize
-    @director_supervisors = {
+    @directors = {
       :chat => Threading::Director.new("chat", 1),
       :server => Threading::Director.new("server", 1),
-      :galaxy => Threading::Director.new("galaxy", 2),
-      :player => Threading::Director.new("player", 5),
+      :galaxy => Threading::Director.new("galaxy", 1),
+      :player => Threading::Director.new("player", 1),
     }
-    @director_supervisors.each do |name, director|
+    @directors.each do |name, director|
       current_actor.link director
     end
 
@@ -35,8 +35,6 @@ class Dispatcher
     @player_id_to_client = {}
     # Session level storage to store data between controllers
     @storage = {}
-
-    @event_handler = DispatcherEventHandler.new
   end
 
   def to_s(client=nil)
@@ -242,7 +240,7 @@ class Dispatcher
   # through.
   #
   def push(client, action, params, filters=nil)
-    typesig binding, Client, String, Hash,
+    typesig binding, ServerActor::Client, String, Hash,
       [NilClass, Array, Dispatcher::PushFilter]
 
     log = "action #{action.inspect} with params #{params.inspect} and filters #{
@@ -371,11 +369,10 @@ class Dispatcher
       raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
     end
 
-    supervisor = @director_supervisors[name]
-    raise "Missing director #{name.inspect}!" if supervisor.nil?
+    director = @directors[name]
+    raise "Missing director #{name.inspect}!" if director.nil?
 
     info "Dispatching to #{name} director: scope=#{scope} task=#{task}"
-    director = supervisor.actor
     director.work!(scope.ids, task)
   end
 
