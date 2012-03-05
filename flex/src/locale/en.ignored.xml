@@ -1317,6 +1317,19 @@
     <label.cooldownEndsIn value="Next battle in"/>
   </General>
 
+   <Errors>
+      <invalidBitmap.title>Broken bitmap</invalidBitmap.title>
+      <invalidBitmap.message>
+         <p>
+            One or more bitmaps were broken while downloading them form the
+            server and upacking afterwards.
+         </p>
+         <p>
+            Refresh the page please.
+         </p>
+      </invalidBitmap.message>
+   </Errors>
+
   <InfoScreen>
     <title.details value="Details" />
     <currentLevel value="Current level" />
