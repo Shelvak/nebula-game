@@ -36,12 +36,12 @@ class ObjectsController < GenericController
   #     "Unit::Trooper" => [Unit#as_json, ...],
   #     "class_name" => [object, ...]
   #   }
-  # - reason (String): reason why this object was updated
+  # - reason (nil|Symbol|String): reason why this object was updated
   #
   ACTION_UPDATED = 'objects|updated'
 
   UPDATED_OPTIONS = logged_in + only_push +
-    required(:objects => Array, :reason => [Symbol, String])
+    required(:objects => Array, :reason => [NilClass, Symbol, String])
   def self.updated_scope(m); objects_scope(m); end
   def self.updated_action(m)
     respond m,
@@ -63,12 +63,12 @@ class ObjectsController < GenericController
   #     "Unit::Trooper" => [1, ...],
   #     "class_name" => [id, ...]
   #   }
-  # - reason (String): reason why this object were destroyed
+  # - reason (nil|Symbol|String): reason why this object were destroyed
   #
   ACTION_DESTROYED = 'objects|destroyed'
 
   DESTROYED_OPTIONS = logged_in + only_push +
-    required(:objects => Array, :reason => [Symbol, String])
+    required(:objects => Array, :reason => [NilClass, Symbol, String])
   def self.destroyed_scope(m); objects_scope(m); end
   def self.destroyed_action(m)
     respond m,

@@ -123,7 +123,7 @@ class UnitsController < GenericController
     player_units = Unit.in_location(planet.location_attrs).
       where(:player_id => m.player.id).find(m.params['unit_ids'])
 
-    unless m.`params['unit_ids'].size == player_units.size
+    unless m.params['unit_ids'].size == player_units.size
       missing_ids = m.params['unit_ids'] - player_units.map(&:id)
       raise ActiveRecord::RecordNotFound.new(
         "Cannot find all units (missing ids: #{missing_ids.join(",")
@@ -135,7 +135,7 @@ class UnitsController < GenericController
 
     # Destroy NPC building if there are no more units there.
     if target.units.blank?
-      Objective::DestroyNpcBuilding.progress(target, player)
+      Objective::DestroyNpcBuilding.progress(target, m.player)
       target.destroy!
     end
 
@@ -178,7 +178,7 @@ class UnitsController < GenericController
     :unit_ids => Array, :source => Hash, :target => Hash, :avoid_npc => Boolean
   )
   # Ignores spawns in galaxy/solar system.
-  def self.move_meta_scope(m); scope.player(m); end
+  def self.move_meta_scope(m); scope.player(m.player); end
   def self.move_meta_action(m)
     source, target = resolve_location(m)
 
@@ -213,7 +213,7 @@ class UnitsController < GenericController
   )
   def self.move_scope(m)
     source, target = resolve_location(m)
-    scope.combat(source)
+    scope.combat(source.location_point)
   end
   def self.move_action(m)
     source, target = resolve_location(m)
@@ -300,7 +300,7 @@ class UnitsController < GenericController
   MOVEMENT_OPTIONS = logged_in + only_push + required(
     :units => Array, :route_hops => Array, :jumps_at => [NilClass, Time]
   )
-  def self.movement_scope(m); scope.player(m); end
+  def self.movement_scope(m); scope.player(m.player); end
   def self.movement_action(m)
     resolver = StatusResolver.new(m.player)
 

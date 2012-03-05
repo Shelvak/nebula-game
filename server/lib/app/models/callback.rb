@@ -40,7 +40,7 @@ class Callback
   end
 
   def to_s
-    "<#{tag}: #{type} on #{@class_name} (#{@object_id}) @ #{
+    "<#{tag}: #{type} on #{@klass.to_s} (#{@object_id}) @ #{
       @ends_at_str} (ruleset: #{@ruleset})>"
   end
 

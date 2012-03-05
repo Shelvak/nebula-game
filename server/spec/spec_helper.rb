@@ -66,13 +66,13 @@ if $SPEC_INITIALIZED.nil?
     old_values = {}
     values.each do |key, value|
       old_values[key] = CONFIG[key]
-      CONFIG[key] = value
+      CONFIG.store(key, GameConfig::DEFAULT_SET, value)
     end
 
     yield
 
     old_values.each do |key, value|
-      CONFIG[key] = value
+      CONFIG.store(key, GameConfig::DEFAULT_SET, value)
     end
   end
 

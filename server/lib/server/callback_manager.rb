@@ -160,9 +160,9 @@ class CallbackManager
   end
 
   class << self
-    def get_column(object)
+    def parse_object(object)
       CLASS_TO_COLUMN.each do |klass, column|
-        return column if object.is_a?(klass)
+        return [klass, column] if object.is_a?(klass)
       end
 
       raise ArgumentError, "Unknown column type for #{object.inspect}!"
@@ -189,7 +189,8 @@ class CallbackManager
       raise ArgumentError.new("object #{object} does not have id!") \
         if object.id.nil?
 
-      column = get_column(object)
+      klass, column = parse_object(object)
+      check_event!(klass, event)
       ActiveRecord::Base.connection.execute(
         "INSERT INTO callbacks SET #{column}='#{object.id.to_i
           }', ruleset='#{CONFIG.set_scope}', event=#{event
@@ -204,7 +205,8 @@ class CallbackManager
       LOGGER.info("Updating event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
-      column = get_column(object)
+      klass, column = parse_object(object)
+      check_event!(klass, event)
       ActiveRecord::Base.connection.execute(
         "UPDATE callbacks SET ends_at='#{time.to_s(:db)}' WHERE #{
         column}=#{object.id} AND event=#{event}"
@@ -230,7 +232,8 @@ class CallbackManager
         "ends_at='#{time.to_s(:db)}'"
       end
 
-      column = get_column(object)
+      klass, column = parse_object(object)
+      check_event!(klass, event)
       ! ActiveRecord::Base.connection.select_value(
         "SELECT 1 FROM callbacks WHERE #{column}=#{object.id} AND event=#{event
         } AND #{time_condition} LIMIT 1"
@@ -240,10 +243,10 @@ class CallbackManager
     def unregister(object, event)
       typesig binding, ActiveRecord::Base, Fixnum
 
-      LOGGER.info("unregistering event '#{TYPES[event]
-        }' for #{object}", TAG)
+      LOGGER.info("unregistering event '#{TYPES[event]}' for #{object}", TAG)
 
-      column = get_column(object)
+      klass, column = parse_object(object)
+      check_event!(klass, event)
       ActiveRecord::Base.connection.execute(
         "DELETE FROM callbacks WHERE #{column}=#{object.id} AND event=#{event}"
       )
@@ -252,6 +255,13 @@ class CallbackManager
     def get(sql, connection=nil)
       connection ||= ActiveRecord::Base.connection
       connection.select_one("SELECT * FROM callbacks #{sql} LIMIT 1")
+    end
+
+    private
+    def check_event!(klass, event)
+      method = :"#{TYPES[event]}_callback"
+      raise ArgumentError, "#{klass} does not respond to #{method}!" \
+        unless klass.respond_to?(method)
     end
   end
 end

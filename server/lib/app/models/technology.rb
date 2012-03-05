@@ -1,4 +1,6 @@
 class Technology < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+
   include Parts::WithProperties
   include Parts::Upgradable
   include Parts::NeedsTechnology
@@ -328,10 +330,10 @@ class Technology < ActiveRecord::Base
 
   ### Callbacks ###
 
-  def upgrade_finished_scope(technology)
+  def self.upgrade_finished_scope(technology)
     DScope.player(technology.player_id)
   end
-  def upgrade_finished_callback(technology)
+  def self.upgrade_finished_callback(technology)
     technology.on_upgrade_finished!
   end
 end

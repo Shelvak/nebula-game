@@ -24,8 +24,12 @@ class Logging::Logger
         # We're not generating a block. Write out immediately.
         write(type, data)
       else
-        # Append to block buffer.
-        @block_buffer += data
+        if send(:"#{type}?")
+          # Append to block buffer.
+          @block_buffer += data
+          # Invoke type callback.
+          callback(type, data)
+        end
       end
     end
   end
@@ -104,5 +108,6 @@ class Logging::Logger
   end
 
   def write(type, data); writer.write(type, data); end
+  def callback(type, data); writer.callback(type, data); end
   def writer; Logging::Writer.instance; end
 end

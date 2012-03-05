@@ -33,29 +33,25 @@ stop_server = proc do
   LOGGER.info "Caught interrupt, shutting down..."
   App.server_state = App::SERVER_STATE_SHUTDOWNING
 end
-#if App.in_development?
-#  trap("INT") do
-#    if $IRB_RUNNING
-#      begin
-#        stop_server.call
-#        throw :IRB_EXIT
-#      ensure
-#        Celluloid::Actor[:callback_manager].resume!
-#      end
-#    else
-#     puts "\n\nDropping into IRB shell. Server operation suspended."
-#     puts "Press CTRL+C again to exit the server.\n\n"
-#
-#     puts "Pausing callback manager..."
-#     Celluloid::Actor[:callback_manager].pause
-#     puts "Starting IRB session..."
-#     IRB.start_session(ROOT_BINDING)
-#     puts "\nIRB done. Server operation resumed.\n\n"
-#    end
-#  end
-#else
+if App.in_development?
+  trap("INT") do
+    if $IRB_RUNNING
+      stop_server.call
+      exit
+    else
+     puts "\n\nDropping into IRB shell. Server operation suspended."
+     puts "Press CTRL+C again to exit the server.\n\n"
+
+     puts "Pausing callback manager..."
+     Celluloid::Actor[:callback_manager].pause
+     puts "Starting IRB session..."
+     IRB.start_session(ROOT_BINDING)
+     puts "\nIRB done. Server operation resumed.\n\n"
+    end
+  end
+else
   trap("INT", &stop_server)
-#end
+end
 trap("TERM", &stop_server)
 
 # Sleep forever while other threads do the dirty work.

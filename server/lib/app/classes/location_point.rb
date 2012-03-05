@@ -68,6 +68,11 @@ class LocationPoint
     Location.find_by_attrs(location_attrs)
   end
 
+  # Compatibility method. Returns self.
+  def location_point
+    self
+  end
+
   # Converts self to +ClientLocation+.
   def client_location
     ClientLocation.new(@id, @type, @x, @y)

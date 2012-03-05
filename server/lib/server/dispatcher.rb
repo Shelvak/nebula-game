@@ -14,6 +14,8 @@ class Dispatcher
   DISCONNECT_OTHER_LOGIN = "other_login"
   # Player was erased from server.
   DISCONNECT_PLAYER_ERASED = "player_erased"
+  # Server has encountered an error.
+  DISCONNECT_SERVER_ERROR = "server_error"
   
   class UnhandledMessage < StandardError; end
   class UnresolvableScope < StandardError; end
@@ -22,9 +24,9 @@ class Dispatcher
   # Initialize the dispatcher.
   def initialize
     @directors = {
-      :chat => Threading::Director.new("chat", 1),
-      :server => Threading::Director.new("server", 1),
-      :galaxy => Threading::Director.new("galaxy", 1),
+      #:chat => Threading::Director.new("chat", 1),
+      #:server => Threading::Director.new("server", 1),
+      #:galaxy => Threading::Director.new("galaxy", 1),
       :player => Threading::Director.new("player", 1),
     }
     @directors.each do |name, director|
@@ -165,14 +167,14 @@ class Dispatcher
   end
 
   # Disconnect client. Send message and close connection.
-  def disconnect(client_or_id, reason=nil, error_message=nil)
+  def disconnect(client_or_id, reason=nil)
     client = client_or_id.is_a?(Fixnum) \
       ? @id_to_client[client_or_id] : client_or_id
     return if client.nil?
 
     transmit_to_client(client, {
       "action" => ACTION_DISCONNECT,
-      "params" => {"reason" => reason, "error" => error_message}
+      "params" => {"reason" => reason}
     })
     unregister client
     Actor[:server].disconnect!(client)
@@ -337,8 +339,13 @@ class Dispatcher
     dispatch_task(scope, task)
   rescue GenericController::ParamOpts::BadParams, UnhandledMessage,
       UnresolvableScope => e
-    info "Cannot process #{message} - #{e.class}: #{e.message}", log_str
-    confirm_receive(message, e)
+    if message.pushed?
+      error "Cannot process #{message} - #{e.class}: #{e.message}", log_str
+      disconnect(message.client, DISCONNECT_SERVER_ERROR)
+    else
+      info "Cannot process #{message} - #{e.class}: #{e.message}", log_str
+      confirm_receive(message, e)
+    end
   end
 
   # Try to resolve scope and handle errors properly.
@@ -369,11 +376,13 @@ class Dispatcher
       raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
     end
 
-    director = @directors[name]
+    #director = @directors[name]
+    director = @directors[:player]
     raise "Missing director #{name.inspect}!" if director.nil?
 
     info "Dispatching to #{name} director: scope=#{scope} task=#{task}"
-    director.work!(scope.ids, task)
+    #director.work!(scope.ids, task)
+    director.work!([nil], task)
   end
 
   # Check if one of the given push filters match for current client.

@@ -236,6 +236,14 @@ if App.in_production?
   log_writer_config.callbacks[:warn] = MAILER[
     "WARN", "Server has issued a warning!"
   ]
+else
+  # Quit on failure in development mode.
+  log_writer_config.callbacks[:fatal] =
+    log_writer_config.callbacks[:error] =
+    lambda do |message|
+      App.server_state = App::SERVER_STATE_SHUTDOWNING
+      Celluloid.shutdown
+    end
 end
 
 Logging::Writer.instance.config = log_writer_config
@@ -247,8 +255,9 @@ Celluloid.logger = LOGGER
 # Set up config object
 require "#{ROOT_DIR}/lib/app/classes/game_config.rb"
 config_dir = File.expand_path(File.join(ROOT_DIR, 'config'))
-CONFIG = GameConfig.new
-CONFIG.setup!(config_dir, File.join(ROOT_DIR, 'run'))
+global_config = GameConfig.new
+global_config.setup!(config_dir, File.join(ROOT_DIR, 'run'))
+CONFIG = GameConfig::ThreadRouter.new(global_config)
 
 # Establish database connection
 DB_CONFIG = GameConfig.read_file(config_dir, 'database.yml')

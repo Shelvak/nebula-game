@@ -31,11 +31,11 @@ class SsObject::Asteroid < SsObject
   def spawn_resources!
     metal_mod, energy_mod, zetium_mod = spawn_modifiers
     
-    metal = metal_generation_rate * CONFIG.rangerand(
+    metal = metal_generation_rate * CONFIG.random_from(
       "ss_object.asteroid.wreckage.metal.spawn") * metal_mod
-    energy = energy_generation_rate * CONFIG.rangerand(
+    energy = energy_generation_rate * CONFIG.random_from(
       "ss_object.asteroid.wreckage.energy.spawn") * energy_mod
-    zetium = zetium_generation_rate * CONFIG.rangerand(
+    zetium = zetium_generation_rate * CONFIG.random_from(
       "ss_object.asteroid.wreckage.zetium.spawn") * zetium_mod
     Wreckage.add(solar_system_point, metal, energy, zetium)
     CallbackManager.register(

@@ -71,10 +71,16 @@ class Logging::Writer
 
   def write(type, message)
     @mutex.synchronize do
-      @callbacks[type].call(message) if @callbacks[type]
-      if inner_write?(type)
-        write_raw(message)
-      end
+      write_raw(message) if inner_write?(type)
+      # Issue callback after writing to log to ensure it is written first.
+      inner_callback(type, message)
+    end
+  end
+
+  # Invoke callback based on type.
+  def callback(type, message)
+    @mutex.synchronize do
+      inner_callback(type, message)
     end
   end
 
@@ -104,5 +110,9 @@ class Logging::Writer
   # Without mutex to use in this class methods.
   def inner_write?(type)
     @level >= TYPE_TO_LEVEL[type]
+  end
+
+  def inner_callback(type, message)
+    @callbacks[type].call(message) if @callbacks[type]
   end
 end
