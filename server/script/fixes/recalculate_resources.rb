@@ -5,12 +5,23 @@
 STDOUT.sync = true
 require File.dirname(__FILE__) + '/../../lib/initializer.rb'
 
-total = SsObject::Planet.count
+mode = ARGV.shift
+scope = case mode
+when "user"
+  SsObject::Planet.joins(:player).where(:players => {:name => ARGV}).
+    readonly(false)
+when "name"
+  SsObject::Planet.where(:name => ARGV)
+else
+  SsObject::Planet
+end
+
+total = scope.count
 
 index = 1
 puts
 
-SsObject::Planet.find_each do |planet|
+scope.find_each do |planet|
   $stdout.write("\rP #{planet.id} (#{index}/#{total})")
 
   solar_system = planet.solar_system

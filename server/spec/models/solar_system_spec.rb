@@ -459,8 +459,9 @@ describe SolarSystem do
     end
 
     it "should dispatch created with FSEs" do
+      # TODO: fails, needs fixing
       entries = create_fges(:galaxy => galaxy).map do |fge|
-        FowSsEntry.create(
+        FowSsEntry.new(
           :solar_system_id => solar_system.id,
           :counter => fge.counter,
           :player_id => fge.player_id,
@@ -477,6 +478,7 @@ describe SolarSystem do
         EventBroker::REASON_SS_ENTRY
       ) do
         solar_system.attach!(x, y)
+        puts SPEC_EVENT_HANDLER.events[-1]
       end
     end
 

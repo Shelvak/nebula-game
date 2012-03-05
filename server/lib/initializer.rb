@@ -146,6 +146,7 @@ require 'rubygems'
 require 'bundler'
 
 require "timeout"
+require "tempfile"
 require "socket"
 require "erb"
 require "pp"
@@ -358,5 +359,3 @@ ActiveSupport::LogSubscriber.colorize_logging = false
 
 # Initialize event handlers
 QUEST_EVENT_HANDLER = QuestEventHandler.new
-
-SpaceMule.instance

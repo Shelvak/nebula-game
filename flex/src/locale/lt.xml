@@ -4784,8 +4784,8 @@
     <Mantis.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Mantis.about]</p>
-      <p>Įmaišant zetiumo į azurų raketas išgaunamas didesnis sprogstamasis
-      efektas, o panaudojant zetiumą jų šarvuose, jie sugeria daugiau žalos.</p>
+      <p>Šios technologijos padidinta kulkosvaidžio galia ir papildomi šarvai
+      paverčia mantį tikru priešininkų siaubu.</p>
       <p>[reference:GroundUpgrade]</p>
     </Mantis.about>
     
@@ -5493,6 +5493,12 @@
         Tu buvai nutildytas iki {0} dėl pokalbių teršimo.
         Vėl galėsi šnekėti už {1}.
      </message.silence>
+     <tooltip.btnDoIgnore>
+       <p>Žaidėjas nėra ignoruojamas</p>
+     </tooltip.btnDoIgnore>
+     <tooltip.btnDoUnignore>
+       <p>Žaidėjas ignoruojamas</p>
+     </tooltip.btnDoUnignore>
      <label.send value="Siųsti" />
      <label.mainChannel value="#galaktika"/>
      <label.allianceChannel value="#sąjunga"/>

@@ -23,7 +23,8 @@ case class PlanetRow(
   override val playerId =
     if (planet.ownedByPlayer) solarSystemRow.playerRow.get.id.toString
     else DB.loadInFileNull
-  override val name = planet.planetName(id)
+  // Lazy because we need to get id until we can have our name.
+  override lazy val name = planet.planetName(id)
 
   private val Now = Some(Calendar.getInstance())
 
