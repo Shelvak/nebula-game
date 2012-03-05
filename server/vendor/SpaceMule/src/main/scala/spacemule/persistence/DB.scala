@@ -12,13 +12,14 @@ import java.util.Date
 import scala.collection.mutable.ListBuffer
 import java.sql.{SQLException, Connection, DriverManager, ResultSet}
 import org.apache.commons.io.{FileUtils, IOUtils}
-import java.io.File
+import java.io.{FileWriter, File}
 
 object DB {
   class LoadInFileException(
-    tableName: String, columns: String, data: String, cause: Throwable
+    filePath: String, tableName: String, columns: String, data: String,
+    cause: Throwable
   ) extends RuntimeException(
-    """Error while LOAD DATA INFILE to %s
+    """Error while LOAD DATA INFILE from %s to %s
 
 Data was:
 %s
@@ -27,7 +28,7 @@ Data was:
 Original exception:
 %s
 """.format(
-      tableName, columns, data, cause.toString
+      filePath, tableName, columns, data, cause.toString
     ),
     cause
   )
@@ -131,17 +132,25 @@ Original exception:
    * information how to avoid being sql injected by using this.
    */
   def loadInFile(tableName: String, columns: String, values: Seq[String]) = {
-    // Define the query we are going to execute
-    val statementText = (
-      "LOAD DATA LOCAL INFILE 'file.txt' INTO TABLE `%s` (%s)"
-    ).format(tableName, columns)
-
     if (values.isEmpty)
       throw new IllegalArgumentException(
         "Cannot save empty values list to table '%s' with columns '%s'!".format(
           tableName, columns
         )
       )
+    
+    val file = File.createTempFile("bulk_sql-scala", null)
+    file.setReadable(true, false); // Allow mysql to read that file.
+
+    // Win32 support. Replace backslashes with double backslashes, because
+    // mysql does its own backslash escaping, so we actually need to pass
+    // "C:/tmp/foo" instead of "c:\tmp\foo". Thank god windows at least supports
+    // '/' as path separator.
+    val filename = file.getAbsolutePath.replace('\\', '/')
+    // Define the query we are going to execute
+    val statementText = (
+      "LOAD DATA INFILE '%s' INTO TABLE `%s` (%s)"
+    ).format(filename, tableName, columns)
 
     // Create StringBuilder to String that will become stream
     val builder = new StringBuilder()
@@ -162,29 +171,29 @@ Original exception:
 //      "%s\n\n%s".format(columns.replace(',', '\t'), builder.toString)
 //    )
 
-    // Create stream from String Builder
-    val inputStream = IOUtils.toInputStream(builder);
-
     ensureConnection()
 
     // First create a statement off the connection
     val statement = connection.createStatement.asInstanceOf[
       com.mysql.jdbc.Statement]
 
-    // Setup our input stream as the source for the local infile
-    statement.setLocalInfileInputStream(inputStream);
-
     try {
+      // Write contents to file.
+      val writer = new FileWriter(file)
+      writer.write(builder.toString)
+      writer.close()
+
       // Execute the load infile
       statement.execute(statementText);
     }
     catch {
       case ex: Exception => throw new LoadInFileException(
-        tableName, columns, builder.toString, ex
+        file.getAbsolutePath, tableName, columns, builder.toString, ex
       )
     }
     finally {
       statement.close()
+      file.delete()
     }
   }
 

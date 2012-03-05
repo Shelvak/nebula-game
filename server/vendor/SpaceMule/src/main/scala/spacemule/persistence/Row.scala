@@ -11,8 +11,16 @@ package spacemule.persistence
 trait Row {
   val companion: RowObject
   val valuesSeq: Seq[Any]
+  
+  private[this] var _id = 0
+  def id_=(id: Int) { _id = id }
+  def id =
+    if (_id == 0) throw new IllegalStateException(
+      "%s does not yet have an ID!".format(this)
+    )
+    else _id
 
-  lazy val values: String = {
+  def values: String = {
     if (companion.columnsSeq.size != valuesSeq.size)
       throw new IllegalArgumentException(
         ("columns sequence size (%d) must be equal to values " +
@@ -21,6 +29,10 @@ trait Row {
         )
       )
     
-    valuesSeq.map { _.toString }.mkString("\t")
+    val vals = companion.pkColumn match {
+      case Some(pk) => Seq(id) ++ valuesSeq
+      case None => valuesSeq
+    }  
+    vals.map { _.toString }.mkString("\t")
   }
 }

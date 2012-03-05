@@ -1,5 +1,6 @@
 package spacemule.modules.pmg.persistence
 
+import manager.{Buffer, BufferManager}
 import objects._
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects.ss_objects.Planet
@@ -10,36 +11,53 @@ import solar_systems.{Wormhole, Battleground, Homeworld}
 import collection.mutable.{HashMap, ListBuffer, HashSet}
 
 object Manager {
-  val galaxies = ListBuffer[String]()
-  val solarSystems = ListBuffer[String]()
-  val ssObjects = ListBuffer[String]()
-  val units = ListBuffer[String]()
-  val buildings = ListBuffer[String]()
-  val foliages = ListBuffer[String]()
-  val tiles = ListBuffer[String]()
-  val players = ListBuffer[String]()
-  val fowSsEntries = ListBuffer[String]()
-  val questProgresses = ListBuffer[String]()
-  val objectiveProgresses = ListBuffer[String]()
-  val wreckages = ListBuffer[String]()
-  val callbacks = ListBuffer[String]()
+  val GalaxiesTable = "galaxies"
+  val PlayersTable = "players"
+  val SolarSystemsTable = "solar_systems"
+  val SolarSystemObjectsTable = "ss_objects"
+  val TilesTable = "tiles"
+  val FoliagesTable = "folliages"
+  val BuildingsTable = "buildings"
+  val UnitsTable = "units"
+  val FowSsEntriesTable = "fow_ss_entries"
+  val FowGalaxyEntriesTable = "fow_galaxy_entries"
+  val QuestsTable = "quests"
+  val QuestProgressesTable = "quest_progresses"
+  val ObjectivesTable = "objectives"
+  val ObjectiveProgressesTable = "objective_progresses"
+  val WreckagesTable = "wreckages"
+  val CallbacksTable = "callbacks"
 
-  val galaxiesTable = "galaxies"
-  val solarSystemsTable = "solar_systems"
-  val ssObjectsTable = "ss_objects"
-  val tilesTable = "tiles"
-  val foliagesTable = "folliages"
-  val buildingsTable = "buildings"
-  val unitsTable = "units"
-  val playersTable = "players"
-  val fowSsEntriesTable = "fow_ss_entries"
-  val fowGalaxyEntriesTable = "fow_galaxy_entries"
-  val questsTable = "quests"
-  val questProgressesTable = "quest_progresses"
-  val objectivesTable = "objectives"
-  val objectiveProgressesTable = "objective_progresses"
-  val wreckagesTable = "wreckages"
-  val callbacksTable = "callbacks"
+  private[this] val buffers = new BufferManager(
+    new Buffer(GalaxiesTable, GalaxyRow),
+    new Buffer(PlayersTable, PlayerRow),
+    new Buffer(SolarSystemsTable, SolarSystemRow),
+    new Buffer(SolarSystemObjectsTable, SSObjectRow),
+    new Buffer(TilesTable, TileRow),
+    new Buffer(FoliagesTable, TileRow),
+    new Buffer(BuildingsTable, BuildingRow),
+    new Buffer(UnitsTable, UnitRow),
+    new Buffer(FowSsEntriesTable, FowSsEntryRow),
+    new Buffer(QuestProgressesTable, QuestProgressRow),
+    new Buffer(ObjectiveProgressesTable, ObjectiveProgressRow),
+    new Buffer(WreckagesTable, WreckageRow),
+    // Last because of FKs
+    new Buffer(CallbacksTable, CallbackRow)
+  )
+  
+  val galaxies = buffers.get(GalaxiesTable)
+  val players = buffers.get(PlayersTable)
+  val solarSystems = buffers.get(SolarSystemsTable)
+  val ssObjects = buffers.get(SolarSystemObjectsTable)
+  val tiles = buffers.get(TilesTable)
+  val foliages = buffers.get(FoliagesTable)
+  val buildings = buffers.get(BuildingsTable)
+  val units = buffers.get(UnitsTable)
+  val fowSsEntries = buffers.get(FowSsEntriesTable)
+  val questProgresses = buffers.get(QuestProgressesTable)
+  val objectiveProgresses = buffers.get(ObjectiveProgressesTable)
+  val wreckages = buffers.get(WreckagesTable)
+  val callbacks = buffers.get(CallbacksTable)
 
   /**
    * Current date to use in fields where NOW() is required.
@@ -90,7 +108,7 @@ ON
   ss.`player_id`=p.`id`
 WHERE
   ss.`galaxy_id`=%d
-      """.format(now, solarSystemsTable, playersTable, galaxy.id)
+      """.format(now, SolarSystemsTable, PlayersTable, galaxy.id)
     )
 
     while (rs.next) {
@@ -105,7 +123,7 @@ WHERE
 
   private def loadQuests(): Seq[Int] = {
     DB.getCol[Int](
-      "SELECT `id` FROM `%s` WHERE `parent_id` IS NULL".format(questsTable)
+      "SELECT `id` FROM `%s` WHERE `parent_id` IS NULL".format(QuestsTable)
     )
   }
 
@@ -113,7 +131,7 @@ WHERE
     if (startQuestIds.isEmpty) Seq[Int]()
     else DB.getCol[Int](
       "SELECT `id` FROM `%s` WHERE `quest_id` IN (%s)".format(
-        objectivesTable, startQuestIds.mkString(",")
+        ObjectivesTable, startQuestIds.mkString(",")
       )
     )
   }
@@ -121,9 +139,8 @@ WHERE
   type Clearable = {def clear(): Unit}
   private val saveTempHolders = List[Clearable](fsesForExisting, playerRows)
 
-  def save(beforeSave: Option[() => Unit]) {
-    TableIds.initialize()
-    clearBuffers()
+  def save[T](beforeSave: () => T): T = {
+    buffers.clear()
     saveTempHolders.foreach { set => set.clear() }
     currentDateTime = DB.date(new Date())
     
@@ -135,19 +152,12 @@ WHERE
     }
 
     // Run something before save if provided
-    beforeSave match {
-      case Some(block) => block()
-      case None => ()
-    }
+    val retVal = beforeSave()
 
-//    if (System.getenv("environment") == "production")
-//      speedup { () => saveBuffers() }
-//    else
-    saveBuffers()
+    buffers.save()
+    
+    retVal
   }
-
-  def save(beforeSave: () => Unit) { save(Some(beforeSave)) }
-  def save() { save(None) }
 
   def save(galaxy: Galaxy): SaveResult = {
     save { () => readGalaxy(galaxy) }
@@ -161,27 +171,6 @@ WHERE
     CallbackRow.initPlayerInactivityCheck
     CallbackRow.initAsteroidSpawn
     CallbackRow.initSsUnitsSpawn
-  }
-
-  /**
-   * Clears all buffers.
-   */
-  private def clearBuffers() {
-    List(
-      galaxies, solarSystems, ssObjects, units, buildings,
-      foliages, tiles, players, fowSsEntries, questProgresses,
-      objectiveProgresses, wreckages
-    ).foreach(_.clear())
-  }
-
-  private def speedup(block: () => Unit) {
-    DB.exec("SET UNIQUE_CHECKS=0")
-    DB.exec("SET FOREIGN_KEY_CHECKS=0")
-    DB.exec("BEGIN")
-    block()
-    DB.exec("COMMIT")
-    DB.exec("SET UNIQUE_CHECKS=1")
-    DB.exec("SET FOREIGN_KEY_CHECKS=1")
   }
 
 // Only for debugging.
@@ -223,42 +212,6 @@ WHERE
 //    items.foreach { i => println(i) }
 //  }
 
-  private def saveBuffers() {
-//    checkFks(SSObjectRow.columns, "solar_system_id", ssObjects,
-//             SolarSystemRow.columns, "id", solarSystems)
-//    checkFks(SSObjectRow.columns, "player_id", ssObjects,
-//             PlayerRow.columns, "id", players)
-
-//    dumpTable(solarSystemsTable, SolarSystemRow.columns, solarSystems)
-
-    DB.transaction { () =>
-      saveBuffer(galaxiesTable, GalaxyRow.columns, galaxies)
-      saveBuffer(playersTable, PlayerRow.columns, players)
-      saveBuffer(solarSystemsTable, SolarSystemRow.columns, solarSystems)
-      saveBuffer(ssObjectsTable, SSObjectRow.columns, ssObjects)
-      saveBuffer(tilesTable, TileRow.columns, tiles)
-      saveBuffer(foliagesTable, TileRow.columns, foliages)
-      saveBuffer(buildingsTable, BuildingRow.columns, buildings)
-      saveBuffer(unitsTable, UnitRow.columns, units)
-      saveBuffer(fowSsEntriesTable, FowSsEntryRow.columns, fowSsEntries)
-      saveBuffer(questProgressesTable, QuestProgressRow.columns,
-                 questProgresses)
-      saveBuffer(objectiveProgressesTable, ObjectiveProgressRow.columns,
-                 objectiveProgresses)
-      saveBuffer(wreckagesTable, WreckageRow.columns, wreckages)
-
-      // Last because of FKs
-      saveBuffer(callbacksTable, CallbackRow.columns, callbacks)
-    }
-  }
-
-  private def saveBuffer(tableName: String, columns: String,
-                         items: Seq[String]) {
-    if (items.size == 0) return
-
-    DB.loadInFile(tableName, columns, items)
-  }
-
   private def readGalaxy(galaxy: Galaxy) {
     initDates()
     galaxy.zones.foreach { case (coords, zone) => readZone(galaxy, zone) }
@@ -282,11 +235,12 @@ WHERE
 
   private def startQuests(playerRow: PlayerRow) {
     startQuestIds.foreach { questId =>
-      questProgresses += QuestProgressRow(questId, playerRow.id).values
+      questProgresses += QuestProgressRow(questId, playerRow.id)
     }
     startObjectiveIds.foreach { objectiveId =>
       objectiveProgresses += ObjectiveProgressRow(
-        objectiveId, playerRow.id).values
+        objectiveId, playerRow.id
+      )
     }
   }
 
@@ -314,12 +268,11 @@ WHERE
       else {
         FowSsEntryRow(ssRow, None, Some(allianceId), counter, empty, true)
       }
+      fowSsEntries += fowSseRow
 
       if (! fsesForExisting.contains(ssRow))
         fsesForExisting(ssRow) = ListBuffer.empty[FowSsEntryRow]
       fsesForExisting(ssRow) += fowSseRow
-
-      fowSsEntries += fowSseRow.values
     }
   }
 
@@ -330,6 +283,8 @@ WHERE
       case Some(playerRow) => playerRow
       case None =>
         val playerRow = new PlayerRow(galaxyId, player)
+        players += playerRow
+        playerRows += playerRow
         playerRowsCache += player -> playerRow
         playerRow
     }
@@ -344,7 +299,7 @@ WHERE
     }
 
     val ssRow = new SolarSystemRow(galaxy.id, solarSystem, coords, playerRow)
-    solarSystems += ssRow.values
+    solarSystems += ssRow
 
     // Create solar system units
     solarSystem.units.foreach { case (ssPointCoord, troops) =>
@@ -354,7 +309,7 @@ WHERE
       )
       troops.foreach { troop =>
         val unitRow = new UnitRow(ssRow.galaxyId, location, troop)
-        units += unitRow.values
+        units += unitRow
       }
     }
 
@@ -365,14 +320,14 @@ WHERE
         Some(ssPointCoord.x), Some(ssPointCoord.y)
       )
       val wreckageRow = WreckageRow(ssRow.galaxyId, location, wreckage)
-      wreckages += wreckageRow.values
+      wreckages += wreckageRow
     }
 
-    def addSpawn() = {
+    def addSpawn() {
       callbacks += CallbackRow(
         ssRow, galaxy.ruleset,
         CallbackRow.Events.Spawn, Calendar.getInstance
-      ).values
+      )
     }
 
     // Add visibility for other players & spawns.
@@ -382,10 +337,9 @@ WHERE
 
         // Add visibility, player and start quests for that player
         // if this is a homeworld.
-        fowSsEntries += FowSsEntryRow(ssRow, Some(playerRow.get.id), None, 1,
-          false).values
-        playerRows += playerRow.get
-        players += playerRow.get.values
+        fowSsEntries += FowSsEntryRow(
+          ssRow, Some(playerRow.get.id), None, 1, false
+        )
         startQuests(playerRow.get)
 
         // Add player inactivity check
@@ -393,7 +347,7 @@ WHERE
           playerRow.get, galaxy.ruleset,
           CallbackRow.Events.CheckInactivePlayer,
           CallbackRow.playerInactivityCheck
-        ).values
+        )
         addSpawn() // Spawn callback
       case _: Wormhole =>
         addSsVisibilityForExistingPlayers(ssRow, true, galaxy, coords.get)
@@ -420,7 +374,7 @@ WHERE
   private def readSSObject(galaxy: Galaxy, ssRow: SolarSystemRow,
                            coords: Coords, obj: SSObject) {
     val ssoRow = SSObjectRow(ssRow, coords, obj)
-    ssObjects += ssoRow.values
+    ssObjects += ssoRow
 
     // Create units in ground
     obj.units.foreach { unit =>
@@ -429,7 +383,7 @@ WHERE
         Location(ssoRow.id, Location.SsObject, None, None),
         unit
       )
-      units += unitRow.values
+      units += unitRow
     }
 
     // Additional creation steps
@@ -442,12 +396,12 @@ WHERE
     }
   }
 
-  private def readAsteroid(galaxy: Galaxy, ssoRow: SSObjectRow) = {
+  private def readAsteroid(galaxy: Galaxy, ssoRow: SSObjectRow) {
     callbacks += CallbackRow(
       ssoRow, galaxy.ruleset,
       CallbackRow.Events.Spawn,
       CallbackRow.asteroidSpawn
-    ).values
+    )
   }
 
   private def readPlanet(galaxy: Galaxy, galaxyId: Int, ssoRow: SSObjectRow,
@@ -456,24 +410,24 @@ WHERE
       ssoRow, galaxy.ruleset,
       CallbackRow.Events.Raid,
       planet.nextRaidAt
-    ).values
+    )
 
     planet.foreachTile { case (coord, kind) =>
         // Only add tiles which mean something.
         if (kind != Planet.TileNormal && kind != Planet.TileVoid) {
           val tileRow = new TileRow(ssoRow, kind, coord.x, coord.y)
-          tiles += tileRow.values
+          tiles += tileRow
         }
     }
 
     planet.foreachFolliage { case (coord, kind) =>
         val folliageRow = new TileRow(ssoRow, kind, coord.x, coord.y)
-        foliages += folliageRow.values
+        foliages += folliageRow
     }
 
     planet.foreachBuilding { building =>
       val buildingRow = new BuildingRow(ssoRow, building)
-      buildings += buildingRow.values
+      buildings += buildingRow
 
       building.units.foreach { unit =>
         val unitRow = new UnitRow(
@@ -481,7 +435,7 @@ WHERE
           Location(buildingRow.id, Location.Building, None, None),
           unit
         )
-        units += unitRow.values
+        units += unitRow
       }
     }
   }

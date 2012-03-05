@@ -1,9 +1,8 @@
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.objects.{Location, Troop, Galaxy}
-import spacemule.modules.config.objects.Config
 import spacemule.persistence.{RowObject, Row, DB}
+import spacemule.modules.pmg.persistence.manager.Buffer
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,8 +13,9 @@ import spacemule.persistence.{RowObject, Row, DB}
  */
 
 object UnitRow extends RowObject {
+  val pkColumn = Some("id")
   val columnsSeq = Seq(
-    "id", "galaxy_id", "type", "level", "location_id",
+    "galaxy_id", "type", "level", "location_id",
     "location_type", "location_x", "location_y", "flank", "hp_percentage"
   )
 }
@@ -24,10 +24,7 @@ case class UnitRow(galaxyId: Int, location: Location, troop: Troop)
 extends Row {
   val companion = UnitRow
 
-  val id = TableIds.unit.next
-
   val valuesSeq = Seq(
-    id,
     galaxyId,
     troop.name,
     1,

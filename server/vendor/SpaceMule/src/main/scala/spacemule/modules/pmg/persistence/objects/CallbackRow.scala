@@ -7,6 +7,7 @@ import spacemule.persistence.{DB, RowObject, Row}
 import ss_object.{PlanetRow, AsteroidRow}
 
 object CallbackRow extends RowObject {
+  val pkColumn = None
   object Events extends Enumeration {
     type Event = Value
     
@@ -60,7 +61,7 @@ object CallbackRow extends RowObject {
 }
 
 case class CallbackRow(
-  row: {def id: Int}, 
+  row: Row,
   ruleset: String, 
   event: CallbackRow.Events.Event,
   time: Calendar

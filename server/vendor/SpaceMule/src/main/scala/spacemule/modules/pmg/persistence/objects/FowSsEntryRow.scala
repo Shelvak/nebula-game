@@ -5,12 +5,12 @@
 
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.modules.pmg.persistence.TableIds
 import spacemule.persistence.{Row, RowObject, DB}
 
 object FowSsEntryRow extends RowObject {
+  val pkColumn = Some("id")
   val columnsSeq = Seq(
-    "id", "solar_system_id", "player_id", "alliance_id", 
+    "solar_system_id", "player_id", "alliance_id",
     "counter", "player_planets", "player_ships", "enemy_planets"
   )
 }
@@ -25,13 +25,10 @@ case class FowSsEntryRow(
 ) extends Row {
   val companion = FowSsEntryRow
 
-  val id = TableIds.fowSsEntries.next
-
   val playerPlanets = if (empty) false else ! enemy
   val enemyPlanets = if (empty) false else enemy
 
   val valuesSeq = Seq(
-    id,
     ssRow.id,
     playerId match {
       case Some(id: Int) => id.toString

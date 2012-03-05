@@ -108,6 +108,10 @@ class GameConfig
   def eval_hashrand(key, set=nil)
     range = self[key, set]
     Kernel.rangerand(safe_eval(range[0]), safe_eval(range[1]) + 1)
+  rescue Exception => e
+    raise e.class,
+      "Error while evaling hashrand for key '#{key}' in set '#{set}'",
+      e.backtrace
   end
 
   alias :eval_rangerand :eval_hashrand

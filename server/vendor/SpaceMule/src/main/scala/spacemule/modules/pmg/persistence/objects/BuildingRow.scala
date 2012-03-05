@@ -1,11 +1,11 @@
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.objects.planet.Building
 import spacemule.persistence.{RowObject, Row}
 
 object BuildingRow extends RowObject {
-  val columnsSeq = List("id", "type", "planet_id", "x", "y", "x_end", "y_end",
+  val pkColumn = Some("id")
+  val columnsSeq = List("type", "planet_id", "x", "y", "x_end", "y_end",
     "armor_mod", "construction_mod", "energy_mod", "constructor_mod", "level",
     "state", "flags")
 
@@ -17,10 +17,7 @@ object BuildingRow extends RowObject {
 case class BuildingRow(planetRow: SSObjectRow, building: Building) extends Row {
   val companion = BuildingRow
 
-  val id = TableIds.building.next
-
   val valuesSeq = List(
-    id,
     building.name,
     planetRow.id,
     building.x,

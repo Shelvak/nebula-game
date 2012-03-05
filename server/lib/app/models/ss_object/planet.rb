@@ -50,6 +50,11 @@ class SsObject::Planet < SsObject
     Cooldown.for_planet(self)
   end
 
+  def next_raid_at=(value)
+    raise ArgumentError, "#next_raid_at cannot be nil!" if value.nil?
+    super(value)
+  end
+
   # Attributes which are related to resources.
   RESOURCE_ATTRIBUTES = %w{
     metal metal_generation_rate metal_usage_rate metal_storage
