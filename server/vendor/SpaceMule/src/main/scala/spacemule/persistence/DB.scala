@@ -142,10 +142,15 @@ Original exception:
     val file = File.createTempFile("bulk_sql-scala", null)
     file.setReadable(true, false); // Allow mysql to read that file.
 
+    // Win32 support. Replace backslashes with double backslashes, because
+    // mysql does its own backslash escaping, so we actually need to pass
+    // "C:/tmp/foo" instead of "c:\tmp\foo". Thank god windows at least supports
+    // '/' as path separator.
+    val filename = file.getAbsolutePath.replace('\\', '/')
     // Define the query we are going to execute
     val statementText = (
       "LOAD DATA INFILE '%s' INTO TABLE `%s` (%s)"
-    ).format(file.getAbsolutePath, tableName, columns)
+    ).format(filename, tableName, columns)
 
     // Create StringBuilder to String that will become stream
     val builder = new StringBuilder()

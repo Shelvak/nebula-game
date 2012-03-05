@@ -108,7 +108,8 @@ class BulkSql
 
         # Execute the load infile. Use file version, because stream version
         # silently ignores errors.
-        sql = "LOAD DATA INFILE '#{tempfile.path}' INTO TABLE `#{table_name
+        filename = tempfile.path.gsub("\\", "/") # Win32 support.
+        sql = "LOAD DATA INFILE '#{filename}' INTO TABLE `#{table_name
           }` (#{columns_str})"
         #STDERR.puts table_name
         #STDERR.puts columns_str
