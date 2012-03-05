@@ -2,8 +2,6 @@ package components.movement
 {
    import com.developmentarc.core.utils.EventBroker;
 
-   import components.buildingselectedsidebar.NpcUnitsList;
-
    import components.map.space.CSpaceMapPopup;
    import components.movement.skins.CSquadronPopupSkin;
    import components.ui.PlayerProfileButton;
@@ -11,17 +9,16 @@ package components.movement
    import config.Config;
 
    import controllers.players.PlayersCommand;
-
    import controllers.routes.RoutesCommand;
    import controllers.ui.NavigationController;
    import controllers.units.OrdersController;
-   
+
    import flash.events.MouseEvent;
 
    import globalevents.GlobalEvent;
-   
+
    import interfaces.ICleanable;
-   
+
    import models.Owner;
    import models.events.BaseModelEvent;
    import models.factories.UnitFactory;
@@ -34,18 +31,17 @@ package components.movement
    import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
-   
+
    import spark.components.Button;
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.List;
 
    import utils.StringUtil;
-
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
-   
-   
+
+
    /**
     * This is a window that pops up when user clicks on a <code>CSquadronsMapIcon</code> componenent.
     */
@@ -110,8 +106,10 @@ package components.movement
             else
                removeGlobalEventHandlers();
             lstUnits.dataProvider = _squadron != null ? _squadron.units : null;
-            lstCachedUnits.dataProvider = _squadron != null 
-               ? UnitFactory.buildCachedUnitsFromUnits(_squadron.units) : null;
+            lstCachedUnits.dataProvider =
+               _squadron != null && _squadron.units != null
+                  ? UnitFactory.buildCachedUnitsFromUnits(_squadron.units)
+                  : null;
             visible = _squadron != null;
             showSourceLoc = _squadron != null && _squadron.isFriendly && _squadron.route != null;
             showDestLoc = showSourceLoc;
@@ -533,7 +531,7 @@ package components.movement
       }
       
       private function unitsManagementButton_clickHandler(event:MouseEvent) : void {
-         if (_squadron == null) {
+         if (_squadron == null || _squadron.units == null) {
             return;
          }
          const unitIDs: Array = _squadron.units.toArray().map(
@@ -542,11 +540,17 @@ package components.movement
          const units: ListCollectionView = Collections.filter(_squadron.units,
             function(unit:Unit) : Boolean { return unitIDs.indexOf(unit.id) >= 0 }
          );
-         NAV_CTRL.showUnits(units, _squadron.currentHop.location.toLocation(), null, null, _squadron.owner);
+         NAV_CTRL.showUnits(
+            units,
+            _squadron.currentHop.location.toLocation(),
+            null,
+            null,
+            _squadron.owner
+         );
       }
       
       private function moveButton_clickHandler(event:MouseEvent) : void {
-         if (_squadron == null) {
+         if (_squadron == null || _squadron.units == null) {
             return;
          }
          OrdersController.getInstance().issueOrder(_squadron.units, _squadron);
@@ -579,20 +583,26 @@ package components.movement
       /* ################################ */
       
       private function addSquadronEventHandlers(squad:MSquadron) : void {
-         squad.addEventListener(BaseModelEvent.PENDING_CHANGE, squadron_pendingChangeHandler,
-            false, 0, true);
-         if (squad.units != null)
-         {
-            squad.units.addEventListener(CollectionEvent.COLLECTION_CHANGE, squadron_unitsChange);
+         squad.addEventListener(
+            BaseModelEvent.PENDING_CHANGE,
+            squadron_pendingChangeHandler, false, 0, true
+         );
+         if (squad.units != null) {
+            squad.units.addEventListener(
+               CollectionEvent.COLLECTION_CHANGE, squadron_unitsChange
+            );
          }
       }
       
       private function removeSquadronEventHandlers(squad:MSquadron) : void {
-         squad.removeEventListener(BaseModelEvent.PENDING_CHANGE, squadron_pendingChangeHandler,
-            false);
-         if (squad.units != null)
-         {
-            squad.units.removeEventListener(CollectionEvent.COLLECTION_CHANGE, squadron_unitsChange);
+         squad.removeEventListener(
+            BaseModelEvent.PENDING_CHANGE,
+            squadron_pendingChangeHandler, false
+         );
+         if (squad.units != null) {
+            squad.units.removeEventListener(
+               CollectionEvent.COLLECTION_CHANGE, squadron_unitsChange
+            );
          }
       }
       
@@ -602,12 +612,13 @@ package components.movement
       }
       
       private function squadron_unitsChange(event:CollectionEvent) : void {
-         if (event.kind == CollectionEventKind.ADD ||
-            event.kind == CollectionEventKind.REMOVE ||
-            event.kind == CollectionEventKind.RESET)
-         {
-            lstCachedUnits.dataProvider = _squadron != null 
-               ? UnitFactory.buildCachedUnitsFromUnits(_squadron.units) : null;
+         if (event.kind == CollectionEventKind.ADD
+                || event.kind == CollectionEventKind.REMOVE
+                || event.kind == CollectionEventKind.RESET) {
+            lstCachedUnits.dataProvider =
+               _squadron != null
+                  ? UnitFactory.buildCachedUnitsFromUnits(_squadron.units)
+                  : null;
          }
       }
       
