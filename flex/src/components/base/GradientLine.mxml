@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:mx="library://ns.adobe.com/flex/mx">
+   <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                     AssetNames.UI_IMAGES_FOLDER + 'gradient_line_left')}"
+                  left="0" id="lnLeft"/>
+   <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                     AssetNames.UI_IMAGES_FOLDER + 'gradient_line_right')}"
+                  right="0" id="lnRight"/>
+   <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                     AssetNames.UI_IMAGES_FOLDER + 'gradient_line_center')}"
+                  left="{lnLeft.width}" right="{lnRight.width}"
+                  fillMode="repeat"/>
+   <fx:Script><![CDATA[
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      ]]></fx:Script>
+</s:Group>

@@ -580,6 +580,9 @@ assets:
         heading_line.png:                Line.png
         heading_line_end.png:            Line_end.png
         apocalypse.png:                  Endofdays0.png
+        gradient_line_left.png:          Line_res_transporter_left.png
+        gradient_line_center.png:        Line_res_transporter_center.png
+        gradient_line_right.png:         Line_res_transporter_right.png
 
       "icons":
         star_red.png:      Star_red.png
