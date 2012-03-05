@@ -39,6 +39,9 @@
                                             scrollToSelected);
                facility.dispatchCollapseEvent();
             }
+            if (facilities.sort != null) {
+               facilities.sort.fields = new Array();
+            }
          }
          facilities = latestPlanet.getUnitsFacilities();
          for each (facility in facilities) {

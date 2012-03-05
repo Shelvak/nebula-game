@@ -22,27 +22,27 @@ package components.map.planet
       private static const IMG:ImagePreloader = ImagePreloader.getInstance();
       
       private static const POINT_0x0:Point = new Point();
-      
-      
-      private var _map:PlanetMap = null,
-                  _coordsTransform:PlanetMapCoordsTransform = null,
-                  _background:BitmapData = null,
-                  _texture:BitmapData = null,
+
+
+      private var _map: PlanetMap = null;
+      private var _coordsTransform: PlanetMapCoordsTransform = null;
+      private var _background: BitmapData = null;
+      private var _texture: BitmapData = null;
       
       // 3d plane
-                  _plane3D_width:BitmapData = null,
-                  _plane3D_height:BitmapData = null,
+      private var _plane3D_width: BitmapData = null;
+      private var _plane3D_height: BitmapData = null;
       
       // tile masks
-                  _tileMask:BitmapData = null,
-                  _sideLeftMask:BitmapData = null,
-                  _sideRightMask:BitmapData = null,
-                  _sideTopMask:BitmapData = null,
-                  _sideBottomMask:BitmapData = null,
-                  _cornerTopLeftMask:BitmapData = null,
-                  _cornerTopRightMask:BitmapData = null,
-                  _cornerBottomLeftMask:BitmapData = null,
-                  _cornerBottomRightMask:BitmapData = null;
+      private var _tileMask: BitmapData = null;
+      private var _sideLeftMask: BitmapData = null;
+      private var _sideRightMask: BitmapData = null;
+      private var _sideTopMask: BitmapData = null;
+      private var _sideBottomMask: BitmapData = null;
+      private var _cornerTopLeftMask: BitmapData = null;
+      private var _cornerTopRightMask:BitmapData = null;
+      private var _cornerBottomLeftMask:BitmapData = null;
+      private var _cornerBottomRightMask:BitmapData = null;
       
       
       /**

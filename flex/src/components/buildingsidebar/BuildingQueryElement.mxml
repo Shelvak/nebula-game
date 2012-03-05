@@ -40,9 +40,13 @@
 
       public function set queryElementModel(value: ConstructionQueueEntry): void {
          if (value != null) {
+           constructor = ML.latestPlanet.getBuildingById(value.constructorId);
+           //Setting properties not in oreder, so refresh things later
+           if (constructor.constructableType == null)
+           {
+             return;
+           }
             _queryElementModel = value;
-            constructor = ML.latestPlanet.getBuildingById
-                    (_queryElementModel.constructorId);
             recalculateTime();
             var constructablePart: Upgradable =
                     ModelUtil.getModelClass

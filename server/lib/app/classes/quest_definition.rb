@@ -201,11 +201,11 @@ class QuestDefinition::WithParent
 
   def define_eco_chain(start_id, quest_count, start_points, multiplier)
     define_points_chain(:have_economy_points, start_id, quest_count,
-                        start_points, multiplier, 0.015, 0.25)
+                        start_points, multiplier, 0.0075, 0.125)
   end
 
   def define_war_chain(start_id, quest_count, start_points, multiplier)
     define_points_chain(:have_war_points, start_id, quest_count,
-                        start_points, multiplier, 0.03, 0.5)
+                        start_points, multiplier, 0.015, 0.25)
   end
 end

@@ -288,7 +288,7 @@ def apache_vhost(vhost, path, hostname="")
   run "/etc/init.d/apache2 reload"
 end
 
-def create_mysql(db_name)
+def create_mysql(db_name, options={})
   pass = rand_pass(20)
   db = "#{USER}_#{db_name}"
   dbuser = "'#{db}'@'localhost'"
@@ -301,8 +301,11 @@ DROP USER #{dbuser};
 CREATE USER #{dbuser} IDENTIFIED BY '#{pass}';
 CREATE DATABASE IF NOT EXISTS `#{db}`;
 GRANT ALL ON `#{db}`.* TO #{dbuser};
-FLUSH PRIVILEGES;
 })
+  script.write(%Q{
+GRANT FILE ON *.* TO #{dbuser};
+}) if options[:file]
+  script.write("FLUSH PRIVILEGES;")
   script.close
   puts File.read(script.path)
   run "mysql --defaults-file=/etc/mysql/debian.cnf < #{script.path}"
@@ -629,7 +632,7 @@ if ARGV.include?("server") # {{{
 
   run("/etc/init.d/munin-node restart")
 
-  dbuser, pass = create_mysql("game")
+  dbuser, pass = create_mysql("game", :file => true)
   File.write("#{HOME}/config/db.game.yml", %Q{---
 production:
   host: "localhost"

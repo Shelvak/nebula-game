@@ -260,9 +260,9 @@ package models.building
             default:
                if (building.npc)
                {            
-                  if (ML.latestPlanet.getAgressiveGroundUnits().length != 0)
+                  if (ML.latestPlanet.getAggressiveGroundUnits().length != 0)
                   {
-                     NC.showUnits(ML.latestPlanet.getAgressiveGroundUnits(), 
+                     NC.showUnits(ML.latestPlanet.getAggressiveGroundUnits(),
                         ML.latestPlanet.toLocation(), building);
                   }
                }

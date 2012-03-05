@@ -4,10 +4,9 @@
 # systems in particular galaxy.
 #
 class FowSsEntry < ActiveRecord::Base
+  # FK :dependent => :destroy_all
   belongs_to :solar_system
-  belongs_to :alliance
-  belongs_to :player
-  
+
   include Parts::FowEntry
 
   custom_serialize :alliance_planet_player_ids, :alliance_ship_player_ids,
@@ -231,58 +230,84 @@ class FowSsEntry < ActiveRecord::Base
     #
     # _kind_ can be either 'player_id' or 'alliance_id'.
     #
-    def increase_for_kind(solar_system_id, kind, id, incrementation=1,
-        before_destroy=nil)
+    def increase_for_kind(solar_system_id, kind, id, incrementation=1)
       check_params = {
         :solar_system_id => solar_system_id,
         kind => id
       }
 
-      update_record(check_params, check_params, incrementation,
-        before_destroy)
+      update_record(check_params, check_params, incrementation)
     end
 
     # Create an entry for _player_ at _solar_system_id_. Increase counter
-    # by _increasement_.
+    # by _increment_.
     #
     # This also creates entry for +Alliance+ if _player_ is in one.
-    def increase(solar_system_id, player, increasement=1,
-        should_dispatch=true)
+    def increase(solar_system_id, player, increment=1, should_dispatch=true)
       return if solar_system_id == Galaxy.battleground_id(player.galaxy_id)
+      raise ArgumentError,
+        "invalid increment 0 for ss #{solar_system_id}, player #{player}!" \
+        if increment == 0
 
-      # Player and alliance ids which saw destroyed SS.
-      destroyed_player_id = nil
-      destroyed_alliance_id = nil
+      # Recalculate, because if visibility increased/decreased there probably
+      # were some changes that we need to send to other players who are also
+      # spectating this solar system.
+      #
+      # This happens before increasing to prevent updates for player for whom
+      # ss created will be dispatched.
+      recalculate(solar_system_id, should_dispatch) if increment > 0
 
-      status = increase_for_kind(solar_system_id, 'player_id',
-        player.id, increasement, 
-        lambda { |id| destroyed_player_id = id })
-      alliance_status = increase_for_kind(solar_system_id, 'alliance_id',
-        player.alliance_id, increasement,
-        lambda { |id| destroyed_alliance_id = id }) \
-        unless player.alliance_id.nil?
+      # Actually increase visibility.
+      status = increase_for_kind(
+        solar_system_id, 'player_id', player.id, increment
+      )
+      alliance_status = increase_for_kind(
+        solar_system_id, 'alliance_id', player.alliance_id, increment
+      ) unless player.alliance_id.nil?
 
-      dispatch_event = status == :created || status == :destroyed
-      dispatch_event = recalculate(solar_system_id, false) || dispatch_event
-      dispatch_event = dispatch_event && should_dispatch
+      # Or after if, to prevent updates for those, to whom destroyed would be
+      # sent.
+      recalculate(solar_system_id, should_dispatch) if increment < 0
 
-      # Only dispatch destroyed if both alliance and player records has been
-      # destroyed
-      if status == :destroyed && alliance_status == :destroyed
-        EventBroker.fire(
-          Event::FowChange::SsDestroyed.by_player_and_ally(solar_system_id,
-            destroyed_player_id, destroyed_alliance_id),
-          EventBroker::FOW_CHANGE,
-          EventBroker::REASON_SS_ENTRY)
-      else
-        EventBroker.fire(
-          Event::FowChange::SolarSystem.new(solar_system_id),
-          EventBroker::FOW_CHANGE,
-          EventBroker::REASON_SS_ENTRY
+      status_is = lambda do |wanted|
+        status == wanted &&
+          (player.alliance_id.nil? || alliance_status == wanted)
+      end
+
+      return false unless should_dispatch
+      if status_is[:destroyed]
+        # Only dispatch destroyed if both alliance and player records has been
+        # destroyed.
+        event = Event::FowChange::SsDestroyed.new(
+          solar_system_id, player.friendly_ids
         )
-      end if dispatch_event
+        EventBroker.fire(
+          event, EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+        )
 
-      dispatch_event
+        should_dispatch
+      elsif status_is[:created]
+        ss = SolarSystem.find(solar_system_id)
+        fow_ss_entries = FowSsEntry.where(:solar_system_id => solar_system_id)
+        fow_ss_entries = player.alliance_id.nil? \
+          ? fow_ss_entries.where(:player_id => player.id) \
+          : fow_ss_entries.where("player_id=? OR alliance_id=?",
+            player.id, player.alliance_id
+          )
+
+        event = Event::FowChange::SsCreated.new(
+          ss.id, ss.x, ss.y, ss.kind, Player.minimal(ss.player_id),
+          fow_ss_entries
+        )
+        EventBroker.fire(
+          event, EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+        )
+
+        should_dispatch
+      else
+        # Only an update, recalculate should have dispatched event for us.
+        false
+      end
     end
 
     # Deletes entry for _player_ at _solar_system_id_. Also removes entry

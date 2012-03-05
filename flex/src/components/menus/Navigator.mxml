@@ -56,36 +56,35 @@ system and planet.
    
    <fx:Script>
       <![CDATA[
-         import controllers.screens.MainAreaScreens;
-         import controllers.ui.NavigationController;
-         
-         import mx.events.FlexEvent;
-         
-         import utils.assets.AssetNames;
-         import utils.locale.Localizer;
-         
-         
-         /**
-          * Registers buttons with navigation controller.
-          */ 
-         private function this_creationCompleteHandler(event:FlexEvent):void
-         {
-            var ctrl:NavigationController = NavigationController.getInstance();
-            ctrl.registerButton(btnCurrentGalaxy);
-            ctrl.registerButton(btnCurrentSS);
-            ctrl.registerButton(btnCurrentPlanet);
-            ctrl.registerButton(btnNotifications);
-            
-            //================
-            ctrl.registerButton(unitsMenu.ground.btnNapUnits);
-            ctrl.registerButton(unitsMenu.ground.btnAllyUnits);
-            ctrl.registerButton(unitsMenu.ground.btnEnemyUnits);
-            ctrl.registerButton(unitsMenu.ground.btnPlayerUnits);
-            ctrl.registerButton(unitsMenu.space.btnNapUnits);
-            ctrl.registerButton(unitsMenu.space.btnAllyUnits);
-            ctrl.registerButton(unitsMenu.space.btnEnemyUnits);
-            ctrl.registerButton(unitsMenu.space.btnPlayerUnits);
-         }
+      import controllers.screens.MainAreaScreens;
+      import controllers.ui.NavigationController;
+
+      import mx.events.FlexEvent;
+
+      import utils.assets.AssetNames;
+      import utils.locale.Localizer;
+
+
+      /**
+       * Registers buttons with navigation controller.
+       */
+      private function this_creationCompleteHandler(event: FlexEvent): void {
+         var ctrl: NavigationController = NavigationController.getInstance();
+         ctrl.registerButton(btnCurrentGalaxy);
+         ctrl.registerButton(btnCurrentSS);
+         ctrl.registerButton(btnCurrentPlanet);
+         ctrl.registerButton(btnNotifications);
+
+         //================
+         ctrl.registerButton(unitsMenu.ground.btnNapUnits);
+         ctrl.registerButton(unitsMenu.ground.btnAllyUnits);
+         ctrl.registerButton(unitsMenu.ground.btnEnemyUnits);
+         ctrl.registerButton(unitsMenu.ground.btnPlayerUnits);
+         ctrl.registerButton(unitsMenu.space.btnNapUnits);
+         ctrl.registerButton(unitsMenu.space.btnAllyUnits);
+         ctrl.registerButton(unitsMenu.space.btnEnemyUnits);
+         ctrl.registerButton(unitsMenu.space.btnPlayerUnits);
+      }
       ]]>
    </fx:Script>
    

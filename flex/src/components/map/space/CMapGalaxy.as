@@ -42,7 +42,7 @@ package components.map.space
          Messenger.hide();
       }
 
-      public static const COMP_CLASSES:StaticObjectComponentClasses =
+      public static const COMP_CLASSES: StaticObjectComponentClasses =
          new StaticObjectComponentClasses();
       COMP_CLASSES.addComponents(MMapSpace.STATIC_OBJECT_NATURAL, CSolarSystem, CSolarSystemInfo);
       COMP_CLASSES.addComponents(MMapSpace.STATIC_OBJECT_COOLDOWN, CCooldown, CCooldownInfo);
@@ -99,8 +99,8 @@ package components.map.space
             _fowContainer.graphics
          );
       }
-      
-      
+
+
       /* ################################# */
       /* ### IVisibleGalaxyAreaTracker ### */
       /* ################################# */

@@ -9,10 +9,6 @@ describe Building::Mothership do
     Building::Mothership.should manage_resources
   end
 
-  it "should include Trait::HasScientists" do
-    Building::Mothership.should include(Trait::HasScientists)
-  end
-
   it "should generate energy" do
     Building::Mothership.energy_generation_rate(1).should > 0
   end

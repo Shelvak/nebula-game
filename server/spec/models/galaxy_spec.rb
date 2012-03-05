@@ -330,67 +330,92 @@ describe Galaxy do
   end
 
   describe "#spawn_convoy!" do
+    let(:galaxy) { Factory.create(:galaxy) }
+
+    shared_examples_for "convoy spawn" do
+      it "should create route" do
+        route.should be_instance_of(Route)
+      end
+
+      it "should fire created on units" do
+        # We need this because creating a route fires events.
+        SPEC_EVENT_HANDLER.clear_events!
+        SPEC_EVENT_HANDLER.fired?(
+          Unit.in_location(route.source).all, EventBroker::CREATED
+        ).should be_true
+      end
+
+      it "should use speed modifier" do
+        UnitMover.should_receive(:move).
+          with(
+            nil, an_instance_of(Array), anything, anything, false,
+            Cfg.convoy_speed_modifier
+          ).and_return(Factory.create(:route))
+        route
+      end
+
+      it "should create units in source location" do
+        check_spawned_units_by_random_definition(
+          Cfg.galaxy_convoy_units_definition,
+          galaxy.id,
+          route.source,
+          nil
+        )
+      end
+
+      it "should have route that goes to other wormhole" do
+        points.each do |src, dst|
+          if src == route.source
+            route.target.location_point.should == dst
+            return
+          end
+        end
+
+        raise "no points matched!"
+      end
+
+      it "should have callbacks for units which destroys them upon arrival" do
+        Unit.in_location(route.source).each do |unit|
+          unit.should have_callback(
+            CallbackManager::EVENT_DESTROY,
+            # See code for explanation for +1.
+            route.arrives_at + 1
+          )
+        end
+      end
+    end
+
+    describe "specifying your own points" do
+      let(:src) { GalaxyPoint.new(galaxy.id, 10, 20) }
+      let(:dst) { GalaxyPoint.new(galaxy.id, -10, 30) }
+      let(:points) { [[src, dst]] }
+      let(:route) { galaxy.spawn_convoy!(src, dst) }
+
+      it_should_behave_like "convoy spawn"
+    end
+
     describe "galaxy with < 2 wormholes" do
       it "should do nothing" do
-        galaxy = Factory.create(:galaxy)
         galaxy.spawn_convoy!.should be_nil
         Unit.where(:galaxy_id => galaxy.id).count.should == 0
       end
     end
     
     describe "galaxy with >= 2 wormholes" do
-      before(:each) do
-        @galaxy = Factory.create(:galaxy)
-        @wh1 = Factory.create(:wormhole, :galaxy => @galaxy, 
-          :x => -10, :y => 20)
-        @wh2 = Factory.create(:wormhole, :galaxy => @galaxy, 
-          :x => -30, :y => -10)
-        @route = @galaxy.spawn_convoy!
+      let(:wh1) do
+        Factory.create(:wormhole, :galaxy => galaxy, :x => -10, :y => 20)
       end
+      let(:wh2) do
+        Factory.create(:wormhole, :galaxy => galaxy, :x => -30, :y => -10)
+      end
+      let(:points) do
+        wh1p = wh1.galaxy_point
+        wh2p = wh2.galaxy_point
+        [[wh1p, wh2p], [wh2p, wh1p]]
+      end
+      let(:route) { points; galaxy.spawn_convoy! }
 
-      it "should create route" do
-        @route.should be_instance_of(Route)
-      end
-
-      it "should fire created on units" do
-        SPEC_EVENT_HANDLER.clear_events!
-        @galaxy.spawn_convoy!
-        SPEC_EVENT_HANDLER.fired?(
-          Unit.in_location(@route.source).all, EventBroker::CREATED
-        ).should be_true
-      end
-      
-      it "should use speed modifier" do
-        UnitMover.should_receive(:move).with(nil, an_instance_of(Array),
-          anything, anything, false, 
-          CONFIG['galaxy.convoy.speed_modifier']).and_return(
-          Factory.create(:route))
-        @galaxy.spawn_convoy!
-      end
-      
-      it "should create units in source location" do
-        check_spawned_units_by_random_definition(
-          Cfg.galaxy_convoy_units_definition,
-          @galaxy.id,
-          @route.source,
-          nil
-        )
-      end
-
-      it "should have route that goes to other wormhole" do
-        if @wh1.galaxy_point == @route.source
-          @wh2.galaxy_point.should == @route.target
-        else
-          @wh1.galaxy_point.should == @route.target
-        end
-      end
-      
-      it "should have callbacks for units which destroys them upon arrival" do
-        Unit.in_location(@route.source).each do |unit|
-          unit.should have_callback(CallbackManager::EVENT_DESTROY, 
-            @route.arrives_at)
-        end
-      end
+      it_should_behave_like "convoy spawn"
     end
   end
 end

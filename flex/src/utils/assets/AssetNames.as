@@ -132,6 +132,11 @@ package utils.assets
        * Folder where all UI images are located. 
        */      
       public static const UI_IMAGES_FOLDER: String = IMAGE_FOLDER + "ui/";
+
+      /**
+       * Folder where all technologyTree images are located.
+       */
+      public static const TECH_TREE_IMAGES_FOLDER: String = IMAGE_FOLDER + "ui/technology_tree/";
       
       /**
        * Folder of chat UI images.

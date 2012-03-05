@@ -1,18 +1,18 @@
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.classes.geom.Coords
-import spacemule.modules.pmg.objects.solar_systems.Homeworld
 import spacemule.modules.pmg.objects.{Galaxy, SolarSystem}
 import spacemule.persistence.{Row, RowObject, DB}
+import spacemule.modules.pmg.persistence.manager.Buffer
 
 object SolarSystemRow extends RowObject {
-  val columnsSeq = Seq("id", "galaxy_id", "x", "y", "kind", "player_id")
+  val pkColumn = Some("id")
+  val columnsSeq = Seq("galaxy_id", "x", "y", "kind", "player_id")
 }
 
 case class SolarSystemRow(
-  val galaxyId: Int, val solarSystem: SolarSystem, coords: Option[Coords],
-  playerRow: Option[PlayerRow]
+  val galaxyId: Int, val solarSystem: SolarSystem,
+  coords: Option[Coords], playerRow: Option[PlayerRow]
 ) extends Row {
   val companion = SolarSystemRow
 
@@ -20,9 +20,7 @@ case class SolarSystemRow(
   def y = coords.get.y
   def kind = solarSystem.kind.id
 
-  val id = TableIds.solarSystem.next
   val valuesSeq = Seq(
-    id,
     galaxyId,
     coords match {
       case Some(coords) => coords.x.toString

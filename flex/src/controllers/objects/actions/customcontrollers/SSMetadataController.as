@@ -1,5 +1,6 @@
 package controllers.objects.actions.customcontrollers
 {
+   import controllers.galaxies.GalaxiesCommand;
    import controllers.ui.NavigationController;
 
    import models.location.LocationMinimal;
@@ -63,7 +64,9 @@ package controllers.objects.actions.customcontrollers
          ss.y = object["y"];
          ss.kind = object["kind"];
          ss.player = Objects.create(PlayerMinimal, object["player"]);
-         ML.latestGalaxy.addObject(ss);
+         if (!ML.latestGalaxy.addSSToVisibleBounds(ss)) {
+            new GalaxiesCommand(GalaxiesCommand.SHOW).dispatch();
+         }
       }
    }
 }

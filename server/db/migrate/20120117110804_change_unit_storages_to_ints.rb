@@ -1,8 +1,8 @@
 class ChangeUnitStoragesToInts < ActiveRecord::Migration
   def self.up
     %w{metal energy zetium}.each do |resource|
-      change_column :units, resource, 'int unsigned', :null => false,
-                    :default => 0
+      change_column :units, resource, 'int(10) unsigned', :null => false,
+                          :default => 0
     end
   end
 

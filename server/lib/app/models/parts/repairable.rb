@@ -6,7 +6,6 @@ module Parts::Repairable
     ) if receiver.include?(Parts::WithCooldown)
 
     receiver.send :include, InstanceMethods
-    receiver.extend ClassMethods
   end
 
   module InstanceMethods
@@ -72,12 +71,10 @@ module Parts::Repairable
       save!
       EventBroker.fire(self, EventBroker::CHANGED)
     end
-  end
 
-  module ClassMethods
-    def cooldown_expired_scope(building)
-      Dispatcher::Scope.planet(building.planet)
+    # Delegate to #on_repairs_finished!
+    def cooldown_expired!
+      on_repairs_finished!
     end
-    def cooldown_expired_callback(building); building.on_repairs_finished!; end
   end
 end

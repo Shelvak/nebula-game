@@ -434,6 +434,7 @@ package models.movement
             return currentHop;
          
          hop = null;
+         // TODO: is this actually ever executed?
          // jump between maps: don't need dispatching any events
          if (endHop.location.type != startHop.location.type ||
              endHop.location.id   != startHop.location.id) {
@@ -464,10 +465,10 @@ package models.movement
          }
          
          if (hasUnits) {
-            var loc:Location = currentHop.location.toLocation();
-            var fromPlanet: Boolean = Unit(units.getItemAt(0)).location.isSSObject;
+            const loc:LocationMinimal = currentHop.location;
+            const fromPlanet: Boolean = Unit(units.getItemAt(0)).location.isSSObject;
             // for debugging
-            var unitIds:Array = units.toArray().map(
+            const unitIds:Array = units.toArray().map(
                function(unit:Unit, index:int, array:Array) : int {
                   return unit.id;
                }
@@ -495,11 +496,7 @@ package models.movement
             moveToNextHop(new Date(2200, 0, 1).time);
          }
       }
-      
-      public function removeAllHops() : void {
-         hops.removeAll();
-      }
-      
+
       public function removeAllHopsButNext() : void {
          var nextHop:MHop = this.nextHop;
          hops.removeAll();

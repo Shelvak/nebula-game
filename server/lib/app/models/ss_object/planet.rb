@@ -8,8 +8,6 @@
 #   building. If nil or in past, you can destroy next building.
 #
 class SsObject::Planet < SsObject
-  DScope = Dispatcher::Scope
-
   include Parts::PlanetExploration
   include Parts::PlanetBoosts
   include Parts::DelayedEventDispatcher
@@ -50,6 +48,11 @@ class SsObject::Planet < SsObject
 
   def cooldown
     Cooldown.for_planet(self)
+  end
+
+  def next_raid_at=(value)
+    raise ArgumentError, "#next_raid_at cannot be nil!" if value.nil?
+    super(value)
   end
 
   # Attributes which are related to resources.
@@ -479,28 +482,6 @@ class SsObject::Planet < SsObject
   end
 
   class << self
-    def energy_diminished_scope(planet); DScope.planet_owner(planet); end
-    def energy_diminished_callback(planet)
-      changes = model.ensure_positive_energy_rate!
-      Notification.create_for_buildings_deactivated(
-        model, changes
-      ) unless changes.blank? || model.player_id.nil?
-      EventBroker.fire(model, EventBroker::CHANGED)
-    end
-
-    # Raid only spawns units and creates a cooldown.
-    def raid_scope(planet); DScope.planet(planet); end
-    def raid_callback(planet)
-      spawner = RaidSpawner.new(planet)
-      spawner.raid!
-    end
-
-    # Exploration might increase resources or give new units.
-    def exploration_complete_scope(planet); DScope.planet(planet); end
-    def exploration_complete_callback(planet)
-      planet.finish_exploration!
-    end
-
     # Checks if any of the given _locations_ is a planet. If so it
     # calculates observer ids before and after block execution. If they are
     # changed - dispatches changed event for that planet.

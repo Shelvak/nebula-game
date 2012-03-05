@@ -20,6 +20,23 @@ describe SsObject::Planet do
     end
   end
 
+  describe "#next_raid_at=" do
+    let(:planet) { Factory.create(:planet) }
+
+    it "should not allow assigning nils" do
+      lambda do
+        planet.next_raid_at = nil
+      end.should raise_error(ArgumentError)
+    end
+
+    it "should allow changing values" do
+      value = 10.minutes.from_now
+      lambda do
+        planet.next_raid_at = value
+      end.should change(planet, :next_raid_at).to(value)
+    end
+  end
+
   describe "boosts" do
     describe "#boosted?" do
       it "should return false if nil" do

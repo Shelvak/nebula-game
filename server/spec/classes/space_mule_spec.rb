@@ -111,13 +111,17 @@ describe SpaceMule do
       end
 
       it "should register callback for spawn" do
-        @ss.should have_callback(CallbackManager::EVENT_SPAWN, Time.now)
+        @ss.should have_callback(
+          CallbackManager::EVENT_SPAWN, @launch_time
+        )
       end
     end
   
     it "should have spawn callback for first convoy" do
-      @galaxy.should have_callback(CallbackManager::EVENT_SPAWN,
-        CONFIG.evalproperty('galaxy.convoy.time').from_now)
+      @galaxy.should have_callback(
+        CallbackManager::EVENT_SPAWN,
+        @launch_time + CONFIG.evalproperty('galaxy.convoy.time')
+      )
     end
     
     MarketOffer::CALLBACK_MAPPINGS.each do |kind, event|
@@ -248,6 +252,18 @@ describe SpaceMule do
       it "should not have any empty npc buildings" do
         @planets.each do |planet|
           planet.should_not have_blank_npc_buildings
+        end
+      end
+
+      it "should have #next_raid_at set" do
+        @planets.map(&:next_raid_at).should_not include(nil)
+      end
+
+      it "should have callbacks registered for #next_raid_at" do
+        @planets.each do |planet|
+          planet.should have_callback(
+            CallbackManager::EVENT_RAID, planet.next_raid_at
+          )
         end
       end
     end

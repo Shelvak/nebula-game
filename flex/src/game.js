@@ -38,6 +38,52 @@ var locales = { // {{{
     if (locale == "lt") return "Ar tikrai nori uždaryti Nebula 44?";
     if (locale == "lv") return "LOCALE: fixme";
     return "Are you sure you want to close Nebula 44?";
+  },
+  clientError: {
+    title: function(locale) {
+      if (locale == "lt") return "Nebula 44 įvyko kritinė klaida!";
+      return "Nebula 44 has encountered a fatal error!";
+    },
+    info: function(locale) {
+      if (locale == "lt") return [
+        "Informacija apie klaidą bus automatiškai nusiųsta mums. Ją " +
+          "peržiūrėję pasistengsime klaidą ištaisyti.",
+        "Jeigu gali, parašyk papildomą informaciją - kokius veiksmus darei, " +
+          "kokiame ekrane buvai ir t.t. Kartais tokia informacija labai " +
+          "padeda išspręsti klaidas :)"
+      ];
+      return ["LOCALE: fixme"];
+    },
+    sending: function(locale) {
+      if (locale == "lt") return "Siunčiama... Prašome palaukti ;)";
+      return "Sending... Please wait a minute ;)";
+    },
+    sent: function(locale) {
+      if (locale == "lt") return "Išsiųsta! Ačiū!";
+      return "Sent! Thanks!";
+    },
+    failed: function(locale) {
+      if (locale == "lt")
+        return "Išsiųsti nepavyko. Na, gal kitą kartą pavyks...";
+      return "Failed. Well, perhaps we'll have better luck next time...";
+    },
+    label: function(locale) {
+      if (locale == "lt") return "Tavo pastabos";
+      return "Your note";
+    },
+    pleaseWait: function(locale) {
+      if (locale == "lt") return "Prieš rašant pastabas prašome palaukti, " +
+        "kol klaida bus išsiųsta";
+      return "Please wait until bug report is sent before writing your notes.";
+    },
+    noteSent: function(locale) {
+      if (locale == "lt") return "Tavo pastaba sėkmingai išsiųsta. Ačiū!";
+      return "Your note has been successfully sent. Thanks!";
+    },
+    submit: function(locale) {
+      if (locale == "lt") return "Siųsti";
+      return "Send";
+    }
   }
 } // }}}
 
@@ -80,7 +126,7 @@ if (! Array.prototype.indexOf) { // {{{
   };
 } // }}}
 
-function inLocalComputer() { 
+function inLocalComputer() {
   return location.href.indexOf("file://") == 0; 
 }
 function inDeveloperMode() { return urlParams['dev'] == '1'; }
@@ -112,7 +158,7 @@ function notificationsOpened() { // {{{
 function setUnreadNotifications(count) { // {{{
   notificationsOpened();  
   notificationOldTitle = document.title;
-  
+
   notificationTimerId = setInterval(function() {
     if (notificationToggle) {
       document.title = notificationOldTitle;
@@ -120,7 +166,7 @@ function setUnreadNotifications(count) { // {{{
     else {
       document.title = "* " + count + " unread notifications *";
     }
-    
+
     notificationToggle = ! notificationToggle;
   }, 1000);
 } // }}}
@@ -217,7 +263,7 @@ function getGameOptions() { // {{{
         return null;
       }
     }
-    
+
     return {mode: 'game', server: server, webPlayerId: webPlayerId,
       serverPlayerId: serverPlayerId, locale: locale, webHost: webHost,
       assetsUrl: assetsUrl};
@@ -270,6 +316,13 @@ function loginSuccessful() {
   _gaq.push(['_trackPageview', '/play/game/success']);
 }
 
+// Ensure player does not close the game accidentally.
+function setLeaveHandler(enabled) {
+  window.onbeforeunload = enabled
+    ? function() { return locales.navigateAwayMessage(locale); }
+    : null;
+}
+
 // Get combat log URL for log with given ID.
 function getCombatLogUrl(combatLogId, playerId) { // {{{
   var clAssetsUrl = assetsUrl == ""
@@ -285,11 +338,133 @@ function getCombatLogUrl(combatLogId, playerId) { // {{{
 
 // Setup google analytics {{{
 var _gaq = _gaq || [];
-if (! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId)) {
+if (
+    ! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId) &&
+    ! defined(planetMapEditor)
+  ) {
   _gaq.push(['_setAccount', gaAccountId], ['_trackPageview']);
   include("http://www.google-analytics.com/ga.js", 'async="true"');
 }
 // }}}
+
+// Called from flash when page refresh is needed.
+function refresh() {
+  setLeaveHandler(false);
+  window.location.reload();
+}
+
+// Called from flash when it crashes.
+function clientError(summary, description, body) {
+  // Remove flash client to stop it.
+  $('#' + appName).remove();
+
+  if (inLocalComputer() || inDeveloperMode()) {
+    crashLocal(summary, description, body);
+  }
+  else {
+    crashRemote(summary, description, body)
+  }
+}
+
+function crashLocal(summary, description, body) {
+  setLeaveHandler(false);
+  $("#client-error").remove();
+  var error = $('<div/>', {style: "margin: 10px"});
+
+  $('<h1/>', {text: summary}).appendTo(error);
+  $('<h2/>', {text: "Description"}).appendTo(error);
+  $('<pre/>', {text: description}).appendTo(error);
+  $('<h2/>', {text: "Body"}).appendTo(error);
+  $('<pre/>', {text: body}).appendTo(error);
+
+  error.appendTo($("body"));
+}
+
+function crashRemote(summary, description, body) {
+  // Ensure player does not turn off window while request is being sent.
+  setLeaveHandler(true);
+
+  var ce = locales.clientError;
+
+  // Set up error message labels.
+  $("#client-error h1").html(ce.title(locale));
+  window.noteHolder = $('#client-error #submit-note-holder');
+  window.noteLabel = $('#client-error label');
+  noteLabel.html(ce.pleaseWait(locale));
+  $('#client-error input[type="submit"]').attr('value', ce.submit(locale));;
+
+  var explanation = $("#client-error .content");
+  $.each(ce.info(locale), function(index, text) {
+    var p = $('<p/>', {text: text});
+    p.appendTo(explanation);
+  });
+
+  window.ajaxStatus = $("#client-error #ajax-status");
+  ajaxStatus.html(ce.sending(locale));
+
+  // Register handler for custom note form.
+  $('#client-error form').submit(onNoteSubmit);
+  window.errorSummary = summary;
+  window.errorDescription = description;
+
+  // Show error message.
+  $("#client-error").show();
+
+  $.ajax({
+    url: 'http://' + webHost + '/client/add_issue',
+    type: 'POST',
+    dataType: 'script',
+    data: {
+      summary: summary,
+      error_description: description,
+      error_body: body
+    }
+  }).done(function() {
+    ajaxStatus.html(ce.sent(locale));
+  }).fail(function() {
+    ajaxStatus.html(ce.failed(locale));
+  }).always(function() {
+    setLeaveHandler(false);
+    noteLabel.html(ce.label(locale));
+    noteHolder.show();
+  });
+}
+
+// Called when player submits custom note.
+function onNoteSubmit() {
+  setLeaveHandler(true);
+  var ce = locales.clientError;
+
+  var textarea = $('#client-error textarea');
+  var note = $.trim(textarea.val());
+  if (note == "") return false;
+
+  ajaxStatus.html(ce.sending(locale));
+
+  $.ajax({
+    url: 'http://' + webHost + '/client/add_note',
+    type: 'POST',
+    dataType: "script",
+    data: {
+      summary: errorSummary,
+      error_description: errorDescription,
+      note: note
+    }
+  }).done(function() {
+    ajaxStatus.html(ce.sent(locale));
+    noteLabel.html(ce.noteSent(locale));
+    noteHolder.hide();
+    // Prevent value from persisting across refreshs. Yeah, it does that if you
+    // don't clean it manually.
+    textarea.val("");
+  }).fail(function() {
+    ajaxStatus.html(ce.failed(locale));
+  }).always(function() {
+    setLeaveHandler(false);
+  });
+
+  return false;
+}
 
 // Load our swf {{{
 $(document).ready(function() {
@@ -314,12 +489,5 @@ $(document).ready(function() {
       "100%", "100%", minVersion, assetsUrl + "playerProductInstall.swf", 
       flashvars, params, attributes);
   swfobject.createCSS("#flashContent", "display:block;text-align:left;");
-
-  // Ensure player does not close the game accidentally.
-  if (! inLocalComputer() && ! inDeveloperMode()) {
-    window.onbeforeunload = function() {
-      return locales.navigateAwayMessage(locale);
-    }
-  }
 });
 // }}}

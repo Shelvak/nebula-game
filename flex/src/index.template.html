@@ -1,25 +1,55 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!-- saved from url=(0014)about:internet -->
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">  
-    <head>
-        <title></title>
-        <meta name="google" value="notranslate"/>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      <!-- Include CSS to eliminate any default margins/padding and set the height of the html element and 
-           the body element to 100%, because Firefox, or any Gecko based browser, interprets percentage as 
-          the percentage of the height of its parent container, which has to be set explicitly.  Fix for
-          Firefox 3.6 focus border issues.  Initially, don't display flashContent div so it won't show 
-          if JavaScript disabled.
-      -->
-        <style type="text/css" media="screen"> 
-         html, body  { height:100%; }
-         body { margin:0; padding:0; overflow:auto; text-align:center; 
-                background-color: white; }   
-         object:focus { outline:none; }
-         #flashContent { display:none; }
-        </style>
-         
-        <script type="text/javascript">//<![CDATA[
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+   <title>Nebula 44</title>
+   <meta name="google" value="notranslate"/>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+   <!-- Include CSS to eliminate any default margins/padding and set the height of the html element and
+        the body element to 100%, because Firefox, or any Gecko based browser, interprets percentage as
+       the percentage of the height of its parent container, which has to be set explicitly.  Fix for
+       Firefox 3.6 focus border issues.  Initially, don't display flashContent div so it won't show
+       if JavaScript disabled.
+   -->
+   <style type="text/css" media="screen">
+      html, body {
+         height: 100%;
+      }
+
+      body {
+         margin: 0;
+         padding: 0;
+         overflow: auto;
+         text-align: left;
+         background-color: white;
+      }
+
+      object:focus {
+         outline: none;
+      }
+
+      #flashContent, #submit-note-holder {
+         display: none;
+      }
+
+      #client-error {
+         padding: 0 20px;
+         text-align: left;
+         display: none;
+      }
+
+      #client-error label, #client-error textarea {
+         display: block;
+      }
+
+      pre {
+         font-size: 12px;
+         margin-top: 20px;
+         display: block;
+      }
+   </style>
+
+   <script type="text/javascript">//<![CDATA[
 function defined(argument) { return argument != undefined; }
 
 // {{{ Store url params
@@ -75,22 +105,38 @@ include(gameJs);
         //]]</script>
     </head>
     <body>
-      <!-- SWFObject's dynamic embed method replaces this alternative HTML content with Flash content when enough 
-          JavaScript and Flash plug-in support is available. The div is initially hidden so that it doesn't show
-          when JavaScript is disabled.
-      -->
-        <div id="flashContent">
-         <p>
-            To view this page ensure that Adobe Flash Player version 
-            ${flashVersion} or greater is installed. 
-         </p>
-         <script type="text/javascript"> 
-            var pageHost = ((document.location.protocol == "https:") ? "https://" : "http://"); 
-            document.write("<a href='http://www.adobe.com/go/getflashplayer'><img src='" 
-                        + pageHost + "www.adobe.com/images/shared/download_buttons/get_flash_player.gif' alt='Get Adobe Flash player' /></a>" ); 
-         </script> 
-        </div>
-         
-       <noscript>You need Javascript enabled to play Nebula 44.</noscript>      
-   </body>
+    <!--
+    SWFObject's dynamic embed method replaces this alternative HTML content
+    with Flash content when enough JavaScript and Flash plug-in support is
+    available. The div is initially hidden so that it doesn't show when
+    JavaScript is disabled.
+    -->
+    <div id="flashContent">
+       <p>
+          To view this page ensure that Adobe Flash Player version
+          ${flashVersion} or greater is installed.
+       </p>
+       <a href='http://www.adobe.com/go/getflashplayer'><img
+         src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif"
+         alt='Get Adobe Flash player' /></a>
+    </div>
+    <noscript>You need Javascript enabled to play Nebula 44.</noscript>
+
+    <!-- Only shown when client crashes, filled in by game.js -->
+    <div id="client-error">
+       <h1></h1>
+       <div class="content"></div>
+
+       <h2 id="ajax-status"></h2>
+
+       <form id="error-form" action="">
+         <label for="message"></label>
+         <div id="submit-note-holder">
+            <textarea name="message" id="message" cols="60" rows="10"></textarea>
+            <input type="submit" value=""/>
+         </div>
+       </form>
+    </div>
+
+    </body>
 </html>

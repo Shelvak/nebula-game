@@ -7,7 +7,6 @@ import spacemule.helpers.BenchmarkableMock
 import spacemule.modules.pmg.objects.solar_systems.Battleground
 import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.config.objects.Config
-import spacemule.modules.pmg.persistence.TableIds
 import spacemule.persistence.DB
 import java.util.{Calendar, Date}
 
@@ -18,44 +17,37 @@ object Runner extends BenchmarkableMock {
   def createGalaxy(ruleset: String, callbackUrl: String): Int = {
     Config.withSetScope(ruleset) { () =>
       val createdAt = DB.date(new Date())
-      TableIds.initialize()
       Manager.initDates()
-      val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
-      val galaxy = new Galaxy(galaxyRow.id, ruleset)
 
-      val battleground = benchmark("create battleground") { 
-        () =>
+      Manager.save { () =>
+        val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
+        Manager.galaxies += galaxyRow
+
+        Manager.callbacks += CallbackRow(
+          galaxyRow, ruleset, CallbackRow.Events.Spawn,
+          Config.convoyTime.fromNow
+        )
+
+        // Create system offer creation cooldowns.
+        List(
+          CallbackRow.Events.CreateMetalSystemOffer,
+          CallbackRow.Events.CreateEnergySystemOffer,
+          CallbackRow.Events.CreateZetiumSystemOffer
+        ).foreach { event =>
+          Manager.callbacks += CallbackRow(
+            galaxyRow, ruleset, event,
+            Config.marketBotRandomResourceCooldown.fromNow
+          )
+        }
+
+
+        val galaxy = new Galaxy(galaxyRow.id, ruleset)
         val battleground = new Battleground()
         battleground.createObjects()
-        battleground
-      }
+        Manager.readSolarSystem(galaxy, None, battleground)
 
-      benchmark("saving") { () => 
-        Manager.save { () =>
-          Manager.galaxies += galaxyRow.values
-          Manager.callbacks += CallbackRow(
-            galaxyRow, ruleset, CallbackRow.Events.Spawn,
-            Config.convoyTime.fromNow
-          ).values
-          
-          // Create system offer creation cooldowns.
-          List(
-            CallbackRow.Events.CreateMetalSystemOffer,
-            CallbackRow.Events.CreateEnergySystemOffer,
-            CallbackRow.Events.CreateZetiumSystemOffer
-          ).foreach { event => 
-            Manager.callbacks += CallbackRow(
-              galaxyRow, ruleset, event,
-              Config.marketBotRandomResourceCooldown.fromNow
-            ).values
-          }
-
-          Manager.readSolarSystem(galaxy, None, battleground)
-        }
+        galaxyRow.id
       }
-      printBenchmarkResults()
-      
-      galaxyRow.id
     }
   }
 
@@ -91,7 +83,6 @@ object Runner extends BenchmarkableMock {
     slot: Int
   ) = {
     Config.withSetScope(ruleset) { () =>
-      TableIds.initialize()
       val galaxy = new Galaxy(galaxyId, ruleset)
 
       benchmark("generate zone") { () =>

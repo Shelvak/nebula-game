@@ -6,15 +6,33 @@
 package spacemule.persistence
 
 import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
-import java.sql.{Connection, DriverManager, ResultSet}
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import scala.collection.mutable.ListBuffer
+import java.sql.{SQLException, Connection, DriverManager, ResultSet}
 import org.apache.commons.io.{FileUtils, IOUtils}
-import java.io.File
+import java.io.{FileWriter, File}
 
 object DB {
+  class LoadInFileException(
+    filePath: String, tableName: String, columns: String, data: String,
+    cause: Throwable
+  ) extends RuntimeException(
+    """Error while LOAD DATA INFILE from %s to %s
+
+Data was:
+%s
+%s
+
+Original exception:
+%s
+""".format(
+      filePath, tableName, columns, data, cause.toString
+    ),
+    cause
+  )
+  
   /**
    * Use this instead of NULL if you're using loadInFile()
    */
@@ -58,14 +76,52 @@ object DB {
     connect(host, 3306, user, password, dbName)
   }
 
-  private def reconnect = connect(connStr)
+  private[this] def reconnect() {
+    connect(connStr)
+  }
+
+  /**
+   * This prevents dreaded
+   *
+   * "com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: The last packet
+   * successfully received from the server was 88,235,472 milliseconds ago.
+   * The last packet sent successfully to the server was 88,235,472
+   * milliseconds ago. is longer than the server configured value of
+   * 'wait_timeout'. You should consider either expiring and/or testing
+   * connection validity before use in your application, increasing the server
+   * configured values for client timeouts, or using the Connector/J
+   * connection property 'autoReconnect=true' to avoid this problem."
+   *
+   * exception by ensuring we have a live connection.
+   */
+  private[this] def ensureConnection() {
+    if (! connection.isValid(1)) reconnect()
+  }
 
   def close() = if (connection != null) connection.close
 
   def exec(sql: String): Int = {
-    reconnecting { () =>
-      val statement = connection.createStatement
-      statement.executeUpdate(sql)
+    val statement = connection.createStatement
+    statement.executeUpdate(sql)
+  }
+
+  def transaction(func: () => Unit) {
+    ensureConnection()
+
+    val autocommit = connection.getAutoCommit
+    
+    try {
+      connection.setAutoCommit(false)
+      func()
+      connection.commit()
+    }
+    catch {
+      case e: Exception =>
+        connection.rollback()
+        throw e
+    }
+    finally {
+      connection.setAutoCommit(autocommit)
     }
   }
 
@@ -76,17 +132,20 @@ object DB {
    * information how to avoid being sql injected by using this.
    */
   def loadInFile(tableName: String, columns: String, values: Seq[String]) = {
-    // Define the query we are going to execute
-    val statementText = (
-      "LOAD DATA LOCAL INFILE 'file.txt' INTO TABLE `%s` (%s)"
-    ).format(tableName, columns)
-
     if (values.isEmpty)
       throw new IllegalArgumentException(
         "Cannot save empty values list to table '%s' with columns '%s'!".format(
           tableName, columns
         )
       )
+    
+    val file = File.createTempFile("bulk_sql-scala", null)
+    file.setReadable(true, false); // Allow mysql to read that file.
+
+    // Define the query we are going to execute
+    val statementText = (
+      "LOAD DATA INFILE '%s' INTO TABLE `%s` (%s)"
+    ).format(file.getAbsolutePath, tableName, columns)
 
     // Create StringBuilder to String that will become stream
     val builder = new StringBuilder()
@@ -96,8 +155,8 @@ object DB {
       builder.append(entry)
       builder.append('\n')
     }
-    
-    // Debugging material
+
+//    // Debugging material
 //    def fileName(table: String, counter: Int=0): File = {
 //      val file = new File("%s-%03d.tabFile".format(table, counter))
 //      if (file.exists()) fileName(table, counter + 1) else file
@@ -107,31 +166,41 @@ object DB {
 //      "%s\n\n%s".format(columns.replace(',', '\t'), builder.toString)
 //    )
 
-    // Create stream from String Builder
-    val inputStream = IOUtils.toInputStream(builder);
+    ensureConnection()
 
-    reconnecting { () =>
-      // First create a statement off the connection
-      val statement = connection.createStatement.asInstanceOf[
-        com.mysql.jdbc.Statement]
+    // First create a statement off the connection
+    val statement = connection.createStatement.asInstanceOf[
+      com.mysql.jdbc.Statement]
 
-      // Setup our input stream as the source for the local infile
-      statement.setLocalInfileInputStream(inputStream);
+    try {
+      // Write contents to file.
+      val writer = new FileWriter(file)
+      writer.write(builder.toString)
+      writer.close()
 
       // Execute the load infile
       statement.execute(statementText);
     }
+    catch {
+      case ex: Exception => throw new LoadInFileException(
+        file.getAbsolutePath, tableName, columns, builder.toString, ex
+      )
+    }
+    finally {
+      statement.close()
+      file.delete()
+    }
   }
 
   def query(sql: String): ResultSet = {
-    reconnecting { () =>
-      // Configure to be Read Only
-      val statement = connection.createStatement(
-        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
-      )
+    ensureConnection()
 
-      statement.executeQuery(sql)
-    }
+    // Configure to be Read Only
+    val statement = connection.createStatement(
+      ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
+    )
+
+    statement.executeQuery(sql)
   }
 
   def getOne[T](sql: String): Option[T] = {
@@ -150,24 +219,5 @@ object DB {
     }
 
     return list.toList
-  }
-  
-  private val MaxReconnects = 3
-
-  private def reconnecting[T](code: () => T, reconnect: Int=0): T = {
-    try {
-      code()
-    }
-    catch {
-      case e: CommunicationsException =>
-        System.err.println(
-          "Error @ reconnect %d:\n%s".format(reconnect, e.getMessage)
-        )
-        if (reconnect == MaxReconnects) throw e
-        else {
-          this.reconnect
-          reconnecting(code, reconnect + 1)
-        }
-    }
   }
 }

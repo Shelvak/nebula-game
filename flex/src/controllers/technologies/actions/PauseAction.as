@@ -1,19 +1,17 @@
 package controllers.technologies.actions
-   /*
-# Pauses upgrading technology
-#
-# Params:
-#   id: Fixnum, id of technology to pause
-#
-   */
-   
 {
 
    import controllers.CommunicationAction;
 
    /**
     * Used for pausing technology
-    */
+    *
+    * Pauses upgrading technology
+    *
+    * Params:
+    *   id: Fixnum, id of technology to pause
+    *
+    **/
    public class PauseAction extends CommunicationAction
    {
    }

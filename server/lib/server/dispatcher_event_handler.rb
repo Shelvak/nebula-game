@@ -87,13 +87,18 @@ class DispatcherEventHandler
       # have their all zone route hops anyways.
       case reason
       when EventBroker::REASON_IN_ZONE
+        debug "In-zone movement."
+
         # Subtract friendly_player_ids set because they have all the zone
         # movements anyway.
-        (
+        player_ids =
           (previous_player_ids | current_player_ids) - friendly_player_ids
-        ).each do |player_id|
+
+        debug "Going to notify: #{player_ids.inspect}"
+        player_ids.each do |player_id|
           state_change = self.class.state_changed?(player_id,
             previous_player_ids, current_player_ids)
+          debug "State change for #{player_id}: #{state_change}"
 
           units = []
           route_hops = []
@@ -111,8 +116,13 @@ class DispatcherEventHandler
             route_hops = [next_hop].compact
             jumps_at = movement_event.route.jumps_at
           when STATE_UNCHANGED
-            # Return if we have no units to show/hide and no route hops
-            return unless next_hop
+            # Skip to next player if we have no units to show/hide and no
+            # route hops
+            unless next_hop
+              debug "Not notifying #{player_id
+                } because state has not changed and there is no next hop."
+              next
+            end
             route_hops = [next_hop]
           else
             raise ArgumentError.new("Unknown state change type: #{
@@ -182,8 +192,7 @@ class DispatcherEventHandler
         end
       when EventBroker::REASON_GALAXY_ENTRY
         # Update galaxy map
-        dispatcher.push_to_player!(player_id,
-          GalaxiesController::ACTION_SHOW)
+        dispatcher.push_to_player!(player_id, GalaxiesController::ACTION_SHOW)
       end
     end
   end

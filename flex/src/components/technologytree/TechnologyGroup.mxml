@@ -1,24 +1,32 @@
 <?xml version="1.0"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:mx="library://ns.adobe.com/flex/mx"
-         xmlns:base="components.base.*"
          depth="5"
          visible="{shouldBeVisible(belongsTo,
           MCTechnologySelectedSidebar.getInstance().selectedTechnology)}">
-  <s:Rect left="1" right="1" top="2" bottom="2">
-  <s:fill>
-    <s:SolidColor color="#000000"/>
-  </s:fill>
-</s:Rect>
-  <base:BorderedGroupBackground left="0" right="0" top="0" bottom="0"/>
+  <s:Group left="0" top="2" right="0" bottom="0">
+    <s:BitmapImage left="0" id="leftSide" source="{IMG.getImage(
+      AssetNames.TECH_TREE_IMAGES_FOLDER + 'additional_group_left')}"/>
+    <s:BitmapImage right="0" id="rightSide" source="{IMG.getImage(
+      AssetNames.TECH_TREE_IMAGES_FOLDER + 'additional_group_right')}"/>
+    <s:BitmapImage left="{leftSide.width}" right="{rightSide.width}"
+                   fillMode="repeat" source="{IMG.getImage(
+      AssetNames.TECH_TREE_IMAGES_FOLDER + 'additional_group_repeat')}"/>
+  </s:Group>
 
-  <s:Group id="content" left="10" right="10" top="20" bottom="10">
+  <s:Group id="content" left="15" right="22" top="26" bottom="10">
 
   </s:Group>
   <fx:Script><![CDATA[
     import models.technology.MCTechnologySelectedSidebar;
     import models.technology.Technology;
+
+    import utils.assets.AssetNames;
+
+    import utils.assets.ImagePreloader;
+
+    [Bindable]
+    private var IMG: ImagePreloader = ImagePreloader.getInstance();
 
     public var techComps: Array = [];
     [Bindable]

@@ -10,6 +10,7 @@ alien_cannon thor_ground
 zeus_cannon
 dart_laser
 boss_light boss_heavy
+convoyship_heavy convoyship_light
 } %>
 <% terrain_types = {
   0 => 'earth',
@@ -129,14 +130,14 @@ assets:
           image = CONFIG["technologies.#{base.underscore}.name"]
           if image.nil?
         %>
-        <%= "#{base}.jpg: #{base}Technology.jpg" %>
+        <%= "#{base}.png: #{base}Technology.png" %>
         <%
           else
             image_set.add image
           end
         end
         image_set.each do |image| %>
-        <%= "#{image}.jpg: #{image}Technology.jpg" %>
+        <%= "#{image}.png: #{image}Technology.png" %>
         <% end %>
         background.jpg:
           wiki_name: Technology_background.jpg
@@ -499,8 +500,9 @@ assets:
         <% end %>
 
       "units":
+        <% non_combat_types = Unit.non_combat_types %>
         <% each_model('unit') do |base| %>
-        <% unless CONFIG["units.#{base.underscore}.guns"].blank? %>
+        <% unless non_combat_types.include?(base) %>
         <%= "#{base}.tar.gz: #{base}BattlefieldUnit.tar.gz" %>
         <% end %>
         <% end %>
@@ -616,15 +618,6 @@ assets:
         overdrive.png: Overdrive.png
         hide.png: Hide_icon.png
         unhide.png: Unhide_icon.png
-
-      "notifications":
-        outcome_loose.jpg:          Outcome_loose.jpg
-        outcome_win.jpg:            Outcome_win.jpg
-        outcome_tie.jpg:            Outcome_tie.jpg
-        ring.png:                   Ziedas.png
-        ring_top.png:               Ziedas_virus.png
-        ring_bottom.png:            Ziedas_apacia.png
-        ring_repeat.png:            Ziedas_repeat.png
 
       "player_screen":
         left.png:                   Pinfo_left.png
@@ -778,6 +771,12 @@ assets:
         btn_chan_private_down.png:      Chat_b3_down.png
         btn_chan_private_disabled.png:  Chat_b3_disabled.png
         friend_offline_background.png:  W_bg.png
+        btn_ignore_green_up.png:          Ignore_button_green_up.png
+        btn_ignore_green_over.png:        Ignore_button_green_over.png
+        btn_ignore_green_down.png:        Ignore_button_green_down.png
+        btn_ignore_red_up.png:            Ignore_button_red_up.png
+        btn_ignore_red_over.png:          Ignore_button_red_over.png
+        btn_ignore_red_down.png:          Ignore_button_red_down.png
 
       "left_hidable_menu":
         show_button_up.png:      Bonusbar_unhide_up.png
@@ -963,6 +962,9 @@ assets:
         point_inactive.png: Techtree_point_inactive.png
         clock.png:          Technology_tree_clock.png
         open_context.png: Tach_context_menu.png
+        additional_group_left.png: Additional_technology_left.png
+        additional_group_repeat.png: Additional_technology_center.png
+        additional_group_right.png: Additional_technology_right.png
 
       "panel":
         bottom_center.png: Panel_bottom_center.png
@@ -1078,6 +1080,13 @@ assets:
         head_time_left.png:          Notifications_title_time_left.png
         head_time_center.png:        Notifications_title_time_center.png
         head_time_right.png:         Notifications_title_time_right.png
+        outcome_loose.jpg:           Outcome_loose.jpg
+        outcome_win.jpg:             Outcome_win.jpg
+        outcome_tie.jpg:             Outcome_tie.jpg
+        ring.png:                    Ziedas.png
+        ring_top.png:                Ziedas_virus.png
+        ring_bottom.png:             Ziedas_apacia.png
+        ring_repeat.png:             Ziedas_repeat.png
 
       "movement":
         order_bottom_left.png:            Locator_bottom_left.png
@@ -1112,6 +1121,13 @@ assets:
         routeir_btn_left.png:             Fleets_button_left.png
         routeir_btn_center.png:           Fleets_button_center.png
         routeir_btn_right.png:            Fleets_button_right.png
+        speedup_time_box.png:                Time_box.png
+        speedup_mode_modifier_btn_up.png:    Btn_standard_up.png
+        speedup_mode_modifier_btn_over.png:  Btn_standard_over.png
+        speedup_mode_modifier_btn_down.png:  Btn_standard_down.png
+        speedup_mode_time_btn_up.png:        Btn_expert_up.png
+        speedup_mode_time_btn_over.png:      Btn_expert_over.png
+        speedup_mode_time_btn_down.png:      Btn_expert_down.png
 
       "maps/space/static_object":
         popup_top_left.png:            Sp_top_left.png

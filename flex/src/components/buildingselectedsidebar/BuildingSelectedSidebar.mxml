@@ -172,9 +172,9 @@
                               <base:Warning text="{getString('warning.attackNpc')}"
                                             width="100%" showSign="false"/>
                               <s:Label text="{getString('noUnits')}" 
-                                       visible="{!ML.latestPlanet.hasAgressiveGroundUnits()}"
+                                       visible="{!ML.latestPlanet.hasAggressiveGroundUnits()}"
                                        styleName="unsatisfied" fontSize="16"/>
-                              <s:Button enabled="{ML.latestPlanet.hasAgressiveGroundUnits()}" 
+                              <s:Button enabled="{ML.latestPlanet.hasAggressiveGroundUnits()}"
                                         horizontalCenter="0" 
                                         click="bSidebar.openCurrent()"
                                         skinClass="components.skins.RedButtonSkin"

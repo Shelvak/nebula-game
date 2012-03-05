@@ -22,6 +22,8 @@ class SolarSystem < ActiveRecord::Base
   has_many :planets, :class_name => "SsObject::Planet"
   has_many :asteroids, :class_name => "SsObject::Asteroid"
   has_many :jumpgates, :class_name => "SsObject::Jumpgate"
+
+  # FK :dependent => :delete_all
   has_many :fow_ss_entries
 
   scope :in_galaxy, Proc.new { |galaxy|
@@ -246,6 +248,7 @@ class SolarSystem < ActiveRecord::Base
     entries = FowGalaxyEntry.
       select("counter, player_id, alliance_id").
       where(:galaxy_id => galaxy_id).
+      where("player_id != ?", player_id).
       where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
       c_select_all.map do |row|
         # By idea player is not in the alliance so we don't need to create
@@ -276,9 +279,8 @@ class SolarSystem < ActiveRecord::Base
       )
     end
 
-    # Activate radars.
-    Building::Radar.for_player(player_id).inactive.not_upgrading.
-      each(&:activate!)
+    # Don't activate radars after attaching because this dispatches events
+    # that should not be dispatched while logging in.
 
     true
   end

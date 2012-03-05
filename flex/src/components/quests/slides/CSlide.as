@@ -6,11 +6,22 @@ package components.quests.slides
    import com.greensock.loading.data.LoaderMaxVars;
    import com.greensock.loading.display.ContentDisplay;
 
+   import components.popups.ErrorPopup;
+
+   import controllers.startup.ChecksumsLoader;
+   import controllers.startup.StartupInfo;
+
    import flash.display.Bitmap;
    import flash.display.BitmapData;
+   import flash.events.Event;
+   import flash.events.TimerEvent;
+   import flash.external.ExternalInterface;
+   import flash.utils.Timer;
 
    import models.quest.events.MMainQuestSlideEvent;
    import models.quest.slides.MSlide;
+
+   import spark.components.Button;
 
    import spark.components.Group;
    import spark.primitives.BitmapImage;
@@ -19,6 +30,7 @@ package components.quests.slides
    import utils.Objects;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
+   import utils.locale.Localizer;
 
 
    [Event(name="visibleChange", type="components.quests.slides.CSlideEvent")]
@@ -127,19 +139,30 @@ package components.quests.slides
                   imageUrl + "!\n\n" + e.name + "\n\n" + e.message);
             }
          }
-         const loader:LoaderMax = new LoaderMax(
+         activeLoaderChilds = getImageUrlsToLoad().length;
+         loader = new LoaderMax(
             new LoaderMaxVars()
-                  .loaders(imageLoaders)
-                  .onComplete(loader_completeHandler)
-                  .onFail(loader_failHandler)
+               .loaders(imageLoaders)
+               .onChildComplete(loader_childCompleteHandler)
+               .onFail(loader_failHandler)
+               .onChildFail(loader_childFailHandler)
          );
          _model.loading = true;
          loader.autoDispose = true;
-         loader.load();
+         loader.load(true);
       }
 
-      private function loader_completeHandler(event:LoaderEvent): void {
-         const loader:LoaderMax = LoaderMax(event.target);
+      private var activeLoaderChilds: int = 0;
+      private var failedCount: int = 0;
+      private static const MAX_FAILED_COUNT: int = 10;
+      private var loader: LoaderMax;
+
+      private function loader_completeHandler(failed: Boolean = false): void {
+         activeLoaderChilds--;
+         if (activeLoaderChilds > 0 && !failed)
+         {
+            return;
+         }
          const images:Object = new Object();
          for each (var imageLoader:ImageLoader in loader.getChildren()) {
             try {
@@ -149,17 +172,114 @@ package components.quests.slides
             }
             catch (e: Error)
             {
-               throw new ArgumentError("Quest screen background: " + imageLoader.url +
-               "not found!\n" + e.message);
+               failedImageUrl = imageLoader.url;
+               fErrorMessage = e.message;
+               checkChecksums();
             }
          }
          imagesLoaded(images);
+         loader = null;
          _model.loading = false;
+      }
+      
+      private function checkChecksums(): void
+      {
+         if (STARTUP_INFO.unbundledAssetsSums == null)
+         {
+            throwBundleFailedError();
+         }
+         oldImagesUrls = getImageUrlsToLoad();
+         reloadChecksums();
+      }
+
+      /* ######################### */
+      /* ### REFRESH CHECKSUMS ### */
+      /* ######################### */
+      
+      private var failedImageUrl: String;
+      private var fErrorMessage: String;
+
+      private function get STARTUP_INFO() : StartupInfo {
+         return StartupInfo.getInstance();
+      }
+
+      private var oldImagesUrls: Array;
+      private var _checksumsLoader: ChecksumsLoader;
+
+      private function reloadChecksums(): void {
+         _checksumsLoader = new ChecksumsLoader(STARTUP_INFO);
+         _checksumsLoader.addEventListener(Event.COMPLETE,
+            checksumsLoader_completeHandler,
+            false, 0, true);
+         _checksumsLoader.load();
+      }
+
+      private function checksumsLoader_completeHandler(event: Event): void {
+         _checksumsLoader.removeEventListener(Event.COMPLETE,
+            checksumsLoader_completeHandler,
+            false);
+         _checksumsLoader = null;
+         var checksumChanged: Boolean = false;
+         var newImagesUrls: Array = getImageUrlsToLoad();
+         for (var i: int = 0; i < oldImagesUrls.length; i++)
+         {
+            if (oldImagesUrls[i] != newImagesUrls[i])
+            {
+               checksumChanged = true;
+            }
+         }
+         if (checksumChanged)
+         {
+            var popUp: ErrorPopup = new ErrorPopup();
+            popUp.retryButtonLabel = Localizer.string('Popups', 'label.refresh');
+            popUp.showCancelButton = false;
+            popUp.showRetryButton = true;
+            popUp.message = Localizer.string('Popups', 'message.outdatedClient');
+            popUp.title = Localizer.string('Popups', 'title.outdatedClient');
+            popUp.retryButtonClickHandler = function (button: Button = null): void
+            {
+               ExternalInterface.call("refresh");
+            };
+            popUp.show();
+         }
+         else
+         {
+            throwBundleFailedError();
+         }
+      }
+
+      private function throwBundleFailedError(): void
+      {
+         throw new ArgumentError("Quest screen background: " + failedImageUrl +
+            " not found!\n" + fErrorMessage);
       }
 
       private function loader_failHandler(event:LoaderEvent): void {
          _model.loading = false;
          trace("LoaderMax failed:", event.text);
+      }
+      
+      private function loader_childCompleteHandler(event:LoaderEvent): void {
+         loader_completeHandler();
+      }
+
+      private function loader_childFailHandler(event:LoaderEvent): void {
+         failedCount++;
+         if (failedCount != MAX_FAILED_COUNT)
+         {
+            var t: Timer = new Timer(1000, 1);
+            function reloadLoader(e: TimerEvent): void
+            {
+               loadImages();
+               t.removeEventListener(TimerEvent.TIMER, reloadLoader);
+            }
+            t.addEventListener(TimerEvent.TIMER, reloadLoader);
+            t.start();
+         }
+         else
+         {
+            loader_completeHandler(true);
+         }
       }
 
       protected function imagesLoaded(images:Object): void {

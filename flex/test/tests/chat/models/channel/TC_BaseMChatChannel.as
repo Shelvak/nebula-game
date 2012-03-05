@@ -6,7 +6,8 @@ package tests.chat.models.channel
    import models.chat.MChat;
    import models.chat.MChatChannel;
    import models.player.Player;
-   
+   import models.player.PlayerOptions;
+
    import mx.resources.IResourceManager;
    import mx.resources.ResourceManager;
    
@@ -41,6 +42,7 @@ package tests.chat.models.channel
       [Before]
       public function setUp() : void
       {
+         PlayerOptions.loadOptions({"ignoredChatPlayers": []});
          RM.addResourceBundle(new ChatResourceBundle());
          RM.update();
          ML.player.reset();

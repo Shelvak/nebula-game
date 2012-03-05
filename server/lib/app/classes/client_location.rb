@@ -68,6 +68,11 @@ class ClientLocation < LocationPoint
     end
   end
 
+  # Drop back to base class.
+  def location_point
+    LocationPoint.new(@id, @type, @x, @y)
+  end
+
   def ==(other); eql?(other); end
 
   def eql?(other)

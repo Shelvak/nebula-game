@@ -25,6 +25,7 @@
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
 
+
       [Bindable]
       private var facility: Building;
 
@@ -33,11 +34,13 @@
          facility = Building(value);
       }
 
-      public function speedModText(building: Building) :String{
-         if (building.constructorMod != 0)
+      public function speedModText(building: Building): String {
+         if (building.constructorMod != 0) {
             return (building.constructorMod + "%")
-         else
+         }
+         else {
             return ("");
+         }
       }
       ]]></fx:Script>
 </s:ItemRenderer>

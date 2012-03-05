@@ -1,6 +1,4 @@
 class SsObject::Asteroid < SsObject
-  DScope = Dispatcher::Scope
-
   def to_s
     (super + "Asteroid m: %3.4f, e: %3.4f, z: %3.4f>") % [
       metal_generation_rate, energy_generation_rate, zetium_generation_rate
@@ -40,12 +38,10 @@ class SsObject::Asteroid < SsObject
     zetium = zetium_generation_rate * CONFIG.rangerand(
       "ss_object.asteroid.wreckage.zetium.spawn") * zetium_mod
     Wreckage.add(solar_system_point, metal, energy, zetium)
-    CallbackManager.register(self, CallbackManager::EVENT_SPAWN,
-      CONFIG.eval_rangerand(
-        "ss_object.asteroid.wreckage.time.spawn").from_now)
+    CallbackManager.register(
+      self, CallbackManager::EVENT_SPAWN, CONFIG.eval_rangerand(
+        "ss_object.asteroid.wreckage.time.spawn"
+      ).from_now
+    )
   end
-
-  # Because combat on that location can also create a wreckage.
-  def self.spawn_scope(asteroid); DScope.combat(asteroid.location_point); end
-  def self.spawn_callback(asteroid); asteroid.spawn_resources!; end
 end

@@ -1,9 +1,7 @@
 module Parts::Constructor
 	def self.included(receiver)
     receiver.extend ConditionalExtender
-    # This must be always included because callbacks access base class
-    # instead of subclass.
-    receiver.extend OnCallback
+    receiver.extend BaseClassMethods
 	end
 
   # Extend subclass with functionality if that subclass is a constructor.
@@ -36,9 +34,10 @@ module Parts::Constructor
     end
   end
 
-  # This must be always included because callbacks access base class instead
-  # of subclass.
-  module OnCallback
+  # Class methods for base class.
+  module BaseClassMethods
+    def constructor?; ! property('constructor.items').nil?; end
+
     def construction_finished_scope(constructor)
       Dispatcher::Scope.planet(constructor.planet)
     end
@@ -256,8 +255,6 @@ module Parts::Constructor
         end
       end
     end
-
-    # TODO: unregister from CM upon destruction
 
     def params_for_type(type)
       params = {}

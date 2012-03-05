@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx"
-         xmlns:base="components.base.*" 
-         xmlns:location="components.location.*" 
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:base="components.base.*"
          xmlns:unitsscreen="components.unitsscreen.*"
-         xmlns:squadronsscreen="components.squadronsscreen.*" 
-         xmlns:flanks="components.unitsscreen.flanks.*" 
+         xmlns:squadronsscreen="components.squadronsscreen.*"
          xmlns:simple="components.unitsscreen.simple.*"
          width="100%" height="100%">
    <fx:Script>

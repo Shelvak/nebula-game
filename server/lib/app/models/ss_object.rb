@@ -1,5 +1,7 @@
 # Use SsObject::*SsObject* instead of this! This acts as a base class.
 class SsObject < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+
   include Location
   include Parts::Object
   include Parts::DelayedEventDispatcher
@@ -91,6 +93,32 @@ class SsObject < ActiveRecord::Base
   end
 
   class << self
+    # Because combat on that location can also create a wreckage.
+    def spawn_scope(asteroid); DScope.combat(asteroid.location_point); end
+    def spawn_callback(asteroid); asteroid.spawn_resources!; end
+
+    def energy_diminished_scope(planet); DScope.planet_owner(planet); end
+    def energy_diminished_callback(planet)
+      changes = model.ensure_positive_energy_rate!
+      Notification.create_for_buildings_deactivated(
+        model, changes
+      ) unless changes.blank? || model.player_id.nil?
+      EventBroker.fire(model, EventBroker::CHANGED)
+    end
+
+    # Raid only spawns units and creates a cooldown.
+    def raid_scope(planet); DScope.planet(planet); end
+    def raid_callback(planet)
+      spawner = RaidSpawner.new(planet)
+      spawner.raid!
+    end
+
+    # Exploration might increase resources or give new units.
+    def exploration_complete_scope(planet); DScope.planet(planet); end
+    def exploration_complete_callback(planet)
+      planet.finish_exploration!
+    end
+
     # Find planet by _id_ for _player_id_.
     #
     # Raise <tt>ActiveRecord::RecordNotFound</tt> if not found.

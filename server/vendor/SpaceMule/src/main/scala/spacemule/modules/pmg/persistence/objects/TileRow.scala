@@ -1,5 +1,8 @@
 package spacemule.modules.pmg.persistence.objects
 
+import spacemule.persistence.{Row, RowObject}
+
+
 /**
  * Created by IntelliJ IDEA.
  * User: arturas
@@ -8,12 +11,16 @@ package spacemule.modules.pmg.persistence.objects
  * To change this template use File | Settings | File Templates.
  */
 
-object TileRow {
-  val columns = "`planet_id`, `kind`, `x`, `y`"
+object TileRow extends RowObject {
+  val pkColumn = None
+  val columnsSeq = List("planet_id", "kind", "x", "y")
 }
 
-case class TileRow(planetRow: SSObjectRow, kind: Int, x: Int, y: Int) {
-  val values = "%d\t%d\t%d\t%d".format(
+case class TileRow(planetRow: SSObjectRow, kind: Int, x: Int, y: Int) 
+  extends Row 
+{
+  val companion = TileRow
+  val valuesSeq = List(
     planetRow.id,
     kind,
     x,

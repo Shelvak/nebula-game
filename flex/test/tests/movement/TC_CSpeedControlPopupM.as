@@ -1,221 +1,238 @@
 package tests.movement
 {
-   import components.movement.CSpeedControlPopupM;
-   import components.movement.events.CSpeedControlPopupMEvent;
-   
-   import config.Config;
-   
+   import components.movement.speedup.CSpeedControlPopupM;
+   import components.movement.speedup.events.SpeedControlEvent;
+
    import ext.hamcrest.events.causes;
    import ext.hamcrest.events.event;
    import ext.hamcrest.object.equals;
-   
+
    import models.ModelLocator;
    import models.player.Player;
    import models.unit.Unit;
-   
+
+   import namespaces.client_internal;
+
    import org.hamcrest.assertThat;
-   import org.hamcrest.number.closeTo;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
-   
+
+   import utils.DateUtil;
    import utils.SingletonFactory;
-   
-   
+
+
    public class TC_CSpeedControlPopupM
    {
-      public function TC_CSpeedControlPopupM()
-      {
-      }
-      
-      
-      private var scpModel:CSpeedControlPopupM;
-      private var player:Player;
-      
-      
+      private var scpModel: CSpeedControlPopupM;
+      private var player: Player;
+
       [Before]
-      public function setUp() : void
-      {
-         Config.setConfig({
-            "units.move.modifier.min": 0.1,
-            "units.move.modifier.max": 2.0,
-            "combat.cooldown.afterJump.duration": 60,
-            "creds.move.speedUp": "200 * percentage * hop_count",
-            "creds.move.speedUp.maxCost": 2500
-         });
-         scpModel = new CSpeedControlPopupM(10, 5);
+      public function setUp(): void {
+         DateUtil.now = new Date(2010, 0, 1).time;
+         MovementTestUtil.setUp();
+         scpModel = new CSpeedControlPopupM(10, 10);
          player = ModelLocator.getInstance().player;
-      };
-      
-      
+      }
+
       [After]
-      public function tearDown() : void
-      {
+      public function tearDown(): void {
          scpModel = null;
          player = null;
+         MovementTestUtil.tearDown();
          SingletonFactory.clearAllSingletonInstances();
-      };
-      
-      
+      }
+
       [Test]
-      public function should_use_configuration_values() : void
-      {
-         assertThat( scpModel.speedModifierMin, equals (Config.getMinMovementSpeedModifier()) );
-         assertThat( scpModel.speedModifierMax, equals (Config.getMaxMovementSpeedModifier()) );
-      };
-      
-      
+      public function initialMode(): void {
+         assertThat(
+            "should be set to MODE_MODIFIER_BASED mode",
+            scpModel.mode, equals (CSpeedControlPopupM.MODE_MODIFIER_BASED)
+         );
+      }
+
       [Test]
-      public function speed_modifier_should_respect_limits() : void
-      {
-         scpModel.speedModifier = 3.0;
+      public function modeSwitching(): void {
+         scpModel.setTimeBasedMode();
          assertThat(
-            "too great value should be substituted with max",
-            scpModel.speedModifier, equals (scpModel.speedModifierMax)
+            "should be set to MODE_TIME_BASED mode",
+            scpModel.mode, equals (CSpeedControlPopupM.MODE_TIME_BASED)
          );
-         
-         scpModel.speedModifier = 0.0;
          assertThat(
-            "too little value should be substituted with min",
-            scpModel.speedModifier, equals (scpModel.speedModifierMin)
+            "time-based controls should be active",
+            scpModel.timeBasedControlsActive, isTrue()
          );
-         
-         scpModel.speedModifier = 1.0;
          assertThat(
-            "value in range should not be changed",
+            "modifier-based controls should not be active",
+            scpModel.modifierBasedControlsActive, isFalse()
+         );
+
+         scpModel.setModifierBasedMode();
+         assertThat(
+            "should be set to MODE_MODIFIER_BASED mode",
+            scpModel.mode, equals (CSpeedControlPopupM.MODE_MODIFIER_BASED)
+         );
+         assertThat(
+            "time-based controls should not be active",
+            scpModel.timeBasedControlsActive, isFalse()
+         );
+         assertThat(
+            "modifier-based controls should be active",
+            scpModel.modifierBasedControlsActive, isTrue()
+         );
+      }
+
+      [Test]
+      public function switchingBetweenModesRetainsSpeedModifierValue(): void {
+         scpModel.setModifierBasedMode();
+
+         scpModel.client_internal::setSpeedModifier(0.9);
+         scpModel.setTimeBasedMode();
+         assertThat(
+            "switching from modifier-based to time-based mode retains "
+               + "speedModifier value",
+            scpModel.speedModifier, equals (0.9)
+         );
+
+         scpModel.client_internal::setSpeedModifier(0.8);
+         assertThat(
+            "switching from time-based to modifier-based mode retains "
+               + "speedModifier value",
+            scpModel.speedModifier, equals (0.8)
+         );
+      }
+
+      [Test]
+      public function modeSwitchingEvents(): void {
+         assertThat(
+            scpModel.setTimeBasedMode,
+            causes (scpModel) .toDispatchEvent (SpeedControlEvent.MODE_CHANGE)
+         );
+         assertThat(
+            scpModel.setModifierBasedMode,
+            causes (scpModel) .toDispatchEvent (SpeedControlEvent.MODE_CHANGE)
+         );
+      }
+
+      [Test]
+      public function modifierBasedMode(): void {
+         scpModel.setModifierBasedMode();
+         advanceTimeBy(1);
+         assertThat(
+            "advancing time should not have changed speed modifier",
             scpModel.speedModifier, equals (1.0)
          );
-      };
-      
+         assertThat(
+            "advancing time should not have changed trip time",
+            scpModel.arrivesIn, equals (10)
+         );
+      }
+
+      [Test]
+      public function timeBaseMode(): void {
+         scpModel.setTimeBasedMode();
+         advanceTimeBy(1);
+         assertThat(
+            "advancing time should have reduced speed modifier",
+            scpModel.speedModifier, equals (0.9)
+         );
+         assertThat(
+            "advancing time should have reduced trip time",
+            scpModel.arrivesIn, equals (9)
+         );
+      }
+
+      [Test]
+      public function reset(): void {
+         scpModel.client_internal::setSpeedModifier(0.8);
+         scpModel.setTimeBasedMode();
+         advanceTimeBy(2);
+         scpModel.reset();
+
+         scpModel.setModifierBasedMode();
+         assertThat(
+            "when in modifier-based mode speed modifier should have default value",
+            scpModel.speedModifier, equals (1)
+         );
+         scpModel.setTimeBasedMode();
+         assertThat(
+            "when in time-based mode speed modifier should have default value",
+            scpModel.speedModifier, equals (1)
+         );
+      }
       
       [Test]
-      public function changing_speed_modifier_should_dispatch_events() : void
-      {
+      public function changingSpeedModifier() : void {
+         scpModel.setTimeBasedMode();
          assertThat(
-            "should dispatch SPEED_MODIFIER_CHANGE and PLAYER_CREDS_CHANGE events",
-            function():void{ scpModel.speedModifier = 1.5 },
-            causes (scpModel) .toDispatch (
-               event (CSpeedControlPopupMEvent.SPEED_MODIFIER_CHANGE),
-               event (CSpeedControlPopupMEvent.PLAYER_CREDS_CHANGE)
+            function():void{ advanceTimeBy(2) },
+            causes (scpModel) .toDispatch(
+               event (SpeedControlEvent.SPEED_MODIFIER_CHANGE),
+               event (SpeedControlEvent.PLAYER_CREDS_CHANGE)
             )
          );
-      };
-      
-      
+      }
+
       [Test]
-      public function arrivalDate_should_have_speed_modifier_applied() : void
-      {  
-         scpModel.speedModifier = 1.0;
+      public function speedupCostVisibility(): void {
+         scpModel.client_internal::setSpeedModifier(1.5);
          assertThat(
-            "should be equal to base trip time when modifier is 1.0",
-            scpModel.arrivalDate.occuresIn, closeTo (10, 1)
-         );
-         
-         scpModel.speedModifier = 0.5;
-         assertThat(
-            "should be equal to half of base trip time when modifier is 0.5",
-            scpModel.arrivalDate.occuresIn, closeTo (5, 1)
-         );
-         
-         scpModel.speedModifier = 2.0;
-         assertThat(
-            "should be equal to twice of base trip time when modifier is 2.0",
-            scpModel.arrivalDate.occuresIn, closeTo (20, 1)
-         );
-      };
-      
-      
-      [Test]
-      public function should_reset_values_to_their_defaults() : void
-      {
-         scpModel.speedModifier = 1.5;
-         scpModel.reset();
-         assertThat(
-            "speedModifier should be reset",
-            scpModel.speedModifier, equals (1.0)
-         );
-      };
-      
-      
-      [Test]
-      public function speedUpCost_should_depend_on_speed_modifier_and_baseTripTime() : void
-      {         
-         scpModel.speedModifier = 1.0;
-         assertThat(
-            "speedUpCost should be 0 if speedModifier is 1.0",
-            scpModel.speedUpCost, equals (0)
-         );
-         
-         scpModel.speedModifier = 1.5;
-         assertThat(
-            "speedUpCost should be 0 if speedModifier is greater than 1.0",
-            scpModel.speedUpCost, equals (0)
-         );
-         
-         scpModel.speedModifier = 0.5;
-         assertThat(
-            "speedUpCost should be calculated using values from config",
-            scpModel.speedUpCost, equals (Unit.getMovementSpeedUpCredsCost(0.5,
-               scpModel.hopCount))
-         );
-         
-         scpModel.speedModifier = 0.25;
-         assertThat(
-            "speedUpCost should be calculated using values from config",
-            scpModel.speedUpCost, equals (Unit.getMovementSpeedUpCredsCost(0.75,
-               scpModel.hopCount))
-         );
-      };
-      
-      
-      [Test]
-      public function cost_should_be_visible_only_if_speedModifier_is_less_than_one() : void
-      {
-         scpModel.speedModifier = 1.0;
-         assertThat(
-            "cost should not be visible if speedModifier >= 1.0",
+            "cost should not be visible if speedModifier >= 1",
             scpModel.showSpeedUpCost, isFalse()
          );
-         
-         scpModel.speedModifier = 0.5;
+
+         scpModel.client_internal::setSpeedModifier(0.5);
          assertThat(
-            "cost should be visible if speedModifier < 1.0",
+            "cost should be visible if speedModifier is less than 1",
             scpModel.showSpeedUpCost, isTrue()
          );
-      };
-      
-      
+      }
+
       [Test]
       public function playerHasEnoughCreds() : void
       {
-         player.creds = Unit.getMovementSpeedUpCredsCost(0.5, scpModel.hopCount);
-         
-         scpModel.speedModifier = 1.0;
+         const hops: int = 10;
+         player.creds = Unit.getMovementSpeedUpCredsCost(0.25, hops);
+
+         scpModel.client_internal::setSpeedModifier(1.0);
          assertThat(
             "should be enough creds if cost is 0",
             scpModel.playerHasEnoughCreds, isTrue()
          );
-         
-         scpModel.speedModifier = 0.5;
+
+         scpModel.client_internal::setSpeedModifier(0.75);
          assertThat(
-            "should be enough creds if const is exact amount of creds player has",
+            "should be enough creds if cost is exact amount of creds player has",
             scpModel.playerHasEnoughCreds, isTrue()
          );
-         
-         scpModel.speedModifier = 0.25;
+
+         scpModel.client_internal::setSpeedModifier(0.5);
          assertThat(
             "should not be enough creds if player has less creds than speedUpCost",
             scpModel.playerHasEnoughCreds, isFalse()
          );
-         
+
          assertThat(
-            "should dispatch PLAYER_CREDS_CHANGE event when ModelLocator.player.creds changes",
-            function():void{ player.creds =  Unit.getMovementSpeedUpCredsCost(0.75, scpModel.hopCount)},
-            causes (scpModel) .toDispatchEvent (CSpeedControlPopupMEvent.PLAYER_CREDS_CHANGE)
+            "should dispatch PLAYER_CREDS_CHANGE event when player.creds changes",
+            function (): void {
+               player.creds = Unit.getMovementSpeedUpCredsCost(0.75, hops)
+            },
+            causes (scpModel) .toDispatchEvent
+               (SpeedControlEvent.PLAYER_CREDS_CHANGE)
          );
          assertThat(
-            "playerHasEnoughCreds should be updated when ModelLocator.player.creds changes",
+            "playerHasEnoughCreds should be updated when player.creds changes",
             scpModel.playerHasEnoughCreds, isTrue()
          );
-      };
+      }
+
+
+      /* ############### */
+      /* ### HELPERS ### */
+      /* ############### */
+
+      private function advanceTimeBy(seconds:int): void {
+         DateUtil.now += seconds * 1000;
+         scpModel.update();
+      }
    }
 }

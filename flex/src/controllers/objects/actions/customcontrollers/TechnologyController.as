@@ -59,12 +59,12 @@ package controllers.objects.actions.customcontrollers
          }
       }
 
-      public function techUnlearned(techIds:Array) : void {
-         for each (var techId: int in techIds)
-         {
-            ML.technologies.getTechnologyById(techId).level = 0;
-            ML.technologies.dispatchTechsChangeEvent();
-         }
+
+      override public function objectDestroyed(objectSubclass: String,
+                                               objectId: int,
+                                               reason: String): void {
+         ML.technologies.getTechnologyById(objectId).level = 0;
+         ML.technologies.dispatchTechsChangeEvent();
       }
    }
 }

@@ -1,147 +1,135 @@
 shared_examples_for "fow entry" do
   describe ".for" do
-    it "should return player entries" do
-      model = Factory.create :"#{@short_factory_name}_player"
-      @klass.for(model.player).should == [model]
+    describe "player is not in alliance" do
+      it "should return player entries" do
+        increase[player]
+        klass.for(player).sort.should == lookup.call.all.sort
+      end
     end
 
-    it "should also return alliance entries" do
-      alliance = Factory.create :alliance
-      player = Factory.create :player, :alliance => alliance
-      model = Factory.create :"#{@short_factory_name}_alliance",
-        :alliance => alliance
-      @klass.for(player).should == [model]
+    describe "player is in alliance" do
+      it "should return player & alliance entries" do
+        increase[player_w_alliance]
+        klass.for(player_w_alliance).sort.should == lookup.call.all.sort
+      end
     end
   end
 
   describe ".increase" do
     it "should fire event if created" do
-      should_fire_event(Event::FowChange.new(@player, @player.alliance),
-          EventBroker::FOW_CHANGE, @event_reason) do
-        @klass.increase(@first_arg, @player)
+      should_fire_event(
+        Event::FowChange.new(player_w_alliance, alliance),
+        EventBroker::FOW_CHANGE, event_reason
+      ) do
+        increase[player_w_alliance]
       end
     end
 
     it "should return true if created" do
-      @klass.increase(@first_arg, @player).should be_true
+      increase[player].should be_true
     end
 
     it "should not fire event if updated" do
-      @klass.increase(@first_arg, @player)
-      should_not_fire_event(Event::FowChange.new(@player, @player.alliance),
-          EventBroker::FOW_CHANGE, @event_reason) do
-        @klass.increase(@first_arg, @player)
+      increase[player]
+      should_not_fire_event(
+        Event::FowChange.new(player_w_alliance, alliance),
+        EventBroker::FOW_CHANGE, event_reason
+      ) do
+        increase[player]
       end
     end
 
     it "should return false if updated" do
-      @klass.increase(@first_arg, @player)
-      @klass.increase(@first_arg, @player).should be_false
+      increase[player]
+      increase[player].should be_false
     end
 
     it "should create new record if one doesn't exist" do
-      @klass.increase(@first_arg, @player)
-      @klass.find(:first,
-        :conditions => @conditions.merge(:player_id => @player.id)
-      ).counter.should == 1
+      increase[player]
+      lookup.call(:player_id => player.id).first.counter.should == 1
     end
 
     it "should work without alliance too" do
-      lambda do
-        @klass.increase(@first_arg, Factory.create(:player))
-      end.should_not raise_error
+      increase(player)
     end
 
     it "should also create new record for alliance" do
-      @klass.increase(@first_arg, @player)
-      @klass.find(:first,
-        :conditions => @conditions.merge(
-          :alliance_id => @player.alliance_id
-        )
-      ).counter.should == 1
+      increase[player_w_alliance]
+      lookup.call(:alliance_id => alliance.id).first.counter.should == 1
     end
 
     it "should update existing record if one exists" do
-      @klass.increase(@first_arg, @player)
-      @klass.increase(@first_arg, @player, 2)
+      increase[player]
+      increase[player, 2]
 
-      @klass.find(:first,
-        :conditions => @conditions.merge(:player_id => @player.id)
-      ).counter.should == 3
+      lookup.call(:player_id => player.id).first.counter.should == 3
     end
 
     it "should update existing alliance records" do
-      @klass.increase(@first_arg, @player)
-      player2 = Factory.create(:player, :galaxy => @player.galaxy,
-        :alliance => @alliance)
+      increase[player_w_alliance]
+      player2 = Factory.create(
+        :player, :galaxy => alliance.galaxy, :alliance => alliance
+      )
 
-      @klass.increase(@first_arg, player2)
-      @klass.find(:first, :conditions => @conditions.merge(
-          :alliance_id => player2.alliance_id
-        )
-      ).counter.should == 2
+      increase[player2]
+      lookup.call(:alliance_id => alliance.id).first.counter.should == 2
+      # Check if player record was created.
+      lookup.call(:player_id => player2.id).first.counter.should == 1
     end
   end
 
   describe ".decrease" do
-    before(:each) do
-      @klass.increase(@first_arg, @player, 2)
-    end
+    describe "without alliance" do
+      before(:each) do
+        increase[player, 2]
+      end
 
-    it "should decrement counter" do
-      @klass.decrease(@first_arg, @player)
-      @klass.find(:first,
-        :conditions => @conditions.merge(:player_id => @player.id)
-      ).counter.should == 1
-    end
+      it "should decrement counter" do
+        decrease[player]
+        lookup.call(:player_id => player.id).first.counter.should == 1
+      end
 
-    it "should return true if destroyed" do
-      @klass.decrease(@first_arg, @player, 2).should be_true
-    end
+      it "should return true if destroyed" do
+        decrease[player, 2].should be_true
+      end
 
-    it "should not fire event if updated" do
-      should_not_fire_event(Event::FowChange.new(@player, @player.alliance),
-          EventBroker::FOW_CHANGE, @event_reason) do
-        @klass.decrease(@first_arg, @player, 1)
+      it "should not fire event if updated" do
+        should_not_fire_event(
+          Event::FowChange.new(player, nil),
+          EventBroker::FOW_CHANGE, event_reason
+        ) do
+          decrease[player]
+        end
+      end
+
+      it "should return false if updated" do
+        decrease[player].should be_false
       end
     end
 
-    it "should return false if updated" do
-      @klass.decrease(@first_arg, @player, 1).should be_false
-    end
+    describe "with alliance" do
+      before(:each) do
+        increase[player_w_alliance, 2]
+      end
 
-    it "should work without alliance too" do
-      player = Factory.create(:player)
-      @klass.increase(@first_arg, player, 2)
-      lambda do
-        @klass.decrease(@first_arg, player)
-      end.should_not raise_error
-    end
+      it "should work" do
+        decrease[player_w_alliance]
+      end
 
-    it "should decrement alliance counter too" do
-      @klass.decrease(@first_arg, @player)
-      @klass.find(:first, :conditions => @conditions.merge(
-          :alliance_id => @player.alliance_id
-        )
-      ).counter.should == 1
-    end
+      it "should decrement counter" do
+        decrease[player_w_alliance]
+        lookup.call(:alliance_id => alliance.id).first.counter.should == 1
+      end
 
-    it "should delete useless rows (player)" do
-      @klass.decrease(@first_arg, @player, 2)
+      it "should delete player rows" do
+        decrease[player_w_alliance, 2]
+        lookup.call(:player_id => player_w_alliance.id).should_not exist
+      end
 
-      @klass.find(:all,
-        :conditions => @conditions.merge(:player_id => @player.id)
-      ).should == []
-    end
-
-    it "should delete useless rows (alliance)" do
-      @klass.decrease(@first_arg, @player, 2)
-
-      @klass.find(:all,
-        :conditions => @conditions.merge(
-          :alliance_id => @player.alliance_id
-        )
-      ).should == []
+      it "should delete alliance rows" do
+        decrease[player_w_alliance, 2]
+        lookup.call(:alliance_id => alliance.id).should_not exist
+      end
     end
   end
 end

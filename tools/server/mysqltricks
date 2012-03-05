@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+def run(cmd)
+  status = system cmd
+  unless $?.success?
+    puts
+    puts "Running `#{cmd}` failed with exit status #{$?.exitstatus}!"
+    exit
+  end
+  status
+end
+
+# Install mysql2 gem... Must do tricks to avoid .so conflicts.
+puts 'mysql2 gem tricks... ENGAGE!'
+puts "BACKUPING"
+Dir["/usr/lib/libmysqlclient*.so"].each do |f|
+  run("mv -vf #{f} #{f}~")
+end
+
+puts "SUBSTITUTING"
+Dir["/usr/lib/libmysqlclient*.so.18"].each do |f|
+  name = f.sub(/\.18$/, '')
+  run("ln -sfv #{f} #{name}")
+end
+
+puts "COMPILE AND PRESS ENTER WHEN DONE."
+gets
+
+puts "RESTORING"
+Dir["/usr/lib/libmysqlclient*.so"].each do |f|
+  run("rm -vf #{f}")
+  run("mv -vf #{f}~ #{f}")
+end
+
+puts "Shazam! mysql2 is installed and linked against libmysqlclient18"
+

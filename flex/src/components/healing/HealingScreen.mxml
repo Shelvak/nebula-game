@@ -16,85 +16,81 @@
          private var HS: MCHealingScreen = MCHealingScreen.getInstance();
       ]]>
    </fx:Script>
-   <base:layout>
-      <s:VerticalLayout paddingLeft="6" paddingTop="6" gap="6" paddingRight="6"/>
-   </base:layout>
-   <s:Group width="100%">
-      <s:Label text="{Localizer.string('Units', 'label.location')}" styleName="h3"/>
-      <location:MiniLocationComp id="locComp" location="{HS.location}"/>
-      <s:layout>
-         <s:VerticalLayout/>
-      </s:layout>
-   </s:Group>
-   <base:AdvancedContainer width="100%">
-      <s:ToggleButton name="self" click="HS.unitsButton_clickHandler(event)"
-                      selected="{HS.selfSelected}"
-                      label="{Localizer.string('Units', 'kind.self',[HS.getUnitCount(HS.selfFlanks)])}"/>
-      <s:ToggleButton name="ally" click="HS.unitsButton_clickHandler(event)"
-                      selected="{HS.allySelected}"
-                      label="{Localizer.string('Units', 'kind.ally',[HS.getUnitCount(HS.allyFlanks)])}"/>
-      <s:ToggleButton name="nap" click="HS.unitsButton_clickHandler(event)"
-                      selected="{HS.napSelected}"
-                      label="{Localizer.string('Units', 'kind.nap', [HS.getUnitCount(HS.napFlanks)])}"/>
-      <base:layout>
-         <s:HorizontalLayout gap="1"/>
-      </base:layout>
-   </base:AdvancedContainer>
-   
-   <s:Group width="100%" height="100%">
-      <s:DataGroup id="selfUnitsList" dataProvider="{HS.selfFlanks}" visible="{HS.selfSelected}" width="100%" height="100%"> 
-         <s:itemRenderer>
-            <fx:Component>
-               <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                  <fx:Script>
+  <base:layout>
+    <s:VerticalLayout gap="0" horizontalAlign="justify"/>
+  </base:layout>
+  <unitsscreen:ScreenLocations location="{HS.location}"/>
+  <unitsscreen:ScreenContent height="100%">
+    <unitsscreen:leftControls>
+      <base:AdvancedContainer width="100%">
+        <s:ToggleButton name="self" click="HS.unitsButton_clickHandler(event)"
+                        selected="{HS.selfSelected}"
+                        label="{Localizer.string('Units', 'kind.self',[HS.getUnitCount(HS.selfFlanks)])}"/>
+        <s:ToggleButton name="ally" click="HS.unitsButton_clickHandler(event)"
+                        selected="{HS.allySelected}"
+                        label="{Localizer.string('Units', 'kind.ally',[HS.getUnitCount(HS.allyFlanks)])}"/>
+        <s:ToggleButton name="nap" click="HS.unitsButton_clickHandler(event)"
+                        selected="{HS.napSelected}"
+                        label="{Localizer.string('Units', 'kind.nap', [HS.getUnitCount(HS.napFlanks)])}"/>
+        <base:layout>
+          <s:HorizontalLayout gap="1"/>
+        </base:layout>
+      </base:AdvancedContainer>
+    </unitsscreen:leftControls>
+    <unitsscreen:content>
+      <s:DataGroup id="selfUnitsList" dataProvider="{HS.selfFlanks}" visible="{HS.selfSelected}" width="100%" height="100%">
+        <s:itemRenderer>
+          <fx:Component>
+            <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+              <fx:Script>
                      <![CDATA[
-                        import models.unit.Unit;
-                     ]]>
+                import models.unit.Unit;
+                ]]>
                   </fx:Script>
-                  <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
-               </s:ItemRenderer>
-            </fx:Component>
-         </s:itemRenderer>
-         <s:layout>
-            <s:VerticalLayout rowHeight="120"/>
-         </s:layout>
+              <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
+            </s:ItemRenderer>
+          </fx:Component>
+        </s:itemRenderer>
+        <s:layout>
+          <s:VerticalLayout rowHeight="120"/>
+        </s:layout>
       </s:DataGroup>
-      
-      <s:DataGroup id="napUnitsList" dataProvider="{HS.napFlanks}" visible="{HS.napSelected}" width="100%" height="100%"> 
-         <s:itemRenderer>
-            <fx:Component>
-               <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                  <fx:Script>
+
+      <s:DataGroup id="napUnitsList" dataProvider="{HS.napFlanks}" visible="{HS.napSelected}" width="100%" height="100%">
+        <s:itemRenderer>
+          <fx:Component>
+            <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+              <fx:Script>
                      <![CDATA[
-                        import models.unit.Unit;
-                     ]]>
+                import models.unit.Unit;
+                ]]>
                   </fx:Script>
-                  <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
-               </s:ItemRenderer>
-            </fx:Component>
-         </s:itemRenderer>
-         <s:layout>
-            <s:VerticalLayout rowHeight="120"/>
-         </s:layout>
+              <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
+            </s:ItemRenderer>
+          </fx:Component>
+        </s:itemRenderer>
+        <s:layout>
+          <s:VerticalLayout rowHeight="120"/>
+        </s:layout>
       </s:DataGroup>
-      
-      <s:DataGroup id="allyUnitsList" dataProvider="{HS.allyFlanks}" visible="{HS.allySelected}" width="100%" height="100%"> 
-         <s:itemRenderer>
-            <fx:Component>
-               <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
-                  <fx:Script>
+
+      <s:DataGroup id="allyUnitsList" dataProvider="{HS.allyFlanks}" visible="{HS.allySelected}" width="100%" height="100%">
+        <s:itemRenderer>
+          <fx:Component>
+            <s:ItemRenderer height="100%" width="100%" autoDrawBackground="false">
+              <fx:Script>
                      <![CDATA[
-                        import models.unit.Unit;
-                     ]]>
+                import models.unit.Unit;
+                ]]>
                   </fx:Script>
-                  <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
-               </s:ItemRenderer>
-            </fx:Component>
-         </s:itemRenderer>
-         <s:layout>
-            <s:VerticalLayout rowHeight="120"/>
-         </s:layout>
+              <unitsscreen:SelectableFlank flankModel="{data}" height="100%" width="100%"/>
+            </s:ItemRenderer>
+          </fx:Component>
+        </s:itemRenderer>
+        <s:layout>
+          <s:VerticalLayout rowHeight="120"/>
+        </s:layout>
       </s:DataGroup>
-   </s:Group>
-   
+    </unitsscreen:content>
+  </unitsscreen:ScreenContent>
 </base:BaseContainer>

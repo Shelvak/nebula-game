@@ -17,15 +17,17 @@ package components.planetmapeditor
       private var _objectsRemoved:Array = new Array();
       private var _tilesRemoved:Array = new Array();
 
-      protected function removeObjectToRestore(x: int, y: int): void {
+      protected function removeObjectToRestore(x: int, y: int): Boolean {
          const object: MPlanetObject = planet.getObject(x, y);
+         var removed: Boolean = false;
          if (object != null) {
             const clone: MPlanetObject = MPlanetMapEditor.cloneObject(object);
-            const removed: Boolean = planet.removeObject(object) != null;
+            removed = planet.removeObject(object) != null;
             if (removed) {
                _objectsRemoved.push(clone);
             }
          }
+         return removed;
       }
 
       protected function removeTileToRestore(x: int, y: int): void {

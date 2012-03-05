@@ -12,7 +12,9 @@ package components.map.planet
    import flash.geom.Rectangle;
 
    import models.location.LocationMinimal;
+   import models.location.LocationType;
    import models.planet.MPlanet;
+   import models.planet.MPlanetObject;
    import models.planet.events.MPlanetEvent;
    import models.solarsystem.events.MSSObjectEvent;
 
@@ -65,16 +67,24 @@ package components.map.planet
             model.width, model.height, BORDER_SIZE
          );
          model.ssObject.addEventListener(
-            MSSObjectEvent.TERRAIN_CHANGE, ssObject_terrainChangeHandler,
-            false, 0, true
+            MSSObjectEvent.TERRAIN_CHANGE,
+            ssObject_terrainChangeHandler, false, 0, true
+         );
+         model.addEventListener(
+            MPlanetEvent.UICMD_SELECT_OBJECT,
+            model_uicmdSelectObjectHandler, false, 0, true
          );
       }
 
       public override function cleanup(): void {
          if (model != null) {
             MPlanet(model).ssObject.removeEventListener(
-               MSSObjectEvent.TERRAIN_CHANGE, ssObject_terrainChangeHandler,
-               false
+               MSSObjectEvent.TERRAIN_CHANGE,
+               ssObject_terrainChangeHandler, false
+            );
+            model.removeEventListener(
+               MPlanetEvent.UICMD_SELECT_OBJECT,
+               model_uicmdSelectObjectHandler, false
             );
          }
          if (_objectsLayer != null) {
@@ -111,6 +121,13 @@ package components.map.planet
             _objectsLayer.reset();
          }
       }
+
+      /**
+       * Typed getter for property <code>model</code>.
+       */
+      public function getPlanet() : MPlanet {
+         return MPlanet(model);
+      }
       
       
       /* ########################### */
@@ -122,11 +139,22 @@ package components.map.planet
        */
       private var _objectsLayer: PlanetObjectsLayer = null;
 
-      /**
-       * Typed getter for property <code>model</code>.
-       */      
-      public function getPlanet() : MPlanet {
-         return MPlanet(model);
+      
+      /* ################### */
+      /* ### UI COMMANDS ### */
+      /* ################### */
+
+      private function model_uicmdSelectObjectHandler(event: MPlanetEvent): void {
+         const building: MPlanetObject = event.object;
+         selectLocationImpl(
+            new LocationMinimal(
+               LocationType.SS_OBJECT,
+               model.id,
+               building.x,
+               building.y
+            ),
+            true, true
+         );
       }
 
       protected override function selectLocationImpl(location: LocationMinimal,
@@ -137,11 +165,16 @@ package components.map.planet
                 IInteractivePlanetMapObject(
                    _objectsLayer.getObjectOnTile(location.x, location.y)
                 );
-         _objectsLayer.selectObject(obj);
-         viewport.zoomArea(
-            new Rectangle(obj.x, obj.y, obj.width, obj.height),
-            !instant, operationCompleteHandler
-         );
+         if (obj != null) {
+            _objectsLayer.selectObject(obj);
+            viewport.zoomArea(
+               new Rectangle(obj.x, obj.y, obj.width, obj.height),
+               !instant, operationCompleteHandler
+            );
+         }
+         else {
+            centerLocation(location, instant, operationCompleteHandler);
+         }
       }
 
       protected override function centerLocation(location: LocationMinimal,

@@ -13,9 +13,14 @@
 
 import math
 
-def log(name, value):
+def log(message_or_name, value=None):
   file = open('/home/arturas/pymacro.log', 'a')
-  file.write(name + ": " + str(value) + "\n")
+  if value == None:
+    message = message_or_name
+  else:
+    message = message_or_name + ": " + str(value)
+  file.write(message + "\n")
+
   file.close()
 
 empty_row = (tuple(),)
@@ -27,9 +32,9 @@ unit_tech_end_multiplier = lambda npc: 180 if npc else 60
 
 ### Attack modifier division ###
 
-kind_proportion = lambda mod: 0.35 * mod # For space/ground technologies
-base_proportion = lambda mod: 0.2 * mod # For unit base technologies
-specialized_proportion = lambda mod: 0.45 * mod # For unit specialization
+kind_proportion = 0.35 # For space/ground technologies
+base_proportion = 0.2 # For unit base technologies
+specialized_proportion = 0.45 # For unit specialization
 
 ### Specialization formulas ###
 
@@ -43,7 +48,7 @@ spec_absorption = (
 )
 # 140% attack maps to extra 300% speed. That means that the ship will fly 4
 # times as fast hop_time / (1 + 3.0)
-spec_speed = ("Speed", lambda base, coef: base / 7.0 * 15.0)
+spec_speed = ("Speed", lambda base, coef: base * 15.0 / 7.0)
 # 140% attack maps to 119% storage
 spec_storage = ("Storage", lambda base, coef: base * 0.85)
 
@@ -239,7 +244,6 @@ def pow_dep(level1, coefs1, mult1, level2, coefs2, mult2, num_levels):
 def research_time(coefs):
   """Given time coefs return array of coefs for min scientists needed.
   1 hours translates to minimum 12 scientists."""
-  log("rt coefs", coefs)
   if isinstance(coefs[0], tuple):
     # Spreadsheet invocation.
     return research_time(coefs[0])
@@ -336,12 +340,10 @@ def unit_techs(name, build_time, metal, energy, zetium, volume_coefs,
   ### Base technology
 
   num_of_base_levels = max_lvl_for_unit_tech(name, unlocker)
-  base_mod = base_proportion(attack_mod)
 
   start_mult = unit_tech_start_multiplier(npc)
   end_mult = start_mult if num_of_base_levels == 1 \
     else unit_tech_end_multiplier(npc)
-
 
   list = tuple()
   list += unit_tech_base(
@@ -350,7 +352,8 @@ def unit_techs(name, build_time, metal, energy, zetium, volume_coefs,
   )
 
   for spec_name, func in specs:
-    max = func(base_mod, crit_abs_coef) * 100
+    # Pass attack_mod to function, because it expects it!
+    max = func(attack_mod, crit_abs_coef) * base_proportion * 100
     coefs = lin_dep_raw(0, max, num_of_base_levels) if unlocker \
       else lin_dep_raw_with_first_lvl(max, num_of_base_levels)
 
@@ -358,8 +361,6 @@ def unit_techs(name, build_time, metal, energy, zetium, volume_coefs,
   list += empty_row
 
   ### Specialization technologies
-
-  spec_mod = specialized_proportion(attack_mod)
 
   for spec_name, func in specs:
     tech_name = name + " " + spec_name
@@ -369,7 +370,9 @@ def unit_techs(name, build_time, metal, energy, zetium, volume_coefs,
       npc
     )
 
-    coefs = lin_dep_raw_with_first_lvl(func(spec_mod, crit_abs_coef) * 100, 10)
+    # Pass attack_mod to function, because it expects it!
+    max_value = func(attack_mod, crit_abs_coef) * specialized_proportion * 100
+    coefs = lin_dep_raw_with_first_lvl(max_value, 10)
     list += (tech_name, spec_name.lower() + " mod") + coefs + (0, 1),
     list += empty_row
 
@@ -389,8 +392,6 @@ def kind_tech_group(name, build_time, metal, energy, zetium, volume_coefs,
 
   list = tuple()
 
-  proportion = kind_proportion(attack_mod)
-
   for spec_name, func in specs:
     tech_name = name + " " + spec_name
     list += unit_tech_base(
@@ -399,7 +400,8 @@ def kind_tech_group(name, build_time, metal, energy, zetium, volume_coefs,
       npc
     )
 
-    coefs = lin_dep_raw_with_first_lvl(func(proportion, crit_abs_coef) * 100, 10)
+    max_value = func(attack_mod, crit_abs_coef) * kind_proportion * 100
+    coefs = lin_dep_raw_with_first_lvl(max_value, 10)
     list += (tech_name, spec_name.lower() + " mod") + coefs + (0, 1),
     list += empty_row
 
@@ -417,7 +419,7 @@ def speed_group(base_name, build_time, metal, energy, zetium,
 
   list = tuple()
 
-  proportion = kind_proportion(attack_mod)
+  proportion = attack_mod * kind_proportion
 
   spec_name, func = spec_speed
   for name in ("Heavy", "Light"):

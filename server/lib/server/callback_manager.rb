@@ -51,6 +51,21 @@ class CallbackManager
     EVENT_CREATE_ZETIUM_SYSTEM_OFFER => :create_zetium_system_offer,
   }
 
+  CLASS_TO_COLUMN = {
+    Player => :player_id,
+    Technology => :technology_id,
+    Galaxy => :galaxy_id,
+    SolarSystem => :solar_system_id,
+    SsObject => :ss_object_id,
+    Building => :building_id,
+    Unit => :unit_id,
+    RouteHop => :route_hop_id,
+    Cooldown => :cooldown_id,
+    Notification => :notification_id,
+    Nap => :nap_id,
+    CombatLog => :combat_log_id,
+  }
+
   TAG = "callback_manager"
 
   def to_s
@@ -115,11 +130,15 @@ class CallbackManager
           sql = "WHERE #{conditions}#{skip_failed} ORDER BY ends_at"
 
           row = self.class.get(sql, @connection)
-          row = Callback.new(
-            row['id'], row['class'], row['object_id'], row['event'],
-            row['ruleset'], row['ends_at']
-          ) unless row.nil?
-          row
+          if row.nil?
+            nil
+          else
+            klass, obj_id = self.class.parse_row(row)
+            Callback.new(
+              row['id'], klass, obj_id, row['event'],
+              row['ruleset'], row['ends_at']
+            )
+          end
         end
       end
 
@@ -140,50 +159,61 @@ class CallbackManager
     end
   end
 
-  private
   class << self
-    def get_class(object)
-      object.class.to_s
+    def get_column(object)
+      CLASS_TO_COLUMN.each do |klass, column|
+        return column if object.is_a?(klass)
+      end
+
+      raise ArgumentError, "Unknown column type for #{object.inspect}!"
+    end
+
+    def parse_row(row)
+      CLASS_TO_COLUMN.each do |klass, column|
+        id = row[column.to_s]
+        return [klass, id] unless id.nil?
+      end
+
+      raise ArgumentError, "Cannot determine class/id for #{row.inspect}!"
     end
 
     # Register _event_ that will happen at _time_ on _object_. It will
     # be scoped in _ruleset_. Beware that ruleset is not considered when
     # updating or checking for object existence.
-    def register(object, event=EVENT_UPGRADE_FINISHED, time=nil)
-      raise ArgumentError.new("object was nil!") if object.nil?
-      raise ArgumentError.new("object was not a ActiveRecord::Base, but #{
-        object.class} with superclass #{object.class.superclass}!") \
-        unless object.is_a?(ActiveRecord::Base)
+    def register(object, event, time)
+      typesig binding, ActiveRecord::Base, Fixnum, Time
 
-      time ||= object.upgrade_ends_at
-
-      LOGGER.debug("Registering event '#{TYPES[event]
+      LOGGER.info("Registering event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
       raise ArgumentError.new("object #{object} does not have id!") \
         if object.id.nil?
 
+      column = get_column(object)
       ActiveRecord::Base.connection.execute(
-        "INSERT INTO callbacks SET class='#{get_class(object)
-          }', ruleset='#{CONFIG.set_scope}', object_id=#{object.id
-          }, event=#{event}, ends_at='#{time.to_s(:db)}'"
+        "INSERT INTO callbacks SET #{column}='#{object.id.to_i
+          }', ruleset='#{CONFIG.set_scope}', event=#{event
+          }, ends_at='#{time.to_s(:db)}'"
       )
     end
 
     # Update existing record.
-    def update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
-      time ||= object.upgrade_ends_at
+    def update(object, event, time)
+      typesig binding, ActiveRecord::Base, Fixnum, Time
 
-      LOGGER.debug("Updating event '#{TYPES[event]
+      LOGGER.info("Updating event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
+      column = get_column(object)
       ActiveRecord::Base.connection.execute(
-        "UPDATE callbacks SET ends_at='#{time.to_s(:db)}' WHERE class='#{
-          get_class(object)}' AND object_id=#{object.id} AND event=#{event}"
+        "UPDATE callbacks SET ends_at='#{time.to_s(:db)}' WHERE #{
+        column}=#{object.id} AND event=#{event}"
       )
     end
 
-    def register_or_update(object, event=EVENT_UPGRADE_FINISHED, time=nil)
+    def register_or_update(object, event, time)
+      typesig binding, ActiveRecord::Base, Fixnum, Time
+
       register(object, event, time)
     rescue ActiveRecord::RecordNotUnique
       update(object, event, time)
@@ -200,31 +230,28 @@ class CallbackManager
         "ends_at='#{time.to_s(:db)}'"
       end
 
+      column = get_column(object)
       ! ActiveRecord::Base.connection.select_value(
-        "SELECT 1 FROM callbacks WHERE class='#{get_class(object)
-         }' AND object_id=#{object.id} AND event=#{event} AND #{time_condition
-        } LIMIT 1"
+        "SELECT 1 FROM callbacks WHERE #{column}=#{object.id} AND event=#{event
+        } AND #{time_condition} LIMIT 1"
       ).nil?
     end
 
-    def unregister(object, event=EVENT_UPGRADE_FINISHED)
-      LOGGER.debug("unregistering event '#{TYPES[event]
+    def unregister(object, event)
+      typesig binding, ActiveRecord::Base, Fixnum
+
+      LOGGER.info("unregistering event '#{TYPES[event]
         }' for #{object}", TAG)
 
+      column = get_column(object)
       ActiveRecord::Base.connection.execute(
-        "DELETE FROM callbacks WHERE class='#{get_class(object)
-          }' AND object_id=#{object.id} AND event=#{event}"
+        "DELETE FROM callbacks WHERE #{column}=#{object.id} AND event=#{event}"
       )
     end
 
     def get(sql, connection=nil)
       connection ||= ActiveRecord::Base.connection
-      connection.select_one(
-        "SELECT id, class, ruleset, object_id, event, ends_at FROM callbacks
-          #{sql} LIMIT 1"
-      )
+      connection.select_one("SELECT * FROM callbacks #{sql} LIMIT 1")
     end
-
-
   end
 end

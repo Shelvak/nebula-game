@@ -2,6 +2,7 @@ require 'rubygems'
 require 'rake'
 require 'fileutils'
 require 'digest/sha1'
+require 'socket'
 
 basedir = File.dirname(__FILE__)
 load basedir + '/../Rakefile'
@@ -16,7 +17,12 @@ namespace :build do
   FLEX_HOME = ENV["FLEX_HOME"] or raise(
     "FLEX_HOME environment variable is not set!"
   )
+  as3_st = "#{basedir}/vendor/as3_st.jar"
+  FCSH = File.join(FLEX_HOME, "bin", windows? ? "fcsh.exe" : "fcsh")
+  FCSHD_PORT = "53000"
+  FCSHD = "#{basedir}/vendor/FlexShellScript.jar"
   src_dir = "#{basedir}/src"
+  src_pp_dir = "#{basedir}/src-pp"
   html_extras_dir = "#{basedir}/html-extras"
   html_files = %W{
     #{src_dir}/index.template.html
@@ -52,6 +58,45 @@ namespace :build do
     end
   end
 
+  def fcsh_running?
+    socket = TCPSocket.open("127.0.0.1", FCSHD_PORT)
+    socket.close
+    true
+  rescue Errno::ECONNREFUSED
+    false
+  rescue Exception => e
+    puts e.class
+    raise e
+  end
+
+  def fcsh(*args)
+    puts fcsh_running?
+    unless fcsh_running?
+      puts
+      puts "  ERROR: fcsh is not running, please launch it with"
+      puts "         `rake build:fcsh` or use fcsh=0 env var to "
+      puts "         disable fcsh!"
+      puts
+      exit
+    end
+
+    if args.find { |a| a.include?(" ") }
+      puts
+      puts "  ERROR: Cannot use this from a directory that contains spaces!"
+      puts "         FCSH does not support it!"
+      puts
+      exit
+    end
+
+    fcsh_cmd = args.join(" ")
+    info "Running %s" % fcsh_cmd
+    fcsh_run("client", fcsh_cmd)
+  end
+
+  def fcsh_run(*args)
+    run("java", "-jar", FCSHD, *args)
+  end
+
   # Compiles _source_mxml_ to _output_swf_.
   def mxmlc(source_mxml, output_swf, options={})
     args = []
@@ -84,8 +129,13 @@ namespace :build do
     args += %W{-output #{File.expand_path(output_swf)}
       #{File.expand_path(source_mxml)}}
 
-    info "Running %s" % args.map(&:inspect).join(" ")
-    run(*args)
+    if ENV['fcsh'] == "0"
+      cmd = args.map(&:inspect).join(" ")
+      info "Running %s" % cmd
+      run(*cmd)
+    else
+      fcsh(*args)
+    end
   end
 
   # Calculates and returns SHA1 checksum of file contents.
@@ -115,7 +165,7 @@ namespace :build do
       FileUtils.cp path, target
       checksums += "#{basename} #{checksummed_name}\n"
     end
-    File.open("#{destination}/checksums", "w") { |f| f.write checksums }
+    File.open("#{destination}/checksums", "wb") { |f| f.write checksums }
   end
 
   desc "Remove all directories created during the build process."
@@ -133,6 +183,17 @@ namespace :build do
     end
   end
 
+  desc "Launches FCSH daemon."
+  task :fcsh do
+    if fcsh_running?
+      puts "FCSHD is already running."
+      return
+    end
+
+    puts "Launching FCSHD..."
+    fcsh_run("server", FCSH, FCSHD_PORT)
+  end
+
   namespace :compile do
     desc "Compile assets into SWF files"
     task :assets do
@@ -140,13 +201,22 @@ namespace :build do
         Rake::Task['flex:assets:build'].invoke
       end
     end
-    
+
+    desc "Preprocess source with stacktracer."
+    task :preprocess do
+      info "Preprocessing with stacktracer" do
+        run "java", "-jar", as3_st, src_dir, src_pp_dir
+      end
+    end
+
     desc "Compile SpaceGame into SWF file. Pass debug=1 for debug build."
     task :swf do
       [output_dir, bin_dir, dist_dir].each do |dir|
         info "Creating #{dir}."
         FileUtils.mkdir_p dir
       end
+
+      Rake::Task['build:compile:preprocess'].invoke
 
       info "Compiling SpaceGame..." do
         compiler_flags = %w{
@@ -172,10 +242,10 @@ namespace :build do
           warn-number-from-string-changes warn-slow-text-field-addition
           warn-unlikely-function-value
         }
-        compiler_flags.push "debug" if ENV['debug'] || ENV['DEBUG']
+        compiler_flags.push "debug" unless ENV['no_debug'] || ENV['NO_DEBUG']
 
         build = Time.now.strftime("%Y-%m%d-%H%M")
-        version_file = "#{src_dir}/application/Version.as"
+        version_file = "#{src_pp_dir}/application/Version.as"
         old_version = nil
         begin
           File.modify(version_file) do |contents|
@@ -194,7 +264,7 @@ namespace :build do
           File.open(bin_version, "w") { |f| f.write(build + "\n") }
 
           mxmlc(
-            "#{src_dir}/SpaceGame.mxml",
+            "#{src_pp_dir}/SpaceGame.mxml",
             bin_swf,
             :libraries => Dir["#{lib_dir}/*.swc"],
             :keep_metadata => %w{Required Optional ArrayElementType SkipProperty},

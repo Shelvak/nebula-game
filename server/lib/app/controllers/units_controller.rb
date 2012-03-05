@@ -60,7 +60,9 @@ class UnitsController < GenericController
     raise Dispatcher::UnresolvableScope, e.message, e.backtrace
   end
   def self.update_action(m)
-    Unit.update_combat_attributes(m.player.id, m.params['updates'])
+    # Map JSON string keys to integer keys.
+    updates = m.params['updates'].map_keys { |key, value| key.to_i }
+    Unit.update_combat_attributes(m.player.id, updates)
   end
 
   # Mass sets hidden property on given player units.

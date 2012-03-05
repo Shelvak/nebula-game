@@ -23,6 +23,7 @@ package models.technology
       
       
       private var coordsHash: Object;
+      private var techsHash: Object;
       
       public var technologies:ArrayCollection = new ArrayCollection();
       
@@ -35,11 +36,13 @@ package models.technology
          technologies.removeAll();
          _buildingRepairTechnology = null;
          coordsHash = null;
+         techsHash = null;
       }
       
       public function createAllTechnologies(): void
       {
          coordsHash = new Object();
+         techsHash = new Object();
          mods = {};
          nullMods = null;
          for each (var tech: String in Config.getTechnologiesTypes())
@@ -64,6 +67,7 @@ package models.technology
          {
             coordsHash[getCoordsAsString(temp.coords[0], temp.coords[1])] = true;
          }
+         techsHash[type] = temp;
          temp.dispatchEvent(new Event(TechnologyEvent.TECHNOLOGY_CREATED));
          technologies.addItem(temp);
       }
@@ -164,16 +168,17 @@ package models.technology
       
       public function getTechnologyById(tech_id: int): Technology
       {
-         for each (var element: Technology in technologies)
-         if (element.id == tech_id) return element;
-         return null;
+         if (techsHash[tech_id] == null)
+         {
+            for each (var element: Technology in technologies)
+               if (element.id == tech_id) techsHash[tech_id] = element;
+         }
+         return techsHash[tech_id];
       }
       
       public function getTechnologyByType(tech_type: String): Technology
       {
-         for each (var element: Technology in technologies)
-         if (element.type == StringUtil.underscoreToCamelCase(tech_type)) return element;
-         return null;
+         return techsHash[StringUtil.underscoreToCamelCase(tech_type)];
       }
 
       private function buildingRepairTechnologyLvlChangeHandler(e: UpgradeEvent): void

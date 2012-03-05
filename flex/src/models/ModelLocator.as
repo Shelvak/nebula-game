@@ -8,6 +8,7 @@ package models
    import controllers.ui.NavigationController;
 
    import flash.events.EventDispatcher;
+   import flash.system.Capabilities;
 
    import globalevents.GPlanetEvent;
 
@@ -26,11 +27,17 @@ package models
    import models.unit.UnitsList;
 
    import mx.collections.ArrayCollection;
+   import mx.formatters.DateFormatter;
 
+   import namespaces.client_internal;
    import namespaces.prop_name;
 
+   import utils.DateUtil;
    import utils.SingletonFactory;
+   import utils.StringUtil;
    import utils.datastructures.Collections;
+   import utils.remote.ServerConnector;
+   import utils.remote.ServerProxyInstance;
 
 
    /**
@@ -40,17 +47,16 @@ package models
    
    /**
     * A class that implements "model locator" pattern (idea more precisely) from the
-    * Cairngom microarchitecture framework. 
+    * Cairngom micro-architecture framework.
     * 
-    * <p>This class should be treaded as a singleton and instance of it should
+    * <p>This class should be treated as a singleton and instance of it should
     * be retrieved either using static method <code>getInstance()</code> or
     * using <code>utils.SingletonFactory</code>.</p>
     */   
    [Bindable]
    public class ModelLocator extends EventDispatcher
    {
-      public static function getInstance() : ModelLocator
-      {
+      public static function getInstance(): ModelLocator {
          return SingletonFactory.getSingletonInstance(ModelLocator);
       }
       
@@ -58,12 +64,38 @@ package models
       {
          var message:String = 'Debug log! Version ' + Version.VERSION +
             '\n\n';
+         message += "FP version: " + Capabilities.version + "\n";
+         message += "FP debug: " + Capabilities.isDebugger + "\n";
+         message += "FP type: " + Capabilities.playerType + "\n";
+         message += "OS: " + Capabilities.os + "\n";
+         message += "CPU Arch: " + Capabilities.cpuArchitecture + "\n\n";
          message += 'Log (last ' + StartupManager.inMemoryLog.maxEntries + ' entries):\n';
          message += StartupManager.inMemoryLog.getContent("\n") + "\n\n";
-         message += 'Player:\n' + player + '\n\n';
+
+         const dateNow: Date = new Date();
+         const dateFmt: DateFormatter = new DateFormatter();
+         dateFmt.formatString = "YYYY-MM-DD JJ:NN:SS";
+         message += StringUtil.substitute(
+            "Lowest observed communications latency: {0}\n",
+            ServerConnector(ServerProxyInstance.getInstance()).client_internal::lowestObservedLatency
+         );
+         message += StringUtil.substitute(
+            "Time diff (serverTime - clientTime): {0}\n", DateUtil.timeDiff
+         );
+         message += StringUtil.substitute(
+            "Local machine timezone offset: {0}\n", dateNow.timezoneOffset
+         );
+         message += StringUtil.substitute(
+            "Local machine time: {0}\n", dateFmt.format(dateNow)
+         );
+         message += StringUtil.substitute(
+            "Server machine time: {0}\n\n",
+            dateFmt.format(DateUtil.getServerTime(dateNow))
+         );
+
+         message += "Player:\n" + player + "\n\n";
          message += "Active map type:\n" + activeMapType + "\n\n";
          message += "Current galaxy:\n" + latestGalaxy + "\n\n";
-//         message += "Solar systems in current galaxy:\n" + latestGalaxy.solarSystems.toArray().join("\n") + "\n\n";
          message += "Current solar system:\n" + latestSSMap + "\n\n";
          message += "Current planet:\n" + latestPlanet + "\n\n";
          return message;
@@ -259,6 +291,13 @@ package models
        * @default empty collection
        */
       public var squadrons:SquadronsList = new SquadronsList();
+
+      /**
+       * List of all additional location users. Hold for updating location comps.
+       *
+       * @default empty collection
+       */
+      public var additionalLocationUsers:ArrayCollection = new ArrayCollection();
       
       
       /* ###################### */

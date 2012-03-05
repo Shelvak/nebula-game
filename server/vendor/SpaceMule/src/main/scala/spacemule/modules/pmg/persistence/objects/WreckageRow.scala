@@ -1,25 +1,24 @@
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.modules.pmg.persistence.TableIds
 import spacemule.modules.pmg.objects.Location
 import spacemule.persistence.{RowObject, Row, DB}
 import spacemule.modules.config.objects.ResourcesEntry
 
 object WreckageRow extends RowObject {
+  val pkColumn = Some("id")
   val columnsSeq = Seq(
-    "id", "galaxy_id",
+    "galaxy_id",
     "location_id", "location_type", "location_x", "location_y",
     "metal", "energy", "zetium"
   )
 }
 
-case class WreckageRow(galaxyId: Int, location: Location, entry: ResourcesEntry)
-extends Row {
+case class WreckageRow(
+  galaxyId: Int, location: Location, entry: ResourcesEntry
+) extends Row {
   val companion = WreckageRow
-  val id = TableIds.wreckages.next
 
   val valuesSeq = Seq(
-    id,
     galaxyId,
     location.id,
     location.kind.id,

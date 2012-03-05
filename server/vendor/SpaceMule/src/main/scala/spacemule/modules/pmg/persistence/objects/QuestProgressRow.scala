@@ -5,10 +5,12 @@
 
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.modules.pmg.persistence.TableIds
+import spacemule.persistence.{Row, RowObject}
+import spacemule.modules.pmg.persistence.manager.Buffer
 
-object QuestProgressRow {
-  val columns = "`id`, `quest_id`, `player_id`, `status`"
+object QuestProgressRow extends RowObject {
+  val pkColumn = Some("id")
+  val columnsSeq = List("quest_id", "player_id", "status")
 
   // Quest is just started by +Player+.
   val StatusStarted = 0
@@ -19,9 +21,12 @@ object QuestProgressRow {
   val StatusRewardTaken = 2
 }
 
-case class QuestProgressRow(questId: Int, playerId: Int) {
-  val id = TableIds.questProgresses.next
-  val values = "%d\t%d\t%d\t0".format(
-    id, questId, playerId
+case class QuestProgressRow(
+  questId: Int, playerId: Int
+) extends Row {
+  val companion = QuestProgressRow
+
+  val valuesSeq = List(
+    questId, playerId, QuestProgressRow.StatusStarted
   )
 }

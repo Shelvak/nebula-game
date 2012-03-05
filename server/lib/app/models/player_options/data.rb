@@ -27,8 +27,8 @@ class PlayerOptions::Data < OptionsHash
   # are present?
   property :show_popups_after_login, :default => true, :valid => Boolean
 
-  # Should first planet be opened after login if player only has one planet?
-  property :open_only_planet_after_login, :default => true, :valid => Boolean
+  # Should first planet be opened after login?
+  property :open_first_planet_after_login, :default => true, :valid => Boolean
 
   ### Generic options ###
 

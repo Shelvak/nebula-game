@@ -16,6 +16,7 @@
       import components.market.MarketScreen;
       import components.notifications.NotificationsScreen;
       import components.player.PlayerScreen;
+      import components.playeroptions.PlayerOptionsScreen;
       import components.quests.QuestsScreen;
       import components.ratings.RatingScreen;
       import components.resourcetransporter.ResourceTransporterScreen;
@@ -127,6 +128,9 @@
                   break;
                case MainAreaScreens.VIP:
                   addElement(new VipScreen());
+                  break;
+               case MainAreaScreens.PREFERENCES:
+                  addElement(new PlayerOptionsScreen());
                   break;
                case MainAreaScreens.ALLY_RATINGS:
                   addElement(new AllianceRatings());

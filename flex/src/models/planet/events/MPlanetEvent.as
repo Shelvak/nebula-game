@@ -1,10 +1,9 @@
 package models.planet.events
 {
    import flash.events.Event;
-   
+
    import models.planet.MPlanet;
    import models.planet.MPlanetObject;
-   import models.tile.Tile;
 
 
    public class MPlanetEvent extends Event
@@ -14,9 +13,14 @@ package models.planet.events
       
       public static const BUILDING_MOVE:String = "buildingMove";
       public static const BUILDING_UPGRADED:String = "planetBuildingUpgraded";
+
+      /**
+       * @see MPlanet
+       */
+      public static const UICMD_SELECT_OBJECT:String = "uicmdSelectObject";
       
       /**
-       * Dispatched when Units||NEW is received.
+       * Dispatched when Units|NEW is received.
        *
        * @eventType unitUpgradeStarted
        */
@@ -39,9 +43,12 @@ package models.planet.events
       
       private var _object:MPlanetObject = null;
       /**
-       * Used only for <code>OBJECT_ADD</code> and <code>OBJECT_REMOVE</code> events: holds instance
-       * of <code>MPlanetObject</code> that has been either added to or removed from the planet this
-       * event originated from.
+       * When used with <code>OBJECT_ADD</code>, <code>OBJECT_REMOVE</code>
+       * events: holds instance of <code>MPlanetObject</code> that has been
+       * either added to or removed from the planet this event originated from.
+       *
+       * When used with <code>UICMD_SELECT_BUILDING</code> holds building to
+       * be selected by the map component.
        */
       public function get object(): MPlanetObject {
          return _object;

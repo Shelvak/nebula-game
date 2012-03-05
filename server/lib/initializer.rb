@@ -5,6 +5,7 @@ require 'rubygems'
 require 'bundler'
 
 require "timeout"
+require "tempfile"
 require "socket"
 require "erb"
 require "pp"

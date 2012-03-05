@@ -85,10 +85,6 @@ class Cfg
 
     ### galaxy.yml ###
 
-    def next_convoy_time
-      CONFIG.evalproperty('galaxy.convoy.time').from_now
-    end
-
     def galaxy_zone_start_slot; CONFIG['galaxy.zone.start_slot']; end
 
     def galaxy_zone_max_player_count; CONFIG['galaxy.zone.players']; end
@@ -128,6 +124,14 @@ class Cfg
 
     def apocalypse_survival_bonus(death_day)
       CONFIG.evalproperty('galaxy.apocalypse.survival_bonus', 'days' => death_day)
+    end
+
+    def next_convoy_time
+      CONFIG.evalproperty('galaxy.convoy.time').from_now
+    end
+
+    def convoy_speed_modifier
+      CONFIG['galaxy.convoy.speed_modifier']
     end
 
     ### market.yml ###

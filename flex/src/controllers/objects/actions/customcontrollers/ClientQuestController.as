@@ -1,6 +1,7 @@
 package controllers.objects.actions.customcontrollers
 {
    import models.factories.QuestFactory;
+   import models.quest.MMainQuestLine;
    import models.quest.Quest;
    import models.quest.events.QuestEvent;
    
@@ -15,6 +16,10 @@ package controllers.objects.actions.customcontrollers
          var quest:Quest = QuestFactory.fromObject(object);
          ML.quests.addItem(quest);
          quest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
+         /* open tutorial if quest is main quest */
+         if (quest.isMainQuest && quest.status == Quest.STATUS_STARTED) {
+            MMainQuestLine.getInstance().openCurrentUncompletedQuest();
+         }
          return quest;
       }
    }

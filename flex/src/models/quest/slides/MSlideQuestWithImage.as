@@ -48,5 +48,13 @@ package models.quest.slides
          }
          return ImagePreloader.getInstance().getImage(imageName);
       }
+
+      public function get width(): uint {
+         if (imageIsUnit) return 130;
+         else if (imageIsBuilding) return 130;
+         else return 150;
+      }
+
+      public function get height(): uint { return width; }
    }
 }

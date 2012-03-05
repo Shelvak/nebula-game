@@ -802,6 +802,7 @@
     <property.height value="Pastato ilgis" />
     <property.vpsOnDamage value="PT už 1 žalos vienetą" />
     <property.credsForKilling value="Kredų už nužudymą" />
+    <property.teleportedVolume value="Perkeliamų karių apimtis" />
 
     <text.deactivated>
       <p>
@@ -907,7 +908,7 @@
       To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
     </Mothership.about>
 
-    <ResourceTransporter.name value="[obj:1:Building_ResourceTransporter]" />
+    <ResourceTransporter.name value="Res. siųstuvas" />
     <ResourceTransporter.tooltip value="Leidžia teleportuoti resursus" />
     <ResourceTransporter.about>
       <p>
@@ -1562,6 +1563,8 @@
     <gun.dart_laser value="Fazinė patranka" />
     <gun.boss_light value="Dvejinti fazeriai" />
     <gun.boss_heavy value="Šoko sviediniai" />
+    <gun.convoyship_light value="Fotonų greitintuvas" />
+    <gun.convoyship_heavy value="TR-3 leistuvas" />
     <armorType value="Šarvų tipas" />
     <damageInPercent value="Procentai" />
     <damage value="Žala" />
@@ -1714,6 +1717,7 @@
   </Location>
 
   <MainMenu>
+    <label.preferences value="Nustatymai" />
     <label.vip value="VIP" />
     <label.quests value="Užduotys" />
     <!-- 0- Player flying squadrons count
@@ -1748,8 +1752,6 @@
     <label.unitsManagement value="Tvarkyti" />
     <label.showUnits value="Rodyti" />
     <label.move value="Judinti" />
-    <label.changeSpeed value="Skrydžio laiko valdymas" />
-    <label.flightTime value="Skrydžio laikas: {0}" />
     <label.arrivesIn value="Atvyks po: {0}" />
     <label.arrivesAt value="Atvyks: {0}" />
     <label.owner value="Žaidėjo:" />
@@ -1762,6 +1764,8 @@
     <label.hop.jumpsIn value="Šoks po:"/>
     <label.hop.landsIn value="Leisis po:"/>
     <title.killBonus value="Sunaikinus šį laivyną Tu gausi:"/>
+    <title.noKillBonus
+      value="Sunaikinus šį laivyna Tu negausi jokio papildomo priedo."/>
     <label.credsKillBonus value="Kredai "/>
     <label.vpsKillBonus value="Pergalės taškai "/>
     <label.honorCoef value="Garbės koef."/>
@@ -1776,10 +1780,6 @@
       </p>
     </tooltip.honorCoef>
     <label.showKillReward value="Atlygis"/>
-    <message.combatCooldownInfo 
-      value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
-    <message.speedUpCost
-      value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
     <message.orderComplete value="Laivai sėkmingai išsiųsti." />
     <label.avoidNpc value="Vengti mūšių su ateiviais" />
     <description.avoidNpc>
@@ -1788,6 +1788,15 @@
       <p>Nepažymėta: tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
       esančiais jo kelyje.</p>
     </description.avoidNpc>
+
+     <speedup.message.combatCooldownInfo
+        value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
+     <speedup.message.cost
+        value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
+     <speedup.label.changeSpeed value="Skrydžio laiko valdymas" />
+     <speedup.label.arrivesAt value="Atvyks: {0}"/>
+     <speedup.label.arrivesIn value="Skrydžio laikas: {0}"/>
+     <speedup.label.speedupValue value="{0}%"/>
   </Movement>
 
   <Navigator>
@@ -1854,6 +1863,18 @@
     <label.combatLog.showLog value="Peržiūrėti įrašą" />
     <label.combatLog.copyToClipboard value="Kopijuoti į iškarpinę" />
 
+    <message.playerAttached value="Tu buvai perkeltas" />
+    <title.playerAttached value="Sveikas sugrįžęs!" />
+    <insideMessage.playerAttached>
+      <p>
+        Tu kurį laiką buvai neaktyvus, todėl buvai perkeltas į naują galaktikos
+        vietą, kuri labiau tinka tavo dabartinei situacijai.
+      </p>
+      <p>
+        Įsikurk, apsidairyk ir susipažink su naujais savo kaimynais! Sekmės!
+      </p>
+    </insideMessage.playerAttached>
+
     <title.questCompleted value="Užduotis įvykdyta" />
     <message.questCompleted value="Užduotis „{0}“ buvo įvykdyta." />
     <message.newQuests value="Tu pradėjai vykdyti šias užduotis:" />
@@ -1861,10 +1882,10 @@
     <title.technologiesChanged value="Įvyko pasikeitimai technologijose" />
     <message.technologiesChanged value="Pasikeitimai technologijose." />
     <insideMessage.technologiesChanged>
-        <p>
-            Dėl nepakankamo mokslininkų arba planetų kiekio buvo atlikti šie
-            pakeitimai technologijoms:
-        </p>
+      <p>
+        Dėl nepakankamo mokslininkų arba planetų kiekio buvo atlikti šie
+        pakeitimai technologijoms:
+      </p>
     </insideMessage.technologiesChanged>
 
     <title.kickedFromAlliance value="Buvai pašalintas iš sąjungos" />
@@ -2040,11 +2061,18 @@
     <title.defaultError value="Klaida!" />
 
     <label.reconnect value="Jungtis vėl" />
+    <label.refresh value="Perkrauti" />
     <label.cancel value="Atšaukti" />
     <label.confirm value="Patvirtinti" />
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+
+    <title.outdatedClient value="Žaidimo versija pasenusi" />
+    <message.outdatedClient>
+      <p>Kol žaidei buvo atnaujinta žaidimo versija.</p>
+      <p>Tam, kad žaidimas veiktų be spragų turi perkrauti puslapį.</p>
+    </message.outdatedClient>
     
     <title.cancelUnitTraining value="Atšaukti kario apmokymus" />
     <message.cancelUnitTraining 
@@ -2057,6 +2085,13 @@
     <title.cancelConstructor value="Atšaukti statybas" />
     <message.cancelConstructor 
     value="Ar tikrai nori atšaukti šio pastato statybas?"/>
+
+    <title.cancelPlayerOptions value="Yra neišsaugotų pakeitimų" />
+    <message.cancelPlayerOptions>
+      <p>Tu padarei pakeitimų nustatymuose. Jei uždarysi šį langą visi pakeitimai
+        bus atšaukti.</p>
+      <p>Ar esi tikras?</p>
+    </message.cancelPlayerOptions>
     
     <title.cancelOffer value="Atšaukti pasiūlymą" />
     <message.cancelOffer>
@@ -2191,16 +2226,8 @@
     </message.disconnect.jsonError>
 
     <crash>
-      <p>Gelbėkitės kas galit! Galingieji Kosmoso Vabalai įsibrovė į mūsų 
-      žaidimą, o jis, kad ir kaip bebūtų gaila, dar nėra jiems visiškai 
-      atsparus! (bent jau kol kas). Na nieko, nesijaudink, visuomet gali 
-      paleisti žaidimą iš naujo ir viskas turėtų (greičiausiai) būti gerai.</p>
+      <p></p>
     </crash>
-
-    <message.slowClient>
-      Tavo kompiuteris yra nepakankamai našus atlikti šią operaciją.
-      Tačiau jei manai, jog tai klaida, gali mums apie tai pranešti forume.
-    </message.slowClient>
     
     <title.log value="Derinimo žurnalas" />
     <message.log.general>
@@ -2224,16 +2251,6 @@
       sunkų darbą bus atlyginta. Mes pažadam. Kosminis mažojo pirštelio pažadas.
       O taip...</p>
     </message.clientCrash.general>
-
-    <message.clientCrash.debugPlayer>
-      <p>[reference:crash]</p>
-      <p>Mes, ko gero, galėtume tai pataisyti, tačiau deja tu neturi Flash 
-      grotuvo versijos skirtos derinimui, tad mes negalime surinkti naudingos
-      informacijos, kuri praverstų ištaisant šią klaidą. Jeigu tu vis gi NORI,
-      kad ši klaida daugiau nepasikartotų, tada spausk ant 
-      „[reference:label.clientCrash.wiki]“ mygtuko, kad sužinotum kaip tu gali
-      mums padėti ;) Mes visuomet dėkingi už pagalbą ir skolingi neliekam!</p>
-    </message.clientCrash.debugPlayer>
 
     <label.clientCrash.copy value="Kopijuoti" />
     <label.clientCrash.forum value="Pranešti klaidą" />
@@ -2520,7 +2537,7 @@
     <p>
       Jūsų įsakymu įrengėme [obj:1:Building_Barracks:what:dc]. Dabar privalome
       parengti daugiau karių. Užsukite į [obj:1:Building_Barracks:what:dc] ir
-      įsakykite pradėti [obj:2:Unit_Trooper:whos:dc] mokymus.
+      įsakykite pradėti desantininkų mokymus.
     </p>
     </about.60>
 
@@ -2818,15 +2835,14 @@
     <about.280>
       <p>Sveiki, Komandore.</p>
       <p>
-        Pastačius [obj:1:Building_Radar:what:dc] pamatėme, jog už mūsų saulės
+        Pastačius radarą pamatėme, jog už mūsų saulės
         sistemos ribų egzistuoja kitos saulės sistemos su laisvomis planetomis.
         Mūsų analitikai sako, jog mums labai praverstų dar viena planeta. O tam,
         jog ją kolonizuotume, mums reikia tam tikrų įrenginių, kuriuos galime
-        pagaminti tik [obj:1:Building_GroundFactory:where:dc].
+        pagaminti tik tankų gamykloje.
       </p>
       <p>
-        Tad nedelskite, pradėkite išradinėti ir statyti
-        [obj:1:Building_GroundFactory:what:dc]!
+        Tad nedelskite, pradėkite išradinėti ir statyti tankų gamyklą!
       </p>
     </about.280>
 
@@ -2841,7 +2857,7 @@
         laimingas atsitiktinumas.
       </p>
       <p>
-        [obj:1:Unit_Mdh] mums pravers norint kolonizuoti trečiąją planetą. Vis
+        Mobilus štabas mums pravers norint kolonizuoti trečiąją planetą. Vis
         gi kelias ilgas ir nesinorėtų ten nuskridus likti it musę kandus.
       </p>
     </about.290>
@@ -2850,12 +2866,12 @@
     <about.300>
       <p>Komandore.</p>
       <p>
-        Išradome [obj:1:Technology_Mdh:whos] technologiją - beliko tik nuskristi
+        Išradome mobilaus štabo technologiją - beliko tik nuskristi
         ir užimti tą trečiąją planetą.
       </p>
       <p>
-        Tankų gamykloje pastatykime savo [obj:1:Unit_Mdh:what:dc], įkraukime jį
-        į [obj:1:Unit_Mule:what:dc] ir su palyda nusiųskime jį į trečiąją
+        Tankų gamykloje pastatykime savo mobilų štabą, įkraukime jį
+        į mulo klasės laivą ir su palyda nusiųskime jį į trečiąją
         planetą. Nepamirškite nusivežti ir žemės karių - greičiausiai planeta
         bus saugoma ateivių.
       </p>
@@ -3347,13 +3363,12 @@
       </p>
     </about.10425>
 
-    <title.10450 value="Pirmasis atlygis" />
+    <title.10450 value="Galios kumštis" />
     <about.10450>
       <p>Komandore.</p>
       <p>
-        Užtikrinkite, jog mes turime pakankamai kasyklų, jog patenkinti mūsų
-        būtiniausius poreikius. Kažkas man kužda, jog greitai mums prireiks
-        žymiai daugiau...
+        Užtikrinkite, jog mes turime pakankamai karių, jog galėtume lengvai
+        apsiginti ar netgi smogti pirmi! Mes turime būti tvirti!
       </p>
     </about.10450>
 
@@ -3797,7 +3812,7 @@
       <![CDATA[
       <p>Ęsant virš sektoriaus su nuolaužomis pasirink savo laivus, tada spausk
         mygtuką „[reference:Squadrons/label.manage]“.</p>
-      <p>Atsidariusiame ekrane paspausk įkrovimo mygtuką.<p>
+      <p>Atsidariusiame ekrane paspausk įkrovimo mygtuką.</p>
       ]]>
     </LoadWreckage1>
     <LoadWreckage2>
@@ -4248,12 +4263,12 @@
     <property.mod.critical.format value="{0}%" />
     <property.mod.critical.tooltip>
       <p>Tikimybė, kad karinis vienetas šaus kritinį šūvį.</p>
-      <p>Kritinis šūvis - tai 2,5 karto daugiau žalos darantis šūvis.</p>
+      <p>Kritinis šūvis - tai {0} karto daugiau žalos darantis šūvis.</p>
     </property.mod.critical.tooltip>
     <property.mod.absorption value="Žalos sugėrimo tikimybė" />
     <property.mod.absorption.format value="{0}%" />
     <property.mod.absorption.tooltip>
-      <p>Tikimybė, kad į karinį vienetą pataikytas šūvis padarys 2,5 karto
+      <p>Tikimybė, kad į karinį vienetą pataikytas šūvis padarys {0} karto
         mažiau žalos.</p>
     </property.mod.absorption.tooltip>
     <property.mod.speed value="Judėjimo trukmės daliklis" />
@@ -4769,8 +4784,8 @@
     <Mantis.about>
       <p>[reference:UnitTech]</p>
       <p>[reference:Units/Mantis.about]</p>
-      <p>Įmaišant zetiumo į azurų raketas išgaunamas didesnis sprogstamasis
-      efektas, o panaudojant zetiumą jų šarvuose, jie sugeria daugiau žalos.</p>
+      <p>Šios technologijos padidinta kulkosvaidžio galia ir papildomi šarvai
+      paverčia mantį tikru priešininkų siaubu.</p>
       <p>[reference:GroundUpgrade]</p>
     </Mantis.about>
     
@@ -5133,6 +5148,7 @@
     <label.resources value="Resursai" />
     <label.transferResources value="Perkelti" />
     <label.cancelPrepaid value="Tu gausi"/>
+    <message.changesCanceled value="Pakeitimai buvo atšaukti dėl įvykusio mūšio"/>
     <!-- 0 - resources string, 1 - 'is' or 'are' 
     in lt we dont use parameter 1 -->
     <label.planetFull>
@@ -5161,8 +5177,7 @@
     </warning.noFleets>
     
     <btnLabel.cancel value="Atšaukti" />
-    <label.cancelTraining
-    value="Atšaukęs kario apmokymą gautum:" />
+    <label.cancelTraining value="Atšaukęs gautum:" />
 
     <stored.short>
       <p>R: {0}%<br/>K: {1}%</p>
@@ -5473,16 +5488,25 @@
      <message.channelJoin  value="[ {0} prisijungė ]"/>
      <message.channelLeave value="[ {0} išėjo ]"/>
      <message.friendOffline value="Šis žaidėjas šiuo metu neprisijungęs"/>
+     <message.memberIgnored value="... ignoruojama ..."/>
      <message.silence>
         Tu buvai nutildytas iki {0} dėl pokalbių teršimo.
         Vėl galėsi šnekėti už {1}.
      </message.silence>
+     <tooltip.btnDoIgnore>
+       <p>Žaidėjas nėra ignoruojamas</p>
+     </tooltip.btnDoIgnore>
+     <tooltip.btnDoUnignore>
+       <p>Žaidėjas ignoruojamas</p>
+     </tooltip.btnDoUnignore>
      <label.send value="Siųsti" />
      <label.mainChannel value="#galaktika"/>
      <label.allianceChannel value="#sąjunga"/>
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Žaidėjai"/>
      <label.generateJoinLeaveMsgs value="Rodyti prisijungimo / išėjimo žinutes"/>
+     <ignorePopup.title value="Ignoruoti?"/>
+     <ignorePopup.message value="Ar tikrai nori ignoruoti žaidėją {0}?"/>
   </Chat>
   
   <Market>
@@ -5604,5 +5628,24 @@
      <title.npcBuildings value="Ateivių pastatai"/>
      <title.foliage value="Kalnai"/>
   </PlanetMapEditor>
+
+  <PlayerOptions>
+     <title.options value="Nustatymai" />
+     <title.chatOptions value="Pokalbių kambario nustatymai" />
+     <title.afterLoginOptions value="Prisijungimo nustatymai" />
+     <title.genericOptions value="Pagrindiniai nustatymai" />
+     <label.save value="Išsaugoti" />
+     <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
+     <label.showPopupsAfterLogin value="Atidaryti iššokančius langus prisijungus" />
+     <label.openFirstPlanet value="Automatiškai atidaryti pirmąją planetą" />
+     <label.showJoinLeave value="Rodyti prisijungimo / atsijungimo pranešimus" />
+     <label.ignoredList value="Ignoruojami žaidėjai:" />
+     <label.ignoredListEmpty value="Nėra ignoruojamų žaidėjų" />
+     <label.addIgnoredPlayer value="Pridėti" />
+     <label.removeIgnored value="Šalinti"/>
+     <label.ignoreComplete value="Pilnai ignoruoti"/>
+     <label.ignoreFiltered value="Uždengti žinutes"/>
+     <label.ignoreType value="Ignoravimo būdas:"/>
+  </PlayerOptions>
 
 </locale>

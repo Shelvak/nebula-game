@@ -1,28 +1,5 @@
 class BulkSql
-  class Connection
-    def initialize
-      @connection = ActiveRecord::Base.
-        connection. # We can't use savepoints when using this.
-        jdbc_connection
-    end
-
-    def create_statement
-      @connection.create_statement
-    end
-
-    def execute(sql)
-      #STDERR.puts sql
-      create_statement.execute(sql)
-    end
-
-    def select_value(sql, key)
-      #STDERR.puts sql
-      statement = create_statement
-      record_set = statement.execute_query(sql)
-      record_set.next
-      record_set.get_object(key)
-    end
-  end
+  # TODO: add lock tables
 
   # This marks NULL when using LOAD DATA INFILE.
   NULL = "\\N"
@@ -37,8 +14,6 @@ class BulkSql
 
       @mutex.synchronize do
         LOGGER.block("Running bulk updates for #{self}", :level => :debug) do
-          connection = Connection.new
-
           primary_key = klass.primary_key.to_sym
           last_pk = klass.maximum(primary_key) || 0
 
@@ -55,7 +30,6 @@ class BulkSql
 
             changes = object.changed
             unless changes.blank?
-
               if pk.nil?
                 # Simulate record save.
                 last_pk += 1
@@ -79,17 +53,13 @@ class BulkSql
             "Running updates for #{update_objects.size} objects",
             :level => :debug
           ) do
-            execute_updates(
-              connection, update_columns.to_a, update_objects, klass
-            )
+            execute_updates(update_columns.to_a, update_objects, klass)
           end
           LOGGER.block(
             "Running inserts for #{insert_objects.size} objects",
             :level => :debug
           ) do
-            execute_inserts(
-              connection, insert_columns.to_a, insert_objects, klass
-            )
+            execute_inserts(insert_columns.to_a, insert_objects, klass)
           end
 
           true
@@ -108,14 +78,14 @@ class BulkSql
 
     def encode_value(value)
       case value
-        when nil then NULL
-        when true then "1"
-        when false then "0"
-        else value.to_s
+      when nil then NULL
+      when true then "1"
+      when false then "0"
+      else value.to_s
       end
     end
 
-    def execute_inserts(connection, columns, objects, klass, table_name=nil)
+    def execute_inserts(columns, objects, klass, table_name=nil, update=false)
       return if objects.size == 0
 
       table_name ||= klass.table_name
@@ -123,33 +93,43 @@ class BulkSql
 
       builder = Java::java.lang.StringBuilder.new
       objects.each do |object|
-        columns.each_with_index do |column, index|
-          value = object[column]
-          builder.append "\t" unless index == 0
-          builder.append encode_value(value)
+        # Run callbacks to simulate proper save.
+        object.run_callbacks(update ? :update : :create) do
+          object.run_callbacks(:save) do
+            columns.each_with_index do |column, index|
+              value = object[column]
+              builder.append "\t" unless index == 0
+              builder.append encode_value(value)
+            end
+            builder.append "\n"
+          end
         end
-        builder.append "\n"
       end
 
-      input_stream = Java::org.apache.commons.io.IOUtils.
-        to_input_stream(builder)
+      tempfile = Tempfile.new("bulk_sql-ruby")
+      begin
+        content = builder.to_s
+        tempfile.write(content)
+        tempfile.flush # Ensure file is fully written.
+        File.chmod(0644, tempfile.path) # Ensure mysql daemon can read it.
 
-      # First create a statement off the connection
-      statement = connection.create_statement
-
-      # Setup our input stream as the source for the local infile
-      statement.set_local_infile_input_stream(input_stream)
-
-      # Execute the load infile
-      statement_text = "LOAD DATA LOCAL INFILE 'file.txt' INTO TABLE `#{
-        table_name}` (#{columns_str})"
-      #STDERR.puts table_name
-      #STDERR.puts columns_str
-      #STDERR.puts builder.to_s
-      statement.execute(statement_text)
+        # Execute the load infile. Use file version, because stream version
+        # silently ignores errors.
+        sql = "LOAD DATA INFILE '#{tempfile.path}' INTO TABLE `#{table_name
+          }` (#{columns_str})"
+        #STDERR.puts table_name
+        #STDERR.puts columns_str
+        #STDERR.puts builder.to_s
+        connection.execute(sql)
+      rescue Exception => e
+        raise ArgumentError,
+          "#{e.message}\nData was:\n#{columns_str}\n#{content}", e.backtrace
+      ensure
+        tempfile.close!
+      end
     end
 
-    def execute_updates(connection, columns, objects, klass)
+    def execute_updates(columns, objects, klass)
       return if objects.size == 0
 
       primary_key = klass.primary_key
@@ -161,9 +141,8 @@ class BulkSql
 
       # Create temporary table from original table definition and changed
       # fields.
-      create_table = connection.select_value(
-        "SHOW CREATE TABLE `#{table_name}`", "Create Table"
-      )
+      create_table = connection.
+        select_one("SHOW CREATE TABLE `#{table_name}`")["Create Table"]
 
       create_tmp_table = "CREATE TEMPORARY TABLE `#{tmp_table_name}` (\n"
       columns.each do |column|
@@ -176,7 +155,7 @@ class BulkSql
       connection.execute(create_tmp_table)
 
       # Use bulk insert to add data to temporary table
-      execute_inserts(columns, objects, klass, tmp_table_name)
+      execute_inserts(columns, objects, klass, tmp_table_name, true)
 
       # Execute mass update from temporary table to the original table.
       # Exclude first column that is always ID.
@@ -196,6 +175,10 @@ class BulkSql
 
     def create_columns_str(columns)
       columns.map { |c| "`#{c}`" }.join(", ")
+    end
+
+    def connection
+      ActiveRecord::Base.connection
     end
   end
 end

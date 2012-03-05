@@ -152,6 +152,7 @@
             energy:energySelector.selectedVal,
             zetium:zetiumSelector.selectedVal
           }).dispatch();
+        selectNone();
       }
     }
 
@@ -193,29 +194,36 @@
       dispatchRefreshMaxStorageEvent();
     }
 
-    private function getPlanets(from: ArrayCollection): ListCollectionView {
-      var provider: ListCollectionView = Collections.filter(from,
-        function (item: MSSObject): Boolean {
-          return ML.latestPlanet == null || item.id != ML.latestPlanet.ssObject.id;
-        });
-      return provider;
-    }
+    [Bindable]
+    private var planetsProvider: ListCollectionView;
 
     private function addedToStageHandler(event: Event): void {
       GlobalEvent.subscribe_TIMED_UPDATE(timedUpdate);
+      planetsProvider = Collections.filter(ML.player.planets,
+         function (item: MSSObject): Boolean {
+          return ML.latestPlanet != null && item.id != ML.latestPlanet.ssObject.id;
+        });
     }
 
     private function removedFromStageHandler(event: Event): void {
       GlobalEvent.unsubscribe_TIMED_UPDATE(timedUpdate);
     }
-
-    private function getTime(from: Date): Number {
-      return from.time;
-    }
     
     private function getWithoutFee(selected: int): String
     {
       return (selected - (selected * selectedBuilding.fee)).toFixed(2);
+    }
+    
+    private function hasNoCooldown(cooldownEndsAt: Date,  _currentTime: Number): Boolean
+    {
+      return cooldownEndsAt == null || cooldownEndsAt.time < _currentTime;
+    }
+    
+    private function getBtnTransportLabel(cooldownEndAt: Date, _currentTime: Number): String
+    {
+      return hasNoCooldown(cooldownEndAt, _currentTime)
+         ? getString('label.transferResources')
+         : DateUtil.secondsToHumanString((cooldownEndAt.time - currentTime)/1000);
     }
     ]]>
    </fx:Script>
@@ -247,7 +255,7 @@
             <s:Label text="{getString('label.selectPlanet')}" fontSize="16" fontWeight="bold"
                      color="#eec500"/>
             <base:PlanetSelector id="planetSelector" change="planetSelector_changeHandler(event)"
-                                 minWidth="180" dataProvider="{getPlanets(ML.player.planets)}"
+                                 minWidth="180" dataProvider="{planetsProvider}"
                                  itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
             <s:layout>
               <s:HorizontalLayout verticalAlign="middle" paddingLeft="10" paddingTop="20"
@@ -301,15 +309,13 @@
             <s:Label text="{getString('warning.willSend', [estimatedCooldown])}"
                      color="#eec500" visible="{estimatedCooldown != null}"
                      includeInLayout="{estimatedCooldown != null}"/>
-            <s:Group toolTip="{getTime(selectedBuilding.cooldownEndsAt) &lt; currentTime
-              ? '' : getString('tooltip.cooldownActive')}">
+            <s:Group toolTip="{
+                hasNoCooldown(selectedBuilding.cooldownEndsAt, currentTime)
+                   ? ''
+                   : getString('tooltip.cooldownActive')}">
               <s:Button skinClass="components.skins.GreenButtonSkin"
-                        enabled="{getTime(selectedBuilding.cooldownEndsAt) &lt; currentTime
-                              &amp;&amp; transferPossible}"
-                        label="{getTime(selectedBuilding.cooldownEndsAt) &lt; currentTime
-                        ? getString('label.transferResources')
-                        :DateUtil.secondsToHumanString((
-                          getTime(selectedBuilding.cooldownEndsAt) - currentTime)/1000)}"
+                        enabled="{hasNoCooldown(selectedBuilding.cooldownEndsAt, currentTime)}"
+                        label="{getBtnTransportLabel(selectedBuilding.cooldownEndsAt, currentTime)}"
                         click="transfer_clickHandler()"/>
             </s:Group>
             <unitsscreen:layout>

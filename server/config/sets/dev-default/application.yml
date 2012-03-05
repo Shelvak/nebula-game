@@ -18,7 +18,9 @@ combat.cooldown.duration: <%= 1.minute %>
 raiding.delay: ["<%= 3.minutes %>", "<%= 9.minutes %>"]
 notifications.expiration_time: <%= 10.minutes %>
 
-<% %w{crow cyrix rhyno avenger jumper dart demosis dirac thor mule}.each do |u| %>
+<% %w{
+  crow cyrix rhyno avenger jumper dart demosis dirac thor mule convoy_ship
+}.each do |u| %>
 units.<%= u %>.move.solar_system.hop_time: 5
 units.<%= u %>.move.galaxy.hop_time: 10
 <% end %>
@@ -26,5 +28,5 @@ combat.cooldown.duration: 30
 combat.cooldown.planet.duration: 60
 combat.cooldown.after_jump.duration: 2
 
-solar_system.spawn.regular.delay: [<%= 3.minutes %>, <%= 5.minutes %>]
-solar_system.spawn.battleground.delay: [<%= 3.minutes %>, <%= 5.minutes %>]
+solar_system.spawn.regular.delay: [<%= 5.minutes %>, <%= 10.minutes %>]
+solar_system.spawn.battleground.delay: [<%= 5.minutes %>, <%= 10.minutes %>]

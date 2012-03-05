@@ -3,9 +3,12 @@ package utils
    import application.Version;
 
    import com.adobe.ac.logging.GlobalExceptionHandlerAction;
-   
+   import com.tinylabproductions.stacktracer.StacktraceError;
+
    import controllers.startup.StartupManager;
-   
+
+   import flash.external.ExternalInterface;
+
    import flash.system.Capabilities;
 
    import models.ModelLocator;
@@ -17,62 +20,63 @@ package utils
 
    public class GlobalErrorHandler implements GlobalExceptionHandlerAction
    {
-      private var firstTime:Boolean = true;
-
-      private function get logger(): ILogger {
-         return Log.getLogger("utils.GlobalErrorHandler");
-      }
-
       public function handle(error: Object) : void {
-         var logger: ILogger = this.logger;
+         var summary: String;
+         var description: String;
+         var body: String;
+         var slowClient: Boolean = false;
 
          if (error is Error) {
-            if (firstTime) {
-               var err: Error = error as Error;
-               logger.fatal(
-                  "Crash on error:"
-                     + "\n      id: {0}"
-                     + "\n    name: {1}"
-                     + "\n message: {2}"
-                     + "\n   class: {3}",
-                  err.errorID,
-                  err.name,
-                  err.message,
-                  Objects.getClassName(err)
-               );
-               var ML:ModelLocator = ModelLocator.getInstance();
-               var message:String = 'Client error! Version ' + Version.VERSION +
-                  '\n\n';
-               message += "Exception data:\n";
-               message += 'Error id: ' + err.errorID + '\n';
-               message += 'Stack trace:\n' + err.getStackTrace() + '\n\n';
+            var err: Error = error as Error;
 
-//            message += "Global unit list:\n" + ML.units + "\n\n";
-//            message += "Global squads list:\n" + ML.squadrons + "\n\n";
-//            message += "Global routes list:\n" + ML.routes + "\n\n";
-//            message += "Global notifications list:\n" + ML.notifications;
+            var stWoVars: String = "";
+            var stWVars : String = "non-stacktracer error";
 
-               message += ML.debugLog;
-
-               // Error #1502: A script has executed for longer than the default
-               // timeout period of 15 seconds.
-               var slowClient: Boolean = err.errorID == 1502;
-
-               var game: SpaceGame = SpaceGame(FlexGlobals.topLevelApplication);
-               game.crash(
-                  message, slowClient, ! Capabilities.isDebugger
-               );
-               firstTime = false;
+            if (error is StacktraceError) {
+               var ste: StacktraceError = error as StacktraceError;
+               stWoVars = ste.generateStacktrace(false);
+               stWVars  = ste.generateStacktrace(true);
             }
-            logger.info("Resetting due to crash.");
-            StartupManager.resetApp();
+            else {
+               stWoVars = err.getStackTrace();
+            }
+
+            var summaryErr: String =
+               err.name + " (error id " + error.errorID + "): " + err.message;
+            summary = Version.VERSION + "|" + summaryErr
+            
+            description =
+               summaryErr +
+               "\n\nStacktrace (without vars):\n" +
+               stWoVars + "\n";
+
+            var ML:ModelLocator = ModelLocator.getInstance();
+            body = "Stacktrace (with vars):\n" + stWVars + "\n" +
+               ML.debugLog;
+
+            // Error #1502: A script has executed for longer than the default
+            // timeout period of 15 seconds.
+            slowClient = err.errorID == 1502;
          }
          else {
-            logger.info(
-               "Error was not an Error but {0}?! String representation: {1}",
-               Objects.getClassName(error), error
-            );
+            summary = "Error was " + Objects.getClassName(error) + "!";
+            description = summary;
+            body = "String representation:\n" + error;
          }
+
+         crash(summary, description, body, slowClient)
+      }
+         
+      private static function crash(
+         summary: String, description: String, body: String,
+         slowClient: Boolean=false
+      ): void {
+         // Double escape backslashes, because strings somehow get "evaluated"
+         // when they are passed to javascript.
+         summary = summary.replace(/\\/g, "\\\\");
+         description = description.replace(/\\/g, "\\\\");
+         body = body.replace(/\\/g, "\\\\");
+         ExternalInterface.call("clientError", summary, description, body);
       }
    }
 }

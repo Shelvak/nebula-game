@@ -29,8 +29,6 @@ describe GalaxiesController do
         player.galaxy_id, 0, 3)
     end
     
-    it_behaves_like "only push"
-
     it "should include galaxy id" do
       push @action, @params
       response_should_include :galaxy_id => player.galaxy_id

@@ -37,25 +37,13 @@ package utils
       public static var now:Number;
       
       /**
-       * Time difference (in milliseconds) of client and server times (serverTime - clientTime). Is updated
-       * each time a message is received from server.
-       * 
-       * @default NaN
-       * 
-       * @internal
-       * This *MUST* be a NaN (NOT 0) for updateTimeDiff() to work. See the code of that method
-       * and you will see why!
+       * Time difference (in milliseconds) of client and server times
+       * (serverTime - clientTime). Is updated each time a message is received
+       * from server by <code>ResponseMessagesTracker</code>.
+       *
+       * @default 0
        */
-      public static var timeDiff:Number = NaN;
-
-      public static function updateTimeDiff(serverTimestamp: *,
-                                            clientTime: Date): void {
-         var serverTime: Number = new Number(serverTimestamp);
-         var newDiff: Number = serverTime - clientTime.time;
-         if (isNaN(timeDiff) || Math.abs(timeDiff) > Math.abs(newDiff)) {
-            timeDiff = newDiff;
-         }
-      }
+      public static var timeDiff: Number = 0;
       
       /**
        * Parses date and time of server format and returns that date.
@@ -70,15 +58,13 @@ package utils
          }
          return serverTime;
       }
-      
-      /**
-       * Does the opposite to <code>getServerTime()</code>: returns time of the local machine at a
-       * specified moment of server machine. This returns local time rounded to lower second.
-       * 
-       * @param serverTime Time of local machine.
-       * 
-       * @return Time of the local machine.  
-       */
+
+      public static function getServerTime(localTime: Date): Date {
+         return new Date(
+            Math.floor((localTime.time + timeDiff) / 1000) * 1000
+         );
+      }
+
       public static function getLocalTime(serverTime: Date): Date {
          return new Date(
             Math.floor((serverTime.time - timeDiff) / 1000) * 1000

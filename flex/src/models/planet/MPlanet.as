@@ -44,51 +44,44 @@ package models.planet
 
    /**
     * Dispatched when an object has been added to this planet.
-    * 
-    * @eventType models.planet.events.MPlanetEvent.OBJECT_ADD
     */
    [Event(name="objectAdd", type="models.planet.events.MPlanetEvent")]
    
-   
    /**
     * Dispatched when an object has been removed from this planet.
-    * 
-    * @eventType models.planet.events.MPlanetEvent.OBJECT_REMOVE
     */
    [Event(name="objectRemove", type="models.planet.events.MPlanetEvent")]
-   
    
    /**
     * Dispatched when building has been moved to another place. <code>object</code> property
     * is set to the building moved.
-    * 
-    * @eventType models.planet.events.MPlanetEvent.BUILDING_MOVE
     */
    [Event(name="buildingMove", type="models.planet.events.MPlanetEvent")]
-   
+
+   /**
+    * Dispatched when an interactive object should be selected by a map
+    * component.
+    */
+   [Event(name="selectObject", type="models.planet.events.MPlanetEvent")]
 
    [Event(name="unitUpgradeStarted", type="models.planet.events.MPlanetEvent")]
    [Event(name="unitRefreshNeeded", type="models.planet.events.MPlanetEvent")]
    [Event(name="buildingUpgraded", type="models.planet.events.MPlanetEvent")]
-   
    
    [Bindable]
    public class MPlanet extends MMap
    {
       private var _zIndexCalculator:ZIndexCalculator = null;
       
-      
       private var _foliageAnimator:PlanetFolliagesAnimator = null;
       private var _suppressFoliageAnimatorUpdate:Boolean = false;
-      private function updateFoliageAnimator() : void
-      {
-         if (_suppressFoliageAnimatorUpdate)
-         {
+
+      private function updateFoliageAnimator(): void {
+         if (_suppressFoliageAnimatorUpdate) {
             return;
          }
          _foliageAnimator.setFolliages(nonblockingFolliages);
       }
-      
       
       public function MPlanet(ssObject:MSSObject)
       {
@@ -207,8 +200,8 @@ package models.planet
       }
       
       
-      private var f_cleanupStarted:Boolean = false,
-         f_cleanupComplete:Boolean = false;
+      private var f_cleanupStarted:Boolean = false;
+      private var f_cleanupComplete:Boolean = false;
       
       
       /**
@@ -794,7 +787,7 @@ package models.planet
       
       
       /**
-       * Foliage currently beeing explored or <code>null</code> if exploration is not underway.
+       * Foliage currently being explored or <code>null</code> if exploration is not underway.
        */
       public function get exploredFoliage() : BlockingFolliage {
          if (_ssObject.explorationEndsAt != null &&
@@ -808,7 +801,6 @@ package models.planet
       /* ############# */
       /* ### UNITS ### */
       /* ############# */
-      
       
       /**
        * Looks for and returns a unit with a given id.
@@ -828,72 +820,97 @@ package models.planet
             }
          );
       }
-      
+
+      /* units cache */
+      private var hasUnitsCache: Object = {};
       
       [Bindable(event="unitRefresh")]
       public function hasActiveUnits(owner: int = -1, kind: String = null,
                                      hiddenCounts: Boolean = true): Boolean
       {
-         if (kind == UnitKind.SPACE)
+         if (hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts] == null)
          {
-            return hasActiveSpaceUnits(owner, hiddenCounts);
+            if (kind == UnitKind.SPACE)
+            {
+               hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts] =
+                  hasActiveSpaceUnits(owner, hiddenCounts);
+            }
+            else if (kind == UnitKind.GROUND)
+            {
+               hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts] =
+                  hasActiveGroundUnits(owner, hiddenCounts);
+            }
+            else
+            {
+               hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts] =
+                  (hasActiveGroundUnits(owner, hiddenCounts)
+                     || hasActiveSpaceUnits(owner, hiddenCounts));
+            }
          }
-         else if (kind == UnitKind.GROUND)
-         {
-            return hasActiveGroundUnits(owner, hiddenCounts);
-         }
-         else
-         {
-            return hasActiveGroundUnits(owner, hiddenCounts) || hasActiveSpaceUnits(owner, hiddenCounts);
-         }
+         return hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts];
       }
       
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveGroundUnits(
-         owner: int = -1, hiddenCounts: Boolean = true
-      ): Boolean {
-         return Collections.findFirst(units,
-            function(unit:Unit) : Boolean
-            {
-               return unit.level > 0 && unit.kind == UnitKind.GROUND
-               && (!unit.hidden || hiddenCounts)
-               && (owner == -1 || owner == unit.owner
-                  || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
-            }
-         ) != null;
+      public function hasActiveGroundUnits(owner: int = -1,
+                                           hiddenCounts: Boolean = true): Boolean
+      {
+         if (hasUnitsCache[owner + '|' + UnitKind.GROUND + '|' + hiddenCounts] == null)
+         {
+            hasUnitsCache[owner + '|' + UnitKind.GROUND + '|' + hiddenCounts] =
+               (Collections.findFirst(units,
+                  function(unit:Unit) : Boolean
+                  {
+                     return unit.level > 0 && unit.kind == UnitKind.GROUND
+                        && (!unit.hidden || hiddenCounts)
+                        && (owner == -1 || owner == unit.owner
+                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
+                  }
+               ) != null);
+         }
+         return hasUnitsCache[owner + '|' + UnitKind.GROUND + '|' + hiddenCounts];
       }
       
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveSpaceUnits(
-         owner: int = -1, hiddenCounts: Boolean = true
-      ): Boolean {
-         return Collections.findFirst(units,
-            function(unit:Unit) : Boolean
-            {
-               return unit.level > 0 && unit.kind == UnitKind.SPACE
-               && (!unit.hidden || hiddenCounts)
-               && (owner == -1
-                  || owner == unit.owner
-                  || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
-            }
-         ) != null;
+      public function hasActiveSpaceUnits(owner: int = -1,
+                                          hiddenCounts: Boolean = true): Boolean
+      {
+         if (hasUnitsCache[owner + '|' + UnitKind.SPACE + '|' + hiddenCounts] == null)
+         {
+            hasUnitsCache[owner + '|' + UnitKind.SPACE + '|' + hiddenCounts] =
+               (Collections.findFirst(units,
+                  function(unit:Unit) : Boolean
+                  {
+                     return unit.level > 0 && unit.kind == UnitKind.SPACE
+                     && (!unit.hidden || hiddenCounts)
+                     && (owner == -1
+                        || owner == unit.owner
+                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
+                  }
+               ) != null);
+         }
+         return hasUnitsCache[owner + '|' + UnitKind.SPACE + '|' + hiddenCounts];
       }
       
       
       [Bindable(event="unitRefresh")]
       public function hasMovingUnits(owner: int, kind: String): Boolean
       {
-         return Collections.findFirst(units,
-            function(unit:Unit) : Boolean
-            {
-               return unit.level > 0 && (unit.owner == owner
-                  || (owner == Owner.ENEMY && unit.owner == Owner.NPC)) 
-               && unit.isMoving &&
-               (unit.kind == kind || kind == null);
-            }
-         ) != null;
+         if (hasUnitsCache[owner + '|' + UnitKind.MOVING] == null)
+         {
+            hasUnitsCache[owner + '|' + UnitKind.MOVING] =
+               (Collections.findFirst(units,
+                  function(unit:Unit) : Boolean
+                  {
+                     return unit.level > 0 && (unit.owner == owner
+                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC))
+                     && unit.isMoving &&
+                     (unit.kind == kind || kind == null);
+                  }
+               ) != null);
+         }
+         return hasUnitsCache[owner + '|' + UnitKind.MOVING];
       }
       
       public function getActiveHealableUnits(): ListCollectionView
@@ -944,14 +961,22 @@ package models.planet
             return false;
          });
       }
+
+      /* aggressive ground units cache */
+      private var aggressiveGroundUnitsCache: Object = {};
       
       [Bindable(event="unitRefresh")]
-      public function hasAgressiveGroundUnits(owner: int = Owner.PLAYER): Boolean
+      public function hasAggressiveGroundUnits(owner: int = Owner.PLAYER): Boolean
       {
-         return getAgressiveGroundUnits(owner).length > 0;
+         if (aggressiveGroundUnitsCache[owner] == null)
+         {
+            aggressiveGroundUnitsCache[owner] =
+               (getAggressiveGroundUnits(owner).length > 0);
+         }
+         return aggressiveGroundUnitsCache[owner];
       }
       
-      public function getAgressiveGroundUnits(owner: int = Owner.PLAYER): ListCollectionView
+      public function getAggressiveGroundUnits(owner: int = Owner.PLAYER): ListCollectionView
       {
          return Collections.filter(ML.units, function(unit: Unit): Boolean
          {
@@ -1493,7 +1518,21 @@ package models.planet
             }
          }
       }
-      
+
+
+      /* ################### */
+      /* ### UI COMMANDS ### */
+      /* ################### */
+
+      public function selectObject(object: MPlanetObject): void {
+         Objects.paramNotNull("object", object);
+         if (hasEventListener(MPlanetEvent.UICMD_SELECT_OBJECT)) {
+            dispatchEvent(
+               new MPlanetEvent(MPlanetEvent.UICMD_SELECT_OBJECT, object)
+            );
+         }
+      }
+
       
       /* ################################## */
       /* ### EVENTS DISPATCHING METHODS ### */
@@ -1503,6 +1542,8 @@ package models.planet
          if (!f_cleanupStarted &&
                 !f_cleanupComplete &&
                 hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED)) {
+            hasUnitsCache = {};
+            aggressiveGroundUnitsCache = {};
             dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_REFRESH_NEEDED));
          }
       }

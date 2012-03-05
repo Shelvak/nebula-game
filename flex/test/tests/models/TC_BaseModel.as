@@ -37,8 +37,15 @@ package tests.models
                model.copyProperties(source, ignoreSkipProperty, props);
             }
          }
-         assertThat( "[param source] of different type", $_copying(new BaseModel()), throws (TypeError) );
-         assertThat( "[param props] has undefined property", $_copying(new Model(), false, ["age", "nonExisting"]) );
+         assertThat(
+            "[param source] of different type",
+            $_copying(new BaseModel()), throws (TypeError)
+         );
+         assertThat(
+            "[param props] has undefined property",
+            $_copying(new Model(), false, ["age", "nonExisting"]),
+            throws (ReferenceError)
+         );
       }
       
       [Test]

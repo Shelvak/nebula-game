@@ -7,6 +7,9 @@ package controllers.dailybonus.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+
+   import models.player.PlayerOptions;
+
    import utils.ApplicationLocker;
    import controllers.dailybonus.DailyBonusCommand;
    
@@ -35,30 +38,37 @@ package controllers.dailybonus.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          var bonus: Reward = new Reward(cmd.parameters.bonus);
-         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
-         var cont: DailyBonusComp = new DailyBonusComp();
-         cont.addEventListener(DailyBonusEvent.CLOSE_PANEL, 
-            function(e: DailyBonusEvent):void
-            {
-               ML.player.dailyBonus = bonus;
-               popUp.close();
-            });
-         cont.reward = bonus;
-         popUp.title = Localizer.string('Popups', 'title.dailyBonus');
-         popUp.addElement(cont);
-         popUp.confirmButtonLabel = Localizer.string('Quests', 'label.claimReward');
-         popUp.cancelButtonLabel = Localizer.string('Quests', 'label.claimLater');
-         popUp.cancelButtonClickHandler = function(button: Button):void
+         if (!PlayerOptions.showPopupsAfterLogin)
          {
             ML.player.dailyBonus = bonus;
-         };
-         popUp.confirmButtonClickHandler = function(button: Button):void
+         }
+         else
          {
-            new DailyBonusCommand(DailyBonusCommand.CLAIM,
-               {'planetId': MSSObject(cont.planetSelector.selectedItem).id}
-            ).dispatch();
-         };
-         popUp.show();
+            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            var cont: DailyBonusComp = new DailyBonusComp();
+            cont.addEventListener(DailyBonusEvent.CLOSE_PANEL,
+               function(e: DailyBonusEvent):void
+               {
+                  ML.player.dailyBonus = bonus;
+                  popUp.close();
+               });
+            cont.reward = bonus;
+            popUp.title = Localizer.string('Popups', 'title.dailyBonus');
+            popUp.addElement(cont);
+            popUp.confirmButtonLabel = Localizer.string('Quests', 'label.claimReward');
+            popUp.cancelButtonLabel = Localizer.string('Quests', 'label.claimLater');
+            popUp.cancelButtonClickHandler = function(button: Button):void
+            {
+               ML.player.dailyBonus = bonus;
+            };
+            popUp.confirmButtonClickHandler = function(button: Button):void
+            {
+               new DailyBonusCommand(DailyBonusCommand.CLAIM,
+                  {'planetId': MSSObject(cont.planetSelector.selectedItem).id}
+               ).dispatch();
+            };
+            popUp.show();
+         }
       }
    }
 }

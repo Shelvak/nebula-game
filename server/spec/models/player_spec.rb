@@ -1826,6 +1826,11 @@ describe Player do
         player.attach!
       end
 
+      it "should create notification" do
+        Notification.should_receive(:create_for_player_attached).with(player.id)
+        player.attach!
+      end
+
       it "should work" do
         player.attach!
         player.should_not be_detached
@@ -1850,6 +1855,18 @@ describe Player do
 
     def ratio(aggressor, defender)
       points(defender) / points(aggressor)
+    end
+
+    it "should fail if aggressor cannot be found" do
+      lambda do
+        Player.battle_vps_multiplier(0, player.id)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if defender cannot be found" do
+      lambda do
+        Player.battle_vps_multiplier(player.id, 0)
+      end.should raise_error(GameLogicError)
     end
 
     it "should use Cfg::Java.fairnessPoints" do

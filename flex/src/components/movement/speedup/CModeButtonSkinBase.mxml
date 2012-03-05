@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark">
+   <fx:Script>
+      <![CDATA[
+      import utils.Objects;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+
+
+      protected function get imageName(): String {
+         Objects.throwAbstractPropertyError();
+         return null;
+      }
+
+      private function getImage(state: String): BitmapData {
+         return ImagePreloader.getInstance().getImage(
+            AssetNames.MOVEMENT_IMAGES_FOLDER + "speedup_mode_"
+               + imageName + "_btn_" + state
+         );
+      }
+      ]]>
+   </fx:Script>
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata>
+   <s:states>
+      <s:State name="up"/>
+      <s:State name="over"/>
+      <s:State name="down"/>
+      <s:State name="disabled"/>
+   </s:states>
+   <s:BitmapImage
+      source.up="{getImage('up')}"
+      source.over="{getImage('over')}"
+      source.down="{getImage('down')}"/>
+</s:Skin>

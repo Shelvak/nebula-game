@@ -293,7 +293,9 @@ class Technology < ActiveRecord::Base
       self.upgrade_ends_at = Time.now + calculate_new_pause_remainder(
         calculate_pause_remainder, old, new
       )
-      CallbackManager.update(self)
+      CallbackManager.update(
+        self, CallbackManager::EVENT_UPGRADE_FINISHED, upgrade_ends_at
+      )
     end
     true
   end

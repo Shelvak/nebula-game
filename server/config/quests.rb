@@ -121,14 +121,14 @@ s_convoys = "Convoys"
 # Explains about galaxy battles.
 s_galaxy_battles = "GalaxyBattles"
 
-mex_1st_planet = 6 # 7 for real, but last one is pretty hard.
-mex_2nd_planet = 6 # 8 for real, but first two already have MEX T2
+mex_1st_planet = 6 # 7 MEXes in planet
+mex_2nd_planet = 2 # 8 MEXes in planet
 mex_3rd_planet = 4
 energy_1st_planet = 8
-energy_2nd_planet = 8
+energy_2nd_planet = 4
 energy_3rd_planet = 6
-zex_1st_planet = 2 # 3 for real, but last one is pretty hard.
-zex_2nd_planet = 2 # 4 for real, but 1 is hard and 1 has ZEX T2 on it.
+zex_1st_planet = 2 # 3 ZEXes in planet
+zex_2nd_planet = 1 # 4 ZEXes in planet
 zex_3rd_planet = 2
 
 QUESTS = QuestDefinition.define(:debug => false) do
@@ -258,14 +258,14 @@ QUESTS = QuestDefinition.define(:debug => false) do
       [10300, Technology::Trooper,                  3, 0.7 ],
       [10305, Technology::Seeker,                   2, 0.65],
       [10310, Technology::Shocker,                  2, 0.6 ],
-      [10315, Technology::FieryMelters,             3, 0.55],
-      [10320, Technology::SuperconductorTechnology, 3, 0.5 ],
-      [10325, Technology::PowderedZetium,           3, 0.45],
-      [10330, Technology::Vulcan,                   3, 0.4 ],
-      [10335, Technology::Screamer,                 3, 0.35],
-      [10340, Technology::Thunder,                  3, 0.3 ],
-      [10345, Technology::ShipStorage,              3, 0.25],
-      [10350, Technology::BuildingRepair,           3, 0.2 ],
+      [10315, Technology::FieryMelters,             4, 0.55],
+      [10320, Technology::SuperconductorTechnology, 4, 0.5 ],
+      [10325, Technology::PowderedZetium,           4, 0.45],
+      [10330, Technology::Vulcan,                   1, 0.4 ],
+      [10335, Technology::Screamer,                 1, 0.35],
+      [10340, Technology::Thunder,                  1, 0.3 ],
+      [10345, Technology::BuildingRepair,           1, 0.25],
+      [10350, Technology::ShipStorage,              3, 0.2 ],
       [10355, Technology::DefensivePortal,          1, nil ],
     ]
 
@@ -321,9 +321,9 @@ QUESTS = QuestDefinition.define(:debug => false) do
   end.tap do |quest|
     # Resources & VIP mode side quests.
     quest.define(10450) do
-      have_upgraded_to Building::MetalExtractor,  :count => 4, :level => 5
-      have_upgraded_to Building::CollectorT1,     :count => 5, :level => 5
-      have_upgraded_to Building::ZetiumExtractor, :count => 2, :level => 2
+      have_upgraded_to Unit::Trooper,  :count => 15
+      have_upgraded_to Unit::Shocker,  :count => 5
+      have_upgraded_to Unit::Seeker,   :count => 5
 
       reward_creds (CONFIG['creds.vip'][0][0] * 1.5).ceil
     end.define(10460) do
@@ -462,9 +462,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
   end.define(300, [s_quest_with_image[Unit::Mdh], s_load_units,
                   s_unload_units, s_deploy_mdh]) do
     # Have third planet and build Headquarters.
-    have_upgraded_to Unit::Mdh
     have_planets :count => 3
-    have_upgraded_to Building::Headquarters
+    have_upgraded_to Building::Headquarters, :count => 2
 
     reward_unit Unit::MobileVulcan
     reward_unit Unit::MobileScreamer
@@ -552,8 +551,10 @@ QUESTS = QuestDefinition.define(:debug => false) do
     achievement(20000 + index) { explore_any_object :count => count }
   end
 
-  [100, 250, 500, 1000, 2500, 5000, 10000, 25000].each_with_index do
-    |count, index|
+  [
+    100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 10000, 25000, 50000,
+    100000, 250000, 500000, 1_000000
+  ].each_with_index do |count, index|
     achievement(20020 + index) { destroy Unit, :count => count }
   end
 
@@ -612,8 +613,21 @@ QUESTS = QuestDefinition.define(:debug => false) do
   end
 
   [1, 2, 3].each_with_index do |count, index|
-    achievement(20290 + index) { upgrade_to Building::Radar,
-      :count => count, :level => 2 }
+    achievement(20290 + index) {
+      upgrade_to Building::Radar, :count => count, :level => 2
+    }
+  end
+
+  [1, 2].each_with_index do |count, index|
+    achievement(20293 + index) {
+      upgrade_to Building::Radar, :count => count, :level => 3
+    }
+  end
+
+  [1].each_with_index do |count, index|
+    achievement(20295 + index) {
+      upgrade_to Building::Radar, :count => count, :level => 4
+    }
   end
 
   [25, 50, 100].each_with_index do |count, index|

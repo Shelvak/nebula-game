@@ -4,7 +4,8 @@ package tests.chat.models
    
    import models.chat.MChatChannel;
    import models.chat.MChatChannelsList;
-   
+   import models.player.PlayerOptions;
+
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.collection.hasItem;
@@ -20,6 +21,7 @@ package tests.chat.models
       [Before]
       public function setUp() : void
       {
+         PlayerOptions.loadOptions({"ignoredChatPlayers": []});
          channel = new MChatChannel("galaxy");
          list = new MChatChannelsList();
          list.addChannel(channel);

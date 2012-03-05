@@ -36,6 +36,17 @@ class SmartTraversableOnce[+T](traversable: TraversableOnce[T]) {
       index += 1
     }
   }
+
+  /**
+   * Maps over collection and yields items and their indexes.
+   */
+  def mapWithIndex[B](function: (T, Int) => B) = {
+    var index = -1
+    traversable.map { item =>
+      index += 1
+      function(item, index)
+    }
+  }
 }
 
 class SmartInt(int: Int) {

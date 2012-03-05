@@ -3,6 +3,8 @@ package controllers.objects.actions
    import controllers.objects.ObjectClass;
    import controllers.objects.UpdatedReason;
 
+   import models.healing.MCHealingScreen;
+
    import models.unit.MCLoadUnloadScreen;
    import models.unit.MCUnitScreen;
    
@@ -28,6 +30,14 @@ package controllers.objects.actions
          {
             ML.latestPlanet.units.refresh();
             ML.latestPlanet.dispatchUnitRefreshEvent();
+            // TODO: Find out why some filters don't refresh if you dont call
+            // refresh function on the list
+            var HS: MCHealingScreen = MCHealingScreen.getInstance();
+            if (HS.oldProvider != null)
+            {
+               HS.oldProvider.refresh();
+               HS.refreshScreen();
+            }
             // TODO: Find out why some filters don't refresh if you dont call 
             // refresh function on the list
             var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();

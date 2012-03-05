@@ -2,16 +2,18 @@ package models.galaxy
 {
    import components.base.viewport.IVisibleAreaTrackerClient;
    import components.map.space.GalaxyMapCoordsTransform;
-   
+
    import flash.geom.Rectangle;
-   
+
+   import models.galaxy.events.GalaxyEvent;
+
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.map.MapArea;
-   
+
    import utils.Objects;
-   
-   
+
+
    public class VisibleGalaxyArea implements IVisibleAreaTrackerClient
    {
       private var _galaxy:Galaxy;
@@ -29,6 +31,10 @@ package models.galaxy
                                         client:IVisibleGalaxyAreaClient,
                                         coordsTransform:GalaxyMapCoordsTransform) {
          _galaxy = Objects.paramNotNull("model", model);
+         _galaxy.addEventListener(
+            GalaxyEvent.NEW_VISIBLE_LOCATION,
+            galaxy_newVisibleLocationHandler, false, 0, true
+         );
          _client = Objects.paramNotNull("client", client);
          _coordsTransform = Objects.paramNotNull("coordsTransform", coordsTransform);
          _galaxyLoc = new LocationMinimal();
@@ -37,7 +43,7 @@ package models.galaxy
       }
       
       private var _visibleAreaOld:MapArea;
-      private var _visibleArea:MapArea
+      private var _visibleArea:MapArea;
       /**
        * Visible area of a galaxy in its logical coordinates. If nothing is visible,
        * this is <code>null</code>.
@@ -45,7 +51,17 @@ package models.galaxy
       public function get visibleArea() : MapArea {
          return _visibleArea;
       }
-      
+
+      private function galaxy_newVisibleLocationHandler(event: GalaxyEvent): void {
+         const loc: LocationMinimal = event.location;
+         const x: int = loc.x;
+         const y: int = loc.y;
+         if (_visibleArea != null
+                && _visibleArea.contains(x, y)
+                && _galaxy.getSSAt(x, y) != null) {
+            _client.sectorShown(x, y);
+         }
+      }
       
       /* ################################# */
       /* ### IVisibleAreaTrackerClient ### */
@@ -55,8 +71,6 @@ package models.galaxy
                                         hiddenAreas:Vector.<Rectangle>,
                                         shownAreas:Vector.<Rectangle>) : void {
          Objects.paramNotNull("visibleAreaReal", visibleAreaReal);
-         Objects.paramNotNull("hiddenAreas", hiddenAreas);
-         Objects.paramNotNull("shownAreas", shownAreas);
          _visibleAreaOld = _visibleArea;
          if (visibleAreaReal.width > 0 && visibleAreaReal.height > 0) {
             _visibleArea = realToLogicalArea(visibleAreaReal);

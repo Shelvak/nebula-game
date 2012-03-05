@@ -163,38 +163,41 @@ package components.movement
 
       private function get isVpZone(): Boolean
       {
+         if (_squadron == null) {
+            return false;
+         }
          return vpZones.indexOf(_squadron.currentHop.location.type) != -1;
       }
       
       private function get hasShipsWithBonus(): Boolean
       {
-         for each (var unit: Unit in _squadron.units)
-         {
-            if (Config.getUnitVictoryPointsBonus(unit.type) > 0
-               || Config.getUnitCredsBonus(unit.type) > 0)
-            {
-               return true;
+         if (_squadron != null) {
+            for each (var unit: Unit in _squadron.units) {
+               if (Config.getUnitVictoryPointsBonus(unit.type) > 0
+                      || Config.getUnitCredsBonus(unit.type) > 0) {
+                  return true;
+               }
             }
          }
          return false;
       }
-      
-      private function get bonusVictoryPoints(): Number
-      {
+
+      private function get bonusVictoryPoints(): Number {
          var total: Number = 0;
-         for each (var unit: Unit in _squadron.units)
-         {
-             total += Config.getUnitVictoryPointsBonus(unit.type) * unit.hp;
+         if (_squadron != null) {
+            for each (var unit: Unit in _squadron.units) {
+               total += Config.getUnitVictoryPointsBonus(unit.type) * unit.hp;
+            }
          }
          return total;
       }
 
-      private function get bonusCreds(): Number
-      {
+      private function get bonusCreds(): Number {
          var total: int = 0;
-         for each (var unit: Unit in _squadron.units)
-         {
-            total += Config.getUnitCredsBonus(unit.type);
+         if (_squadron != null) {
+            for each (var unit: Unit in _squadron.units) {
+               total += Config.getUnitCredsBonus(unit.type);
+            }
          }
          return total;
       }
@@ -221,11 +224,15 @@ package components.movement
                btnRewardInfo.visible = true;
             }
             killRewardContainer.visible = false;
+            noRewardContainer.visible = false;
          }
       }
 
       private function setReward(e: MSquadronEvent = null): void
       {
+         if (_squadron == null) {
+            return;
+         }
          var totalVps: Number = 0;
          var totalCreds: Number = 0;
          totalVps += bonusVictoryPoints;
@@ -274,6 +281,7 @@ package components.movement
          }
          if (totalCreds > 0 || totalVps > 0)
          {
+            noRewardContainer.visible = false;
             killRewardContainer.visible = true;
             lblKillCreds.text = totalCreds.toFixed();
             lblKillVps.text = totalVps.toFixed();
@@ -286,6 +294,7 @@ package components.movement
          else
          {
             killRewardContainer.visible = false;
+            noRewardContainer.visible = true;
          }
       }
       
@@ -293,6 +302,9 @@ package components.movement
 
       private function showKillReward(e: MouseEvent): void
       {
+         if (_squadron == null) {
+            return;
+         }
          if (_squadron.owner != Owner.NPC)
          {
              MKR.addEventListener(MSquadronEvent.MULTIPLIER_CHANGE, setReward);
@@ -319,6 +331,10 @@ package components.movement
 
       [SkinPart(required="true")]
       public var killRewardContainer:Group;
+
+      [SkinPart(required="true")]
+      public var noRewardContainer:Group;
+
       [SkinPart(required="true")]
       public var credsGroup:Group;
       [SkinPart(required="true")]
@@ -517,28 +533,43 @@ package components.movement
       }
       
       private function unitsManagementButton_clickHandler(event:MouseEvent) : void {
-         var unitIDs:Array = _squadron.units.toArray().map(
+         if (_squadron == null) {
+            return;
+         }
+         const unitIDs: Array = _squadron.units.toArray().map(
             function(unit:Unit, idx:int, array:Array) : int { return unit.id }
          );
-         var units:ListCollectionView = Collections.filter(_squadron.units,
+         const units: ListCollectionView = Collections.filter(_squadron.units,
             function(unit:Unit) : Boolean { return unitIDs.indexOf(unit.id) >= 0 }
          );
          NAV_CTRL.showUnits(units, _squadron.currentHop.location.toLocation(), null, null, _squadron.owner);
       }
       
       private function moveButton_clickHandler(event:MouseEvent) : void {
+         if (_squadron == null) {
+            return;
+         }
          OrdersController.getInstance().issueOrder(_squadron.units, _squadron);
       }
       
       private function stopButton_clickHandler(event:MouseEvent) : void {
+         if (_squadron == null) {
+            return;
+         }
          new RoutesCommand(RoutesCommand.DESTROY, _squadron).dispatch();
       }
       
       private function btnOpenSourceLoc_clickHandler(event:MouseEvent) : void {
+         if (_squadron == null) {
+            return;
+         }
          _squadron.route.sourceLocation.navigateTo();
       }
       
       private function btnOpenDestLoc_clickHandler(event:MouseEvent) : void {
+         if (_squadron == null) {
+            return;
+         }
          _squadron.route.targetLocation.navigateTo();
       }
       

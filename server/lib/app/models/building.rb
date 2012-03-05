@@ -212,7 +212,9 @@ class Building < ActiveRecord::Base
   def y_end; y ? y + height - 1 : nil; end
 
   def cancel!(*args)
-    super(*args) { activate }
+    super(*args) do
+      activate if level != 0
+    end
   end
 
   def upgrade
@@ -445,6 +447,9 @@ class Building < ActiveRecord::Base
     def upgrade_finished_callback(building)
       building.on_upgrade_finished!
     end
+
+    def cooldown_expired_scope(building); DScope.planet(building.planet); end
+    def cooldown_expired_callback(building); building.cooldown_expired!; end
 
     def constructor?; ! property('constructor.items').nil?; end
 

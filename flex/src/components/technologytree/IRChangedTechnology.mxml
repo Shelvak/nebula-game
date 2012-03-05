@@ -69,7 +69,12 @@
       source="{cast(data).technology == null
           ? null
           : ImagePreloader.getInstance().getImage(
-            AssetNames.getTechnologyImageName(cast(data).technology))}"
+               AssetNames.getTechnologyImageName(
+                  ML.technologies.getTechnologyByType(
+                     cast(data).technology
+                  ).configName
+               )
+            )}"
       width="{imageSize}" height="{imageSize}"
       top="0" left="0" right="0" bottom="0" id="techImg"/>
   </s:Group>

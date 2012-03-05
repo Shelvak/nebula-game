@@ -3,8 +3,8 @@ package components.map.space
    import components.base.viewport.ViewportZoomable;
    import components.base.viewport.events.ViewportEvent;
    import components.map.CMap;
-   import components.movement.CSpeedControlPopup;
-   import components.movement.CSpeedControlPopupM;
+   import components.movement.speedup.CSpeedControlPopup;
+   import components.movement.speedup.CSpeedControlPopupM;
    import components.movement.CSquadronMapIcon;
    import components.movement.CSquadronPopup;
    import components.movement.CTargetLocationPopup;
@@ -27,6 +27,8 @@ package components.map.space
 
    import mx.collections.ArrayCollection;
    import mx.events.FlexEvent;
+   import mx.logging.ILogger;
+   import mx.logging.Log;
 
    import spark.components.Group;
    import spark.layouts.HorizontalAlign;
@@ -57,6 +59,10 @@ package components.map.space
        */
       internal static const OBJECT_POPUP_YSHIFT:int = 20;
 
+      private function get logger(): ILogger {
+         return Log.getLogger(Objects.getClassName(this, true));
+      }
+
 
       internal var grid:Grid;
       internal var squadronsController:SquadronsController;
@@ -85,7 +91,12 @@ package components.map.space
          return grid.getRealMapSize();
       }
 
+      private var f_cleanupCalled:Boolean = false;
       public override function cleanup(): void {
+         if (f_cleanupCalled) {
+            return;
+         }
+         f_cleanupCalled = true;
          if (model != null) {
             deselectSelectedLocation();
          }
@@ -349,7 +360,7 @@ package components.map.space
       /**
        * Allows to speed up or slow down movement of a squad.
        */
-      private var speedControlPopup:CSpeedControlPopup;
+      private var speedControlPopup: CSpeedControlPopup;
 
       /**
        * Hides <code>speedControlPopup</code>
@@ -368,7 +379,10 @@ package components.map.space
          speedControlPopup.includeInLayout = false;
       }
 
-      private function activateSpeedControlPopup(model: CSpeedControlPopupM): void {
+      protected function activateSpeedControlPopup(model: CSpeedControlPopupM): void {
+         if (getModel().mapType != ML.activeMapType) {
+            return;
+         }
          Objects.notNull(
             speedControlPopup, "[prop speedControlPopup] can't be null"
          );
@@ -548,6 +562,7 @@ package components.map.space
          VerticalLayout(sectorPopups.layout).paddingTop = OBJECT_POPUP_YSHIFT;
          staticObject.selected = true;
          if (ORDERS_CTRL.issuingOrders) {
+            passivateSpeedControlPopup();
             grid.issueOrderToLocationUnderMouse(location);
          }
       }
@@ -604,20 +619,6 @@ package components.map.space
        */
       public function getStaticObjects(): ArrayCollection {
          return DisplayListUtil.getChildren(_staticObjectsCont);
-      }
-
-      /**
-       * Returns a list of route objects on the map.
-       */
-      public function getRouteObjects(): ArrayCollection {
-         return DisplayListUtil.getChildren(routeObjectsCont);
-      }
-
-      /**
-       * Returns list of <code>CSquadronsMapIcon</code> objects on the map.
-       */
-      public function getSquadronObjects(): ArrayCollection {
-         return DisplayListUtil.getChildren(squadronObjectsCont);
       }
 
 
@@ -681,6 +682,27 @@ package components.map.space
       }
 
       private function ordersController_uicmdShowSpeedUpPopupHandler(event: OrdersControllerEvent): void {
+         // Now this should be impossible, but in practice it sometimes happens:
+         // http://forum.nebula44.lt/topic/1544/siunciant-laivus/
+         // Judging from the log, this can't happen in the map which is open
+         // right now because units|move_meta would fail also and it didn't
+         // So that leaves some not completely destroyed map in the memory
+         // which somehow failed to unregister this listener in the cleanup()
+         // Is there anything that I don't know how EventDispatcher works?
+         if (targetLocationPopup == null) {
+            if (f_cleanupCalled) {
+               logger.warn(
+                  "@ordersController_uicmdShowSpeedUpPopupHandler(): "
+                     + "cleanup() has already been called but listener "
+                     + "has not been removed from OrdersController!"
+               );
+            }
+            logger.warn(
+               "@ordersController_uicmdShowSpeedUpPopupHandler(): "
+                  + "targetLocationPopup is null, returning."
+            );
+            return;
+         }
          /**
           * Save locationPlanet and locationSpace from targetLocationPopup so that we could restore the popup
           * if player decides to change target location instead of confirming the order.
@@ -691,7 +713,9 @@ package components.map.space
 
          activateSpeedControlPopup(
             new CSpeedControlPopupM(
-               (event.arrivalTime - DateUtil.now) / 1000, event.hopCount)
+               Math.floor(event.arrivalTime - DateUtil.now) / 1000,
+               event.hopCount
+            )
          );
       }
 
@@ -744,7 +768,9 @@ package components.map.space
       }
 
       protected function this_creationCompleteHandler(event: FlexEvent): void {
-         squadronsController.updateOrderSourceLocIndicator();
+         if (squadronsController != null) {
+            squadronsController.updateOrderSourceLocIndicator();
+         }
       }
 
       /**
@@ -789,12 +815,14 @@ package components.map.space
             );
          }
          else if (ORDERS_CTRL.issuingOrders) {
-            var staticObject: CStaticSpaceObjectsAggregator =
-                   grid.getStaticObjectInSector(
-                      grid.getSectorLocation(new Point(mouseX, mouseY))
-                   );
-            if (staticObject) {
-               staticObject_doubleClickHandler(staticObject);
+            const mouseLocation:LocationMinimal =
+                     grid.getSectorLocation(new Point(mouseX, mouseY));
+            if (mouseLocation != null) {
+               const staticObject: CStaticSpaceObjectsAggregator =
+                        grid.getStaticObjectInSector(mouseLocation);
+               if (staticObject != null) {
+                  staticObject_doubleClickHandler(staticObject);
+               }
             }
          }
       }
