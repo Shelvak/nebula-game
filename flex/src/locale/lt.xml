@@ -1525,6 +1525,19 @@
     <label.cooldownEndsIn value="Kitas mūšis už" />
   </General>
 
+  <Errors>
+     <invalidBitmap.title>Sugadintas paveikslėlis</invalidBitmap.title>
+     <invalidBitmap.message>
+        <p>
+           Siunčiant ir išpakuojant paveikslėlius bent vienas iš jų buvo
+           sugadintas.
+        </p>
+        <p>
+           Prašome perkrauti puslapį.
+        </p>
+     </invalidBitmap.message>
+  </Errors>
+
   <InfoScreen>
     <title.details value="Duomenys" />
     <currentLevel value="Dabartinis lygis" />
