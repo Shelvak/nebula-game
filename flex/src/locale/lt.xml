@@ -1618,6 +1618,16 @@
     <label.tip value="Patarimas:"/>
     <label.pleaseWait value="Kraunami paveiksliukai, prašome palaukti." />
     <label.progress value="Kraunama {0}%"/>
+    <loadModule.failPopup.retryLabel>
+       Bandyti, kol pavyks
+    </loadModule.failPopup.retryLabel>
+    <loadModule.failPopup.title>
+       Siuntimas nutrūko!
+    </loadModule.failPopup.title>
+    <loadModule.failPopup.message>
+       Nepavyko atsiųsti modulio {0}. Tikriausiai dėl to kaltas prastas
+       interneto ryšys. Bandyti tol, kol pavyks?
+    </loadModule.failPopup.message>
   </LoadingScreen>
   
   <Tips>
