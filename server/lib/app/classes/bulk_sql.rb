@@ -1,6 +1,4 @@
 class BulkSql
-  # TODO: add lock tables
-
   # This marks NULL when using LOAD DATA INFILE.
   NULL = "\\N"
 
@@ -9,11 +7,10 @@ class BulkSql
     def save(objects, klass)
       return true if objects.blank?
 
-      raise "You forgot to initialize subclass based mutex for #{self}!" \
-        if @mutex.nil?
-
-      @mutex.synchronize do
-        LOGGER.block("Running bulk updates for #{self}", :level => :debug) do
+      LOGGER.block("Running bulk updates for #{self}", :level => :debug) do
+        # Get a lock on a table to ensure no one else is writing to it.
+        connection.execute("LOCK TABLES `#{klass.table_name}` WRITE")
+        begin
           primary_key = klass.primary_key.to_sym
           last_pk = klass.maximum(primary_key) || 0
 
@@ -63,6 +60,8 @@ class BulkSql
           end
 
           true
+        ensure
+          connection.execute("UNLOCK TABLES")
         end
       end
     end

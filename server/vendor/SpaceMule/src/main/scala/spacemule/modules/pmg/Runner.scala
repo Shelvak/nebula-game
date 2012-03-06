@@ -16,37 +16,38 @@ object Runner extends BenchmarkableMock {
    */
   def createGalaxy(ruleset: String, callbackUrl: String): Int = {
     Config.withSetScope(ruleset) { () =>
-      val createdAt = DB.date(new Date())
-      Manager.initDates()
+      Manager.buffers.transaction { () =>
+        val createdAt = DB.date(new Date())
+        Manager.initDates()
 
-      Manager.save { () =>
-        val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
-        Manager.galaxies += galaxyRow
+        Manager.save { () =>
+          val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
+          Manager.galaxies += galaxyRow
 
-        Manager.callbacks += CallbackRow(
-          galaxyRow, ruleset, CallbackRow.Events.Spawn,
-          Config.convoyTime.fromNow
-        )
-
-        // Create system offer creation cooldowns.
-        List(
-          CallbackRow.Events.CreateMetalSystemOffer,
-          CallbackRow.Events.CreateEnergySystemOffer,
-          CallbackRow.Events.CreateZetiumSystemOffer
-        ).foreach { event =>
           Manager.callbacks += CallbackRow(
-            galaxyRow, ruleset, event,
-            Config.marketBotRandomResourceCooldown.fromNow
+            galaxyRow, ruleset, CallbackRow.Events.Spawn,
+            Config.convoyTime.fromNow
           )
+
+          // Create system offer creation cooldowns.
+          List(
+            CallbackRow.Events.CreateMetalSystemOffer,
+            CallbackRow.Events.CreateEnergySystemOffer,
+            CallbackRow.Events.CreateZetiumSystemOffer
+          ).foreach { event =>
+            Manager.callbacks += CallbackRow(
+              galaxyRow, ruleset, event,
+              Config.marketBotRandomResourceCooldown.fromNow
+            )
+          }
+
+          val galaxy = new Galaxy(galaxyRow.id, ruleset)
+          val battleground = new Battleground()
+          battleground.createObjects()
+          Manager.readSolarSystem(galaxy, None, battleground)
+
+          galaxyRow.id
         }
-
-
-        val galaxy = new Galaxy(galaxyRow.id, ruleset)
-        val battleground = new Battleground()
-        battleground.createObjects()
-        Manager.readSolarSystem(galaxy, None, battleground)
-
-        galaxyRow.id
       }
     }
   }
@@ -58,19 +59,21 @@ object Runner extends BenchmarkableMock {
     players: Map[Long, String]
   ): SaveResult = {
     Config.withSetScope(ruleset) { () =>
-      val galaxy = new Galaxy(galaxyId, ruleset)
+      Manager.buffers.transaction { () =>
+        val galaxy = new Galaxy(galaxyId, ruleset)
 
-      benchmark("load galaxy") { () => Manager.load(galaxy) }
+        benchmark("load galaxy") { () => Manager.load(galaxy) }
 
-      players.foreach { case(webUserId, name) =>
-        val player = Player(name, webUserId)
-        benchmark("create player") { () => galaxy.createZoneFor(player) }
+        players.foreach { case(webUserId, name) =>
+          val player = Player(name, webUserId)
+          benchmark("create player") { () => galaxy.createZoneFor(player) }
+        }
+
+        val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
+        printBenchmarkResults()
+
+        result
       }
-
-      val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
-      printBenchmarkResults()
-
-      result
     }
   }
   
@@ -83,16 +86,18 @@ object Runner extends BenchmarkableMock {
     slot: Int
   ) = {
     Config.withSetScope(ruleset) { () =>
-      val galaxy = new Galaxy(galaxyId, ruleset)
+      Manager.buffers.transaction { () =>
+        val galaxy = new Galaxy(galaxyId, ruleset)
 
-      benchmark("generate zone") { () =>
-        galaxy.addZone(Zone(slot, quarter, Config.zoneDiameter))
+        benchmark("generate zone") { () =>
+          galaxy.addZone(Zone(slot, quarter, Config.zoneDiameter))
+        }
+
+        val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
+        printBenchmarkResults()
+
+        result
       }
-
-      val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
-      printBenchmarkResults()
-
-      result
     }
   }
 }

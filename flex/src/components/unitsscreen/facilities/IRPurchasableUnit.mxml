@@ -272,9 +272,9 @@
             {"level": 1},
             facility.constructorMod + facility.leveledConstructionMod
          );
-         selectedTimeCost = DateUtil.secondsToHumanString(timeCost);
+         selectedTimeCost = DateUtil.secondsToHumanString(timeCost, 2);
          qSelectedTimeCost = DateUtil.secondsToHumanString
-                                (Math.max(1, timeCost * selector.value));
+                                (Math.max(1, timeCost * selector.value), 2);
          refreshUpgradeState();
       }
 

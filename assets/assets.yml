@@ -580,6 +580,9 @@ assets:
         heading_line.png:                Line.png
         heading_line_end.png:            Line_end.png
         apocalypse.png:                  Endofdays0.png
+        gradient_line_left.png:          Line_res_transporter_left.png
+        gradient_line_center.png:        Line_res_transporter_center.png
+        gradient_line_right.png:         Line_res_transporter_right.png
 
       "icons":
         star_red.png:      Star_red.png
@@ -1128,6 +1131,9 @@ assets:
         speedup_mode_time_btn_up.png:        Btn_expert_up.png
         speedup_mode_time_btn_over.png:      Btn_expert_over.png
         speedup_mode_time_btn_down.png:      Btn_expert_down.png
+        reward_left.png:                     Reward_hint_left.png
+        reward_center.png:                   Reward_hint_center.png
+        reward_right.png:                    Reward_hint_right.png
 
       "maps/space/static_object":
         popup_top_left.png:            Sp_top_left.png
@@ -1145,9 +1151,13 @@ assets:
   "unbundled":
     flex_unbundled:
       "images/tips":
-        <% languages.each do |language| %><% 0.upto(9) do |tip_no| %>
+        <% languages.each do |language| %><% 0.upto(10) do |tip_no| %>
         "<%= language %>_<%= tip_no %>.png": "Tip<%= tip_no %>.png"
         <% end %><% end %>
+        lt_10.png:                  Tip_load_res.png
+        lt_11.png:                  Tip_notif_star.png
+        lt_12.png:                  Tip_heal.png
+
       "images/quest_screens/backgrounds":
         Quest.jpg:                  Quest_content0.jpg
         QuestWithImage.jpg:         Quest_content1.jpg
