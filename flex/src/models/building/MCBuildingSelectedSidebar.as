@@ -324,11 +324,14 @@ package models.building
                }
                if (_selectedBuilding.isGhost)
                {
-                  constructor.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
                   for each (var queueEntry: ConstructionQueueEntry in constructor.constructionQueueEntries)
                   {
                      queueEntry.selected = false;
                   }
+               }
+               if (constructor != null)
+               {
+                  constructor.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
                }
             }
             _selectedBuilding = value;
@@ -364,7 +367,7 @@ package models.building
 
             refreshPriceOrientatedProperties();
             refreshConstructor();
-            if (_selectedBuilding != null && _selectedBuilding.isGhost)
+            if (_selectedBuilding != null && constructor != null)
             {
                constructor.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
             }
@@ -441,13 +444,14 @@ package models.building
 
       public function queueList_dragCompleteHandler(event:DragEvent):void
       {
-         var queueList: List = List(event.dragSource);
-         if (queueList.dragMoveEnabled)
+         var queueList: List = List(event.dragInitiator);
+         if (queueList.dragMoveEnabled && !dragCanceled)
          {
             var tempElement: ConstructionQueueEntry = ConstructionQueueEntry(
                     List(event.dragInitiator).selectedItems[0]);
-            if (constructor.constructionQueueEntries.getItemIndex(tempElement) !=
-               tempElement.position)
+            if (tempElement != null &&
+               (constructor.constructionQueueEntries.getItemIndex(tempElement) !=
+               tempElement.position))
             {
                EventBroker.subscribe(GBuildingEvent.QUEUE_APROVED, restoreSelection);
                var newPosition: int = tempElement.position> constructor.constructionQueueEntries.getItemIndex(tempElement)?
@@ -456,10 +460,19 @@ package models.building
                new ConstructionQueuesCommand(
                   ConstructionQueuesCommand.MOVE,
                   {id: tempElement.id,
+                     count: tempElement.count,
                      position: newPosition}
                ).dispatch ();
             }
          }
+      }
+
+      public function queueList_dragStartHandler(event: DragEvent): void
+      {
+
+         queueList.dropEnabled = true;
+         queueList.dragMoveEnabled = true;
+         dragCanceled = false;
       }
 
       private function restoreSelection(e: GBuildingEvent): void
@@ -766,7 +779,9 @@ package models.building
          }
       }
 
-      private var queueList: List;
+      public var queueList: List;
+
+      private var dragCanceled: Boolean = false;
 
       private function cancelDrag(e: BuildingEvent): void
       {
@@ -778,6 +793,7 @@ package models.building
             queueList.layout.hideDropIndicator();
             DragManager.showFeedback(DragManager.NONE);
             queueList.drawFocus(false);
+            dragCanceled = true;
          }
       }
       
