@@ -2,7 +2,7 @@
 # units can be seen by +Player+ or +Alliance+.
 #
 class FowGalaxyEntry < ActiveRecord::Base
-  default_scope lock(true)
+  include Parts::WithLocking
 
   # FK :dependent => :destroy_all
   belongs_to :galaxy

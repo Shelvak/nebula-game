@@ -1394,17 +1394,15 @@ describe SsObject::Planet do
 
   describe "#after_find" do
     it "should recalculate if needed" do
-      model = Factory.create :planet,
-        :last_resources_update => 10.seconds.ago
-      model.should_receive(:recalculate!).once
-      model.send :recalculate_if_unsynced!
+      model = Factory.create :planet, :last_resources_update => 10.seconds.ago
+      model.should_receive(:recalculate).once
+      model.send :recalculate_if_unsynced
     end
 
     it "should not recalculate if not needed" do
-      model = Factory.create :planet,
-        :last_resources_update => nil
-      model.should_not_receive(:recalculate!)
-      model.send :recalculate_if_unsynced!
+      model = Factory.create :planet, :last_resources_update => nil
+      model.should_not_receive(:recalculate)
+      model.send :recalculate_if_unsynced
     end
   end
 

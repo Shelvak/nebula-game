@@ -1,5 +1,5 @@
 class CredStats < ActiveRecord::Base
-  default_scope lock(true)
+  include Parts::WithLocking
 
   # Accelerate an upgradable
   ACTION_ACCELERATE = 0

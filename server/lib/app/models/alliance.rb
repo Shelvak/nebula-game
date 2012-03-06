@@ -1,5 +1,5 @@
 class Alliance < ActiveRecord::Base
-  default_scope lock(true)
+  include Parts::WithLocking
 
   # Foreign key
   belongs_to :galaxy

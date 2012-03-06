@@ -29,7 +29,7 @@
 # }
 #
 class Route < ActiveRecord::Base
-  default_scope lock(true)
+  include Parts::WithLocking
 
   # FK :dependant => :delete_all
   belongs_to :player

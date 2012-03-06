@@ -6,7 +6,7 @@
 # _galaxy_id_ attribute is needed because of FK CASCADE for galaxy.
 #
 class Wreckage < ActiveRecord::Base
-  default_scope lock(true)
+  include Parts::WithLocking
 
   include Parts::Notifier
   include Parts::InLocation

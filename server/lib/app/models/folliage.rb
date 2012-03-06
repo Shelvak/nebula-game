@@ -1,5 +1,5 @@
 class Folliage < ActiveRecord::Base
-  default_scope lock(true)
+  include Parts::WithLocking
 
   include FastFind
   def self.fast_find_columns

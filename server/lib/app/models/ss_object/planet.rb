@@ -398,10 +398,10 @@ class SsObject::Planet < SsObject
       if player_id && last_resources_update.nil?
   end
   
-  after_find :recalculate_if_unsynced!
-  def recalculate_if_unsynced!
+  after_find :recalculate_if_unsynced
+  def recalculate_if_unsynced
     if last_resources_update and last_resources_update.to_i < Time.now.to_i
-      recalculate!
+      recalculate
     end
   end
 
@@ -473,12 +473,6 @@ class SsObject::Planet < SsObject
 
       send("#{resource}=", value + rate * time_diff)
     end
-  end
-
-  # #recalculate and #save!
-  def recalculate!
-    recalculate
-    save!
   end
 
   class << self

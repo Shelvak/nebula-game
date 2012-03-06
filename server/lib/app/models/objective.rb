@@ -1,5 +1,5 @@
 class Objective < ActiveRecord::Base
-  default_scope lock(true)
+  include Parts::WithLocking
 
   belongs_to :quest
   # FK :dependent => :delete_all

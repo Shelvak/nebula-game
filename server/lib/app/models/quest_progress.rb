@@ -5,7 +5,7 @@
 # - completed (Fixnum): number of objectives completed.
 #
 class QuestProgress < ActiveRecord::Base
-  default_scope lock(true)
+  include Parts::WithLocking
 
   # Methods must be before include.
 

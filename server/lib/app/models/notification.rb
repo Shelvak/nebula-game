@@ -19,7 +19,7 @@
 #
 class Notification < ActiveRecord::Base
   DScope = Dispatcher::Scope
-  default_scope lock(true)
+  include Parts::WithLocking
 
   # These methods must be defined before the include.
   

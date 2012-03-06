@@ -17,7 +17,7 @@
 # quests. nil if quest is not a main quest.
 #
 class Quest < ActiveRecord::Base
-  default_scope lock(true)
+  include Parts::WithLocking
 
   belongs_to :parent, :class_name => "Quest"
   # FK :dependent => :delete_all

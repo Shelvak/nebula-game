@@ -4,7 +4,8 @@
 # ConstructionQueue class that will manage these objects.
 #
 class ConstructionQueueEntry < ActiveRecord::Base
-  default_scope order(:position).lock(true)
+  include Parts::WithLocking
+  default_scope order(:position)
   belongs_to :constructor, :class_name => "Building"
   serialize :params, Hash
 

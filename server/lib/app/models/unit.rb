@@ -1,6 +1,6 @@
 class Unit < ActiveRecord::Base
   DScope = Dispatcher::Scope
-  default_scope lock(true)
+  include Parts::WithLocking
 
   include Parts::WithProperties
   include Parts::UpgradableWithHp

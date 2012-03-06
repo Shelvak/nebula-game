@@ -1,6 +1,6 @@
 # Non-Agression Pact. Established between two alliances to cease fire.
 class Nap < ActiveRecord::Base
-  default_scope lock(true)
+  include Parts::WithLocking
   belongs_to :initiator, :class_name => 'Alliance'
   belongs_to :acceptor, :class_name => 'Alliance'
 

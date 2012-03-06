@@ -12,20 +12,15 @@ class Callback
 
   # Returns either object or nil if object cannot be found. If object cannot be
   # found automatically marks this callback as processed.
-  #
-  # If lock=false, then do not lock object for update when requiring it. This
-  # is needed when looking up object for scope resolver.
-  def object!(lock=true)
+  def object!
     LOGGER.debug "Resolving object.", tag
-    object = lock \
-     ? @klass.find(@object_id) \
-     : @klass.unscoped { @klass.find(@object_id) }
+    object = @klass.find(@object_id)
 
     LOGGER.debug "Object resolved: #{object}", tag
 
     object
-  rescue ActiveRecord::RecordNotFound
-    LOGGER.info "Cannot resolve object (lock=#{lock})", tag
+  rescue ActiveRecord::RecordNotFound => e
+    LOGGER.info "Cannot resolve object: #{e.message}", tag
 
     false
   end

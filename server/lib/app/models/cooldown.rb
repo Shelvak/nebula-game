@@ -1,6 +1,6 @@
 class Cooldown < ActiveRecord::Base
   DScope = Dispatcher::Scope
-  default_scope lock(true)
+  include Parts::WithLocking
 
   include Parts::InLocation
   include Parts::ByFowEntries
