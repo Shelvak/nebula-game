@@ -76,8 +76,9 @@
          {
             if (e != null)
             {
-              _building.removeEventListener(BuildingEvent.CACHED_UNITS_CHANGE,
-                rebuildFlanks);
+               e.building.removeEventListener(
+                  BuildingEvent.CACHED_UNITS_CHANGE, rebuildFlanks
+               );
             }
             flanks.removeAll();
             flanksHash = {};
