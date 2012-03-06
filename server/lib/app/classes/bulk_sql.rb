@@ -12,51 +12,57 @@ class BulkSql
       return true if objects.blank?
 
       LOGGER.block("Running bulk updates for #{self}", :level => :debug) do
-        primary_key = klass.primary_key.to_sym
-        last_pk = klass.maximum(primary_key) || 0
+        # Get a lock on a table to ensure no one else is writing to it.
+        connection.execute("LOCK TABLES `#{klass.table_name}` WRITE")
+        begin
+          primary_key = klass.primary_key.to_sym
+          last_pk = klass.maximum(primary_key) || 0
 
-        # Create the data holders.
-        insert_objects = Java::java.util.LinkedList.new
-        insert_columns = Set.new([primary_key])
+          # Create the data holders.
+          insert_objects = Java::java.util.LinkedList.new
+          insert_columns = Set.new([primary_key])
 
-        update_objects = Java::java.util.LinkedList.new
-        update_columns = Set.new([primary_key])
+          update_objects = Java::java.util.LinkedList.new
+          update_columns = Set.new([primary_key])
 
-        # Gather the data.
-        objects.each do |object|
-          pk = object[primary_key]
+          # Gather the data.
+          objects.each do |object|
+            pk = object[primary_key]
 
-          changes = object.changed
-          unless changes.blank?
-            if pk.nil?
-              # Simulate record save.
-              last_pk += 1
-              object[primary_key] = last_pk
-              object.instance_variable_set(:"@new_record", false)
+            changes = object.changed
+            unless changes.blank?
+              if pk.nil?
+                # Simulate record save.
+                last_pk += 1
+                object[primary_key] = last_pk
+                object.instance_variable_set(:"@new_record", false)
 
-              changes.each { |column| insert_columns.add(column.to_sym) }
-              insert_objects.push object
-            else
-              changes.each { |column| update_columns.add(column.to_sym) }
-              update_objects.push object
+                changes.each { |column| insert_columns.add(column.to_sym) }
+                insert_objects.push object
+              else
+                changes.each { |column| update_columns.add(column.to_sym) }
+                update_objects.push object
+              end
             end
+
+            # Mark as saved.
+            object.changed_attributes.clear
           end
 
-          # Mark as saved.
-          object.changed_attributes.clear
+          # Bulk insert/update.
+          LOGGER.block(
+            "Running updates for #{update_objects.size} objects",
+            :level => :debug
+          ) { execute_updates(update_columns.to_a, update_objects, klass) }
+          LOGGER.block(
+            "Running inserts for #{insert_objects.size} objects",
+            :level => :debug
+          ) { execute_inserts(insert_columns.to_a, insert_objects, klass) }
+
+          true
+        ensure
+          connection.execute("UNLOCK TABLES")
         end
-
-        # Bulk insert/update.
-        LOGGER.block(
-          "Running updates for #{update_objects.size} objects",
-          :level => :debug
-        ) { execute_updates(update_columns.to_a, update_objects, klass) }
-        LOGGER.block(
-          "Running inserts for #{insert_objects.size} objects",
-          :level => :debug
-        ) { execute_inserts(insert_columns.to_a, insert_objects, klass) }
-
-        true
       end
     end
 

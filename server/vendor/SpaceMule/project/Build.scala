@@ -24,7 +24,9 @@ object SpaceMule extends Build {
         )
 
         // Copy libs.
-        updateReport.allFiles.foreach { srcPath =>
+        updateReport.matching(configurationFilter(Runtime.name)).foreach {
+          srcPath =>
+
           val destPath = dist / "lib" / srcPath.getName
           IO.copyFile(srcPath, destPath, preserveLastModified=true)
         }
@@ -41,9 +43,12 @@ object SpaceMule extends Build {
         version             := "1.0",
         scalaVersion        := "2.9.1",
         scalacOptions       := Seq("-deprecation"),
+        autoCompilerPlugins := true,
         resolvers           := Seq(
           // JGraphT
-          "conjars.org" at "http://conjars.org/repo"
+          "conjars.org" at "http://conjars.org/repo",
+          // scala-enhanched-strings
+          "Virtual-Void repository" at "http://mvn.virtual-void.net"
         ),
         libraryDependencies := Seq(
           // Java libraries
@@ -61,7 +66,11 @@ object SpaceMule extends Build {
           // Scala libraries
 
           // Converting between Java and Scala collections
-          "org.scalaj" %% "scalaj-collection" % "1.2"
+          "org.scalaj" %% "scalaj-collection" % "1.2",
+          // String interpolation
+          compilerPlugin(
+            "net.virtualvoid" %% "scala-enhanced-strings" % "0.5.2"
+          )
         ),
         distTask
       )

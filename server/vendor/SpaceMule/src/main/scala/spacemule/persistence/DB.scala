@@ -32,6 +32,11 @@ Original exception:
     ),
     cause
   )
+
+  object Lock extends Enumeration {
+    val Read = Value(0, "read")
+    val Write = Value(1, "write")
+  }
   
   /**
    * Use this instead of NULL if you're using loadInFile()
@@ -105,15 +110,27 @@ Original exception:
     statement.executeUpdate(sql)
   }
 
-  def transaction(func: () => Unit) {
+  def transaction[T](lockedTables: Seq[(String, Lock.Value)]=Seq.empty)
+                    (func: () => T): T = {
     ensureConnection()
 
     val autocommit = connection.getAutoCommit
     
     try {
       connection.setAutoCommit(false)
-      func()
+      if (! lockedTables.isEmpty) {
+        val tables = lockedTables.map { case (table, lock) => 
+          "`%s` %s".format(table, lock match {
+            case Lock.Read => "READ"
+            case Lock.Write => "WRITE"
+          }) 
+        }.mkString(", ")
+        exec("LOCK TABLES %s".format(tables))
+      }
+
+      val retVal = func()
       connection.commit()
+      retVal
     }
     catch {
       case e: Exception =>
@@ -121,6 +138,7 @@ Original exception:
         throw e
     }
     finally {
+      if (! lockedTables.isEmpty) exec("UNLOCK TABLES")
       connection.setAutoCommit(autocommit)
     }
   }
