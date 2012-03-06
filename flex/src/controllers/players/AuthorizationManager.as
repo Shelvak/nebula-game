@@ -94,7 +94,7 @@ package controllers.players
             // there is nothing to do here if JS throws an error
             // we got one error here in ~3 weeks:
             // 0001281: 2012-0302-2041|Error (error id 0):
-            // 
+            //
             // [Exception... "prompt aborted by user" nsresult: "0x80040111
             // (NS_ERROR_NOT_AVAILABLE)|jkwcwn
          }
