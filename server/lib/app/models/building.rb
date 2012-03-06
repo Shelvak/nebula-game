@@ -1,5 +1,6 @@
 class Building < ActiveRecord::Base
   DScope = Dispatcher::Scope
+  default_scope lock(true)
 
   class BuildingInactiveError < GameLogicError; end
 

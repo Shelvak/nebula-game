@@ -1,5 +1,6 @@
 class Galaxy < ActiveRecord::Base
   DScope = Dispatcher::Scope
+  default_scope lock(true)
 
   include ::Zone
 

@@ -19,6 +19,7 @@
 #
 class Notification < ActiveRecord::Base
   DScope = Dispatcher::Scope
+  default_scope lock(true)
 
   # These methods must be defined before the include.
   
@@ -178,6 +179,7 @@ class Notification < ActiveRecord::Base
   # - _yane_units_ - SpaceMule#combat response['yane'][player_id]
   # - _leveled_up_ - Combat::NotificationHelpers#leveled_up_units.
   # - _statistics_ - SpaceMule#combat response['statistics'][player_id]
+  # - _push_notification_ - should notification be dispatched to client.
   #
   # The created +Notification+ has these _params_:
   #
@@ -251,7 +253,7 @@ class Notification < ActiveRecord::Base
   #
   def self.create_for_combat(player_id, alliance_id, alliances,
       combat_log_id, location_attrs, outcome, yane_units, leveled_up,
-      statistics, resources)
+      statistics, resources, push_notification)
     model = new
     model.event = EVENT_COMBAT
     model.player_id = player_id
@@ -267,6 +269,7 @@ class Notification < ActiveRecord::Base
       'statistics' => statistics,
       'resources' => resources
     }
+    model.skip_dispatch = !! push_notification
     model.save!
 
     model   

@@ -60,11 +60,17 @@ class Dispatcher
     player = resolve_player(client)
     # This is safe because it is in same thread.
     unless player.nil?
+      #dispatch_task(
+      #  Scope.player(player), PlayerUnregisterTask.player(tag, player)
+      #)
+      ## There is no point of notifying about leaves if server is shutdowning.
+      #dispatch_task(Scope.chat, PlayerUnregisterTask.chat(tag, player)) \
+      #  unless App.server_shutdowning?
       dispatch_task(
-        Scope.player(player), PlayerUnregisterTask.player(tag, player)
+        nil, PlayerUnregisterTask.player(tag, player)
       )
       # There is no point of notifying about leaves if server is shutdowning.
-      dispatch_task(Scope.chat, PlayerUnregisterTask.chat(tag, player)) \
+      dispatch_task(nil, PlayerUnregisterTask.chat(tag, player)) \
         unless App.server_shutdowning?
     end
 
@@ -93,7 +99,8 @@ class Dispatcher
 
     @client_to_player[client] = player
     @player_id_to_client[player.id] = client
-    dispatch_task(Scope.player(player), PlayerRegisterTask.create(tag, player))
+    #dispatch_task(Scope.player(player), PlayerRegisterTask.create(tag, player))
+    dispatch_task(nil, PlayerRegisterTask.create(tag, player))
   end
 
   # Update player entry if player is connected.
@@ -137,8 +144,8 @@ class Dispatcher
         return
       end
 
-      object = callback.object! or return
-      scope = resolve_scope(klass, scope_method, object)
+      object = callback.object!(false) or return
+      scope = nil; #resolve_scope(klass, scope_method, object)
       task = Dispatcher::CallbackTask.create(klass, callback_method, callback)
       dispatch_task(scope, task)
     end
@@ -334,7 +341,7 @@ class Dispatcher
       raise UnhandledMessage.new(error_str)
     end
 
-    scope = resolve_scope(controller_class, scope_method, message)
+    scope = nil; #resolve_scope(controller_class, scope_method, message)
     task = ControllerTask.create(controller_class, action_method, message)
     dispatch_task(scope, task)
   rescue GenericController::ParamOpts::BadParams, UnhandledMessage,
@@ -362,25 +369,27 @@ class Dispatcher
   # Dispatches a +Threading::Director::Task+ to appropriate
   # +Threading::Director+ according to its +Dispatcher::Scope+.
   def dispatch_task(scope, task)
-    typesig binding, Scope, Threading::Director::Task
-
-    if scope.chat?
-      name = :chat
-    elsif scope.galaxy?
-      name = :galaxy
-    elsif scope.player?
-      name = :player
-    elsif scope.server?
-      name = :server
-    else
-      raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
-    end
-
+    typesig binding, NilClass, Threading::Director::Task
+    #typesig binding, Scope, Threading::Director::Task
+    #
+    #if scope.chat?
+    #  name = :chat
+    #elsif scope.galaxy?
+    #  name = :galaxy
+    #elsif scope.player?
+    #  name = :player
+    #elsif scope.server?
+    #  name = :server
+    #else
+    #  raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
+    #end
+    #
     #director = @directors[name]
     director = @directors[:player]
     raise "Missing director #{name.inspect}!" if director.nil?
 
-    info "Dispatching to #{name} director: scope=#{scope} task=#{task}"
+    #info "Dispatching to #{name} director: scope=#{scope} task=#{task}"
+    info "Dispatching to director: scope=#{scope} task=#{task}"
     #director.work!(scope.ids, task)
     director.work!([nil], task)
   end

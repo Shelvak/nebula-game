@@ -11,6 +11,8 @@
 # #creds include normal creds + vip creds if player is a VIP.
 #
 class Player < ActiveRecord::Base
+  default_scope lock(true)
+
   belongs_to :alliance
   belongs_to :galaxy
   # FK :dependent => :delete_all

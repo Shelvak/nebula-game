@@ -11,6 +11,9 @@ class SpaceMule
       USED_DB_CONFIG.to_scala,
       CONFIG.scala_wrapper
     )
+    # Pretend that all SpaceMule actions have shared state for now. In reality
+    # this is only needed because SpaceMule uses its own configuration which
+    # does not support thread-local set scope.
     @mutex = Mutex.new
   end
 

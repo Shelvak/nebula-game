@@ -1,5 +1,7 @@
 # Base class for Tile::* classes.
 class Tile < ActiveRecord::Base
+  default_scope lock(true)
+
   include FastFind
   def self.fast_find_columns
     {:id => :to_i, :x => :to_i, :y => :to_i, :kind => :to_i}

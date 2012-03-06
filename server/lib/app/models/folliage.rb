@@ -1,4 +1,6 @@
 class Folliage < ActiveRecord::Base
+  default_scope lock(true)
+
   include FastFind
   def self.fast_find_columns
     {:x => :to_i, :y => :to_i, :kind => :to_i}

@@ -1,4 +1,6 @@
 class Objective < ActiveRecord::Base
+  default_scope lock(true)
+
   belongs_to :quest
   # FK :dependent => :delete_all
   has_many :objective_progresses

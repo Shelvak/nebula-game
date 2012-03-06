@@ -1,6 +1,7 @@
 # Use one of the SolarSystem::* classes. This serves as base class.
 class SolarSystem < ActiveRecord::Base
   DScope = Dispatcher::Scope
+  default_scope lock(true)
 
   belongs_to :galaxy
 

@@ -13,6 +13,8 @@
 # of this offers creation (without the amount of this offer).
 #
 class MarketOffer < ActiveRecord::Base
+  default_scope lock(true)
+
   belongs_to :galaxy
   belongs_to :planet, :class_name => "SsObject::Planet"
   delegate :player, :player_id, :to => :planet

@@ -12,20 +12,22 @@ class Callback
 
   # Returns either object or nil if object cannot be found. If object cannot be
   # found automatically marks this callback as processed.
-  def object!
+  #
+  # If lock=false, then do not lock object for update when requiring it. This
+  # is needed when looking up object for scope resolver.
+  def object!(lock=true)
     LOGGER.debug "Resolving object.", tag
-    object = @klass.where(:id => @object_id).first
-
-    if object.nil?
-      LOGGER.info "Callback #{self} cannot find its object. It must have " +
-        "been destroyed. Marking callback as processed.", tag
-      Celluloid::Actor[:callback_manager].processed!(self)
-      return
-    end
+    object = lock \
+     ? @klass.find(@object_id) \
+     : @klass.unscoped { @klass.find(@object_id) }
 
     LOGGER.debug "Object resolved: #{object}", tag
 
     object
+  rescue ActiveRecord::RecordNotFound
+    LOGGER.info "Cannot resolve object (lock=#{lock})", tag
+
+    false
   end
 
   # Removes callback from the database.

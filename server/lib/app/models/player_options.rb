@@ -1,4 +1,6 @@
 class PlayerOptions < ActiveRecord::Base
+  default_scope lock(true)
+
   self.primary_key = :player_id
   belongs_to :player
 

@@ -218,7 +218,7 @@ describe Notification do
 
       @args = [@player.id, @player.alliance_id, @alliances,
         @combat_log.sha1_id, @location.client_location.as_json, @outcome,
-        @yane_units, @leveled_up, @statistics, @resources]
+        @yane_units, @leveled_up, @statistics, @resources, true]
     end
 
     it_behaves_like "create for"
@@ -272,9 +272,19 @@ describe Notification do
       Notification.send(@method, *@args).params['statistics'].should == \
         @statistics
     end
-  end
 
-  shared_examples_for "quest notification" do
+    it "should dispatch created if push_notification=true" do
+      notification = Notification.send(@method, *@args)
+      SPEC_EVENT_HANDLER.fired?(notification, EventBroker::CREATED).
+        should == 1
+    end
+
+    it "should not dispatch created if push_notification=false" do
+      @args[10] = false # Lots of args suck...
+      notification = Notification.send(@method, *@args)
+      SPEC_EVENT_HANDLER.fired?(notification, EventBroker::CREATED).
+        should == 0
+    end
   end
 
   describe ".create_for_achievement_completed" do

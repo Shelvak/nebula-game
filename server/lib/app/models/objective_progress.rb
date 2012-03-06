@@ -1,4 +1,6 @@
 class ObjectiveProgress < ActiveRecord::Base
+  default_scope lock(true)
+
   belongs_to :objective
   belongs_to :player
 

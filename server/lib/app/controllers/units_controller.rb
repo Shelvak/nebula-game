@@ -100,7 +100,7 @@ class UnitsController < GenericController
   # the battle.
   #
   # Response:
-  # - notification_id (Fixnum): ID of the notification for this player
+  # - notification (Notification#as_json): notification for this player
   # that notifies about this battle.
   #
   ACTION_ATTACK = 'units|attack'
@@ -139,7 +139,9 @@ class UnitsController < GenericController
       target.destroy!
     end
 
-    respond m, :notification_id => assets.notification_ids[m.player.id]
+    notification_id = assets.notification_ids[m.player.id]
+    notification = Notification.find(notification_id)
+    respond m, :notification => notification.as_json
   end
 
   # Calculate arrival date and number of hop times of selected space units.

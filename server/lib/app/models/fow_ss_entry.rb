@@ -4,6 +4,8 @@
 # systems in particular galaxy.
 #
 class FowSsEntry < ActiveRecord::Base
+  default_scope lock(true)
+
   # FK :dependent => :destroy_all
   belongs_to :solar_system
 

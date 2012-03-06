@@ -1,5 +1,6 @@
 # Stores current market rate for resource pair in given galaxy.
 class MarketRate < ActiveRecord::Base
+  default_scope lock(true)
   belongs_to :galaxy
 
   def to_s

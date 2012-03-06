@@ -1,6 +1,7 @@
 # Use SsObject::*SsObject* instead of this! This acts as a base class.
 class SsObject < ActiveRecord::Base
   DScope = Dispatcher::Scope
+  default_scope lock(true)
 
   include Location
   include Parts::Object

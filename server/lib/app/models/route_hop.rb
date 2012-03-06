@@ -11,6 +11,7 @@
 #
 class RouteHop < ActiveRecord::Base
   DScope = Dispatcher::Scope
+  default_scope lock(true)
 
   belongs_to :route
   composed_of :location, :class_name => 'LocationPoint',

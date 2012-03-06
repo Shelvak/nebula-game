@@ -1,4 +1,6 @@
 class CredStats < ActiveRecord::Base
+  default_scope lock(true)
+
   # Accelerate an upgradable
   ACTION_ACCELERATE = 0
   # Self-destruct a building

@@ -1,4 +1,6 @@
 class Alliance < ActiveRecord::Base
+  default_scope lock(true)
+
   # Foreign key
   belongs_to :galaxy
   # FK
