@@ -2705,7 +2705,7 @@
       <p>Komandore,</p>
       <p>Mūsų žmonėms reikia daugiau vietos! Dar truputis ir nebus kur
         kojos padėti!</p>
-      <p>Nedelsiant pradėkite gyvenųjų bokštų statybas.</p>
+      <p>Nedelsiant pradėkite gyvenamųjų bokštų statybas.</p>
     </about.160>
 
     <title.170 value="Kelias į žvaigždes" />
@@ -2837,7 +2837,7 @@
     <p>Komandore,</p>
     <p>panašu, kad tie ateiviai yra beatodairiški fanatikai. Jūs privalote
       smogti triuškinantį smūgį į jų stipriausius laivus, jog parodytumėte savo
-      galia! Tai vienintėlis būdas juos sustabdyti!</p>
+      galią! Tai vienintėlis būdas juos sustabdyti!</p>
     </about.260>
 
     <title.270 value="Akis danguje" />
@@ -5471,7 +5471,7 @@
     </Jumper.about>
 
     <MobileTurret>
-      <p>Gali būti gabenamas kroviniais laivais. Neišskleistas nešaudo.
+      <p>Gali būti gabenamas krovininiais laivais. Neišskleistas nešaudo.
       Po išskleidimo nebesuskleidžiamas.</p>
     </MobileTurret>
 
