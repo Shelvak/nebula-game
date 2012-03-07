@@ -219,7 +219,10 @@ package models.unit
          }
          else
          {
-            filteredSquadronUnits.refresh();
+            if (filteredSquadronUnits != null)
+            {
+               filteredSquadronUnits.refresh();
+            }
          }
          
          groundVisible = hasGroundUnits || currentKind == UnitKind.GROUND;
