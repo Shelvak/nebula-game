@@ -2,6 +2,8 @@ package controllers.messages
 {
    import controllers.CommunicationCommand;
 
+   import utils.Objects;
+
    import utils.SingletonFactory;
    import utils.logging.MessagesLogger;
    import utils.remote.IServerProxy;
@@ -34,6 +36,40 @@ package controllers.messages
 
 
       public function MessagesProcessor() {
+         reset();
+      }
+
+      public function reset(): void {
+         _orderOfNotYetReceivedMessages = new Array();
+         _deferredRMOs = new Object();
+      }
+
+      private var _orderOfNotYetReceivedMessages: Array;
+      private var _deferredRMOs: Object;
+
+      private function get orderEnforced(): Boolean {
+         return _orderOfNotYetReceivedMessages.length > 0;
+      }
+
+      private function orderEnforcedFor(action:String): Boolean {
+         return orderEnforced
+                   && _orderOfNotYetReceivedMessages.indexOf(action) >= 0;
+      }
+
+      /**
+       * Temporally enforces order in which incoming messages are processed.
+       * Once all message have been processed in the given order, the
+       * execution proceeds normally.
+       *
+       * Response messages are not affected.
+       *
+       * @param order a list of incoming message keys (actions) in the order
+       * those messages must be processed.
+       */
+      public function enforceIncomingMessagesOrder(order: Array): void {
+         Objects.paramNotNull("order", order);
+         _orderOfNotYetReceivedMessages =
+            _orderOfNotYetReceivedMessages.concat(order);
       }
 
       /**
@@ -46,17 +82,36 @@ package controllers.messages
             return;
          }
          for each (var rmo: ServerRMO in messages) {
-            var keyword: String = rmo.action != null ? rmo.action : "";
             if (rmo.isReply) {
                respMsgTracker.removeRMO(rmo);
             }
             else {
-               msgLog.logMessage(keyword, "Processing message {0}", [rmo.id]);
-               new CommunicationCommand
-                  (rmo.action, rmo.parameters, true, false, rmo)
-                  .dispatch();
+               if (orderEnforcedFor(rmo.action)) {
+                  _deferredRMOs[rmo.action] = rmo;
+                  var deferredToProcess: String;
+                  var deferredRMO: ServerRMO;
+                  do {
+                     deferredToProcess = _orderOfNotYetReceivedMessages[0];
+                     deferredRMO = _deferredRMOs[deferredToProcess];
+                     if (deferredRMO != null) {
+                        _orderOfNotYetReceivedMessages.unshift();
+                        delete _deferredRMOs[deferredToProcess];
+                        processMessage(rmo);
+                     }
+                  }
+                  while (orderEnforced && deferredRMO != null)
+               }
+               else {
+                  processMessage(rmo);
+               }
             }
          }
+      }
+
+      private function processMessage(rmo: ServerRMO): void {
+         msgLog.logMessage(rmo.action, "Processing message {0}", [rmo.id]);
+         new CommunicationCommand(rmo.action, rmo.parameters, true, false, rmo)
+            .dispatch();
       }
 
       /**

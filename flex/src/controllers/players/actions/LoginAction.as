@@ -4,7 +4,18 @@ package controllers.players.actions
 
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import utils.ApplicationLocker;
+   import controllers.chat.ChatCommand;
+   import controllers.galaxies.GalaxiesCommand;
+   import controllers.game.GameCommand;
+   import controllers.messages.MessagesProcessor;
+   import controllers.notifications.NotificationsCommand;
+   import controllers.planets.PlanetsCommand;
+   import controllers.playeroptions.PlayerOptionsCommand;
+   import controllers.players.PlayersCommand;
+   import controllers.quests.QuestsCommand;
+   import controllers.routes.RoutesCommand;
+   import controllers.technologies.TechnologiesCommand;
+
    import controllers.players.AuthorizationManager;
    import controllers.startup.StartupInfo;
    
@@ -40,8 +51,21 @@ package controllers.players.actions
       }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void {
-         if (cmd.parameters["success"])
+         if (cmd.parameters["success"]) {
+            MessagesProcessor.getInstance().enforceIncomingMessagesOrder([
+               GameCommand.CONFIG,
+               PlayersCommand.SHOW,
+               PlanetsCommand.PLAYER_INDEX,
+               TechnologiesCommand.INDEX,
+               QuestsCommand.INDEX,
+               NotificationsCommand.INDEX,
+               RoutesCommand.INDEX,
+               PlayerOptionsCommand.SHOW,
+               ChatCommand.INDEX,
+               GalaxiesCommand.SHOW
+            ]);
             AM.loginSuccessful();
+         }
          else {
             if (cmd.parameters["requiredVersion"]) {
                AM.versionTooOld(cmd.parameters["requiredVersion"]);

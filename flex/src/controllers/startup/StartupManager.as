@@ -28,6 +28,8 @@ package controllers.startup
    import controllers.game.actions.*;
    import controllers.market.MarketCommand;
    import controllers.market.actions.*;
+   import controllers.messages.MessagesProcessor;
+   import controllers.messages.ResponseMessagesTracker;
    import controllers.notifications.NotificationsCommand;
    import controllers.notifications.actions.*;
    import controllers.objects.ObjectsCommand;
@@ -35,6 +37,7 @@ package controllers.startup
    import controllers.planets.PlanetsCommand;
    import controllers.planets.actions.*;
    import controllers.playeroptions.PlayerOptionsCommand;
+   import controllers.playeroptions.actions.SetAction;
    import controllers.playeroptions.actions.ShowAction;
    import controllers.players.AuthorizationManager;
    import controllers.players.PlayersCommand;
@@ -61,8 +64,6 @@ package controllers.startup
    import models.chat.MChat;
    import models.quest.MainQuestSlideFactory;
    import models.time.MTimeEventFixedMoment;
-
-   import mx.controls.Alert;
 
    import mx.logging.ILogger;
    import mx.logging.Log;
@@ -185,6 +186,8 @@ package controllers.startup
          logger.info("-------------- APPLICATION RESET --------------");
          new GlobalEvent(GlobalEvent.APP_RESET);
          ServerProxyInstance.getInstance().reset();
+         ResponseMessagesTracker.getInstance().reset();
+         MessagesProcessor.getInstance().reset();
          StringUtil.reset();
          ML.reset();
          MChat.getInstance().reset();
@@ -397,7 +400,7 @@ package controllers.startup
       private static function bindPlayerOptionsCommands() : void
       {
          bindPair(PlayerOptionsCommand.SHOW, new controllers.playeroptions.actions.ShowAction());
-         bindPair(PlayerOptionsCommand.SET, new controllers.playeroptions.actions.SetAction());
+         bindPair(PlayerOptionsCommand.SET, new SetAction());
       }
       private static function bindAlliancesCommands() : void
       {
