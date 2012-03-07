@@ -251,16 +251,18 @@
     <s:Group height="100%">
       <base:Scroller id="contScroller" left="0" right="0" top="0" bottom="0" stepMultiplier="5">
         <base:AdvancedContainer right="6" left="0">
-          <s:Group width="95%">
-            <s:Label text="{getString('label.selectPlanet')}" fontSize="16" fontWeight="bold"
-                     color="#eec500"/>
-            <base:PlanetSelector id="planetSelector" change="planetSelector_changeHandler(event)"
-                                 minWidth="180" dataProvider="{planetsProvider}"
-                                 itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
-            <s:layout>
-              <s:HorizontalLayout verticalAlign="middle" paddingLeft="10" paddingTop="20"
-                paddingBottom="10" gap="10"/>
-            </s:layout>
+          <s:Group width="100%">
+            <base:GradientLine left="0" right="0"/>
+            <s:Group left="0" right="0" verticalCenter="0">
+               <s:Label text="{getString('label.selectPlanet')}" fontSize="16" fontWeight="bold"
+                        color="#eec500"/>
+               <base:PlanetSelector id="planetSelector" change="planetSelector_changeHandler(event)"
+                                    minWidth="180" dataProvider="{planetsProvider}"
+                                    itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
+               <s:layout>
+                 <s:HorizontalLayout verticalAlign="middle" paddingLeft="30" gap="10"/>
+               </s:layout>
+            </s:Group>
           </s:Group>
           <unitsscreen:StoragePanel width="100%" visible="{((getMaxStock(ResourceType.METAL) != 0)
                                          || (getMaxStock(ResourceType.ENERGY) != 0)
@@ -326,12 +328,14 @@
           <base:Warning text="{getString('label.nothingToTransfer')}"
                         visible="{!((getMaxStock(ResourceType.METAL) != 0)
                              || (getMaxStock(ResourceType.ENERGY) != 0) 
-                             || (getMaxStock(ResourceType.ZETIUM) != 0))}"/>
+                             || (getMaxStock(ResourceType.ZETIUM) != 0))}"
+                        paddingTop="10"/>
 
           <base:Warning text="{getString('label.noOtherPlanet')}"
-                        visible="{ML.player.planets.length == 1}"/>
+                        visible="{ML.player.planets.length == 1}"
+                        paddingTop="10"/>
           <base:layout>
-            <s:VerticalLayout gap="10" horizontalAlign="center"/>
+            <s:VerticalLayout gap="0" horizontalAlign="center"/>
           </base:layout>
 
         </base:AdvancedContainer>

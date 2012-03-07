@@ -897,9 +897,9 @@ package models.planet
       [Bindable(event="unitRefresh")]
       public function hasMovingUnits(owner: int, kind: String): Boolean
       {
-         if (hasUnitsCache[owner + '|' + UnitKind.MOVING] == null)
+         if (hasUnitsCache[owner + '|' + UnitKind.MOVING + '|' + kind] == null)
          {
-            hasUnitsCache[owner + '|' + UnitKind.MOVING] =
+            hasUnitsCache[owner + '|' + UnitKind.MOVING + '|' + kind] =
                (Collections.findFirst(units,
                   function(unit:Unit) : Boolean
                   {
@@ -910,7 +910,7 @@ package models.planet
                   }
                ) != null);
          }
-         return hasUnitsCache[owner + '|' + UnitKind.MOVING];
+         return hasUnitsCache[owner + '|' + UnitKind.MOVING + '|' + kind];
       }
       
       public function getActiveHealableUnits(): ListCollectionView
@@ -932,11 +932,18 @@ package models.planet
             return false;
          });
       }
+
+      /* for count of active units */
+      private var activeUnitsCountCache: Object = {};
       
       [Bindable (event="unitRefresh")]
       public function getActiveUnitsCount(owner: int, kind: String): int
       {
-         return getActiveUnits(owner, kind).length;
+         if (activeUnitsCountCache[owner + '|' + kind] == null)
+         {
+            activeUnitsCountCache[owner + '|' + kind] = getActiveUnits(owner, kind).length;
+         }
+         return activeUnitsCountCache[owner + '|' + kind];
       }
       
       public function getActiveUnits(owner: int, kind: String = null): ListCollectionView
@@ -1543,6 +1550,7 @@ package models.planet
                 !f_cleanupComplete &&
                 hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED)) {
             hasUnitsCache = {};
+            activeUnitsCountCache = {};
             aggressiveGroundUnitsCache = {};
             dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_REFRESH_NEEDED));
          }
