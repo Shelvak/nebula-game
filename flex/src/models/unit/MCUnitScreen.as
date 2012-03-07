@@ -673,7 +673,9 @@ package models.unit
          }
          else if (kind == UnitKind.SQUADRON)
          {
-            count = filteredUnits.length;
+
+            count = filteredSquadronUnits == null
+               ? 0 : filteredSquadronUnits.length;
          }
          else
          {
