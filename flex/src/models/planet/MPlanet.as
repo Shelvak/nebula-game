@@ -897,9 +897,9 @@ package models.planet
       [Bindable(event="unitRefresh")]
       public function hasMovingUnits(owner: int, kind: String): Boolean
       {
-         if (hasUnitsCache[owner + '|' + UnitKind.MOVING] == null)
+         if (hasUnitsCache[owner + '|' + UnitKind.MOVING + '|' + kind] == null)
          {
-            hasUnitsCache[owner + '|' + UnitKind.MOVING] =
+            hasUnitsCache[owner + '|' + UnitKind.MOVING + '|' + kind] =
                (Collections.findFirst(units,
                   function(unit:Unit) : Boolean
                   {
@@ -910,7 +910,7 @@ package models.planet
                   }
                ) != null);
          }
-         return hasUnitsCache[owner + '|' + UnitKind.MOVING];
+         return hasUnitsCache[owner + '|' + UnitKind.MOVING + '|' + kind];
       }
       
       public function getActiveHealableUnits(): ListCollectionView
