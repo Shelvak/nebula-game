@@ -217,6 +217,13 @@ package models.unit
          {
             createFlanks();
          }
+         else
+         {
+            if (filteredSquadronUnits != null)
+            {
+               filteredSquadronUnits.refresh();
+            }
+         }
          
          groundVisible = hasGroundUnits || currentKind == UnitKind.GROUND;
          spaceVisible = hasSpaceUnits || currentKind == UnitKind.SPACE
