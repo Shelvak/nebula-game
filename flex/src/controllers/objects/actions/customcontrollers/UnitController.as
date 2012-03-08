@@ -61,9 +61,20 @@ package controllers.objects.actions.customcontrollers
          if (UnitJumps.preJumpLocationMatches(object["id"], locString)) {
             return;
          }
-         if (reason == UpdatedReason.COMBAT ||
-             reason == UpdatedReason.TRANSPORTATION) {
+         if (reason == UpdatedReason.TRANSPORTATION) {
             ML.units.addOrUpdate(object, Unit);
+         }
+         else if (reason == UpdatedReason.COMBAT) {
+            const existingUnit: Unit = ML.units.find(object["id"]);
+            if (existingUnit != null) {
+               existingUnit.hp = object["hp"];
+               existingUnit.level = object["level"];
+               existingUnit.xp = object["xp"];
+               existingUnit.owner = object["status"];
+            }
+            else {
+               ML.units.addItem(Objects.create(Unit, object));
+            }
          }
          else {
             ML.units.update(object);
