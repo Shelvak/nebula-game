@@ -2,6 +2,10 @@ package controllers.messages
 {
    import controllers.CommunicationCommand;
 
+   import mx.logging.ILogger;
+
+   import mx.logging.Log;
+
    import utils.Objects;
 
    import utils.SingletonFactory;
@@ -77,7 +81,8 @@ package controllers.messages
        * this method.
        */
       public function process(): void {
-         var messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
+         const logger:ILogger = Log.getLogger("MessagesProcessor");
+         const messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
          if (messages == null) {
             return;
          }
@@ -87,6 +92,10 @@ package controllers.messages
             }
             else {
                if (orderEnforcedFor(rmo.action)) {
+                  logger.debug(
+                     "@process() [order enforced]: Deferring processing of: {0}",
+                     rmo.action
+                  );
                   _deferredRMOs[rmo.action] = rmo;
                   var deferredToProcess: String;
                   var deferredRMO: ServerRMO;
@@ -96,7 +105,11 @@ package controllers.messages
                      if (deferredRMO != null) {
                         _orderOfNotYetReceivedMessages.unshift();
                         delete _deferredRMOs[deferredToProcess];
-                        processMessage(rmo);
+                        logger.debug(
+                           "@process() [order enforced]: Processing deferred: {0}",
+                           rmo.action
+                        );
+                        processMessage(deferredRMO);
                      }
                   }
                   while (orderEnforced && deferredRMO != null)
