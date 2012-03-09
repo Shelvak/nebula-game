@@ -71,6 +71,7 @@ package controllers.objects.actions.customcontrollers
                existingUnit.level = object["level"];
                existingUnit.xp = object["xp"];
                existingUnit.owner = object["status"];
+               existingUnit.stored = object["stored"];
             }
             else {
                ML.units.addItem(Objects.create(Unit, object));
