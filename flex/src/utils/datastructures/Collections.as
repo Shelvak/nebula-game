@@ -32,6 +32,7 @@ package utils.datastructures
             try {
                list.removeAll();
             }
+            // TODO: how do we handle this when RangeError is wrapped?
             catch (err: RangeError) {
                logger.error(
                   "@cleanListOfICleanables: Error while removing all items: {0}",
@@ -208,24 +209,20 @@ package utils.datastructures
        * @param testFunction | <b>not null</b>
        * @param silent if <code>false</code>, will throw error if item to
        * remove can't be found; if <code>true</code>, does not throw any error
-       * in such case and returns <code>null</code>
+       * and returns <code>null</code>
        */
       public static function removeFirst(list: IList,
                                          testFunction: Function,
                                          silent: Boolean = false): * {
          Objects.paramNotNull("list", list);
          Objects.paramNotNull("testFunction", testFunction);
-         try {
-            return list.removeItemAt(findFirstIndex(list, testFunction));
+         const itemIndex: int = findFirstIndex(list, testFunction);
+         if (itemIndex < 0 && !silent) {
+            throw new Error(
+               "Could not find an item to remove (using testFunction)"
+            );
          }
-         catch (error: RangeError) {
-            if (!silent) {
-               throw new Error(
-                  "Could not find an item to remove (using testFunction)"
-               );
-            }
-         }
-         return null;
+         return list.removeItemAt(itemIndex);
       }
       
       /**
@@ -244,15 +241,11 @@ package utils.datastructures
                                                 silent: Boolean = false): * {
          Objects.paramNotNull("list", list);
          Objects.paramNotNull("example", example);
-         try {
-            return list.removeItemAt(findFirstIndexEqualTo(list, example));
+         const itemIndex: int = findFirstIndexEqualTo(list, example);
+         if (itemIndex < 0 && !silent) {
+            throw new Error("Could not find an item equal to " + example);
          }
-         catch (error: RangeError) {
-            if (!silent) {
-               throw new Error("Could not find an item equal to " + example);
-            }
-         }
-         return null;
+         return list.removeItemAt(itemIndex);
       }
    }
 }
