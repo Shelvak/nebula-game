@@ -24,7 +24,7 @@ class Threading::Director::Task
   def self.retrying_transaction(worker_name)
     current_retry = 0
     begin
-      DispatcherEventHandler::Buffer.wrap do
+      DispatcherEventHandler::Buffer.instance.wrap do
         ActiveRecord::Base.transaction(:joinable => false) do
           yield
         end

@@ -225,7 +225,7 @@ class DispatcherEventHandler
   # should have never been dispatched.
   #
   # TODO: spec
-  def dispatcher; DispatcherEventHandler::Buffer; end
+  def dispatcher; DispatcherEventHandler::Buffer.instance; end
 
   def debug(message, &block); self.class.debug(message, &block); end
 

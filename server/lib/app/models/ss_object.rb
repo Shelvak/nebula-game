@@ -100,11 +100,11 @@ class SsObject < ActiveRecord::Base
 
     def energy_diminished_scope(planet); DScope.planet_owner(planet); end
     def energy_diminished_callback(planet)
-      changes = model.ensure_positive_energy_rate!
+      changes = planet.ensure_positive_energy_rate!
       Notification.create_for_buildings_deactivated(
-        model, changes
-      ) unless changes.blank? || model.player_id.nil?
-      EventBroker.fire(model, EventBroker::CHANGED)
+        planet, changes
+      ) unless changes.blank? || planet.player_id.nil?
+      EventBroker.fire(planet, EventBroker::CHANGED)
     end
 
     # Raid only spawns units and creates a cooldown.

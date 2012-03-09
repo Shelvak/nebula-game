@@ -134,9 +134,13 @@ class App
 end
 
 class Exception
+  def name
+    self.class.to_s
+  end
+
   def to_log_str
     "Exception: %s (%s)\n\nBacktrace:\n%s" % [
-      message, self.class.to_s, self.backtrace.try(:join, "\n") || "No backtrace"
+      message, name, self.backtrace.try(:join, "\n") || "No backtrace"
     ]
   end
 end

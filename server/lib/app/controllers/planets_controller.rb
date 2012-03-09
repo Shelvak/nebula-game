@@ -277,7 +277,7 @@ class PlanetsController < GenericController
       "You cannot have any enemies to take planet ownership!"
     ) unless report.status == Combat::CheckReport::NO_CONFLICT
     
-    planet.player = player
+    planet.player = m.player
     planet.save!
     
     # Push planet show because player now needs garrisoned units and other

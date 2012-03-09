@@ -269,7 +269,7 @@ class Notification < ActiveRecord::Base
       'statistics' => statistics,
       'resources' => resources
     }
-    model.skip_dispatch = !! push_notification
+    model.skip_dispatch = ! push_notification
     model.save!
 
     model   
