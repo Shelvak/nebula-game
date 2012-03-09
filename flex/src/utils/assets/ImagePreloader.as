@@ -366,7 +366,7 @@ package utils.assets
                                  parameters: Array = null): String {
          return Localizer.string(
             "LoadingScreen",
-            "loadModule.failPopup" + property,
+            "loadModule.failPopup." + property,
             parameters
          );
       }

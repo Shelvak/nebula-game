@@ -2265,10 +2265,6 @@
       žaidimą iš naujo. Jeigu tai kartosis, prašytume jog praneštumėt apie 
       klaidą detaliai aprašant veiksmų seką ir aplinkybes. Dėkojame.</p>
     </message.disconnect.jsonError>
-
-    <crash>
-      <p></p>
-    </crash>
     
     <title.log value="Derinimo žurnalas" />
     <message.log.general>
