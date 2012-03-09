@@ -7,17 +7,10 @@ package utils
 
    import components.popups.ErrorPopup;
 
-   import controllers.startup.StartupManager;
-
    import flash.external.ExternalInterface;
-
    import flash.system.Capabilities;
 
    import models.ModelLocator;
-   
-   import mx.core.FlexGlobals;
-   import mx.logging.ILogger;
-   import mx.logging.Log;
 
    import utils.locale.Localizer;
 
@@ -28,10 +21,16 @@ package utils
          var summary: String;
          var description: String;
          var body: String;
-         var slowClient: Boolean = false;
 
          if (error is Error) {
             var err: Error = error as Error;
+
+            // This is an Android FlashPlayer bug.
+            // Ignore this error since we do not use IME anyway.
+            // https://bugbase.adobe.com/index.cfm?event=bug&id=3101786
+            if (err.errorID == 2063 && Capabilities.version.indexOf("AND") == 0) {
+               return;
+            }
 
             // Invalid BitmapData
             if (err.errorID == 2015) {
@@ -61,10 +60,6 @@ package utils
 
             body = "Stacktrace (with vars):\n" + stWVars + "\n" +
                       ModelLocator.getInstance().debugLog;
-
-            // Error #1502: A script has executed for longer than the default
-            // timeout period of 15 seconds.
-            slowClient = err.errorID == 1502;
          }
          else {
             summary = "Error was " + Objects.getClassName(error) + "!";
@@ -72,7 +67,7 @@ package utils
             body = "String representation:\n" + error;
          }
 
-         crash(summary, description, body, slowClient)
+         crash(summary, description, body);
       }
 
       private static function showErrorPopup(key: String): void {
@@ -87,11 +82,10 @@ package utils
       private static function getString(property:String): String {
          return Localizer.string("Errors", property);
       }
-         
-      private static function crash(
-         summary: String, description: String, body: String,
-         slowClient: Boolean=false
-      ): void {
+
+      private static function crash(summary: String,
+                                    description: String,
+                                    body: String): void {
          // Double escape backslashes, because strings somehow get "evaluated"
          // when they are passed to javascript.
          summary = summary.replace(/\\/g, "\\\\");

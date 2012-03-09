@@ -83,7 +83,7 @@ bars and so on.
          <s:Group>
             <ui:IconWithLabel id="icoPlanetCooldown" toolTip="{Localizer.string('General', 'label.cooldownEndsIn')}"
                               icon="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'cooldown_large')}"
-                              text="{ML.latestPlanet.ssObject.cooldown.endsEvent.occuresInString}"
+                              text="{ML.latestPlanet.ssObject.cooldown.endsEvent.occuresInString()}"
                               visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
                               ML.latestPlanet.ssObject.cooldown != null}"
                               left="0" right="0" top="0" bottom="4"/>

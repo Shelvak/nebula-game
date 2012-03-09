@@ -6,7 +6,8 @@
                     height="100%" width="100%"
                     xmlns:buildingselectedsidebar="components.buildingselectedsidebar.*" 
                     xmlns:components="utils.components.*" 
-                    xmlns:buildingsidebar="components.buildingsidebar.*">
+                    xmlns:buildingsidebar="components.buildingsidebar.*"
+                    creationComplete="bSidebar.queueList = queueList">
    
    <fx:Script>
       <![CDATA[
@@ -58,11 +59,6 @@
 
       private function getString(key: String, params: Array = null): String {
          return Localizer.string('BuildingSelectedSidebar', key, params);
-      }
-
-      private function queueList_dragStartHandler(event: DragEvent): void {
-         queueList.dropEnabled = true;
-         queueList.dragMoveEnabled = true;
       }
 
       private function queueList_creationCompleteHandler(event: FlexEvent): void {
@@ -268,7 +264,7 @@
                              useVirtualLayout="false"
                              rollOverColor="#0f0f0f" selectionColor="#0f0f0f" 
                              dragEnabled="true" borderVisible="false" 
-                             dragStart="queueList_dragStartHandler(event)"
+                             dragStart="bSidebar.queueList_dragStartHandler(event)"
                              creationComplete="queueList_creationCompleteHandler(event)"
                              contentBackgroundAlpha="0"
                              dragComplete="bSidebar.queueList_dragCompleteHandler(event)"

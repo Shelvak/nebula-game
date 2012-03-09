@@ -78,14 +78,7 @@ package models.building.events
        */
       public static const TYPE_CHANGE:String="typeChange";
       
-      /**
-      * Dispatched when <code>BuildingFacilities</code> finishes creating it's
-      * elements list, building sidebar handles this event and selects first facility
-      * 
-      * @eventType facilitiesListCreated
-      */
-      public static const FACILITIES_LIST_CREATED:String="facilitiesListCreated";
-      
+
       /**
        * Dispatched when <code>BUILDINGS|UPDATED</code> is received, <code>FacilitiesElement</code>
        * refreshes it's state on this event

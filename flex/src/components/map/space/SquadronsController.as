@@ -120,8 +120,8 @@ package components.map.space
       /* ######################## */
       
       
-      private var _squads:ArrayCollection = new ArrayCollection(),
-                  _routes:ArrayCollection = new ArrayCollection();
+      private var _squads:ArrayCollection = new ArrayCollection();
+      private var _routes:ArrayCollection = new ArrayCollection();
       
       private function getFilterByModel(squadM:MSquadron) : Function {
          return function(component:*) : Boolean { return squadM.equals(component.squadron) };
@@ -129,27 +129,22 @@ package components.map.space
       private function getFilterByLocation(loc:LocationMinimal) : Function {
          return function(squadC:CSquadronMapIcon) : Boolean { return squadC.currentLocation.equals(loc) };
       }
-      
-      
-      private function getCRoute(squadM:MSquadron) : CRoute
-      {
-         try
-         {
-            return CRoute(filter(_routes, getFilterByModel(squadM)).getItemAt(0));
+
+      private function getCRoute(squadM: MSquadron): CRoute {
+         const routeC: IList = filter(_routes, getFilterByModel(squadM));
+         if (routeC.length > 0) {
+            return CRoute(routeC.getItemAt(0));
          }
-         catch (error:RangeError) {}
          return null;
       }
-      
-      
-      private function getCSquadron(squadM:MSquadron) : CSquadronMapIcon
-      {
-         return CSquadronMapIcon(filter(_squads, getFilterByModel(squadM)).getItemAt(0));
+
+      private function getCSquadron(squadM: MSquadron): CSquadronMapIcon {
+         return CSquadronMapIcon(
+            filter(_squads, getFilterByModel(squadM)).getItemAt(0)
+         );
       }
-      
-      
-      internal function getCSquadronsIn(location:LocationMinimal) : ListCollectionView
-      {
+
+      internal function getCSquadronsIn(location: LocationMinimal): ListCollectionView {
          return filter(_squads, getFilterByLocation(location));
       }
       

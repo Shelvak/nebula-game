@@ -1406,6 +1406,17 @@
     <label.tip value="TIP:"/>
     <label.pleaseWait value="Preloading images. Please stand by." />
     <label.progress value="Loading {0}%"/>
+    <loadModule.failPopup.retryLabel>
+      Retry indefinitely
+    </loadModule.failPopup.retryLabel>
+    <loadModule.failPopup.title>
+      Download failed
+    </loadModule.failPopup.title>
+    <loadModule.failPopup.message>
+      Downloading of module {0} have failed. This is probably due to
+      poor connection quality. Would you like to retry until all modules are
+      downloaded successfully?
+    </loadModule.failPopup.message>
   </LoadingScreen>
   
   <Tips>

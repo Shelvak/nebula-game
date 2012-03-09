@@ -8,19 +8,15 @@
    
    <fx:Script>
       <![CDATA[
-      import com.developmentarc.core.utils.EventBroker;
-
       import components.credits.AccelerateSelector;
       import components.popups.ActionConfirmationPopup;
 
       import config.Config;
 
-      import utils.ApplicationLocker;
+      import models.building.Building;
 
       import controllers.buildings.BuildingsCommand;
       import controllers.objects.ObjectClass;
-
-      import globalevents.GCreditEvent;
 
       import models.parts.events.UpgradeEvent;
       import models.resource.Resource;
@@ -48,7 +44,7 @@
 
       public function set unitModel(value: Unit): void {
          if (_unitModel != value) {
-            if (_unitModel != null) {
+            if (_unitModel != null && _unitModel.upgradePart != null) {
                _unitModel.upgradePart.removeEventListener(
                        UpgradeEvent.UPGRADE_PROGRESS,
                        model_upgradeProgressHandler
@@ -59,7 +55,7 @@
             if (_unitModel != null) {
                _unitModel.upgradePart.addEventListener(
                        UpgradeEvent.UPGRADE_PROGRESS,
-                       model_upgradeProgressHandler
+                       model_upgradeProgressHandler, false, 0, true
                );
                fade.play([lights]);
             }
@@ -115,13 +111,20 @@
          accelerator.popUp = speedPopUp;
          speedPopUp.confirmButtonEnabled = false;
          speedPopUp.confirmButtonClickHandler = function(): void {
-            if (accelerator.hasEnoughCredits()) {
-               new BuildingsCommand(BuildingsCommand.ACCELERATE_CONSTRUCTOR,
-                       {'id': ML.latestPlanet.getBuildingByConstructable(_unitModel.id, ObjectClass.UNIT).id,
-                          'index': accelerator.selectedAccelerateType}).dispatch();
-            }
-            else {
-               UrlNavigate.getInstance().showBuyCreds();
+            const building: Building =
+                     ML.latestPlanet.getBuildingByConstructable(
+                        _unitModel.id, ObjectClass.UNIT
+                     );
+            if (building != null) {
+               if (accelerator.hasEnoughCredits()) {
+                  new BuildingsCommand(
+                     BuildingsCommand.ACCELERATE_CONSTRUCTOR, {
+                        'id': building.id,
+                        'index': accelerator.selectedAccelerateType}).dispatch();
+               }
+               else {
+                  UrlNavigate.getInstance().showBuyCreds();
+               }
             }
          }
          speedPopUp.addElement(accelerator);

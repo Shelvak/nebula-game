@@ -62,7 +62,7 @@ package components.movement.speedup
       [Bindable(event="arrivalTimeChange")]
       public function get label_arrivesAt(): String {
          return Localizer.string(
-            "Movement", "speedup.label.arrivesAt", [arrivalEvent.occuresAtString]
+            "Movement", "speedup.label.arrivesAt", [arrivalEvent.occuresAtString()]
          );
       }
 
