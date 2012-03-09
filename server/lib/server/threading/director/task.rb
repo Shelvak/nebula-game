@@ -1,8 +1,8 @@
 class Threading::Director::Task
   DEADLOCK_ERROR =
     "ActiveRecord::JDBCError: Deadlock found when trying to get lock"
-  MAX_RETRIES = 10
-  SLEEP_RANGE = 10..500
+  MAX_RETRIES = 20
+  SLEEP_RANGE = 50..200
 
   def initialize(description, &block)
     @description = description
@@ -28,7 +28,6 @@ class Threading::Director::Task
         yield
       end
     rescue ActiveRecord::StatementInvalid => e
-      LOGGER.error e.message
       if e.message.starts_with?(DEADLOCK_ERROR) && current_retry < MAX_RETRIES
         current_retry += 1
 
