@@ -57,7 +57,7 @@ class RaidSpawner
   # Return array of built (but not saved) units.
   def units
     definitions = unit_counts
-    galaxy_id = @planet.solar_system.galaxy_id
+    galaxy_id = without_locking { @planet.solar_system.galaxy_id }
 
     units = []
     definitions.each do |type, count, flank|
@@ -143,15 +143,19 @@ class RaidSpawner
 
   # Has the apocalypse started?
   def apocalypse?
-    @_apocalypse ||= @planet.solar_system.galaxy.apocalypse_started?
+    @_apocalypse ||= without_locking do
+      @planet.solar_system.galaxy.apocalypse_started?
+    end
   end
 
   # Current apocalypse day.
   def apocalypse_raid_arg
-    @planet.solar_system.galaxy.apocalypse_day(@planet.next_raid_at)
+    without_locking do
+      @planet.solar_system.galaxy.apocalypse_day(@planet.next_raid_at)
+    end
   end
 
   def battleground?
-    @_battleground ||= @planet.solar_system.battleground?
+    @_battleground ||= without_locking { @planet.solar_system.battleground? }
   end
 end

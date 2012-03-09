@@ -218,8 +218,14 @@ class DispatcherEventHandler
       filter
     )
   end
-  
-  def dispatcher; Celluloid::Actor[:dispatcher]; end
+
+  # Buffer messages until commit instead of dispatching them right now.
+  #
+  # This allows us to restart tasks and not flood client with messages that
+  # should have never been dispatched.
+  #
+  # TODO: spec
+  def dispatcher; DispatcherEventHandler::Buffer; end
 
   def debug(message, &block); self.class.debug(message, &block); end
 

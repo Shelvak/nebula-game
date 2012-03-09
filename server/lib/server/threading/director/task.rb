@@ -27,6 +27,7 @@ class Threading::Director::Task
       ActiveRecord::Base.transaction(:joinable => false) do
         yield
       end
+      DispatcherEventHandler::Buffer.commit!
     rescue ActiveRecord::StatementInvalid => e
       if e.message.starts_with?(DEADLOCK_ERROR) && current_retry < MAX_RETRIES
         current_retry += 1

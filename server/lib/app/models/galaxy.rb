@@ -245,14 +245,16 @@ class Galaxy < ActiveRecord::Base
   # wormholes in the galaxy.
   def spawn_convoy!(source=nil, target=nil)
     if source.nil? && target.nil?
-      total = solar_systems.wormhole.count
+      total = without_locking { solar_systems.wormhole.count }
       return if total < 2
     end
 
     CONFIG.with_set_scope(ruleset) do
       get_wormhole = lambda do
-        row = solar_systems.wormhole.select("x, y").limit("#{rand(total)}, 1").
-          c_select_one
+        row = without_locking do
+          solar_systems.wormhole.select("x, y").limit("#{rand(total)}, 1").
+            c_select_one
+        end
 
         GalaxyPoint.new(id, row["x"], row["y"])
       end

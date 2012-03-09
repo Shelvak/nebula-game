@@ -45,7 +45,7 @@ class Wreckage < ActiveRecord::Base
       when Location::SOLAR_SYSTEM
         # Convert +LocationPoint+ to +SolarSystemPoint+ and return
         # #galaxy_id
-        location.object.galaxy_id
+        without_locking { location.object.galaxy_id }
       else
         raise GameLogicError.new("Cannot create Wreckage in #{location}!")
       end

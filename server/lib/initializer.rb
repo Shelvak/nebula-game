@@ -362,6 +362,15 @@ class ActiveRecord::Relation
   end
 end
 
+# Disables SQL locking for this thread in given block. Only use this on
+# read-only operations!
+def without_locking
+  Parts::WithLocking.locking = false
+  value = yield
+  Parts::WithLocking.locking = true
+  value
+end
+
 ActiveSupport::JSON.backend = :json_gem
 ActiveSupport.use_standard_json_time_format = true
 
