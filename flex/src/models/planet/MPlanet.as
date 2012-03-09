@@ -813,12 +813,7 @@ package models.planet
       [Bindable(event="unitUpgradeStarted")]
       public function getUnitById(id: int): Unit
       {
-         return Collections.findFirst(units,
-            function(unit:Unit) : Boolean
-            {
-               return unit.id == id;
-            }
-         );
+         return ML.units.find(id);
       }
 
       /* units cache */

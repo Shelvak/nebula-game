@@ -8,22 +8,15 @@
    
    <fx:Script>
       <![CDATA[
-      import com.developmentarc.core.utils.EventBroker;
-
       import components.credits.AccelerateSelector;
       import components.popups.ActionConfirmationPopup;
 
       import config.Config;
 
-      import models.battle.BBuilding;
       import models.building.Building;
-
-      import utils.ApplicationLocker;
 
       import controllers.buildings.BuildingsCommand;
       import controllers.objects.ObjectClass;
-
-      import globalevents.GCreditEvent;
 
       import models.parts.events.UpgradeEvent;
       import models.resource.Resource;
@@ -51,7 +44,7 @@
 
       public function set unitModel(value: Unit): void {
          if (_unitModel != value) {
-            if (_unitModel != null) {
+            if (_unitModel != null && _unitModel.upgradePart != null) {
                _unitModel.upgradePart.removeEventListener(
                        UpgradeEvent.UPGRADE_PROGRESS,
                        model_upgradeProgressHandler
@@ -62,7 +55,7 @@
             if (_unitModel != null) {
                _unitModel.upgradePart.addEventListener(
                        UpgradeEvent.UPGRADE_PROGRESS,
-                       model_upgradeProgressHandler
+                       model_upgradeProgressHandler, false, 0, true
                );
                fade.play([lights]);
             }

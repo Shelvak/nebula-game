@@ -24,12 +24,15 @@
       import globalevents.GTechnologiesEvent;
       import globalevents.GlobalEvent;
 
+      import models.ModelsCollection;
+
       import models.building.Building;
       import models.building.events.BuildingEvent;
       import models.constructionqueueentry.ConstructionQueueEntry;
       import models.unit.Unit;
 
       import mx.collections.ArrayCollection;
+      import mx.controls.Alert;
       import mx.core.IUIComponent;
       import mx.core.UIComponent;
       import mx.events.DragEvent;
@@ -292,6 +295,12 @@
          ).dispatch();
       }
 
+      private function getProvider(_list: ArrayCollection, 
+                                   _constructableId: int): ArrayCollection
+      {
+         return _constructableId > 0 ? _list : null;
+      }
+
       protected function btnHidden_clickHandler(event: Event): void {
          new BuildingsCommand(BuildingsCommand.SET_BUILD_HIDDEN,
                  {
@@ -405,8 +414,10 @@
                         source="{IMG.getImage(AssetNames.UNITS_SCREEN_IMAGE_FOLDER + 'top_center')}"/>
          <s:Group left="0" right="0" height="100%">
             <s:Group left="0" right="0" height="100%">
-               <facilities:BuildElement unitModel="{ML.latestPlanet.getUnitById(_facility.constructableId)}" height="100%"
-                                        visible="{_facility.constructableType != null}" id="buildElem"
+               <facilities:BuildElement unitModel="{_facility.constructableId > 0
+                                           ? ML.latestPlanet.getUnitById(_facility.constructableId)
+                                           : null}" height="100%"
+                                        visible="{_facility.constructableId > 0}" id="buildElem"
                                         left="0" top="6" facilityId="{_facility.id}" />
                <s:Group id="queueGroup" left="{buildElem.visible?buildElem.width:0}" height="100%" right="0">
                   <base:Scroller horizontalScrollPolicy="off" verticalScrollPolicy="off"
@@ -415,7 +426,7 @@
                         <s:List top="6" bottom="6" id="content" minWidth="{queueGroup.width -(previousQueue.visible?48:0)}"
                                 maxWidth="{_facility.constructionQueueEntries.length == 0? queueGroup.width : UIComponent.DEFAULT_MAX_WIDTH}"
                                 width="{Math.max(queueLayout.columnCount * 167, queueGroup.width -(previousQueue.visible?48:0))}"
-                                dataProvider="{_facility.constructionQueueEntries}"
+                                dataProvider="{getProvider(_facility.constructionQueueEntries, _facility.constructableId)}"
                                 skinClass="components.skins.ListNonScrollableSkin"
                                 useVirtualLayout="false" contentBackgroundColor="#00ff22"
                                 contentBackgroundAlpha="0" dropEnabled="{isMoving}"
