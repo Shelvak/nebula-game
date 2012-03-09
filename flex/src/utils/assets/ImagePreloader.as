@@ -2,7 +2,7 @@ package utils.assets
 {
    import assets.AssetsBundle;
 
-   import components.popups.ErrorPopup;
+   import components.popups.ModuleLoadFailPopup;
 
    import config.Config;
 
@@ -345,9 +345,7 @@ package utils.assets
                throwModuleDownloadFailedError();
             }
             else {
-               const popup:ErrorPopup = new ErrorPopup();
-               popup.showCancelButton = false;
-               popup.showRetryButton = true;
+               const popup:ModuleLoadFailPopup = new ModuleLoadFailPopup();
                popup.title = getString("title");
                popup.message = getString("message", [_currentModule]);
                popup.retryButtonLabel = getString("retryLabel");

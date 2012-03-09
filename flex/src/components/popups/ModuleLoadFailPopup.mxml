@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<popups:BasePopup xmlns:fx="http://ns.adobe.com/mxml/2009"
+                  xmlns:s="library://ns.adobe.com/flex/spark"
+                  xmlns:popups="components.popups.*">
+   <fx:Declarations>
+      <s:Button id="btnRetry" label="{retryButtonLabel}"/>
+   </fx:Declarations>
+   <fx:Script>
+      <![CDATA[
+      [Bindable]
+      public var retryButtonLabel: String = "";
+
+      public var retryButtonClickHandler: Function;
+
+      [Bindable]
+      public var message: String = "";
+
+      protected override function initializationComplete(): void {
+         super.initializationComplete();
+         addActionButton(btnRetry, retryButtonClickHandler);
+      }
+      ]]>
+   </fx:Script>
+   <s:Label left="0" right="0" lineBreak="toFit"
+            text="{message}" textAlign="left"/>
+</popups:BasePopup>
