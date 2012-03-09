@@ -40,8 +40,8 @@ package models.time
       }
       
       [Bindable(event="occuresInChange")]
-      public function get occuresInString() : String {
-         return DateUtil.secondsToHumanString(occuresIn, 2);
+      public function occuresInString(timeParts: int = 2): String {
+         return DateUtil.secondsToHumanString(occuresIn, timeParts);
       }
       
       change_flag var occuresAt:Boolean = true;
@@ -50,8 +50,8 @@ package models.time
       }
       
       [Bindable(event="occuresAtChange")]
-      public function get occuresAtString() : String {
-         return DateUtil.formatShortDateTime(occuresAt);
+      public function occuresAtString(includeSeconds: Boolean = false): String {
+         return DateUtil.formatShortDateTime(occuresAt, includeSeconds);
       }
       
       

@@ -1462,6 +1462,7 @@
   <Formatters>
     <date.shortDate value="YYYY-MM-DD" />
     <date.shortDateTime value="YYYY-MM-DD JJ:NN" />
+    <date.shortDateTimeWithSeconds value="YYYY-MM-DD JJ:NN:SS" />
   </Formatters>
 
   <Galaxy>

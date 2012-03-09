@@ -440,7 +440,7 @@ package components.movement
             && _squadron.isFriendly
             && _squadron.route != null) {
             lblArrivesIn.text = getString
-               ("label.location.arrivesIn", [_squadron.route.arrivalEvent.occuresInString]);
+               ("label.location.arrivesIn", [_squadron.route.arrivalEvent.occuresInString(3)]);
          }
       }
       

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <popups:ActionConfirmationPopup xmlns:fx="http://ns.adobe.com/mxml/2009" 
                                 xmlns:s="library://ns.adobe.com/flex/spark" 
-                                xmlns:mx="library://ns.adobe.com/flex/mx"
                                 xmlns:popups="components.popups.*"
                                 title="{getString('title.popup')}"
                                 confirmButtonEnabled="false"
@@ -94,7 +93,7 @@
       <s:layout>
          <s:VerticalLayout horizontalAlign="center" gap="0"/>
       </s:layout>
-      <s:Label styleName="h1" text="{ANNOUNCEMENT.event.occuresAtString}"/>
-      <s:Label styleName="h2" text="{ANNOUNCEMENT.event.occuresInString}"/>
+      <s:Label styleName="h1" text="{ANNOUNCEMENT.event.occuresAtString()}"/>
+      <s:Label styleName="h2" text="{ANNOUNCEMENT.event.occuresInString()}"/>
    </s:Group>
 </popups:ActionConfirmationPopup>

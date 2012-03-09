@@ -48,7 +48,7 @@ package models.time
       public override function get occuresIn() : Number
       {
          return _occuresIn;
-      };
+      }
       
       
       [Bindable(event="occuresAtChange")]
