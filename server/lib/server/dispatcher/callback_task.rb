@@ -7,7 +7,7 @@ module Dispatcher::CallbackTask
           # Wrap our request in correct ruleset.
           CONFIG.with_set_scope(callback.ruleset) do
             # Ensure that if anything bad happens it would be rollbacked.
-            ActiveRecord::Base.transaction(:joinable => false) do
+            Threading::Director::Task.retrying_transaction(worker_name) do
               object = callback.object! or return
 
               # Destroy this callback in transaction. If anything fails while

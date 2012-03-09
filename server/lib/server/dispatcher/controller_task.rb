@@ -13,7 +13,7 @@ module Dispatcher::ControllerTask
 
           CONFIG.with_set_scope(ruleset) do
             # Ensure that if anything bad happens it would be rollbacked.
-            ActiveRecord::Base.transaction(:joinable => false) do
+            Threading::Director::Task.retrying_transaction(worker_name) do
               controller_class.send(action_method, message)
             end
           end

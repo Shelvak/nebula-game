@@ -24,10 +24,10 @@ class Dispatcher
   # Initialize the dispatcher.
   def initialize
     @directors = {
-      #:chat => Threading::Director.new("chat", 1),
-      #:server => Threading::Director.new("server", 1),
-      #:galaxy => Threading::Director.new("galaxy", 1),
-      :player => Threading::Director.new("player", 1),
+      :chat => Threading::Director.new("chat", 1),
+      :server => Threading::Director.new("server", 2),
+      :galaxy => Threading::Director.new("galaxy", 2),
+      :player => Threading::Director.new("player", 10),
     }
     @directors.each do |name, director|
       current_actor.link director
@@ -364,26 +364,23 @@ class Dispatcher
   def dispatch_task(scope, task)
     typesig binding, Scope, Threading::Director::Task
 
-    #if scope.chat?
-    #  name = :chat
-    #elsif scope.galaxy?
-    #  name = :galaxy
-    #elsif scope.player?
-    #  name = :player
-    #elsif scope.server?
-    #  name = :server
-    #else
-    #  raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
-    #end
-    #
-    #director = @directors[name]
-    director = @directors[:player]
+    if scope.chat?
+      name = :chat
+    elsif scope.galaxy?
+      name = :galaxy
+    elsif scope.player?
+      name = :player
+    elsif scope.server?
+      name = :server
+    else
+      raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
+    end
+
+    director = @directors[name]
     raise "Missing director #{name.inspect}!" if director.nil?
 
-    #info "Dispatching to #{name} director: scope=#{scope} task=#{task}"
-    info "Dispatching to director: scope=#{scope} task=#{task}"
-    #director.work!(scope.ids, task)
-    director.work!([nil], task)
+    info "Dispatching to #{name} director: scope=#{scope} task=#{task}"
+    director.work!(scope.ids, task)
   end
 
   # Check if one of the given push filters match for current client.
