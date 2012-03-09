@@ -4,6 +4,8 @@ package controllers.units.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
 
+   import models.factories.NotificationFactory;
+
    import models.notification.Notification;
 
    /**
@@ -13,6 +15,7 @@ package controllers.units.actions
    {
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
+         NotificationFactory.fromObject(cmd.parameters.notification);
          for each (var alert: Notification in ML.notificationAlerts)
          {
             if (alert.id == cmd.parameters.notificationId)
