@@ -11,14 +11,18 @@ module DispatcherEventHandler::Buffer
     # For Dispatcher interchangeability.
     alias :push_to_player! :push_to_player
 
-    def commit!
+    def wrap
+      LOGGER.debug "Entering wrapped block.", TAG
+      buffer.clear
+
+      yield
+
       LOGGER.debug "Commiting buffer of #{buffer.size} entries.", TAG
+      
       dispatcher = Celluloid::Actor[:dispatcher]
       buffer.each do |args|
         dispatcher.push_to_player!(*args)
       end
-      LOGGER.debug "Clearing #{buffer.size} entries.", TAG
-      buffer.clear
     end
 
     private
