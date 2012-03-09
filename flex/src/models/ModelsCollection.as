@@ -1,7 +1,6 @@
 package models
 {
    import mx.collections.ArrayCollection;
-   import mx.collections.ArrayList;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
 
@@ -44,12 +43,7 @@ package models
          return _modelsHash[id];
       }
 
-      /**
-       * @see mx.collections.ArrayCollection#ArrayCollection()
-       * @see ModelsCollection
-       */
-      public function ModelsCollection(source:Array = null)
-      {
+      public function ModelsCollection(source: Array = null) {
          super(source);
          for each (var model: BaseModel in source) {
             addModelToHash(model);
@@ -64,32 +58,25 @@ package models
             _modelsHash = new Object();
          }
       }
-      
-      
+
       [Bindable(event="collectionChange")]
-      public function get isEmpty() : Boolean
-      {
+      public function get isEmpty(): Boolean {
          return length == 0;
       }
-      
-      
+
       /**
        * Returns first model in this collection or <code>null</code> if its is empty.
        */
-      public function getFirst() : *
-      {
+      public function getFirst(): * {
          return !isEmpty ? getItemAt(0) : null;
       }
-      
-      
+
       /**
        * Returns last model in this collection or <code>null</code> if its is empty.
        */
-      public function getLast() : *
-      {
+      public function getLast(): * {
          return !isEmpty ? getItemAt(length - 1) : null;
       }
-
 
       /**
        * Looks for model with given id and returns that model or <code>null</code> if one could not
@@ -99,32 +86,21 @@ package models
          return getModelFromHash(Objects.paramIsId("id", id));
       }
 
-
-      /**
-       * Adds the given model to this collection or updates a model already in the collection
-       * (uses <code>equals()</code> method).
-       * 
-       * @throws Error if <code>item</code> is not a <code>BaseModel</code>
-       * 
-       * @see mx.collections.ArrayCollection#addItemAt()
-       */
-      public override function addItemAt(item:Object, index:int) : void {
-         checkItemType(item);
+      public override function addItemAt(item: Object, index: int): void {
+         Objects.requireType(item, BaseModel);
          addModelToHash(BaseModel(item));
          super.addItemAt(item, index);
       }
 
-      public override function removeItemAt(index:int): Object {
+      public override function removeItemAt(index: int): Object {
          const model: BaseModel = BaseModel(super.removeItemAt(index));
          removeModelFromHash(model);
          return model;
       }
-      
-      
+
       /**
-       * 
-       * @param model
-       * @return <code>true</code> if model has been added or <code>false</code> if updated 
+       * @return <code>true</code> if model has been added or <code>false</code>
+       * if updated
        */      
       public function addOrUpdate(model:Object, type: Class) : Boolean
       {
@@ -138,99 +114,70 @@ package models
             return false;
          }
       }
-      
-      
+
       /**
-       * Looks for exact (uses <code>equals()</code> method) medel as the given one and then
-       * updates it (calls <code>copyProperties()</code>).
-       * 
-       * @throws ArgumentError if model to update could not be found
+       * Looks for model with specific ID as the given one and then
+       * updates it (calls <code>Objects.update()</code>).
        */
-      public function update(model:Object) : void
-      {
-         var modelToUpdate:Object = find(model.id);
-         if (modelToUpdate)
-         {
+      public function update(model: Object): void {
+         const modelToUpdate: Object = find(model.id);
+         if (modelToUpdate) {
             Objects.update(modelToUpdate, model);
          }
-         else
-         {
-            throw new ArgumentError("Could not find " + 'model' + ": can't update");
+         else {
+            throw new ArgumentError(
+               "Could not find " + 'model' + ": can't update"
+            );
          }
       }
-      
-      
+
       /**
        * Removes model with given id or throws error if such model does not exist.
        */
-      public function remove(id:int, silent:Boolean = false) : *
-      {
+      public function remove(id: int, silent: Boolean = false): * {
          return Collections.removeFirst(
             this,
-            function(model:BaseModel) : Boolean {
+            function (model: BaseModel): Boolean {
                return model.id == id;
             },
             silent
          );
       }
-      
-      
+
       /**
-       * Removes model equal to (uses <code>equals()</code> method) the given one or throws error if
-       * such model does not exist.
+       * Removes model equal to (uses <code>equals()</code> method) the given one.
        */
       public function removeExact(model:BaseModel, silent:Boolean = false) : * {
          return Collections.removeFirstEqualTo(this, model, silent);
       }
-      
-      
+
       /**
        * Will return a collection not bound to this one and containing only those models for which
        * <code>filterFunction</code> returned <code>true</code>.
        */
-      public function filter(filterFunction:Function) : ModelsCollection
-      {
-         var source:Array = new Array();
-         for each (var model:BaseModel in this)
-         {
-            if (filterFunction(model))
-            {
+      public function filter(filterFunction: Function): ModelsCollection {
+         const source: Array = new Array();
+         for each (var model: BaseModel in this) {
+            if (filterFunction(model)) {
                source.push(model);
             }
          }
          return new ModelsCollection(source);
       }
-      
-      
+
       /**
        * Shuffles this collection.
        */
-      public function shuffle(random:Rndm = null) : void
-      {
-         if (random == null)
-         {
+      public function shuffle(random: Rndm = null): void {
+         if (random == null) {
             random = Rndm.instance;
          }
-         
-         for (var i:int = 0; i < length; i++)
-         {
-            var randomNumber:int = random.integer(0, length - 1);
-            var tmp:Object = getItemAt(i);
+
+         for (var i: int = 0; i < length; i++) {
+            var randomNumber: int = random.integer(0, length - 1);
+            var tmp: Object = getItemAt(i);
             setItemAt(getItemAt(randomNumber), i);
             setItemAt(tmp, randomNumber);
-         }
-      }
-      
-      /* ############### */
-      /* ### HELPERS ### */
-      /* ############### */
-      
-      
-      private function checkItemType(item:Object) : void
-      {
-         if ( !(item is BaseModel) )
-         {
-            throw new Error(item + " is not an instance of BaseModel");
          }
       }
    }
