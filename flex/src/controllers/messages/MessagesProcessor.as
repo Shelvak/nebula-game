@@ -103,7 +103,7 @@ package controllers.messages
                      deferredToProcess = _orderOfNotYetReceivedMessages[0];
                      deferredRMO = _deferredRMOs[deferredToProcess];
                      if (deferredRMO != null) {
-                        _orderOfNotYetReceivedMessages.unshift();
+                        _orderOfNotYetReceivedMessages.shift();
                         delete _deferredRMOs[deferredToProcess];
                         logger.debug(
                            "@process() [order enforced]: Processing deferred: {0}",
