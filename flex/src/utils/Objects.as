@@ -1088,6 +1088,7 @@ package utils
                      try {
                         setProp(createImpl(propClass, propValue, performMapping(aggrData, metaPropsMap), null, rawCreation));
                      }
+                     // TODO: this does not work after preprocessor
                      catch (err:MappingError) {
                         pushMappingError(err);
                      }
@@ -1121,7 +1122,8 @@ package utils
                   try {
                      setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, rawCreation));
                   }
-                  catch (err:MappingError) {
+                  // TODO: this does not work after preprocessor
+                  catch (err: MappingError) {
                      pushMappingError(err);
                   }
                   continue;
@@ -1165,6 +1167,7 @@ package utils
                   try {
                      setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, rawCreation));
                   }
+                  // TODO: this does not work after preprocessor
                   catch (err:MappingError) {
                      pushMappingError(err);
                   }

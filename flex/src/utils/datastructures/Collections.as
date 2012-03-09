@@ -32,8 +32,7 @@ package utils.datastructures
             try {
                list.removeAll();
             }
-            // TODO: how do we handle this when RangeError is wrapped?
-            catch (err: RangeError) {
+            catch (err: Error) {
                logger.error(
                   "@cleanListOfICleanables: Error while removing all items: {0}",
                      err.message

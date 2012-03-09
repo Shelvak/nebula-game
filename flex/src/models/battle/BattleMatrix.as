@@ -67,6 +67,8 @@ package models.battle
          {
          (getItemAt(x) as ArrayCollection).setItemAt(meaning, y);
          }
+         // since all items are ArrayCollections form flex this works
+         // with preprocessor
          catch (err: RangeError)
          {
             throw new RangeError('rowCount: ' + rowCount + ' columnCount: ' + columnCount + ' x: ' + 
