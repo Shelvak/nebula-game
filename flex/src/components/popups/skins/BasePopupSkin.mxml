@@ -12,19 +12,6 @@
       [HostComponent("components.popups.BasePopup")]
    </fx:Metadata>
    
-   <fx:Script>
-      <![CDATA[
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         
-         
-         private static function getImage(name:String) : BitmapData
-         {
-            return ImagePreloader.getInstance().getImage(name);
-         }
-      ]]>
-   </fx:Script>
-   
    <s:states>
       <s:State name="normal" />
       <s:State name="disabled" />
@@ -49,7 +36,7 @@
       
       <!-- layer 2: background -->
       <s:BitmapImage left="1" right="1" top="1" bottom="1" fillMode="repeat"
-                     source="{getImage(AssetNames.BACKGROUND_IMAGE)}"/>
+                     source="@Embed(source='/embed/assets/main_background.png')"/>
       
       <!-- layer 3: contents -->
       <s:Group left="1" right="1" top="1" bottom="1">
@@ -64,10 +51,10 @@
                <s:layout>
                   <s:HorizontalLayout gap="0"/>
                </s:layout>
-               <s:BitmapImage source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'popup_title_left')}"/>
-               <s:BitmapImage source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'popup_title_center')}"
+               <s:BitmapImage source="@Embed(source='/embed/assets/crash_title_left.png')"/>
+               <s:BitmapImage source="@Embed(source='/embed/assets/crash_title_center.png')"
                               fillMode="repeat" width="100%"/>
-               <s:BitmapImage source="{getImage(AssetNames.UI_IMAGES_FOLDER + 'popup_title_right')}"/>
+               <s:BitmapImage source="@Embed(source='/embed/assets/crash_title_right.png')"/>
             </s:Group>
             <!-- layer 3: text -->
             <s:Label id="titleDisplay" maxDisplayedLines="1"
