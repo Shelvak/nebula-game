@@ -216,10 +216,13 @@ package utils.datastructures
          Objects.paramNotNull("list", list);
          Objects.paramNotNull("testFunction", testFunction);
          const itemIndex: int = findFirstIndex(list, testFunction);
-         if (itemIndex < 0 && !silent) {
-            throw new Error(
-               "Could not find an item to remove (using testFunction)"
-            );
+         if (itemIndex < 0) {
+            if (!silent) {
+               throw new Error(
+                  "Could not find an item to remove (using testFunction)"
+               );
+            }
+            return null;
          }
          return list.removeItemAt(itemIndex);
       }
@@ -241,8 +244,11 @@ package utils.datastructures
          Objects.paramNotNull("list", list);
          Objects.paramNotNull("example", example);
          const itemIndex: int = findFirstIndexEqualTo(list, example);
-         if (itemIndex < 0 && !silent) {
-            throw new Error("Could not find an item equal to " + example);
+         if (itemIndex < 0) {
+            if (!silent) {
+               throw new Error("Could not find an item equal to " + example);
+            }
+            return null;
          }
          return list.removeItemAt(itemIndex);
       }
