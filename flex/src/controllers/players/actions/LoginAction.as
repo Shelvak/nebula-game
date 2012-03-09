@@ -43,6 +43,18 @@ package controllers.players.actions
       
       
       public override function applyClientAction(cmd:CommunicationCommand) : void {
+         MessagesProcessor.getInstance().enforceIncomingMessagesOrder([
+            GameCommand.CONFIG,
+            PlayersCommand.SHOW,
+            PlanetsCommand.PLAYER_INDEX,
+            TechnologiesCommand.INDEX,
+            QuestsCommand.INDEX,
+            NotificationsCommand.INDEX,
+            RoutesCommand.INDEX,
+            PlayerOptionsCommand.SHOW,
+            ChatCommand.INDEX,
+            GalaxiesCommand.SHOW
+         ]);
          sendMessage(new ClientRMO({
             "webPlayerId": SI.webPlayerId,
             "serverPlayerId": SI.serverPlayerId,
@@ -52,18 +64,6 @@ package controllers.players.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void {
          if (cmd.parameters["success"]) {
-            MessagesProcessor.getInstance().enforceIncomingMessagesOrder([
-               GameCommand.CONFIG,
-               PlayersCommand.SHOW,
-               PlanetsCommand.PLAYER_INDEX,
-               TechnologiesCommand.INDEX,
-               QuestsCommand.INDEX,
-               NotificationsCommand.INDEX,
-               RoutesCommand.INDEX,
-               PlayerOptionsCommand.SHOW,
-               ChatCommand.INDEX,
-               GalaxiesCommand.SHOW
-            ]);
             AM.loginSuccessful();
          }
          else {
