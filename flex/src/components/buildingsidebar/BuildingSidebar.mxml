@@ -535,7 +535,7 @@
                                .getItemIndex(tempElement) + 1;
                new ConstructionQueuesCommand(
                        ConstructionQueuesCommand.MOVE,
-                       {id: tempElement.id, position: newPosition}
+                       {id: tempElement.id, count: 1, position: newPosition}
                ).dispatch();
             }
          }
