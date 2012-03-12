@@ -439,8 +439,16 @@ package components.movement
             && _squadron != null
             && _squadron.isFriendly
             && _squadron.route != null) {
-            lblArrivesIn.text = getString
-               ("label.location.arrivesIn", [_squadron.route.arrivalEvent.occuresInString(3)]);
+            lblArrivesIn.text =
+               getString(
+                  "label.location.arrivesIn",
+                  [_squadron.route.arrivalEvent.occuresInString(3)]
+               )
+               + "\n" +
+               getString(
+                  "label.location.arrivesAt",
+                  [_squadron.route.arrivalEvent.occuresAtString(true)]
+               );
          }
       }
       

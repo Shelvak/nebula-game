@@ -1785,6 +1785,7 @@
     <label.location.source value="Iš:" />
     <label.location.target value="Į:" />
     <label.location.arrivesIn value="Atvyks po: {0}" />
+    <label.location.arrivesAt value="({0})" />
     <label.close value="Uždaryti" />
     <label.cancel value="Atšaukti" />
     <label.toSector value="Judėti į sektorių" />
