@@ -291,7 +291,7 @@ describe AlliancesController do
   describe "alliances|show" do
     before(:each) do
       @alliance = Factory.create(:alliance)
-      @players = (1..10).map do
+      @players = (1..10).map do |i|
         Factory.create(:player_for_ratings, :alliance => @alliance)
       end
 
@@ -454,7 +454,7 @@ describe AlliancesController do
     end
 
     it "should push alliances|show on success" do
-      should_push(AlliancesController::ACTION_SHOW, 'id' => @player.alliance_id)
+      should_push(AlliancesController::ACTION_SHOW, :id => @player.alliance_id)
       invoke @action, @params
     end
   end
@@ -505,8 +505,8 @@ describe AlliancesController do
     end
 
     it "should push alliances|show on success" do
-      should_push(AlliancesController::ACTION_SHOW, 'id' => @alliance.id)
       invoke @action, @params
+      should_have_pushed(AlliancesController::ACTION_SHOW, 'id' => @alliance.id)
     end
 
     it "should respond with error if technology is too low" do

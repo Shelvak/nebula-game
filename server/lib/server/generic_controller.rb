@@ -2,8 +2,8 @@ class GenericController
   ### Session variable keys ###
 
   S_KEY_RULESET = :ruleset
-  S_KEY_CURRENT_SS_ID = :current_ss_id
-  S_KEY_CURRENT_PLANET_ID = :current_planet_id
+  S_KEY_CURRENT_SS_ID = Dispatcher::S_KEY_CURRENT_SS_ID
+  S_KEY_CURRENT_PLANET_ID = Dispatcher::S_KEY_CURRENT_PLANET_ID
   S_KEY_CURRENT_PLANET_SS_ID = :current_planet_ss_id
 
   class << self

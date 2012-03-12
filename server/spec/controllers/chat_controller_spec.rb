@@ -17,7 +17,7 @@ describe ChatController do
       @hub.register(player)
     end
 
-    it_behaves_like "only push"
+    it_should_behave_like "with param options", :only_push => true
 
     it "should respond with channels" do
       push @action, @params
@@ -45,8 +45,8 @@ describe ChatController do
       @method = :push
     end
 
-    it_behaves_like "with param options", %w{channel player}
-    it_behaves_like "only push"
+    it_behaves_like "with param options", :required => %w{channel player},
+      :only_push => true
 
     it "should have channel name" do
       push @action, @params
@@ -72,8 +72,8 @@ describe ChatController do
       @method = :push
     end
 
-    it_behaves_like "with param options", %w{channel player}
-    it_behaves_like "only push"
+    it_behaves_like "with param options", :required => %w{channel player},
+      :only_push => true
 
     it "should have channel name" do
       push @action, @params
@@ -134,8 +134,8 @@ describe ChatController do
       @method = :push
     end
 
-    it_should_behave_like "only push"
-    it_should_behave_like "with param options", %w{until}
+    it_should_behave_like "with param options", :required => %w{until},
+      :only_push => true
 
     it "should respond with 'until'" do
       push @action, @params

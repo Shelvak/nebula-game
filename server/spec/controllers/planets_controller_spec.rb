@@ -12,11 +12,11 @@ end
 
 shared_examples_for "visible planet" do
   it "should set currently viewed planet" do
-    @controller.current_planet_id.should == @planet.id
+    current_planet_id.should == @planet.id
   end
 
   it "should set currently viewed planet ss id" do
-    @controller.current_planet_ss_id.should == @planet.solar_system_id
+    current_planet_ss_id.should == @planet.solar_system_id
   end
 
   it "should include tiles" do
@@ -92,15 +92,15 @@ describe PlanetsController do
       end
 
       it "should clear currently viewed solar system id if it is different" do
-        @controller.current_ss_id = -1
+        self.current_ss_id = -1
         invoke @action, @params
-        @controller.current_ss_id.should be_nil
+        current_ss_id.should be_nil
       end
 
       it "should keep currently viewed solar system id if it is same" do
-        @controller.current_ss_id = @planet.solar_system_id
+        self.current_ss_id = @planet.solar_system_id
         invoke @action, @params
-        @controller.current_ss_id.should == @planet.solar_system_id
+        current_ss_id.should == @planet.solar_system_id
       end
 
       describe "without owner attributes" do
@@ -154,20 +154,20 @@ describe PlanetsController do
     before(:each) do
       @action = "planets|unset_current"
       @params = {}
-      @controller.current_planet_id = 10
-      @controller.current_planet_ss_id = 100
+      self.current_planet_id = 10
+      self.current_planet_ss_id = 100
     end
 
     it_should_behave_like "only push"
 
     it "should unset current planet id" do
       push @action, @params
-      @controller.current_planet_id.should be_nil
+      self.current_planet_id.should be_nil
     end
 
     it "should unset current planet ss id" do
       push @action, @params
-      @controller.current_planet_ss_id.should be_nil
+      self.current_planet_ss_id.should be_nil
     end
   end
 
@@ -488,15 +488,15 @@ describe PlanetsController do
     end
     
     it "should push show action if current planet id == planet.id" do
-      @controller.current_planet_id = @planet.id
-      should_push PlanetsController::ACTION_SHOW, 'id' => @planet.id
+      self.current_planet_id = @planet.id
       invoke @action, @params
+      should_have_pushed PlanetsController::ACTION_SHOW, 'id' => @planet.id
     end
     
     it "should not push show if current planet id != planet.id" do
-      @controller.current_planet_id = @planet.id - 1
-      should_not_push PlanetsController::ACTION_SHOW, 'id' => @planet.id
+      self.current_planet_id = @planet.id - 1
       invoke @action, @params
+      should_have_not_pushed PlanetsController::ACTION_SHOW, 'id' => @planet.id
     end
   end
 end

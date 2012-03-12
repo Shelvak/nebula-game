@@ -14,7 +14,8 @@ describe CombatLogsController do
       @params = {'id' => @combat_log.sha1_id}
     end
 
-    it_behaves_like "with param options", %w{id}
+    it_should_behave_like "with param options", :required => %w{id},
+      :needs_login => false
 
     it "should return log" do
       invoke @action, @params

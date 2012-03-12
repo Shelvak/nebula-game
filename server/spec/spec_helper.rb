@@ -69,10 +69,12 @@ if $SPEC_INITIALIZED.nil?
       CONFIG.store(key, GameConfig::DEFAULT_SET, value)
     end
 
-    yield
-
-    old_values.each do |key, value|
-      CONFIG.store(key, GameConfig::DEFAULT_SET, value)
+    begin
+      yield
+    ensure
+      old_values.each do |key, value|
+        CONFIG.store(key, GameConfig::DEFAULT_SET, value)
+      end
     end
   end
 

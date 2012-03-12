@@ -148,9 +148,9 @@ describe GalaxiesController do
       @method = :push
     end
 
-    it_should_behave_like "with param options", %w{start}
-
-    it_should_behave_like "only push"
+    it_should_behave_like "with param options",
+      :required => %w{start},
+      :only_push => true
 
     it "should respond with start time" do
       push @action, @params

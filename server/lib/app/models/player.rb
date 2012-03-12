@@ -270,7 +270,8 @@ class Player < ActiveRecord::Base
         row['alliance'] = alliance_id \
           ? {'id' => alliance_id, 'name' => alliance_name} \
           : nil
-        row['last_seen'] = true if Celluloid::Actor[:dispatcher].connected?(row['id'])
+        row['last_seen'] = true \
+          if Celluloid::Actor[:dispatcher].player_connected?(row['id'])
         row['last_seen'] = Time.parse(row['last_seen']) \
           if row['last_seen'].is_a?(String)
         row['death_date'] = Time.parse(row['death_date']) \

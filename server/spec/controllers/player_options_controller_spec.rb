@@ -13,10 +13,9 @@ describe PlayerOptionsController do
     before(:each) do
       @action = "player_options|show"
       @params = {}
-      @method = :push
     end
 
-    it_should_behave_like "only push"
+    it_should_behave_like "with param options", :only_push => true
 
     it "should respond with player options" do
       push @action, @params

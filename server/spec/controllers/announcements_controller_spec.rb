@@ -21,7 +21,7 @@ describe AnnouncementsController do
     end
     
     it "should push it to logged in players" do
-      Dispatcher.instance.should_receive(:push_to_logged_in).
+      Celluloid::Actor[:dispatcher].should_receive(:push_to_logged_in!).
         with(AnnouncementsController::ACTION_NEW, 
           {'ends_at' => @ends_at, 'message' => @message})
       AnnouncementsController.set(@ends_at, @message)
@@ -50,9 +50,10 @@ describe AnnouncementsController do
       @method = :push
     end
     
-    it_behaves_like "with param options", %w{message ends_at}
-    it_behaves_like "only push"
-    
+    it_behaves_like "with param options",
+      :required => %w{message ends_at},
+      :only_push => true, :needs_login => true
+
     %w{message ends_at}.each do |attr|
       it "should respond with #{attr}" do
         push @action, @params

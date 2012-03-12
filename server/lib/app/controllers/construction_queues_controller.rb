@@ -31,7 +31,7 @@ class ConstructionQueuesController < GenericController
   # Parameters:
   #   * id - id of ConstructionQueueEntry
   #   * position - new element position.
-  #   * count - count to split of. If nil or equal to model count then
+  #   * count - count to split of. If equal to model count then
   #     entry is moved instead of splitting.
   #
   # Response: None
@@ -39,8 +39,9 @@ class ConstructionQueuesController < GenericController
   #
   ACTION_MOVE = 'construction_queues|move'
 
-  MOVE_OPTIONS = logged_in + required(:id => Fixnum, :position => Fixnum) +
-    valid(:count => Fixnum)
+  MOVE_OPTIONS = logged_in + required(
+    :id => Fixnum, :position => Fixnum, :count => Fixnum
+  )
   def self.move_scope(m); entry_scope(m); end
   def self.move_action(m)
     entry = get_entry(m)

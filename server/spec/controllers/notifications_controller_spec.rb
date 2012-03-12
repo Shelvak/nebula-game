@@ -22,18 +22,18 @@ describe NotificationsController do
       @action = "notifications|index"
       @limit = 2
       @notifications = [
-        Factory.create(:notification, :player => player, 
+        Factory.create(:notification, :player => player,
           :created_at => 7.minutes.ago, :starred => false, :read => true),
-        Factory.create(:notification, :player => player, 
+        Factory.create(:notification, :player => player,
           :created_at => 10.minutes.ago, :starred => false, :read => true),
-        Factory.create(:notification, :player => player, 
+        Factory.create(:notification, :player => player,
           :created_at => 9.minutes.ago, :starred => false, :read => true),
-        Factory.create(:notification, :player => player, 
+        Factory.create(:notification, :player => player,
           :created_at => 6.minutes.ago, :starred => false, :read => true),
       ]
       @params = {}
     end
-    
+
     it_behaves_like "only push"
 
     it "should limit number of notifications sent" do

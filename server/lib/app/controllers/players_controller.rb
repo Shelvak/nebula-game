@@ -67,7 +67,7 @@ class PlayersController < GenericController
       disconnect m
     end
   rescue ActiveRecord::RecordNotFound
-    respond :success => false
+    respond m, :success => false
     disconnect m
   end
 
@@ -154,8 +154,8 @@ class PlayersController < GenericController
 
   VIP_OPTIONS = logged_in + required(:vip_level => Fixnum)
   def self.vip_scope(message); scope.player(message.player); end
-  def self.vip_action(player, params)
-    player.vip_start!(params['vip_level'])
+  def self.vip_action(m)
+    m.player.vip_start!(m.params['vip_level'])
   rescue ArgumentError => e
     # VIP level was incorrect.
     raise GameLogicError, e.message, e.backtrace

@@ -25,7 +25,7 @@ class GenericController::ParamOpts
       merged[:required] = @data[:required].merge(param_opts.data[:required])
     end
     if @data[:valid] && param_opts.data[:valid]
-      merged[:valid] = @data[:valid] | param_opts.data[:valid]
+      merged[:valid] = @data[:valid].merge(param_opts.data[:valid])
     end
 
     self.class.new(merged)

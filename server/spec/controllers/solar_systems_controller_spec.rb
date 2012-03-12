@@ -90,24 +90,24 @@ describe SolarSystemsController do
     it "should store current solar system id" do
       lambda do
         invoke @action, @params
-      end.should change(@controller, :current_ss_id).to(@solar_system.id)
+      end.should change(self, :current_ss_id).to(@solar_system.id)
     end
 
     %w{current_planet_id current_planet_ss_id}.each do |attr|
       it "should clear #{attr} if we opened other ss than planet is in" do
-        @controller.current_planet_ss_id = @solar_system.id + 1
-        @controller.current_planet_id = 10
+        self.current_planet_ss_id = @solar_system.id + 1
+        self.current_planet_id = 10
         lambda do
           invoke @action, @params
-        end.should change(@controller, attr).to(nil)
+        end.should change(self, attr).to(nil)
       end
 
       it "should keep #{attr} if we opened same ss that planet is in" do
-        @controller.current_planet_ss_id = @solar_system.id
-        @controller.current_planet_id = 10
+        self.current_planet_ss_id = @solar_system.id
+        self.current_planet_id = 10
         lambda do
           invoke @action, @params
-        end.should_not change(@controller, attr)
+        end.should_not change(self, attr)
       end
     end
 

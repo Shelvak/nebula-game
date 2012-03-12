@@ -29,7 +29,7 @@ class PlayerOptionsController < GenericController
   def self.set_action(m)
     opts = m.player.options.data
 
-    params.each do |property, value|
+    m.params.each do |property, value|
       begin
         opts.send("#{property}=", value)
       rescue NoMethodError, ArgumentError => e

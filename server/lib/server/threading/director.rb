@@ -27,6 +27,10 @@ class Threading::Director
     @sync_token = 0
   end
 
+  def inspect
+    "<#{self.class} workers=#{@workers.size}>"
+  end
+
   def to_s
     "director-#{@name}"
   end

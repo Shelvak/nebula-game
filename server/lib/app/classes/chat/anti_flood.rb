@@ -32,7 +32,7 @@ class Chat::AntiFlood
 
     @silence_until[player_id] = silence_until
 
-    @dispatcher.push_to_player(
+    @dispatcher.push_to_player!(
       player_id, ChatController::ACTION_SILENCE, {'until' => silence_until}
     )
   end

@@ -1,49 +1,53 @@
 module ControllerSpecHelper
-  def mock_dispatcher
-    dispatcher_mock = mock(Dispatcher)
-    
-    storage_mock = mock(Hash)
-    storage_mock.stub!(:'[]').and_return({})
-    dispatcher_mock.stub!(:storage).and_return(storage_mock)
-
-    dispatcher_mock.stub!(:change_player).and_return(true)
-    dispatcher_mock.stub!(:transmit).and_return(true)
-    def dispatcher_mock.push(message, client_id)
-      @pushed_messages ||= {}
-      @pushed_messages[client_id] ||= []
-      @pushed_messages[client_id].push message
-    end
-    def dispatcher_mock.pushed_messages
-      @pushed_messages || {}
-    end
-    dispatcher_mock.stub!(:push_to_player).and_return(true)
-    dispatcher_mock.stub!(:update_player).and_return(true)
-
-    dispatcher_mock
-  end
-
   def init_controller(klass, options={})
-    @dispatcher = mock_dispatcher
-    @controller = klass.new(@dispatcher)
-    @controller.instance_variable_set("@client_id",
-      DEFAULT_SPEC_CLIENT_ID)
-    def @controller.response; @response; end
-    def @controller.respond_params; response; end
-    def @controller.response_params; response; end
+    @controller = klass.dup
+    @controller.instance_eval do
+      def __set_controller_name(value); @controller_name = value; end
+      def inspect; "<#{@controller_name} dupped>"; end
+      def to_s; inspect; end
 
-    def @controller.respond(params)
-      @response = params
-      true
+      @session = {}
+      def session; @session; end
+      def session_get(message, key); @session[key]; end
+      def session_set(message, key, value); @session[key] = value; end
+
+      def response; @response; end
+      def respond_params; response; end
+      def response_params; response; end
+      def respond(message, params)
+        typesig binding, Dispatcher::Message, Hash
+
+        @response = params
+      end
+
+      def pushed; @pushed ||= []; end
+      def pushed?(action, params)
+        pushed.include?([action, params.stringify_keys])
+      end
+      def push(message, action, params={})
+        typesig binding, Dispatcher::Message, String, Hash
+
+        pushed << [action, params.stringify_keys]
+      end
     end
+    @controller.__set_controller_name(klass.to_s)
 
-    @client_id = DEFAULT_SPEC_CLIENT_ID
+    @controller_name = klass.to_s.underscore.sub(/_controller$/, '')
+    @message_id = "10101" # Fake message id.
+    @client = ServerActor::Client.new("127.0.0.1", 12345)
+
     login(
       options[:login] == true ? nil : options[:login]
     ) if options[:login]
   end
 
-  def client_id
-    @client_id
+  %w{ruleset current_ss_id current_planet_id current_planet_ss_id}.each do
+    |session_var|
+
+    define_method(session_var) { @controller.send(session_var, nil) }
+    define_method("#{session_var}=") do |value|
+      @controller.send("set_#{session_var}", nil, value)
+    end
   end
 
   def player
@@ -51,14 +55,7 @@ module ControllerSpecHelper
   end
 
   def login(player=nil)
-    player ||= Factory.create :player
-    @controller.login(player)
-    @client_id = player.id
-    @player = player
-  end
-
-  def should_respond_with(what)
-    @controller.should_receive(:respond).with(what)
+    @player = player || Factory.create(:player)
   end
 
   def response
@@ -69,42 +66,64 @@ module ControllerSpecHelper
     @controller.session
   end
 
+  def should_respond_with(what)
+    @controller.should_receive(:respond).with(
+      an_instance_of(Dispatcher::Message), what
+    )
+  end
+
   def response_should_include(what)
-    what.each do |key, value|
-      @controller.response[key].should == value
-    end
+    @controller.response.only(what.keys).should equal_to_hash(what)
+  end
+
+  def response_should_be(what)
+    @controller.response.should equal_to_hash(what)
+  end
+
+  def should_have_pushed(action, params={})
+    @controller.pushed?(action, params).should be_true
   end
 
   def should_push(action, params={})
-    @dispatcher.should_receive(:push).with({
-      'action' => action,
-      'params' => params
-    }, @client_id)
+    @controller.should_receive(:push).with(
+      an_instance_of(Dispatcher::Message), action, params
+    )
+  end
+
+  def should_have_not_pushed(action, params={})
+    @controller.pushed?(action, params).should be_false
   end
 
   def should_not_push(action, params={})
-    @dispatcher.should_not_receive(:push).with({
-      'action' => action,
-      'params' => params
-    }, @client_id)
+    @controller.should_not_receive(:push)..with(
+      an_instance_of(Dispatcher::Message), action, params
+    )
   end
 
   def invoke(action, params={})
-    @controller.receive(create_message(action, params))
+    message = create_message(action, params, false, !! @player)
+    send_message(message)
   end
 
   def push(action, params={})
-    message = create_message(action, params)
-    message['pushed'] = true
-    @controller.receive(message)
+    message = create_message(action, params, true, !! @player)
+    send_message(message)
   end
 
-  def create_message(action, params)
-    {
-      'action' => action,
-      'params' => params,
-      'client_id' => @client_id,
-      'player' => @player
-    }
+  def create_message(action, params, pushed, logged_in=true)
+    raise "Cannot log in player, but it is required!" \
+      if logged_in && @player.nil?
+    Dispatcher::Message.new(
+      @message_id, action, params, @client, logged_in ? @player : nil, pushed
+    )
+  end
+
+  def send_message(message)
+    @controller.send("#{message.action}_action", message)
+  end
+
+  def check_options!(message)
+    const = "#{message.action.upcase}_OPTIONS"
+    @controller.const_get(const).check!(message)
   end
 end

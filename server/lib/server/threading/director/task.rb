@@ -35,7 +35,7 @@ class Threading::Director::Task
 
         sleep_for = SLEEP_RANGE.random_element / 1000.0
         LOGGER.info "Deadlock occurred, retry #{current_retry
-          }, retrying again in #{sleep_for}s.", worker_name
+          }, retrying again in #{sleep_for}s: #{e.message}", worker_name
         sleep sleep_for
         retry
       else

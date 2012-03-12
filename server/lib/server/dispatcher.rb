@@ -16,6 +16,9 @@ class Dispatcher
   DISCONNECT_PLAYER_ERASED = "player_erased"
   # Server has encountered an error.
   DISCONNECT_SERVER_ERROR = "server_error"
+
+  S_KEY_CURRENT_SS_ID = :current_ss_id
+  S_KEY_CURRENT_PLANET_ID = :current_planet_id
   
   class UnhandledMessage < StandardError; end
   class UnresolvableScope < StandardError; end
@@ -24,19 +27,23 @@ class Dispatcher
   # Initialize the dispatcher.
   def initialize
     @directors = {
-      :chat => Threading::Director.new("chat", 1),
-      :server => Threading::Director.new("server", 2),
-      :galaxy => Threading::Director.new("galaxy", 2),
-      :player => Threading::Director.new("player", 10),
+      :chat => Threading::Director.new_link("chat", 1),
+      :server => Threading::Director.new_link("server", 2),
+      :galaxy => Threading::Director.new_link("galaxy", 2),
+      :player => Threading::Director.new_link("player", 10),
     }
-    @directors.each do |name, director|
-      current_actor.link director
-    end
 
     @client_to_player = {}
     @player_id_to_client = {}
     # Session level storage to store data between controllers
     @storage = {}
+  end
+
+  # Override inspect from celluloid because that gets us infinite recursion
+  # error while inspecting directors.
+  def inspect
+    "<Dispatcher clients=#{@storage.size} players=#{@client_to_player.size
+      } directors=#{@directors.keys.join(",")}>"
   end
 
   def to_s(client=nil)
@@ -180,6 +187,22 @@ class Dispatcher
     Actor[:server].disconnect!(client)
   end
 
+  # Pushes message to player if he is connected.
+  #
+  # @see #push
+  def transmit_to_players(message, action, params={}, filters=nil)
+    typesig binding, Fixnum, String, Hash,
+      [NilClass, Array, Dispatcher::PushFilter]
+
+    client = @player_id_to_client[player_id]
+    if client.nil?
+      debug "Push to player #{player_id} filtered: not connected."
+      return
+    end
+
+    push(client, action, params, filters)
+  end
+
   # Transmit _message_ to clients identified by _ids_.
   def transmit(message, *clients)
     clients.each do |client|
@@ -205,10 +228,10 @@ class Dispatcher
   end
 
   # Solar system ID which is currently viewed by client.
-  def current_ss_id(client); @storage[client][:current_ss_id]; end
+  def current_ss_id(client); @storage[client][S_KEY_CURRENT_SS_ID]; end
   # SsObject ID which is currently viewed by client.
   def current_planet_id(client)
-    @storage[client][:current_planet_id]
+    @storage[client][S_KEY_CURRENT_PLANET_ID]
   end
   
   # Pushes message to all logged in players.

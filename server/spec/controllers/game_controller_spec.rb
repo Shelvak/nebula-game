@@ -45,11 +45,12 @@ describe GameController do
         )
       end
 
+      # TODO: fails with others.
       it "should replace speed with constant" do
         with_config_values 'units.foo' => '10 / speed * level' do
           invoke @action, @params
-          response[:config]['units.foo'].should == "10 / #{
-            CONFIG['speed']} * level"
+          response[:config]['units.foo'].
+            should == "10 / #{CONFIG['speed']} * level"
         end
       end
 

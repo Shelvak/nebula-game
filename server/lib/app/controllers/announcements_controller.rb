@@ -57,9 +57,9 @@ class AnnouncementsController < GenericController
   # Response: Same as parameters.
   #
   ACTION_NEW = 'announcements|new'
-  def self.new_options
-    logged_in + only_push + required(:message => String, :ends_at => Time)
-  end
+  NEW_OPTIONS = logged_in + only_push + required(
+    :message => String, :ends_at => Time
+  )
   def self.new_scope(message); scope.player(message.player); end
   def self.new_action(m)
     respond m, :message => m.params['message'], :ends_at => m.params['ends_at']
