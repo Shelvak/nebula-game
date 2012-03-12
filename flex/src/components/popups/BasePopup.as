@@ -1,33 +1,33 @@
 package components.popups
 {
    import components.popups.skins.BasePopupSkin;
-   import components.skins.CrashPopupSkin;
-   
+
    import flash.events.MouseEvent;
-   
+
    import models.ModelLocator;
-   
+
    import mx.collections.ArrayCollection;
-   import mx.core.FlexGlobals;
    import mx.events.FlexEvent;
    import mx.logging.ILogger;
    import mx.logging.Log;
-   import mx.managers.PopUpManager;
-   
-   import spark.components.Application;
+
    import spark.components.Button;
    import spark.components.Group;
    import spark.components.Panel;
-   
+
    import utils.Objects;
    import utils.datastructures.Collections;
-   
-   
+
+
    /**
     * Base popup class.
     */
-   public class BasePopup extends Panel
+   public class BasePopUp extends Panel
    {
+      private function get popUpManager(): PopUpManager {
+         return PopUpManager.getInstance();
+      }
+
       /**
        * Reference to application-wide instance of <code>ModelLocator</code>.
        */
@@ -41,7 +41,7 @@ package components.popups
       }
       
       
-      public function BasePopup() : void {
+      public function BasePopUp() : void {
          super();
          setStyle("skinClass", BasePopupSkin);
          addEventListener(MouseEvent.CLICK, this_clickHandler);
@@ -49,23 +49,21 @@ package components.popups
       }
       
       private function this_creationCompleteHandler(event:FlexEvent) : void {
-         PopUpManager.centerPopUp(this);
+         popUpManager.centerPopUp(this);
       }
       
       /**
        * Shows this popup in the screen. 
        */      
       public function show() : void {
-         PopUpManager.addPopUp(this, Application(FlexGlobals.topLevelApplication), true);
+         popUpManager.addPopUp(this);
       }
       
       /**
        * Removes this popup from popup list in <code>PopupManager</code>.
-       * 
-       * @param command will be used as argument for a close handler.
        */
       public function close() : void {
-         PopUpManager.removePopUp(this);
+         popUpManager.removePopUp(this);
       }
       
       

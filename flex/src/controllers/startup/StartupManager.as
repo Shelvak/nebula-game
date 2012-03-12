@@ -6,6 +6,7 @@ package controllers.startup
    import com.developmentarc.core.actions.actions.AbstractAction;
 
    import components.alliance.AllianceScreenM;
+   import components.popups.PopUpManager;
 
    import controllers.alliances.AlliancesCommand;
    import controllers.alliances.actions.*;
@@ -184,6 +185,7 @@ package controllers.startup
       public static function resetApp() : void {
          logger.info("-------------- APPLICATION RESET --------------");
          new GlobalEvent(GlobalEvent.APP_RESET);
+         PopUpManager.getInstance().reset();
          ServerProxyInstance.getInstance().reset();
          StringUtil.reset();
          ML.reset();

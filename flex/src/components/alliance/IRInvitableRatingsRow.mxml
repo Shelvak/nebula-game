@@ -6,7 +6,7 @@
                 xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
-      import components.popups.ErrorPopup;
+      import components.popups.ErrorPopUp;
       import components.ratings.RatingsWidths;
 
       import utils.ApplicationLocker;
@@ -21,6 +21,7 @@
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
       import utils.locale.Localizer;
+
 
       [Bindable]
       private var player: MRatingPlayer;
@@ -38,7 +39,7 @@
 
       protected function button1_clickHandler(event: MouseEvent): void {
          new AlliancesCommand(AlliancesCommand.INVITE,
-                 new InviteActionParams(player.id)).dispatch();
+                              new InviteActionParams(player.id)).dispatch();
       }
       ]]>
    </fx:Script>

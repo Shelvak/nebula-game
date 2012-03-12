@@ -5,7 +5,7 @@
                 autoDrawBackground="false">
    <fx:Script>
       <![CDATA[
-      import components.popups.ErrorPopup;
+      import components.popups.ErrorPopUp;
       import components.ratings.RatingsWidths;
 
       import controllers.alliances.AlliancesCommand;
@@ -39,7 +39,7 @@
       [Bindable]
       private var ML: ModelLocator = ModelLocator.getInstance();
 
-      private function setupPopupButtons(popup: ErrorPopup): void {
+      private function setupPopupButtons(popup: ErrorPopUp): void {
          popup.retryButtonLabel = Localizer.string('Popups', 'label.yes');
          popup.cancelButtonLabel = Localizer.string('Popups', 'label.no');
          popup.showCancelButton = true;
@@ -47,9 +47,10 @@
       }
 
       private function btnKick_clickHandler(event: MouseEvent): void {
-         var popUp: ErrorPopup = new ErrorPopup();
+         var popUp: ErrorPopUp = new ErrorPopUp();
          setupPopupButtons(popUp);
-         popUp.message = Localizer.string('Popups', 'message.kick', [data.name]);
+         popUp.message = Localizer.string('Popups', 'message.kick',
+                                          [data.name]);
          popUp.title = Localizer.string('Popups', 'title.kick');
          popUp.retryButtonClickHandler =
             function (button: Button = null): void {
@@ -64,7 +65,7 @@
       }
 
       private function btnTransferOwnership_clickHandler(event: MouseEvent): void {
-         const popup: ErrorPopup = new ErrorPopup();
+         const popup: ErrorPopUp = new ErrorPopUp();
          popup.title = Localizer.string(
             "Alliances", "giveAway.title.confirmationPopup"
          );
@@ -83,7 +84,6 @@
             };
          popup.show();
       }
-      
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">

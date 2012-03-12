@@ -10,142 +10,127 @@
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.credits.events.CreditEvent;
-         import components.popups.ActionConfirmationPopup;
-         
-         import config.Config;
-         
-         import controllers.buildings.actions.AccelerateConstructorAction;
-         
-         import globalevents.GCreditEvent;
-         
-         import models.ModelLocator;
-         import models.credit.MAccelerate;
-         import models.parts.Upgradable;
-         import models.parts.events.UpgradeEvent;
-         
-         import mx.collections.ArrayCollection;
-         import mx.events.FlexEvent;
-         
-         import utils.DateUtil;
-         import utils.StringUtil;
-         import utils.locale.Localizer;
-         
-         
-         [Bindable]
-         public var upgradePart: Upgradable;
-         
-         public var popUp: ActionConfirmationPopup;
-         
-         public function get selectedAccelerateType(): int
-         {
-            return selectedIndex;
+      import com.developmentarc.core.utils.EventBroker;
+
+      import components.credits.events.CreditEvent;
+      import components.popups.ActionConfirmationPopUp;
+
+      import config.Config;
+
+      import controllers.buildings.actions.AccelerateConstructorAction;
+
+      import globalevents.GCreditEvent;
+
+      import models.ModelLocator;
+      import models.credit.MAccelerate;
+      import models.parts.Upgradable;
+      import models.parts.events.UpgradeEvent;
+
+      import mx.collections.ArrayCollection;
+      import mx.events.FlexEvent;
+
+      import utils.DateUtil;
+      import utils.StringUtil;
+      import utils.locale.Localizer;
+
+
+      [Bindable]
+      public var upgradePart: Upgradable;
+
+      public var popUp: ActionConfirmationPopUp;
+
+      public function get selectedAccelerateType(): int {
+         return selectedIndex;
+      }
+
+      protected function grAccelerate_changeHandler(event: Event = null): void {
+         if (grAccelerate != null && grAccelerate.selectedValue != null) {
+            selectedIndex = MAccelerate(grAccelerate.selectedValue).index;
+            dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
+            popUp.confirmButtonEnabled = true;
+            popUp.confirmButtonLabel = Localizer.string('Credits',
+                                                        hasEnoughCredits()
+                                                           ? 'label.confirm'
+                                                           : 'label.buy');
          }
-         
-         protected function grAccelerate_changeHandler(event:Event = null):void
-         {
-            if (grAccelerate != null && grAccelerate.selectedValue != null)
-            {
-               selectedIndex = MAccelerate(grAccelerate.selectedValue).index;
-               dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
-               popUp.confirmButtonEnabled = true;
-               popUp.confirmButtonLabel = Localizer.string('Credits', 
-                  hasEnoughCredits()?'label.confirm':'label.buy');
+      }
+
+      private function refreshList(): void {
+         accelerateInfo.removeAll();
+         var i: int = 0;
+         for each (var obj: Array in Config.getAccelerateInfo()) {
+            var accModel: MAccelerate = new MAccelerate(obj[0], obj[1],
+                                                        grAccelerate, i);
+            accelerateInfo.addItem(accModel);
+            if (upgradePart && upgradePart.upgradeEndsAt && accModel.time > upgradePart.timeToFinish) {
+               break;
             }
+            i++;
          }
-         
-         private function refreshList(): void
-         {
-            accelerateInfo.removeAll();
-            var i: int = 0;
-            for each (var obj: Array in Config.getAccelerateInfo())
-            {
-               var accModel: MAccelerate = new MAccelerate(obj[0], obj[1], grAccelerate, i);
-               accelerateInfo.addItem(accModel);
-               if (upgradePart && upgradePart.upgradeEndsAt && accModel.time > upgradePart.timeToFinish)
-               {
-                  break;
-               }
-               i++;
-            }
-            if (selectedIndex > accelerateInfo.length - 1)
-            {
-               selectedIndex = -1;
-               dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
-               popUp.confirmButtonEnabled = false;
-               popUp.confirmButtonLabel = Localizer.string('Credits', 'label.confirm');
-            }
-            if (selectedIndex == -1)
-            {
-               grAccelerate.selectedValue = accelerateInfo.getItemAt(accelerateInfo.length - 1);
-               selectedIndex = accelerateInfo.length - 1;
-               dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
-               popUp.confirmButtonEnabled = true;
-               popUp.confirmButtonLabel = Localizer.string('Credits', 
-                  hasEnoughCredits()?'label.confirm':'label.buy');
-            }
+         if (selectedIndex > accelerateInfo.length - 1) {
+            selectedIndex = -1;
+            dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
+            popUp.confirmButtonEnabled = false;
+            popUp.confirmButtonLabel = Localizer.string('Credits',
+                                                        'label.confirm');
          }
-         
-         public function hasEnoughCredits(): Boolean
-         {
-            return ModelLocator.getInstance().player.creds >= selectedCost;
+         if (selectedIndex == -1) {
+            grAccelerate.selectedValue = accelerateInfo.getItemAt(accelerateInfo.length - 1);
+            selectedIndex = accelerateInfo.length - 1;
+            dispatchEvent(new CreditEvent(CreditEvent.ACCELERATE_CHANGE));
+            popUp.confirmButtonEnabled = true;
+            popUp.confirmButtonLabel = Localizer.string('Credits',
+                                                        hasEnoughCredits()
+                                                           ? 'label.confirm'
+                                                           : 'label.buy');
          }
-         
-         public function get selectedCost(): int
-         { 
-            if (grAccelerate != null && grAccelerate.selectedValue != null)
-            {
-               return MAccelerate(grAccelerate.selectedValue).credits;
-            }
-            else
-            {
-               return MAccelerate(accelerateInfo.getItemAt(
-                  accelerateInfo.length - 1)).credits;
-            }
+      }
+
+      public function hasEnoughCredits(): Boolean {
+         return ModelLocator.getInstance().player.creds >= selectedCost;
+      }
+
+      public function get selectedCost(): int {
+         if (grAccelerate != null && grAccelerate.selectedValue != null) {
+            return MAccelerate(grAccelerate.selectedValue).credits;
          }
-         
-         [Bindable]
-         private var selectedIndex: int = -1;
-         
-         [Bindable(event="selected_accelerate_changed")]
-         private function getModified(time: Number): String
-         {
-            if (accelerateInfo.length > 1 && upgradePart && upgradePart.upgradeEndsAt &&
-               MAccelerate(accelerateInfo.getItemAt(accelerateInfo.length - 2)).time > upgradePart.timeToFinish)
-            {
-               refreshList();
-            }
-            if (upgradePart.upgradeEndsAt == null)
-            {
-               popUp.close();
-            }
-            if (selectedIndex == -1)
-            {
-               return DateUtil.secondsToHumanString(time);
-            }
-            else
-            {
-               if (MAccelerate(grAccelerate.selectedValue).time == 0)
-               {
-                  return DateUtil.secondsToHumanString(0);
-               }
-               else
-               {
-                  return DateUtil.secondsToHumanString(time - MAccelerate(grAccelerate.selectedValue).time);
-               }
-            }
+         else {
+            return MAccelerate(accelerateInfo.getItemAt(
+               accelerateInfo.length - 1)).credits;
          }
-         
-         [Bindable]
-         private var accelerateInfo: ArrayCollection = new ArrayCollection();
-         
-         protected function group1_creationCompleteHandler(event:FlexEvent):void
-         {
+      }
+
+      [Bindable]
+      private var selectedIndex: int = -1;
+
+      [Bindable(event="selected_accelerate_changed")]
+      private function getModified(time: Number): String {
+         if (accelerateInfo.length > 1 && upgradePart && upgradePart.upgradeEndsAt &&
+                MAccelerate(accelerateInfo.getItemAt(accelerateInfo.length - 2)).time > upgradePart.timeToFinish) {
             refreshList();
          }
-         
+         if (upgradePart.upgradeEndsAt == null) {
+            popUp.close();
+         }
+         if (selectedIndex == -1) {
+            return DateUtil.secondsToHumanString(time);
+         }
+         else {
+            if (MAccelerate(grAccelerate.selectedValue).time == 0) {
+               return DateUtil.secondsToHumanString(0);
+            }
+            else {
+               return DateUtil.secondsToHumanString(time - MAccelerate(grAccelerate.selectedValue).time);
+            }
+         }
+      }
+
+      [Bindable]
+      private var accelerateInfo: ArrayCollection = new ArrayCollection();
+
+      protected function group1_creationCompleteHandler(event: FlexEvent): void {
+         refreshList();
+      }
       ]]>
    </fx:Script>
    <s:Label text="{Localizer.string('Credits', 'label.whouldFinish')}" textAlign="center"

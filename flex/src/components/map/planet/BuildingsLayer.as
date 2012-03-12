@@ -8,7 +8,7 @@ package components.map.planet
    import components.map.planet.objects.MapBuilding;
    import components.map.planet.objects.PlanetObjectBasement;
    import components.map.planet.objects.PlanetObjectBasementColor;
-   import components.popups.ActionConfirmationPopup;
+   import components.popups.ActionConfirmationPopUp;
 
    import config.Config;
 
@@ -335,7 +335,7 @@ package components.map.planet
          if ((b.x != _oldX || b.y != _oldY) && planet.canBeBuilt(b)) {
             // ask for user confirmation before sending message to the server
             _waitingUserConfirmationForMove = true;
-            var popup:ActionConfirmationPopup = new ActionConfirmationPopup();
+            var popup:ActionConfirmationPopUp = new ActionConfirmationPopUp();
             popup.title = Localizer.string("Popups", "title.moveBuilding");
             popup.cancelButtonClickHandler = movePopup_cancelButtonHandler;
             popup.confirmButtonClickHandler = movePopup_confirmButtonHandler;

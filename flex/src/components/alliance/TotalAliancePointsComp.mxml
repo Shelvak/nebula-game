@@ -5,21 +5,21 @@
          xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
-         import components.popups.ErrorPopup;
-         import components.ratings.RatingsWidths;
-         
-         import controllers.alliances.AlliancesCommand;
-         
-         import models.ModelLocator;
-         import models.alliance.MAlliance;
-         
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
-         
-         [Bindable]
-         public var alliance: MAlliance;
-         
+      import components.popups.ErrorPopUp;
+      import components.ratings.RatingsWidths;
+
+      import controllers.alliances.AlliancesCommand;
+
+      import models.ModelLocator;
+      import models.alliance.MAlliance;
+
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+
+      [Bindable]
+      public var alliance: MAlliance;
       ]]>
    </fx:Script>
    <s:Rect left="0" right="0" top="0" bottom="0">

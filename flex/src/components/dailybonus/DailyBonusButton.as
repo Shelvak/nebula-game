@@ -1,7 +1,7 @@
 package components.dailybonus
 {
    import components.base.AttentionButton;
-   import components.popups.ActionConfirmationPopup;
+   import components.popups.ActionConfirmationPopUp;
    
    import controllers.dailybonus.DailyBonusCommand;
    
@@ -51,7 +51,7 @@ package components.dailybonus
       }
       
       private function this_clickHandler(event:MouseEvent) : void {
-         var popup:ActionConfirmationPopup = new ActionConfirmationPopup();
+         var popup:ActionConfirmationPopUp = new ActionConfirmationPopUp();
          var cont:DailyBonusComp = new DailyBonusComp();
          cont.reward = player.dailyBonus;
          cont.addEventListener(

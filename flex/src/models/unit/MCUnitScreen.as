@@ -1,6 +1,6 @@
 package models.unit
 {
-   import components.popups.ActionConfirmationPopup;
+   import components.popups.ActionConfirmationPopUp;
    import components.unitsscreen.events.UnitsScreenEvent;
 
    import models.location.ILocationUser;
@@ -810,7 +810,7 @@ package models.unit
       
       public function confirmDismiss():void
       {
-         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popUp.confirmButtonLabel = getPopupText('label.yes');
          popUp.cancelButtonLabel = getPopupText('label.no');
          var lbl: Label = new Label();
