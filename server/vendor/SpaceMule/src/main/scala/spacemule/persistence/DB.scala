@@ -5,16 +5,17 @@
 
 package spacemule.persistence
 
-import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import scala.collection.mutable.ListBuffer
-import java.sql.{SQLException, Connection, DriverManager, ResultSet}
-import org.apache.commons.io.{FileUtils, IOUtils}
+import java.sql.{Connection, DriverManager, ResultSet}
 import java.io.{FileWriter, File}
 
 object DB {
+  val KeepTmpFilesEnvVar = "KEEP_BULKSQL_TMP"
+  private[this] val keepTmpFiles = System.getenv(KeepTmpFilesEnvVar) == "1"
+
   class LoadInFileException(
     filePath: String, tableName: String, columns: String, data: String,
     cause: Throwable
@@ -211,7 +212,7 @@ Original exception:
     }
     finally {
       statement.close()
-      file.delete()
+      if (! keepTmpFiles) file.delete()
     }
   }
 

@@ -125,7 +125,9 @@ class BulkSql
         raise ArgumentError,
           "#{e.message}\nData was:\n#{columns_str}\n#{content}", e.backtrace
       ensure
-        tempfile.close!
+        tempfile.close! unless ENV[
+          Java::spacemule.persistence.DB.KeepTmpFilesEnvVar
+        ] == "1"
       end
     end
 
