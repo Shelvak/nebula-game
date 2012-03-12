@@ -58,13 +58,6 @@ class BulkSql
       end
     end
 
-    protected
-
-    # Class that is being inserted.
-    def klass
-      raise NotImplementedError
-    end
-
     private
 
     def encode_value(value)
@@ -131,7 +124,9 @@ class BulkSql
           raise ArgumentError,
             "#{e.message}\nData was:\n#{columns_str}\n#{content}", e.backtrace
         ensure
-          tempfile.close!
+          tempfile.close! unless ENV[
+            Java::spacemule.persistence.DB.KeepTmpFilesEnvVar
+          ] == "1"
         end
       ensure
         connection.execute("UNLOCK TABLES") unless update
