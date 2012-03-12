@@ -21,7 +21,7 @@ package controllers.planets.actions
        */
       public function EditActionParams(planet:MPlanet, newName:String) {
          this.planet = Objects.paramNotNull("planet", planet);
-         this.newName = Objects.paramNotEquals("newName", newName, [null, ""]);
+         this.newName = Objects.paramNotEmpty("newName", newName);
       }
       
       /**
