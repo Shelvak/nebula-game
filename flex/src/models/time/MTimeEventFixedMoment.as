@@ -100,8 +100,8 @@ package models.time
       }
 
       [Bindable(event="occuredBeforeChange")]
-      public function get occurredBeforeString(): String {
-         return DateUtil.secondsToHumanString(occurredBefore, 2);
+      public function occurredBeforeString(timeParts:int = 2): String {
+         return DateUtil.secondsToHumanString(occurredBefore, timeParts);
       }
       
       

@@ -296,7 +296,7 @@ package components.movement.speedup
       [Bindable(event="speedModifierChange")]
       public function get label_arrivesIn(): String {
          return getString("speedup.label.arrivesIn", [
-            controlInstance.arrivalEvent.occuresInString
+            controlInstance.arrivalEvent.occuresInString()
          ]);
       }
 

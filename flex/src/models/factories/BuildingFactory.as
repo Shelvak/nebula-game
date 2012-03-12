@@ -33,6 +33,8 @@ package models.factories
                data
             );
          }
+         // Since ReferenceError is thrown by FlashPlayer native code
+         // this works with preprocessor
          catch (e: ReferenceError) {
             if (Config.getBuildingNpc(data.type)) {
                return Objects.create(Npc, data);
@@ -65,6 +67,8 @@ package models.factories
             building =
                new (getDefinitionByName("models.building." + type) as Class)();
          }
+         // Since ReferenceError is thrown by FlashPlayer native code
+         // this works with preprocessor
          catch (e: ReferenceError) {
             building = new Building();
          }

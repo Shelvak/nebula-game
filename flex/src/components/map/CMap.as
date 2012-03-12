@@ -111,13 +111,17 @@ package components.map
          _f_childrenCreated = true;
       }
 
+      private var _f_cleanupCalled: Boolean = false;
       public function cleanup(): void {
+         if (_f_cleanupCalled) {
+            return;
+         }
          removeGlobalEventHandlers();
-         if (model) {
+         if (model != null) {
             removeModelEventHandlers(getModel());
             model = null;
          }
-         if (_backgroundComponent) {
+         if (_backgroundComponent != null) {
             removeElement(_backgroundComponent);
             _backgroundComponent.source = null;
             _backgroundComponent = null;
@@ -131,6 +135,9 @@ package components.map
       /* ######################## */
       
       protected override function measure() : void {
+         if (_f_cleanupCalled) {
+            return;
+         }
          var size:Point = getSize();
          measuredWidth = size.x;
          measuredHeight = size.y;
@@ -138,14 +145,14 @@ package components.map
       
       protected override function updateDisplayList(uw:Number, uh:Number) : void {
          super.updateDisplayList(uw, uh);
-         if (_backgroundComponent) {
+         if (_backgroundComponent != null) {
             _backgroundComponent.width = uw;
             _backgroundComponent.height = uh;
          }
       }
 
       public function renderBackground(useCached:Boolean = true): void {
-         const backgroundData:BitmapData = getBackground(useCached);
+         const backgroundData: BitmapData = getBackground(useCached);
          if (backgroundData == null) {
             return;
          }
@@ -166,19 +173,19 @@ package components.map
       /* ### PROPERTIES ### */
       /* ################## */
       
-      private var f_viewportSet:Boolean = false;
-      private var _viewport:ViewportZoomable = null;
+      private var _f_viewportSet:Boolean = false;
+      private var _viewport: ViewportZoomable = null;
       /**
        * A viewport that is responsible for moving and zooming this map. This is a
        * write-once-read-many property.
        */
       public function set viewport(value: ViewportZoomable): void {
-         if (f_viewportSet) {
+         if (_f_viewportSet) {
             throwWriteOncePropertyError();
          }
          if (_viewport != value) {
             _viewport = value;
-            f_viewportSet = true;
+            _f_viewportSet = true;
          }
       }
       /**

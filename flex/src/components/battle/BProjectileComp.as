@@ -30,30 +30,23 @@ package components.battle
       {
          return BProjectile(model);
       }
-      
-      
-      public override function playAnimation(name:String) : void
-      {
-         try
-         {
+
+
+      public override function playAnimation(name: String): void {
+         try {
             super.playAnimation(name);
          }
-         catch(err: ArgumentError)
-         {
-            throw new ArgumentError(getModel().gunType + ': ' + err);
+         catch (err: Error) {
+            throw new Error(getModel().gunType + ': ' + err);
          }
       }
-      
-      
-      public override function playAnimationImmediately(name:String) : void
-      {
-         try
-         {
+
+      public override function playAnimationImmediately(name: String): void {
+         try {
             super.playAnimationImmediately(name);
          }
-         catch(err: ArgumentError)
-         {
-            throw new ArgumentError(getModel().gunType + ': ' + err);
+         catch (err: Error) {
+            throw new Error(getModel().gunType + ': ' + err);
          }
       }
       

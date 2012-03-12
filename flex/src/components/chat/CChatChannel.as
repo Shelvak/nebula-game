@@ -468,7 +468,7 @@ package components.chat
                inpMessage.text = getString(
                   "message.silence",
                   [DateUtil.formatShortDateTime(_model.silenced.occuresAt),
-                   _model.silenced.occuresInString]
+                   _model.silenced.occuresInString()]
                );
             }
          }

@@ -32,7 +32,7 @@ package controllers.announcements.actions
             announcement.event.occuresAt = DateUtil.parseServerDTF(params["endsAt"]);
             AnnouncementPopup.getInstance().show();
          }
-         catch (err:TypeError) {
+         catch (err:Error) {
             logger.error(
                "Error while processing new announcement data:\n{0}\nError message: {1}",
                ObjectUtil.toString(params), err.message

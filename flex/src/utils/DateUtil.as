@@ -132,9 +132,13 @@ package utils
        * Fromats given <code>date</code> as a short date and time string specified by
        * <code>locale.xml/Formatters.date.shortDateTime</code>.
        */
-      public static function formatShortDateTime(date: Date): String {
+      public static function formatShortDateTime(date: Date,
+                                                 includeSeconds:Boolean = false): String {
          Objects.paramNotNull("date", date);
-         return format(date, "shortDateTime");
+         return format(
+            date,
+            includeSeconds ? "shortDateTimeWithSeconds" : "shortDateTime"
+         );
       }
 
       private static var _formatter: DateFormatter = new DateFormatter();

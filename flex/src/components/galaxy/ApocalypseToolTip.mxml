@@ -68,12 +68,12 @@
                lineBreak="toFit" textAlign="center"
                textFlow="{apocalypseEvent.hasOccured
                ? getFlow(true, [
-                  apocalypseEvent.occuresAtString,
+                  apocalypseEvent.occuresAtString(),
                   DateUtil.secondsToDays(apocalypseEvent.occurredBefore),
                   getReward(apocalypseEvent.occurredBefore)
                  ])
                : getFlow(false, [
-                  apocalypseEvent.occuresAtString,
+                  apocalypseEvent.occuresAtString(),
                   getTime(apocalypseEvent.occuresIn)
                  ])}"
            left="5" right="5" top="5" bottom="5"/>

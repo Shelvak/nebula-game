@@ -50,7 +50,7 @@ package models.time
       /**
        * Shortcut for <code>DateUtil.secondsToHumanString(this.occuresIn)</code>.
        */ 
-      function get occuresInString() : String;
+      function occuresInString(timeParts:int = 2) : String;
       
       /**
        * Point in time when this event will occur (or already has occurred). When this property changes
@@ -62,6 +62,6 @@ package models.time
       /**
        * Shortcut for <code>DateUtil.formatShortDateTime(this.occuresAt)</code>.
        */
-      function get occuresAtString() : String;
+      function occuresAtString(includeSecods:Boolean = false) : String;
    }
 }

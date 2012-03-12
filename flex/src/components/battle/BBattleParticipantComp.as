@@ -272,28 +272,22 @@ package components.battle
       /* ######################### */
       
       
-      public function playAnimation(name:String) : void
-      {
-         try
-         {
+      public function playAnimation(name:String) : void {
+         try {
             _animatedBitmap.playAnimation(name);
          }
-         catch(err: ArgumentError)
-         {
-            throw new ArgumentError(participantModel.type + ': ' + err);
+         catch (err: Error) {
+            throw new Error(participantModel.type + ': ' + err);
          }
       }
-      
-      
-      public function playAnimationImmediately(name:String) : void
-      {
-         try
-         {
+
+
+      public function playAnimationImmediately(name: String): void {
+         try {
             _animatedBitmap.playAnimationImmediately(name);
          }
-         catch(err: ArgumentError)
-         {
-            throw new ArgumentError(participantModel.type + ': ' + err);
+         catch (err: Error) {
+            throw new Error(participantModel.type + ': ' + err);
          }
       }
       

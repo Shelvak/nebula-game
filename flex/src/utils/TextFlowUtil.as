@@ -71,8 +71,10 @@ package utils
          layoutFormat.verticalAlign = VerticalAlign.MIDDLE;
          config.textFlowInitialFormat = layoutFormat;
          try {
-            const flow:TextFlow = getImporter(config).importToFlow(value);
+            const flow: TextFlow = getImporter(config).importToFlow(value);
          }
+         // TypeError is thrown by importToFlow so this works fine
+         // after preprocessor
          catch (err:TypeError) {
             throw new TypeError(StringUtil.substitute(
                "Error importing String to TextFlow:"
@@ -85,7 +87,7 @@ package utils
       }
 
       private static function getImporter(config:Configuration): TextLayoutImporter {
-         const importer:TextLayoutImporter = new TextLayoutImporter(config);
+         const importer: TextLayoutImporter = new TextLayoutImporter(config);
          importer.throwOnError = true;
          return importer;
       }
