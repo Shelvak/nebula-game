@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx" 
-         xmlns:battle="components.battle.*" 
-         click="group1_clickHandler(event)"
-         creationComplete="Messenger.init(this)" xmlns:base="components.base.*">
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:battle="components.battle.*"
+         xmlns:base="components.base.*"
+         click="this_clickHandler(event)"
+         creationComplete="Messenger.init(this)"
+         mouseEnabled="{link != null}"
+         mouseChildren="{link != null}">
    <fx:Script>
       <![CDATA[
-         import controllers.Messenger;
-         
-         import utils.UrlNavigate;
-         import utils.locale.Localizer;
-         
-         [Bindable]
-         public var link: String;
-         
-         [Bindable]
-         public var text: String = '';
-         
-         protected function group1_clickHandler(event:MouseEvent):void
-         {
-            if (link)
-            {
-               UrlNavigate.getInstance().showUrl(link);
-            }
+      import controllers.Messenger;
+
+      import utils.UrlNavigate;
+      import utils.locale.Localizer;
+
+
+      [Bindable]
+      public var link: String;
+
+      [Bindable]
+      public var text: String = '';
+
+      private function this_clickHandler(event: MouseEvent): void {
+         if (link) {
+            UrlNavigate.getInstance().showUrl(link);
          }
-         
+      }
       ]]>
    </fx:Script>
    <battle:DarkBackground width="100%" height="100%"/>
