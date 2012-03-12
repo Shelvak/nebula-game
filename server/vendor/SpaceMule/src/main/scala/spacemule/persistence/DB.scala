@@ -5,16 +5,17 @@
 
 package spacemule.persistence
 
-import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import scala.collection.mutable.ListBuffer
-import java.sql.{SQLException, Connection, DriverManager, ResultSet}
-import org.apache.commons.io.{FileUtils, IOUtils}
+import java.sql.{Connection, DriverManager, ResultSet}
 import java.io.{FileWriter, File}
 
 object DB {
+  val KeepTmpFilesEnvVar = "KEEP_BULKSQL_TMP"
+  private[this] val keepTmpFiles = System.getenv(KeepTmpFilesEnvVar) == "1"
+
   class LoadInFileException(
     filePath: String, tableName: String, columns: String, data: String,
     cause: Throwable
@@ -32,6 +33,11 @@ Original exception:
     ),
     cause
   )
+
+  object Lock extends Enumeration {
+    val Read = Value(0, "read")
+    val Write = Value(1, "write")
+  }
   
   /**
    * Use this instead of NULL if you're using loadInFile()
@@ -105,15 +111,27 @@ Original exception:
     statement.executeUpdate(sql)
   }
 
-  def transaction(func: () => Unit) {
+  def transaction[T](lockedTables: Seq[(String, Lock.Value)]=Seq.empty)
+                    (func: () => T): T = {
     ensureConnection()
 
     val autocommit = connection.getAutoCommit
     
     try {
       connection.setAutoCommit(false)
-      func()
+      if (! lockedTables.isEmpty) {
+        val tables = lockedTables.map { case (table, lock) => 
+          "`%s` %s".format(table, lock match {
+            case Lock.Read => "READ"
+            case Lock.Write => "WRITE"
+          }) 
+        }.mkString(", ")
+        exec("LOCK TABLES %s".format(tables))
+      }
+
+      val retVal = func()
       connection.commit()
+      retVal
     }
     catch {
       case e: Exception =>
@@ -121,6 +139,7 @@ Original exception:
         throw e
     }
     finally {
+      if (! lockedTables.isEmpty) exec("UNLOCK TABLES")
       connection.setAutoCommit(autocommit)
     }
   }
@@ -193,7 +212,7 @@ Original exception:
     }
     finally {
       statement.close()
-      file.delete()
+      if (! keepTmpFiles) file.delete()
     }
   }
 

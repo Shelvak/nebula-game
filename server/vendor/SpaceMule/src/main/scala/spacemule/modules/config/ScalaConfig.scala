@@ -1,7 +1,5 @@
 package spacemule.modules.config
 
-import scala.{collection => sc}
-
 /**
  * Created by IntelliJ IDEA.
  * User: arturas

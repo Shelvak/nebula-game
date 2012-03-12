@@ -28,7 +28,11 @@ object Manager {
   val WreckagesTable = "wreckages"
   val CallbacksTable = "callbacks"
 
-  private[this] val buffers = new BufferManager(
+  val buffers = new BufferManager(
+    QuestsTable,
+    ObjectivesTable,
+    FowGalaxyEntriesTable
+  )(
     new Buffer(GalaxiesTable, GalaxyRow),
     new Buffer(PlayersTable, PlayerRow),
     new Buffer(SolarSystemsTable, SolarSystemRow),
@@ -91,24 +95,25 @@ object Manager {
     loadSolarSystems(galaxy)
   }
 
+  @EnhanceStrings
   private def loadSolarSystems(galaxy: Galaxy) {
+    // String variables
     val now = DB.date(Calendar.getInstance())
+    val ss = SolarSystemsTable
+    val p = PlayersTable
+
     val rs = DB.query(
       """
 SELECT
-  ss.`x`,
-  ss.`y`,
-  ss.`player_id`,
-  IF(p.`created_at`, TO_SECONDS('%s') - TO_SECONDS(p.`created_at`), 0) AS age
-FROM
-  `%s` AS ss
-LEFT JOIN
-  `%s` AS p
-ON
-  ss.`player_id`=p.`id`
-WHERE
-  ss.`galaxy_id`=%d
-      """.format(now, SolarSystemsTable, PlayersTable, galaxy.id)
+  #ss.`x`,
+  #ss.`y`,
+  #ss.`player_id`,
+  IF(#p.`created_at`, TO_SECONDS('#now') - TO_SECONDS(#p.`created_at`), 0) AS age
+FROM `#ss`
+LEFT JOIN `#p`
+ON #ss.`player_id`=#p.`id`
+WHERE #ss.`galaxy_id`=#galaxy.id
+      """
     )
 
     while (rs.next) {
