@@ -1,10 +1,6 @@
 package controllers.messages
 {
-   import com.developmentarc.core.utils.EventBroker;
-
    import controllers.connection.ConnectionManager;
-
-   import globalevents.GlobalEvent;
 
    import mx.utils.ObjectUtil;
 
@@ -44,11 +40,6 @@ package controllers.messages
       private var _pendingRMOs: Object = new Object();
 
       public function ResponseMessagesTracker() {
-         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
-      }
-
-      private function global_appResetHandler(event: GlobalEvent): void {
-         reset();
       }
 
       /**
