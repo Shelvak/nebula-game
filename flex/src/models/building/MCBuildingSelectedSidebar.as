@@ -6,8 +6,8 @@ package models.building
 
    import components.credits.ConfirmCredsLabel;
 
-   import components.popups.ActionConfirmationPopup;
-   import components.popups.WaitingCredsPopup;
+   import components.popups.ActionConfirmationPopUp;
+   import components.popups.WaitingCredsPopUp;
 
    import config.Config;
 
@@ -584,7 +584,7 @@ package models.building
 
       public function cancelUpgrade(): void
       {
-         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
          popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
          var lbl: Label = new Label();
@@ -616,7 +616,7 @@ package models.building
       {
          if (canDestroyBuilding)
          {
-            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
             popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
             popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
             var lbl: Label = new Label();
@@ -635,7 +635,7 @@ package models.building
          }
          else
          {
-            var confirmPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            var confirmPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
             var confirmLabel: ConfirmCredsLabel = new ConfirmCredsLabel();
             confirmLabel.popUp = confirmPopUp;
             var destCreds: int = Config.getDestructCredits();
@@ -658,7 +658,7 @@ package models.building
                }
                else
                {
-                  WaitingCredsPopup.showPopup(destCreds, doDestruct);
+                  WaitingCredsPopUp.showPopUp(destCreds, doDestruct);
                }
             };
             confirmPopUp.show();
@@ -669,7 +669,7 @@ package models.building
       {
          var accelerator: AccelerateSelector = new AccelerateSelector();
          accelerator.upgradePart = _selectedBuilding.upgradePart;
-         var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var speedPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          accelerator.popUp = speedPopUp;
          speedPopUp.confirmButtonEnabled = false;
          speedPopUp.confirmButtonClickHandler = function(): void
@@ -707,7 +707,7 @@ package models.building
             }
             else
             {
-               WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
+               WaitingCredsPopUp.showPopUp(accelerator.selectedCost, doAccelerate);
             }
          }
          speedPopUp.addElement(accelerator);

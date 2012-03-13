@@ -6,6 +6,7 @@ package controllers.startup
    import com.developmentarc.core.actions.actions.AbstractAction;
 
    import components.alliance.AllianceScreenM;
+   import components.popups.PopUpManager;
 
    import controllers.alliances.AlliancesCommand;
    import controllers.alliances.actions.*;
@@ -28,6 +29,8 @@ package controllers.startup
    import controllers.game.actions.*;
    import controllers.market.MarketCommand;
    import controllers.market.actions.*;
+   import controllers.messages.MessagesProcessor;
+   import controllers.messages.ResponseMessagesTracker;
    import controllers.notifications.NotificationsCommand;
    import controllers.notifications.actions.*;
    import controllers.objects.ObjectsCommand;
@@ -185,6 +188,9 @@ package controllers.startup
          logger.info("-------------- APPLICATION RESET --------------");
          new GlobalEvent(GlobalEvent.APP_RESET);
          ServerProxyInstance.getInstance().reset();
+         MessagesProcessor.getInstance().reset();
+         ResponseMessagesTracker.getInstance().reset();
+         PopUpManager.getInstance().reset();
          StringUtil.reset();
          ML.reset();
          MChat.getInstance().reset();

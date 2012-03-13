@@ -12,8 +12,8 @@
       import com.developmentarc.core.utils.EventBroker;
 
       import components.credits.AccelerateSelector;
-      import components.popups.ActionConfirmationPopup;
-      import components.popups.WaitingCredsPopup;
+      import components.popups.ActionConfirmationPopUp;
+      import components.popups.WaitingCredsPopUp;
 
       import config.Config;
 
@@ -40,6 +40,7 @@
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
 
+
       [Bindable]
       private var _researchModel: Technology;
 
@@ -55,7 +56,8 @@
          return _researchModel;
       }
 
-      override protected function updateDisplayList(uw: Number, uh: Number): void {
+      override protected function updateDisplayList(uw: Number,
+                                                    uh: Number): void {
          super.updateDisplayList(uw, uh);
 
          if (!_researchModel || !_researchModel.upgradePart) {
@@ -63,18 +65,19 @@
          }
 
          if (_researchModel.pauseRemainder != 0 || _researchModel.upgradePart.upgradeEndsAt != null) {
-            researchBar.setProgress(_researchModel.upgradePart.upgradeProgress, 1);
+            researchBar.setProgress(_researchModel.upgradePart.upgradeProgress,
+                                    1);
          }
       }
 
       protected function addModelEventListeners(): void {
          _researchModel.upgradePart.addEventListener(
-                 UpgradeEvent.UPGRADE_PROGRESS,
-                 model_upgradeProgressHandler
+            UpgradeEvent.UPGRADE_PROGRESS,
+            model_upgradeProgressHandler
          );
          _researchModel.upgradePart.addEventListener(
-                 UpgradeEvent.UPGRADE_STOPPED,
-                 model_upgradeProgressHandler
+            UpgradeEvent.UPGRADE_STOPPED,
+            model_upgradeProgressHandler
          );
       }
 
@@ -85,49 +88,50 @@
       private function removeModelEventListeners(e: GlobalEvent = null): void {
          if (_researchModel && _researchModel.upgradePart) {
             _researchModel.upgradePart.removeEventListener(
-                    UpgradeEvent.UPGRADE_PROGRESS,
-                    model_upgradeProgressHandler
+               UpgradeEvent.UPGRADE_PROGRESS,
+               model_upgradeProgressHandler
             );
             _researchModel.upgradePart.removeEventListener(
-                    UpgradeEvent.UPGRADE_STOPPED,
-                    model_upgradeProgressHandler
+               UpgradeEvent.UPGRADE_STOPPED,
+               model_upgradeProgressHandler
             );
          }
       }
 
       protected function basecontainer1_creationCompleteHandler(event: FlexEvent): void {
-         EventBroker.subscribe(GlobalEvent.APP_RESET, removeModelEventListeners);
+         EventBroker.subscribe(GlobalEvent.APP_RESET,
+                               removeModelEventListeners);
       }
 
       protected function coin_clickHandler(event: MouseEvent): void {
          var accelerator: AccelerateSelector = new AccelerateSelector();
          accelerator.upgradePart = _researchModel.upgradePart;
-         var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var speedPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          accelerator.popUp = speedPopUp;
          speedPopUp.confirmButtonEnabled = false;
-         speedPopUp.confirmButtonClickHandler = function(): void {
+         speedPopUp.confirmButtonClickHandler = function (): void {
             function doAccelerate(): void {
                new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE,
-                       {'id': _researchModel.id,
-                          'index': accelerator.selectedAccelerateType}).dispatch();
+                                       {'id':      _researchModel.id,
+                                          'index': accelerator.selectedAccelerateType}).dispatch();
             }
 
             if (accelerator.hasEnoughCredits()) {
                doAccelerate();
             }
             else {
-               WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
+               WaitingCredsPopUp.showPopUp(accelerator.selectedCost,
+                                           doAccelerate);
             }
          }
          speedPopUp.addElement(accelerator);
          speedPopUp.show();
       }
 
-      protected function handleTechClick(e: MouseEvent): void
-      {
-          MCTechnologySelectedSidebar.getInstance().selectedTechnology = _researchModel;
-          _researchModel.dispatchEvent(new Event(TechnologyEvent.SELECTED_CHANGE));
-          MCSidebar.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_INFO);
+      protected function handleTechClick(e: MouseEvent): void {
+         MCTechnologySelectedSidebar.getInstance().selectedTechnology = _researchModel;
+         _researchModel.dispatchEvent(new Event(TechnologyEvent.SELECTED_CHANGE));
+         MCSidebar.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_INFO);
       }
       ]]>
    </fx:Script>

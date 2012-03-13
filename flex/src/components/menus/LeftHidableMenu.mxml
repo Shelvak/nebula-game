@@ -11,7 +11,7 @@
       <![CDATA[
       import components.dailybonus.DailyBonusComp;
       import components.dailybonus.DailyBonusEvent;
-      import components.popups.ActionConfirmationPopup;
+      import components.popups.ActionConfirmationPopUp;
 
       import controllers.dailybonus.DailyBonusCommand;
 
@@ -42,11 +42,11 @@
       }
 
       private function showDailyBonus(): void {
-         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          var cont: DailyBonusComp = new DailyBonusComp();
          cont.reward = ML.player.dailyBonus;
          cont.addEventListener(DailyBonusEvent.CLOSE_PANEL,
-                               function(e: DailyBonusEvent): void {
+                               function (e: DailyBonusEvent): void {
                                   popUp.close();
                                });
          popUp.title = Localizer.string('Popups', 'title.dailyBonus');
@@ -55,7 +55,7 @@
                                                      'label.claimReward');
          popUp.cancelButtonLabel = Localizer.string('Quests',
                                                     'label.claimLater');
-         popUp.confirmButtonClickHandler = function(button: Button): void {
+         popUp.confirmButtonClickHandler = function (button: Button): void {
             new DailyBonusCommand(
                DailyBonusCommand.CLAIM,
                {'planetId': MSSObject(cont.planetSelector.selectedItem).id}

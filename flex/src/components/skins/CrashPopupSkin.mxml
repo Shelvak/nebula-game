@@ -9,7 +9,7 @@
              alpha.disabledWithControlBar="0.5">
    
    <fx:Metadata>
-      [HostComponent("components.popups.BasePopup")]
+      [HostComponent("components.popups.BasePopUp")]
    </fx:Metadata>
    
    <fx:Script>

@@ -8,8 +8,8 @@
    <fx:Script>
       <![CDATA[
       import components.credits.AccelerateSelector;
-      import components.popups.ActionConfirmationPopup;
-      import components.popups.WaitingCredsPopup;
+      import components.popups.ActionConfirmationPopUp;
+      import components.popups.WaitingCredsPopUp;
 
       import controllers.buildings.BuildingsCommand;
       import controllers.objects.ObjectClass;
@@ -72,14 +72,14 @@
       protected function coincomp1_clickHandler(event: MouseEvent): void {
          var accelerator: AccelerateSelector = new AccelerateSelector();
          accelerator.upgradePart = _constructableModel.upgradePart;
-         var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var speedPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          accelerator.popUp = speedPopUp;
          speedPopUp.confirmButtonEnabled = false;
-         speedPopUp.confirmButtonClickHandler = function(): void {
+         speedPopUp.confirmButtonClickHandler = function (): void {
             function doAccelerate(): void {
                new BuildingsCommand(
                   BuildingsCommand.ACCELERATE_CONSTRUCTOR, {
-                     'id': ML.latestPlanet.getBuildingByConstructable(
+                     'id':    ML.latestPlanet.getBuildingByConstructable(
                         _constructableModel.id,
                         _constructableModel is Building
                            ? ObjectClass.BUILDING
@@ -92,7 +92,7 @@
                doAccelerate();
             }
             else {
-               WaitingCredsPopup.showPopup(
+               WaitingCredsPopUp.showPopUp(
                   accelerator.selectedCost, doAccelerate
                );
             }
@@ -106,7 +106,7 @@
 
       protected function btnDelete_clickHandler(event: MouseEvent): void {
          if (_constructableModel is Building) {
-            const building:Building = Building(_constructableModel);
+            const building: Building = Building(_constructableModel);
             ML.latestPlanet.selectLocation(
                new LocationMinimal(
                   LocationType.SS_OBJECT,

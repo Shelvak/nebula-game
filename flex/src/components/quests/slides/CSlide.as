@@ -6,7 +6,7 @@ package components.quests.slides
    import com.greensock.loading.data.LoaderMaxVars;
    import com.greensock.loading.display.ContentDisplay;
 
-   import components.popups.ErrorPopup;
+   import components.popups.ErrorPopUp;
 
    import controllers.startup.ChecksumsLoader;
    import controllers.startup.StartupInfo;
@@ -230,7 +230,7 @@ package components.quests.slides
          }
          if (checksumChanged)
          {
-            var popUp: ErrorPopup = new ErrorPopup();
+            var popUp: ErrorPopUp = new ErrorPopUp();
             popUp.retryButtonLabel = Localizer.string('Popups', 'label.refresh');
             popUp.showCancelButton = false;
             popUp.showRetryButton = true;

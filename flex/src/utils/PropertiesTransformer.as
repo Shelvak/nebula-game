@@ -1,8 +1,8 @@
 package utils
 {
-   import mx.collections.ArrayCollection;
-   
-   
+   import flash.utils.Dictionary;
+
+
    /**
     * Contains static methods for transforming objects with one type of
     * properties notation to another objects with different type of notation.
@@ -58,7 +58,7 @@ package utils
        * are of CamelCase notation instead of under_score.
        */
       public static function objectToCamelCase(obj: Object): Object {
-         return (transformObject(obj, CAMEL_CASE, new ArrayCollection()));
+         return (transformObject(obj, CAMEL_CASE, new Dictionary()));
       }
 
       /**
@@ -77,7 +77,7 @@ package utils
        * are of under_score notation instead of CamelCase.
        */
       public static function objectToUnderscore(obj: Object): Object {
-         return (transformObject(obj, UNDER_SCORE, new ArrayCollection()));
+         return (transformObject(obj, UNDER_SCORE, new Dictionary()));
       }
 
       // Recursively creates new object with a given properties notation form a
@@ -85,8 +85,8 @@ package utils
       // any property that holds a non-primitive type.
       private static function transformObject(obj: Object,
                                               notation: int,
-                                              visitedObjs: ArrayCollection): Object {
-         visitedObjs.addItem(obj);
+                                              visitedObjs: Dictionary): Object {
+         visitedObjs[obj] = true;
          var result: * = undefined;
 
          if (obj is Array) {
@@ -96,7 +96,7 @@ package utils
                   result.push(item);
                }
                else {
-                  if (!visitedObjs.contains(item)) {
+                  if (visitedObjs[item] === undefined) {
                      result.push(transformObject(item, notation, visitedObjs));
                   }
                }
@@ -121,7 +121,7 @@ package utils
                   result[transfProp] = obj[prop];
                }
                else {
-                  if (!visitedObjs.contains(obj[prop])) {
+                  if (visitedObjs[obj[prop]] === undefined) {
                      result[transfProp] = transformObject(
                         obj[prop], notation, visitedObjs
                      );

@@ -1,5 +1,8 @@
 package controllers.timedupdate
 {
+   import controllers.messages.MessagesProcessor;
+   import controllers.messages.ResponseMessagesTracker;
+
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
@@ -8,6 +11,7 @@ package controllers.timedupdate
    import utils.DateUtil;
    import utils.datastructures.iterators.IIterator;
    import utils.datastructures.iterators.IIteratorFactory;
+
 
    public class MasterUpdateTrigger
    {
@@ -132,6 +136,10 @@ package controllers.timedupdate
       private function triggerUpdate() : void {
          // grab current time
          DateUtil.now = new Date().time;
+
+         // process a few messages
+         MessagesProcessor.getInstance().process(5);
+         ResponseMessagesTracker.getInstance().checkWaitingMessages();
          
          // advance to the next trigger
          _triggerIndex++;

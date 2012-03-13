@@ -5,7 +5,7 @@
                         xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
-      import components.popups.ActionConfirmationPopup;
+      import components.popups.ActionConfirmationPopUp;
 
       import config.Config;
 
@@ -21,6 +21,7 @@
       import utils.UrlNavigate;
       import utils.locale.Localizer;
 
+
       [Bindable]
       public var resource: Resource;
 
@@ -29,7 +30,7 @@
             UrlNavigate.getInstance().showBuyCreds();
          }
          else {
-            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
             popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
             popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
             var lbl: Label = new Label();
@@ -38,10 +39,11 @@
             popUp.addElement(lbl);
             popUp.title = Localizer.string('Popups', 'title.boostPlanet');
             popUp.confirmButtonClickHandler = function (button: Button = null): void {
-               new PlanetsCommand(PlanetsCommand.BOOST, {'planet': ML.latestPlanet,
-                  'resource': resource.type,
-                  'attribute': attribute
-               }).dispatch();
+               new PlanetsCommand(PlanetsCommand.BOOST,
+                                  {'planet':      ML.latestPlanet,
+                                     'resource':  resource.type,
+                                     'attribute': attribute
+                                  }).dispatch();
             };
             popUp.show();
          }

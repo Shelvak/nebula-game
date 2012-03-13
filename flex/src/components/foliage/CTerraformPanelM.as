@@ -1,7 +1,7 @@
 package components.foliage
 {
    import components.foliage.events.CFoliageSidebarMEvent;
-   import components.popups.ActionConfirmationPopup;
+   import components.popups.ActionConfirmationPopUp;
    
    import config.Config;
    
@@ -96,7 +96,7 @@ package components.foliage
       }
       
       public function removeFolliage() : void {
-         var popup:ActionConfirmationPopup = new ActionConfirmationPopup();
+         var popup:ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popup.title = getString("title.confirmTerraform");
          popup.cancelButtonLabel = getString("label.cancel");
          popup.cancelButtonEnabled = true;
