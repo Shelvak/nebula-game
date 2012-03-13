@@ -87,8 +87,8 @@ describe ChatController do
   end
 
   # This action is not pushed via regular Dispatcher#push but instead
-  # transmitted directly via Dispatcher#transmit from +Chat::Hub+ for
-  # performance reasons. Because of that we only test client invocation
+  # transmitted directly via Dispatcher#transmit_to_players! from +Chat::Hub+
+  # for performance reasons. Because of that we only test client invocation
   # here.
   describe "chat|c" do
     before(:each) do

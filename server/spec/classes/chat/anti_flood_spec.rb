@@ -4,11 +4,14 @@ require File.expand_path(
 
 describe Chat::AntiFlood do
   let(:dispatcher) do
-    dispatcher = mock(Dispatcher)
-    dispatcher.stub!(:push_to_player)
+    dispatcher = mock_actor(:dispatcher_mock, Dispatcher)
+    dispatcher.stub!(:push_to_player!)
     dispatcher
   end
-  let(:antiflood) { Chat::AntiFlood.new(dispatcher) }
+  let(:antiflood) do
+    dispatcher()
+    Chat::AntiFlood.new(:dispatcher_mock)
+  end
   let(:msg_count) { Cfg.chat_antiflood_messages }
   let(:period) { Cfg.chat_antiflood_period }
   let(:player_id) { 10 }
@@ -25,7 +28,7 @@ describe Chat::AntiFlood do
 
     it "should silence player if he is flooding" do
       silence_until = Cfg.chat_antiflood_silence_for(1).from_now
-      dispatcher.should_receive(:push_to_player).with(
+      dispatcher.should_receive(:push_to_player!).with(
         player_id, ChatController::ACTION_SILENCE, {'until' => silence_until}
       )
 
@@ -58,7 +61,7 @@ describe Chat::AntiFlood do
   describe "#silence" do
     it "should silence player until given time if it is given" do
       silence_until = 10.minutes.from_now
-      dispatcher.should_receive(:push_to_player).with(
+      dispatcher.should_receive(:push_to_player!).with(
         player_id, ChatController::ACTION_SILENCE, {'until' => silence_until}
       )
       antiflood.silence(player_id, silence_until)

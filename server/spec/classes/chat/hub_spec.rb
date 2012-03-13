@@ -3,26 +3,28 @@ require File.expand_path(
 )
 
 describe Chat::Hub do
+  let(:dispatcher_mock_name) { :dispatcher_mock }
+
   before(:each) do
-    @dispatcher = mock(Dispatcher)
-    @dispatcher.stub!(:transmit).and_return(true)
-    @dispatcher.stub!(:push).and_return(true)
-    @hub = Chat::Hub.new(@dispatcher)
+    @dispatcher = mock_actor(dispatcher_mock_name, Dispatcher)
+    @dispatcher.stub!(:transmit_to_players!).and_return(true)
+    @dispatcher.stub!(:push_to_player!).and_return(true)
+    @hub = Chat::Hub.new(dispatcher_mock_name)
     @antiflood = @hub.instance_variable_get("@antiflood")
     @control = @hub.instance_variable_get("@control")
   end
 
   describe ".new" do
     it "should create antiflood along with hub" do
-      Chat::AntiFlood.should_receive(:new).with(@dispatcher)
-      Chat::Hub.new(@dispatcher)
+      Chat::AntiFlood.should_receive(:new).with(dispatcher_mock_name)
+      Chat::Hub.new(dispatcher_mock_name)
     end
   end
 
   describe "#register" do
     before(:each) do
       @player = Factory.create(:player)
-      @dispatcher.stub!(:connected?).with(@player.id).and_return(true)
+      @dispatcher.stub!(:player_connected?).with(@player.id).and_return(true)
     end
 
     it "should join to galaxy channel" do
@@ -64,7 +66,7 @@ describe Chat::Hub do
   describe "#unregister" do
     before(:each) do
       @player = Factory.create(:player)
-      @dispatcher.stub!(:connected?).with(@player.id).and_return(true)
+      @dispatcher.stub!(:player_connected?).with(@player.id).and_return(true)
       @hub.register(@player)
     end
 
@@ -108,10 +110,10 @@ describe Chat::Hub do
   describe "#send_stored!" do
     before(:each) do
       @player = Factory.create(:player)
-      @dispatcher.stub!(:connected?).with(@player.id).and_return(true)
+      @dispatcher.stub!(:player_connected?).with(@player.id).and_return(true)
 
       @source = Factory.create(:player)
-      @dispatcher.stub!(:connected?).with(@source.id).and_return(false)
+      @dispatcher.stub!(:player_connected?).with(@source.id).and_return(false)
 
       Chat::Message.store!(@source.id, @player.id, "FOO")
       Chat::Message.store!(@source.id, @player.id, "bar")
@@ -216,12 +218,12 @@ describe Chat::Hub do
       @source = Factory.create(:player)
       @target = Factory.create(:player)
       @message = "OMG"
-      @dispatcher.stub(:connected?)
+      @dispatcher.stub(:player_connected?)
     end
 
     describe "target player is connected" do
       before(:each) do
-        @dispatcher.should_receive(:connected?).with(@target.id).
+        @dispatcher.should_receive(:player_connected?).with(@target.id).
           at_least(1).and_return(true)
       end
 
@@ -241,21 +243,19 @@ describe Chat::Hub do
 
       describe "source player is not connected" do
         before(:each) do
-          @dispatcher.should_receive(:connected?).with(@source.id).
+          @dispatcher.should_receive(:player_connected?).with(@source.id).
             at_least(1).and_return(false)
         end
 
         it "should add name & stamp to params" do
           stamp = 10.minutes.ago
-          @dispatcher.should_receive(:transmit).with(
+          @dispatcher.should_receive(:transmit_to_players!).with(
+            ChatController::PRIVATE_MESSAGE,
             {
-              'action' => ChatController::PRIVATE_MESSAGE,
-              'params' => {
-                'pid' => @source.id,
-                'msg' => @message,
-                'name' => @source.name,
-                'stamp' => stamp.as_json
-              }
+              'pid' => @source.id,
+              'msg' => @message,
+              'name' => @source.name,
+              'stamp' => stamp.as_json
             },
             @target.id
           )
@@ -272,16 +272,14 @@ describe Chat::Hub do
 
       describe "source player is connected" do
         before(:each) do
-          @dispatcher.should_receive(:connected?).with(@source.id).
+          @dispatcher.should_receive(:player_connected?).with(@source.id).
             and_return(true)
         end
 
         it "should transmit message to player" do
-          @dispatcher.should_receive(:transmit).with(
-            {
-              'action' => ChatController::PRIVATE_MESSAGE,
-              'params' => {'pid' => @source.id, 'msg' => @message}
-            },
+          @dispatcher.should_receive(:transmit_to_players!).with(
+            ChatController::PRIVATE_MESSAGE,
+            {'pid' => @source.id, 'msg' => @message},
             @target.id
           )
           @hub.private_msg(@source.id, @target.id, @message)
@@ -310,7 +308,7 @@ describe Chat::Hub do
 
       describe "if directed to normal player" do
         before(:each) do
-          @dispatcher.should_receive(:connected?).with(@target.id).
+          @dispatcher.should_receive(:player_connected?).with(@target.id).
             and_return(false)
         end
 

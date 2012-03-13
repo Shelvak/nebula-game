@@ -242,12 +242,20 @@ if App.in_production?
   ]
 else
   # Quit on failure in development mode.
-  log_writer_config.callbacks[:fatal] =
-    log_writer_config.callbacks[:error] =
-    lambda do |message|
+  handler = proc do |arg|
+    STDERR.puts "ERROR HANDLER STRUCK:"
+    STDERR.puts arg
+    if App.server_state == App::SERVER_STATE_RUNNING
       App.server_state = App::SERVER_STATE_SHUTDOWNING
       Celluloid.shutdown
     end
+  end
+
+  log_writer_config.callbacks[:fatal] =
+    log_writer_config.callbacks[:error] =
+      handler
+
+  Celluloid.exception_handler(&handler)
 end
 
 Logging::Writer.instance.config = log_writer_config

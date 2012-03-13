@@ -38,6 +38,11 @@ class Dispatcher::Scope
       new(GALAXY, [galaxy_ir_id.is_a?(Fixnum) ? galaxy_ir_id : galaxy_ir_id.id])
     end
 
+    # This work is readonly, it doesn't matter which worker does it.
+    def readonly
+      new(PLAYER, [])
+    end
+
     # This work involves several players.
     def player(player_or_id)
       typesig binding, [Player, Fixnum]

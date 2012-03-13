@@ -1,7 +1,6 @@
 class Chat::AntiFlood
-  def initialize(dispatcher)
-    @dispatcher = dispatcher
-
+  def initialize(dispatcher_actor_name)
+    @dispatcher_actor_name = dispatcher_actor_name
     # {player_id => Fixnum}
     @silence_counters = Hash.new(0)
     # {player_id => Time}
@@ -32,12 +31,16 @@ class Chat::AntiFlood
 
     @silence_until[player_id] = silence_until
 
-    @dispatcher.push_to_player!(
+    dispatcher.push_to_player!(
       player_id, ChatController::ACTION_SILENCE, {'until' => silence_until}
     )
   end
 
   private
+
+  def dispatcher
+    Celluloid::Actor[@dispatcher_actor_name]
+  end
 
   def message(player_id, timestamp)
     timestamp = timestamp.to_f

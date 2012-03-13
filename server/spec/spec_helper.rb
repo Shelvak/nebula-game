@@ -78,6 +78,20 @@ if $SPEC_INITIALIZED.nil?
     end
   end
 
+  def mock_actor(name, klass)
+    mock = mock(klass)
+    Celluloid::Actor.instance_eval do
+      define_singleton_method(:[]) do |key|
+        if name == key
+          mock
+        else
+          super(key)
+        end
+      end
+    end
+    mock
+  end
+
   def stacktrace!
     raise "error"
   rescue Exception => e
