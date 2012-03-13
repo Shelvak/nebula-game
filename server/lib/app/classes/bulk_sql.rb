@@ -162,11 +162,13 @@ class BulkSql
       # Execute mass update from temporary table to the original table.
       # Exclude first column that is always ID.
       set_str = columns[1..-1].
-        map { |c| "`dst`.`#{c}`=`src`.`#{c}`" }.join(", ")
+        map { |c| "`#{table_name}`.`#{c}`=`#{tmp_table_name}`.`#{c}`" }.
+        join(", ")
       update_sql = %Q{
-        UPDATE `#{table_name}` AS dst
-        INNER JOIN `#{tmp_table_name}` AS src
-        ON dst.`#{primary_key}` = src.`#{primary_key}`
+        UPDATE `#{table_name}`
+        INNER JOIN `#{tmp_table_name}`
+        ON `#{table_name}`.`#{primary_key}` = `#{tmp_table_name}`.`#{
+          primary_key}`
         SET #{set_str}
       }
       connection.execute(update_sql)
