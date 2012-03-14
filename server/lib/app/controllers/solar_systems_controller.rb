@@ -68,7 +68,7 @@ class SolarSystemsController < GenericController
       :units => units.map {
         |unit| unit.as_json(:perspective => resolver)
       },
-      :npc_units => npc_units,
+      :npc_units => npc_units, # TODO: spec me in s2_par branch!
       :players => Player.minimal_from_objects(units),
       :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
         Route.non_friendly_for_solar_system(
