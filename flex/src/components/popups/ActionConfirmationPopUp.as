@@ -11,9 +11,9 @@ package components.popups
     * <code>Localizer.string("Popups", "label.confirm")</code> and label of cancel button is
     * <code>Localizer.string("Popups", "label.cancel")</code>.
     */
-   public class ActionConfirmationPopup extends BasePopup
+   public class ActionConfirmationPopUp extends BasePopUp
    {
-      public function ActionConfirmationPopup()
+      public function ActionConfirmationPopUp()
       {
          super();
          _confirmButtonLabel = getLabel("confirm");
@@ -29,7 +29,7 @@ package components.popups
       
       
       /**
-       * @see BasePopup#addActionButton()
+       * @see BasePopUp#addActionButton()
        */
       public var confirmButtonClickHandler:Function;
       
@@ -169,7 +169,7 @@ package components.popups
       
       
       /**
-       * @see BasePopup#addActionButton()
+       * @see BasePopUp#addActionButton()
        */
       public var cancelButtonClickHandler:Function;
       

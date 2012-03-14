@@ -9,7 +9,7 @@
    <fx:Script>
       <![CDATA[
       import components.market.events.MarketEvent;
-      import components.popups.ActionConfirmationPopup;
+      import components.popups.ActionConfirmationPopUp;
       import components.skins.GreenButtonSkin;
 
       import models.building.Building;
@@ -21,6 +21,7 @@
       import utils.ApplicationLocker;
 
       import utils.MathUtil;
+
 
       protected function what_selectedResourceChangeHandler(event: Event): void {
          if (sellSelector.selectedVal < Config.getMinMarketOffer()) {
@@ -63,7 +64,8 @@
 
 
       protected function advancedcontainer1_creationCompleteHandler(event: FlexEvent): void {
-         mScreen.addEventListener(MarketEvent.AVG_RATE_CHANGE, dispatchAvgRateChangeEvent);
+         mScreen.addEventListener(MarketEvent.AVG_RATE_CHANGE,
+                                  dispatchAvgRateChangeEvent);
          mScreen.addEventListener(MarketEvent.RATE_UPDATE_NEEDED, updateRate);
       }
 
@@ -74,7 +76,7 @@
       }
 
       protected function confirm_clickHandler(event: MouseEvent): void {
-         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
          popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
          var lbl: Label = new Label();
@@ -84,11 +86,11 @@
          popUp.title = Localizer.string('Popups', 'title.createOffer');
          popUp.confirmButtonClickHandler = function (button: Button = null): void {
             new MarketCommand(MarketCommand.NEW, {
-               'marketId': mScreen.market.id,
+               'marketId':   mScreen.market.id,
                'fromAmount': sellSelector.selectedVal,
-               'fromKind': OfferResourceKind[what.selectedItem],
-               'toRate': forSelector.selectedVal / sellSelector.selectedVal,
-               'toKind': OfferResourceKind[forWhat.selectedItem]
+               'fromKind':   OfferResourceKind[what.selectedItem],
+               'toRate':     forSelector.selectedVal / sellSelector.selectedVal,
+               'toKind':     OfferResourceKind[forWhat.selectedItem]
             }).dispatch();
             reset();
          };

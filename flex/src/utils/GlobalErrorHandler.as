@@ -5,7 +5,7 @@ package utils
    import com.adobe.ac.logging.GlobalExceptionHandlerAction;
    import com.tinylabproductions.stacktracer.StacktraceError;
 
-   import components.popups.ErrorPopup;
+   import components.popups.ErrorPopUp;
 
    import flash.external.ExternalInterface;
    import flash.system.Capabilities;
@@ -71,7 +71,7 @@ package utils
       }
 
       private static function showErrorPopup(key: String): void {
-         const popup: ErrorPopup = new ErrorPopup();
+         const popup: ErrorPopUp = new ErrorPopUp();
          popup.showCancelButton = false;
          popup.showRetryButton = false;
          popup.title = getString(key + ".title");

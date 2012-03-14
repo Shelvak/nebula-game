@@ -18,13 +18,15 @@ package controllers.units.actions
          NotificationFactory.fromObject(cmd.parameters.notification);
          for each (var alert: Notification in ML.notificationAlerts)
          {
-            if (alert.id == cmd.parameters.notificationId)
+            if (alert.id == cmd.parameters.notification.id)
             {
-               ML.notificationAlerts.removeItemAt(ML.notificationAlerts.getItemIndex(alert));
+               ML.notificationAlerts.removeItemAt(
+                  ML.notificationAlerts.getItemIndex(alert)
+               );
                break;
             }
          }
-         ML.notifications.show(cmd.parameters.notificationId, true);
+         ML.notifications.show(cmd.parameters.notification.id, true);
       }
    }
 }

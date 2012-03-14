@@ -7,6 +7,8 @@ package components.map.planet
    import interfaces.ICleanable;
 
    import models.map.MapDimensionType;
+   import models.planet.MPlanet;
+   import models.solarsystem.MSSObject;
    import models.tile.Tile;
 
    import utils.BitmapUtil;
@@ -134,8 +136,10 @@ package components.map.planet
             return _background;
          }
 
-         var border:int = PlanetMap.BORDER_SIZE;
-         var terrain:int = _map.getPlanet().ssObject.terrain;
+         const border: int = PlanetMap.BORDER_SIZE;
+         const planet: MPlanet = _map.getPlanet();
+         const ssObject: MSSObject = planet.ssObject;
+         const terrain: int = ssObject.terrain;
          
          _plane3D_width = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.WIDHT)).clone();
          _plane3D_height = IMG.getImage(AssetNames.get3DPlaneImageName(terrain, MapDimensionType.HEIGHT)).clone();
@@ -177,7 +181,7 @@ package components.map.planet
          for (var x: int = 0; x < _coordsTransform.logicalWidth; x++) {
             dfsArray.push(new Array());
             for (var y: int = 0; y < _coordsTransform.logicalHeight; y++) {
-               var t: Tile = _map.getPlanet().getTile(x, y);
+               var t: Tile = planet.getTile(x, y);
 
                // Foliage tiles must become regular tiles as they are
                // not rendered here (this is responsibility of one of planet

@@ -1,7 +1,7 @@
 package components.alliance
 {
    import components.alliance.events.AllianceScreenMEvent;
-   import components.popups.ErrorPopup;
+   import components.popups.ErrorPopUp;
 
    import config.Config;
 
@@ -296,7 +296,7 @@ package components.alliance
       
       public function leave_clickHandler(event:MouseEvent):void
       {
-         var popUp: ErrorPopup = new ErrorPopup();
+         var popUp: ErrorPopUp = new ErrorPopUp();
          popUp.retryButtonLabel = Localizer.string('Popups', 'label.yes');
          popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
          popUp.showCancelButton = true;

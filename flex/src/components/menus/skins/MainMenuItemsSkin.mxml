@@ -11,36 +11,33 @@
    
    <fx:Script>
       <![CDATA[
-         import application.Version;
-         
-         import components.popups.DebugLogPopup;
-         
-         import controllers.startup.StartupManager;
-         import controllers.ui.NavigationController;
-         
-         import models.ModelLocator;
-         
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
-         
-         
-         private static function get ML() : ModelLocator {
-            return ModelLocator.getInstance();
+      import application.Version;
+
+      import components.popups.DebugLogPopUp;
+
+      import controllers.startup.StartupManager;
+      import controllers.ui.NavigationController;
+
+      import models.ModelLocator;
+
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+
+      private static function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
+
+      private function getImage(name: String): BitmapData {
+         return ImagePreloader.getInstance().getImage(AssetNames.START_MENU_FOLDER + name);
+      }
+
+      protected function label1_clickHandler(event: MouseEvent): void {
+         if (event.ctrlKey) {
+            DebugLogPopUp.showLog(ML.debugLog);
          }
-         
-         private function getImage(name:String) : BitmapData {
-            return ImagePreloader.getInstance().getImage(AssetNames.START_MENU_FOLDER + name);
-         }
-         
-         protected function label1_clickHandler(event:MouseEvent):void
-         {
-            if (event.ctrlKey)
-            {
-               DebugLogPopup.showLog(ML.debugLog);
-            }
-         }
-         
+      }
       ]]>
    </fx:Script>
    

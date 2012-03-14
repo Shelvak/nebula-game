@@ -183,6 +183,8 @@
       [Bindable]
       private var enoughRates: Boolean = false;
       [Bindable]
+      private var enoughPop: Boolean = false;
+      [Bindable]
       private var resLeft: String = '';
 
       private static function get ML(): ModelLocator {
@@ -234,6 +236,8 @@
                                                       qSelectedEnergyCost,
                                                       qSelectedZetiumCost)
                   );
+                  enoughPop = (populationCost * selector.value <=
+                              ML.player.populationMax - ML.player.population);
                }
             }
          }
@@ -418,7 +422,7 @@
                         ? getString('label.fullQueue')
                         : (selectionCanBeUpgraded || !isValid)
                            ? getString(type+'.name')
-                           : (enoughRates
+                           : ((enoughRates &amp;&amp; enoughPop)
                               ? (enoughStorages
                                  ? getString('label.enoughIn', [resLeft])
                                  : getString('label.notEnoughStorage'))

@@ -40,21 +40,19 @@
       <![CDATA[
       import com.developmentarc.core.utils.EventBroker;
 
-      import controllers.messages.MessagesProcessor;
-      import controllers.messages.ResponseMessagesTracker;
       import controllers.navigation.MCTopLevel;
       import controllers.screens.Screens;
       import controllers.startup.StartupManager;
 
       import globalevents.GlobalEvent;
 
-      import models.events.LocaleEvent;
-
       import mx.events.FlexEvent;
 
       import utils.ApplicationLocker;
       import utils.DateUtil;
+      import utils.execution.GameLogicExecutionManager;
       import utils.profiler.Profiler;
+
 
       private function vstTopLevelScreens_creationCompleteHandler(event: FlexEvent): void {
          MCTopLevel.getInstance().showScreen(Screens.LOADING);
@@ -98,13 +96,8 @@
       private var _mainTimer: Timer;
 
       // we only need one instance of this event
-      private var _timedUpdateEvent: GlobalEvent =
-                     new GlobalEvent(GlobalEvent.TIMED_UPDATE, false);
-
-      private var _messagesProcessor: MessagesProcessor =
-                     MessagesProcessor.getInstance();
-      private var _respMsgTracker: ResponseMessagesTracker =
-                     ResponseMessagesTracker.getInstance();
+      private const _timedUpdateEvent: GlobalEvent =
+                       new GlobalEvent(GlobalEvent.TIMED_UPDATE, false);
 
       /**
        *
@@ -126,9 +119,9 @@
        */
       private function mainTimer_timerHandler(event: TimerEvent): void {
          DateUtil.now = new Date().time;
-         EventBroker.broadcast(_timedUpdateEvent);
-         _messagesProcessor.process();
-         _respMsgTracker.checkWaitingMessages();
+         if (GameLogicExecutionManager.getInstance().executionEnabled) {
+            EventBroker.broadcast(_timedUpdateEvent);
+         }
       }
       ]]>
    </fx:Script>

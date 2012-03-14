@@ -19,7 +19,7 @@
       source="canTakeOver(ownerIsActive_var, technologyLevelLow_var)"/>
    <fx:Script>
       <![CDATA[
-      import components.popups.ErrorPopup;
+      import components.popups.ErrorPopUp;
 
       import config.Config;
 
@@ -91,7 +91,7 @@
          );
       }
 
-      private function getTechLevelTooLowMessage(numPlayers:int): String {
+      private function getTechLevelTooLowMessage(numPlayers: int): String {
          return getString(
             'message.techLevelTooLow',
             [MAlliance.technologyLevelRequiredForPlayers(numPlayers)]
@@ -99,7 +99,7 @@
       }
 
       private function btnTakeOver_clickHandler(event: MouseEvent): void {
-         const popup: ErrorPopup = new ErrorPopup();
+         const popup: ErrorPopUp = new ErrorPopUp();
          popup.title = getString('title.confirmationPopup');
          popup.retryButtonLabel = Localizer.string("Popups", 'label.yes');
          popup.cancelButtonLabel = Localizer.string("Popups", 'label.no');
@@ -107,7 +107,7 @@
          popup.showCancelButton = true;
          popup.message = getString('message.confirmationPopup');
          popup.retryButtonClickHandler =
-            function(button: Button): void {
+            function (button: Button): void {
                new AlliancesCommand(AlliancesCommand.TAKE_OVER).dispatch();
             };
          popup.show();

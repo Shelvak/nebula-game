@@ -5,26 +5,27 @@
          textAlign="center">
    <fx:Script>
       <![CDATA[
-         import components.popups.ActionConfirmationPopup;
-         
-         import models.ModelLocator;
-         
-         import utils.locale.Localizer;
-         public var credsRequired: int = 0;
-         
-         public var popUp: ActionConfirmationPopup;
-         
-         public function hasEnoughCredits(): Boolean
-         {
-            return ModelLocator.getInstance().player.creds >= credsRequired;
-         }
-         
-         public function refreshPopup(): void
-         {
-            popUp.confirmButtonLabel = Localizer.string('Credits', 
-               hasEnoughCredits()?'label.confirm':'label.buy');
-         }
-         
+      import components.popups.ActionConfirmationPopUp;
+
+      import models.ModelLocator;
+
+      import utils.locale.Localizer;
+
+
+      public var credsRequired: int = 0;
+
+      public var popUp: ActionConfirmationPopUp;
+
+      public function hasEnoughCredits(): Boolean {
+         return ModelLocator.getInstance().player.creds >= credsRequired;
+      }
+
+      public function refreshPopup(): void {
+         popUp.confirmButtonLabel = Localizer.string('Credits',
+                                                     hasEnoughCredits()
+                                                        ? 'label.confirm'
+                                                        : 'label.buy');
+      }
       ]]>
    </fx:Script>
 </s:RichText>

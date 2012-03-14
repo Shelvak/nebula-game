@@ -1,16 +1,15 @@
 package components.chat
 {
    import com.adobe.utils.StringUtil;
-   
+
    import components.base.Panel;
-   
-   import flash.events.Event;
+
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.ui.Keyboard;
-   
+
    import flashx.textLayout.events.CompositionCompleteEvent;
-   
+
    import models.chat.ChatConstants;
    import models.chat.MChatChannel;
    import models.chat.MChatChannelPrivate;
@@ -19,9 +18,8 @@ package components.chat
    import models.time.events.MTimeEventEvent;
 
    import mx.events.PropertyChangeEvent;
-   
+
    import spark.components.Button;
-   import spark.components.CheckBox;
    import spark.components.Group;
    import spark.components.Label;
    import spark.components.RichEditableText;
@@ -30,10 +28,9 @@ package components.chat
    import spark.components.supportClasses.SkinnableComponent;
 
    import utils.DateUtil;
-
    import utils.locale.Localizer;
-   
-   
+
+
    /**
     * Visual representation of a chat channel. Consists of:
     * <ul>
@@ -178,8 +175,6 @@ package components.chat
             inpMessage.setFocus();
             updateGrpFriendOfflineWarningContainer();
             updatePnlMembers();
-            updateGrpJoinLeaveMsgsCheckBoxContainer();
-            updateChkJoinLeaveMsgs();
             updateMessageSendingAvailability();
             enableAutoScroll();
             _forceAutoScrollAfterModelChange = true;
@@ -241,29 +236,6 @@ package components.chat
       
       [SkinPart(required="true")]
       /**
-       * Lets user decide if he wants to see member join / leave messages.
-       */
-      public var chkJoinLeaveMsgs:CheckBox;
-      private function updateChkJoinLeaveMsgs() : void {
-         if (chkJoinLeaveMsgs != null && _model != null)
-            chkJoinLeaveMsgs.selected = _model.generateJoinLeaveMsgs;
-      }
-      
-      [SkinPart(required="true")]
-      /**
-       * Container for <code>chkJoinLeaveMsgs</code> and corresponding artwork.
-       */
-      public var grpJoinLeaveMsgsCheckBoxContainer:Group;
-      private function updateGrpJoinLeaveMsgsCheckBoxContainer() : void {
-         if (grpJoinLeaveMsgsCheckBoxContainer != null) {
-            grpJoinLeaveMsgsCheckBoxContainer.visible =
-            grpJoinLeaveMsgsCheckBoxContainer.includeInLayout =
-               _model != null && _model.isPublic
-         }
-      }
-      
-      [SkinPart(required="true")]
-      /**
        * A warning that a friend in a private channel is offline.
        */
       public var lblFriendOfflineWarning:Label;
@@ -311,18 +283,6 @@ package components.chat
             case pnlMembers:
                updatePnlMembers();
                break;
-            
-            case chkJoinLeaveMsgs:
-               chkJoinLeaveMsgs.addEventListener(
-                  Event.CHANGE, chkJoinLeaveMsgs_changeHandler, false, 0, true
-               );
-               chkJoinLeaveMsgs.label = getString("label.generateJoinLeaveMsgs");
-               updateChkJoinLeaveMsgs();
-               break;
-            
-            case grpJoinLeaveMsgsCheckBoxContainer:
-               updateGrpJoinLeaveMsgsCheckBoxContainer();
-               break;
          }
       }
       
@@ -339,12 +299,6 @@ package components.chat
             case btnSend:
                btnSend.removeEventListener(
                   MouseEvent.CLICK, btnSend_clickHandler, false
-               );
-               break;
-            
-            case chkJoinLeaveMsgs:
-               chkJoinLeaveMsgs.removeEventListener(
-                  Event.CHANGE, chkJoinLeaveMsgs_changeHandler, false
                );
                break;
          }
@@ -487,12 +441,6 @@ package components.chat
       
       private function btnSend_clickHandler(event:MouseEvent) : void {
          sendMessage();
-      }
-      
-      private function chkJoinLeaveMsgs_changeHandler(event:Event) : void {
-         if (_model != null) {
-            _model.generateJoinLeaveMsgs = chkJoinLeaveMsgs.selected;
-         }
       }
       
       

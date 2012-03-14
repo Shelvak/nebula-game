@@ -1,6 +1,6 @@
 package controllers.routes.actions
 {
-   import components.popups.ActionConfirmationPopup;
+   import components.popups.ActionConfirmationPopUp;
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
@@ -25,7 +25,7 @@ package controllers.routes.actions
       public override function applyClientAction(cmd:CommunicationCommand):void
       {
          var model:BaseModel = BaseModel(cmd.parameters);
-         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
          popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
          var lbl: Label = new Label();
