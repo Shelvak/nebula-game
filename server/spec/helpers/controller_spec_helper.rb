@@ -56,6 +56,7 @@ module ControllerSpecHelper
 
   def login(player=nil)
     @player = player || Factory.create(:player)
+    self.ruleset = @player.galaxy.ruleset
   end
 
   def response
