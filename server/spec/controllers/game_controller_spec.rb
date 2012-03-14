@@ -45,7 +45,6 @@ describe GameController do
         )
       end
 
-      # TODO: fails with others.
       it "should replace speed with constant" do
         with_config_values 'units.foo' => '10 / speed * level' do
           invoke @action, @params
@@ -59,7 +58,7 @@ describe GameController do
           invoke @action, @params
           default_value = response[:config]['units.foo']
 
-          session[:ruleset] = 'hyper'
+          self.ruleset = 'hyper'
           invoke @action, @params
           response[:config]['units.foo'].should_not == default_value
         end

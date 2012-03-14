@@ -8,8 +8,8 @@ class Chat::Control
   # Logging tag.
   TAG = "chat_control"
 
-  def initialize(dispatcher, antiflood)
-    @dispatcher = dispatcher
+  def initialize(dispatcher_actor_name, antiflood)
+    @dispatcher_actor_name = dispatcher_actor_name
     @antiflood = antiflood
   end
 
@@ -51,6 +51,10 @@ class Chat::Control
   end
 
   private
+
+  def dispatcher
+    Celluloid::Actor[@dispatcher_actor_name]
+  end
 
   def cmd_help(player, args)
     log(player, "help", args)
@@ -161,8 +165,9 @@ class Chat::Control
     messages.each do |message|
       params = {'pid' => SYSTEM_ID, 'msg' => message, 'name' => SYSTEM_NAME}
 
-      @dispatcher.transmit(
-        {'action' => ChatController::PRIVATE_MESSAGE, 'params' => params},
+      dispatcher.transmit_to_players!(
+        ChatController::PRIVATE_MESSAGE,
+        params,
         player_id
       )
     end

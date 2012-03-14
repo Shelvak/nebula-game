@@ -39,10 +39,6 @@ class GameController < GenericController
     tiles\..+?\.mod\.
   )/x
 
-  # Ensure only one thread is modifying cached configs at one time.
-  @@ruleset_mutex = Mutex.new
-  @@ruleset_configs = {}
-
   ACTION_CONFIG = 'game|config'
 
   CONFIG_OPTIONS = no_options
@@ -58,19 +54,27 @@ class GameController < GenericController
   end
 
   class << self
+    # Ensure only one thread is modifying cached configs at one time.
+    @@ruleset_mutex = Mutex.new
+
     private
 
     def get_config(ruleset)
       @@ruleset_mutex.synchronize do
-        # Config will be scoped to ruleset right here, so no harm done
-        # by not passing ruleset to it.
-        @@ruleset_configs[ruleset] ||= cache_config(ruleset)
+        # Ensure duplicated controller instances have separate configurations
+        # for testing. If we use @@ testing becomes impossible, because one
+        # example intervenes with other.
+        @ruleset_configs ||= {}
+        @ruleset_configs[ruleset] ||= cache_config(ruleset)
       end
     end
 
     # Cache current configuration replacing speed with constant.
     def cache_config(ruleset)
-      CONFIG.constantize_speed(CONFIG.filter(SENDABLE_RE, ruleset))
+      CONFIG.with_set_scope(ruleset) do
+        filtered = CONFIG.filter(SENDABLE_RE, ruleset)
+        CONFIG.constantize_speed(filtered)
+      end
     end
   end
 end

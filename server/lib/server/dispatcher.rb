@@ -176,7 +176,7 @@ class Dispatcher
   # Disconnect client. Send message and close connection.
   def disconnect(client_or_id, reason=nil)
     client = client_or_id.is_a?(Fixnum) \
-      ? @id_to_client[client_or_id] : client_or_id
+      ? @player_id_to_client[client_or_id] : client_or_id
     return if client.nil?
 
     transmit_to_client(client, {
@@ -187,26 +187,25 @@ class Dispatcher
     Actor[:server].disconnect!(client)
   end
 
-  # Pushes message to player if he is connected.
-  #
-  # @see #push
-  def transmit_to_players(message, action, params={}, filters=nil)
-    typesig binding, Fixnum, String, Hash,
-      [NilClass, Array, Dispatcher::PushFilter]
+  # Transmits message to given players ids.
+  def transmit_to_players(action, params={}, *player_ids)
+    typesig binding, String, Hash, Array
 
-    client = @player_id_to_client[player_id]
-    if client.nil?
-      debug "Push to player #{player_id} filtered: not connected."
-      return
-    end
+    clients = player_ids.map do |player_id|
+      @player_id_to_client[player_id]
+    end.compact
 
-    push(client, action, params, filters)
+    transmit_to_clients(action, params, *clients)
   end
 
-  # Transmit _message_ to clients identified by _ids_.
-  def transmit(message, *clients)
+  # Transmit message to clients.
+  def transmit_to_clients(action, params={}, *clients)
+    typesig binding, String, Hash, Array
+
+    message_hash = {"action" => action, "params" => params}
+
     clients.each do |client|
-      transmit_to_client(client, message)
+      transmit_to_client(client, message_hash)
     end
   end
 

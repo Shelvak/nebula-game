@@ -4,12 +4,14 @@ class Chat::Pool
 
   def initialize
     @hubs = {}
+    @mutex = Mutex.new
   end
 
   # Retrieves correct hub for _player_.
   def hub_for(player)
-    galaxy_id = player.galaxy_id
-    @hubs[galaxy_id] ||= Chat::Hub.new(Celluloid::Actor[:dispatcher])
-    @hubs[galaxy_id]
+    @mutex.synchronize do
+      galaxy_id = player.galaxy_id
+      @hubs[galaxy_id] ||= Chat::Hub.new(:dispatcher)
+    end
   end
 end

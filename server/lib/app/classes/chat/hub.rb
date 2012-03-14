@@ -5,12 +5,14 @@ class Chat::Hub
   # Language for global channel.
   GLOBAL_CHANNEL_LANGUAGE = 'en'
 
-  def initialize(dispatcher)
-    @dispatcher = dispatcher
-    @antiflood = Chat::AntiFlood.new(dispatcher)
-    @control = Chat::Control.new(dispatcher, @antiflood)
+  def initialize(dispatcher_actor_name)
+    typesig binding, Symbol
+
+    @dispatcher_actor_name = dispatcher_actor_name
+    @antiflood = Chat::AntiFlood.new(dispatcher_actor_name)
+    @control = Chat::Control.new(dispatcher_actor_name, @antiflood)
     @channels = {
-      GLOBAL_CHANNEL => Chat::Channel.new(GLOBAL_CHANNEL, @dispatcher)
+      GLOBAL_CHANNEL => Chat::Channel.new(GLOBAL_CHANNEL, dispatcher_actor_name)
     }
     # Cache of player_id => channel_names pairs
     @channels_cache = {}
@@ -104,7 +106,7 @@ class Chat::Hub
       @antiflood.message!(player_id)
     end
 
-    if @dispatcher.connected?(target_id)
+    if dispatcher.player_connected?(target_id)
       params = {'pid' => player_id, 'msg' => message}
 
       # Retrieve player name from cache and send it to client with the
@@ -112,16 +114,12 @@ class Chat::Hub
       # player is connected right now client will know his name because he
       # will be joined in 'galaxy' channel.
       params['name'] = player_name(player_id) \
-        unless @dispatcher.connected?(player_id)
+        unless dispatcher.player_connected?(player_id)
       # Include timestamp if it is provided.
       params['stamp'] = created_at.as_json unless created_at.nil?
 
-      @dispatcher.transmit(
-        {
-          'action' => ChatController::PRIVATE_MESSAGE,
-          'params' => params
-        },
-        target_id
+      dispatcher.transmit_to_players!(
+        ChatController::PRIVATE_MESSAGE, params, target_id
       )
     else
       Chat::Message.store!(player_id, target_id, message)
@@ -136,6 +134,10 @@ class Chat::Hub
   end
 
   private
+  def dispatcher
+    Celluloid::Actor[@dispatcher_actor_name]
+  end
+
   # Retrieves player name by _player_id_ either from cache or from db (and
   # stores it in cache).
   def player_name(player_id)
@@ -163,7 +165,9 @@ class Chat::Hub
 
   # Joins _player_ to channel.
   def join(channel_name, player, dispatch_to_self=true)
-    @channels[channel_name] ||= Chat::Channel.new(channel_name, @dispatcher)
+    @channels[channel_name] ||= Chat::Channel.new(
+      channel_name, @dispatcher_actor_name
+    )
     @channels[channel_name].join(player, dispatch_to_self)
     @channels_cache[player.id] ||= Set.new
     @channels_cache[player.id].add(channel_name)

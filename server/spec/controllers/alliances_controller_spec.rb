@@ -153,7 +153,7 @@ describe AlliancesController do
         player)
 
       @action = "alliances|join"
-      @params = {'notification_id' => @notification}
+      @params = {'notification_id' => @notification.id}
     end
 
     it_behaves_like "with param options", %w{notification_id}
@@ -487,7 +487,7 @@ describe AlliancesController do
     end
 
     it "should fail if new owner is not found" do
-      @member.destroy
+      @member.destroy!
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
