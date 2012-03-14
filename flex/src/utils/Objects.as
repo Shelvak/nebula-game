@@ -23,7 +23,7 @@ package utils
    /**
     * Has a bunch of methods for working with objects and classes. 
     */
-   public class Objects
+   public final class Objects
    {
       private static function get logger():ILogger {
          return Log.getLogger("utils.Objects");
