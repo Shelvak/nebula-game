@@ -80,6 +80,8 @@ package controllers.startup
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.StringUtil;
+   import utils.execution.GameLogicExecutionManager;
+   import utils.execution.JobExecutorsManager;
    import utils.logging.InMemoryTarget;
    import utils.logging.MessagesLogger;
    import utils.remote.ServerProxyInstance;
@@ -187,6 +189,7 @@ package controllers.startup
       public static function resetApp() : void {
          logger.info("-------------- APPLICATION RESET --------------");
          new GlobalEvent(GlobalEvent.APP_RESET);
+         JobExecutorsManager.getInstance().stopAll();
          ServerProxyInstance.getInstance().reset();
          MessagesProcessor.getInstance().reset();
          ResponseMessagesTracker.getInstance().reset();

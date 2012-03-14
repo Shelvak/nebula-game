@@ -11,6 +11,7 @@ package controllers.timedupdate
    import utils.DateUtil;
    import utils.datastructures.iterators.IIterator;
    import utils.datastructures.iterators.IIteratorFactory;
+   import utils.execution.GameLogicExecutionManager;
 
 
    public class MasterUpdateTrigger
@@ -111,10 +112,13 @@ package controllers.timedupdate
       
       
       private function timer_timerHandler(event:TimerEvent) : void {
-         // For now we call this each time before triggering next batch of updates.
-         // Later this will be called by the rendering mechanism after all display objects are updated.
-         resetChangeFlags();
-         triggerUpdate();
+         if (GameLogicExecutionManager.getInstance().executionEnabled) {
+            // For now we call this each time before triggering next batch of
+            // updates. Later this will be called by the rendering mechanism
+            // after all display objects are updated.
+            resetChangeFlags();
+            triggerUpdate();
+         }
       }
       
       

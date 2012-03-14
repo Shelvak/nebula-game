@@ -3,6 +3,7 @@ package controllers.messages
    import controllers.CommunicationCommand;
 
    import utils.SingletonFactory;
+   import utils.execution.GameLogicExecutionManager;
    import utils.logging.MessagesLogger;
    import utils.remote.IServerProxy;
    import utils.remote.ServerProxyInstance;
@@ -55,10 +56,14 @@ package controllers.messages
       }
 
       private function processBuffer(count: uint): void {
+         const logicExecutionManager: GameLogicExecutionManager
+                  = GameLogicExecutionManager.getInstance();
          var processed: uint = 0;
-         while ((count == 0 || processed < count) && buffer.length > 0) {
+         while (logicExecutionManager.executionEnabled
+                   && (count == 0 || processed < count)
+                   && buffer.length > 0) {
             const rmo: ServerRMO = buffer.shift();
-            var keyword: String = rmo.action != null ? rmo.action : "";
+            const keyword: String = rmo.action != null ? rmo.action : "";
             if (rmo.isReply) {
                respMsgTracker.removeRMO(rmo);
             }
