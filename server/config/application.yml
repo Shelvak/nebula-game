@@ -7,7 +7,7 @@
 game:
   port: 55345
 client:
-  required_version: 2012-0224-1350
+  required_version: 2012-0314-2205
 # Control server listening port.
 control:
   port: 55100
