@@ -918,7 +918,7 @@ package utils
          }
          
          // primitives and generic objects don't need any handling at all
-         if (TypeChecker.isPrimitiveClass(type) || type == Object) {
+         if (TypeChecker.isPrimitiveClass(type) || type === Object) {
             return data;
          }
 
@@ -947,10 +947,6 @@ package utils
          }
 
          const errs: Array = new Array();
-         function pushError(message: String, ...params): void {
-            errs.push(StringUtil.substitute(message, params));
-         }
-
          for each (var propInfo: PropInfo in TYPE_INFO_HASH.getInfo(type)) {
 
             /* FOR NEW OBJECTS UPDATE SYSTEM */
@@ -978,24 +974,11 @@ package utils
             }
             // read-only null property
             if (!propInfo.typeIsPrimitive && propInfo.readOnly && propValue == null) {
-               pushError(
-                  "Read-only property '{0}' of type {1} not initialized",
+               createImpl_pushError(
+                  errs, "Read-only property '{0}' of type {1} not initialized",
                   propName, propInfo.type
                );
                continue;
-            }
-
-            function setProp(value: Object): void {
-               if (object[propName] != value) {
-                  object[propName] = value;
-               }
-            }
-
-            function pushMappingError(err: MappingError): void {
-               pushError(
-                  "Error while performing mappings of prop '{0}':\n{1}",
-                  propName, err.message
-               );
             }
 
             if (propInfo.isAggregator) {
@@ -1004,7 +987,7 @@ package utils
                const aggrData: Object =
                         aggregatesProps != null
                            ? extractProps(aggregatesProps, data)
-                           : extractPropsWithPrefix(aggregatesPrefix, data)
+                           : extractPropsWithPrefix(aggregatesPrefix, data);
 
                if (!hasAnyProp(aggrData)) {
                   if (propInfo.required) {
@@ -1018,26 +1001,26 @@ package utils
                         errorMsg += "no properties with prefix '" + aggregatesPrefix + "'";
                      }
                      errorMsg += " are provided.";
-                     pushError(errorMsg);
+                     createImpl_pushError(errs, errorMsg);
                   }
                }
                else {
                   try {
-                     setProp(createImpl(
+                     createImpl_setProp(object, propName, createImpl(
                         propInfo.type, propValue,
                         performMapping(aggrData, propInfo), null, rawCreation
                      ));
                   }
                   catch (err: MappingError) {
-                     pushMappingError(err);
+                     createImpl_pushMappingError(errs, propName, err);
                   }
                }
-
                continue;
             }
 
             if (propInfo.required && propData === undefined) {
-               pushError(
+               createImpl_pushError(
+                  errs,
                   "Property '{0}' does not exist in source object but "
                      + "is required.",
                   propName
@@ -1054,7 +1037,8 @@ package utils
             // is generic object or an instance of some non-primitive class
             if (TypeChecker.isPrimitiveClass(propType) &&
                    !TypeChecker.isOfPrimitiveType(propData)) {
-               pushError(
+               createImpl_pushError(
+                  errs,
                   "Property '{0}' is of primitive type {1}, but the value "
                      + "'{2}' in the data object is of complex type {3}",
                   propName, propType, propData, getClass(propData)
@@ -1066,13 +1050,13 @@ package utils
                    TypeChecker.isPrimitiveClass(propType) ||
                    propType == Object) {
                try {
-                  setProp(createImpl(
+                  createImpl_setProp(object, propName, createImpl(
                      propType, propValue, performMapping(propData, propInfo),
                      null, rawCreation
                   ));
                }
                catch (err: MappingError) {
-                  pushMappingError(err);
+                  createImpl_pushMappingError(errs, propName, err);
                }
                continue;
             }
@@ -1082,18 +1066,18 @@ package utils
             }
 
             if (propInfo.typeIsAnyCollection) {
-               setProp(createImpl(
+               createImpl_setProp(object, propName, createImpl(
                   propType, propValue, propData, propInfo.itemType, rawCreation
                ));
             }
             else {
                try {
-                  setProp(createImpl(
+                  createImpl_setProp(object, propName, createImpl(
                      propType, propValue, performMapping(propData, propInfo), null, rawCreation
                   ));
                }
                catch (err: MappingError) {
-                  pushMappingError(err);
+                  createImpl_pushMappingError(errs, propName, err);
                }
             }
          }
@@ -1111,7 +1095,31 @@ package utils
          
          return object;
       }
-      
+
+      private static function createImpl_pushError(errs: Array,
+                                                   message: String,
+                                                   ...params): void {
+         errs.push(StringUtil.substitute(message, params));
+      }
+
+      private static function createImpl_pushMappingError(errs: Array,
+                                                          propName: String,
+                                                          err: MappingError): void {
+         createImpl_pushError(
+            errs,
+            "Error while performing mappings of prop '{0}':\n{1}",
+            propName, err.message
+         );
+      }
+
+      private static function createImpl_setProp(object: Object,
+                                                 propName: String,
+                                                 propValue: *): void {
+         if (object[propName] != propValue) {
+            object[propName] = propValue;
+         }
+      }
+
       /**
        * @throws MappingError 
        */
@@ -1394,7 +1402,7 @@ class TypeInfoHash
       return HASH[type];
    }
 
-   public function setInfo(type: Class, info: Vector.<PropInfo>) {
+   public function setInfo(type: Class, info: Vector.<PropInfo>): void {
       HASH[type] = info;
    }
 
