@@ -1,8 +1,8 @@
 class Threading::Director::Task
   DEADLOCK_ERROR =
     "ActiveRecord::JDBCError: Deadlock found when trying to get lock"
-  MAX_RETRIES = 20
-  SLEEP_RANGE = 50..200
+  MAX_RETRIES = 5
+  SLEEP_RANGE = 100..1000
 
   def initialize(description, &block)
     @description = description

@@ -112,7 +112,8 @@ class DispatcherEventHandler
           # If unit appeared from invisible zone.
           case state_change
           when STATE_CHANGED_TO_VISIBLE
-            units = movement_event.route.units
+            # Eagerly load collection to ensure threading safety.
+            units = movement_event.route.units.all
             route_hops = [next_hop].compact
             jumps_at = movement_event.route.jumps_at
           when STATE_UNCHANGED
@@ -133,6 +134,7 @@ class DispatcherEventHandler
         end
       when EventBroker::REASON_BETWEEN_ZONES
         # Movement was between zones.
+        # Eagerly load collection to ensure threading safety.
         units = movement_event.route.units
 
         # Dispatch units that arrived at zone and their route hops for their
@@ -211,10 +213,18 @@ class DispatcherEventHandler
 
   # Dispatches movement action to player
   def dispatch_movement(filter, player_id, units, route_hops, jumps_at)
+    typesig binding, Dispatcher::PushFilter, Fixnum, Array, Array,
+            [NilClass, Time]
+
     dispatcher.push_to_player!(
       player_id,
       UnitsController::ACTION_MOVEMENT,
-      {'units' => units, 'route_hops' => route_hops, 'jumps_at' => jumps_at},
+      {
+        # #to_a to ensure collections are eagerly loaded
+        'units' => units.to_a,
+        'route_hops' => route_hops.to_a,
+        'jumps_at' => jumps_at
+      },
       filter
     )
   end

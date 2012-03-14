@@ -64,10 +64,14 @@ class ServerActor
             return
           end
 
-          info "Received message: \"#{message}\"", to_s(client)
+          debug "Received message: \"#{message}\"", to_s(client)
 
           json = begin
-            JSON.parse(message)
+            LOGGER.block(
+              "Parsing message", :level => :info, :component => to_s(client)
+            ) do
+              JSON.parse(message)
+            end
           rescue JSON::ParserError => e
             info "Cannot parse #{message.inspect} as JSON: #{e}", to_s(client)
             socket.write("ERROR: not JSON\n")
@@ -94,7 +98,11 @@ class ServerActor
     end
 
     json = begin
-      JSON.generate(message)
+      LOGGER.block(
+        "Serializing message", :level => :info, :component => to_s(client)
+      ) do
+        JSON.generate(message)
+      end
     rescue Exception => e
       error "Failed while serializing message:\n\n#{
         message.inspect}\n\n#{

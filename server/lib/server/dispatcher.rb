@@ -17,6 +17,7 @@ class Dispatcher
   # Server has encountered an error.
   DISCONNECT_SERVER_ERROR = "server_error"
 
+  S_KEY_SEQ = :seq
   S_KEY_CURRENT_SS_ID = :current_ss_id
   S_KEY_CURRENT_PLANET_ID = :current_planet_id
   
@@ -186,6 +187,17 @@ class Dispatcher
     })
     unregister client
     Actor[:server].disconnect!(client)
+  end
+
+  # Responds to received/pushed message.
+  def respond(message, params)
+    typesig binding, Message, Hash
+
+    message_hash = {
+      "seq" => message.seq, "action" => message.full_action, "params" => params
+    }
+
+    transmit_to_client(message.client, message_hash)
   end
 
   # Transmits message to given players ids.
@@ -439,12 +451,18 @@ class Dispatcher
   def message_object(client, message, pushed=false)
     Dispatcher::Message.new(
       message['id'],
+      next_client_seq(client),
       message['action'] || "",
       message['params'] || {},
       client,
       @client_to_player[client],
       pushed
     )
+  end
+
+  def next_client_seq(client)
+    @storage[client][S_KEY_SEQ] ||= -1 # Start sequences from 0
+    @storage[client][S_KEY_SEQ] += 1
   end
 
   # Return new pseudo-unique ID for message.
