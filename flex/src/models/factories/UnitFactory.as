@@ -129,7 +129,10 @@ package models.factories
 
             for (var groupKey: String in npcUnits[key]) {
                var splitGroup: Array = groupKey.split(",", 4);
-               var type: String = splitGroup[0];
+               // Property transformer transforms this property into lower
+               // camel case, because it thinks this is an object key.
+               // Fix it up.
+               var type: String = StringUtil.firstToUpperCase(splitGroup[0]);
                var stance: int = int(splitGroup[1]);
                var flank: int = int(splitGroup[2]);
                var level: int = int(splitGroup[3]);
