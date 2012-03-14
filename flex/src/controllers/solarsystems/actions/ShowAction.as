@@ -11,6 +11,7 @@ package controllers.solarsystems.actions
    import models.factories.UnitFactory;
    import models.map.MMapSolarSystem;
    import models.movement.MHop;
+   import models.planet.MPlanet;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
 
@@ -19,8 +20,11 @@ package controllers.solarsystems.actions
    import mx.logging.Log;
 
    import utils.Objects;
+   import utils.execution.IJobExecutor;
+   import utils.execution.JobExecutorFactory;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
+
 
    /**
     * Downloads objects for one solar system and shows solar system map.
@@ -69,58 +73,91 @@ package controllers.solarsystems.actions
       }
 
       override public function applyServerAction(cmd: CommunicationCommand): void {
-         function log(message: String): void {
-            Log.getLogger("controllers.solarsystems.actions.ShowAction")
-               .debug("@applyServerAction(): " + message);
+         const params: Object = cmd.parameters;
+         const ssCreationJob: IJobExecutor =
+                  JobExecutorFactory.frameBasedExecutor(true);
+
+         var ss: MSolarSystem;
+         var ssMap: MMapSolarSystem;
+
+         function jobStarted(message: String): void {
+            Log.getLogger("__solar_systems.show__").debug(message);
          }
 
-         var params:Object = cmd.parameters;
+         ssCreationJob.addSubJob(function (): void {
+            jobStarted("creating ss model, ss map model, natural objects");
+            ss = SolarSystemFactory.fromObject(params["solarSystem"]);
+            ssMap = new MMapSolarSystem(ss);
+            createMapObjects(ssMap, MSSObject, params["ssObjects"]);
+         });
+         ssCreationJob.addSubJob(function (): void {
+            jobStarted("creating wreckages, cooldowns");
+            createMapObjects(ssMap, MWreckage, params["wreckages"]);
+            createMapObjects(ssMap, MCooldownSpace, params["cooldowns"]);
+         });
+         ssCreationJob.addSubJob(function (): void {
+            jobStarted("cleaning up existing planet and ss");
+            const planet: MPlanet = ML.latestPlanet;
+            // destroy latest a planet if its not in the given solar system
+            if (planet != null
+                   && (!planet.inBattleground || !ss.isGlobalBattleground)) {
+               if (!(planet.inBattleground
+                        && ss.isGlobalBattleground
+                        || planet.solarSystemId == ss.id)) {
+                  ML.latestPlanet.setFlag_destructionPending();
+                  ML.latestPlanet = null;
+               }
+            }
+            // destroy old solar system
+            if (ML.latestSSMap != null) {
+               ML.latestSSMap.setFlag_destructionPending();
+               ML.latestSSMap = null;
+            }
+         });
 
-         log("creating MSolarSystem");
-         var ss:MSolarSystem = SolarSystemFactory.fromObject(params["solarSystem"]);
-         log("creating MMapSolarSystem");
-         var ssMap:MMapSolarSystem = new MMapSolarSystem(ss);
-         log("creating MSSObject's for MMapSolarSystem");
-         createMapObjects(ssMap, MSSObject, params["ssObjects"]);
-         log("creating MWreckage's for MMapSolarSystem");
-         createMapObjects(ssMap, MWreckage, params["wreckages"]);
-         log("creating MCooldownSpace's for MMapSolarSystem");
-         createMapObjects(ssMap, MCooldownSpace, params["cooldowns"]);
-
-         log("check and destroy ML.latestPlanet");
-         // destroy latest a planet if its not in the given solar system
-         if (ML.latestPlanet != null
-                && (!ML.latestPlanet.inBattleground
-                       || !ss.isGlobalBattleground)) {
-            if (!(ML.latestPlanet.inBattleground && ss.isGlobalBattleground
-                     || ML.latestPlanet.solarSystemId == ss.id)) {
-               ML.latestPlanet.setFlag_destructionPending();
-               ML.latestPlanet = null;
+         function createUnitsJob(unitsBatch: Array): Function {
+            return function (): void {
+               jobStarted("creating " + unitsBatch.length + " units with their squadrons");
+               const units: IList = UnitFactory.fromObjects(unitsBatch, params["players"]);
+               ML.units.disableAutoUpdate();
+               ML.units.addAll(units);
+               ML.units.enableAutoUpdate();
+               SQUADS_CTRL.createSquadronsForUnits(units, ssMap);
             }
          }
-         log("check and destroy ML.latestSSMap");
-         // destroy old solar system
-         if (ML.latestSSMap != null) {
-            ML.latestSSMap.setFlag_destructionPending();
-            ML.latestSSMap = null;
+         const units: Array = params["units"];
+         const step: int = 400;
+         for (var idx: int = 0; idx < units.length; idx += step) {
+            ssCreationJob.addSubJob(
+               createUnitsJob(units.slice(idx, idx + step))
+            );
          }
-         log("creating units, squads, hops");
-         var units:ArrayCollection = UnitFactory.fromObjects(params["units"], params["players"]);
-         ML.units.disableAutoUpdate();
-         ML.units.addAll(units);
-         ML.units.enableAutoUpdate();
-         SQUADS_CTRL.createSquadronsForUnits(units, ssMap);
-         SQUADS_CTRL.addHopsToSquadrons(IList(Objects.fillCollection(new ArrayCollection(), MHop, params["routeHops"])).toArray());
-         SQUADS_CTRL.attachJumpsAtToHostileSquads(ssMap.squadrons, params["nonFriendlyJumpsAt"]);
-         if (f_createMapOnly) {
-            log("just recreating solar system map");
-            NAV_CTRL.recreateMap(ssMap);
-         }
-         else {
-            log("showing new solar system map");
-            NAV_CTRL.showSolarSystem(ssMap);
-         }
-         resetFlags();
+
+         ssCreationJob.addSubJob(function (): void {
+            jobStarted("creating hops");
+            SQUADS_CTRL.addHopsToSquadrons(
+               IList(Objects.fillCollection(
+                  new ArrayCollection(), MHop, params["routeHops"]
+               )).toArray()
+            );
+            SQUADS_CTRL.attachJumpsAtToHostileSquads(
+               ssMap.squadrons, params["nonFriendlyJumpsAt"]
+            );
+         });
+         ssCreationJob.addSubJob(function (): void {
+            jobStarted("creating ss map component");
+            if (f_createMapOnly) {
+               NAV_CTRL.recreateMap(ssMap);
+            }
+            else {
+               NAV_CTRL.showSolarSystem(ssMap);
+            }
+            resetFlags();
+         });
+         ssCreationJob.addSubJob(function(): void {
+            jobStarted("done with ss construction");
+         });
+         ssCreationJob.execute();
       }
 
       public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void {
