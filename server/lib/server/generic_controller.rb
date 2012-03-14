@@ -31,8 +31,8 @@ class GenericController
     def respond(message, params={})
       typesig binding, Dispatcher::Message, Hash
 
-      dispatcher.transmit!(
-        {"action" => message.full_action, "params" => params}, message.client
+      dispatcher.transmit_to_clients!(
+        message.full_action, params, message.client
       )
     end
 

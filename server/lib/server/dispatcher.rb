@@ -28,9 +28,10 @@ class Dispatcher
   def initialize
     @directors = {
       :chat => Threading::Director.new_link("chat", 1),
-      :server => Threading::Director.new_link("server", 2),
-      :galaxy => Threading::Director.new_link("galaxy", 2),
-      :player => Threading::Director.new_link("player", 10),
+      #:server => Threading::Director.new_link("server", 2),
+      #:galaxy => Threading::Director.new_link("galaxy", 2),
+      #:player => Threading::Director.new_link("player", 10),
+      :world => Threading::Director.new_link("world", 20),
     }
 
     @client_to_player = {}
@@ -386,23 +387,24 @@ class Dispatcher
   def dispatch_task(scope, task)
     typesig binding, Scope, Threading::Director::Task
 
-    if scope.chat?
-      name = :chat
-    elsif scope.galaxy?
-      name = :galaxy
-    elsif scope.player?
-      name = :player
-    elsif scope.server?
-      name = :server
-    else
-      raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
-    end
+    #if scope.chat?
+    #  name = :chat
+    #elsif scope.galaxy?
+    #  name = :galaxy
+    #elsif scope.player?
+    #  name = :player
+    #elsif scope.server?
+    #  name = :server
+    #else
+    #  raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
+    #end
+    name = scope.chat? ? :chat : :world
 
     director = @directors[name]
     raise "Missing director #{name.inspect}!" if director.nil?
 
     info "Dispatching to #{name} director: scope=#{scope} task=#{task}"
-    director.work!(scope.ids, task)
+    director.work!(task)
   end
 
   # Check if one of the given push filters match for current client.

@@ -1,5 +1,7 @@
 # Chat hub that holds channels and directs all message moving in the galaxy.
 class Chat::Hub
+  include Celluloid
+
   # Global channel which everybody joins
   GLOBAL_CHANNEL = 'galaxy'
   # Language for global channel.
@@ -38,7 +40,7 @@ class Chat::Hub
   # messages.
   #
   # This sends immediately and does not go through push queue!
-  def send_stored!(player)
+  def send_stored(player)
     Chat::Message.retrieve!(player.id).each do |message|
       private_msg(message['source_id'], player.id, message['message'],
         message['created_at'])
@@ -78,7 +80,7 @@ class Chat::Hub
 
   # Is this _player_ joined to that _channel_?
   def joined?(player, channel)
-    check_channel!(channel)
+    check_channel(channel)
     @channels[channel].has?(player)
   end
 
@@ -89,7 +91,7 @@ class Chat::Hub
     @control.message(player, message) and return false
     @antiflood.message!(player.id)
 
-    check_channel!(channel_name)
+    check_channel(channel_name)
     channel = @channels[channel_name]
     channel.message(player, message)
     true
@@ -147,7 +149,7 @@ class Chat::Hub
     @names_cache[player_id]
   end
 
-  def check_channel!(channel_name)
+  def check_channel(channel_name)
     raise ArgumentError.new("Unknown channel #{channel_name}") \
       unless @channels.has_key?(channel_name)
   end
@@ -175,7 +177,7 @@ class Chat::Hub
 
   # Makes _player_ leave the channel.
   def leave(channel_name, player, dispatch_to_self=true)
-    check_channel!(channel_name)
+    check_channel(channel_name)
     @channels[channel_name].leave(player, dispatch_to_self)
     @channels_cache[player.id].delete(channel_name)
   end

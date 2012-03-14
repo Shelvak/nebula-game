@@ -24,7 +24,7 @@ class ChatController < GenericController
     end
 
     respond m, :channels => channels, :players => players
-    hub.send_stored!(m.player)
+    hub.send_stored(m.player)
   end
 
   # Channel message.

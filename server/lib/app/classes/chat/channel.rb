@@ -1,4 +1,6 @@
 class Chat::Channel
+  include Celluloid
+
   # Channel name.
   attr_reader :name
 
@@ -48,7 +50,7 @@ class Chat::Channel
   # If _dispatch_to_self_ is false then event is not dispatched for
   # _player_. This is useful when using Chat::Hub#unregister.
   def leave(player, dispatch_to_self=true)
-    check_player!(player)
+    check_player(player)
 
     params = {'channel' => @name, 'player' => player}
     @players.each do |target_id, target|
@@ -61,7 +63,7 @@ class Chat::Channel
   end
 
   def message(player, message)
-    check_player!(player)
+    check_player(player)
     params = {'chan' => @name, 'pid' => player.id, 'msg' => message}
 
     player_ids = @players.keys - [player.id]
@@ -81,7 +83,7 @@ class Chat::Channel
   end
 
   # Check if _player_ is in channel.
-  def check_player!(player)
+  def check_player(player)
     raise ArgumentError.new(
       "Player #{player} is not in channel #{@name}!"
     ) unless has?(player)

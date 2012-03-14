@@ -11,7 +11,7 @@ module FlashPolicyHandler
 
 <cross-domain-policy>
   <site-control permitted-cross-domain-policies='master-only'/>
-  <allow-access-from domain='*' to-ports='#{CONFIG['game']['port']}' />
+  <allow-access-from domain='*' to-ports='#{CONFIG['server']['port']}' />
 </cross-domain-policy>\0
 EOF
     str.strip!
