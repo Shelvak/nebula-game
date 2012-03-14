@@ -1,6 +1,7 @@
 package models.factories
 {
    import models.ModelsCollection;
+   import models.Owner;
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.player.PlayerMinimal;
@@ -121,19 +122,19 @@ package models.factories
          npcUnits: Object, keys: Vector.<String>, ssId: int
       ): ModelsCollection {
          const unitsArr: Array = [];
-         for (var key: String in keys) {
+         for each (var key: String in keys) {
             var splitKey: Array = key.split(",", 2);
             var locationX: int = int(splitKey[0]);
             var locationY: int = int(splitKey[1]);
 
-            for each (var groupKey: String in npcUnits[key]) {
+            for (var groupKey: String in npcUnits[key]) {
                var splitGroup: Array = groupKey.split(",", 4);
                var type: String = splitGroup[0];
                var stance: int = int(splitGroup[1]);
                var flank: int = int(splitGroup[2]);
                var level: int = int(splitGroup[3]);
                
-               for (var data: Object in npcUnits[key][groupKey]) {
+               for each (var data: Object in npcUnits[key][groupKey]) {
                   var unit: Unit = new Unit();
                   unit.id = data.id;
                   unit.hp = data.hp;
@@ -149,12 +150,12 @@ package models.factories
                   );
                   unit.player = PlayerMinimal.NPC_PLAYER;
                   unit.playerId = unit.player.id;
+                  unit.owner = Owner.NPC;
                   unitsArr.push(unit);
                }
             }
          }
-         const units: ModelsCollection = new ModelsCollection(unitsArr);
-         return units;
+         return new ModelsCollection(unitsArr);
       }
    }
 }

@@ -87,9 +87,7 @@ package controllers.solarsystems.actions
          var ssMap: MMapSolarSystem;
 
          function logJob(message: String): void {
-            Log.getLogger(
-               "__SSCreationJob__"
-            ).debug("#{0} {1}", jobId, message);
+            Log.getLogger("__SSCreationJob__").debug("#{0} {1}", jobId, message);
          }
 
          ssCreationJob.addSubJob(function (): void {
@@ -166,7 +164,7 @@ package controllers.solarsystems.actions
          const npcUnits: Object = params["npcUnits"];
          var keys: Vector.<String> = new Vector.<String>();
          const npcStep: int = 3;
-         for each (var key: String in npcUnits) {
+         for (var key: String in npcUnits) {
             keys.push(key);
             if (keys.length == npcStep) {
                ssCreationJob.addSubJob(createNpcUnitsJob(npcUnits, keys));
