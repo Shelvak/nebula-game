@@ -391,6 +391,34 @@ class Unit < ActiveRecord::Base
         end
     end
 
+    def fast_npc_fetch(scope)
+      npc_units = {}
+      type_cache = {}
+
+      scope.
+        select(%w{
+          location_x location_y
+          type stance flank level
+          id hp_percentage
+        }).
+        c_select_all.each do |row|
+          type = row['type']
+          location = "#{row['location_x']},#{row['location_y']}"
+          second_tier =
+            "#{type},#{row['stance']},#{row['flank']},#{row['level']}"
+
+          klass = type_cache[type] ||= "Unit::#{type}".constantize
+          npc_units[location] ||= {}
+          npc_units[location][second_tier] ||= []
+          npc_units[location][second_tier] << {
+            :id => row['id'],
+            :hp => (klass.hit_points * row['hp_percentage']).round,
+          }
+        end
+
+      npc_units
+    end
+
     # Selects units for movement.
     #
     # Used in UnitMover#move

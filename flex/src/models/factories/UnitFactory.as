@@ -1,6 +1,8 @@
 package models.factories
 {
    import models.ModelsCollection;
+   import models.location.LocationMinimal;
+   import models.location.LocationType;
    import models.player.PlayerMinimal;
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
@@ -96,6 +98,63 @@ package models.factories
             }
          }
          return createCachedUnits(types);
+      }
+
+      /**
+       * Creates non-moving NPC units from special hash server sends with 
+       * solar_systems|show.
+       * 
+       * It looks like this:
+       *  {
+       *    "location_x,location_y" => {
+       *      "type,stance,flank,level" => [{"id" => int, "hp" => int}, ...]
+       *    },
+       *    ...
+       *  }
+       * 
+       * @param npcUnits data hash
+       * @param keys location keys to take from that hash
+       * @param ssId solar system id
+       * @return
+       */
+      public static function ssNpcUnits(
+         npcUnits: Object, keys: Vector.<String>, ssId: int
+      ): ModelsCollection {
+         const unitsArr: Array = [];
+         for (var key: String in keys) {
+            var splitKey: Array = key.split(",", 2);
+            var locationX: int = int(splitKey[0]);
+            var locationY: int = int(splitKey[1]);
+
+            for each (var groupKey: String in npcUnits[key]) {
+               var splitGroup: Array = groupKey.split(",", 4);
+               var type: String = splitGroup[0];
+               var stance: int = int(splitGroup[1]);
+               var flank: int = int(splitGroup[2]);
+               var level: int = int(splitGroup[3]);
+               
+               for (var data: Object in npcUnits[key][groupKey]) {
+                  var unit: Unit = new Unit();
+                  unit.id = data.id;
+                  unit.hp = data.hp;
+                  unit.type = type;
+                  unit.stance = stance;
+                  unit.flank = flank;
+                  unit.level = level;
+                  unit.location = new LocationMinimal(
+                     LocationType.SOLAR_SYSTEM,
+                     ssId,
+                     locationX,
+                     locationY
+                  );
+                  unit.player = PlayerMinimal.NPC_PLAYER;
+                  unit.playerId = unit.player.id;
+                  unitsArr.push(unit);
+               }
+            }
+         }
+         const units: ModelsCollection = new ModelsCollection(unitsArr);
+         return units;
       }
    }
 }
