@@ -28,49 +28,51 @@ class SolarSystemsController < GenericController
   # anything so it shouldn't be a big problem even if I am mistaken.
   def self.show_scope(m); scope.player(m.player); end
   def self.show_action(m)
-    # Client needs solar system to determine it's variation
-    solar_system = SolarSystem.find_if_visible_for(m.params['id'], m.player)
-    solar_system = SolarSystem.galaxy_battleground(m.player.galaxy_id) \
-      if solar_system.wormhole?
+    without_locking do
+      # Client needs solar system to determine it's variation
+      solar_system = SolarSystem.find_if_visible_for(m.params['id'], m.player)
+      solar_system = SolarSystem.galaxy_battleground(m.player.galaxy_id) \
+        if solar_system.wormhole?
 
-    # Only change planet if client opened other solar system.
-    if current_planet_ss_id(m) != solar_system.id
-      set_current_planet_id(m, nil)
-      set_current_planet_ss_id(m, nil)
-    end
-    set_current_ss_id(m, solar_system.id)
-
-    resolver = StatusResolver.new(m.player)
-
-    ss_objects = solar_system.ss_objects.includes(:player).map do
-      |ss_object|
-      case ss_object
-      when SsObject::Planet
-        ss_object.as_json(:perspective => resolver)
-      else
-        ss_object.as_json
+      # Only change planet if client opened other solar system.
+      if current_planet_ss_id(m) != solar_system.id
+        set_current_planet_id(m, nil)
+        set_current_planet_ss_id(m, nil)
       end
+      set_current_ss_id(m, solar_system.id)
+
+      resolver = StatusResolver.new(m.player)
+
+      ss_objects = solar_system.ss_objects.includes(:player).map do
+        |ss_object|
+        case ss_object
+        when SsObject::Planet
+          ss_object.as_json(:perspective => resolver)
+        else
+          ss_object.as_json
+        end
+      end
+
+      units = Unit.in_zone(solar_system)
+      route_hops = RouteHop.find_all_for_player(
+        m.player, solar_system, units
+      )
+
+      respond m,
+        :solar_system => solar_system,
+        :ss_objects => ss_objects,
+        :units => units.map {
+          |unit| unit.as_json(:perspective => resolver)
+        },
+        :players => Player.minimal_from_objects(units),
+        :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
+          Route.non_friendly_for_solar_system(
+            solar_system.id, m.player.friendly_ids
+          )
+        ),
+        :route_hops => route_hops.map(&:as_json),
+        :wreckages => Wreckage.in_zone(solar_system).all.map(&:as_json),
+        :cooldowns => Cooldown.in_zone(solar_system).all.map(&:as_json)
     end
-
-    units = Unit.in_zone(solar_system)
-    route_hops = RouteHop.find_all_for_player(
-      m.player, solar_system, units
-    )
-
-    respond m,
-      :solar_system => solar_system,
-      :ss_objects => ss_objects,
-      :units => units.map {
-        |unit| unit.as_json(:perspective => resolver)
-      },
-      :players => Player.minimal_from_objects(units),
-      :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
-        Route.non_friendly_for_solar_system(
-          solar_system.id, m.player.friendly_ids
-        )
-      ),
-      :route_hops => route_hops.map(&:as_json),
-      :wreckages => Wreckage.in_zone(solar_system).all.map(&:as_json),
-      :cooldowns => Cooldown.in_zone(solar_system).all.map(&:as_json)
   end
 end
