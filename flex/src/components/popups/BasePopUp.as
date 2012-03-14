@@ -1,6 +1,6 @@
 package components.popups
 {
-   import components.popups.skins.BasePopupSkin;
+   import components.popups.skins.BasePopUpSkin;
 
    import flash.events.MouseEvent;
 
@@ -43,7 +43,7 @@ package components.popups
       
       public function BasePopUp() : void {
          super();
-         setStyle("skinClass", BasePopupSkin);
+         setStyle("skinClass", BasePopUpSkin);
          addEventListener(MouseEvent.CLICK, this_clickHandler);
          addEventListener(FlexEvent.CREATION_COMPLETE, this_creationCompleteHandler);
       }

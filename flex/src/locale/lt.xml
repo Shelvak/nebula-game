@@ -2274,25 +2274,7 @@
       bėdas ir tai padės mums jas išspręsti.</p>
     </message.log.general>
     <label.log.close value="Uždaryti" />
-
-    <title.clientCrash value="Aaaaaaaaaa!" />
-    <message.clientCrash.general>
-      <p>[reference:crash]</p>
-      <p>Tačiau! Jeigu tau nesvetimas noras išvaikyti tuos niekingus Kosmoso
-      Vabalus, galėtum atsiųsti tuos trupinėlius informacijos, kuriuos mes 
-      surinkome. Užtikriname tave, kad PANAUDOSIME juos tobulinant mūsų 
-      Anti-Vabalinę formulę, jog tavo žaidimas būtų toks malonus, kaip tik
-      žmogiškai įmanoma ;)</p>
-      <p>Taigi tiesiog nukopijuok apačioje esantį tekstą į iškarpinę (arba 
-      spustelėk mūsų patogiai padėtą „[reference:label.clientCrash.copy]“
-      mygtuką) ir keliauk į forumą, kad praneštum apie šią klaidą. Už tavo 
-      sunkų darbą bus atlyginta. Mes pažadam. Kosminis mažojo pirštelio pažadas.
-      O taip...</p>
-    </message.clientCrash.general>
-
-    <label.clientCrash.copy value="Kopijuoti" />
-    <label.clientCrash.forum value="Pranešti klaidą" />
-    <label.clientCrash.wiki value="Gauti derintuvą" />
+    <label.log.copy value="Kopijuoti" />
   </Popups>
 
   <Achievements>

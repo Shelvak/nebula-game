@@ -60,7 +60,7 @@
                   'General', 'message.copyToClipboardSuccessful')}"/>
       </s:Group>
       <s:Button id="btnCopy" click="btnCopy_clickHandler(event)"
-                label="{getString('label.clientCrash.copy')}"/>
+                label="{getString('label.log.copy')}"/>
       <s:Button id="btnClose" click="btnClose_clickHandler(event)"
                 label="{getString('label.log.close')}"/>
    </s:Group>
