@@ -52,7 +52,7 @@ class SolarSystemsController < GenericController
 
     # Non-moving & non-npc units.
     units = scope.
-      where("player_id IS NOT NULL AND route_id IS NOT NULL")
+      where("player_id IS NOT NULL OR route_id IS NOT NULL")
     route_hops = RouteHop.find_all_for_player(
       player, solar_system, units
     )
