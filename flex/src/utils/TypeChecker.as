@@ -107,7 +107,11 @@ package utils
          if (instance == null) {
             return false;
          }
-         return getQualifiedClassName(instance).indexOf(">") >= 0;
+         return isVectorName(getQualifiedClassName(instance));
+      }
+
+      public static function isVectorName(className:String): Boolean {
+         return className != null && className.indexOf(">") >= 0;
       }
       
       /**

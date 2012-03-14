@@ -80,15 +80,7 @@ package utils
             className = className.replace("::", ".");
          return className;
       }
-      
-      /**
-       * Returns the class name (without package) of a given object. This is a shorcut method for
-       * <code>toSimpleClassName(getClassName(o))</code>.
-       */
-      public static function getClassNameSimple(o:Object) : String {
-         return toSimpleClassName(getClassName(o));
-      }
-      
+
       /**
        * Strips package part from full class name and leaves only the name only.
        * 
@@ -889,16 +881,22 @@ package utils
          Objects.paramNotNull("type", type);
          return createImpl(type, null, data);
       }
-      
-      public static function update(object: Object, data: Object): void
-      {
+
+      public static function update(object: Object, data: Object): void {
          createImpl(getClass(object), object, data, null, false);
-         if (object is BaseModel)
-         {
+         if (object is BaseModel) {
             BaseModel(object).refresh();
          }
       }
-      
+
+      private static var _typeInfoHash: TypeInfoHash = null;
+      private static function get TYPE_INFO_HASH(): TypeInfoHash {
+         if (_typeInfoHash == null) {
+            _typeInfoHash = new TypeInfoHash();
+         }
+         return _typeInfoHash
+      }
+
       private static function createImpl(type: Class,
                                          object: Object,
                                          data: Object,
@@ -906,8 +904,9 @@ package utils
                                          rawCreation: Boolean = true): Object {
          paramNotNull("type", type);
 
-         if (data == null)
+         if (data == null) {
             return null;
+         }
          
          // type processors come first so that special types could be created directly using 
          // create() method
@@ -919,13 +918,15 @@ package utils
          }
          
          // primitives and generic objects don't need any handling at all
-         if (TypeChecker.isPrimitiveClass(type) || type == Object)
+         if (TypeChecker.isPrimitiveClass(type) || type == Object) {
             return data;
-         
+         }
+
          // the rest operations also need an instance of given type
          // assuming that all types from this point forward have constructors without arguments
-         if (object == null)
+         if (object == null) {
             object = new type();
+         }
          
          // collections
          if (TypeChecker.isCollection(object)) {
@@ -940,248 +941,172 @@ package utils
             // would be too much dependent on internals of each collection type
             return object;
          }
-         
-         var errs:Array = new Array();
-         function pushError(message:String, ... params) : void {
+
+         if (!TYPE_INFO_HASH.hasInfo(type)) {
+            buildTypeInfoFor(type);
+         }
+
+         const errs: Array = new Array();
+         function pushError(message: String, ...params): void {
             errs.push(StringUtil.substitute(message, params));
          }
-         
-         // other types: assuming they have metadata tags attached to properties
-         var typeInfo:XML = describeType(type).factory[0];
-         for each (var propsInfoList:XMLList in [typeInfo.accessor, typeInfo.variable, typeInfo.constant]) {
-            for each (var propInfo:XML in propsInfoList) {
-               var readOnly:Boolean = propInfo.name() == "constant" ||
-                                      propInfo.name() == "accessor" && propInfo.@access[0] == "readonly";
-               var propMetadata:XMLList = propInfo.metadata;
-               /* FOR NEW OBJECTS UPDATE SYSTEM */
-               var skipProperty:XML = propMetadata.(@name == "SkipProperty")[0];
 
-               if (skipProperty != null && !rawCreation)
-               {
-                  continue;
-               }
+         for each (var propInfo: PropInfo in TYPE_INFO_HASH.getInfo(type)) {
 
-               var propName:String  = propInfo.@name[0];
-               var propClassName:String = String(propInfo.@type[0]).replace("&lt;", "<");
-               var propClass:Class = getDefinitionByName(propClassName) as Class;
-               var metaRequired:XML = propMetadata.(@name == "Required")[0];
-               var metaOptional:XML = propMetadata.(@name == "Optional")[0];
-               var metaPropsMap:XML = propMetadata.(@name == "PropsMap")[0];
-               var metaActual:XML   = metaRequired != null ? metaRequired : metaOptional;
-               if (metaActual != null) {
-                  var propAlias:String = metaActual.arg.(@key == "alias").@value[0];
-                  var aggregatesProps:String  = metaActual.arg.(@key == "aggregatesProps" ).@value[0];
-                  var aggregatesPrefix:String = metaActual.arg.(@key == "aggregatesPrefix").@value[0];
+            /* FOR NEW OBJECTS UPDATE SYSTEM */
+            if (propInfo.skipProperty && !rawCreation) {
+               continue;
+            }
+
+            if (!propInfo.includeInConstruction) {
+               continue;
+            }
+
+            const propName: String = propInfo.name;
+            const propType: Class = propInfo.type;
+            const propData: * = data[propInfo.alias];
+            var propValue: * = undefined;
+            try {
+               propValue = object[propName];
+            }
+            catch (err: Error) {
+               logger.warn(
+                  "@createImpl(): Error '{0}' while reading property '{1}' "
+                     + "of instance of {2}. Assuming 'undefined' value.",
+                  err.message, propName, type
+               );
+            }
+            // read-only null property
+            if (!propInfo.typeIsPrimitive && propInfo.readOnly && propValue == null) {
+               pushError(
+                  "Read-only property '{0}' of type {1} not initialized",
+                  propName, propInfo.type
+               );
+               continue;
+            }
+
+            function setProp(value: Object): void {
+               if (object[propName] != value) {
+                  object[propName] = value;
                }
-               
-               
-               // skip the property if its not tagged
-               if (metaRequired == null && metaOptional == null)
-                  continue;
-               
-               if (metaRequired != null && metaOptional != null) {
-                  pushError(
-                     "Property '{0}' has both - [Required] and [Optional] - metadata tags declared which " +
-                     "is illegal.", propName
-                  );
-                  continue;
-               }
-               if ((aggregatesProps != null || aggregatesPrefix != null) && propAlias != null) {
-                  pushError(
-                     "Property '{0}' has both - alias and aggregatesProps (or aggregatesPrefix) - attributes " +
-                     "defined which is illegal.", propName
-                  );
-                  continue;
-               }
-               if (aggregatesProps != null && aggregatesPrefix != null) {
-                  pushError(
-                     "Property '{0}' has both - aggregatesProps and aggregatesPrefix - " +
-                     "attributes defined which is illegal.", propName
-                  );
-                  continue;
-               }
-               if (propClass == type && metaRequired != null) {
-                  pushError(
-                     "Property '{0}' is marked with [Required] and is of exact type as given object type " +
-                     "{1}. This is not legal. Use [Optional] instead.", propName, type
-                  );
-                  continue;
-               }
-               
-               if (propAlias == null) {
-                  propAlias = propName;
-               }
-               var propValue:* = undefined;
-               try {
-                  propValue = object[propName];
-               }
-               catch(err:Error) {
-                  logger.warn(
-                     "@createImpl(): Error '{0}' while reading property '{1}' "
-                        + "of instance of {2}. Assuming 'undefined' value.",
-                     err.message, propName, type
-                  );
-               }
-               var propData:* = data[propAlias];
-               
-               if (TypeChecker.isPrimitiveClass(propClass)) {
-                  // [PropsMap] not supported on primitives
-                  if (metaPropsMap != null) {
-                     pushError("[PropsMap] not allowed on a property '{0}' of primitive type", propName);
-                     continue;
-                  }
-                  // read-only primitive error
-                  if (readOnly) {
-                     pushError("Read-only property '{0}' of primitive type {1}", propName, propClass);
-                     continue;
-                  }
-               }
-               // read-only null property
-               else if (propValue == null && readOnly) {
-                  pushError("Read-only property '{0}' of type {1} not initialized", propName, propClass);
-                  continue;
-               }
-               
-               function setProp(value:Object) : void {
-                  if (object[propName] != value)
-                     object[propName] = value;
-               }
-               function pushMappingError(err:MappingError) : void {
-                  pushError("Error while performing mappings of prop '{0}': {1}", propName, err.message);
-               }
-               
-               // aggregator comes first
-               if (aggregatesProps != null || aggregatesPrefix != null) {
-                  
-                  // aggregatesProps and aggregatesPrefix not allowed for primitives
-                  if (TypeChecker.isPrimitiveClass(propClass)) {
-                     pushError(
-                        "aggregatesProps and aggregatesPrefix attributes not allowed in [Optional|Required] " +
-                        "tags attached to a property of primitive type, but such tag was found on property " +
-                        "'{0}'", propName
-                     );
-                     continue;
-                  }
-                  
-                  var aggrData:Object;
-                  // aggregates props
-                  if (aggregatesProps != null) {
-                     aggregatesProps = aggregatesProps.replace(WHITESPACE_REGEXP, "");
-                     aggrData = extractProps(aggregatesProps.split(","), data);
-                  }
-                  // aggregates prefix
-                  else
-                     aggrData = extractPropsWithPrefix(aggregatesPrefix, data);
-                  
-                  if (!hasAnyProp(aggrData)) {
-                     if (metaRequired != null) {
-                        var errorMsg:String = "Aggregator defined by property '" + propName + "' is required but ";
-                        if (aggregatesProps != null)
-                           errorMsg += "none of aggregated properties [" + aggregatesProps + "]"; 
-                        else
-                           errorMsg += "no properties with prefix '" + aggregatesPrefix + "'";
-                        errorMsg += " are provided.";
-                        pushError(errorMsg);
+            }
+
+            function pushMappingError(err: MappingError): void {
+               pushError(
+                  "Error while performing mappings of prop '{0}':\n{1}",
+                  propName, err.message
+               );
+            }
+
+            if (propInfo.isAggregator) {
+               const aggregatesProps: Array = propInfo.aggregatesProps;
+               const aggregatesPrefix: String = propInfo.aggregatesPrefix;
+               const aggrData: Object =
+                        aggregatesProps != null
+                           ? extractProps(aggregatesProps, data)
+                           : extractPropsWithPrefix(aggregatesPrefix, data)
+
+               if (!hasAnyProp(aggrData)) {
+                  if (propInfo.required) {
+                     var errorMsg: String =
+                            "Aggregator defined by property '" + propName
+                               + "' is required but ";
+                     if (aggregatesProps != null) {
+                        errorMsg += "none of aggregated properties [" + aggregatesProps + "]";
                      }
-                  }
-                  else {
-                     try {
-                        setProp(createImpl(propClass, propValue, performMapping(aggrData, metaPropsMap), null, rawCreation));
+                     else {
+                        errorMsg += "no properties with prefix '" + aggregatesPrefix + "'";
                      }
-                     // TODO: this does not work after preprocessor
-                     catch (err:MappingError) {
-                        pushMappingError(err);
-                     }
+                     errorMsg += " are provided.";
+                     pushError(errorMsg);
                   }
-                  
-                  continue;
                }
-               
-               if (metaRequired != null && propData === undefined) {
-                  pushError("Property '{0}' does not exist in source object but is required.", propName);
-                  continue;
-               }
-               
-               // skip null and undefined values in source object
-               if (rawCreation && propData == null)
-                  continue;
-               
-               // error when property is a primitive but the value in data object is generic object or 
-               // an instance of some non-primitive class
-               if (TypeChecker.isPrimitiveClass(propClass) && !TypeChecker.isOfPrimitiveType(propData)) {
-                  pushError(
-                     "Property '{0}' is of primitive type {1}, but the value '{2}' in the data object " +
-                     "is of complex type {3}", propName, propClass, propData, getClass(propData)
-                  );
-                  continue;
-               }
-               
-               if (getTypeProcessor(propClass) != null ||
-                   TypeChecker.isPrimitiveClass(propClass) ||
-                   propClass == Object) {
+               else {
                   try {
-                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, rawCreation));
+                     setProp(createImpl(
+                        propInfo.type, propValue,
+                        performMapping(aggrData, propInfo), null, rawCreation
+                     ));
                   }
-                  // TODO: this does not work after preprocessor
                   catch (err: MappingError) {
                      pushMappingError(err);
                   }
-                  continue;
                }
-               
-               if (propValue == null)
-                  propValue = new propClass();
-               
-               // collections
-               var propIsVector:Boolean = TypeChecker.isVector(propValue);
-               var propIsArray:Boolean = propValue is Array;
-               var propIsList:Boolean = propValue is IList;
-               if (propIsArray || propIsList || propIsVector) {
-                  
-                  // elementType attribute is mandatory element for Array and IList properties
-                  var itemTypeName:String = metaActual.arg.(@key == "elementType").@value[0];
-                  if (!propIsVector && itemTypeName == null) {
-                     pushError(
-                        "Property '{0}' is of [class IList] or [class Array] type and therefore requires " +
-                        "elementType attribute of [Required|Optional] metadata tag declared.", propName
-                     );
-                     continue;
-                  }
-                  // [PropsMap] on collections not supported
-                  if (metaPropsMap != null) {
-                     pushError("[PropsMap] not allowed on a property '{0}' of collection type", propName);
-                     continue;
-                  }
-                  
-                  if (propIsVector) {
-                     itemTypeName = propClassName.substring(
-                        propClassName.indexOf("Vector.<") + 8,
-                        propClassName.length - 1
-                     );
-                  }
-                  setProp(createImpl(propClass, propValue, propData, getDefinitionByName(itemTypeName) as Class, rawCreation));
+
+               continue;
+            }
+
+            if (propInfo.required && propData === undefined) {
+               pushError(
+                  "Property '{0}' does not exist in source object but "
+                     + "is required.",
+                  propName
+               );
+               continue;
+            }
+
+            // skip null and undefined values in source object
+            if (rawCreation && propData == null) {
+               continue;
+            }
+
+            // error when property is a primitive but the value in data object
+            // is generic object or an instance of some non-primitive class
+            if (TypeChecker.isPrimitiveClass(propType) &&
+                   !TypeChecker.isOfPrimitiveType(propData)) {
+               pushError(
+                  "Property '{0}' is of primitive type {1}, but the value "
+                     + "'{2}' in the data object is of complex type {3}",
+                  propName, propType, propData, getClass(propData)
+               );
+               continue;
+            }
+
+            if (getTypeProcessor(propType) != null ||
+                   TypeChecker.isPrimitiveClass(propType) ||
+                   propType == Object) {
+               try {
+                  setProp(createImpl(
+                     propType, propValue, performMapping(propData, propInfo),
+                     null, rawCreation
+                  ));
                }
-                  
-               // other objects
-               else {
-                  try {
-                     setProp(createImpl(propClass, propValue, performMapping(propData, metaPropsMap), null, rawCreation));
-                  }
-                  // TODO: this does not work after preprocessor
-                  catch (err:MappingError) {
-                     pushMappingError(err);
-                  }
+               catch (err: MappingError) {
+                  pushMappingError(err);
+               }
+               continue;
+            }
+
+            if (propValue == null) {
+               propValue = new propType();
+            }
+
+            if (propInfo.typeIsAnyCollection) {
+               setProp(createImpl(
+                  propType, propValue, propData, propInfo.itemType, rawCreation
+               ));
+            }
+            else {
+               try {
+                  setProp(createImpl(
+                     propType, propValue, performMapping(propData, propInfo), null, rawCreation
+                  ));
+               }
+               catch (err: MappingError) {
+                  pushMappingError(err);
                }
             }
          }
-         
-         if (errs.length != 0)
+
+         if (errs.length != 0) {
             throw new AppError(
-               errs.join("\n") + "\nFix properties in " + type + " or see to it that data " +
-               "object holds values for all required properties of correct type. Data object was:\n" +
-               ObjectUtil.toString(data)
+               errs.join("\n") + "\nFix properties in " + type + " or see to "
+                  + "it that data object holds values for all required "
+                  + "properties of correct type. Data object was:\n" +
+                  ObjectUtil.toString(data)
             );
-         
+         }
+
          callAfterCreate(object, data);
          
          return object;
@@ -1190,65 +1115,255 @@ package utils
       /**
        * @throws MappingError 
        */
-      private static function performMapping(sourceData:Object, metaPropsMap:XML) : Object {
-         if (metaPropsMap == null)
+      private static function performMapping(sourceData: Object,
+                                             propInfo: PropInfo): Object {
+         if (!propInfo.hasMapping) {
             return sourceData;
-         
-         var errs:Array = new Array();
-         function pushError(message:String, ... parameters) : void {
-            errs.push(StringUtil.substitute(message, parameters));
          }
-         
-         var propDataMapped:Object = new Object();
-         // Maybe cache these maps?
-         // But I don't expect this feature used heavily so maybe not worth the trouble?
-         var sdMap:Object = new Object();
-         var dsMap:Object = new Object();
-         for each (var sdPair:XML in metaPropsMap.arg) {
-            var sourceProp:String = sdPair.@key[0];
-            var destProp:String = sdPair.@value[0];
-            if (destProp.length == 0) {
-               pushError(
-                  "invalid destination (value) prop '{0}' for source (key) prop {'1'}",
-                  destProp, sourceProp
-               );
-               continue;
+         const srcToDestMap: Object = propInfo.srcToDestMap;
+         const propDataMapped: Object = new Object();
+         for (var sourcePropName: String in sourceData) {
+            var destPropName: String = srcToDestMap[sourcePropName];
+            if (destPropName == null) {
+               destPropName = sourcePropName;
             }
-            if (sdMap[sourceProp] !== undefined)
-               pushError(
-                  "source (key) prop '{0}' duplication (destination (value) prop '{1}')",
-                  sourceProp, destProp
-               );
-            else
-               sdMap[sourceProp] = destProp;
-            if (dsMap[destProp] !== undefined)
-               pushError(
-                  "destination (value) prop '{0}' duplication (source (key) prop '{1}')",
-                  destProp, sourceProp
-               );
-            else
-               dsMap[destProp] = sourceProp;
+            propDataMapped[destPropName] = sourceData[sourcePropName];
          }
-         
-         if (errs.length > 0) {
-            var ident1:String = "\n   ";
-            var ident2:String = "\n      ";
-            throw new MappingError(
-               "MappingError:" + ident1 + "Mapping metadata: " + metaPropsMap.toXMLString() + ident1 +
-               "Errors:" + ident2 + errs.join(ident2)
-            );
-         }
-         
-         for (sourceProp in sourceData) {
-            destProp = sdMap[sourceProp];
-            if (destProp == null)
-               destProp = sourceProp;
-            propDataMapped[destProp] = sourceData[sourceProp];
-         }
-         
          return propDataMapped;
       }
-      
+
+      private static function buildTypeInfoFor(type: Class): void {
+         const typeInfoXML: XML = describeType(type).factory[0];
+         const typeInfo: Vector.<PropInfo> = new Vector.<PropInfo>();
+
+         const errs: Array = new Array();
+         function pushError(message: String, ...params): void {
+            errs.push(
+               StringUtil.substitute.apply(null, [message].concat(params))
+            );
+         }
+         function pushMappingError(propName: String,
+                                   message: String,
+                                   ...params): void {
+            message =
+               "Mapping error for property '" + propName + "': " + message;
+            pushError.apply(null, [message].concat(params));
+         }
+
+         for each (var propsInfoList:XMLList in [typeInfoXML.accessor,
+                                                 typeInfoXML.variable,
+                                                 typeInfoXML.constant]) {
+            for each (var propInfoXML: XML in propsInfoList) {
+               const propMetadata: XMLList = propInfoXML.metadata;
+               const metaRequired: XML = propMetadata.(@name == "Required")[0];
+               const metaOptional: XML = propMetadata.(@name == "Optional")[0];
+               var metaActual: XML = metaRequired != null
+                                        ? metaRequired
+                                        : metaOptional;
+               const skipProperty: Boolean =
+                        propMetadata.(@name == "SkipProperty")[0];
+
+               if (metaActual == null && !skipProperty) {
+                  continue;
+               }
+
+               const propInfo: PropInfo = new PropInfo();
+               propInfo.skipProperty = skipProperty;
+               propInfo.name = propInfoXML.@name[0];
+               propInfo.required = metaRequired != null;
+               propInfo.optional = metaOptional != null;
+
+               if (!propInfo.includeInConstruction) {
+                  continue;
+               }
+
+               if (propInfo.required && propInfo.optional) {
+                  pushError(
+                     "Property '{0}' has both - [Required] and [Optional] - "
+                        + "metadata tags declared which is illegal.",
+                     propInfo.name
+                  );
+                  continue;
+               }
+
+               propInfo.alias = metaActual.arg.(@key == "alias").@value[0];
+               var aggregatesProps: String =
+                      metaActual.arg.(@key == "aggregatesProps" ).@value[0];
+               if (aggregatesProps != null) {
+                  propInfo.aggregatesProps =
+                        aggregatesProps
+                           .replace(WHITESPACE_REGEXP, "")
+                           .split(",");
+               }
+               propInfo.aggregatesPrefix =
+                  metaActual.arg.(@key == "aggregatesPrefix" ).@value[0];
+
+
+               if (propInfo.alias != null && propInfo.isAggregator) {
+                  pushError(
+                     "Property '{0}' has both - alias and aggregatesProps "
+                        + "(or aggregatesPrefix) - attributes defined which "
+                        + "is illegal.",
+                     propInfo.name
+                  );
+                  continue;
+               }
+               if (propInfo.alias == null) {
+                  propInfo.alias = propInfo.name;
+               }
+               if (propInfo.aggregatesProps != null
+                      && propInfo.aggregatesPrefix != null) {
+                  pushError(
+                     "Property '{0}' has both - aggregatesProps and "
+                        + "aggregatesPrefix - attributes defined which "
+                        + "is illegal.", propInfo.name
+                  );
+                  continue;
+               }
+               if (propInfo.typeIsPrimitive && propInfo.isAggregator) {
+                  pushError(
+                     "aggregatesProps and aggregatesPrefix attributes not "
+                        + "allowed in [Optional|Required] tags attached to "
+                        + "a property of primitive type, but such tag was "
+                        + "found on property '{0}'",
+                     propInfo.name
+                  );
+                  continue;
+               }
+
+               const propClassName: String =
+                        String(propInfoXML.@type[0]).replace("&lt;", "<");
+               propInfo.type = getDefinitionByName(propClassName) as Class;
+
+               if (propInfo.type === type && metaRequired != null) {
+                  pushError(
+                     "Property '{0}' is marked with [Required] and is of "
+                        + "exact type as given object type {1}. This is not "
+                        + "legal. Use [Optional] instead.",
+                     propInfo.name, type
+                  );
+                  continue;
+               }
+
+               const metaPropsMap: XML = propMetadata.(@name == "PropsMap")[0];
+               propInfo.readOnly =
+                  propInfoXML.name() == "constant"
+                     || propInfoXML.name() == "accessor"
+                           && propInfoXML.@access[0] == "readonly";
+
+
+               if (propInfo.typeIsPrimitive) {
+                  if (metaPropsMap != null) {
+                     pushError(
+                        "[PropsMap] not allowed on a property '{0}' of "
+                           + "primitive type", propInfo.name
+                     );
+                     continue;
+                  }
+                  if (propInfo.readOnly) {
+                     pushError(
+                        "Read-only property '{0}' of primitive type {1}",
+                        propInfo.name, propInfo.type
+                     );
+                     continue;
+                  }
+               }
+
+               if (metaPropsMap != null) {
+                  propInfo.srcToDestMap = new Object();
+                  const srcToDestMap: Object = propInfo.srcToDestMap;
+                  const destToSrcMap: Object = new Object();
+                  for each (var sdPair: XML in metaPropsMap.arg) {
+                     const sourceProp: String = sdPair.@key[0];
+                     const destProp: String = sdPair.@value[0];
+                     if (destProp.length == 0) {
+                        pushMappingError(
+                           propInfo.name,
+                           "invalid destination (value) prop '{0}' for "
+                              + "source (key) prop {'1'}",
+                           destProp, sourceProp
+                        );
+                        continue;
+                     }
+                     if (srcToDestMap[sourceProp] !== undefined) {
+                        pushMappingError(
+                           propInfo.name,
+                           "source (key) prop '{0}' duplication (destination "
+                              + "(value) prop '{1}')",
+                           sourceProp, destProp
+                        );
+                     }
+                     else {
+                        srcToDestMap[sourceProp] = destProp;
+                     }
+                     if (destToSrcMap[destProp] !== undefined) {
+                        pushMappingError(
+                           "destination (value) prop '{0}' duplication (source "
+                              + "(key) prop '{1}')",
+                           destProp, sourceProp
+                        );
+                     }
+                     else {
+                        destToSrcMap[destProp] = sourceProp;
+                     }
+                  }
+               }
+
+
+               const propTypeInfoXML: XML = describeType(propInfo.type);
+               const propTypeName: String = propTypeInfoXML.@name[0];
+               propInfo.typeIsArray = propTypeName == "Array";
+               propInfo.typeIsVector = TypeChecker.isVectorName(propTypeName);
+               propInfo.typeIsList = propTypeInfoXML
+                                        .factory.implementsInterface
+                                        .(@type == "mx.collections::IList")[0]
+                                        != null;
+               if (propInfo.typeIsAnyCollection) {
+                  // elementType attribute is mandatory element for Array and IList properties
+                  var propItemTypeName: String =
+                         metaActual.arg.(@key == "elementType").@value[0];
+                  if (!propInfo.typeIsVector && propItemTypeName == null) {
+                     pushError(
+                        "Property '{0}' is of [class IList] or [class Array] "
+                           + "type and therefore requires elementType "
+                           + "attribute of [Required|Optional] metadata tag "
+                           + "declared.",
+                        propInfo.name
+                     );
+                     continue;
+                  }
+                  // [PropsMap] on collections not supported
+                  if (metaPropsMap != null) {
+                     pushError(
+                        "[PropsMap] not allowed on a property '{0}' of "
+                           + "collection type",
+                        propInfo.name
+                     );
+                     continue;
+                  }
+
+                  if (propInfo.typeIsVector) {
+                     propItemTypeName = propClassName.substring(
+                        propClassName.indexOf("Vector.<") + 8,
+                        propClassName.length - 1
+                     );
+                  }
+                  propInfo.itemType =
+                     getDefinitionByName(propItemTypeName) as Class;
+               }
+               typeInfo.push(propInfo);
+            }
+         }
+
+         if (errs.length != 0) {
+            throw new AppError(
+               "Errors found in metadata of " + type + ":\n" + errs.join("\n")
+            );
+         }
+
+         TYPE_INFO_HASH.setInfo(type, typeInfo);
+      }
+
       private static function callAfterCreate(target:Object, data:Object) : void {
          paramNotNull("target", target);
          paramNotNull("data", data);
@@ -1259,6 +1374,10 @@ package utils
    }
 }
 
+import flash.utils.Dictionary;
+
+import utils.TypeChecker;
+
 
 class MappingError extends Error
 {
@@ -1266,3 +1385,58 @@ class MappingError extends Error
       super(message);
    }
 }
+
+class TypeInfoHash
+{
+   private const HASH: Dictionary = new Dictionary();
+
+   public function getInfo(type: Class): Vector.<PropInfo> {
+      return HASH[type];
+   }
+
+   public function setInfo(type: Class, info: Vector.<PropInfo>) {
+      HASH[type] = info;
+   }
+
+   public function hasInfo(type: Class): Boolean {
+      return getInfo(type) != null;
+   }
+}
+
+class PropInfo
+{
+   public var name: String = null;
+   public var alias: String = null;
+   public var readOnly: Boolean = false;
+   public var required: Boolean = false;
+   public var optional: Boolean = false;
+   public function get includeInConstruction(): Boolean {
+      return required || optional;
+   }
+
+   public var skipProperty: Boolean;
+
+   public var type: Class = null;
+   public function get typeIsPrimitive(): Boolean {
+      return TypeChecker.isPrimitiveClass(type);
+   }
+   public var typeIsList: Boolean = false;
+   public var typeIsArray: Boolean = false;
+   public var typeIsVector: Boolean = false;
+   public function get typeIsAnyCollection(): Boolean {
+      return typeIsList || typeIsVector || typeIsArray;
+   }
+   public var itemType: Class = null;
+
+   public var aggregatesPrefix: String = null;
+   public var aggregatesProps: Array = null;
+   public function get isAggregator(): Boolean {
+      return aggregatesPrefix != null || aggregatesProps != null;
+   }
+
+   public var srcToDestMap: Object = null;
+   public function get hasMapping(): Boolean {
+      return srcToDestMap != null;
+   }
+}
+
