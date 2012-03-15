@@ -7,6 +7,8 @@ class Dispatcher
   # Special key for message id. This is needed for client to do time
   # syncing.
   MESSAGE_ID_KEY = 'id'
+  MESSAGE_SEQ_KEY = 'seq'
+  MESSAGE_REPLY_TO_KEY = 'reply_to'
   # Disconnect action name.
   ACTION_DISCONNECT = 'players|disconnect'
 
@@ -160,7 +162,10 @@ class Dispatcher
   def confirm_receive(message, error=nil)
     typesig binding, Message, [NilClass, Exception]
 
-    confirmation = {'reply_to' => message.id}
+    confirmation = {
+      MESSAGE_REPLY_TO_KEY => message.id,
+      MESSAGE_SEQ_KEY => next_client_seq(message.client)
+    }
     if error
       confirmation['failed'] = true
       confirmation['error'] = {
@@ -194,7 +199,9 @@ class Dispatcher
     typesig binding, Message, Hash
 
     message_hash = {
-      "seq" => message.seq, "action" => message.full_action, "params" => params
+      MESSAGE_SEQ_KEY => message.seq || next_client_seq(message.client),
+      "action" => message.full_action,
+      "params" => params
     }
 
     transmit_to_client(message.client, message_hash)
@@ -451,7 +458,7 @@ class Dispatcher
   def message_object(client, message, pushed=false)
     Dispatcher::Message.new(
       message['id'],
-      next_client_seq(client),
+      pushed ? next_client_seq(client) : nil,
       message['action'] || "",
       message['params'] || {},
       client,
@@ -462,7 +469,9 @@ class Dispatcher
 
   def next_client_seq(client)
     @storage[client][S_KEY_SEQ] ||= -1 # Start sequences from 0
-    @storage[client][S_KEY_SEQ] += 1
+    value = @storage[client][S_KEY_SEQ] += 1
+    debug "Returning sequence number: #{value}", to_s(client)
+    value
   end
 
   # Return new pseudo-unique ID for message.
