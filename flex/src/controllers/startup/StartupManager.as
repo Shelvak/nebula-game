@@ -157,9 +157,9 @@ package controllers.startup
          initializeFreeSingletons();
          bindCommandsToActions();
          setupObjects();
+         masterTrigger = new MasterUpdateTrigger();
          switch (StartupInfo.getInstance().mode) {
             case StartupMode.GAME:
-               masterTrigger = new MasterUpdateTrigger();
                AnimationTimer.forUi.start();
                AnimationTimer.forMovement.start();
             
