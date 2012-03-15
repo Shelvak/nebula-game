@@ -6,14 +6,19 @@ package controllers.solarsystems.actions
    import controllers.units.SquadronsController;
 
    import models.MWreckage;
+   import models.ModelsCollection;
    import models.cooldown.MCooldownSpace;
    import models.factories.SolarSystemFactory;
    import models.factories.UnitFactory;
+   import models.location.LocationMinimal;
+   import models.location.LocationType;
    import models.map.MMapSolarSystem;
    import models.movement.MHop;
    import models.planet.MPlanet;
+   import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
+   import models.unit.Unit;
 
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
@@ -82,9 +87,7 @@ package controllers.solarsystems.actions
          var ssMap: MMapSolarSystem;
 
          function logJob(message: String): void {
-            Log.getLogger(
-               "__SSCreationJob__"
-            ).debug("#{0} {1}", jobId, message);
+            Log.getLogger("__SSCreationJob__").debug("#{0} {1}", jobId, message);
          }
 
          ssCreationJob.addSubJob(function (): void {
@@ -113,19 +116,27 @@ package controllers.solarsystems.actions
             }
             jobId++;
          });
+
+         function addUnitsList(units: IList): void {
+            logJob("Adding to global units list.");
+            ML.units.disableAutoUpdate();
+            ML.units.addAll(units);
+            ML.units.enableAutoUpdate();
+            logJob("Completed. Creating squadrons for the units.");
+            SQUADS_CTRL.createSquadronsForUnits(units, ssMap);
+            logJob("Completed.");
+            jobId++;
+         }
+
          function createUnitsJob(unitsBatch: Array): Function {
             return function (): void {
                logJob("Creating " + unitsBatch.length + " units.");
                const units: IList = UnitFactory.fromObjects(unitsBatch, params["players"]);
-               logJob("Completed. Adding to global units list.");
-               ML.units.disableAutoUpdate();
-               ML.units.addAll(units);
-               ML.units.enableAutoUpdate();
-               logJob("Completed. Creating squadrons for the units.");
-               SQUADS_CTRL.createSquadronsForUnits(units, ssMap);
-               jobId++;
+               logJob("Completed.");
+               addUnitsList(units);
             }
          }
+         // Moving or non-npc units.
          const units: Array = params["units"];
          const step: int = 200;
          for (var idx: int = 0; idx < units.length; idx += step) {
@@ -133,6 +144,37 @@ package controllers.solarsystems.actions
                createUnitsJob(units.slice(idx, idx + step))
             );
          }
+         
+         function createNpcUnitsJob(npcUnits: Object, keys: Vector.<String>): 
+            Function 
+         {
+            return function (): void {
+               logJob("Creating npc units for " + keys.length + " locations.");
+               const units: IList = UnitFactory.ssNpcUnits(
+                  npcUnits, keys, ss.id
+               );
+               logJob("Completed.");
+               addUnitsList(units);
+            }
+         }
+         // Non-moving npc units. There can be a lot of them so these need
+         // specific handling.
+         //
+         // See UnitFactory.ssNpcUnits for data definition.
+         const npcUnits: Object = params["npcUnits"];
+         var keys: Vector.<String> = new Vector.<String>();
+         const npcStep: int = 3;
+         for (var key: String in npcUnits) {
+            keys.push(key);
+            if (keys.length == npcStep) {
+               ssCreationJob.addSubJob(createNpcUnitsJob(npcUnits, keys));
+               keys = new Vector.<String>();
+            }
+         }
+         if (keys.length != 0) {
+            ssCreationJob.addSubJob(createNpcUnitsJob(npcUnits, keys));
+         }
+         
          ssCreationJob.addSubJob(function (): void {
             logJob("Creating hops.");
             SQUADS_CTRL.addHopsToSquadrons(
