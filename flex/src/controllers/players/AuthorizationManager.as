@@ -6,13 +6,12 @@ package controllers.players
    import controllers.navigation.MCTopLevel;
    import controllers.screens.Screens;
    import controllers.startup.StartupInfo;
-   
+
    import flash.external.ExternalInterface;
-   
-   import models.ModelLocator;
-   
+
    import utils.SingletonFactory;
    import utils.locale.Localizer;
+
 
    public class AuthorizationManager
    {
@@ -25,11 +24,7 @@ package controllers.players
       private function get SI() : StartupInfo {
          return StartupInfo.getInstance();
       }
-      
-      private function get ML() : ModelLocator {
-         return ModelLocator.getInstance();
-      }
-      
+
       private function get SCREEN_SWITCH() : MCTopLevel {
          return MCTopLevel.getInstance();
       }
@@ -103,7 +98,6 @@ package controllers.players
       
       public function loginSuccessful() : void {
          ExternalInterface.call(JSFN_LOGIN_SUCCESSFUL);
-         ML.player.loggedIn = true;
          SCREEN_SWITCH.showScreen(Screens.MAIN);
          resetStatusVars();
       }
