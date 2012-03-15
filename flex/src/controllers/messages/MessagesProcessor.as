@@ -2,7 +2,6 @@ package controllers.messages
 {
    import controllers.CommunicationCommand;
 
-   import utils.Objects;
    import utils.SingletonFactory;
    import utils.execution.GameLogicExecutionManager;
    import utils.logging.MessagesLogger;
@@ -10,6 +9,7 @@ package controllers.messages
    import utils.remote.ServerProxyInstance;
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
+
 
    /**
     * Responsible for processing messages, received form server as well as sending messages to the server
@@ -34,44 +34,16 @@ package controllers.messages
       }
 
 
-      private var buffer: Vector.<ServerRMO>;
+      private var _deferredRMOs: Object;
+      private var _buffer: Vector.<ServerRMO>;
 
       public function MessagesProcessor() {
          reset();
       }
 
       public function reset(): void {
-         _orderOfNotYetReceivedMessages = new Array();
          _deferredRMOs = new Object();
-         buffer = new Vector.<ServerRMO>();
-      }
-
-      private var _orderOfNotYetReceivedMessages: Array;
-      private var _deferredRMOs: Object;
-
-      private function get orderEnforced(): Boolean {
-         return _orderOfNotYetReceivedMessages.length > 0;
-      }
-
-      private function orderEnforcedFor(action:String): Boolean {
-         return orderEnforced
-                   && _orderOfNotYetReceivedMessages.indexOf(action) >= 0;
-      }
-
-      /**
-       * Temporally enforces order in which incoming messages are processed.
-       * Once all message have been processed in the given order, the
-       * execution proceeds normally.
-       *
-       * Response messages are not affected.
-       *
-       * @param order a list of incoming message keys (actions) in the order
-       * those messages must be processed.
-       */
-      public function enforceIncomingMessagesOrder(order: Array): void {
-         Objects.paramNotNull("order", order);
-         _orderOfNotYetReceivedMessages =
-            _orderOfNotYetReceivedMessages.concat(order);
+         _buffer = new Vector.<ServerRMO>();
       }
 
       /**
@@ -84,7 +56,7 @@ package controllers.messages
       public function process(count: uint = 0): void {
          var messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
          if (messages != null) {
-            buffer = buffer.concat(messages);
+            _buffer = _buffer.concat(messages);
          }
          processBuffer(count);
       }
@@ -95,30 +67,13 @@ package controllers.messages
          var processed: uint = 0;
          while (logicExecutionManager.executionEnabled
                    && (count == 0 || processed < count)
-                   && buffer.length > 0) {
-            const rmo: ServerRMO = buffer.shift();
+                   && _buffer.length > 0) {
+            const rmo: ServerRMO = _buffer.shift();
             if (rmo.isReply) {
                respMsgTracker.removeRMO(rmo);
             }
             else {
-               if (orderEnforcedFor(rmo.action)) {
-                  _deferredRMOs[rmo.action] = rmo;
-                  var deferredToProcess: String;
-                  var deferredRMO: ServerRMO;
-                  do {
-                     deferredToProcess = _orderOfNotYetReceivedMessages[0];
-                     deferredRMO = _deferredRMOs[deferredToProcess];
-                     if (deferredRMO != null) {
-                        _orderOfNotYetReceivedMessages.shift();
-                        delete _deferredRMOs[deferredToProcess];
-                        processMessage(deferredRMO);
-                     }
-                  }
-                  while (orderEnforced && deferredRMO != null)
-               }
-               else {
-                  processMessage(rmo);
-               }
+               processMessage(rmo);
             }
             processed++;
          }
