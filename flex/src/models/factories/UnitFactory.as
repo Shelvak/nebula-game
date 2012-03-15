@@ -9,6 +9,7 @@ package models.factories
    import models.unit.UnitBuildingEntry;
 
    import mx.collections.ArrayCollection;
+   import mx.collections.ArrayList;
    import mx.collections.IList;
 
    import utils.Objects;
@@ -28,9 +29,10 @@ package models.factories
        * @return instance of <code>Unit</code> with values of properties
        * loaded from the data object.
        */
-      public static function fromObject(data:Object) : Unit {
-         if (!data)
+      public static function fromObject(data: Object): Unit {
+         if (data == null) {
             throw new Error('Can not create unit, null given');
+         }
          return Objects.create(Unit, data);
       }
       
@@ -39,35 +41,38 @@ package models.factories
        * have <code>player</code> set to <code>NPC</code> player instance. If corresponding player object
        * can't be found in <code>playersHash</code> for any unit, error will be thrown.
        */
-      public static function fromObjects(units:Array, playersHash:Object) : ModelsCollection {
-         var players:Object = PlayerFactory.fromHash(playersHash);
-         var source:Array = [];
-         var errors:Array = [];
-         for each (var unitData:Object in units) {
-            var unit:Unit = fromObject(unitData);
+      public static function fromObjects(units: Array,
+                                         playersHash: Object): ModelsCollection {
+         const players: Object = PlayerFactory.fromHash(playersHash);
+         const source: Array = [];
+         const errors: Array = [];
+         for each (var unitData: Object in units) {
+            const unit: Unit = fromObject(unitData);
             // TODO: move assignment of unit.player to afterCreateModel() method like in Location?
-            if (unit.playerId == 0)
+            if (unit.playerId == 0) {
                unit.player = PlayerMinimal.NPC_PLAYER;
-            else if (!players[unit.playerId])
+            }
+            else if (!players[unit.playerId]) {
                errors.push("No player for unit " + unit);
-            else
+            }
+            else {
                unit.player = players[unit.playerId];
+            }
             source.push(unit);
          }
-         if (errors.length > 0)
+         if (errors.length > 0) {
             throw new Error(errors.join("\n"));
+         }
          return new ModelsCollection(source);
       }
       
       /**
        * Creates a list of <code>UnitBuildingEntry</code> from the given cached units generic object. 
        */
-      public static function createCachedUnits(cachedUnits:Object) : ArrayCollection
-      {
-         var result:ArrayCollection = new ArrayCollection();
-         for (var unitType:String in cachedUnits)
-         {
-            var entry:UnitBuildingEntry = new UnitBuildingEntry(
+      public static function createCachedUnits(cachedUnits: Object): ArrayCollection {
+         var result: ArrayCollection = new ArrayCollection();
+         for (var unitType: String in cachedUnits) {
+            var entry: UnitBuildingEntry = new UnitBuildingEntry(
                "unit::" + StringUtil.underscoreToCamelCase(unitType),
                cachedUnits[unitType]
             );
@@ -76,25 +81,19 @@ package models.factories
          return result;
       }
       
-      
-      
       /**
        * 
        * @param source - list of Unit models
        * @return cached units
        * 
-       */      
-      public static function buildCachedUnitsFromUnits(source: IList): ArrayCollection
-      {
+       */
+      public static function buildCachedUnitsFromUnits(source: IList): ArrayCollection {
          var types: Object = {};
-         for each (var unit: Unit in source)
-         {
-            if (types[unit.type] == null)
-            {
+         for each (var unit: Unit in source) {
+            if (types[unit.type] == null) {
                types[unit.type] = 1;
             }
-            else
-            {
+            else {
                types[unit.type] += 1;
             }
          }
@@ -116,29 +115,28 @@ package models.factories
        * @param npcUnits data hash
        * @param keys location keys to take from that hash
        * @param ssId solar system id
-       * @return
        */
-      public static function ssNpcUnits(
-         npcUnits: Object, keys: Vector.<String>, ssId: int
-      ): ModelsCollection {
+      public static function ssNpcUnits(npcUnits: Object,
+                                        keys: Vector.<String>,
+                                        ssId: int): IList {
          const unitsArr: Array = [];
          for each (var key: String in keys) {
-            var splitKey: Array = key.split(",", 2);
-            var locationX: int = int(splitKey[0]);
-            var locationY: int = int(splitKey[1]);
+            const splitKey: Array = key.split(",");
+            const locationX: int = int(splitKey[0]);
+            const locationY: int = int(splitKey[1]);
 
             for (var groupKey: String in npcUnits[key]) {
-               var splitGroup: Array = groupKey.split(",", 4);
+               const splitGroup: Array = groupKey.split(",");
                // Property transformer transforms this property into lower
                // camel case, because it thinks this is an object key.
                // Fix it up.
-               var type: String = StringUtil.firstToUpperCase(splitGroup[0]);
-               var stance: int = int(splitGroup[1]);
-               var flank: int = int(splitGroup[2]);
-               var level: int = int(splitGroup[3]);
+               const type: String = StringUtil.firstToUpperCase(splitGroup[0]);
+               const stance: int = int(splitGroup[1]);
+               const flank: int = int(splitGroup[2]);
+               const level: int = int(splitGroup[3]);
                
                for each (var data: Object in npcUnits[key][groupKey]) {
-                  var unit: Unit = new Unit();
+                  const unit: Unit = new Unit();
                   unit.id = data.id;
                   unit.hp = data.hp;
                   unit.type = type;
@@ -158,7 +156,7 @@ package models.factories
                }
             }
          }
-         return new ModelsCollection(unitsArr);
+         return new ArrayList(unitsArr);
       }
    }
 }
