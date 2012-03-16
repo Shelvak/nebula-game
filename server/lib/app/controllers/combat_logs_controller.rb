@@ -12,12 +12,14 @@ class CombatLogsController < GenericController
   ACTION_SHOW = 'combat_logs|show'
 
   SHOW_OPTIONS = required(:id => String)
-  def self.show_scope(m); scope.server; end
+  SHOW_SCOPE = scope.world
   def self.show_action(m)
-    combat_log = CombatLog.where(:sha1_id => m.params['id']).first
-    raise ActiveRecord::RecordNotFound.new(
-      "Cannot find combat log with id #{m.params['id']}!"
-    ) if combat_log.nil?
-    respond m, :log => combat_log.info
+    without_locking do
+      combat_log = CombatLog.where(:sha1_id => m.params['id']).first
+      raise ActiveRecord::RecordNotFound.new(
+        "Cannot find combat log with id #{m.params['id']}!"
+      ) if combat_log.nil?
+      respond m, :log => combat_log.info
+    end
   end
 end

@@ -17,7 +17,7 @@ class ObjectsController < GenericController
   ACTION_CREATED = 'objects|created'
 
   CREATED_OPTIONS = logged_in + only_push + required(:objects => Array)
-  def self.created_scope(m); objects_scope(m); end
+  CREATED_SCOPE = scope.world
   def self.created_action(m)
     respond m, :objects => prepare(m.player, m.params['objects'])
   end
@@ -42,7 +42,7 @@ class ObjectsController < GenericController
 
   UPDATED_OPTIONS = logged_in + only_push +
     required(:objects => Array, :reason => [NilClass, Symbol, String])
-  def self.updated_scope(m); objects_scope(m); end
+  UPDATED_SCOPE = scope.world
   def self.updated_action(m)
     respond m,
       :objects => prepare(m.player, m.params['objects']),
@@ -69,7 +69,7 @@ class ObjectsController < GenericController
 
   DESTROYED_OPTIONS = logged_in + only_push +
     required(:objects => Array, :reason => [NilClass, Symbol, String])
-  def self.destroyed_scope(m); objects_scope(m); end
+  DESTROYED_SCOPE = scope.world
   def self.destroyed_action(m)
     respond m,
       :object_ids => prepare_destroyed(m.params['objects']),
@@ -79,14 +79,14 @@ class ObjectsController < GenericController
   protected
   class << self
     private
-    def objects_scope(m); scope.player(m.player); end
-
     def prepare(player, objects)
-      resolver = StatusResolver.new(player)
+      without_locking do
+        resolver = StatusResolver.new(player)
 
-      group_by_class(objects).inject({}) do |hash, (class_name, class_objects)|
-        hash[class_name] = cast_perspective(player, class_objects, resolver)
-        hash
+        group_by_class(objects).inject({}) do |hash, (class_name, class_objects)|
+          hash[class_name] = cast_perspective(player, class_objects, resolver)
+          hash
+        end
       end
     end
 

@@ -3,7 +3,7 @@ package controllers.dailybonus.actions
    
    import components.dailybonus.DailyBonusComp;
    import components.dailybonus.DailyBonusEvent;
-   import components.popups.ActionConfirmationPopup;
+   import components.popups.ActionConfirmationPopUp;
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
@@ -44,7 +44,7 @@ package controllers.dailybonus.actions
          }
          else
          {
-            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
             var cont: DailyBonusComp = new DailyBonusComp();
             cont.addEventListener(DailyBonusEvent.CLOSE_PANEL,
                function(e: DailyBonusEvent):void

@@ -10,9 +10,11 @@ class PlayerOptionsController < GenericController
   ACTION_SHOW = 'player_options|show'
 
   SHOW_OPTIONS = logged_in + only_push
-  def self.show_scope(message); scope.player(message.player); end
+  SHOW_SCOPE = scope.world
   def self.show_action(m)
-    respond m, :options => m.player.options.as_json
+    without_locking do
+      respond m, :options => m.player.options.as_json
+    end
   end
 
   # Set options for this player
@@ -25,7 +27,7 @@ class PlayerOptionsController < GenericController
   ACTION_SET = 'player_options|set'
 
   SET_OPTIONS = logged_in
-  def self.set_scope(m); scope.player(m.player); end
+  SET_SCOPE = scope.world
   def self.set_action(m)
     opts = m.player.options.data
 

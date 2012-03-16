@@ -552,7 +552,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
   end
 
   [
-    100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 10000, 25000, 50000,
+    100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000,
     100000, 250000, 500000, 1_000000
   ].each_with_index do |count, index|
     achievement(20020 + index) { destroy Unit, :count => count }

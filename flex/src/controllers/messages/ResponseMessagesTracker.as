@@ -112,16 +112,16 @@ package controllers.messages
                msgLog.logMessage(
                   rmo.action,
                   "Processing response message to {0}. Success: false. "
-                     + "Server error: {1}",
-                  [rmo.id, ObjectUtil.toString(sRMO.error)]
+                     + "Server error: {1}. Seq: {2}",
+                  [rmo.id, ObjectUtil.toString(sRMO.error), sRMO.sequenceNumber]
                );
                rmo.responder.cancel(rmo, sRMO);
             }
             else {
                msgLog.logMessage(
                   rmo.action,
-                  "Processing response message to {0}. Success: true.",
-                  [rmo.id]
+                  "Processing response message to {0}. Success: true. Seq: {1}.",
+                  [rmo.id, sRMO.sequenceNumber]
                );
                rmo.responder.result(rmo);
             }

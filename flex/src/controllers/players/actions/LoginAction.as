@@ -4,28 +4,13 @@ package controllers.players.actions
 
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.chat.ChatCommand;
-   import controllers.galaxies.GalaxiesCommand;
-   import controllers.game.GameCommand;
-   import controllers.messages.MessagesProcessor;
-   import controllers.notifications.NotificationsCommand;
-   import controllers.planets.PlanetsCommand;
-   import controllers.playeroptions.PlayerOptionsCommand;
-   import controllers.players.PlayersCommand;
-   import controllers.quests.QuestsCommand;
-   import controllers.routes.RoutesCommand;
-   import controllers.technologies.TechnologiesCommand;
-
    import controllers.players.AuthorizationManager;
    import controllers.startup.StartupInfo;
-   
+
    import utils.remote.rmo.ClientRMO;
    import utils.remote.rmo.ServerRMO;
 
 
-   /**
-    * Performs a login operation.
-    */
    public class LoginAction extends CommunicationAction
    {
       private function get SI() : StartupInfo {
@@ -35,30 +20,12 @@ package controllers.players.actions
       private function get AM() : AuthorizationManager {
          return AuthorizationManager.getInstance();
       }
-      
-      
-      public function LoginAction() {
-         super ();
-      }
-      
-      
-      public override function applyClientAction(cmd:CommunicationCommand) : void {
-         MessagesProcessor.getInstance().enforceIncomingMessagesOrder([
-            GameCommand.CONFIG,
-            PlayersCommand.SHOW,
-            PlanetsCommand.PLAYER_INDEX,
-            TechnologiesCommand.INDEX,
-            QuestsCommand.INDEX,
-            NotificationsCommand.INDEX,
-            RoutesCommand.INDEX,
-            PlayerOptionsCommand.SHOW,
-            ChatCommand.INDEX,
-            GalaxiesCommand.SHOW
-         ]);
+
+      public override function applyClientAction(cmd: CommunicationCommand): void {
          sendMessage(new ClientRMO({
-            "webPlayerId": SI.webPlayerId,
+            "webPlayerId":    SI.webPlayerId,
             "serverPlayerId": SI.serverPlayerId,
-            "version": Version.VERSION
+            "version":        Version.VERSION
          }));
       }
       
@@ -75,8 +42,8 @@ package controllers.players.actions
             }
          }
       }
-      
-      public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void {
+
+      public override function cancel(rmo: ClientRMO, srmo: ServerRMO): void {
          super.cancel(rmo, srmo);
          AM.loginFailed();
       }

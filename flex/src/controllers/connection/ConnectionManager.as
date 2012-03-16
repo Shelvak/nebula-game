@@ -3,7 +3,7 @@ package controllers.connection
    import com.developmentarc.core.utils.EventBroker;
 
    import components.announcement.AnnouncementPopup;
-   import components.popups.ErrorPopup;
+   import components.popups.ErrorPopUp;
 
    import controllers.combatlogs.CombatLogsCommand;
    import controllers.game.GameCommand;
@@ -132,7 +132,7 @@ package controllers.connection
             throw new Error("Unhandled message error!");
          }
          
-         var popup:ErrorPopup = new ErrorPopup();
+         var popup:ErrorPopUp = new ErrorPopUp();
          popup.showCancelButton = false;
          popup.retryButtonLabel = reconnectLabelText;
          popup.retryButtonClickHandler = retryButton_clickHandler;
@@ -267,7 +267,7 @@ package controllers.connection
          
          ML.player.pending = false;
          
-         var popup:ErrorPopup = new ErrorPopup();
+         var popup:ErrorPopUp = new ErrorPopUp();
          popup.title   = Localizer.string("Popups", "title." + titleKey);
          popup.message = Localizer.string("Popups", "message." + messageKey, messageParams);
          popup.showCancelButton = false;

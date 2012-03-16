@@ -1,6 +1,11 @@
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
   unless defined?(ROOT_DIR)
 
+# Global constants related to server tweaking
+WORKERS_CHAT = 1
+WORKERS_WORLD = 3
+DB_POOL_SIZE = WORKERS_CHAT + WORKERS_WORLD + 10
+
 require 'rubygems'
 require 'bundler'
 
@@ -270,12 +275,13 @@ config_dir = File.expand_path(File.join(ROOT_DIR, 'config'))
 global_config = GameConfig.new
 global_config.setup!(config_dir, File.join(ROOT_DIR, 'run'))
 CONFIG = GameConfig::ThreadRouter.new(global_config)
+require "#{ROOT_DIR}/lib/app/classes/cfg.rb"
 
 # Establish database connection
 DB_CONFIG = GameConfig.read_file(config_dir, 'database.yml')
 DB_CONFIG.each do |env, config|
   config["adapter"] = "jdbcmysql"
-  config["pool"] = 30
+  config["pool"] = DB_POOL_SIZE
 end
 USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
 DB_MIGRATIONS_DIR = File.expand_path(
@@ -377,9 +383,13 @@ end
 # Disables SQL locking for this thread in given block. Only use this on
 # read-only operations!
 def without_locking
-  Parts::WithLocking.locking = false
-  value = yield
-  Parts::WithLocking.locking = true
+  old_value = Parts::WithLocking.locking
+  begin
+    Parts::WithLocking.locking = false
+    value = yield
+  ensure
+    Parts::WithLocking.locking = old_value
+  end
   value
 end
 

@@ -11,7 +11,7 @@
       <![CDATA[
       import com.developmentarc.core.utils.EventBroker;
 
-      import components.popups.ActionConfirmationPopup;
+      import components.popups.ActionConfirmationPopUp;
 
       import config.Config;
 
@@ -32,6 +32,7 @@
       import utils.assets.ImagePreloader;
       import utils.locale.Localizer;
 
+
       [Bindable(event="willNotChange")]
       private function get ML(): ModelLocator {
          return ModelLocator.getInstance();
@@ -43,7 +44,7 @@
          return AllianceScreenM.getInstance();
       }
 
-      [Bindable (event="willNotChange")]
+      [Bindable(event="willNotChange")]
       private function get allianceTech(): Technology {
          return ML.technologies.getTechnologyByType('alliances');
       }
@@ -51,18 +52,22 @@
       private function createAlliance(e: Event): void {
          if (allyName.text.length >= Config.getMinAllyNameLength()) {
             allianceExists = false;
-            EventBroker.subscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
-            EventBroker.subscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
+            EventBroker.subscribe(GAllianceEvent.ALLIANCE_CONFIRMED,
+                                  removeAlliancePending);
+            EventBroker.subscribe(GAllianceEvent.ALLIANCE_FAILED,
+                                  removeAlliancePending);
             new AlliancesCommand(
-                    AlliancesCommand.NEW,
-                    {'name': allyName.text}
+               AlliancesCommand.NEW,
+               {'name': allyName.text}
             ).dispatch();
          }
       }
 
       private function removeAlliancePending(e: GAllianceEvent): void {
-         EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_CONFIRMED, removeAlliancePending);
-         EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_FAILED, removeAlliancePending);
+         EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_CONFIRMED,
+                                 removeAlliancePending);
+         EventBroker.unsubscribe(GAllianceEvent.ALLIANCE_FAILED,
+                                 removeAlliancePending);
          if (e.type == GAllianceEvent.ALLIANCE_FAILED) {
             allianceExists = true;
          }
@@ -72,10 +77,12 @@
       private var allianceExists: Boolean = false;
 
       protected function this_creationCompleteHandler(event: FlexEvent): void {
-         NavigationController.getInstance().creationCompleteFunction(MainAreaScreens.ALLIANCE, this);
+         NavigationController.getInstance().creationCompleteFunction(MainAreaScreens.ALLIANCE,
+                                                                     this);
 
          tabDescription.width =
-                 tabManagement.width = Math.max(tabDescription.width, tabManagement.width);
+            tabManagement.width = Math.max(tabDescription.width,
+                                           tabManagement.width);
       }
 
       [Bindable]
@@ -87,18 +94,21 @@
          }
          else if (allyNewName.text.length >= Config.getMinAllyNameLength()) {
 
-            var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+            var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
             popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
             popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
             var lbl: Label = new Label();
             lbl.minWidth = 300;
             lbl.text = Localizer.string('Popups', 'message.renameAlliance',
-                    [allyNewName.text, Config.getEditAllianceCredits()]);
+                                        [
+                                           allyNewName.text,
+                                           Config.getEditAllianceCredits()
+                                        ]);
             popUp.addElement(lbl);
             popUp.title = Localizer.string('Popups', 'title.renameAlliance');
             popUp.confirmButtonClickHandler = function (button: Button = null): void {
                new AlliancesCommand(AlliancesCommand.EDIT,
-                       {'name': allyNewName.text}).dispatch();
+                                    {'name': allyNewName.text}).dispatch();
                allyNewName.text = '';
             };
             popUp.show();
@@ -111,12 +121,13 @@
       protected function save_clickHandler(event: MouseEvent): void {
          model.alliance.newDescription = desc.text;
          new AlliancesCommand(AlliancesCommand.EDIT_DESCRIPTION,
-                 model.alliance).dispatch();
+                              model.alliance).dispatch();
          editing = false;
       }
 
 
-      private function getString(property: String, parameters: Array = null): String {
+      private function getString(property: String,
+                                 parameters: Array = null): String {
          return Localizer.string("Alliances", property, parameters);
       }
 

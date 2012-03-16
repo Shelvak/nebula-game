@@ -1,6 +1,6 @@
 package components.chat
 {
-   import components.popups.ActionConfirmationPopup;
+   import components.popups.ActionConfirmationPopUp;
 
    import flash.events.MouseEvent;
 
@@ -117,7 +117,7 @@ package components.chat
 
       private function btnDoIgnore_clickHandler(event: MouseEvent): void {
          if (_model != null) {
-            const popup: ActionConfirmationPopup = new ActionConfirmationPopup();
+            const popup: ActionConfirmationPopUp = new ActionConfirmationPopUp();
             const message: Label = new Label();
             message.left = 0;
             message.right = 0;

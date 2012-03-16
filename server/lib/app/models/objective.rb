@@ -62,8 +62,9 @@ class Objective < ActiveRecord::Base
         # Objective::CompleteAchievements where we really just need
         # "`type`="CompleteAchievements"``
         #
-        objectives = where(:key => resolve_key(klass),
-                           :type => to_s.demodulize).all
+        objectives = without_locking {
+          where(:key => resolve_key(klass), :type => to_s.demodulize).all
+        }
         objectives.each do |objective|
           objective_models = filter(objective, class_models)
 

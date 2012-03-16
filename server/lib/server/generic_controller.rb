@@ -31,9 +31,7 @@ class GenericController
     def respond(message, params={})
       typesig binding, Dispatcher::Message, Hash
 
-      dispatcher.transmit!(
-        {"action" => message.full_action, "params" => params}, message.client
-      )
+      dispatcher.respond!(message, params)
     end
 
     # Push message to client who sent message.
@@ -91,7 +89,25 @@ class GenericController
       session_set(message, S_KEY_CURRENT_PLANET_SS_ID, value)
     end
 
+    # Send all messages from this block to dispatcher in an atomic block.
+    # Does not support messages that get back values!
+    def atomic!
+      begin
+        Thread.current[:atomizer] = Dispatcher::Atomizer.new
+        yield
+        Celluloid::Actor[:dispatcher].atomic!(Thread.current[:atomizer])
+      ensure
+        Thread.current[:atomizer] = nil
+      end
+    end
+
     private
-    def dispatcher; Celluloid::Actor[:dispatcher]; end
+    def dispatcher
+      if Thread.current[:atomizer]
+        Thread.current[:atomizer]
+      else
+        Celluloid::Actor[:dispatcher]
+      end
+    end
   end
 end

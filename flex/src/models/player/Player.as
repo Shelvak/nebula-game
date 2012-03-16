@@ -1,9 +1,9 @@
 package models.player
 {
    import config.Config;
-   
+
    import interfaces.IUpdatable;
-   
+
    import models.Reward;
    import models.parts.events.UpgradeEvent;
    import models.player.events.PlayerEvent;
@@ -12,22 +12,20 @@ package models.player
    import models.technology.Technology;
    import models.time.MTimeEventFixedMoment;
    import models.time.events.MTimeEventEvent;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
-   import mx.events.CollectionEvent;
-   import mx.events.CollectionEventKind;
    import mx.utils.ObjectUtil;
-   
+
    import namespaces.prop_name;
-   
+
    import utils.DateUtil;
    import utils.MathUtil;
    import utils.NumberUtil;
    import utils.Objects;
    import utils.datastructures.Collections;
-   
-   
+
+
    /**
     * @see models.player.events.PlayerEvent#POPULATION_CAP_CHANGE
     * @eventType models.player.events.PlayerEvent.POPULATION_CAP_CHANGE
@@ -117,18 +115,6 @@ package models.player
        * @default 0
        */
       public var galaxyId:int = 0;
-      
-      
-      [SkipProperty]
-      /**
-       * Makes sense only for the player instance in <code>ModelLocator</code>.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [SkipProperty]</i></p>
-       * 
-       * @default null
-       */
-      public var loggedIn:Boolean = false;
       
       prop_name static const dailyBonus:String = "dailyBonus";
       [SkipProperty]
@@ -575,7 +561,6 @@ package models.player
       
       public function reset() : void {
          Collections.cleanListOfICleanables(planets);
-         loggedIn = false;
          scientists = 0;
          scientistsTotal = 0;
          xp = 0;

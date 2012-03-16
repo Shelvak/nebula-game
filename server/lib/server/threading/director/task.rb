@@ -1,8 +1,10 @@
 class Threading::Director::Task
   DEADLOCK_ERROR =
     "ActiveRecord::JDBCError: Deadlock found when trying to get lock"
-  MAX_RETRIES = 20
-  SLEEP_RANGE = 50..200
+  LOCK_WAIT_ERROR =
+    "ActiveRecord::JDBCError: Lock wait timeout exceeded"
+  MAX_RETRIES = 8
+  SLEEP_RANGE = 500..2000
 
   def initialize(description, &block)
     @description = description
@@ -30,17 +32,26 @@ class Threading::Director::Task
         end
       end
     rescue ActiveRecord::StatementInvalid => e
-      if e.message.starts_with?(DEADLOCK_ERROR) && current_retry < MAX_RETRIES
+      innodb_info = ActiveRecord::Base.connection.
+        select_one("SHOW ENGINE INNODB STATUS")["Status"]
+      status_line = "\n\nInnoDB status:\n#{innodb_info}"
+
+      if (
+        e.message.starts_with?(DEADLOCK_ERROR) ||
+        e.message.starts_with?(LOCK_WAIT_ERROR)
+      ) && current_retry < MAX_RETRIES
         current_retry += 1
 
         sleep_for = SLEEP_RANGE.random_element / 1000.0
-        LOGGER.info "Deadlock occurred, retry #{current_retry
-          }, retrying again in #{sleep_for}s: #{e.message}", worker_name
+        LOGGER.warn %Q{Deadlock occurred, retry #{current_retry
+          }, retrying again in #{sleep_for}s: #{e.message}#{status_line}},
+          worker_name
         sleep sleep_for
         retry
       else
         raise e.class,
-          "Deadlock unresolvable after #{MAX_RETRIES} retries: #{e.message}"
+          "Deadlock unresolvable after #{MAX_RETRIES} retries: #{e.message}#{
+            status_line}"
       end
     end
   end

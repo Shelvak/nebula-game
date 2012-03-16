@@ -276,16 +276,16 @@ class Unit < ActiveRecord::Base
     end
   end
 
-  class << self
-    def destroy_scope(unit); DScope.combat(unit.location); end
-    def destroy_callback(unit)
-      unit.destroy!
-      EventBroker.fire(unit, EventBroker::DESTROYED)
-    end
+  DESTROY_SCOPE = DScope.world
+  def self.destroy_callback(unit)
+    unit.destroy!
+    EventBroker.fire(unit, EventBroker::DESTROYED)
+  end
 
-    def upgrade_finished_scope(unit); DScope.combat(unit.location); end
-    def upgrade_finished_callback(unit); unit.on_upgrade_finished!; end
-    
+  UPGRADE_FINISHED_SCOPE = DScope.world
+  def self.upgrade_finished_callback(unit); unit.on_upgrade_finished!; end
+
+  class << self
     def update_combat_attributes(player_id, updates)
       unit_ids = updates.keys
       units = where(:id => unit_ids, :player_id => player_id).all
@@ -391,6 +391,34 @@ class Unit < ActiveRecord::Base
           units[player_id][key]["cached_units"][row['type']] = row['count'].to_i
           units
         end
+    end
+
+    def fast_npc_fetch(scope)
+      npc_units = {}
+      type_cache = {}
+
+      scope.
+        select(%w{
+          location_x location_y
+          type stance flank level
+          id hp_percentage
+        }).
+        c_select_all.each do |row|
+          type = row['type']
+          location = "#{row['location_x']},#{row['location_y']}"
+          second_tier =
+            "#{type},#{row['stance']},#{row['flank']},#{row['level']}"
+
+          klass = type_cache[type] ||= "Unit::#{type}".constantize
+          npc_units[location] ||= {}
+          npc_units[location][second_tier] ||= []
+          npc_units[location][second_tier] << {
+            :id => row['id'],
+            :hp => (klass.hit_points * row['hp_percentage']).round,
+          }
+        end
+
+      npc_units
     end
 
     # Selects units for movement.

@@ -37,13 +37,6 @@ module Parts::Constructor
   # Class methods for base class.
   module BaseClassMethods
     def constructor?; ! property('constructor.items').nil?; end
-
-    def construction_finished_scope(constructor)
-      Dispatcher::Scope.planet(constructor.planet)
-    end
-    def construction_finished_callback(constructor)
-      constructor.on_construction_finished!
-    end
   end
 
 	module ClassMethods

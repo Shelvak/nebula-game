@@ -86,9 +86,7 @@ class Notification < ActiveRecord::Base
     )
   end
 
-  def self.destroy_scope(notification)
-    DScope.player(notification.player_id)
-  end
+  DESTROY_SCOPE = DScope.world
   def self.destroy_callback(notification); notification.destroy!; end
 
   def self.create_from_error(error)

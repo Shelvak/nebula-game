@@ -2,13 +2,8 @@ package controllers.messages
 {
    import controllers.CommunicationCommand;
 
-   import mx.logging.ILogger;
-
-   import mx.logging.Log;
-
-   import utils.Objects;
-
    import utils.SingletonFactory;
+   import utils.execution.GameLogicExecutionManager;
    import utils.logging.MessagesLogger;
    import utils.remote.IServerProxy;
    import utils.remote.ServerProxyInstance;
@@ -39,92 +34,82 @@ package controllers.messages
       }
 
 
+      private var _buffer: Vector.<ServerRMO>;
+      private var _sequence: RMOSequence;
+      private var _nextSequenceNumber: int;
+
       public function MessagesProcessor() {
          reset();
       }
 
       public function reset(): void {
-         _orderOfNotYetReceivedMessages = new Array();
-         _deferredRMOs = new Object();
-      }
-
-      private var _orderOfNotYetReceivedMessages: Array;
-      private var _deferredRMOs: Object;
-
-      private function get orderEnforced(): Boolean {
-         return _orderOfNotYetReceivedMessages.length > 0;
-      }
-
-      private function orderEnforcedFor(action:String): Boolean {
-         return orderEnforced
-                   && _orderOfNotYetReceivedMessages.indexOf(action) >= 0;
-      }
-
-      /**
-       * Temporally enforces order in which incoming messages are processed.
-       * Once all message have been processed in the given order, the
-       * execution proceeds normally.
-       *
-       * Response messages are not affected.
-       *
-       * @param order a list of incoming message keys (actions) in the order
-       * those messages must be processed.
-       */
-      public function enforceIncomingMessagesOrder(order: Array): void {
-         Objects.paramNotNull("order", order);
-         _orderOfNotYetReceivedMessages =
-            _orderOfNotYetReceivedMessages.concat(order);
+         _buffer = new Vector.<ServerRMO>();
+         _sequence = new RMOSequence();
+         _nextSequenceNumber = 0;
       }
 
       /**
        * Processes all messages received form the server since the last call to
        * this method.
+       *
+       * @param count number of messages to process during this call. If 0 is
+       * provided, all available messages will be processed.
        */
-      public function process(): void {
-         const logger:ILogger = Log.getLogger("MessagesProcessor");
-         const messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
-         if (messages == null) {
-            return;
+      public function process(count: uint = 0): void {
+         var messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
+         if (messages != null) {
+            _buffer = _buffer.concat(messages);
          }
-         for each (var rmo: ServerRMO in messages) {
-            if (rmo.isReply) {
-               respMsgTracker.removeRMO(rmo);
-            }
-            else {
-               if (orderEnforcedFor(rmo.action)) {
-                  logger.debug(
-                     "@process() [order enforced]: Deferring processing of: {0}",
-                     rmo.action
-                  );
-                  _deferredRMOs[rmo.action] = rmo;
-                  var deferredToProcess: String;
-                  var deferredRMO: ServerRMO;
-                  do {
-                     deferredToProcess = _orderOfNotYetReceivedMessages[0];
-                     deferredRMO = _deferredRMOs[deferredToProcess];
-                     if (deferredRMO != null) {
-                        _orderOfNotYetReceivedMessages.shift();
-                        delete _deferredRMOs[deferredToProcess];
-                        logger.debug(
-                           "@process() [order enforced]: Processing deferred: {0}",
-                           rmo.action
-                        );
-                        processMessage(deferredRMO);
-                     }
-                  }
-                  while (orderEnforced && deferredRMO != null)
+         processBuffer(count);
+      }
+
+      private function get canProcessSequence(): Boolean {
+         return _sequence.hasItems
+                   && _sequence.firstNumber == _nextSequenceNumber;
+      }
+
+      private function processBuffer(count: uint): void {
+         const logicExecutionManager: GameLogicExecutionManager
+                  = GameLogicExecutionManager.getInstance();
+         var processed: uint = 0;
+         while (logicExecutionManager.executionEnabled
+                   && (count == 0 || processed < count)
+                   && (_buffer.length > 0 || canProcessSequence)) {
+            var processSequence: Boolean = true;
+            if (_buffer.length > 0) {
+               const rmo: ServerRMO = _buffer.shift();
+               if (rmo.inSequence) {
+                  _sequence.insert(rmo);
                }
                else {
                   processMessage(rmo);
+                  processed++;
+                  processSequence = false;
                }
+            }
+            if (processSequence && canProcessSequence) {
+               _nextSequenceNumber++;
+               processMessage(_sequence.removeFirst());
+               processed++;
             }
          }
       }
 
       private function processMessage(rmo: ServerRMO): void {
-         msgLog.logMessage(rmo.action, "Processing message {0}", [rmo.id]);
-         new CommunicationCommand(rmo.action, rmo.parameters, true, false, rmo)
-            .dispatch();
+         if (rmo.isReply) {
+            respMsgTracker.removeRMO(rmo);
+         }
+         else {
+            msgLog.logMessage(
+               rmo.action,
+               "Processing message {0}. Seq: {1}.",
+               [rmo.id, rmo.sequenceNumber],
+               rmo.inSequence
+            );
+            new CommunicationCommand(
+               rmo.action, rmo.parameters, true, false, rmo
+            ).dispatch();
+         }
       }
 
       /**
@@ -134,5 +119,37 @@ package controllers.messages
          respMsgTracker.addRMO(rmo);
          serverProxy.sendMessage(rmo);
       }
+   }
+}
+
+
+import utils.remote.rmo.ServerRMO;
+
+
+class RMOSequence
+{
+   private const _list: Vector.<ServerRMO> = new Vector.<ServerRMO>();
+
+   public function insert(rmo: ServerRMO): void {
+      const sequenceNumber: int = rmo.sequenceNumber;
+      const length: int = _list.length;
+      for (var insertAt: int = 0; insertAt < length; insertAt++) {
+         if (sequenceNumber < _list[insertAt].sequenceNumber) {
+            break;
+         }
+      }
+      _list.splice(insertAt, 0, rmo);
+   }
+
+   public function removeFirst(): ServerRMO {
+      return _list.shift();
+   }
+
+   public function get hasItems(): Boolean {
+      return _list.length > 0;
+   }
+
+   public function get firstNumber(): int {
+      return _list[0].sequenceNumber;
    }
 }

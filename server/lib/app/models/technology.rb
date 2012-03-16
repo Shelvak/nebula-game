@@ -331,9 +331,7 @@ class Technology < ActiveRecord::Base
 
   ### Callbacks ###
 
-  def self.upgrade_finished_scope(technology)
-    DScope.player(technology.player_id)
-  end
+  UPGRADE_FINISHED_SCOPE = DScope.world
   def self.upgrade_finished_callback(technology)
     technology.on_upgrade_finished!
   end

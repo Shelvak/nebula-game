@@ -93,33 +93,30 @@ class SsObject < ActiveRecord::Base
     self.class.to_s.demodulize.underscore.to_sym
   end
 
+  SPAWN_SCOPE = DScope.world
+  def self.spawn_callback(asteroid); asteroid.spawn_resources!; end
+
+  ENERGY_DIMINISHED_SCOPE = DScope.world
+  def self.energy_diminished_callback(planet)
+    changes = planet.ensure_positive_energy_rate!
+    Notification.create_for_buildings_deactivated(
+      planet, changes
+    ) unless changes.blank? || planet.player_id.nil?
+    EventBroker.fire(planet, EventBroker::CHANGED)
+  end
+
+  RAID_SCOPE = DScope.world
+  def self.raid_callback(planet)
+    spawner = RaidSpawner.new(planet)
+    spawner.raid!
+  end
+
+  EXPLORATION_COMPLETE_SCOPE = DScope.world
+  def self.exploration_complete_callback(planet)
+    planet.finish_exploration!
+  end
+
   class << self
-    # Because combat on that location can also create a wreckage.
-    def spawn_scope(asteroid); DScope.combat(asteroid.location_point); end
-    def spawn_callback(asteroid); asteroid.spawn_resources!; end
-
-    def energy_diminished_scope(planet); DScope.planet_owner(planet); end
-    def energy_diminished_callback(planet)
-      changes = planet.ensure_positive_energy_rate!
-      Notification.create_for_buildings_deactivated(
-        planet, changes
-      ) unless changes.blank? || planet.player_id.nil?
-      EventBroker.fire(planet, EventBroker::CHANGED)
-    end
-
-    # Raid only spawns units and creates a cooldown.
-    def raid_scope(planet); DScope.planet(planet); end
-    def raid_callback(planet)
-      spawner = RaidSpawner.new(planet)
-      spawner.raid!
-    end
-
-    # Exploration might increase resources or give new units.
-    def exploration_complete_scope(planet); DScope.planet(planet); end
-    def exploration_complete_callback(planet)
-      planet.finish_exploration!
-    end
-
     # Find planet by _id_ for _player_id_.
     #
     # Raise <tt>ActiveRecord::RecordNotFound</tt> if not found.

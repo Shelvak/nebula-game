@@ -1,5 +1,8 @@
 package controllers.timedupdate
 {
+   import controllers.messages.MessagesProcessor;
+   import controllers.messages.ResponseMessagesTracker;
+
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
@@ -8,6 +11,8 @@ package controllers.timedupdate
    import utils.DateUtil;
    import utils.datastructures.iterators.IIterator;
    import utils.datastructures.iterators.IIteratorFactory;
+   import utils.execution.GameLogicExecutionManager;
+
 
    public class MasterUpdateTrigger
    {
@@ -107,10 +112,13 @@ package controllers.timedupdate
       
       
       private function timer_timerHandler(event:TimerEvent) : void {
-         // For now we call this each time before triggering next batch of updates.
-         // Later this will be called by the rendering mechanism after all display objects are updated.
-         resetChangeFlags();
-         triggerUpdate();
+         if (GameLogicExecutionManager.getInstance().executionEnabled) {
+            // For now we call this each time before triggering next batch of
+            // updates. Later this will be called by the rendering mechanism
+            // after all display objects are updated.
+            resetChangeFlags();
+            triggerUpdate();
+         }
       }
       
       
@@ -132,6 +140,10 @@ package controllers.timedupdate
       private function triggerUpdate() : void {
          // grab current time
          DateUtil.now = new Date().time;
+
+         // process a few messages
+         MessagesProcessor.getInstance().process(5);
+         ResponseMessagesTracker.getInstance().checkWaitingMessages();
          
          // advance to the next trigger
          _triggerIndex++;

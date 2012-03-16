@@ -16,13 +16,7 @@ class PlayersController < GenericController
     :web_player_id => Fixnum,
     :version => String
   )
-  def self.login_scope(message)
-    # Player login depends on galaxy scope because logging him in might reattach
-    # him to the galaxy.
-    player = Player.where(:id => message.params['server_player_id']).first
-    # There might not be such player.
-    scope.galaxy(player.try(:galaxy_id))
-  end
+  LOGIN_SCOPE = scope.world
   def self.login_action(m)
     if ClientVersion.ok?(m.params['version'])
       player = Player.find(m.params['server_player_id'])
@@ -72,8 +66,9 @@ class PlayersController < GenericController
   end
 
   ACTION_SHOW = 'players|show'
+
   SHOW_OPTIONS = logged_in + only_push
-  def self.show_scope(message); scope.player(message.player); end
+  SHOW_SCOPE = scope.world
   def self.show_action(m); respond m, :player => m.player.as_json; end
 
   # Shows player profile.
@@ -90,18 +85,20 @@ class PlayersController < GenericController
   ACTION_SHOW_PROFILE = "players|show_profile"
 
   SHOW_PROFILE_OPTIONS = logged_in + required(:id => Fixnum)
-  def self.show_profile_scope(message); scope.player(message.player); end
+  SHOW_PROFILE_SCOPE = scope.world
   def self.show_profile_action(m)
-    player_hash = Player.ratings(
-      m.player.galaxy_id, Player.where(:id => m.params['id'])
-    )[0]
+    without_locking do
+      player_hash = Player.ratings(
+        m.player.galaxy_id, Player.where(:id => m.params['id'])
+      )[0]
 
-    raise ActiveRecord::RecordNotFound.new("Cannot find player with id #{
-      m.params['id']} in galaxy #{m.player.galaxy_id}!") if player_hash.nil?
+      raise ActiveRecord::RecordNotFound.new("Cannot find player with id #{
+        m.params['id']} in galaxy #{m.player.galaxy_id}!") if player_hash.nil?
 
-    respond m, \
-      :player => player_hash,
-      :achievements => Quest.achievements_by_player_id(m.params['id'])
+      respond m, \
+        :player => player_hash,
+        :achievements => Quest.achievements_by_player_id(m.params['id'])
+    end
   end
 
 
@@ -117,9 +114,11 @@ class PlayersController < GenericController
   ACTION_RATINGS = "players|ratings"
 
   RATINGS_OPTIONS = logged_in
-  def self.ratings_scope(message); scope.galaxy(message.player.galaxy_id); end
+  RATINGS_SCOPE = scope.world
   def self.ratings_action(m)
-    respond m, :ratings => Player.ratings(m.player.galaxy_id)
+    without_locking do
+      respond m, :ratings => Player.ratings(m.player.galaxy_id)
+    end
   end
 
 
@@ -134,7 +133,7 @@ class PlayersController < GenericController
   ACTION_EDIT = "players|edit"
 
   EDIT_OPTIONS = logged_in + valid(%w{portal_without_allies})
-  def self.edit_scope(message); scope.player(message.player); end
+  EDIT_SCOPE = scope.world
   def self.edit_action(m)
     m.player.portal_without_allies = m.params['portal_without_allies'] \
       unless m.params['portal_without_allies'].nil?
@@ -153,7 +152,7 @@ class PlayersController < GenericController
   ACTION_VIP = "players|vip"
 
   VIP_OPTIONS = logged_in + required(:vip_level => Fixnum)
-  def self.vip_scope(message); scope.player(message.player); end
+  VIP_SCOPE = scope.world
   def self.vip_action(m)
     m.player.vip_start!(m.params['vip_level'])
   rescue ArgumentError => e
@@ -177,7 +176,7 @@ class PlayersController < GenericController
   ACTION_STATUS_CHANGE = 'players|status_change'
 
   STATUS_CHANGE_OPTIONS = logged_in + only_push + required(:changes => Array)
-  def self.status_change_scope(message); scope.player(message.player); end
+  STATUS_CHANGE_SCOPE = scope.world
   def self.status_change_action(m)
     respond m, :changes => m.params['changes']
   end
@@ -196,7 +195,7 @@ class PlayersController < GenericController
   ACTION_CONVERT_CREDS = 'players|convert_creds'
 
   CONVERT_CREDS_OPTIONS = logged_in + required(:amount => Fixnum)
-  def self.convert_creds_scope(message); scope.player(message.player); end
+  CONVERT_CREDS_SCOPE = scope.world
   def self.convert_creds_action(m)
     m.player.vip_convert(m.params['amount'])
     m.player.save!
@@ -219,9 +218,7 @@ class PlayersController < GenericController
   ACTION_BATTLE_VPS_MULTIPLIER = 'players|battle_vps_multiplier'
 
   BATTLE_VPS_MULTIPLIER_OPTIONS = logged_in + required(:target_id => Fixnum)
-  def self.battle_vps_multiplier_scope(message)
-    scope.players([message.player.id, message.params['target_id']])
-  end
+  BATTLE_VPS_MULTIPLIER_SCOPE = scope.world
   def self.battle_vps_multiplier_action(m)
     respond m, :multiplier =>
       Player.battle_vps_multiplier(m.player.id, m.params['target_id'])

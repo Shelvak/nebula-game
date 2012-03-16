@@ -18,12 +18,7 @@ class UnitsController < GenericController
     :type => String, :count => Fixnum, :constructor_id => Fixnum,
     :prepaid => Boolean
   )
-  def self.new_scope(m)
-    constructor = Building.find(m.params['constructor_id'], :include => :planet)
-    scope.planet(constructor.planet_id)
-  rescue ActiveRecord::RecordNotFound => e
-    raise Dispatcher::UnresolvableScope, e.message, e.backtrace
-  end
+  NEW_SCOPE = scope.world
   def self.new_action(m)
     raise GameLogicError.new(
       "Cannot build new building without resources unless VIP!"
@@ -52,13 +47,7 @@ class UnitsController < GenericController
   ACTION_UPDATE = 'units|update'
 
   UPDATE_OPTIONS = logged_in + required(:updates => Hash)
-  def self.update_scope(m)
-    unit_id, updates = m.params['updates'].first
-    unit = Unit.find(unit_id)
-    scope.combat(unit.location)
-  rescue ActiveRecord::RecordNotFound => e
-    raise Dispatcher::UnresolvableScope, e.message, e.backtrace
-  end
+  UPDATE_SCOPE = scope.world
   def self.update_action(m)
     # Map JSON string keys to integer keys.
     updates = m.params['updates'].map_keys { |key, value| key.to_i }
@@ -81,7 +70,7 @@ class UnitsController < GenericController
   SET_HIDDEN_OPTIONS = logged_in + required(
     :planet_id => Fixnum, :unit_ids => Array, :value => Boolean
   )
-  def self.set_hidden_scope(m); scope.planet(m.params['planet_id']); end
+  SET_HIDDEN_SCOPE = scope.world
   def self.set_hidden_action(m)
     Unit.mass_set_hidden(
       m.player.id, m.params['planet_id'], m.params['unit_ids'],
@@ -108,7 +97,7 @@ class UnitsController < GenericController
   ATTACK_OPTIONS = logged_in + required(
     :planet_id => Fixnum, :target_id => Fixnum, :unit_ids => Array
   )
-  def self.attack_scope(m); scope.planet(m.params['planet_id']); end
+  ATTACK_SCOPE = scope.world
   def self.attack_action(m)
     raise GameLogicError.new("unit_ids cannot be empty!") \
       if m.params['unit_ids'].blank?
@@ -179,16 +168,17 @@ class UnitsController < GenericController
   MOVE_META_OPTIONS = logged_in + required(
     :unit_ids => Array, :source => Hash, :target => Hash, :avoid_npc => Boolean
   )
-  # Ignores spawns in galaxy/solar system.
-  def self.move_meta_scope(m); scope.player(m.player); end
+  MOVE_META_SCOPE = scope.world
   def self.move_meta_action(m)
-    source, target = resolve_location(m)
+    without_locking do
+      source, target = resolve_location(m)
 
-    arrival_date, hop_count = UnitMover.move_meta(
-      m.player.id, m.params['unit_ids'], source, target, m.params['avoid_npc']
-    )
+      arrival_date, hop_count = UnitMover.move_meta(
+        m.player.id, m.params['unit_ids'], source, target, m.params['avoid_npc']
+      )
 
-    respond m, :arrival_date => arrival_date, :hop_count => hop_count
+      respond m, :arrival_date => arrival_date, :hop_count => hop_count
+    end
   end
 
   # Initiate movement of selected space units. All units must be space
@@ -213,10 +203,7 @@ class UnitsController < GenericController
     :unit_ids => Array, :source => Hash, :target => Hash, :avoid_npc => Boolean,
     :speed_modifier => [Fixnum, Float]
   )
-  def self.move_scope(m)
-    source, target = resolve_location(m)
-    scope.combat(source.location_point)
-  end
+  MOVE_SCOPE = scope.world
   def self.move_action(m)
     source, target = resolve_location(m)
 
@@ -258,7 +245,7 @@ class UnitsController < GenericController
   MOVEMENT_PREPARE_OPTIONS = logged_in + only_push + required(
     :route => Hash, :unit_ids => Array, :route_hops => Array
   )
-  def self.movement_prepare_scope(m); scope.player(m.player); end
+  MOVEMENT_PREPARE_SCOPE = scope.world
   def self.movement_prepare_action(m)
     respond m,
       :route => m.params['route'],
@@ -302,16 +289,18 @@ class UnitsController < GenericController
   MOVEMENT_OPTIONS = logged_in + only_push + required(
     :units => Array, :route_hops => Array, :jumps_at => [NilClass, Time]
   )
-  def self.movement_scope(m); scope.player(m.player); end
+  MOVEMENT_SCOPE = scope.world
   def self.movement_action(m)
-    resolver = StatusResolver.new(m.player)
+    without_locking do
+      resolver = StatusResolver.new(m.player)
 
-    respond m,
-      :units => m.params['units'].
-        map { |unit| unit.as_json(:perspective => resolver) },
-      :players => Player.minimal_from_objects(m.params['units']),
-      :route_hops => m.params['route_hops'],
-      :jumps_at => m.params['jumps_at']
+      respond m,
+        :units => m.params['units'].
+          map { |unit| unit.as_json(:perspective => resolver) },
+        :players => Player.minimal_from_objects(m.params['units']),
+        :route_hops => m.params['route_hops'],
+        :jumps_at => m.params['jumps_at']
+    end
   end
 
   # Deploy a deployable unit onto +SsObject+.
@@ -332,7 +321,7 @@ class UnitsController < GenericController
   DEPLOY_OPTIONS = logged_in + required(
     :planet_id => Fixnum, :unit_id => Fixnum, :x => Fixnum, :y => Fixnum
   )
-  def self.deploy_scope(m); scope.planet(m.params['planet_id']); end
+  DEPLOY_SCOPE = scope.world
   def self.deploy_action(m)
     planet = SsObject::Planet.where(:player_id => m.player.friendly_ids).
       find(m.params['planet_id'])
@@ -368,7 +357,7 @@ class UnitsController < GenericController
   LOAD_OPTIONS = logged_in + required(
     :unit_ids => Array, :transporter_id => Fixnum
   )
-  def self.load_scope(m); transporter_scope(m); end
+  LOAD_SCOPE = scope.world
   def self.load_action(m)
     transporter = Unit.where(:player_id => m.player.id).
       find(m.params['transporter_id'])
@@ -417,7 +406,7 @@ class UnitsController < GenericController
     :transporter_id => Fixnum, :metal => Fixnum, :energy => Fixnum,
     :zetium => Fixnum
   )
-  def self.transfer_resources_scope(m); transporter_scope(m); end
+  TRANSFER_SCOPE = scope.world
   def self.transfer_resources_action(m)
     # Duplicate params so we could modify them.
     params = m.params.dup
@@ -486,7 +475,7 @@ class UnitsController < GenericController
 
   UNLOAD_OPTIONS = logged_in +
     required(:unit_ids => Array, :transporter_id => Fixnum)
-  def self.unload_scope(m); transporter_scope(m); end
+  UNLOAD_SCOPE = scope.world
   def self.unload_action(m)
     transporter = Unit.where(:player_id => m.player.id).
       find(m.params['transporter_id'])
@@ -513,17 +502,14 @@ class UnitsController < GenericController
   ACTION_SHOW = 'units|show'
 
   SHOW_OPTIONS = logged_in + required(:unit_id => Fixnum)
-  def self.show_scope(m)
-    transporter = Unit.find(m.params['unit_id'])
-    scope.player(transporter.player_id)
-  rescue ActiveRecord::RecordNotFound => e
-    raise Dispatcher::UnresolvableScope, e.message, e.backtrace
-  end
+  SHOW_SCOPE = scope.world
   def self.show_action(m)
-    transporter = Unit.where(:player_id => m.player.id).
-      find(m.params['unit_id'])
+    without_locking do
+      transporter = Unit.where(:player_id => m.player.id).
+        find(m.params['unit_id'])
 
-    respond m, :units => transporter.units.map(&:as_json)
+      respond m, :units => transporter.units.map(&:as_json)
+    end
   end
 
   # Heals requested units to full HP. Sets cooldown on healing center.
@@ -541,14 +527,7 @@ class UnitsController < GenericController
 
   HEAL_OPTIONS = logged_in +
     required(:building_id => Fixnum, :unit_ids => Array)
-  def self.heal_scope(m)
-    building = Building.find(m.params['building_id'])
-    # Heals units which might go into combat, so everybody in the planet is
-    # involved.
-    scope.planet(building.planet_id)
-  rescue ActiveRecord::RecordNotFound => e
-    raise Dispatcher::UnresolvableScope, e.message, e.backtrace
-  end
+  HEAL_SCOPE = scope.world
   def self.heal_action(m)
     building = Building::HealingCenter.find(m.params['building_id'])
     raise GameLogicError.new("Planet must belong to #{m.player}!") unless \
@@ -578,7 +557,7 @@ class UnitsController < GenericController
 
   DISMISS_OPTIONS = logged_in +
     required(:planet_id => Fixnum, :unit_ids => Array)
-  def self.dismiss_scope(m); scope.planet(m.params['planet_id']); end
+  DISMISS_SCOPE = scope.world
   def self.dismiss_action(m)
     planet = SsObject::Planet.where(:player_id => m.player.id).
       find(m.params['planet_id'])
@@ -599,32 +578,27 @@ class UnitsController < GenericController
   ACTION_POSITIONS = 'unit|positions'
 
   POSITIONS_OPTIONS = logged_in
-  def self.positions_scope(m); scope.friendly_to_player(m.player); end
+  POSITIONS_SCOPE = scope.world
   def self.positions_action(m)
-    positions = Unit.positions(
-      Unit.where(
-        "location_type != ? AND route_id IS NULL AND level > 0",
-        Location::UNIT
-      ).where(:player_id => m.player.friendly_ids)
-    )
-    players = Player.minimal_from_objects(positions) do |player_id, data|
-      player_id
-    end
+    without_locking do
+      positions = Unit.positions(
+        Unit.where(
+          "location_type != ? AND route_id IS NULL AND level > 0",
+            Location::UNIT
+        ).where(:player_id => m.player.friendly_ids)
+      )
+      players = Player.minimal_from_objects(positions) do |player_id, data|
+        player_id
+      end
 
-    respond m,
-      :positions => positions,
-      :players => players
+      respond m,
+        :positions => positions,
+        :players => players
+    end
   end
 
   class << self
     private
-    def transporter_scope(m)
-      transporter = Unit.find(m.params['transporter_id'])
-      scope.combat(transporter.location)
-    rescue ActiveRecord::RecordNotFound => e
-      raise Dispatcher::UnresolvableScope, e.message, e.backtrace
-    end
-
     def resolve_location(m)
       source = Location.find_by_attrs(m.params['source'].symbolize_keys)
       target = Location.find_by_attrs(m.params['target'].symbolize_keys)

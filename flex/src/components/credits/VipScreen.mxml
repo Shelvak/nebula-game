@@ -7,8 +7,8 @@
          xmlns:base="components.base.*" xmlns:screens="components.screens.*">
    <fx:Script>
       <![CDATA[
-      import components.popups.ActionConfirmationPopup;
-      import components.popups.WaitingCredsPopup;
+      import components.popups.ActionConfirmationPopUp;
+      import components.popups.WaitingCredsPopUp;
 
       import controllers.players.PlayersCommand;
       import controllers.ui.NavigationController;
@@ -22,6 +22,7 @@
       import utils.StringUtil;
       import utils.locale.Localizer;
 
+
       private static function get ML(): ModelLocator {
          return ModelLocator.getInstance();
       }
@@ -30,21 +31,22 @@
          return NavigationController.getInstance();
       }
 
-      private function getString(property: String, parameters: Array = null): String {
+      private function getString(property: String,
+                                 parameters: Array = null): String {
          return Localizer.string("Credits", property, parameters);
       }
 
       private function order_clickHandler(e: Event): void {
          var cost: int = VipLevelsData.getVipCost(
-                 int(VipLevelsData.vipSelection.selectedValue));
+            int(VipLevelsData.vipSelection.selectedValue));
 
          function getVip(): void {
             new PlayersCommand(PlayersCommand.VIP,
-                    {'vipLevel': VipLevelsData.getSelectedLevel()}).dispatch();
+                               {'vipLevel': VipLevelsData.getSelectedLevel()}).dispatch();
          }
 
          if (cost > ML.player.creds) {
-            WaitingCredsPopup.showPopup(cost, getVip);
+            WaitingCredsPopUp.showPopUp(cost, getVip);
          }
          else {
             getVip();
@@ -53,19 +55,23 @@
 
 
       protected function button1_clickHandler(event: MouseEvent): void {
-         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
          popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
          var lbl: Label = new Label();
          lbl.minWidth = 300;
          lbl.text = Localizer.string('Popups', 'message.convertCreds',
-                 [credSelector.value, VipLevelsData.getVipConvertedCreds(
-                         ML.player.vipLevel, credSelector.value)]);
+                                     [
+                                        credSelector.value,
+                                        VipLevelsData.getVipConvertedCreds(
+                                           ML.player.vipLevel,
+                                           credSelector.value)
+                                     ]);
          popUp.addElement(lbl);
          popUp.title = Localizer.string('Popups', 'title.convertCreds');
          popUp.confirmButtonClickHandler = function (button: Button = null): void {
             new PlayersCommand(PlayersCommand.CONVERT_CREDS,
-                    {'amount': credSelector.value}).dispatch();
+                               {'amount': credSelector.value}).dispatch();
             credSelector.value = 0;
          };
          popUp.show();

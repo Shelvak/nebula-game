@@ -3,6 +3,7 @@ package spacemule.modules.config.objects
 import scala.{collection => sc}
 import collection.mutable.HashMap
 import de.congrace.exp4j.ExpressionBuilder
+import spacemule.helpers.Exceptions.wrappingException
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,33 +39,29 @@ object FormulaCalc {
     }).build().calculate()
   }
 
+  implicit private[this] def exceptionWrapper =
+    (message: String, cause: Exception) => {
+      new IllegalArgumentException(message, cause)
+    }
+
   def calc(formula: String): Double =
-    try {
-      calculateValue(resolveExpression(formula), None)
-    }
-    catch {
-      case e: Exception =>
-        System.err.println(
-          "Error while calculating formula '%s'".format(formula)
-        )
-      throw e
-    }
+    wrappingException(
+      "Error while calculating formula '%s' without variables.".format(
+        formula
+      )
+    ) { () => calculateValue(resolveExpression(formula), None) }
   
   def calc(formula: String, vars: VarMap): Double =
-    try {
+    wrappingException(
+      "Error while calculating formula '%s' with variables %s".format(
+        formula, vars
+      )
+    ) { () =>
       calculateValue(resolveExpression(formula), Some(vars))
-    }
-    catch {
-      case e: Exception =>
-        throw new IllegalArgumentException(
-          "Error while calculating formula '%s' with variables %s".format(
-            formula, vars
-          ), e
-        )
     }
   
   // Just placeholders if formula is not exactly a formula. (When called from
-  // jruby side)
+  // JRuby side)
   
   def calc(formula: Long) = formula
   def calc(formula: Long, vars: VarMap) = formula

@@ -135,7 +135,9 @@
             <s:Button id="btnOpenDestLoc" right="5" width="78" top="75" visible="{hostComponent.showDestLoc}"/>
             <s:Label id="lblDestLocTitle" left="0" top="63" fontWeight="bold" visible="{hostComponent.showDestLoc}"/>
             <s:Label id="lblDestLoc" left="0" top="78" visible="{hostComponent.showDestLoc}"/>
-            <s:Label id="lblArrivesIn" left="0" top="105" fontWeight="bold" visible="{hostComponent.showDestLoc}"/>
+            <s:Label id="lblArrivesIn" left="0" lineBreak="explicit"
+                     textAlign="center" top="105" fontWeight="bold"
+                     visible="{hostComponent.showDestLoc}"/>
          </s:Group>
       </s:Group>
 

@@ -34,6 +34,7 @@ module ControllerSpecHelper
 
     @controller_name = klass.to_s.underscore.sub(/_controller$/, '')
     @message_id = "10101" # Fake message id.
+    @seq = 0 # Fake sequence number.
     @client = ServerActor::Client.new("127.0.0.1", 12345)
 
     login(
@@ -115,7 +116,8 @@ module ControllerSpecHelper
     raise "Cannot log in player, but it is required!" \
       if logged_in && @player.nil?
     Dispatcher::Message.new(
-      @message_id, action, params, @client, logged_in ? @player : nil, pushed
+      @message_id, @seq, action, params, @client, logged_in ? @player : nil,
+      pushed
     )
   end
 

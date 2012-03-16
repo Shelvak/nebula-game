@@ -69,6 +69,6 @@ class CombatLog < ActiveRecord::Base
     log
   end
 
-  def self.destroy_scope(combat_log); DScope.server; end
+  DESTROY_SCOPE = DScope.world
   def self.destroy_callback(combat_log); combat_log.destroy!; end
 end

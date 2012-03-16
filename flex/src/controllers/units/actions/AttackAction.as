@@ -20,7 +20,9 @@ package controllers.units.actions
          {
             if (alert.id == cmd.parameters.notification.id)
             {
-               ML.notificationAlerts.removeItemAt(ML.notificationAlerts.getItemIndex(alert));
+               ML.notificationAlerts.removeItemAt(
+                  ML.notificationAlerts.getItemIndex(alert)
+               );
                break;
             }
          }

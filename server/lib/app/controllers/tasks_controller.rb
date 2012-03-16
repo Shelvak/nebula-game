@@ -8,7 +8,7 @@ class TasksController < GenericController
   ACTION_REOPEN_LOGS = 'tasks|reopen_logs'
 
   REOPEN_LOGS_OPTIONS = control_token
-  def self.reopen_logs_scope(m); scope.server; end
+  REOPEN_LOGS_SCOPE = scope.world
   def self.reopen_logs_action(m)
     LOGGER.info "Reopening log outputs."
     Celluloid::Actor[:log_writer].reopen!
@@ -24,7 +24,7 @@ class TasksController < GenericController
   ACTION_APPLY_HOTFIX = 'tasks|apply_hotfix'
 
   APPLY_HOTFIX_OPTIONS = control_token + required(:hotfix => String)
-  def self.apply_hotfix_scope(m); scope.server; end
+  APPLY_HOTFIX_SCOPE = scope.world
   def self.apply_hotfix_action(m)
     unless m.client.host == '127.0.0.1'
       LOGGER.fatal(%Q{Somebody tried to apply hotfix not from localhost!
@@ -68,7 +68,7 @@ Message was:
 
   CREATE_GALAXY_OPTIONS = control_token +
     required(:ruleset => String, :callback_url => String)
-  def self.create_galaxy_scope(m); scope.server; end
+  CREATE_GALAXY_SCOPE = scope.world
   def self.create_galaxy_action(m)
     galaxy_id = Galaxy.create_galaxy(
       m.params['ruleset'], m.params['callback_url']
@@ -86,7 +86,7 @@ Message was:
   ACTION_DESTROY_GALAXY = 'tasks|destroy_galaxy'
 
   DESTROY_GALAXY_OPTIONS = control_token + required(:id => Fixnum)
-  def self.destroy_scope(m); scope.galaxy(m.params['id']); end
+  DESTROY_GALAXY_SCOPE = scope.world
   def self.destroy_galaxy_action(m)
     Galaxy.find(m.message['id']).destroy!
   rescue ActiveRecord::RecordNotFound
@@ -108,7 +108,7 @@ Message was:
   CREATE_PLAYER_OPTIONS = control_token + required(
     :galaxy_id => Fixnum, :web_user_id => Fixnum, :name => String
   )
-  def self.create_player_scope(m); scope.galaxy(m.params['galaxy_id']); end
+  CREATE_PLAYER_SCOPE = scope.world
   def self.create_player_action(m)
     galaxy_id = m.params['galaxy_id']
     web_user_id = m.params['web_user_id']
@@ -128,7 +128,7 @@ Message was:
   ACTION_DESTROY_PLAYER = 'tasks|destroy_player'
 
   DESTROY_PLAYER_OPTIONS = control_token + required(:player_id => Fixnum)
-  def self.destroy_player_scope(m); scope.player(m.params['player_id']); end
+  DESTROY_PLAYER_SCOPE = scope.world
   def self.destroy_player_action(m)
     player = Player.find(m.params['player_id'])
     player.invoked_from_web = true
@@ -148,7 +148,7 @@ Message was:
   ACTION_ADD_CREDS = 'tasks|add_creds'
 
   ADD_CREDS_OPTIONS = control_token + required(:player_id => Fixnum)
-  def self.add_creds_scope(m); scope.player(m.params['player_id']); end
+  ADD_CREDS_SCOPE = scope.world
   def self.add_creds_action(m)
     player = Player.find(m.params['player_id'])
     player.pure_creds += m.params['creds']
@@ -170,23 +170,25 @@ Message was:
   ACTION_PLAYER_STATS = 'tasks|player_stats'
 
   PLAYER_STATS_OPTIONS = control_token
-  def self.player_stats_scope(m); scope.server; end
+  PLAYER_STATS_SCOPE = scope.world
   def self.player_stats_actions(m)
-    # Returns how much players were logged in in last _time_ seconds.
-    get_player_count_in = lambda do |time|
-      Player.where("last_seen >= ?", Time.now - time).count
+    without_locking do
+      # Returns how much players were logged in in last _time_ seconds.
+      get_player_count_in = lambda do |time|
+        Player.where("last_seen >= ?", Time.now - time).count
+      end
+
+      stats = {
+        :current => Celluloid::Actor[:dispatcher].logged_in_count,
+        :"24h" => get_player_count_in[24.hours],
+        :"48h" => get_player_count_in[48.hours],
+        :"1w" => get_player_count_in[1.week],
+        :"2w" => get_player_count_in[2.weeks],
+        :total => Player.count,
+      }
+
+      respond m, stats
     end
-
-    stats = {
-      :current => Celluloid::Actor[:dispatcher].logged_in_count,
-      :"24h" => get_player_count_in[24.hours],
-      :"48h" => get_player_count_in[48.hours],
-      :"1w" => get_player_count_in[1.week],
-      :"2w" => get_player_count_in[2.weeks],
-      :total => Player.count,
-    }
-
-    respond m, stats
   end
 
   # Return market rate for given resource pair in different galaxies.
@@ -201,15 +203,19 @@ Message was:
 
   MARKET_RATES_STATS_OPTIONS = control_token +
     required(:from_kind => Fixnum, :to_kind => Fixnum)
-  def self.market_rates_stats_scope(m); scope.server; end
+  MARKET_RATES_STATS_SCOPE = scope.world
   def self.market_rates_stats_action(m)
-    stats = Galaxy.select("id").c_select_values.inject({}) do |hash, galaxy_id|
-      hash[galaxy_id] = MarketRate.
-        average(galaxy_id, m.params['from_kind'], m.params['to_kind'])
-      hash
-    end
+    without_locking do
+      stats = Galaxy.select("id").c_select_values.inject({}) do
+        |hash, galaxy_id|
 
-    respond m, stats
+        hash[galaxy_id] = MarketRate.
+          average(galaxy_id, m.params['from_kind'], m.params['to_kind'])
+        hash
+      end
+
+      respond m, stats
+    end
   end
 
   # Return number of market offers for given resource pair in different galaxies.
@@ -224,19 +230,23 @@ Message was:
 
   MARKET_COUNTS_STATS_OPTIONS = control_token +
     required(:from_kind => Fixnum, :to_kind => Fixnum)
-  def self.market_counts_stats_scope(m); scope.server; end
+  MARKET_COUNTS_STATS_SCOPE = scope.world
   def self.market_counts_stats_action(m)
-    stats = Galaxy.select("id").c_select_values.inject({}) do |hash, galaxy_id|
-      count = MarketOffer.where(
-        :from_kind => m.params['from_kind'],
-        :to_kind => m.params['to_kind'],
-        :galaxy_id => galaxy_id
-      ).count
-      hash[galaxy_id] = count
-      hash
-    end
+    without_locking do
+      stats = Galaxy.select("id").c_select_values.inject({}) do
+        |hash, galaxy_id|
 
-    respond m, stats
+        count = MarketOffer.where(
+          :from_kind => m.params['from_kind'],
+            :to_kind => m.params['to_kind'],
+            :galaxy_id => galaxy_id
+        ).count
+        hash[galaxy_id] = count
+        hash
+      end
+
+      respond m, stats
+    end
   end
 
   # Send announcement to all the connected players.
@@ -252,7 +262,7 @@ Message was:
 
   ANNOUNCE_OPTIONS = control_token +
     required(:ends_at => String, :message => String)
-  def self.announce_scope(m); scope.server; end
+  ANNOUNCE__SCOPE = scope.world
   def self.announce_action(m)
     time = Time.parse(m.params['ends_at'])
     raise ParamOpts::BadParams.new(

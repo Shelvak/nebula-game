@@ -6,11 +6,15 @@ class Objective::HavePlanets < Objective
       ? Player.find(player_id).friendly_ids \
       : player_id
 
-    Player.where(:id => player_ids).sum(:planets_count)
+    without_locking do
+      Player.where(:id => player_ids).sum(:planets_count)
+    end
   end
 
   def filter(models)
-    models.reject { |p| p.solar_system.battleground? }
+    without_locking do
+      models.reject { |p| p.solar_system.battleground? }
+    end
   end
 
   def self.count_benefits(models)

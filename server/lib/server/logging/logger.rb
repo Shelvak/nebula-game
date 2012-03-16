@@ -1,11 +1,10 @@
 class Logging::Logger
-  DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+  DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%L"
   DEFAULT_COMPONENT = 'main'
 
   BLOCK_INDENT = 4
 
   def initialize
-    @include_time = true
     @indent = 0
     # Buffer for block logging.
     @block_buffer = nil
@@ -42,7 +41,6 @@ class Logging::Logger
     if @block_buffer.nil?
       @block_buffer = "\n#{data}"
       started_buffering = true
-      @include_time = false
     else
       @block_buffer += data
     end
@@ -81,7 +79,6 @@ class Logging::Logger
       write(options[:level], @block_buffer + "\n")
       # Clear block buffer if this was the call that started buffering.
       @block_buffer = nil
-      @include_time = true
     end
   end
 
@@ -100,10 +97,10 @@ class Logging::Logger
     name = Celluloid.actor? \
       ? "Ax#{Celluloid.current_actor.object_id.to_s(16)}" \
       : "main"
-    "%s[%s%s|%s|%dt|%-5s] %s\n" % [
+    "%s[%s|%s|%s|%-5s] %s\n" % [
       ' ' * @indent,
-      @include_time ? "#{Time.now.strftime(DATETIME_FORMAT)}|" : "",
-      name, component, Thread.list.size, type, message
+      Time.now.strftime(DATETIME_FORMAT),
+      name, component, type, message
     ]
   end
 

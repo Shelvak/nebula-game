@@ -15,8 +15,8 @@
 
       import components.credits.AccelerateSelector;
       import components.credits.ConfirmCredsLabel;
-      import components.popups.ActionConfirmationPopup;
-      import components.popups.WaitingCredsPopup;
+      import components.popups.ActionConfirmationPopUp;
+      import components.popups.WaitingCredsPopUp;
       import components.skins.GreenButtonSkin;
       import components.skins.PauseButtonSkin;
 
@@ -61,6 +61,7 @@
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
 
+
       [Bindable]
       private var _selectedModel: Technology;
 
@@ -69,41 +70,40 @@
             if (_selectedModel != null) {
                if (_selectedModel.upgradePart != null) {
                   _selectedModel.upgradePart.removeEventListener(UpgradeEvent.LEVEL_CHANGE,
-                          refreshPriceOrientatedProperties);
+                                                                 refreshPriceOrientatedProperties);
                   _selectedModel.upgradePart.removeEventListener(
-                          UpgradeEvent.UPGRADE_PROGRESS,
-                          model_upgradeProgressHandler
+                     UpgradeEvent.UPGRADE_PROGRESS,
+                     model_upgradeProgressHandler
                   );
                   _selectedModel.upgradePart.removeEventListener(
-                          UpgradeEvent.UPGRADE_STOPPED,
-                          model_upgradeProgressHandler
+                     UpgradeEvent.UPGRADE_STOPPED,
+                     model_upgradeProgressHandler
                   );
                }
                _selectedModel.removeEventListener(TechnologyEvent.SELECTED_CHANGE,
-                       refreshPriceOrientatedProperties);
+                                                  refreshPriceOrientatedProperties);
             }
             _selectedModel = tScreen.selectedTechnology;
             if (_selectedModel != null) {
                if (ML.player.scientists + _selectedModel.scientists >
-                       _selectedModel.minScientists)
-               {
+                      _selectedModel.minScientists) {
                   scientistsSelector.value = Math.max(_selectedModel.scientists,
-                     _selectedModel.minScientists);
+                                                      _selectedModel.minScientists);
                }
                if (_selectedModel.upgradePart != null) {
                   _selectedModel.upgradePart.addEventListener(UpgradeEvent.LEVEL_CHANGE,
-                          refreshPriceOrientatedProperties);
+                                                              refreshPriceOrientatedProperties);
                   _selectedModel.upgradePart.addEventListener(
-                          UpgradeEvent.UPGRADE_PROGRESS,
-                          model_upgradeProgressHandler
+                     UpgradeEvent.UPGRADE_PROGRESS,
+                     model_upgradeProgressHandler
                   );
                   _selectedModel.upgradePart.addEventListener(
-                          UpgradeEvent.UPGRADE_STOPPED,
-                          model_upgradeProgressHandler
+                     UpgradeEvent.UPGRADE_STOPPED,
+                     model_upgradeProgressHandler
                   );
                }
                _selectedModel.addEventListener(TechnologyEvent.SELECTED_CHANGE,
-                       refreshPriceOrientatedProperties);
+                                               refreshPriceOrientatedProperties);
 
             }
          }
@@ -144,11 +144,13 @@
       private function calculateResLeft(): void {
          var planet: MSSObject = ML.latestPlanet.ssObject;
          missingStorageString = Resource.getMissingStoragesString(planet,
-                 metalCost, energyCost, zetiumCost);
+                                                                  metalCost,
+                                                                  energyCost,
+                                                                  zetiumCost);
          enoughStorage = (missingStorageString == '' ? true : false);
          resLeft = Resource.getTimeToReachResources
-                 (planet.metal, planet.energy, planet.zetium,
-                         metalCost, energyCost, zetiumCost);
+                      (planet.metal, planet.energy, planet.zetium,
+                       metalCost, energyCost, zetiumCost);
       }
 
       public function refreshUpgradeState(e: Event = null): void {
@@ -156,8 +158,8 @@
             var planet: MSSObject = ML.latestPlanet.ssObject;
             if (_selectedModel != null) {
                canBeUpgraded = !((metalCost > planet.metal.currentStock) ||
-                       (energyCost > planet.energy.currentStock) ||
-                       (zetiumCost > planet.zetium.currentStock));
+                                    (energyCost > planet.energy.currentStock) ||
+                                    (zetiumCost > planet.zetium.currentStock));
 
                calculateResLeft();
             }
@@ -169,15 +171,17 @@
       protected function recalculateCosts(): void {
          if (_selectedModel) {
             var upgradable: Upgradable = _selectedModel.upgradePart;
-            var speedBoostCost: Number = speedUpBoost.selected ? Config.getTechnologiesSpeedUpCost() : 1;
+            var speedBoostCost: Number = speedUpBoost.selected
+                                            ? Config.getTechnologiesSpeedUpCost()
+                                            : 1;
             var resources: ResourcesAmount = upgradable.resourcesNeededForNextLevel();
             metalCost = resources.metal * speedBoostCost;
             energyCost = resources.energy * speedBoostCost;
             zetiumCost = resources.zetium * speedBoostCost;
             var timeSeconds: int = _selectedModel.upgradePart.calcUpgradeTime(
-                    {'level': _selectedModel.upgradePart.level + 1,
-                       'scientists': scientistsSelector.value,
-                       'speedUp': speedUpBoost.selected});
+               {'level':        _selectedModel.upgradePart.level + 1,
+                  'scientists': scientistsSelector.value,
+                  'speedUp':    speedUpBoost.selected});
             timeSeconds = timeSeconds > 1 ? timeSeconds : 1;
             timeCost = getStringFromSeconds(timeSeconds, 3);
          }
@@ -196,26 +200,26 @@
       }
 
       protected function unlearn(event: MouseEvent): void {
-         var confirmPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var confirmPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          var confirmLabel: ConfirmCredsLabel = new ConfirmCredsLabel();
          confirmLabel.popUp = confirmPopUp;
          var destCreds: int = Config.getTechnologyUnlearnCost();
          confirmLabel.credsRequired = destCreds;
          confirmLabel.textFlow = getTextFlow(
-                 Localizer.string('Credits', 'label.unlearnPrice', [destCreds]));
+            Localizer.string('Credits', 'label.unlearnPrice', [destCreds]));
          confirmLabel.refreshPopup();
          confirmPopUp.addElement(confirmLabel);
          confirmPopUp.confirmButtonClickHandler = function (button: Button = null): void {
             function doDestruct(): void {
                new TechnologiesCommand(TechnologiesCommand.UNLEARN,
-                       {'id': _selectedModel.id}).dispatch();
+                                       {'id': _selectedModel.id}).dispatch();
             }
 
             if (confirmLabel.hasEnoughCredits()) {
                doDestruct();
             }
             else {
-               WaitingCredsPopup.showPopup(destCreds, doDestruct);
+               WaitingCredsPopUp.showPopUp(destCreds, doDestruct);
             }
          };
          confirmPopUp.show();
@@ -224,20 +228,20 @@
       protected function upgradeButton_clickHandler(event: MouseEvent): void {
          if (_selectedModel.upgradePart.level == 0) {
             new TechnologiesCommand(
-                    TechnologiesCommand.NEW,
-                    {type: _selectedModel.type,
-                       planet_id: ML.latestPlanet.id,
-                       scientists: scientistsSelector.value,
-                       speed_up: speedUpBoost.selected}
+               TechnologiesCommand.NEW,
+               {type:         _selectedModel.type,
+                  planet_id:  ML.latestPlanet.id,
+                  scientists: scientistsSelector.value,
+                  speed_up:   speedUpBoost.selected}
             ).dispatch();
          }
          else {
             new TechnologiesCommand(
-                    TechnologiesCommand.UPGRADE,
-                    {id: _selectedModel.id,
-                       planet_id: ML.latestPlanet.id,
-                       scientists: scientistsSelector.value,
-                       speed_up: speedUpBoost.selected}
+               TechnologiesCommand.UPGRADE,
+               {id:           _selectedModel.id,
+                  planet_id:  ML.latestPlanet.id,
+                  scientists: scientistsSelector.value,
+                  speed_up:   speedUpBoost.selected}
             ).dispatch();
          }
       }
@@ -259,7 +263,7 @@
          var temp: *;
          if (ModelUtil.getModelClass(Config.unlockHash[_selectedModel.type]) == ObjectClass.BUILDING) {
             temp = BuildingFactory.createDefault(
-                    ModelUtil.getModelSubclass(Config.unlockHash[_selectedModel.type]));
+               ModelUtil.getModelSubclass(Config.unlockHash[_selectedModel.type]));
          }
          else {
             temp = new Unit();
@@ -274,14 +278,16 @@
          refreshPriceOrientatedProperties();
       }
 
-      override protected function updateDisplayList(uw: Number, uh: Number): void {
+      override protected function updateDisplayList(uw: Number,
+                                                    uh: Number): void {
          super.updateDisplayList(uw, uh);
          if (!_selectedModel || !_selectedModel.upgradePart) {
             return;
          }
 
          if (_selectedModel.pauseRemainder != 0 || _selectedModel.upgradePart.upgradeEndsAt != null) {
-            techProgressBar.setProgress(_selectedModel.upgradePart.upgradeProgress, 1);
+            techProgressBar.setProgress(_selectedModel.upgradePart.upgradeProgress,
+                                        1);
          }
       }
 
@@ -294,25 +300,27 @@
          if (pauseButton.selected) {
             scientistsSelector.value = _selectedModel.scientists;
             new TechnologiesCommand(
-                    TechnologiesCommand.PAUSE,
-                    {id: _selectedModel.id}
+               TechnologiesCommand.PAUSE,
+               {id: _selectedModel.id}
             ).dispatch();
          }
          else {
             new TechnologiesCommand(
-                    TechnologiesCommand.RESUME,
-                    {id: _selectedModel.id,
-                       scientists: scientistsSelector.value}
+               TechnologiesCommand.RESUME,
+               {id:           _selectedModel.id,
+                  scientists: scientistsSelector.value}
             ).dispatch();
          }
       }
 
       private var tScreen: MCTechnologySelectedSidebar =
-              MCTechnologySelectedSidebar.getInstance();
+                     MCTechnologySelectedSidebar.getInstance();
 
       protected function techSidebar_creationCompleteHandler(event: FlexEvent): void {
-         tScreen.addEventListener(TechnologySidebarEvent.SELECTED_CHANGE, refreshSelected);
-         EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshUpgradeState);
+         tScreen.addEventListener(TechnologySidebarEvent.SELECTED_CHANGE,
+                                  refreshSelected);
+         EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE,
+                               refreshUpgradeState);
          refreshPriceOrientatedProperties();
          refreshSelected();
       }
@@ -324,13 +332,14 @@
 
       protected function button1_clickHandler(event: MouseEvent): void {
          new TechnologiesCommand(
-                 TechnologiesCommand.UPDATE,
-                 {id: _selectedModel.id,
-                    scientists: scientistsSelector.value}
+            TechnologiesCommand.UPDATE,
+            {id:           _selectedModel.id,
+               scientists: scientistsSelector.value}
          ).dispatch();
       }
 
-      private function getStringFromSeconds(seconds: int, parts: int = 2): String {
+      private function getStringFromSeconds(seconds: int,
+                                            parts: int = 2): String {
          return DateUtil.secondsToHumanString(seconds, parts);
       }
 
@@ -342,21 +351,22 @@
       protected function coin_clickHandler(event: MouseEvent): void {
          var accelerator: AccelerateSelector = new AccelerateSelector();
          accelerator.upgradePart = _selectedModel.upgradePart;
-         var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var speedPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          accelerator.popUp = speedPopUp;
          speedPopUp.confirmButtonEnabled = false;
-         speedPopUp.confirmButtonClickHandler = function(): void {
+         speedPopUp.confirmButtonClickHandler = function (): void {
             function doAccelerate(): void {
                new TechnologiesCommand(TechnologiesCommand.ACCELERATE_UPGRADE,
-                       {'id': _selectedModel.id,
-                          'index': accelerator.selectedAccelerateType}).dispatch();
+                                       {'id':      _selectedModel.id,
+                                          'index': accelerator.selectedAccelerateType}).dispatch();
             }
 
             if (accelerator.hasEnoughCredits()) {
                doAccelerate();
             }
             else {
-               WaitingCredsPopup.showPopup(accelerator.selectedCost, doAccelerate);
+               WaitingCredsPopUp.showPopUp(accelerator.selectedCost,
+                                           doAccelerate);
             }
          }
          speedPopUp.addElement(accelerator);

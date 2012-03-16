@@ -48,13 +48,18 @@
       private var NC: NavigationController = NavigationController.getInstance();
 
       private function renamePlanet(): void {
-         new PlanetsCommand(PlanetsCommand.EDIT, new EditActionParams(ML.latestPlanet, newPlanetName.text))
-                 .dispatch();
-         newPlanetName.text = "";
+         if (canRenamePlanetTo(newPlanetName.text)) {
+            new PlanetsCommand(
+               PlanetsCommand.EDIT,
+               new EditActionParams(ML.latestPlanet, newPlanetName.text)
+            ).dispatch();
+            newPlanetName.text = "";
+         }
       }
 
-      private function getLength(text: String): int {
-         return text.length;
+      private function canRenamePlanetTo(newName:String): Boolean {
+         return newName != null
+                   && newName.length >= Config.getMinPlanetNameLength();
       }
 
       private function getString(key: String, params: Array = null): String {
@@ -310,8 +315,9 @@
                      <base:BaseTextInput width="80%" id="newPlanetName" enter="renamePlanet()"
                                          maxChars="{Config.getMaxPlanetNameLength()}"/>
                      <s:Group width="100%">
-                        <s:Button right="6" enabled="{getLength(newPlanetName.text) >= Config.getMinPlanetNameLength()
-                                  &amp;&amp; !ML.latestPlanet.pending}"
+                        <s:Button right="6"
+                                  enabled="{canRenamePlanetTo(newPlanetName.text)
+                                             &amp;&amp; !ML.latestPlanet.pending}"
                                   click="renamePlanet()" 
                                   label="{getString('label.changeName')}"/>
                      </s:Group>

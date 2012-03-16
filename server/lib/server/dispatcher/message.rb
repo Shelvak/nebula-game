@@ -2,11 +2,16 @@ class Dispatcher::Message
   # Controller/Action splitter.
   SPLITTER = "|"
 
-  attr_reader :id, :controller_name, :action, :params, :client, :player
+  # Message id.
+  attr_reader :id
+  # Message sequence number. Used to order messages in client.
+  attr_reader :seq
+  attr_reader :controller_name, :action, :params, :client, :player
   def pushed?; @pushed; end
 
-  def initialize(id, action, params, client, player, pushed)
+  def initialize(id, seq, action, params, client, player, pushed)
     @id = id
+    @seq = seq
     @controller_name, @action = action.split(SPLITTER, 2)
     @params = params.freeze
     @client = client
@@ -19,7 +24,7 @@ class Dispatcher::Message
   end
 
   def to_s
-    "<#{self.class} #{full_action}: id=#{@id} client=#{@client} player=#{@player
-      } pushed=#{@pushed} params=#{@params.inspect}>"
+    "<#{self.class} #{full_action}: id=#{@id} seq=#{@seq || "nil"} client=#{
+      @client} player=#{@player} pushed=#{@pushed} params=#{@params.inspect}>"
   end
 end

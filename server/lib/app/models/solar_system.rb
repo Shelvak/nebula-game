@@ -286,7 +286,7 @@ class SolarSystem < ActiveRecord::Base
     true
   end
 
-  def self.spawn_scope(solar_system); DScope.galaxy(solar_system.galaxy_id); end
+  SPAWN_SCOPE = DScope.world
   def self.spawn_callback(solar_system)
     solar_system.spawn!
     date = Cfg.solar_system_spawn_random_delay_date(solar_system)

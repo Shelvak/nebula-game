@@ -15,7 +15,7 @@ class AlliancesController < GenericController
   ACTION_NEW = 'alliances|new'
 
   NEW_OPTIONS = logged_in + required(:name => String)
-  def self.new_scope(m); scope.player(m.player); end
+  NEW_SCOPE = scope.world
   def self.new_action(m)
     raise GameLogicError.new(
       "Cannot create alliance if cooldown hasn't expired yet!"
@@ -52,7 +52,7 @@ class AlliancesController < GenericController
   ACTION_INVITE = 'alliances|invite'
 
   INVITE_OPTIONS = logged_in + required(:player_id => Fixnum)
-  def self.invite_scope(m); scope.player(m.player); end
+  INVITE_SCOPE = scope.world
   def self.invite_action(m)
     alliance = get_owned_alliance(m)
 
@@ -85,7 +85,7 @@ class AlliancesController < GenericController
   ACTION_JOIN = 'alliances|join'
 
   JOIN_OPTIONS = logged_in + required(:notification_id => Fixnum)
-  def self.join_scope(m); scope.player(m.player); end
+  JOIN_SCOPE = scope.world
   def self.join_action(m)
     notification = Notification.where(:player_id => m.player.id).find(
       m.params['notification_id'])
@@ -123,7 +123,7 @@ class AlliancesController < GenericController
   ACTION_LEAVE = 'alliances|leave'
 
   LEAVE_OPTIONS = logged_in
-  def self.leave_scope(m); scope.player(m.player); end
+  LEAVE_SCOPE = scope.world
   def self.leave_action(m)
     m.player.leave_alliance!
   end
@@ -144,9 +144,7 @@ class AlliancesController < GenericController
   ACTION_KICK = 'alliances|kick'
 
   KICK_OPTIONS = logged_in + required(:player_id => Fixnum)
-  def self.kick_scope(m)
-    scope.players([m.player.id, m.params['player_id']])
-  end
+  KICK_SCOPE = scope.world
   def self.kick_action(m)
     alliance = get_owned_alliance(m)
     raise GameLogicError.new("Current player is not in alliance!") \
@@ -181,7 +179,7 @@ class AlliancesController < GenericController
   ACTION_SHOW = 'alliances|show'
   
   SHOW_OPTIONS = logged_in + required(:id => Fixnum)
-  def self.show_scope(m); scope.readonly; end
+  SHOW_SCOPE = scope.world
   def self.show_action(m)
     without_locking do
       alliance = Alliance.find(m.params['id'])
@@ -216,7 +214,7 @@ class AlliancesController < GenericController
   ACTION_EDIT = 'alliances|edit'
 
   EDIT_OPTIONS = logged_in + valid(:name => String)
-  def self.edit_scope(m); scope.player(m.player); end
+  EDIT_SCOPE = scope.world
   def self.edit_action(m)
     alliance = get_owned_alliance(m)
     creds_needed = CONFIG['creds.alliance.change']
@@ -248,7 +246,7 @@ class AlliancesController < GenericController
   ACTION_EDIT_DESCRIPTION = 'alliances|edit_description'
 
   EDIT_DESCRIPTION_OPTIONS = logged_in + required(:description => String)
-  def self.edit_description_scope(m); scope.player(m.player); end
+  EDIT_DESCRIPTION_SCOPE = scope.world
   def self.edit_description_action(m)
     alliance = get_owned_alliance(m)
     alliance.description = m.params['description']
@@ -267,7 +265,7 @@ class AlliancesController < GenericController
   ACTION_RATINGS = 'alliances|ratings'
 
   RATINGS_OPTIONS = logged_in
-  def self.ratings_scope(m); scope.readonly; end
+  RATINGS_SCOPE = scope.world
   def self.ratings_action(m)
     without_locking do
       respond m, :ratings => Alliance.ratings(m.player.galaxy_id)
@@ -289,8 +287,7 @@ class AlliancesController < GenericController
   ACTION_TAKE_OVER = 'alliances|take_over'
 
   TAKE_OVER_OPTIONS = logged_in
-  # Player logging in might disrupt this action.
-  def self.take_over_scope(m); scope.galaxy(m.player.galaxy_id); end
+  TAKE_OVER_SCOPE = scope.world
   def self.take_over_action(m)
     alliance = m.player.alliance
     raise GameLogicError.new(
@@ -319,7 +316,7 @@ class AlliancesController < GenericController
   ACTION_GIVE_AWAY = 'alliances|give_away'
 
   GIVE_AWAY_OPTIONS = logged_in + required(:player_id => Fixnum)
-  def self.give_away_scope(m); scope.player(m.player); end
+  GIVE_AWAY_SCOPE = scope.world
   def self.give_away_action(m)
     alliance = m.player.alliance
     raise GameLogicError.new(

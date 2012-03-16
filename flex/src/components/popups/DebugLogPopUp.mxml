@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<popups:BasePopup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<popups:BasePopUp xmlns:fx="http://ns.adobe.com/mxml/2009"
                   xmlns:s="library://ns.adobe.com/flex/spark" 
                   xmlns:popups="components.popups.*"
                   title="{getString('title.log')}"
@@ -8,41 +8,37 @@
    
    <fx:Script>
       <![CDATA[
-         import components.skins.CrashTextAreaSkin;
-         
-         import utils.locale.Localizer;
-         
-         public static function showLog(msg: String): void
-         {
-            var ppup: DebugLogPopup = new DebugLogPopup();
-            ppup.logMsg = msg;
-            ppup.show();
-         }
-         
-         public function get messageText(): String
-         {
-            return msgArea.text;
-         }
-         
-         [Bindable]
-         public var logMsg: String;
-         
-         private function getString(property:String) : String
-         {
-            return Localizer.string("Popups", property);
-         }
-         
-         
-         private function btnCopy_clickHandler(event:MouseEvent):void
-         {
-            lblCopiedToClipboard.visible = true;
-            System.setClipboard(messageText);
-         }
-         
-         private function btnClose_clickHandler(event:MouseEvent):void
-         {
-            this.close();
-         }
+      import components.skins.CrashTextAreaSkin;
+
+      import utils.locale.Localizer;
+
+
+      public static function showLog(msg: String): void {
+         var ppup: DebugLogPopUp = new DebugLogPopUp();
+         ppup.logMsg = msg;
+         ppup.show();
+      }
+
+      public function get messageText(): String {
+         return msgArea.text;
+      }
+
+      [Bindable]
+      public var logMsg: String;
+
+      private function getString(property: String): String {
+         return Localizer.string("Popups", property);
+      }
+
+
+      private function btnCopy_clickHandler(event: MouseEvent): void {
+         lblCopiedToClipboard.visible = true;
+         System.setClipboard(messageText);
+      }
+
+      private function btnClose_clickHandler(event: MouseEvent): void {
+         this.close();
+      }
       ]]>
    </fx:Script>
    
@@ -64,10 +60,10 @@
                   'General', 'message.copyToClipboardSuccessful')}"/>
       </s:Group>
       <s:Button id="btnCopy" click="btnCopy_clickHandler(event)"
-                label="{getString('label.clientCrash.copy')}"/>
+                label="{getString('label.log.copy')}"/>
       <s:Button id="btnClose" click="btnClose_clickHandler(event)"
                 label="{getString('label.log.close')}"/>
    </s:Group>
    <s:TextArea id="msgArea" text="{logMsg}" height="100%" editable="false"
                skinClass="components.skins.CrashTextAreaSkin"/>
-</popups:BasePopup>
+</popups:BasePopUp>

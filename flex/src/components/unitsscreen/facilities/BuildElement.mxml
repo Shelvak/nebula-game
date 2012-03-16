@@ -9,7 +9,7 @@
    <fx:Script>
       <![CDATA[
       import components.credits.AccelerateSelector;
-      import components.popups.ActionConfirmationPopup;
+      import components.popups.ActionConfirmationPopUp;
 
       import config.Config;
 
@@ -35,6 +35,7 @@
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
 
+
       private var fade: Fade = new Fade();
 
       private static const FADE_TIME: int = 600;
@@ -46,16 +47,16 @@
          if (_unitModel != value) {
             if (_unitModel != null && _unitModel.upgradePart != null) {
                _unitModel.upgradePart.removeEventListener(
-                       UpgradeEvent.UPGRADE_PROGRESS,
-                       model_upgradeProgressHandler
+                  UpgradeEvent.UPGRADE_PROGRESS,
+                  model_upgradeProgressHandler
                );
                fade.end();
             }
             _unitModel = value;
             if (_unitModel != null) {
                _unitModel.upgradePart.addEventListener(
-                       UpgradeEvent.UPGRADE_PROGRESS,
-                       model_upgradeProgressHandler, false, 0, true
+                  UpgradeEvent.UPGRADE_PROGRESS,
+                  model_upgradeProgressHandler, false, 0, true
                );
                fade.play([lights]);
             }
@@ -70,7 +71,8 @@
       [Bindable]
       private var builtPart: Number;
 
-      override protected function updateDisplayList(uw: Number, uh: Number): void {
+      override protected function updateDisplayList(uw: Number,
+                                                    uh: Number): void {
          super.updateDisplayList(uw, uh);
          if (!_unitModel || !_unitModel.upgradePart) {
             return;
@@ -89,9 +91,8 @@
          invalidateDisplayList();
       }
 
-      [Bindable (event="willNotChange")]
-      private function get notEnoughStorageTooltip(): String
-      {
+      [Bindable(event="willNotChange")]
+      private function get notEnoughStorageTooltip(): String {
          return Localizer.string('Resources', 'notEnoughStorage');
       }
 
@@ -107,10 +108,10 @@
       protected function coincomp1_clickHandler(event: MouseEvent): void {
          var accelerator: AccelerateSelector = new AccelerateSelector();
          accelerator.upgradePart = _unitModel.upgradePart;
-         var speedPopUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var speedPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          accelerator.popUp = speedPopUp;
          speedPopUp.confirmButtonEnabled = false;
-         speedPopUp.confirmButtonClickHandler = function(): void {
+         speedPopUp.confirmButtonClickHandler = function (): void {
             const building: Building =
                      ML.latestPlanet.getBuildingByConstructable(
                         _unitModel.id, ObjectClass.UNIT
@@ -119,7 +120,7 @@
                if (accelerator.hasEnoughCredits()) {
                   new BuildingsCommand(
                      BuildingsCommand.ACCELERATE_CONSTRUCTOR, {
-                        'id': building.id,
+                        'id':    building.id,
                         'index': accelerator.selectedAccelerateType}).dispatch();
                }
                else {
@@ -139,7 +140,7 @@
       }
 
       private function cancelUpgrade(): void {
-         var popUp: ActionConfirmationPopup = new ActionConfirmationPopup();
+         var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
          popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
          var lbl: Label = new Label();
@@ -149,7 +150,7 @@
          popUp.title = Localizer.string('Popups', 'title.cancelUnitTraining');
          popUp.confirmButtonClickHandler = function (button: Button = null): void {
             new BuildingsCommand(BuildingsCommand.CANCEL_CONSTRUCTOR,
-                    {'id': facilityId}).dispatch();
+                                 {'id': facilityId}).dispatch();
          };
          popUp.show();
       }
