@@ -175,9 +175,6 @@ class SectorObjects
 class StaticObjectsHash
 {
    private const _hash:Dictionary = new Dictionary();
-   
-   public function StaticObjectsHash() {
-   }
 
    public function put(object:IMStaticSpaceObject) : void {
       var hashCode:String = computeHashCode(
