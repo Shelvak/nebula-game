@@ -675,10 +675,12 @@ class Player < ActiveRecord::Base
     )
   end
 
-  # Checking inactive player is only dependant on player, because his points
-  # might change. It is not dependent on the galaxy, because it only detaches
-  # player and will never reattach him, so condition where player is attached
-  # to taken spot will never occur.
-  def self.check_inactive_player_scope(player); DScope.player(player); end
+  CHECK_INACTIVE_PLAYER_SCOPE = DScope.world
   def self.check_inactive_player_callback(player); player.check_activity!; end
+
+  VIP_TICK_SCOPE = DScope.world
+  def self.vip_tick_callback(player); player.vip_tick!; end
+
+  VIP_STOP_SCOPE = DScope.world
+  def self.vip_stop_callback(player); player.vip_stop!; end
 end

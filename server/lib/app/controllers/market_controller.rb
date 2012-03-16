@@ -14,7 +14,7 @@ class MarketController < GenericController
 
   AVG_RATE_OPTIONS = logged_in +
     required(:from_kind => Fixnum, :to_kind => Fixnum)
-  def self.avg_rate_scope(m); market_scope(m); end
+  AVG_RATE_SCOPE = scope.world
   def self.avg_rate_action(m)
     avg_rate = MarketRate.average(
       m.player.galaxy_id, m.params['from_kind'], m.params['to_kind']
@@ -39,7 +39,7 @@ class MarketController < GenericController
   ACTION_INDEX = 'market|index'
 
   INDEX_OPTIONS = logged_in + required(:planet_id => Fixnum)
-  def self.index_scope(m); market_scope(m); end
+  INDEX_SCOPE = scope.world
   def self.index_action(m)
     # Ensure that planet_id is valid.
     planet = m.player.planets.find(m.params['planet_id'])
@@ -75,7 +75,7 @@ class MarketController < GenericController
     :market_id => Fixnum, :from_amount => Fixnum, :from_kind => Fixnum,
     :to_kind => Fixnum, :to_rate => [Fixnum, Float]
   )
-  def self.new_scope(m); market_scope(m); end
+  NEW_SCOPE = scope.world
   def self.new_action(m)
     market = Building::Market.find(m.params['market_id'])
     raise GameLogicError.new("This planet does not belong to you!") \
@@ -100,7 +100,7 @@ class MarketController < GenericController
   ACTION_CANCEL = 'market|cancel'
 
   CANCEL_OPTIONS = logged_in + required(:offer_id => Fixnum)
-  def self.cancel_scope(m); market_scope(m); end
+  CANCEL_SCOPE = scope.world
   def self.cancel_action(m)
     offer = MarketOffer.find(m.params['offer_id'])
     raise GameLogicError.new(
@@ -128,7 +128,7 @@ class MarketController < GenericController
 
   BUY_OPTIONS = logged_in +
     required(:offer_id => Fixnum, :planet_id => Fixnum, :amount => Fixnum)
-  def self.buy_scope(m); market_scope(m); end
+  BUY_SCOPE = scope.world
   def self.buy_action(m)
     offer = begin
       MarketOffer.find(m.params['offer_id'])
@@ -146,10 +146,5 @@ class MarketController < GenericController
     
     amount_bought = offer.buy!(buyer_planet, m.params['amount'])
     respond m, :amount => amount_bought
-  end
-
-  class << self
-    private
-    def market_scope(m); scope.galaxy(m.player.galaxy_id); end
   end
 end

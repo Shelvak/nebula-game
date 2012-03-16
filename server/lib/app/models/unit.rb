@@ -276,16 +276,16 @@ class Unit < ActiveRecord::Base
     end
   end
 
-  class << self
-    def destroy_scope(unit); DScope.combat(unit.location); end
-    def destroy_callback(unit)
-      unit.destroy!
-      EventBroker.fire(unit, EventBroker::DESTROYED)
-    end
+  DESTROY_SCOPE = DScope.world
+  def self.destroy_callback(unit)
+    unit.destroy!
+    EventBroker.fire(unit, EventBroker::DESTROYED)
+  end
 
-    def upgrade_finished_scope(unit); DScope.combat(unit.location); end
-    def upgrade_finished_callback(unit); unit.on_upgrade_finished!; end
-    
+  UPGRADE_FINISHED_SCOPE = DScope.world
+  def self.upgrade_finished_callback(unit); unit.on_upgrade_finished!; end
+
+  class << self
     def update_combat_attributes(player_id, updates)
       unit_ids = updates.keys
       units = where(:id => unit_ids, :player_id => player_id).all

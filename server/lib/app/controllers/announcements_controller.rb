@@ -60,7 +60,7 @@ class AnnouncementsController < GenericController
   NEW_OPTIONS = logged_in + only_push + required(
     :message => String, :ends_at => Time
   )
-  def self.new_scope(message); scope.player(message.player); end
+  NEW_SCOPE = scope.chat
   def self.new_action(m)
     respond m, :message => m.params['message'], :ends_at => m.params['ends_at']
   end

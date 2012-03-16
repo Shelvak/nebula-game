@@ -24,17 +24,13 @@ class Dispatcher
   S_KEY_CURRENT_PLANET_ID = :current_planet_id
   
   class UnhandledMessage < StandardError; end
-  class UnresolvableScope < StandardError; end
   class ClientDisconnected < StandardError; end
 
   # Initialize the dispatcher.
   def initialize
     @directors = {
-      :chat => Threading::Director.new_link("chat", 1),
-      #:server => Threading::Director.new_link("server", 2),
-      #:galaxy => Threading::Director.new_link("galaxy", 2),
-      #:player => Threading::Director.new_link("player", 10),
-      :world => Threading::Director.new_link("world", 20),
+      :chat => Threading::Director.new_link("chat", WORKERS_CHAT),
+      :world => Threading::Director.new_link("world", WORKERS_WORLD),
     }
 
     @client_to_player = {}
@@ -140,21 +136,18 @@ class Dispatcher
       klass = callback.klass
       method_name = callback.type
 
-      scope_method = "#{method_name}_scope"
+      scope_const = "#{method_name}_SCOPE"
       callback_method = "#{method_name}_callback"
 
-      unless klass.respond_to?(scope_method)
-        error "#{klass} is missing scope resolver: #{klass}.#{scope_method}"
+      unless klass.const_defined?(scope_const)
+        error "#{klass} is missing scope resolver: #{klass}::#{scope_const}"
         return
       end
 
-      object = callback.object! or return
-      scope = resolve_scope(klass, scope_method, object)
+      scope = klass.const_get(scope_const)
       task = Dispatcher::CallbackTask.create(klass, callback_method, callback)
       dispatch_task(scope, task)
     end
-  rescue UnresolvableScope => e
-    info "Cannot resolve scope for #{callback}: #{e.message}"
   end
 
   # Confirm client of _message_ receiving. Set error to inform client
@@ -251,6 +244,10 @@ class Dispatcher
   # SsObject ID which is currently viewed by client.
   def current_planet_id(client)
     @storage[client][S_KEY_CURRENT_PLANET_ID]
+  end
+
+  def atomic(atomizer)
+    atomizer.implode(self)
   end
   
   # Pushes message to all logged in players.
@@ -350,7 +347,7 @@ class Dispatcher
     log_str = to_s(message.client)
 
     options_const = "#{message.action.upcase}_OPTIONS"
-    scope_method = "#{message.action}_scope"
+    scope_const = "#{message.action.upcase}_SCOPE"
     action_method = "#{message.action}_action"
 
     initialize_controllers!
@@ -370,17 +367,16 @@ class Dispatcher
     end
     controller_class.const_get(options_const).check!(message)
 
-    unless controller_class.respond_to?(scope_method)
+    unless controller_class.const_defined?(scope_const)
       error_str = "#{message.full_action} is missing scope resolver method!"
       error error_str, log_str
       raise UnhandledMessage.new(error_str)
     end
 
-    scope = resolve_scope(controller_class, scope_method, message)
+    scope = controller_class.const_get(scope_const)
     task = ControllerTask.create(controller_class, action_method, message)
     dispatch_task(scope, task)
-  rescue GenericController::ParamOpts::BadParams, UnhandledMessage,
-      UnresolvableScope => e
+  rescue GenericController::ParamOpts::BadParams, UnhandledMessage => e
     if message.pushed?
       error "Cannot process #{message} - #{e.class}: #{e.message}", log_str
       disconnect(message.client, DISCONNECT_SERVER_ERROR)
@@ -390,39 +386,17 @@ class Dispatcher
     end
   end
 
-  # Try to resolve scope and handle errors properly.
-  def resolve_scope(klass, method, *args)
-    klass.send(method, *args)
-  rescue UnresolvableScope => e
-    raise e
-  rescue Exception => e
-    error "Error while resolving scope with #{klass}.#{method}#{args.inspect
-      }!\n\n#{e.to_log_str}"
-    raise UnresolvableScope, e.message, e.backtrace
-  end
-
   # Dispatches a +Threading::Director::Task+ to appropriate
   # +Threading::Director+ according to its +Dispatcher::Scope+.
   def dispatch_task(scope, task)
     typesig binding, Scope, Threading::Director::Task
 
-    #if scope.chat?
-    #  name = :chat
-    #elsif scope.galaxy?
-    #  name = :galaxy
-    #elsif scope.player?
-    #  name = :player
-    #elsif scope.server?
-    #  name = :server
-    #else
-    #  raise ArgumentError, "Unknown dispatcher work scope: #{scope.inspect}!"
-    #end
-    name = scope.chat? ? :chat : :world
+    name = scope.name
 
     director = @directors[name]
     raise "Missing director #{name.inspect}!" if director.nil?
 
-    info "Dispatching to #{name} director: scope=#{scope} task=#{task}"
+    info "Dispatching to #{name} director: #{task}"
     director.work!(task)
   end
 

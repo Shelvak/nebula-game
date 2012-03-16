@@ -5,6 +5,8 @@
 
 server:
   port: 55345
+  chat_workers: 1
+  world_workers: 3
 client:
   required_version: 2012-0314-2205
 # Control server listening port.

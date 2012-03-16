@@ -13,12 +13,7 @@ class ConstructionQueuesController < GenericController
   ACTION_INDEX = 'construction_queues|index'
 
   INDEX_OPTIONS = logged_in + only_push + required(:constructor_id => Fixnum)
-  def self.index_scope(m)
-    constructor = Building.find(m.params['constructor_id'])
-    scope.planet_owner(constructor.planet_id)
-  rescue ActiveRecord::RecordNotFound => e
-    raise Dispatcher::UnresolvableScope, e.message, e.backtrace
-  end
+  INDEX_SCOPE = scope.world
   def self.index_action(m)
     respond m,
       :entries => ConstructionQueueEntry.
@@ -42,7 +37,7 @@ class ConstructionQueuesController < GenericController
   MOVE_OPTIONS = logged_in + required(
     :id => Fixnum, :position => Fixnum, :count => Fixnum
   )
-  def self.move_scope(m); entry_scope(m); end
+  MOVE_SCOPE = scope.world
   def self.move_action(m)
     entry = get_entry(m)
     ConstructionQueue.move(entry, m.params['position'], m.params['count'])
@@ -62,7 +57,7 @@ class ConstructionQueuesController < GenericController
   ACTION_REDUCE = 'construction_queues|reduce'
 
   REDUCE_OPTIONS = logged_in + required(:id => Fixnum, :count => Fixnum)
-  def self.reduce_scope(m); entry_scope(m); end
+  REDUCE_SCOPE = scope.world
   def self.reduce_action(m)
     entry = get_entry(m)
     ConstructionQueue.reduce(entry, m.params['count'])
@@ -70,14 +65,6 @@ class ConstructionQueuesController < GenericController
 
   class << self
     private
-    def entry_scope(m)
-      entry = ConstructionQueueEntry.find(m.params['id'])
-      planet_id = entry.constructor.planet_id
-      scope.planet_owner(planet_id)
-    rescue ActiveRecord::RecordNotFound => e
-      raise Dispatcher::UnresolvableScope, e.message, e.backtrace
-    end
-
     def get_entry(m)
       entry = ConstructionQueueEntry.find(m.params['id'])
       raise GameLogicError.new(

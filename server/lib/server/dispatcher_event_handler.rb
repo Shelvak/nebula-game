@@ -213,7 +213,7 @@ class DispatcherEventHandler
 
   # Dispatches movement action to player
   def dispatch_movement(filter, player_id, units, route_hops, jumps_at)
-    typesig binding, Dispatcher::PushFilter, Fixnum, Array, Array,
+    typesig binding, [NilClass, Dispatcher::PushFilter], Fixnum, Array, Array,
             [NilClass, Time]
 
     dispatcher.push_to_player!(

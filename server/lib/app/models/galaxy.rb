@@ -77,25 +77,25 @@ class Galaxy < ActiveRecord::Base
     Dispatcher::Scope.galaxy(galaxy_id)
   end
 
-  def self.spawn_scope(galaxy); DScope.galaxy(galaxy); end
+  SPAWN_SCOPE = DScope.world
   def self.spawn_callback(galaxy)
     galaxy.spawn_convoy!
     CallbackManager.register(
       galaxy, CallbackManager::EVENT_SPAWN, Cfg.next_convoy_time
     )
   end
-  
-  def self.create_metal_system_offer_scope(galaxy); DScope.galaxy(galaxy); end
+
+  CREATE_METAL_SYSTEM_OFFER_SCOPE = DScope.world
   def self.create_metal_system_offer_callback(galaxy)
     MarketOffer.create_system_offer(galaxy.id, MarketOffer::KIND_METAL).save!
   end
-  
-  def self.create_energy_system_offer_scope(galaxy); DScope.galaxy(galaxy); end
+
+  CREATE_ENERGY_SYSTEM_OFFER_SCOPE = DScope.world
   def self.create_energy_system_offer_callback(galaxy)
     MarketOffer.create_system_offer(galaxy.id, MarketOffer::KIND_ENERGY).save!
   end
-  
-  def self.create_zetium_system_offer_scope(galaxy); DScope.galaxy(galaxy); end
+
+  CREATE_ZETIUM_SYSTEM_OFFER_SCOPE = DScope.world
   def self.create_zetium_system_offer_callback(galaxy)
     MarketOffer.create_system_offer(galaxy.id, MarketOffer::KIND_ZETIUM).save!
   end

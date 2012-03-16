@@ -19,34 +19,45 @@ class PlanetsController < GenericController
   ACTION_SHOW = 'planets|show'
 
   SHOW_OPTIONS = logged_in + required(:id => Fixnum)
-  def self.show_scope(message); scope.planet(message.params['id']); end
+  SHOW_SCOPE = scope.world
   def self.show_action(m)
-    planet = SsObject::Planet.find(m.params['id'])
+    without_locking do
+      planet = SsObject::Planet.find(m.params['id'])
 
-    if planet.observer_player_ids.include?(m.player.id)
-      set_current_ss_id(m, nil) if current_ss_id(m) != planet.solar_system_id
-      set_current_planet_ss_id(m, planet.solar_system_id)
-      set_current_planet_id(m, planet.id)
+      if planet.observer_player_ids.include?(m.player.id)
+        resolver = StatusResolver.new(m.player)
+        data = {
+          :planet => planet.as_json(
+            :owner => planet.player_id == m.player.id,
+              :view => true,
+              :perspective => m.player
+          ),
+          :tiles => Tile.fast_find_all_for_planet(planet),
+          :folliages => Folliage.fast_find_all_for_planet(planet),
+          :buildings => planet.buildings.map(&:as_json),
+          :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
+            Route.non_friendly_for_ss_object(planet.id, m.player.friendly_ids)
+          ),
+          :units => planet.units.map { |unit|
+            unit.as_json(:perspective => resolver)
+          },
+          :players => Player.minimal_from_objects(planet.units),
+          :cooldown_ends_at => Cooldown.for_planet(planet).as_json
+        }
 
-      resolver = StatusResolver.new(m.player)
-      respond m,
-        :planet => planet.as_json(
-          :owner => planet.player_id == m.player.id,
-          :view => true,
-          :perspective => m.player
-        ),
-        :tiles => Tile.fast_find_all_for_planet(planet),
-        :folliages => Folliage.fast_find_all_for_planet(planet),
-        :buildings => planet.buildings.map(&:as_json),
-        :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
-          Route.non_friendly_for_ss_object(planet.id, m.player.friendly_ids)
-        ),
-        :units => planet.units.map {
-          |unit| unit.as_json(:perspective => resolver)},
-        :players => Player.minimal_from_objects(planet.units),
-        :cooldown_ends_at => Cooldown.for_planet(planet).as_json
-    else
-      raise GameLogicError.new("Player #{m.player} cannot view this #{planet}!")
+        # Set after response to prevent race conditions, where player does not
+        # yet have planet but other threads think it has it.
+        current_ss_id = current_ss_id(m)
+
+        atomic! do
+          set_current_ss_id(m, nil) if current_ss_id != planet.solar_system_id
+          set_current_planet_ss_id(m, planet.solar_system_id)
+          set_current_planet_id(m, planet.id)
+          respond m, data
+        end
+      else
+        raise GameLogicError, "Player #{m.player} cannot view this #{planet}!"
+      end
     end
   end
 
@@ -61,7 +72,7 @@ class PlanetsController < GenericController
   ACTION_UNSET_CURRENT = 'planets|unset_current'
 
   UNSET_CURRENT_OPTIONS = logged_in + only_push
-  def self.unset_current_scope(message); scope.player(message.player); end
+  UNSET_SCOPE = scope.world
   def self.unset_current_action(m)
     set_current_planet_ss_id(m, nil)
     set_current_planet_id(m, nil)
@@ -79,13 +90,15 @@ class PlanetsController < GenericController
   ACTION_PLAYER_INDEX = 'planets|player_index'
 
   PLAYER_INDEX_OPTIONS = logged_in + only_push
-  def self.player_index_scope(message); scope.player(message.player); end
+  PLAYER_INDEX_SCOPE = scope.world
   def self.player_index_action(m)
-    planets = SsObject::Planet.for_player(m.player)
-    respond m,
-      :planets => planets.map { |planet|
-        planet.as_json(:index => true, :view => true)
-      }
+    without_locking do
+      planets = SsObject::Planet.for_player(m.player)
+      respond m,
+        :planets => planets.map { |planet|
+          planet.as_json(:index => true, :view => true)
+        }
+    end
   end
 
   # Sends an exploration mission to explore block foliage.
@@ -104,8 +117,7 @@ class PlanetsController < GenericController
 
   EXPLORE_OPTIONS = logged_in +
     required(:planet_id => Fixnum, :x => Fixnum, :y => Fixnum)
-  # This only starts exploring which is only seen by current planet owner.
-  def self.explore_scope(m); scope.planet_owner(m.params['planet_id']); end
+  EXPLORE_SCOPE = scope.world
   def self.explore_action(m)
     planet = SsObject::Planet.where(:player_id => m.player.id).
       find(m.params['planet_id'])
@@ -130,7 +142,7 @@ class PlanetsController < GenericController
   ACTION_FINISH_EXPLORATION = 'planets|finish_exploration'
 
   FINISH_EXPLORATION_OPTIONS = logged_in + required(:id => Fixnum)
-  def self.finish_exploration_scope(m); scope.planet(m.params['id']); end
+  FINISH_EXPLORATION_SCOPE = scope.world
   def self.finish_exploration_action(m)
     planet = SsObject::Planet.where(:player_id => m.player.id).
       find(m.params['id'])
@@ -152,7 +164,7 @@ class PlanetsController < GenericController
 
   REMOVE_FOLIAGE_OPTIONS = logged_in +
     required(:id => Fixnum, :x => Fixnum, :y => Fixnum)
-  def self.remove_foliage_scope(m); scope.player(m.player); end
+  REMOVE_FOLIAGE_SCOPE = scope.world
   def self.remove_foliage_action(m)
     planet = SsObject::Planet.where(:player_id => m.player.id).
       find(m.params['id'])
@@ -177,7 +189,7 @@ class PlanetsController < GenericController
   ACTION_EDIT = 'planets|edit'
 
   EDIT_OPTIONS = logged_in + required(:id => Fixnum) + valid(%w{name})
-  def self.edit_scope(m); scope.planet_owner(m.params['id']); end
+  EDIT_SCOPE = scope.world
   def self.edit_action(m)
     planet = SsObject::Planet.where(:player_id => m.player.id).
       find(m.params['id'])
@@ -215,7 +227,7 @@ class PlanetsController < GenericController
 
   BOOST_OPTIONS = logged_in +
     required(:id => Fixnum, :resource => String, :attribute => String)
-  def self.boost_scope(m); scope.planet_owner(m.params['id']); end
+  BOOST_SCOPE = scope.world
   def self.boost_action(m)
     planet = SsObject::Planet.where(:player_id => m.player.id).
       find(m.params['id'])
@@ -236,15 +248,18 @@ class PlanetsController < GenericController
   ACTION_PORTAL_UNITS = 'planets|portal_units'
 
   PORTAL_UNITS_OPTIONS = logged_in + required(:id => Fixnum)
-  def self.portal_units_scope(m); scope.friendly_to_player(m.player); end
+  PORTAL_UNITS_SCOPE = scope.world
   def self.portal_units_action(m)
-    planet = SsObject::Planet.where(:player_id => m.player.id).
-      find(m.params['id'])
+    without_locking do
+      planet = SsObject::Planet.where(:player_id => m.player.id).
+        find(m.params['id'])
 
-    respond m,
-      :unit_counts => Building::DefensivePortal.portal_unit_counts_for(planet),
-      :teleport_volume =>
-        Building::DefensivePortal.teleported_volume_for(planet)
+      respond m,
+        :unit_counts =>
+          Building::DefensivePortal.portal_unit_counts_for(planet),
+        :teleport_volume =>
+          Building::DefensivePortal.teleported_volume_for(planet)
+    end
   end
   
   # Take ownership of a free planet. To take a planet, it must belong to 
@@ -261,7 +276,7 @@ class PlanetsController < GenericController
   ACTION_TAKE = 'planets|take'
 
   TAKE_OPTIONS = logged_in + required(:id => Fixnum)
-  def self.take_scope(m); scope.planet(m.params['id']); end
+  TAKE_SCOPE = scope.world
   def self.take_action(m)
     raise GameLogicError.new("Cannot take planets during apocalypse!") \
       if m.player.galaxy.apocalypse_started?

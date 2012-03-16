@@ -3,9 +3,11 @@ class TechnologiesController < GenericController
   ACTION_INDEX = 'technologies|index'
 
   INDEX_OPTIONS = logged_in + only_push
-  def self.index_scope(m); technologies_scope(m); end
+  INDEX_SCOPE = scope.world
   def self.index_action(m)
-    respond m, :technologies => m.player.technologies.map(&:as_json)
+    without_locking do
+      respond m, :technologies => m.player.technologies.map(&:as_json)
+    end
   end
 
   # Starts researching new technology (from level 0)
@@ -26,7 +28,7 @@ class TechnologiesController < GenericController
     :type => String, :planet_id => Fixnum, :scientists => Fixnum,
     :speed_up => Boolean
   )
-  def self.new_scope(m); technologies_scope(m); end
+  NEW_SCOPE = scope.world
   def self.new_action(m)
     technology = Technology.new_by_type(
       m.params['type'],
@@ -53,7 +55,7 @@ class TechnologiesController < GenericController
     :id => Fixnum, :planet_id => Fixnum, :scientists => Fixnum,
     :speed_up => Boolean
   )
-  def self.upgrade_scope(m); technologies_scope(m); end
+  UPGRADE_SCOPE = scope.world
   def self.upgrade_action(m)
     technology = m.player.technologies.find(m.params['id'])
     technology.scientists = m.params['scientists']
@@ -73,7 +75,7 @@ class TechnologiesController < GenericController
   ACTION_UPDATE = 'technologies|update'
 
   UPDATE_OPTIONS = logged_in + required(:id => Fixnum, :scientists => Fixnum)
-  def self.update_scope(m); technologies_scope(m); end
+  UPDATE_SCOPE = scope.world
   def self.update_action(m)
     technology = m.player.technologies.find(m.params['id'])
     technology.scientists = m.params['scientists']
@@ -88,7 +90,7 @@ class TechnologiesController < GenericController
   ACTION_PAUSE = 'technologies|pause'
 
   PAUSE_OPTIONS = logged_in + required(:id => Fixnum)
-  def self.pause_scope(m); technologies_scope(m); end
+  PAUSE_SCOPE = scope.world
   def self.pause_action(m)
     technology = m.player.technologies.find(m.params['id'])
     technology.pause!
@@ -103,7 +105,7 @@ class TechnologiesController < GenericController
   ACTION_RESUME = 'technologies|resume'
 
   RESUME_OPTIONS = logged_in + required(:id => Fixnum, :scientists => Fixnum)
-  def self.resume_scope(m); technologies_scope(m); end
+  RESUME_SCOPE = scope.world
   def self.resume_action(m)
     technology = m.player.technologies.find(m.params['id'])
     technology.scientists = m.params['scientists']
@@ -119,7 +121,7 @@ class TechnologiesController < GenericController
   ACTION_ACCELERATE = 'technologies|accelerate'
 
   ACCELERATE_OPTIONS = logged_in + required(:id => Fixnum, :index => Fixnum)
-  def self.accelerate_scope(m); technologies_scope(m); end
+  ACCELERATE_SCOPE = scope.world
   def self.accelerate_action(m)
     technology = m.player.technologies.find(m.params['id'])
     begin
@@ -140,14 +142,9 @@ class TechnologiesController < GenericController
   ACTION_UNLEARN = 'technologies|unlearn'
 
   UNLEARN_OPTIONS = logged_in + required(:id => Fixnum)
-  def self.unlearn_scope(m); technologies_scope(m); end
+  UNLEARN_SCOPE = scope.world
   def self.unlearn_action(m)
     technology = m.player.technologies.find(m.params['id'])
     technology.unlearn!
-  end
-
-  class << self
-    private
-    def technologies_scope(m); scope.player(m.player); end
   end
 end

@@ -32,15 +32,17 @@ class BuildingsController < GenericController
   ACTION_SHOW_GARRISON = 'buildings|show_garrison'
 
   SHOW_GARRISON_OPTIONS = logged_in + required(:id => Fixnum)
-  def self.show_garrison_scope(m); scope.npc_building(m.params['id']); end
+  SHOW_GARRISON_SCOPE = scope.world
   def self.show_garrison_action(m)
-    building = Building.find(m.params['id'])
-    planet = building.planet
-    raise GameLogicError.new("You cannot view NPC units in planet #{planet}!") \
-      if planet.player_id != m.player.id
+    without_locking do
+      building = Building.find(m.params['id'])
+      planet = building.planet
+      raise GameLogicError, "You cannot view NPC units in planet #{planet}!" \
+        if planet.player_id != m.player.id
 
-    units = building.units
-    respond m, :units => units.map(&:as_json)
+      units = building.units
+      respond m, :units => units.map(&:as_json)
+    end
   end
 
   # Start construction of new building in a planet that player owns.
@@ -60,10 +62,7 @@ class BuildingsController < GenericController
     :constructor_id => Fixnum, :x => Fixnum, :y => Fixnum, :type => String,
     :prepaid => Boolean
   )
-  def self.new_scope(m)
-    constructor = Building.find(m.params['constructor_id'], :include => :planet)
-    scope.planet(constructor.planet_id)
-  end
+  NEW_SCOPE = scope.world
   def self.new_action(m)
     raise GameLogicError.new(
       "Cannot build new building without resources unless VIP!"
@@ -93,7 +92,7 @@ class BuildingsController < GenericController
   ACTION_UPGRADE = 'buildings|upgrade'
 
   UPGRADE_OPTIONS = logged_in + find_building_options
-  def self.upgrade_scope(m); scope.planet(find_building(m).planet_id); end
+  UPGRADE_SCOPE = scope.world
   def self.upgrade_action(m)
     building = find_building(m)
 
@@ -111,7 +110,7 @@ class BuildingsController < GenericController
   ACTION_ACTIVATE = 'buildings|activate'
 
   ACTIVATE_OPTIONS = logged_in + find_building_options
-  def self.activate_scope(m); scope.planet(find_building(m).planet_id); end
+  ACTIVATE_SCOPE = scope.world
   def self.activate_action(m)
     building = find_building(m)
     building.activate!
@@ -127,7 +126,7 @@ class BuildingsController < GenericController
   ACTION_DEACTIVATE = 'buildings|deactivate'
 
   DEACTIVATE_OPTIONS = logged_in + find_building_options
-  def self.deactivate_scope(m); scope.planet(find_building(m).planet_id); end
+  DEACTIVATE_SCOPE = scope.world
   def self.deactivate_action(m)
     building = find_building(m)
     building.deactivate!
@@ -143,9 +142,7 @@ class BuildingsController < GenericController
   ACTION_ACTIVATE_OVERDRIVE = 'buildings|activate_overdrive'
 
   ACTIVATE_OVERDRIVE_OPTIONS = logged_in + find_building_options
-  def self.activate_overdrive_scope(m)
-    scope.planet_owner(find_building(m).planet_id)
-  end
+  ACTIVATE_SCOPE = scope.world
   def self.activate_overdrive_action(m)
     building = find_building(m)
     if building.is_a?(Trait::Overdriveable)
@@ -165,9 +162,7 @@ class BuildingsController < GenericController
   ACTION_DEACTIVATE_OVERDRIVE = 'buildings|deactivate_overdrive'
 
   DEACTIVATE_OVERDRIVE_OPTIONS = logged_in + find_building_options
-  def self.deactivate_overdrive_scope(m)
-    scope.planet_owner(find_building(m).planet_id)
-  end
+  DEACTIVATE_SCOPE = scope.world
   def self.deactivate_overdrive_action(m)
     building = find_building(m)
     if building.is_a?(Trait::Overdriveable)
@@ -200,9 +195,7 @@ class BuildingsController < GenericController
 
   SELF_DESTRUCT_OPTIONS = logged_in + find_building_options +
     required(:id => Fixnum, :with_creds => Boolean)
-  def self.self_destruct_scope(m)
-    scope.planet_owner(find_building(m).planet_id)
-  end
+  SELF_DESTRUCT_SCOPE = scope.world
   def self.self_destruct_action(m)
     building = find_building(m)
     building.self_destruct!(m.params['with_creds'])
@@ -227,9 +220,7 @@ class BuildingsController < GenericController
 
   MOVE_OPTIONS = logged_in + find_building_options +
       required(:id => Fixnum, :x => Fixnum, :y => Fixnum)
-  def self.move_scope(m)
-    scope.planet_owner(find_building(m).planet_id)
-  end
+  MOVE_SCOPE = scope.world
   def self.move_action(m)
     building = find_building(m)
     building.move!(m.params['x'].to_i, m.params['y'].to_i)
@@ -247,10 +238,7 @@ class BuildingsController < GenericController
 
   ACCELERATE_CONSTRUCTOR_OPTIONS = logged_in + find_building_options +
     required(:id => Fixnum, :index => Fixnum)
-  def self.accelerate_constructor_scope(m)
-    # This might create something that is able to shoot.
-    scope.planet(find_building(m).planet_id)
-  end
+  ACCELERATE_CONSTRUCTOR_SCOPE = scope.world
   def self.accelerate_constructor_action(m)
     building = find_building(m)
     check_for_constructor!(building)
@@ -274,10 +262,7 @@ class BuildingsController < GenericController
 
   ACCELERATE_UPGRADE_OPTIONS = logged_in + find_building_options +
     required(:id => Fixnum, :index => Fixnum)
-  def self.accelerate_upgrade_scope(m)
-    # This might create something that is able to shoot.
-    scope.planet(find_building(m).planet_id)
-  end
+  ACCELERATE_UPGRADE_SCOPE = scope.world
   def self.accelerate_upgrade_action(m)
     building = find_building(m)
     begin
@@ -301,9 +286,7 @@ class BuildingsController < GenericController
   ACTION_CANCEL_CONSTRUCTOR = 'buildings|cancel_constructor'
 
   CANCEL_CONSTRUCTOR_OPTIONS = logged_in + find_building_options
-  def self.cancel_constructor_scope(m)
-    scope.planet_owner(find_building(m).planet_id)
-  end
+  CANCEL_CONSTRUCTOR_SCOPE = scope.world
   def self.cancel_constructor_action(m)
     constructor = find_building(m)
     check_for_constructor!(constructor)
@@ -323,10 +306,7 @@ class BuildingsController < GenericController
   ACTION_CANCEL_UPGRADE = 'buildings|cancel_upgrade'
 
   CANCEL_UPGRADE_OPTIONS = logged_in + find_building_options
-  def self.cancel_upgrade_scope(m)
-    # This might activate a deactivated turret and it could start shooting.
-    scope.planet(find_building(m).planet_id)
-  end
+  CANCEL_UPGRADE_SCOPE = scope.world
   def self.cancel_upgrade_action(m)
     building = find_building(m)
     building.cancel!
@@ -344,9 +324,7 @@ class BuildingsController < GenericController
 
   SET_BUILD_IN_2ND_FLANK_OPTIONS = logged_in + find_building_options +
     required(:id => Fixnum, :enabled => Boolean)
-  def self.set_build_in_2nd_flank_scope(m)
-    scope.planet_owner(find_building(m).planet_id)
-  end
+  SET_BUILD_IN_2ND_FLANK_SCOPE = scope.world
   def self.set_build_in_2nd_flank_action(m)
     building = find_building(m)
     check_for_constructor!(building)
@@ -366,9 +344,7 @@ class BuildingsController < GenericController
 
   SET_BUILD_HIDDEN_OPTIONS = logged_in + find_building_options +
     required(:id => Fixnum, :enabled => Boolean)
-  def self.set_build_hidden_scope(m)
-    scope.planet_owner(find_building(m).planet_id)
-  end
+  SET_BUILD_HIDDEN_SCOPE = scope.world
   def self.set_build_hidden_action(m)
     building = find_building(m)
     check_for_constructor!(building)
@@ -387,9 +363,7 @@ class BuildingsController < GenericController
   ACTION_REPAIR = 'buildings|repair'
 
   REPAIR_OPTIONS = logged_in + find_building_options
-  def self.repair_scope(m)
-    scope.planet_owner(find_building(m).planet_id)
-  end
+  REPAIR_SCOPE = scope.world
   def self.repair_action(m)
     building = find_building(m)
     building.repair!
@@ -420,9 +394,7 @@ class BuildingsController < GenericController
     :id => Fixnum, :target_planet_id => Fixnum, :metal => Fixnum,
     :energy => Fixnum, :zetium => Fixnum
   )
-  def self.transport_resources_scope(m)
-    scope.planet_owner(find_building(m).planet_id)
-  end
+  TRANSPORT_RESOURCES_SCOPE = scope.world
   def self.transport_resources_action(m)
     building = find_building(m)
 

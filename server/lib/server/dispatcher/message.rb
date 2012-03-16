@@ -24,7 +24,7 @@ class Dispatcher::Message
   end
 
   def to_s
-    "<#{self.class} #{full_action}: id=#{@id} client=#{@client} player=#{@player
-      } pushed=#{@pushed} params=#{@params.inspect}>"
+    "<#{self.class} #{full_action}: id=#{@id} seq=#{@seq || "nil"} client=#{
+      @client} player=#{@player} pushed=#{@pushed} params=#{@params.inspect}>"
   end
 end

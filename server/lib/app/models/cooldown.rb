@@ -43,7 +43,7 @@ class Cooldown < ActiveRecord::Base
     model
   end
 
-  def self.destroy_scope(cooldown); DScope.combat(cooldown.location); end
+  DESTROY_SCOPE = DScope.world
   def self.destroy_callback(cooldown)
     cooldown.destroy!
     Combat::LocationChecker.check_location(cooldown.location)

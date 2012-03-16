@@ -8,15 +8,6 @@ module Parts
   module PlayerVip
     def self.included(receiver)
       receiver.send(:include, InstanceMethods)
-      receiver.extend(ClassMethods)
-    end
-
-    module ClassMethods
-      def vip_tick_scope(player); Dispatcher::Scope.player(player); end
-      def vip_tick_callback(player); player.vip_tick!; end
-
-      def vip_stop_scope(player); Dispatcher::Scope.player(player); end
-      def vip_stop_callback(player); player.vip_stop!; end
     end
 
     module InstanceMethods

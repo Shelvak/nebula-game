@@ -12,9 +12,11 @@ class DailyBonusController < GenericController
   ACTION_SHOW = "daily_bonus|show"
 
   SHOW_OPTIONS = logged_in + only_push
-  def self.show_scope(message); scope.player(message.player); end
+  SHOW_SCOPE = scope.world
   def self.show_action(m)
-    respond m, :bonus => get_bonus(m.player).as_json
+    without_locking do
+      respond m, :bonus => get_bonus(m.player).as_json
+    end
   end
   
   # Reclaim todays reward for this player to some planet. 
@@ -30,7 +32,7 @@ class DailyBonusController < GenericController
   ACTION_CLAIM = 'daily_bonus|claim'
 
   CLAIM_OPTIONS = logged_in + required(:planet_id => Fixnum)
-  def self.claim_scope(m); scope.planet(m.params['planet_id']); end
+  CLAIM_SCOPE = scope.world
   def self.claim_action(m)
     planet = SsObject::Planet.where(:player_id => m.player.id).
       find(m.params['planet_id'])

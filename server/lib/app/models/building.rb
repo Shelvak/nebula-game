@@ -443,15 +443,20 @@ class Building < ActiveRecord::Base
       ])
   end
 
+  UPGRADE_FINISHED_SCOPE = DScope.world
+  def self.upgrade_finished_callback(building)
+    building.on_upgrade_finished!
+  end
+
+  COOLDOWN_EXPIRED_SCOPE = DScope.world
+  def self.cooldown_expired_callback(building); building.cooldown_expired!; end
+
+  CONSTRUCTION_FINISHED_SCOPE = DScope.world
+  def self.construction_finished_callback(constructor)
+    constructor.on_construction_finished!
+  end
+
   class << self
-    def upgrade_finished_scope(building); DScope.planet(building.planet); end
-    def upgrade_finished_callback(building)
-      building.on_upgrade_finished!
-    end
-
-    def cooldown_expired_scope(building); DScope.planet(building.planet); end
-    def cooldown_expired_callback(building); building.cooldown_expired!; end
-
     def constructor?; ! property('constructor.items').nil?; end
 
     def width
