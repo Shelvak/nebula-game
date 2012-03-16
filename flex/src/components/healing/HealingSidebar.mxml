@@ -139,7 +139,8 @@
             <unitsscreen:NoSelectionPanel visible="{HS.price == null}"/>
 
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.healing')}"
-                    visible="{getTime(HS.location.cooldownEndsAt) >= currentTime
+                    visible="{(HS.location.cooldownEndsAt != null
+                    &amp;&amp; getTime(HS.location.cooldownEndsAt) >= currentTime)
                     || HS.price != null}">
                <base:AdvancedContainer width="100%" visible="{HS.price != null}"
                        top="0" bottom="{btnHeal.height + 12}"
