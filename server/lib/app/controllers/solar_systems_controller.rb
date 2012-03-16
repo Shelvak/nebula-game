@@ -48,9 +48,19 @@ class SolarSystemsController < GenericController
       end
     end
 
-    units = Unit.in_zone(solar_system)
+    scope = Unit.in_zone(solar_system)
+
+    # Non-moving & non-npc units.
+    units = scope.
+      where("player_id IS NOT NULL OR route_id IS NOT NULL")
     route_hops = RouteHop.find_all_for_player(
       player, solar_system, units
+    )
+
+    # Standing NPC units. This is needed because there can be even 4000 of them
+    # and we need to get them as fast as we can.
+    npc_units = Unit.fast_npc_fetch(
+      scope.where(:player_id => nil, :route_id => nil)
     )
 
     respond :solar_system => solar_system,
@@ -58,6 +68,7 @@ class SolarSystemsController < GenericController
       :units => units.map {
         |unit| unit.as_json(:perspective => resolver)
       },
+      :npc_units => npc_units, # TODO: spec me in s2_par branch!
       :players => Player.minimal_from_objects(units),
       :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
         Route.non_friendly_for_solar_system(

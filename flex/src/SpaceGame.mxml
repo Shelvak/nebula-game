@@ -50,6 +50,7 @@
 
       import utils.ApplicationLocker;
       import utils.DateUtil;
+      import utils.execution.GameLogicExecutionManager;
       import utils.profiler.Profiler;
 
 
@@ -118,7 +119,9 @@
        */
       private function mainTimer_timerHandler(event: TimerEvent): void {
          DateUtil.now = new Date().time;
-         EventBroker.broadcast(_timedUpdateEvent);
+         if (GameLogicExecutionManager.getInstance().executionEnabled) {
+            EventBroker.broadcast(_timedUpdateEvent);
+         }
       }
       ]]>
    </fx:Script>
