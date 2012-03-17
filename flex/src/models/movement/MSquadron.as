@@ -60,19 +60,18 @@ package models.movement
       
       public function MSquadron(): void {
          super();
-         units = Collections.filter(
-            ML.units,
-            function(unit: Unit): Boolean {
-               if (isMoving) {
-                  return id == unit.squadronId;
-               }
-               else if (!unit.isMoving && currentHop != null) {
-                  return unit.location.equals(currentHop.location)
-                            && unit.playerId == playerId;
-               }
-               return false;
+         units.list = ML.units;
+         units.filterFunction = function (unit: Unit): Boolean {
+            if (isMoving) {
+               return id == unit.squadronId;
             }
-         );
+            else if (!unit.isMoving && currentHop != null) {
+               return unit.location.equals(currentHop.location)
+                         && unit.playerId == playerId;
+            }
+            return false;
+         };
+         units.refresh();
       }
       
       
@@ -85,14 +84,9 @@ package models.movement
        * @see ICleanable#cleanup()
        */
       public function cleanup() : void {
-         if (units != null) {
-            units.list = null;
-            units.filterFunction = null;
-            units = null;
-         }
-         if (_route != null) {
-            _route = null;
-         }
+         units.list = null;
+         units.filterFunction = null;
+         _route = null;
       }
       
       protected override function get collectionsFilterProperties() : Object {
@@ -272,14 +266,13 @@ package models.movement
          return route != null && route.jumpPending;
       }
       
-      [Bindable(event="willNotChange")]
       /**
        * List of units in this squadron.
        * 
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable]</i></p>
        */
-      public var units:ListCollectionView;
+      public const units:ListCollectionView = new ListCollectionView();
       
       /**
        * Indicates if there are any units in <code>units</code> list.
