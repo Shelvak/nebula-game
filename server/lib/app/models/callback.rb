@@ -22,7 +22,7 @@ class Callback
   rescue ActiveRecord::RecordNotFound => e
     LOGGER.info "Cannot resolve object: #{e.message}", tag
 
-    false
+    nil
   end
 
   # Removes callback from the database.

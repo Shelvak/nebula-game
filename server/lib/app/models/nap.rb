@@ -33,24 +33,26 @@ class Nap < ActiveRecord::Base
   # Alliances in a set have naps with alliance in hash key.
   #
   def self.get_rules(alliance_ids, status=[STATUS_ESTABLISHED, STATUS_CANCELED])
-    nap_rules = {}
+    without_locking do
+      nap_rules = {}
 
-    Nap.where(:status => status).where(
-      "(initiator_id IN (?) OR acceptor_id IN (?))",
-      alliance_ids, alliance_ids
-    ).each do |nap|
-      nap_rules[nap.initiator_id] ||= Set.new
-      nap_rules[nap.acceptor_id] ||= Set.new
+      Nap.where(:status => status).where(
+        "(initiator_id IN (?) OR acceptor_id IN (?))",
+          alliance_ids, alliance_ids
+      ).each do |nap|
+        nap_rules[nap.initiator_id] ||= Set.new
+        nap_rules[nap.acceptor_id] ||= Set.new
 
-      nap_rules[nap.initiator_id].add nap.acceptor_id
-      nap_rules[nap.acceptor_id].add nap.initiator_id
+        nap_rules[nap.initiator_id].add nap.acceptor_id
+        nap_rules[nap.acceptor_id].add nap.initiator_id
+      end
+
+      nap_rules.each do |alliance_id, set|
+        nap_rules[alliance_id] = set.to_a
+      end
+
+      nap_rules
     end
-
-    nap_rules.each do |alliance_id, set|
-      nap_rules[alliance_id] = set.to_a
-    end
-
-    nap_rules
   end
 
   # Cancel +Nap+ by request of +Alliance+ with _initiator_id_. If

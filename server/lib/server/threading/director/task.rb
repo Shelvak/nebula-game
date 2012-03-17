@@ -3,8 +3,9 @@ class Threading::Director::Task
     "ActiveRecord::JDBCError: Deadlock found when trying to get lock"
   LOCK_WAIT_ERROR =
     "ActiveRecord::JDBCError: Lock wait timeout exceeded"
+  INFO_FROM_RETRY = 3 # From which retry should innodb info be included?
   MAX_RETRIES = 8
-  SLEEP_RANGE = 500..2000
+  SLEEP_RANGE = 100..500
 
   def initialize(description, &block)
     @description = description
@@ -32,9 +33,15 @@ class Threading::Director::Task
         end
       end
     rescue ActiveRecord::StatementInvalid => e
-      innodb_info = ActiveRecord::Base.connection.
-        select_one("SHOW ENGINE INNODB STATUS")["Status"]
-      status_line = "\n\nInnoDB status:\n#{innodb_info}"
+      if current_retry >= INFO_FROM_RETRY
+        innodb_info = ActiveRecord::Base.connection.
+          select_one("SHOW ENGINE INNODB STATUS")["Status"]
+        status_line = "\n\nInnoDB status:\n#{innodb_info}"
+        log_method = :warn
+      else
+        status_line = ""
+        log_method = :info
+      end
 
       if (
         e.message.starts_with?(DEADLOCK_ERROR) ||
@@ -43,9 +50,12 @@ class Threading::Director::Task
         current_retry += 1
 
         sleep_for = SLEEP_RANGE.random_element / 1000.0
-        LOGGER.warn %Q{Deadlock occurred, retry #{current_retry
-          }, retrying again in #{sleep_for}s: #{e.message}#{status_line}},
+        LOGGER.send(
+          log_method,
+          %Q{Deadlock occurred, retry #{current_retry}, retrying again in #{
+          sleep_for}s: #{e.message}#{status_line}},
           worker_name
+        )
         sleep sleep_for
         retry
       else

@@ -4,7 +4,14 @@ ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
 # Global constants related to server tweaking
 WORKERS_CHAT = 1
 WORKERS_WORLD = 3
-DB_POOL_SIZE = WORKERS_CHAT + WORKERS_WORLD + 10
+# Connections:
+# - initializer: migrator check, checked in.
+# - callback manager
+# - workers
+#
+# Each actor uses fiber, which is a different thread in JRuby. That's why we
+# need two connections per actor, not one.
+DB_POOL_SIZE = (WORKERS_CHAT + WORKERS_WORLD + 1) * 2
 
 require 'rubygems'
 require 'bundler'
@@ -282,6 +289,7 @@ DB_CONFIG = GameConfig.read_file(config_dir, 'database.yml')
 DB_CONFIG.each do |env, config|
   config["adapter"] = "jdbcmysql"
   config["pool"] = DB_POOL_SIZE
+  config["encoding"] = "utf8"
 end
 USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
 DB_MIGRATIONS_DIR = File.expand_path(
@@ -299,21 +307,22 @@ end
 # on working DB connection.
 unless rake?
   ActiveRecord::Base.establish_connection(USED_DB_CONFIG)
-  ActiveRecord::Base.connection.execute "SET NAMES UTF8"
 
   unless App.in_test?
-    migrator = ActiveRecord::Migrator.new(:up, DB_MIGRATIONS_DIR)
-    pending = migrator.pending_migrations
-    unless pending.blank?
-      puts "You still have pending migrations!"
-      puts
-      pending.each do |migration|
-        puts " * #{migration.name}"
+    ActiveRecord::Base.connection_pool.with_connection do
+      migrator = ActiveRecord::Migrator.new(:up, DB_MIGRATIONS_DIR)
+      pending = migrator.pending_migrations
+      unless pending.blank?
+        puts "You still have pending migrations!"
+        puts
+        pending.each do |migration|
+          puts " * #{migration.name}"
+        end
+        puts
+        puts "Please run `rake db:migrate` before you proceed."
+        puts
+        exit 1
       end
-      puts
-      puts "Please run `rake db:migrate` before you proceed."
-      puts
-      exit 1
     end
   end
 end
@@ -383,14 +392,14 @@ end
 # Disables SQL locking for this thread in given block. Only use this on
 # read-only operations!
 def without_locking
-  old_value = Parts::WithLocking.locking
+  old_value = Parts::WithLocking.locking?
   begin
     Parts::WithLocking.locking = false
-    value = yield
+    ret_value = yield
   ensure
     Parts::WithLocking.locking = old_value
   end
-  value
+  ret_value
 end
 
 ActiveSupport::JSON.backend = :json_gem

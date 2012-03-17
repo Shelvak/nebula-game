@@ -17,7 +17,7 @@ class ConstructionQueueEntry < ActiveRecord::Base
   include FlagShihTzu
   has_flags(
     1 => :prepaid,
-    :check_flag_column => false
+    :check_for_column => false
   )
 
   def as_json(options=nil)

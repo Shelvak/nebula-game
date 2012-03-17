@@ -142,7 +142,7 @@ class BuildingsController < GenericController
   ACTION_ACTIVATE_OVERDRIVE = 'buildings|activate_overdrive'
 
   ACTIVATE_OVERDRIVE_OPTIONS = logged_in + find_building_options
-  ACTIVATE_SCOPE = scope.world
+  ACTIVATE_OVERDRIVE_SCOPE = scope.world
   def self.activate_overdrive_action(m)
     building = find_building(m)
     if building.is_a?(Trait::Overdriveable)
@@ -162,7 +162,7 @@ class BuildingsController < GenericController
   ACTION_DEACTIVATE_OVERDRIVE = 'buildings|deactivate_overdrive'
 
   DEACTIVATE_OVERDRIVE_OPTIONS = logged_in + find_building_options
-  DEACTIVATE_SCOPE = scope.world
+  DEACTIVATE_OVERDRIVE_SCOPE = scope.world
   def self.deactivate_overdrive_action(m)
     building = find_building(m)
     if building.is_a?(Trait::Overdriveable)

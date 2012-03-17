@@ -49,7 +49,9 @@ class Technology < ActiveRecord::Base
       if player.war_points < war_points
     raise GameLogicError.new("Cannot upgrade technology in planet which " +
       "does not have any research centers!"
-    ) unless Building::ResearchCenter.where(:planet_id => planet_id).count > 0
+    ) unless without_locking {
+      Building::ResearchCenter.where(:planet_id => planet_id).exists?
+    }
 
     super
   end

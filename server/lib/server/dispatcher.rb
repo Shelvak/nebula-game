@@ -68,7 +68,7 @@ class Dispatcher
     # This is safe because it is in same thread.
     unless player.nil?
       dispatch_task(
-        Scope.player(player), PlayerUnregisterTask.player(tag, player)
+        Scope.world, PlayerUnregisterTask.player(tag, player)
       )
       # There is no point of notifying about leaves if server is shutdowning.
       dispatch_task(Scope.chat, PlayerUnregisterTask.chat(tag, player)) \
@@ -100,7 +100,7 @@ class Dispatcher
 
     @client_to_player[client] = player
     @player_id_to_client[player.id] = client
-    dispatch_task(Scope.player(player), PlayerRegisterTask.create(tag, player))
+    dispatch_task(Scope.world, PlayerRegisterTask.create(tag, player))
   end
 
   # Update player entry if player is connected.
@@ -136,7 +136,7 @@ class Dispatcher
       klass = callback.klass
       method_name = callback.type
 
-      scope_const = "#{method_name}_SCOPE"
+      scope_const = "#{method_name.upcase}_SCOPE"
       callback_method = "#{method_name}_callback"
 
       unless klass.const_defined?(scope_const)
@@ -192,6 +192,8 @@ class Dispatcher
     typesig binding, Message, Hash
 
     message_hash = {
+      # Pushed messages have message sequence number, regular messages don't.
+      # Generate one for them instead. See #message_object for more info.
       MESSAGE_SEQ_KEY => message.seq || next_client_seq(message.client),
       "action" => message.full_action,
       "params" => params
@@ -432,6 +434,9 @@ class Dispatcher
   def message_object(client, message, pushed=false)
     Dispatcher::Message.new(
       message['id'],
+      # Only assign message sequence number if it was pushed, because pushed
+      # messages are dispatched to different threads and can come back out of
+      # order. Sequencing helps client to get around that.
       pushed ? next_client_seq(client) : nil,
       message['action'] || "",
       message['params'] || {},

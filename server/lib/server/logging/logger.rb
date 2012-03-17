@@ -35,7 +35,7 @@ class Logging::Logger
 
   def block(message, options={})
     options.reverse_merge!(:component => DEFAULT_COMPONENT, :level => :info)
-    return yield if @except_types.include?(options[:level])
+    return yield unless send("#{options[:level]}?")
 
     data = data_for(options[:component], options[:level], message)
     if @block_buffer.nil?

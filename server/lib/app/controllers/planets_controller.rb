@@ -72,7 +72,7 @@ class PlanetsController < GenericController
   ACTION_UNSET_CURRENT = 'planets|unset_current'
 
   UNSET_CURRENT_OPTIONS = logged_in + only_push
-  UNSET_SCOPE = scope.world
+  UNSET_CURRENT_SCOPE = scope.world
   def self.unset_current_action(m)
     set_current_planet_ss_id(m, nil)
     set_current_planet_id(m, nil)

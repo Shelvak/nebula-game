@@ -18,8 +18,10 @@ module Location
       if ss_object.is_a?(SsObject::Planet)
         # Add non NPC players to combat or NPC players if they have combat
         # buildings.
-        if ! ss_object.player_id.nil? || ss_object.buildings.combat.
-            where(:state => Building::STATE_ACTIVE).size != 0
+        if ! ss_object.player_id.nil? || without_locking {
+          ss_object.buildings.combat.where(:state => Building::STATE_ACTIVE).
+            size != 0
+        }
           player_ids.push ss_object.player_id
         end
       end

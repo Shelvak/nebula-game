@@ -8,13 +8,19 @@ module Dispatcher::CallbackTask
           CONFIG.with_set_scope(callback.ruleset) do
             # Ensure that if anything bad happens it would be rollbacked.
             Threading::Director::Task.retrying_transaction(worker_name) do
-              object = callback.object! or return
+              object = callback.object!
 
               # Destroy this callback in transaction. If anything fails while
               # working with the callback it will be restored back to life.
               callback.destroy!
 
-              klass.send(method, object)
+              # Object can be nil if somehow other thread deleted it. Then
+              # we don't need to process the callback too.
+              unless object.nil?
+                klass.send(method, object)
+              else
+                LOGGER.info "Object gone, ignoring.", worker_name
+              end
             end
           end
 

@@ -68,39 +68,47 @@ class FowSsEntry < ActiveRecord::Base
         "Recalculating metadata for #{solar_system_id}", :level => :debug
       ) do
         # Select data we need
-        planet_player_ids = SsObject.
-          select("DISTINCT(player_id)").
-          where(
-            "solar_system_id=? AND player_id IS NOT NULL", 
-            solar_system_id
-          ).
-          c_select_values.map(&:to_i)
-        unit_player_ids = Unit.
-          select("DISTINCT(player_id)").
-          where(
-            "location_type=? AND location_id=? AND player_id IS NOT NULL",
-            Location::SOLAR_SYSTEM, solar_system_id
-          ).
-          c_select_values.map(&:to_i)
-        planet_alliance_ids = Player.
-          select("DISTINCT(alliance_id)").
-          where(:id => planet_player_ids).
-          c_select_values.map(&:to_i)
-        unit_alliance_ids = Player.
-          select("DISTINCT(alliance_id)").
-          where(:id => unit_player_ids).
-          c_select_values.map(&:to_i)
+        planet_player_ids = without_locking do
+          SsObject.
+            select("DISTINCT(player_id)").
+            where(
+              "solar_system_id=? AND player_id IS NOT NULL",
+              solar_system_id
+            ).
+            c_select_values.map(&:to_i)
+        end
+        unit_player_ids = without_locking do
+          Unit.
+            select("DISTINCT(player_id)").
+            where(
+              "location_type=? AND location_id=? AND player_id IS NOT NULL",
+              Location::SOLAR_SYSTEM, solar_system_id
+            ).
+            c_select_values.map(&:to_i)
+        end
+        planet_alliance_ids = without_locking do
+          Player.
+            select("DISTINCT(alliance_id)").
+            where(:id => planet_player_ids).
+            c_select_values.map(&:to_i)
+        end
+        unit_alliance_ids = without_locking do
+          Player.
+            select("DISTINCT(alliance_id)").
+            where(:id => unit_player_ids).
+            c_select_values.map(&:to_i)
+        end
 
         changed = []
 
         # Find all entries that relate to that solar system.
         entries = self.where(:solar_system_id => solar_system_id)
         entries.each do |entry|
-          # It's a Player entry
           if entry.player_id
+            # It's a Player entry
+
             # Resolve planets
-            entry.player_planets = planet_player_ids.include?(
-              entry.player_id)
+            entry.player_planets = planet_player_ids.include?(entry.player_id)
             entry.enemy_planets = !! (planet_player_ids.find do |id|
               id != entry.player_id
             end)
@@ -115,16 +123,19 @@ class FowSsEntry < ActiveRecord::Base
             entry.alliance_ship_player_ids = []
             entry.nap_ships = nil
 
-          # It's an Alliance entry
           else
-            alliance_player_ids = Player.
-              select("id").
-              where(:alliance_id => entry.alliance_id).
-              c_select_values.map(&:to_i)
+            # It's an Alliance entry
+            alliance_player_ids = without_locking do
+              Player.
+                select("id").
+                where(:alliance_id => entry.alliance_id).
+                c_select_values.map(&:to_i)
+            end
 
             # Get established naps.
-            nap_ids = Nap.alliance_ids_for(entry.alliance_id,
-              Nap::STATUS_ESTABLISHED).to_a
+            nap_ids = Nap.alliance_ids_for(
+              entry.alliance_id, Nap::STATUS_ESTABLISHED
+            ).to_a
 
             # Filter player ids to leave only those who are in our alliance
             #

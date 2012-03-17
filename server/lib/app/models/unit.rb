@@ -342,13 +342,15 @@ class Unit < ActiveRecord::Base
       LOGGER.block(
         "Checking for player ids in #{location}", :level => :debug
       ) do
-        # Do not compact here, because NPC units are also distinct player id
-        # values.
-        query = where(location.location_attrs).where("level > 0")
-        query = query.combat if exclude_non_combat
+        without_locking do
+          # Do not compact here, because NPC units are also distinct player id
+          # values.
+          query = where(location.location_attrs).where("level > 0")
+          query = query.combat if exclude_non_combat
 
-        query.select("DISTINCT(player_id)").c_select_values.
-          map { |id| id.nil? ? nil : id.to_i }
+          query.select("DISTINCT(player_id)").c_select_values.
+            map { |id| id.nil? ? nil : id.to_i }
+        end
       end
     end
 
@@ -370,40 +372,43 @@ class Unit < ActiveRecord::Base
       location_fields =
         "`location_id`, `location_type`, `location_x`, `location_y`"
 
-      scope.
-        select(
+      without_locking do
+        scope.
+          select(
           "`player_id`, #{location_fields}, `type`, COUNT(*) as `count`").
-        group("#{location_fields}, `type`, `player_id`").
-        c_select_all.
-        inject({}) do |units, row|
+          group("#{location_fields}, `type`, `player_id`").
+          c_select_all.
+          inject({}) do |units, row|
           player_id = row['player_id'].to_i
           key = "#{row['location_id']},#{row['location_type']},#{
-            row['location_x']},#{row['location_y']}"
-          
+          row['location_x']},#{row['location_y']}"
+
           units[player_id] ||= {}
           units[player_id][key] ||= {
             "location" => LocationPoint.new(
               row['location_id'], row['location_type'],
-              row['location_x'], row['location_y']
+                row['location_x'], row['location_y']
             ).client_location.as_json,
             "cached_units" => {}
           }
           units[player_id][key]["cached_units"][row['type']] = row['count'].to_i
           units
         end
+      end
     end
 
     def fast_npc_fetch(scope)
       npc_units = {}
       type_cache = {}
 
-      scope.
-        select(%w{
-          location_x location_y
-          type stance flank level
-          id hp_percentage
-        }).
-        c_select_all.each do |row|
+      without_locking do
+        scope.
+          select(%w{
+            location_x location_y
+            type stance flank level
+            id hp_percentage
+          }).
+          c_select_all.each do |row|
           type = row['type']
           location = "#{row['location_x']},#{row['location_y']}"
           second_tier =
@@ -417,6 +422,7 @@ class Unit < ActiveRecord::Base
             :hp => (klass.hit_points * row['hp_percentage']).round,
           }
         end
+      end
 
       npc_units
     end
