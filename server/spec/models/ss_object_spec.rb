@@ -21,11 +21,9 @@ describe SsObject do
     it "should return Hash" do
       position = 2
       angle = 90
-      planet = Factory.create(:planet, :position => position,
-        :angle => angle)
+      planet = Factory.create(:planet, :position => position, :angle => angle)
       planet.route_attrs.should == {
-        :id => planet.id,
-        :type => Location::SS_OBJECT,
+        :ss_object_id => planet.id,
         :x => planet.position,
         :y => planet.angle
       }

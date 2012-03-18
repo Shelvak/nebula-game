@@ -11,9 +11,13 @@
 #
 class RouteHop < ActiveRecord::Base
   belongs_to :route
-  composed_of :location, :class_name => 'LocationPoint',
-      :mapping => LocationPoint.attributes_mapping_for(:location)
-  
+  composed_of :location, LocationPoint.composed_of_options(
+    :location,
+    LocationPoint::COMPOSED_OF_GALAXY,
+    LocationPoint::COMPOSED_OF_SOLAR_SYSTEM,
+    LocationPoint::COMPOSED_OF_SS_OBJECT
+  )
+
   include Parts::InLocation
 
   default_scope :order => "`index` ASC"
@@ -112,7 +116,7 @@ class RouteHop < ActiveRecord::Base
         self.class.handle_fow_change(event)
         # Update Route#jumps_at when zone changes.
         route.jumps_at = route.hops.
-          where("location_type != ?", route.current.type).first.
+          where("location_#{route.current.type_column} IS NULL").first.
           try(:arrives_at)
       end
 

@@ -114,13 +114,12 @@ module SpaceMule::Pathfinder
     attrs = location.route_attrs
     coords = Coords.new(attrs[:x], attrs[:y])
 
-    case attrs[:type]
-    when Location::GALAXY
-      PfO.GalaxyPoint.new(attrs[:id], coords, 1.0)
-    when Location::SOLAR_SYSTEM
+    if ! attrs[:galaxy_id].nil?
+      PfO.GalaxyPoint.new(attrs[:galaxy_id], coords, 1.0)
+    elsif ! attrs[:solar_system_id].nil?
       PfO.SolarSystemPoint.new(sm_solar_system, coords)
-    when Location::SS_OBJECT
-      PfO.Planet.new(attrs[:id], sm_solar_system, coords)
+    elsif ! attrs[:ss_object_id].nil?
+      PfO.Planet.new(attrs[:ss_object_id], sm_solar_system, coords)
     else
       raise ArgumentError.new(
         "Cannot convert #{location.inspect

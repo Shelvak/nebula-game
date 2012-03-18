@@ -172,7 +172,7 @@ class SolarSystem < ActiveRecord::Base
       location = strategy.pick
       
       units = UnitBuilder.from_random_ranges(
-        definition, galaxy_id, location, nil
+        definition, location, nil
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
       Combat::LocationChecker.check_location(location)

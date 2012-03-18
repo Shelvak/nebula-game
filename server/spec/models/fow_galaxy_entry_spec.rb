@@ -18,10 +18,7 @@ describe FowGalaxyEntry do
           "location_y BETWEEN #{fge1.y} AND #{fge1.y_end}) OR " +
           "(location_x BETWEEN #{fge2.x} AND #{fge2.x_end} AND " +
           "location_y BETWEEN #{fge2.y} AND #{fge2.y_end})" +
-        ") AND (" +
-          "location_type=#{Location::GALAXY} AND " +
-          "location_id=#{fge1.galaxy_id}" +
-        ")"
+        ") AND (location_galaxy_id=#{fge1.galaxy_id})"
     end
   end
 

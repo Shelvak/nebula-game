@@ -236,7 +236,6 @@ describe SolarSystem do
         units = :units
         UnitBuilder.should_receive(:from_random_ranges).with(
           Cfg.solar_system_spawn_units_definition(solar_system),
-          solar_system.galaxy_id,
           an_instance_of(SolarSystemPoint),
           nil
         ).and_return(units)

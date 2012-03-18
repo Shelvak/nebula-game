@@ -39,8 +39,7 @@ class Galaxy < ActiveRecord::Base
       sanitize_sql_for_conditions(
         {
           :player_id => player.friendly_ids,
-          :location_type => Location::GALAXY,
-          :location_id => player.galaxy_id
+          :location_galaxy_id => player.galaxy_id
         },
         Unit.table_name
       ),
@@ -256,7 +255,7 @@ class Galaxy < ActiveRecord::Base
 
       # Create units.
       units = UnitBuilder.from_random_ranges(
-        Cfg.galaxy_convoy_units_definition, id, source, nil
+        Cfg.galaxy_convoy_units_definition, source, nil
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
       unit_ids = units.map(&:id)

@@ -115,8 +115,7 @@ describe SolarSystemPoint do
       position = 1
       angle = 45
       SolarSystemPoint.new(id, position, angle).route_attrs.should == {
-        :id => id,
-        :type => Location::SOLAR_SYSTEM,
+        :solar_system_id => id,
         :x => position,
         :y => angle
       }

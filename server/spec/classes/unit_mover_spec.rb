@@ -165,44 +165,28 @@ describe UnitMover do
     it "should create RouteHop objects along the way" do
       route = UnitMover.move(@player.id, @unit_ids, @source, @target)
       route.hops.map do |h|
-        [h.route_id, h.index, h.location_id, h.location_type,
-          h.location_x, h.location_y]
+        [h.route_id, h.index, h.location.id, h.location.type,
+          h.location.x, h.location.y]
       end.should == [
         Factory.build(:route_hop, :route => route, :index => 0,
-          :location_id => @ss1.id,
-          :location_type => Location::SOLAR_SYSTEM,
-          :location_x => 1, :location_y => 0),
+          :location => SolarSystemPoint.new(@ss1.id, 1, 0)),
         Factory.build(:route_hop, :route => route, :index => 1,
-          :location_id => @ss1.id,
-          :location_type => Location::SOLAR_SYSTEM,
-          :location_x => 2, :location_y => 0),
+          :location => SolarSystemPoint.new(@ss1.id, 2, 0)),
         Factory.build(:route_hop, :route => route, :index => 2,
-          :location_id => @galaxy.id,
-          :location_type => Location::GALAXY,
-          :location_x => -1, :location_y => 0),
+          :location => GalaxyPoint.new(@galaxy.id, -1, 0)),
         Factory.build(:route_hop, :route => route, :index => 3,
-          :location_id => @galaxy.id,
-          :location_type => Location::GALAXY,
-          :location_x => 0, :location_y => 0),
+          :location => GalaxyPoint.new(@galaxy.id, 0, 0)),
         Factory.build(:route_hop, :route => route, :index => 4,
-          :location_id => @galaxy.id,
-          :location_type => Location::GALAXY,
-          :location_x => 1, :location_y => 0),
+          :location => GalaxyPoint.new(@galaxy.id, 1, 0)),
         Factory.build(:route_hop, :route => route, :index => 5,
-          :location_id => @ss2.id,
-          :location_type => Location::SOLAR_SYSTEM,
-          :location_x => 2, :location_y => 0),
+          :location => SolarSystemPoint.new(@ss2.id, 2, 0)),
         Factory.build(:route_hop, :route => route, :index => 6,
-          :location_id => @ss2.id,
-          :location_type => Location::SOLAR_SYSTEM,
-          :location_x => 1, :location_y => 0),
+          :location => SolarSystemPoint.new(@ss2.id, 1, 0)),
         Factory.build(:route_hop, :route => route, :index => 7,
-          :location_id => @p2.id,
-          :location_type => Location::SS_OBJECT,
-          :location_x => nil, :location_y => nil),
+          :location => LocationPoint.planet(@p2.id)),
       ].map do |h|
-        [h.route_id, h.index, h.location_id, h.location_type,
-          h.location_x, h.location_y]
+        [h.route_id, h.index, h.location.id, h.location.type,
+          h.location.x, h.location.y]
       end
     end
 

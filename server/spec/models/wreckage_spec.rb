@@ -3,8 +3,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb
 describe Wreckage do
   describe "#as_json" do
     it_behaves_like "as json", Factory.create(:wreckage), nil,
-                    %w{id location metal energy zetium},
-                    %w{galaxy_id}
+      %w{id location metal energy zetium},
+      %w{location_galaxy_id location_solar_system_id location_x location_y}
   end
 
   describe ".add" do

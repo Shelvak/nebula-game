@@ -20,8 +20,8 @@ describe Combat do
         loaded_units, unloaded_unit_ids = Combat.
           loaded_units(@location, @transporters, false)
         loaded_units.should == @loaded.inject({}) do |hash, unit|
-          hash[unit.location_id] ||= Set.new
-          hash[unit.location_id].add unit
+          hash[unit.location.id] ||= Set.new
+          hash[unit.location.id].add unit
           hash
         end
         unloaded_unit_ids.should be_instance_of(Set)
@@ -31,7 +31,7 @@ describe Combat do
         loaded_units, _ = Combat.
           loaded_units(@location, @transporters, false)
         @loaded.each do |unit|
-          loaded_units[unit.location_id].find do |unit_in_transporter|
+          loaded_units[unit.location.id].find do |unit_in_transporter|
             unit_in_transporter.id == unit.id
           end.location.should == unit.location
         end
@@ -42,7 +42,7 @@ describe Combat do
           loaded_units, _ = Combat.
             loaded_units(@location, @transporters, true)
           @loaded.each do |unit|
-            loaded_units[unit.location_id].find do |unit_in_transporter|
+            loaded_units[unit.location.id].find do |unit_in_transporter|
               unit_in_transporter.id == unit.id
             end.location.should == @location.location_point
           end
@@ -64,7 +64,7 @@ describe Combat do
           it "should not change non-combat unit location" do
             loaded_units, _ = Combat.
               loaded_units(@location, @transporters, true)
-            loaded_units[@mdh.location_id].find do |unit_in_transporter|
+            loaded_units[@mdh.location.id].find do |unit_in_transporter|
               unit_in_transporter.id == @mdh.id
             end.location.should == @mdh.location
           end
@@ -653,7 +653,7 @@ describe Combat do
       location_container = nil
       @dsl = CombatDsl.new do
         location_container = location(:planet) do
-          buildings { thunder :hp => 2 }
+          buildings { thunder :hp => 3 }
         end
         player(:planet_owner => true)
         player = self.player do

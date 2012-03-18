@@ -31,22 +31,42 @@ module Location
   def self.find_by_attrs(attrs)
     typesig binding, Hash
 
-    case attrs[:location_type]
+    id, type = id_and_type_from_row(attrs)
+
+    case type
     when Location::GALAXY
-      GalaxyPoint.new(attrs[:location_id], attrs[:location_x],
-        attrs[:location_y])
+      GalaxyPoint.new(id, attrs[:location_x], attrs[:location_y])
     when Location::SOLAR_SYSTEM
-      SolarSystemPoint.new(attrs[:location_id], attrs[:location_x],
-        attrs[:location_y])
+      SolarSystemPoint.new(id, attrs[:location_x], attrs[:location_y])
     when Location::SS_OBJECT
-      SsObject.find(attrs[:location_id])
+      SsObject.find(id)
     when Location::UNIT
-      Unit.find(attrs[:location_id])
+      Unit.find(id)
     when Location::BUILDING
-      Building.find(attrs[:location_id])
+      Building.find(id)
     else
-      raise ArgumentError.new("Unknown location type #{
-        attrs[:location_type].inspect}!")
+      raise ArgumentError, "Cannot find location from type #{type}!"
+    end
+  end
+
+  # Returns [id, type] from row.
+  def self.id_and_type_from_row(row, prefix="location_")
+    typesig binding, Hash
+
+    row = row.symbolize_keys
+
+    if ! row[:"#{prefix}galaxy_id"].nil?
+      [row[:"#{prefix}galaxy_id"], Location::GALAXY]
+    elsif ! row[:"#{prefix}solar_system_id"].nil?
+      [row[:"#{prefix}solar_system_id"], Location::SOLAR_SYSTEM]
+    elsif ! row[:"#{prefix}ss_object_id"].nil?
+      [row[:"#{prefix}ss_object_id"], Location::SS_OBJECT]
+    elsif ! row[:"#{prefix}unit_id"].nil?
+      [row[:"#{prefix}unit_id"], Location::UNIT]
+    elsif ! row[:"#{prefix}building_id"].nil?
+      [row[:"#{prefix}building_id"], Location::BUILDING]
+    else
+      raise ArgumentError, "Cannot find location from #{row.inspect}!"
     end
   end
 
@@ -116,12 +136,10 @@ module Location
     )
   end
 
-  # Returns +Hash+ which can be used to set object location.
+  # Returns +Hash+ which can be used to query objects by location.
   #
   # {
-  #   :location_id => location_id,
-  #   :location_type => Location::GALAXY || Location::SOLAR_SYSTEM ||
-  #      Location::SS_OBJECT,
+  #   :location_#{type}_id => Fixnum,
   #   :location_x => location_x,
   #   :location_y => location_y,
   # }
@@ -135,18 +153,13 @@ module Location
   # +SOLAR_SYSTEM+ type.
   #
   def location_attrs
-    attrs = route_attrs("location_")
+    attrs = route_attrs(:location_)
 
     case self
     when GalaxyPoint, SolarSystemPoint
       attrs
     when SsObject
-      {
-        :location_id => attrs[:location_id],
-        :location_type => attrs[:location_type],
-        :location_x => nil,
-        :location_y => nil
-      }
+      attrs.except(:location_x, :location_y)
     else
       raise NotImplementedError.new("I don't know how to handle #{
         self.class}!")

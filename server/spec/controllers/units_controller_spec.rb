@@ -123,7 +123,7 @@ describe UnitsController do
         with(@constructor.id, an_instance_of(Hash)).and_return(@constructor)
       @constructor.should_receive(:construct!).with(
         "Unit::#{@params['type']}", @params['prepaid'],
-        {:galaxy_id => player.galaxy_id}, @params['count'].to_i
+        {}, @params['count'].to_i
       )
       invoke @action, @params
     end
@@ -222,9 +222,8 @@ describe UnitsController do
         end.should raise_error(ControllerArgumentError)
       end
 
-      it "should raise RecordNotFound if some units are not " +
-      "in that planet" do
-        @units[0].location_id += 1
+      it "should raise RecordNotFound if some units are not in that planet" do
+        @units[0].location = Factory.create(:planet)
         @units[0].save!
 
         lambda do
@@ -244,11 +243,7 @@ describe UnitsController do
 
       it "should not create cooldown" do
         invoke @action, @params
-        Cooldown.find(:first, :conditions => {
-            :location_id => @planet.id,
-            :location_type => Location::SS_OBJECT
-          }
-        ).should be_nil
+        Cooldown.where(:location_ss_object_id => @planet.id).first.should be_nil
       end
 
       it "should push units|attack" do

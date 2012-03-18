@@ -28,7 +28,7 @@ class CombatDsl
   end
 
   class LocationContainer
-    attr_reader :location, :galaxy_id
+    attr_reader :location
 
     def read_buildings; Set.new(@buildings); end
 
@@ -38,15 +38,12 @@ class CombatDsl
       case type
       when :planet
         @location = Factory.create(:planet, options)
-        @galaxy_id = @location.solar_system.galaxy_id
       when :solar_system
         ss = Factory.create(:solar_system, options)
         @location = SolarSystemPoint.new(ss.id, 0, 0)
-        @galaxy_id = @location.galaxy_id
       when :galaxy
         galaxy = Factory.create(:galaxy, options)
         @location = GalaxyPoint.new(galaxy.id, 0, 0)
-        @galaxy_id = @location.id
       else
         raise ArgumentError.new("Don't know how to build location #{type}")
       end
@@ -65,10 +62,9 @@ class CombatDsl
   class UnitsContainer
     attr_reader :units
 
-    def initialize(player, location, galaxy_id, &block)
+    def initialize(player, location, &block)
       @player = player
       @location = location
-      @galaxy_id = galaxy_id
       @units = []
       instance_eval(&block)
     end
@@ -77,8 +73,8 @@ class CombatDsl
       options = args.last || {}
       units = []
       (options[:count] || 1).times do
-        unit = Factory.build!("u_#{name}", :location => @location,
-          :galaxy_id => @galaxy_id,
+        unit = Factory.build!("u_#{name}",
+          :location => @location,
           :level => (options[:level] || 1),
           :flank => (options[:flank] || 0),
           :player => @player
@@ -90,8 +86,7 @@ class CombatDsl
 
         # Add transported units
         if block
-          transporter_container = self.class.new(@player, unit, @galaxy_id,
-            &block)
+          transporter_container = self.class.new(@player, unit, &block)
           unit.stored = transporter_container.units.inject(0) do 
             |sum, transported_unit|
             sum + transported_unit.volume
@@ -100,7 +95,6 @@ class CombatDsl
           # Update stored volume
           unit.save!
         end
-
 
         @units.push unit
         units.push unit
@@ -129,8 +123,9 @@ class CombatDsl
 
     protected
     def units(&block)
-      @units = UnitsContainer.new(@player, @location_container.location,
-        @location_container.galaxy_id, &block)
+      @units = UnitsContainer.new(
+        @player, @location_container.location, &block
+      )
     end
   end
 

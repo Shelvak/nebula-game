@@ -146,11 +146,7 @@ class FowGalaxyEntry < ActiveRecord::Base
 
       "(" + conditions_for_coordinates(fow_entries, prefix) +
         ") AND (#{sanitize_sql_for_conditions(
-          [
-            "#{prefix}type=? AND #{prefix}id=?",
-            Location::GALAXY,
-            fow_entries[0].galaxy_id
-          ]
+          ["#{prefix}galaxy_id=?", fow_entries[0].galaxy_id]
       )})"
     end
 
