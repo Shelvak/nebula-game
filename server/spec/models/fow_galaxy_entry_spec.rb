@@ -73,11 +73,16 @@ describe FowGalaxyEntry do
   end
 
   describe "fow entry" do
-    let(:solar_system) { Factory.create(:solar_system) }
+    let(:galaxy) { Factory.create(:galaxy) }
+    let(:solar_system) { Factory.create(:solar_system, :galaxy => galaxy) }
     let(:klass) { FowGalaxyEntry }
-    let(:player) { Factory.create(:player) }
-    let(:player_w_alliance) { Factory.create(:player, :alliance => alliance) }
-    let(:alliance) { Factory.create(:alliance) }
+    let(:player) { Factory.create(:player, :galaxy => galaxy) }
+    let(:player_w_alliance) do
+      Factory.create(:player, :alliance => alliance, :galaxy => galaxy)
+    end
+    let(:alliance) do
+      Factory.create(:alliance, :galaxy => galaxy)
+    end
     let(:event_reason) { EventBroker::REASON_GALAXY_ENTRY }
     let(:rectangle) { Rectangle.new(0, 0, 4, 4) }
 
@@ -93,7 +98,8 @@ describe FowGalaxyEntry do
           :x => rectangle.x,
           :x_end => rectangle.x_end,
           :y => rectangle.y,
-          :y_end => rectangle.y_end
+          :y_end => rectangle.y_end,
+          :galaxy_id => galaxy.id
         )
         scope = scope.where(*args) unless args.blank?
         scope
