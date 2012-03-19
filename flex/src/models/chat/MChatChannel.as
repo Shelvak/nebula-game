@@ -86,7 +86,8 @@ package models.chat
       public function get isPublic() : Boolean {
          throw new IllegalOperationError("Property is abstract!");
       }
-      
+
+      public var userInput: String = "";
       
       /* ########## */
       /* ### UI ### */

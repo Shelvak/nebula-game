@@ -40,6 +40,7 @@ package components.map.planet
 
    import spark.components.Button;
    import spark.components.Label;
+   import spark.primitives.BitmapImage;
 
    import utils.locale.Localizer;
 
@@ -84,27 +85,35 @@ package components.map.planet
       /* ################################# */
       /* ### RESOURCE TILES INDICATORS ### */
       /* ################################# */
-      
-      private var _resourceTilesIndicators:Object;
-      private var _resourceTiles:ArrayCollection;
 
-      public override function initialize(objectsLayer:PlanetObjectsLayer,
-                                          map:PlanetMap,
-                                          planet:MPlanet) : void {
+      private var _grid: BitmapImage;
+      private var _resourceTilesIndicators: Object;
+      private var _resourceTiles: ArrayCollection;
+
+      public override function initialize(objectsLayer: PlanetObjectsLayer,
+                                          map: PlanetMap,
+                                          planet: MPlanet): void {
          super.initialize(objectsLayer, map, planet);
+
+         _grid = new BitmapImage();
+         _grid.source = map.getGrid();
+         _grid.depth = Number.MIN_VALUE;
+         _grid.visible = false;
+         objectsLayer.addElement(_grid);
+
          _resourceTilesIndicators = new Object();
          _resourceTiles = planet.resourceTiles;
-         var lw:int = Extractor.WIDTH;
-         var lh:int = Extractor.HEIGHT;
-         for each (var t:Tile in _resourceTiles) {
-            var indicator:PlanetObjectBasement = new PlanetObjectBasement();
-            var lxMax:int = t.x + lw - 1;
-            var lyMax:int = t.y + lh - 1;
+         const lw: int = Extractor.WIDTH;
+         const lh: int = Extractor.HEIGHT;
+         for each (var t: Tile in _resourceTiles) {
+            const indicator: PlanetObjectBasement = new PlanetObjectBasement();
+            const lxMax: int = t.x + lw - 1;
+            const lyMax: int = t.y + lh - 1;
             indicator.logicalWidth = lw;
             indicator.logicalHeight = lh;
             indicator.x = map.coordsTransform.logicalToReal_X(t.x, lyMax);
             indicator.y = map.coordsTransform.logicalToReal_Y(lxMax, lyMax);
-            indicator.depth = Number.MIN_VALUE; // must be below all other objects
+            indicator.depth = Number.MIN_VALUE + 1;
             indicator.alpha = 0.3;
             indicator.visible = false;
             _resourceTilesIndicators[t.hashKey()] = indicator;
@@ -113,12 +122,18 @@ package components.map.planet
       }
 
       public override function cleanup(): void {
-         if (objectsLayer != null && _resourceTilesIndicators != null) {
-            for each (var indicator: PlanetObjectBasement in _resourceTilesIndicators) {
-               objectsLayer.removeElement(indicator);
+         if (objectsLayer != null) {
+            if (_resourceTilesIndicators != null) {
+               for each (var indicator: PlanetObjectBasement in _resourceTilesIndicators) {
+                  objectsLayer.removeElement(indicator);
+               }
+               _resourceTiles = null;
+               _resourceTilesIndicators = null;
             }
-            _resourceTiles = null;
-            _resourceTilesIndicators = null;
+            if (_grid != null) {
+               objectsLayer.removeElement(_grid);
+               _grid = null;
+            }
          }
          super.cleanup();
       }
@@ -435,6 +450,7 @@ package components.map.planet
          _buildingPH.visible = false;
 
          objectsLayer.addObject(_buildingPH, false);
+         _grid.visible = true;
          if (building.isExtractor) {
             showResourceTilesIndicators(Extractor(building).baseResource);
          }
@@ -454,6 +470,9 @@ package components.map.planet
                objectsLayer.removeElement(_buildingPH);
                _buildingPH.cleanup();
                _buildingPH = null;
+            }
+            if (_grid != null) {
+               _grid.visible = false;
             }
             objectsLayer.takeOverMouseEvents();
             objectsLayer.resetAllInteractiveObjectsState();

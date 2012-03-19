@@ -161,12 +161,22 @@
          
          protected function basecontainer1_clickHandler(event:MouseEvent):void
          {
-            if (!_queryElementModel.selected)
+            // Some of the users managed to click this while _queryElementModel
+            // or countSelector or latestPlanet was null (possible only theoreticaly
+            // betwean some rendered frames??), so adding nullchecks
+            if (_queryElementModel != null && countSelector != null
+                    && !_queryElementModel.selected
+                    && ML.latestPlanet != null)
             {
-               deselectEveryInQueue
-               (ML.latestPlanet.getBuildingById(_queryElementModel.constructorId).constructionQueueEntries);
-               _queryElementModel.selected = true;
-               countSelector.value = _queryElementModel.countSelected;
+               var constructor: Building =
+                       ML.latestPlanet.getBuildingById(_queryElementModel.constructorId);
+               if (constructor != null)
+               {
+                  deselectEveryInQueue
+                  (constructor.constructionQueueEntries);
+                  _queryElementModel.selected = true;
+                  countSelector.value = _queryElementModel.countSelected;
+               }
             }
          }
 
