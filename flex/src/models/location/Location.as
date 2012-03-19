@@ -207,33 +207,34 @@ package models.location
        */
       public function get isNavigable() : Boolean
       {
-         if (isGalaxy)
-         {
+         if (isGalaxy) {
             return true;
          }
-         if (isSolarSystem)
-         {
-            if (ML.latestGalaxy.getSSById(id) != null ||
-               (ML.latestGalaxy.isWormhole(id) || ML.latestGalaxy.isBattleground(id) &&
-                                                  ML.latestGalaxy.hasWormholes))
-            {
+         if (isSolarSystem) {
+            if (canNavigateToSimpleSS(id)
+                   || (ML.latestGalaxy.isWormhole(id)
+                          || ML.latestGalaxy.isBattleground(id)
+                                && ML.latestGalaxy.hasWormholes)) {
                return true;
             }
          }
-         if (isSSObject)
-         {
-            var playerPlanet:MSSObject = findPlayerPlanet();
-            if (playerPlanet != null)
-            {
+         if (isSSObject) {
+            const playerPlanet: MSSObject = findPlayerPlanet();
+            if (playerPlanet != null) {
                return true;
             }
-            if (ML.latestGalaxy.getSSById(solarSystemId) != null ||
-                ML.latestGalaxy.isBattleground(solarSystemId) && ML.latestGalaxy.hasWormholes)
-            {
+            if (canNavigateToSimpleSS(solarSystemId)
+                   || ML.latestGalaxy.isBattleground(solarSystemId)
+                         && ML.latestGalaxy.hasWormholes) {
                return true;
             }
          }
          return false
+      }
+
+      private function canNavigateToSimpleSS(ssId: int): Boolean {
+         const ss: MSolarSystem = ML.latestGalaxy.getSSById(ssId);
+         return ss != null && (ss.player == null || ss.player.equals(ML.player));
       }
       
       
