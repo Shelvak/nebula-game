@@ -180,6 +180,9 @@ package components.chat
                lstMembers.itemRendererFunction = null;
             }
             inpMessage.setFocus();
+            // Focus will be gained at the next frame so we also have to
+            // invoke this code later.
+            inpMessage.callLater(inpMessage_selectRangeCallback);
             updateGrpFriendOfflineWarningContainer();
             updatePnlMembers();
             updateUserInput();
@@ -188,7 +191,14 @@ package components.chat
          }
          f_modelChanged = false;
       }
-      
+
+      private function inpMessage_selectRangeCallback(): void {
+         const text: String = inpMessage.text;
+         if (text != null) {
+            inpMessage.selectRange(text.length, text.length);
+         }
+      }
+
       
       /* ############ */
       /* ### SKIN ### */
@@ -440,13 +450,13 @@ package components.chat
       /* ################################# */
       /* ### SKIN PARTS EVENT HANDLERS ### */
       /* ################################# */
-      
-      private function inpMessage_keyUpHandler(event:KeyboardEvent) : void {
+
+      private function inpMessage_keyUpHandler(event: KeyboardEvent): void {
          if (event.keyCode == Keyboard.ENTER) {
             sendMessage();
          }
       }
-      
+
       private function btnSend_clickHandler(event:MouseEvent) : void {
          sendMessage();
       }
