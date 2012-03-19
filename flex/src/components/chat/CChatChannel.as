@@ -62,9 +62,9 @@ package components.chat
             MChatChannelEvent.GOT_SOME_MESSAGE, urlBugWorkaround
          );
          var oldOne: MChatChannel = _model;
+         urlFixed = true;
          model = null;
          model = oldOne;
-         urlFixed = true;
       }
 
       private var urlFixed: Boolean = false;
@@ -77,6 +77,14 @@ package components.chat
                _model.removeEventListener(
                   MChatChannelEvent.GOT_SOME_MESSAGE, urlBugWorkaround
                );
+               if (inpMessage != null && _model.silenced.hasOccured)
+               {
+                  _model.userInput = inpMessage.text;
+               }
+               else
+               {
+                  _model.userInput = "";
+               }
             }
             if (_modelOld == null) {
                _modelOld = _model;
@@ -171,11 +179,10 @@ package components.chat
                lstMembers.model = null;
                lstMembers.itemRendererFunction = null;
             }
-            inpMessage.text = "";
             inpMessage.setFocus();
             updateGrpFriendOfflineWarningContainer();
             updatePnlMembers();
-            updateMessageSendingAvailability();
+            updateUserInput();
             enableAutoScroll();
             _forceAutoScrollAfterModelChange = true;
          }
@@ -261,7 +268,7 @@ package components.chat
                inpMessage.addEventListener(
                   KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false, 0, true
                );
-               updateMessageSendingAvailability();
+               updateUserInput();
                break;
             
             case btnSend:
@@ -269,7 +276,7 @@ package components.chat
                btnSend.addEventListener(
                   MouseEvent.CLICK, btnSend_clickHandler, false, 0, true
                );
-               updateMessageSendingAvailability();
+               updateUserInput();
                break;
             
             case lblFriendOfflineWarning:
@@ -389,14 +396,14 @@ package components.chat
       }
 
       private function silenced_hasOccurredChangeHandler(event: MTimeEventEvent): void {
-         updateMessageSendingAvailability();
+         updateUserInput();
       }
 
       private function silenced_occursInChangeHandler(event: MTimeEventEvent): void {
          updateInpMessageText();
       }
 
-      private function updateMessageSendingAvailability(): void {
+      private function updateUserInput(): void {
          if (_model == null) {
             return;
          }
@@ -416,7 +423,8 @@ package components.chat
       private function updateInpMessageText(): void {
          if (inpMessage != null && _model != null) {
             if (_model.silenced.hasOccured) {
-               inpMessage.text = "";
+                  inpMessage.text = _model.userInput;
+                  _model.userInput = "";
             }
             else {
                inpMessage.text = getString(
