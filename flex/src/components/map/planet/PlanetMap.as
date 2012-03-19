@@ -50,7 +50,14 @@ package components.map.planet
 
       private var _objectsEditorLayer: ObjectsEditorLayer = null;
       private var _terrainEditorLayer: TerrainEditorLayer = null;
+
       private var _backgroundRenderer: BackgroundRenderer = null;
+      private function get backgroundRenderer(): BackgroundRenderer {
+         if (_backgroundRenderer == null) {
+            _backgroundRenderer = new BackgroundRenderer(this);
+         }
+         return _backgroundRenderer;
+      }
 
       /**
        * Constructor.
@@ -100,10 +107,11 @@ package components.map.planet
       }
 
       public override function getBackground(useCached:Boolean = true): BitmapData {
-         if (_backgroundRenderer == null) {
-            _backgroundRenderer = new BackgroundRenderer(this);
-         }
-         return _backgroundRenderer.renderBackground(useCached);
+         return backgroundRenderer.renderBackground(useCached);
+      }
+
+      internal function getGrid(): BitmapData {
+         return backgroundRenderer.renderGrid();
       }
 
       protected override function createObjects(): void {
