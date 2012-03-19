@@ -306,8 +306,18 @@ describe UnitsController do
       @jg = Factory.create(:sso_jumpgate)
       @params = {
         'unit_ids' => @unit_ids,
-        'source' => @source.location_attrs.stringify_keys,
-        'target' => @target.location_attrs.stringify_keys,
+        'source' => {
+          'location_id' => @source.id,
+          'location_type' => @source.type,
+          'location_x' => @source.x,
+          'location_y' => @source.y
+        },
+        'target' => {
+          'location_id' => @target.id,
+          'location_type' => @target.type,
+          'location_x' => @target.x,
+          'location_y' => @target.y
+        },
         'avoid_npc' => true
       }
     end
@@ -356,8 +366,18 @@ describe UnitsController do
       FowSsEntry.increase(@target.id, player)
       @params = {
         'unit_ids' => @unit_ids,
-        'source' => @source.location_attrs.stringify_keys,
-        'target' => @target.location_attrs.stringify_keys,
+        'source' => {
+          'location_id' => @source.id,
+          'location_type' => @source.type,
+          'location_x' => @source.x,
+          'location_y' => @source.y
+        },
+        'target' => {
+          'location_id' => @target.id,
+          'location_type' => @target.type,
+          'location_x' => @target.x,
+          'location_y' => @target.y
+        },
         'avoid_npc' => true,
         'speed_modifier' => 1.1
       }

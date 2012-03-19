@@ -108,10 +108,6 @@ class LocationPoint
     @id, @type, @x, @y = id, type, x, y
   end
 
-  def self.planet(id)
-    new(id, Location::SS_OBJECT, nil, nil)
-  end
-
   ### Readers for composed_of mappings ###
 
   def location_galaxy_id; @type == Location::GALAXY ? @id : nil; end

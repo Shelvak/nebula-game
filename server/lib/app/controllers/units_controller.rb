@@ -573,8 +573,8 @@ class UnitsController < GenericController
 
   private
   def resolve_location
-    source = Location.find_by_attrs(params['source'].symbolize_keys)
-    target = Location.find_by_attrs(params['target'].symbolize_keys)
+    source = Location.find_by_type_hash(params['source'].symbolize_keys)
+    target = Location.find_by_type_hash(params['target'].symbolize_keys)
     raise GameLogicError.new("Target #{target} is not visible for #{
       player}!") unless Location.visible?(player, target)
 

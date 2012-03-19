@@ -518,8 +518,9 @@ class Unit < ActiveRecord::Base
 
           grouped_units.each do |player_id, player_units|
             unit_count = player_units.reject { |unit| ! unit.space? }.size
-            FowSsEntry.decrease(location_id, player_cache[player_id],
-              unit_count) unless unit_count == 0
+            FowSsEntry.decrease(
+              location_id, player_cache[player_id], unit_count
+            ) unless unit_count == 0
           end
         end
 

@@ -25,15 +25,12 @@ module Location
     player_ids | Unit.player_ids_in_location(location_point, true)
   end
 
-  # Returns +Location+ object for given _attrs_ as obtained by
-  # Location#location_attrs. It can be +GalaxyPoint+,
-  # +SolarSystemPoint+, +SsObject+, +Unit+ or +Building+.
-  def self.find_by_attrs(attrs)
+  def self.find_by_type_hash(attrs)
     typesig binding, Hash
 
-    id, type = id_and_type_from_row(attrs)
+    id = attrs[:location_id]
 
-    case type
+    case attrs[:location_type]
     when Location::GALAXY
       GalaxyPoint.new(id, attrs[:location_x], attrs[:location_y])
     when Location::SOLAR_SYSTEM
@@ -47,6 +44,19 @@ module Location
     else
       raise ArgumentError, "Cannot find location from type #{type}!"
     end
+  end
+
+  # Returns +Location+ object for given _attrs_ as obtained by
+  # Location#location_attrs. It can be +GalaxyPoint+,
+  # +SolarSystemPoint+, +SsObject+, +Unit+ or +Building+.
+  def self.find_by_attrs(attrs)
+    typesig binding, Hash
+
+    id, type = id_and_type_from_row(attrs)
+    find_by_type_hash(
+      :location_id => id, :location_type => type,
+      :location_x => attrs[:location_x], :location_y => attrs[:location_y]
+    )
   end
 
   # Returns [id, type] from row.

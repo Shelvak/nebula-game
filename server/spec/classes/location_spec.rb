@@ -54,6 +54,46 @@ describe Location do
     end
   end
 
+  describe ".find_by_type_hash" do
+    it "should return GalaxyPoint when in galaxy" do
+      Location.find_by_type_hash(
+        :location_id => 20, :location_type => Location::GALAXY,
+        :location_x => 3, :location_y => 10
+      ).should == GalaxyPoint.new(20, 3, 10)
+    end
+
+    it "should return SolarSystemPoint when in solar system" do
+      Location.find_by_type_hash(
+        :location_id => 20, :location_type => Location::SOLAR_SYSTEM,
+        :location_x => 3, :location_y => 90
+      ).should == SolarSystemPoint.new(20, 3, 90)
+    end
+
+    it "should return Planet when in planet" do
+      planet = Factory.create(:planet)
+      Location.find_by_type_hash(
+        :location_id => planet.id, :location_type => Location::SS_OBJECT,
+        :location_x => nil, :location_y => nil
+      ).should == planet
+    end
+
+    it "should return Unit when in unit" do
+      unit = Factory.create(:unit)
+      Location.find_by_type_hash(
+        :location_id => unit.id, :location_type => Location::UNIT,
+        :location_x => nil, :location_y => nil
+      ).should == unit
+    end
+
+    it "should return Building when in building" do
+      building = Factory.create(:building)
+      Location.find_by_type_hash(
+        :location_id => building.id, :location_type => Location::BUILDING,
+        :location_x => nil, :location_y => nil
+      ).should == building
+    end
+  end
+
   describe ".find_by_attrs" do
     it "should return GalaxyPoint when in galaxy" do
       Location.find_by_attrs(
