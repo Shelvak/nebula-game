@@ -54,16 +54,56 @@ describe Location do
     end
   end
 
-  describe ".find_by_attrs" do
+  describe ".find_by_type_hash" do
     it "should return GalaxyPoint when in galaxy" do
-      Location.find_by_attrs(:location_type => Location::GALAXY,
-        :location_id => 20, :location_x => 3, :location_y => 10
+      Location.find_by_type_hash(
+        :location_id => 20, :location_type => Location::GALAXY,
+        :location_x => 3, :location_y => 10
       ).should == GalaxyPoint.new(20, 3, 10)
     end
 
     it "should return SolarSystemPoint when in solar system" do
-      Location.find_by_attrs(:location_type => Location::SOLAR_SYSTEM,
-        :location_id => 20, :location_x => 3, :location_y => 90
+      Location.find_by_type_hash(
+        :location_id => 20, :location_type => Location::SOLAR_SYSTEM,
+        :location_x => 3, :location_y => 90
+      ).should == SolarSystemPoint.new(20, 3, 90)
+    end
+
+    it "should return Planet when in planet" do
+      planet = Factory.create(:planet)
+      Location.find_by_type_hash(
+        :location_id => planet.id, :location_type => Location::SS_OBJECT,
+        :location_x => nil, :location_y => nil
+      ).should == planet
+    end
+
+    it "should return Unit when in unit" do
+      unit = Factory.create(:unit)
+      Location.find_by_type_hash(
+        :location_id => unit.id, :location_type => Location::UNIT,
+        :location_x => nil, :location_y => nil
+      ).should == unit
+    end
+
+    it "should return Building when in building" do
+      building = Factory.create(:building)
+      Location.find_by_type_hash(
+        :location_id => building.id, :location_type => Location::BUILDING,
+        :location_x => nil, :location_y => nil
+      ).should == building
+    end
+  end
+
+  describe ".find_by_attrs" do
+    it "should return GalaxyPoint when in galaxy" do
+      Location.find_by_attrs(
+        :location_galaxy_id => 20, :location_x => 3, :location_y => 10
+      ).should == GalaxyPoint.new(20, 3, 10)
+    end
+
+    it "should return SolarSystemPoint when in solar system" do
+      Location.find_by_attrs(
+        :location_solar_system_id => 20, :location_x => 3, :location_y => 90
       ).should == SolarSystemPoint.new(20, 3, 90)
     end
 
@@ -80,6 +120,48 @@ describe Location do
     it "should return Building when in building" do
       building = Factory.create(:building)
       Location.find_by_attrs(building.location_attrs).should == building
+    end
+  end
+
+  describe ".id_and_type_from_row" do
+    it "should be able to change prefix" do
+      Location.id_and_type_from_row({:ss_object_id => 20}, "").should ==
+        Location.id_and_type_from_row(:location_ss_object_id => 20)
+    end
+
+    it "should symbolize keys" do
+      Location.id_and_type_from_row("location_ss_object_id" => 20).should ==
+        Location.id_and_type_from_row(:location_ss_object_id => 20)
+    end
+
+    it "should work for galaxy" do
+      Location.id_and_type_from_row(
+        :location_galaxy_id => 20, :location_x => 3, :location_y => 10
+      ).should == [20, Location::GALAXY]
+    end
+
+    it "should work for solar system" do
+      Location.id_and_type_from_row(
+        :location_solar_system_id => 20, :location_x => 3, :location_y => 90
+      ).should == [20, Location::SOLAR_SYSTEM]
+    end
+
+    it "should work for ss object" do
+      Location.id_and_type_from_row(
+        :location_ss_object_id => 20, :location_x => nil, :location_y => nil
+      ).should == [20, Location::SS_OBJECT]
+    end
+
+    it "should work for unit" do
+      Location.id_and_type_from_row(
+        :location_unit_id => 20, :location_x => nil, :location_y => nil
+      ).should == [20, Location::UNIT]
+    end
+
+    it "should work for building" do
+      Location.id_and_type_from_row(
+        :location_building_id => 20, :location_x => nil, :location_y => nil
+      ).should == [20, Location::BUILDING]
     end
   end
 
@@ -196,12 +278,7 @@ describe Location do
     describe SsObject do
       it "should return hash" do
         planet = Factory.create(:planet)
-        planet.location_attrs.should == {
-          :location_id => planet.id,
-          :location_type => Location::SS_OBJECT,
-          :location_x => nil,
-          :location_y => nil
-        }
+        planet.location_attrs.should == {:location_ss_object_id => planet.id}
       end
     end
   end

@@ -50,7 +50,7 @@ shared_examples_for "fow entry" do
     end
 
     it "should work without alliance too" do
-      increase(player)
+      increase[player]
     end
 
     it "should also create new record for alliance" do

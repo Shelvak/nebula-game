@@ -29,7 +29,7 @@ class UnitsController < GenericController
 
     constructor.construct!(
       "Unit::#{params['type']}", params['prepaid'],
-      {:galaxy_id => player.galaxy_id}, params['count'].to_i
+      {}, params['count'].to_i
     )
   end
 
@@ -559,8 +559,7 @@ class UnitsController < GenericController
   def action_positions
     positions = Unit.positions(
       Unit.where(
-        "location_type != ? AND route_id IS NULL AND level > 0",
-        Location::UNIT
+        "location_unit_id IS NULL AND route_id IS NULL AND level > 0"
       ).where(:player_id => player.friendly_ids)
     )
     players = Player.minimal_from_objects(positions) do |player_id, data|
@@ -574,8 +573,8 @@ class UnitsController < GenericController
 
   private
   def resolve_location
-    source = Location.find_by_attrs(params['source'].symbolize_keys)
-    target = Location.find_by_attrs(params['target'].symbolize_keys)
+    source = Location.find_by_type_hash(params['source'].symbolize_keys)
+    target = Location.find_by_type_hash(params['target'].symbolize_keys)
     raise GameLogicError.new("Target #{target} is not visible for #{
       player}!") unless Location.visible?(player, target)
 

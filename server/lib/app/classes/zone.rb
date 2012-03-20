@@ -28,10 +28,14 @@ module Zone
   # Returns +Zone+ attributes. These attributes can be used in finders to
   # find units, route hops or other objects contained in that zone.
   def zone_attrs
-    {
-      :location_id => id,
-      :location_type => Zone.resolve_type(self)
-    }
+    case Zone.resolve_type(self)
+    when Location::GALAXY
+      {:location_galaxy_id => id}
+    when Location::SOLAR_SYSTEM
+      {:location_solar_system_id => id}
+    else
+      raise ArgumentError, "Cannot return zone attrs for #{self}."
+    end
   end
 
   def include?(location_point)

@@ -158,7 +158,7 @@ Original exception:
         )
       )
     
-    val file = File.createTempFile("bulk_sql-scala", null)
+    val file = File.createTempFile("bulk_sql-scala-%s".format(tableName), null)
     file.setReadable(true, false); // Allow mysql to read that file.
 
     // Win32 support. Replace backslashes with double backslashes, because

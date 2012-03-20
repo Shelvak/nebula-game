@@ -160,6 +160,7 @@ if $SPEC_INITIALIZED.nil?
 
   ActiveRecord::Base.establish_connection(DB_CONFIG['test'])
   cleanup_database
+  SpaceMule.instance # Initialize db/config in spacemule.
 
   # Include factories
   require 'factory_girl'

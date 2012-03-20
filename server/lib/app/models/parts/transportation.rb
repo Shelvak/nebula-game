@@ -4,15 +4,7 @@ module Parts::Transportation
     receiver.send :include, InstanceMethods
     receiver.extend ClassMethods
 
-    receiver.send :has_many, :units,
-                  :foreign_key => "location_id",
-                  :conditions => {:location_type => Location::UNIT}
-    receiver.send :after_destroy do
-      # Unit instead of self.class because it would use subclass like
-      # Unit::Mule
-      Unit.delete_all ["location_type=? AND location_id=?",
-        Location::UNIT, id]
-    end
+    receiver.send :has_many, :units, :foreign_key => :location_unit_id
 
     receiver.send :after_destroy,
         :if => lambda { |r| r.location.type == Location::UNIT } do

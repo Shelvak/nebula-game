@@ -134,8 +134,8 @@ class DispatcherEventHandler::ObjectResolver
 
     def location(object)
       [
-        "Location-#{object.location_id}-#{object.location_type}-#{
-          object.location_x}-#{object.location_y}",
+        "Location-#{object.location.id}-#{object.location.type}-#{
+          object.location.x}-#{object.location.y}",
         lambda { LocationResolver.resolve(object.location) }
       ]
     end

@@ -76,7 +76,7 @@ class Nap < ActiveRecord::Base
     #
     # Check for combat in those locations.
     Unit.connection.select_all(%Q{
-      SELECT `location_id`, `location_type`, `location_x`, `location_y`,
+      SELECT #{Unit::LOCATION_COLUMNS},
         COUNT(DISTINCT(
           IF(player_id IN (#{initiator_player_ids.join(",")}), 1, 2)
         )) as alliance_count
@@ -84,7 +84,7 @@ class Nap < ActiveRecord::Base
       WHERE player_id IN (#{
         (initiator_player_ids + acceptor_player_ids).join(",")
       })
-      GROUP BY `location_id`, `location_type`, `location_x`, `location_y`
+      GROUP BY #{Unit::LOCATION_COLUMNS}
       HAVING alliance_count = 2
     }).each do |row|
       Combat::LocationChecker.check_location(

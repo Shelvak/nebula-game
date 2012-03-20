@@ -8,9 +8,9 @@ class Building < ActiveRecord::Base
 
   belongs_to :planet, :class_name => "SsObject::Planet"
   delegate :player, :player_id, :to => :planet
-  has_many :units,
-    :finder_sql => proc { %Q{SELECT * FROM `#{Unit.table_name}` WHERE
-    `location_type`=#{Location::BUILDING} AND `location_id`=#{id}} }
+  has_many :units, :finder_sql => proc {
+    %Q{SELECT * FROM `#{Unit.table_name}` WHERE `location_building_id`=#{id}}
+  }
 
   include Trait
   include Location
@@ -126,8 +126,7 @@ class Building < ActiveRecord::Base
   # See Location#location_attrs
   def location_attrs
     {
-      :location_id => id,
-      :location_type => Location::BUILDING,
+      :location_building_id => id,
       :location_x => nil,
       :location_y => nil
     }
@@ -151,6 +150,10 @@ class Building < ActiveRecord::Base
   def xp=(value); end
   # Buildings don't accumulate XP. This method always returns 0.
   def can_upgrade_by; 0; end
+
+  def location_point
+    LocationPoint.new(id, Location::BUILDING, nil, nil)
+  end
 
   # Check for combat after upgrading.
   def on_upgrade_just_finished_after_save

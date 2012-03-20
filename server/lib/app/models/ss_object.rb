@@ -66,10 +66,9 @@ class SsObject < ActiveRecord::Base
   # See Location#route_attrs
   def route_attrs(prefix="")
     {
-      "#{prefix}id".to_sym => id,
-      "#{prefix}type".to_sym => Location::SS_OBJECT,
-      "#{prefix}x".to_sym => position,
-      "#{prefix}y".to_sym => angle
+      :"#{prefix}ss_object_id" => id,
+      :"#{prefix}x" => position,
+      :"#{prefix}y" => angle
     }
   end
 

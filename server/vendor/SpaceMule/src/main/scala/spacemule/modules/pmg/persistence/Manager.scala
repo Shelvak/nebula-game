@@ -313,7 +313,7 @@ WHERE #ss.`galaxy_id`=#galaxy.id
         Some(ssPointCoord.x), Some(ssPointCoord.y)
       )
       troops.foreach { troop =>
-        val unitRow = new UnitRow(ssRow.galaxyId, location, troop)
+        val unitRow = new UnitRow(location, troop)
         units += unitRow
       }
     }
@@ -324,7 +324,7 @@ WHERE #ss.`galaxy_id`=#galaxy.id
         ssRow.id, Location.SolarSystem,
         Some(ssPointCoord.x), Some(ssPointCoord.y)
       )
-      val wreckageRow = WreckageRow(ssRow.galaxyId, location, wreckage)
+      val wreckageRow = WreckageRow(location, wreckage)
       wreckages += wreckageRow
     }
 
@@ -384,7 +384,6 @@ WHERE #ss.`galaxy_id`=#galaxy.id
     // Create units in ground
     obj.units.foreach { unit =>
       val unitRow = new UnitRow(
-        ssRow.galaxyId,
         Location(ssoRow.id, Location.SsObject, None, None),
         unit
       )
@@ -436,7 +435,6 @@ WHERE #ss.`galaxy_id`=#galaxy.id
 
       building.units.foreach { unit =>
         val unitRow = new UnitRow(
-          galaxyId,
           Location(buildingRow.id, Location.Building, None, None),
           unit
         )
