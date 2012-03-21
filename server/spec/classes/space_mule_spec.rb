@@ -12,12 +12,14 @@ shared_examples_for "adding new solar systems (create player)" do
         :player_ships => fse.player_ships,
         :enemy_planets => fse.enemy_planets,
         :enemy_ships => fse.enemy_ships,
+        :counter => 2
       }
     end.should include(
       :player_planets => false,
       :player_ships => false,
       :enemy_planets => true,
-      :enemy_ships => false
+      :enemy_ships => false,
+      :counter => 2
     )
   end
 
@@ -32,12 +34,14 @@ shared_examples_for "adding new solar systems" do
         :player_ships => fse.player_ships,
         :enemy_planets => fse.enemy_planets,
         :enemy_ships => fse.enemy_ships,
+        :counter => fse.counter
       }
     end.should include(
       :player_planets => false,
       :player_ships => false,
       :enemy_planets => false,
-      :enemy_ships => false
+      :enemy_ships => false,
+      :counter => 2
     )
   end
 end
@@ -279,15 +283,25 @@ describe SpaceMule do
       # Ensure we see them, because the center is not filled, so need to take
       # a bit bigger rectangle...
       diameter = CONFIG['galaxy.zone.diameter'] * 10
-      rectangle = Rectangle.new(
-        -diameter, -diameter, diameter, diameter
+      diameter2 = CONFIG['galaxy.zone.diameter'] * 11
+      rectangle = Rectangle.new(-diameter, -diameter, diameter, diameter)
+      rectangle2 = Rectangle.new(-diameter2, -diameter2, diameter2, diameter2)
+      # Check that counter is increased instead of trying to create two FSEs
+      # for players which see newly created SS.
+      @player_fge = Factory.create(
+        :fge_player, :rectangle => rectangle, :galaxy => @galaxy
       )
-      @player_fge = Factory.create(:fge_player, :rectangle => rectangle,
-        :galaxy => @galaxy)
-      @alliance_fge = Factory.create(:fge_alliance, :rectangle => rectangle,
-        :galaxy => @galaxy)
-      # Create a player for alliance.
-      Factory.create(:player, :alliance_id => @alliance_fge.alliance_id)
+      Factory.create(
+        :fge_player, :rectangle => rectangle2, :galaxy => @galaxy,
+        :player => @player_fge.player
+      )
+      @alliance_fge = Factory.create(
+        :fge_alliance, :rectangle => rectangle, :galaxy => @galaxy
+      )
+      Factory.create(
+        :fge_alliance, :rectangle => rectangle2, :galaxy => @galaxy,
+        :alliance => @alliance_fge.alliance
+      )
 
       @existing_player = Factory.create(:player, :galaxy => @galaxy)
       @web_user_id = @existing_player.web_user_id + 1
@@ -446,13 +460,25 @@ describe SpaceMule do
       # Ensure we see them, because the center is not filled, so need to take
       # a bit bigger rectangle...
       diameter = CONFIG['galaxy.zone.diameter'] * 10
-      rectangle = Rectangle.new(
-        -diameter, -diameter, diameter, diameter
+      diameter2 = CONFIG['galaxy.zone.diameter'] * 11
+      # Create two entries that cover same zone to check if fses are being
+      # created with proper counter value.
+      rectangle = Rectangle.new(-diameter, -diameter, diameter, diameter)
+      rectangle2 = Rectangle.new(-diameter2, -diameter2, diameter2, diameter2)
+      @player_fge = Factory.create(
+        :fge_player, :rectangle => rectangle, :galaxy => @galaxy
       )
-      @player_fge = Factory.create(:fge_player, :rectangle => rectangle,
-        :galaxy => @galaxy)
-      @alliance_fge = Factory.create(:fge_alliance, :rectangle => rectangle,
-        :galaxy => @galaxy)
+      Factory.create(
+        :fge_player, :rectangle => rectangle2, :galaxy => @galaxy,
+        :player => @player_fge.player
+      )
+      @alliance_fge = Factory.create(
+        :fge_alliance, :rectangle => rectangle, :galaxy => @galaxy
+      )
+      Factory.create(
+        :fge_alliance, :rectangle => rectangle2, :galaxy => @galaxy,
+        :alliance => @alliance_fge.alliance
+      )
       # Create a player for alliance.
       Factory.create(:player, :alliance_id => @alliance_fge.alliance_id)
 
@@ -463,24 +489,6 @@ describe SpaceMule do
     it "should not create any player solar systems" do
       SolarSystem.where("player_id IS NOT NULL").
         where(:galaxy_id => @galaxy.id).should_not exist
-    end
-
-    describe "visibility for existing ss where radar covers it" do
-      describe "player" do
-        before(:each) do
-          @conditions = {:player_id => @player_fge.player_id}
-        end
-
-        it_behaves_like "adding new solar systems"
-      end
-
-      describe "alliance" do
-        before(:each) do
-          @conditions = {:alliance_id => @alliance_fge.alliance_id}
-        end
-
-        it_behaves_like "adding new solar systems"
-      end
     end
 
     describe "visibility for existing ss where radar covers it" do
