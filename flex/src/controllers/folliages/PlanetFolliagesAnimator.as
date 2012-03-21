@@ -1,5 +1,8 @@
 package controllers.folliages
 {
+   import controllers.navigation.MCMainArea;
+   import controllers.screens.MainAreaScreens;
+
    import flash.events.TimerEvent;
    import flash.utils.Timer;
    
@@ -100,7 +103,10 @@ package controllers.folliages
       
       private function timer_timerEventHandler(event:TimerEvent) : void
       {
-         triggerAnimations();
+         if (MCMainArea.getInstance().currentName == MainAreaScreens.PLANET)
+         {
+            triggerAnimations();
+         }
       }
    }
 }
