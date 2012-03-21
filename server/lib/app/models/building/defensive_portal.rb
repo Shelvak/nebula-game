@@ -1,4 +1,6 @@
 class Building::DefensivePortal < Building
+  include Parts::ArmyPoints
+
   # Raised when no units can be teleported for defense. For internal usage.
   class NoUnitsError < StandardError; end
 
@@ -141,8 +143,7 @@ class Building::DefensivePortal < Building
       planet_ids = planet_ids.map(&:to_i).join(",")
 
       "type IN (#{PORTAL_UNIT_TYPES_SQL}) AND
-        location_type=#{Location::SS_OBJECT} AND
-        location_id IN (#{planet_ids}) AND
+        location_ss_object_id IN (#{planet_ids}) AND
         player_id IN (#{player_ids}) AND
         level > 0 AND #{Unit.not_hidden_condition}"
     end

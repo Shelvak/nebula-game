@@ -139,8 +139,7 @@ class Rewards
           units << klass.new(
             :level => specification['level'],
             :hp_percentage => specification['hp'].to_f / 100,
-            :player => player,
-            :galaxy_id => player.galaxy_id
+            :player => player
           )
         end
       end

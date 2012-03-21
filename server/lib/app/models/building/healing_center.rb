@@ -15,8 +15,8 @@ class Building::HealingCenter < Building
     units.each do |unit|
       raise GameLogicError.new("Unit #{unit} must be in same planet (#{
         planet_id}) as building to heal!") unless \
-        unit.location_type == Location::SS_OBJECT &&
-        unit.location_id == planet_id
+        unit.location.type == Location::SS_OBJECT &&
+        unit.location.id == planet_id
       
       u_metal, u_energy, u_zetium = resources_for_healing(unit)
       metal += u_metal

@@ -63,8 +63,8 @@
          if (event.ctrlKey && event.keyCode == Keyboard.SPACE) {
             System.setClipboard(Profiler.resultsString);
          }
-         else if (event.ctrlKey && event.keyCode == Keyboard.HOME) {
-            throw new Error("Dont you ever press ctrl+home again!");
+         else if (event.ctrlKey && event.keyCode == 144 /*NUMLOCK*/) {
+            throw new Error("Dont you ever press ctrl+numlock again!");
          }
       }
 

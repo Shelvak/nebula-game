@@ -175,7 +175,7 @@ class SolarSystem < ActiveRecord::Base
       location = strategy.pick
       
       units = UnitBuilder.from_random_ranges(
-        definition, galaxy_id, location, nil
+        definition, location, nil
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
       # TODO: spec me
@@ -249,7 +249,7 @@ class SolarSystem < ActiveRecord::Base
     entries = FowGalaxyEntry.
       select("counter, player_id, alliance_id").
       where(:galaxy_id => galaxy_id).
-      where("player_id != ?", player_id).
+      where("player_id != ? OR player_id IS NULL", player_id).
       where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
       c_select_all.map do |row|
         # By idea player is not in the alliance so we don't need to create

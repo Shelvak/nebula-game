@@ -369,10 +369,10 @@ shared_examples_for "upgradable" do
   describe "#resume" do
     it "should register to CallbackManager" do
       @model.pause_remainder = 100
-      CallbackManager.should_receive(:register_or_update).with(
-        @model, CallbackManager::EVENT_UPGRADE_FINISHED, @model.upgrade_ends_at
-      )
       @model.resume!
+      @model.should have_callback(
+        CallbackManager::EVENT_UPGRADE_FINISHED, @model.upgrade_ends_at
+      )
     end
 
     it "should not register to CallbackManager if told to" do

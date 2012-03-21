@@ -20,7 +20,7 @@ package controllers.chat
       
       
       /**
-       * @see controllers.chat.actions.MesssagePrivateAction
+       * @see controllers.chat.actions.MessagePrivateAction
        */
       public static const MESSAGE_PRIVATE:String = "chat|m";
       

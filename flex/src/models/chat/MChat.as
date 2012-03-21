@@ -614,6 +614,19 @@ package models.chat
       /* ################ */
       /* ### CHANNELS ### */
       /* ################ */
+
+      private var _generateJoinLeaveMsgs: Boolean = false;
+      /**
+       * Should join/leave channel system messages be generated?
+       */
+      public function set generateJoinLeaveMsgs(value: Boolean): void {
+         if (_generateJoinLeaveMsgs != value) {
+            _generateJoinLeaveMsgs = value;
+            for each (var channel:MChatChannel in _channels) {
+               channel.generateJoinLeaveMsgs = _generateJoinLeaveMsgs;
+            }
+         }
+      }
       
       
       private var _channels:MChatChannelsList;

@@ -7,21 +7,21 @@ import spacemule.modules.config.objects.ResourcesEntry
 object WreckageRow extends RowObject {
   val pkColumn = Some("id")
   val columnsSeq = Seq(
-    "galaxy_id",
-    "location_id", "location_type", "location_x", "location_y",
+    "location_galaxy_id", "location_solar_system_id",
+    "location_x", "location_y",
     "metal", "energy", "zetium"
   )
 }
 
 case class WreckageRow(
-  galaxyId: Int, location: Location, entry: ResourcesEntry
+  location: Location, entry: ResourcesEntry
 ) extends Row {
   val companion = WreckageRow
 
   val valuesSeq = Seq(
-    galaxyId,
-    location.id,
-    location.kind.id,
+    if (location.kind == Location.Galaxy) location.id else DB.loadInFileNull,
+    if (location.kind == Location.SolarSystem)
+      location.id else DB.loadInFileNull,
     location.x match {
       case Some(x: Int) => x.toString
       case None => DB.loadInFileNull

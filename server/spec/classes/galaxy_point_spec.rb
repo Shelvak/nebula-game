@@ -44,7 +44,7 @@ describe GalaxyPoint do
       x = 0
       y = 12
       GalaxyPoint.new(id, x, y).route_attrs.should == {
-        :id => id, :type => Location::GALAXY, :x => x, :y => y
+        :galaxy_id => id, :x => x, :y => y
       }
     end
   end

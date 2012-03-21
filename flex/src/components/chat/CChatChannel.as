@@ -62,9 +62,9 @@ package components.chat
             MChatChannelEvent.GOT_SOME_MESSAGE, urlBugWorkaround
          );
          var oldOne: MChatChannel = _model;
+         urlFixed = true;
          model = null;
          model = oldOne;
-         urlFixed = true;
       }
 
       private var urlFixed: Boolean = false;
@@ -77,6 +77,14 @@ package components.chat
                _model.removeEventListener(
                   MChatChannelEvent.GOT_SOME_MESSAGE, urlBugWorkaround
                );
+               if (inpMessage != null && _model.silenced.hasOccured)
+               {
+                  _model.userInput = inpMessage.text;
+               }
+               else
+               {
+                  _model.userInput = "";
+               }
             }
             if (_modelOld == null) {
                _modelOld = _model;
@@ -171,17 +179,26 @@ package components.chat
                lstMembers.model = null;
                lstMembers.itemRendererFunction = null;
             }
-            inpMessage.text = "";
             inpMessage.setFocus();
+            // Focus will be gained at the next frame so we also have to
+            // invoke this code later.
+            inpMessage.callLater(inpMessage_selectRangeCallback);
             updateGrpFriendOfflineWarningContainer();
             updatePnlMembers();
-            updateMessageSendingAvailability();
+            updateUserInput();
             enableAutoScroll();
             _forceAutoScrollAfterModelChange = true;
          }
          f_modelChanged = false;
       }
-      
+
+      private function inpMessage_selectRangeCallback(): void {
+         const text: String = inpMessage.text;
+         if (text != null) {
+            inpMessage.selectRange(text.length, text.length);
+         }
+      }
+
       
       /* ############ */
       /* ### SKIN ### */
@@ -261,7 +278,7 @@ package components.chat
                inpMessage.addEventListener(
                   KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false, 0, true
                );
-               updateMessageSendingAvailability();
+               updateUserInput();
                break;
             
             case btnSend:
@@ -269,7 +286,7 @@ package components.chat
                btnSend.addEventListener(
                   MouseEvent.CLICK, btnSend_clickHandler, false, 0, true
                );
-               updateMessageSendingAvailability();
+               updateUserInput();
                break;
             
             case lblFriendOfflineWarning:
@@ -389,14 +406,14 @@ package components.chat
       }
 
       private function silenced_hasOccurredChangeHandler(event: MTimeEventEvent): void {
-         updateMessageSendingAvailability();
+         updateUserInput();
       }
 
       private function silenced_occursInChangeHandler(event: MTimeEventEvent): void {
          updateInpMessageText();
       }
 
-      private function updateMessageSendingAvailability(): void {
+      private function updateUserInput(): void {
          if (_model == null) {
             return;
          }
@@ -416,7 +433,8 @@ package components.chat
       private function updateInpMessageText(): void {
          if (inpMessage != null && _model != null) {
             if (_model.silenced.hasOccured) {
-               inpMessage.text = "";
+                  inpMessage.text = _model.userInput;
+                  _model.userInput = "";
             }
             else {
                inpMessage.text = getString(
@@ -432,13 +450,13 @@ package components.chat
       /* ################################# */
       /* ### SKIN PARTS EVENT HANDLERS ### */
       /* ################################# */
-      
-      private function inpMessage_keyUpHandler(event:KeyboardEvent) : void {
+
+      private function inpMessage_keyUpHandler(event: KeyboardEvent): void {
          if (event.keyCode == Keyboard.ENTER) {
             sendMessage();
          }
       }
-      
+
       private function btnSend_clickHandler(event:MouseEvent) : void {
          sendMessage();
       }

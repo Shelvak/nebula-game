@@ -41,8 +41,12 @@ class Route < ActiveRecord::Base
   serialize :cached_units
 
   [:source, :current, :target].each do |side|
-    composed_of side, :class_name => 'ClientLocation',
-      :mapping => ClientLocation.attributes_mapping_for(side)
+    composed_of side, ClientLocation.composed_of_options(
+      side,
+      LocationPoint::COMPOSED_OF_GALAXY,
+      LocationPoint::COMPOSED_OF_SOLAR_SYSTEM,
+      LocationPoint::COMPOSED_OF_SS_OBJECT
+    )
   end
 
   # Returns routes where Route#player_id do not belong to given player ids.
@@ -51,17 +55,11 @@ class Route < ActiveRecord::Base
   }
   # Returns routes which are currently in solar system.
   scope :currently_in_solar_system, proc { |solar_system_id|
-    where(
-      :current_id => solar_system_id,
-      :current_type => Location::SOLAR_SYSTEM
-    )
+    where(:current_solar_system_id => solar_system_id)
   }
   # Returns routes which are currently in solar system object.
   scope :currently_in_ss_object, proc { |ss_object_id|
-    where(
-      :current_id => ss_object_id,
-      :current_type => Location::SS_OBJECT
-    )
+    where(:current_ss_object_id => ss_object_id)
   }
 
   include Parts::Object

@@ -256,8 +256,7 @@ module Parts::Constructor
       when /^Building/
         params[:planet_id] = self.planet_id
       when /^Unit/
-        params[:location_id] = self.planet_id
-        params[:location_type] = Location::SS_OBJECT
+        params[:location_ss_object_id] = self.planet_id
       end
 
       params

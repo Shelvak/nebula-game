@@ -206,9 +206,10 @@ package controllers.startup
       private static function initializeLogging() : void
       {
          MessagesLogger.getInstance().disableLogging([
-            "chat|",
-            "reply_to",
-            GameCommand.CONFIG
+            ChatCommand.MESSAGE_PRIVATE,
+            ChatCommand.MESSAGE_PUBLIC,
+            GameCommand.CONFIG,
+            "reply_to"
          ]);
          
          var traceTarget:TraceTarget = new TraceTarget();   

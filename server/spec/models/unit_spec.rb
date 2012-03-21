@@ -116,12 +116,6 @@ describe Unit do
       end
     end
     
-    it "should set their galaxy id" do
-      Unit.give_units_raw(@units, @location, @player).each do |unit|
-        unit.galaxy_id.should == @player.galaxy_id
-      end
-    end
-    
     it "should save them" do
       Unit.give_units_raw(@units, @location, @player).each do |unit|
         unit.should be_saved
@@ -255,8 +249,11 @@ describe Unit do
     end
 
     it "should destroy units" do
-      Unit.should_receive(:delete_all_units).with(@units)
-      Unit.dismiss_units(@planet, @units.map(&:id))
+      unit_ids = @units.map(&:id)
+      Unit.should_receive(:delete_all_units).and_return do |units|
+        units.map(&:id).sort.should == unit_ids.sort
+      end
+      Unit.dismiss_units(@planet, unit_ids)
     end
   end
 
@@ -295,17 +292,43 @@ describe Unit do
   end
 
   describe ".update_location_sql" do
-    before(:all) do
-      @unit = Factory.create(:unit)
-      @location = GalaxyPoint.new(Factory.create(:galaxy).id, 100, -100)
-      Unit.where(:id => @unit.id).
-        update_all(Unit.update_location_sql(@location))
-      @unit.reload
-    end
+    columns = [
+      :location_galaxy_id, :location_solar_system_id, :location_ss_object_id,
+      :location_building_id, :location_unit_id
+    ]
 
-    %w{id type x y}.each do |attr|
-      it "should change #{attr}" do
-        @unit.send("location_#{attr}").should == @location.send(attr)
+    locations = [
+      GalaxyPoint.new(Factory.create(:galaxy).id, 100, -100),
+      SolarSystemPoint.new(Factory.create(:solar_system).id, 1, 270),
+      Factory.create(:planet),
+      Factory.create(:unit),
+      Factory.create(:building),
+    ]
+    locations.each do |new_location|
+      (locations - [new_location]).each do |old_location|
+        unit = Factory.create(:unit, :location => old_location)
+
+        describe "#{old_location.class.to_s} -> #{new_location.class.to_s}" do
+          update = lambda do
+            Unit.where(:id => unit.id).update_all(
+              Unit.update_location_sql(new_location)
+            )
+          end
+
+          it "should change location" do
+            update.call
+            unit.reload.location.should == new_location.location_point
+          end
+
+          (
+            columns - [:"location_#{new_location.location_point.type_column}"]
+          ).each do |column|
+            it "should do clear ##{column}" do
+              update.call
+              unit.reload.send(column).should be_nil
+            end
+          end
+        end
       end
     end
   end
@@ -599,7 +622,8 @@ describe Unit do
       nil,
       %w{id level player_id upgrade_ends_at type flank route_id stance
       construction_mod location hp hidden},
-      %w{location_id location_x location_y location_type hp_remainder
+      %w{location_x location_y location_galaxy_id location_solar_system_id
+      location_ss_object_id location_building_id location_unit_id hp_remainder
       pause_remainder stored metal energy zetium galaxy_id xp flags}
 
     it "should include location#as_json" do
@@ -722,8 +746,8 @@ describe Unit do
     ].each do |desc, obj|
       it "should find units in #{desc}" do
         unit1 = Factory.create :unit, obj.location_attrs
-        unit2 = Factory.create :unit, :location_type => Location::GALAXY,
-          :location_id => 1, :location_x => 0, :location_y => 0
+        unit2 = Factory.create :unit,
+          :location => GalaxyPoint.new(Factory.create(:galaxy).id, 0, 0)
         unit3 = Factory.create :unit, obj.location_attrs
 
         Unit.in_location(obj.location_attrs).all.should == [unit1, unit3]
@@ -856,19 +880,17 @@ describe Unit do
       Location::SOLAR_SYSTEM, 2, 90],
     ["planet", Factory.create(:planet), Location::SS_OBJECT, nil, nil],
     ["unit", Factory.create(:unit), Location::UNIT, nil, nil],
-  ].each do |desc, point, type, x, y|
+  ].each do |desc, location, type, x, y|
+    point = location.location_point
+
     describe "#location= (#{desc})" do
       before(:all) do
         @model = Factory.create :unit
-        @model.location = point
+        @model.location = location
       end
 
-      it "should set location_id" do
-        @model.location_id.should == point.id
-      end
-
-      it "should set location_type" do
-        @model.location_type.should == type
+      it "should set #location_#{point.type_column}" do
+        @model.send(:"location_#{point.type_column}").should == location.id
       end
 
       it "should set location_x" do
@@ -881,13 +903,10 @@ describe Unit do
     end
 
     describe "#location (#{desc})" do
-      before(:all) do
-        @model = Factory.create :unit
-        @model.location = point
-      end
+      let(:model) { Factory.create :unit, :location => location }
 
       it "should return location" do
-        @model.location.object.should == point
+        model.location.object.should == location
       end
     end
   end

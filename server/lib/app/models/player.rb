@@ -571,11 +571,14 @@ class Player < ActiveRecord::Base
 
     return false if Unit.where(:player_id => id).
       where(
-        "location_type=? OR (location_type=? AND location_id!=?) OR " +
-          "(location_type=? AND location_id NOT IN (?))",
-          Location::GALAXY,
-          Location::SOLAR_SYSTEM, home_ss_id,
-          Location::SS_OBJECT, home_planet_ids
+        %Q{
+        location_galaxy_id IS NOT NULL
+        OR
+        (location_solar_system_id IS NOT NULL AND location_solar_system_id != ?)
+        OR
+        (location_ss_object_id IS NOT NULL AND location_ss_object_id NOT IN (?))
+        },
+        home_ss_id, home_planet_ids
       ).exists?
 
     true

@@ -15,11 +15,18 @@ describe LocationPoint do
     end
   end
 
+  describe "#type_column" do
+    LocationPoint::COMPOSED_OF_OPTIONS.each do |attribute, type|
+      it "should return :#{attribute} when type == #{type}" do
+        LocationPoint.new(1, type, 0, 0).type_column.should == attribute
+      end
+    end
+  end
+
   describe "#object" do
     it "should dispatch to Location#find_by_attrs" do
       Location.should_receive(:find_by_attrs).with(
-        :location_id => 1,
-        :location_type => Location::GALAXY,
+        :location_galaxy_id => 1,
         :location_x => 2,
         :location_y => 3
       )

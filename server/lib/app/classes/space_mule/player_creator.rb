@@ -60,10 +60,8 @@ class SpaceMule::PlayerCreator
         fse = FowSsEntry.new(
           :solar_system_id => ss_row.id,
           :counter => entry_row.counter,
-          :player_id =>
-            entry_row.playerId.isDefined ? entry_row.playerId.get : nil,
-          :alliance_id =>
-            entry_row.allianceId.isDefined ? entry_row.allianceId.get : nil,
+          :player_id => entry_row.playerId,
+          :alliance_id => entry_row.allianceId,
           :player_planets => entry_row.playerPlanets,
           :enemy_planets => entry_row.enemyPlanets
         )

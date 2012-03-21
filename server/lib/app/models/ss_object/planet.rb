@@ -26,10 +26,7 @@ class SsObject::Planet < SsObject
   has_many :folliages
   has_many :buildings
   has_many :market_offers
-  has_many :units,
-    :finder_sql => proc { %Q{SELECT * FROM `#{Unit.table_name}` WHERE
-    `location_type`=#{Location::SS_OBJECT} AND `location_id`=#{id} AND
-    `location_x` IS NULL AND `location_y` IS NULL} }
+  has_many :units, :foreign_key => :location_ss_object_id
 
   validates_length_of :name, 
     :minimum => CONFIG['planet.validation.name.length.min'],

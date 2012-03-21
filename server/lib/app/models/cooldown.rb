@@ -10,9 +10,12 @@ class Cooldown < ActiveRecord::Base
   def self.notify_on_destroy?; false; end
   include Parts::Notifier
 
-  composed_of :location, :class_name => 'LocationPoint',
-    :mapping => LocationPoint.attributes_mapping_for(:location),
-    :converter => LocationPoint::CONVERTER
+  composed_of :location, LocationPoint.composed_of_options(
+    :location,
+    LocationPoint::COMPOSED_OF_GALAXY,
+    LocationPoint::COMPOSED_OF_SOLAR_SYSTEM,
+    LocationPoint::COMPOSED_OF_SS_OBJECT
+  )
 
   def as_json(options=nil)
     {

@@ -2,9 +2,6 @@ class Unit::TestUnit < Unit; end
 
 Factory.define :unit, :class => Unit::TestUnit do |m|
   m.association :player
-  m.galaxy_id do |r|
-    r.player ? r.player.galaxy_id : Factory.create(:galaxy).id
-  end
   m.level 0
   m.location do |r|
     Factory.create(:planet, :player => r.player)

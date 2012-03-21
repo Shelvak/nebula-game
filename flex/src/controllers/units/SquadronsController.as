@@ -301,7 +301,9 @@ package controllers.units
          }
          squadToStop.id = 0;
          squadToStop.route = null;
-         var squadStationary:MSquadron = findSquad(0, squadToStop.playerId, squadToStop.currentHop.location);
+         var squadStationary:MSquadron = findSquad(
+            0, squadToStop.playerId, squadToStop.currentHop.location
+         );
          if (squadStationary != null)
          {
             squadStationary.units.refresh();
@@ -529,9 +531,7 @@ package controllers.units
             if (unit.kind == UnitKind.SPACE) {
                var squad:MSquadron = findSquad(unit.squadronId, unit.playerId, unit.location);
                if (squad != null) {
-                  if (squad.units != null) {
-                     squad.units.refresh();
-                  }
+                  squad.units.refresh();
                   if (!squad.hasUnits) {
                      SQUADS.removeExact(squad);
                      if (squad.isMoving && squad.isFriendly) {

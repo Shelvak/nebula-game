@@ -13,9 +13,11 @@ class Wreckage < ActiveRecord::Base
   include Parts::Object
   include Parts::ByFowEntries
 
-  composed_of :location, :class_name => 'LocationPoint',
-    :mapping => LocationPoint.attributes_mapping_for(:location),
-    :converter => LocationPoint::CONVERTER
+  composed_of :location, LocationPoint.composed_of_options(
+    :location,
+    LocationPoint::COMPOSED_OF_GALAXY,
+    LocationPoint::COMPOSED_OF_SOLAR_SYSTEM
+  )
 
   def to_s
     "<Wreckage(#{id})@#{location} m:#{metal} e:#{energy} z:#{zetium}"
@@ -33,27 +35,6 @@ class Wreckage < ActiveRecord::Base
   def as_json(options=nil)
     {"id" => id, "location" => location.as_json(options),
       "metal" => metal, "energy" => energy, "zetium" => zetium}
-  end
-
-  # Set galaxy id before creation.
-  before_create do
-    self.galaxy_id = case location
-    when LocationPoint
-      case location.type
-      when Location::GALAXY
-        location.id
-      when Location::SOLAR_SYSTEM
-        # Convert +LocationPoint+ to +SolarSystemPoint+ and return
-        # #galaxy_id
-        without_locking { location.object.galaxy_id }
-      else
-        raise GameLogicError.new("Cannot create Wreckage in #{location}!")
-      end
-    else
-      raise ArgumentError.new("Unknown location class: #{location.inspect}")
-    end
-
-    true
   end
 
   # Creates or updates +Wreckage+ in given _location_.

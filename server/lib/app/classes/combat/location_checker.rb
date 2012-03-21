@@ -32,16 +32,17 @@ class Combat::LocationChecker
       planet_ids = SsObject::Planet.where(:player_id => player.id).
         select("id").c_select_values
       
-      location_columns = "location_id, location_type, location_x, location_y"
       unit_locations = Unit.where(:player_id => player.id).
-        select(location_columns).group(location_columns).c_select_all
+        select(Unit::LOCATION_COLUMNS).group(Unit::LOCATION_COLUMNS).
+        c_select_all
 
       locations = Set.new
       planet_ids.each { |id| locations.add(PlanetPoint.new(id)) }
       unit_locations.each do |row|
+        id, type = Location.id_and_type_from_row(row)
+
         locations.add(
-          LocationPoint.new(row["location_id"], row["location_type"],
-            row["location_x"], row["location_y"])
+          LocationPoint.new(id, type, row["location_x"], row["location_y"])
         )
       end
 

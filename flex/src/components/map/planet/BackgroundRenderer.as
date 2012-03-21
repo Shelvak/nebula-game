@@ -462,6 +462,69 @@ package components.map.planet
          );
          BitmapUtil.fillWithBitmap(sampleTexture, _texture);
       }
+
+
+      /* ############ */
+      /* ### GRID ### */
+      /* ############ */
+
+      private const GRID_COLOR32: uint = 0xFFDDDDDD;
+      private var _gridBitmap: BitmapData = null;
+
+      public function renderGrid(): BitmapData {
+         if (f_cleanupCalled) {
+            return null;
+         }
+         if (_gridBitmap == null) {
+            renderGridImpl();
+         }
+         return _gridBitmap;
+      }
+
+      private function renderGridImpl(): void {
+         const tileBorder: BitmapData =
+                  new BitmapData(Tile.IMAGE_WIDTH, Tile.IMAGE_HEIGHT, true, 0);
+         var x: int;
+         var yToTop: int;
+         var yToBottom: int;
+         function set4GridPixels(x: int): void {
+            tileBorder.setPixel32(x,     yToTop,    GRID_COLOR32);
+            tileBorder.setPixel32(x + 1, yToTop,    GRID_COLOR32);
+            tileBorder.setPixel32(x,     yToBottom, GRID_COLOR32);
+            tileBorder.setPixel32(x + 1, yToBottom, GRID_COLOR32);
+            yToTop--;
+            yToBottom++;
+         }
+         yToTop = Tile.IMAGE_HEIGHT / 2;
+         yToBottom = yToTop + 1;
+         for (x = 0; x < Tile.IMAGE_WIDTH / 2; x += 2) {
+            set4GridPixels(x);
+         }
+         yToTop = Tile.IMAGE_HEIGHT - 1;
+         yToBottom = 0;
+         for (x = Tile.IMAGE_WIDTH / 2; x < Tile.IMAGE_WIDTH; x += 2) {
+            set4GridPixels(x);
+         }
+
+         _gridBitmap = new BitmapData(
+            _coordsTransform.realWidth,
+            _coordsTransform.realHeight,
+            true, 0
+         );
+
+         const destPoint: Point = new Point();
+         const lw: int = _coordsTransform.logicalWidth;
+         const lh: int = _coordsTransform.logicalHeight;
+         for (var lx: int = 0; lx < lw; lx++) {
+            for (var ly: int = 0; ly < lh; ly++) {
+               destPoint.x = _coordsTransform.logicalToReal_X(lx, ly);
+               destPoint.y = _coordsTransform.logicalToReal_Y(lx, ly);
+               _gridBitmap.copyPixels(tileBorder, tileBorder.rect, destPoint);
+            }
+         }
+
+         tileBorder.dispose();
+      }
    }
 }
 

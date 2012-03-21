@@ -123,7 +123,7 @@ describe UnitsController do
         with(@constructor.id, an_instance_of(Hash)).and_return(@constructor)
       @constructor.should_receive(:construct!).with(
         "Unit::#{@params['type']}", @params['prepaid'],
-        {:galaxy_id => player.galaxy_id}, @params['count'].to_i
+        {}, @params['count'].to_i
       )
       invoke @action, @params
     end
@@ -221,8 +221,7 @@ describe UnitsController do
       end.should raise_error(GameLogicError)
     end
 
-    it "should raise RecordNotFound if some units are not " +
-    "in that planet" do
+    it "should raise error if some units are not in that planet" do
       @units[0].location_id += 1
       @units[0].save!
 
@@ -231,8 +230,7 @@ describe UnitsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should raise RecordNotFound if some units does not belong " +
-    "to that player" do
+    it "should raise error if some units does not belong to that player" do
       @units[0].player = Factory.create(:player)
       @units[0].save!
 
@@ -243,11 +241,7 @@ describe UnitsController do
 
     it "should not create cooldown" do
       invoke @action, @params
-      Cooldown.find(:first, :conditions => {
-          :location_id => @planet.id,
-          :location_type => Location::SS_OBJECT
-        }
-      ).should be_nil
+      Cooldown.where(:location_ss_object_id => @planet.id).should_not exist
     end
 
     it "should respond with the notification" do
@@ -295,8 +289,18 @@ describe UnitsController do
       @jg = Factory.create(:sso_jumpgate)
       @params = {
         'unit_ids' => @unit_ids,
-        'source' => @source.location_attrs.stringify_keys,
-        'target' => @target.location_attrs.stringify_keys,
+        'source' => {
+          'location_id' => @source.id,
+          'location_type' => @source.type,
+          'location_x' => @source.x,
+          'location_y' => @source.y
+        },
+        'target' => {
+          'location_id' => @target.id,
+          'location_type' => @target.type,
+          'location_x' => @target.x,
+          'location_y' => @target.y
+        },
         'avoid_npc' => true
       }
     end
@@ -345,8 +349,18 @@ describe UnitsController do
       FowSsEntry.increase(@target.id, player)
       @params = {
         'unit_ids' => @unit_ids,
-        'source' => @source.location_attrs.stringify_keys,
-        'target' => @target.location_attrs.stringify_keys,
+        'source' => {
+          'location_id' => @source.id,
+          'location_type' => @source.type,
+          'location_x' => @source.x,
+          'location_y' => @source.y
+        },
+        'target' => {
+          'location_id' => @target.id,
+          'location_type' => @target.type,
+          'location_x' => @target.x,
+          'location_y' => @target.y
+        },
         'avoid_npc' => true,
         'speed_modifier' => 1.1
       }

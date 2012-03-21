@@ -236,7 +236,6 @@ describe SolarSystem do
         units = :units
         UnitBuilder.should_receive(:from_random_ranges).with(
           Cfg.solar_system_spawn_units_definition(solar_system),
-          solar_system.galaxy_id,
           an_instance_of(SolarSystemPoint),
           nil
         ).and_return(units)
@@ -377,15 +376,20 @@ describe SolarSystem do
       Factory.create(:ss_detached, :player => player, :galaxy => galaxy)
     end
     let(:fse) do
-      Factory.create(:fse_player, :player => player,
-        :solar_system => solar_system)
+      Factory.create(
+        :fse_player, :player => player, :solar_system => solar_system,
+        :counter => 1
+      )
     end
 
     def create_fges(merged={})
-      [
-        Factory.create(:fge_player, coords.merge(merged)),
-        Factory.create(:fge_alliance, coords.merge(merged)),
-      ]
+      fge_player = Factory.create(
+        :fge_player, coords.merge(merged)
+      )
+      fge_alliance = Factory.create(
+        :fge_alliance, coords.merge(merged)
+      )
+      [fge_player, fge_alliance]
     end
 
     before(:each) { fse() }
@@ -431,6 +435,7 @@ describe SolarSystem do
     it "should create FSEs for players who will be able to see it" do
       fow_galaxy_entries = create_fges(:galaxy => galaxy)
       solar_system.attach!(x, y)
+
       fow_galaxy_entries.each do |fge|
         FowSsEntry.where(
           :solar_system_id => solar_system.id, :player_id => fge.player_id,
@@ -478,7 +483,6 @@ describe SolarSystem do
         EventBroker::REASON_SS_ENTRY
       ) do
         solar_system.attach!(x, y)
-        puts SPEC_EVENT_HANDLER.events[-1]
       end
     end
 

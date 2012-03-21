@@ -11,13 +11,9 @@ describe UnitBuilder do
       @location = GalaxyPoint.new(@galaxy_id, 10, 20)
       @player = Factory.create(:player, :galaxy => galaxy)
       @units = UnitBuilder.from_random_ranges(
-        @definition, @galaxy_id, @location, @player.id
+        @definition, @location, @player.id
       )
       Unit.save_all_units(@units)
-    end
-
-    it "should set #galaxy_id" do
-      @units.map(&:galaxy_id).uniq.should == [@galaxy_id]
     end
 
     it "should set #location" do

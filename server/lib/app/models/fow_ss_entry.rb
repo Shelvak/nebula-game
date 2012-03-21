@@ -81,8 +81,8 @@ class FowSsEntry < ActiveRecord::Base
           Unit.
             select("DISTINCT(player_id)").
             where(
-              "location_type=? AND location_id=? AND player_id IS NOT NULL",
-              Location::SOLAR_SYSTEM, solar_system_id
+              "location_solar_system_id=? AND player_id IS NOT NULL",
+              solar_system_id
             ).
             c_select_values.map(&:to_i)
         end

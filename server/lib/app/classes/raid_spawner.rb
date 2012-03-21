@@ -57,18 +57,12 @@ class RaidSpawner
   # Return array of built (but not saved) units.
   def units
     definitions = unit_counts
-    galaxy_id = without_locking { @planet.solar_system.galaxy_id }
 
     units = []
     definitions.each do |type, count, flank|
       klass = "Unit::#{type.camelcase}".constantize
       count.times do
-        unit = klass.new(
-          :level => 1,
-          :location => @planet,
-          :galaxy_id => galaxy_id,
-          :flank => flank
-        )
+        unit = klass.new(:level => 1, :location => @planet, :flank => flank)
         unit.skip_validate_technologies = true
 
         units.push unit
