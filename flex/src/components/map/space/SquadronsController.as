@@ -311,12 +311,11 @@ package components.map.space
       
       internal function selectSquadron(squadC:CSquadronMapIcon) : void
       {
-//         if (ORDERS_CTRL.issuingOrders)
-//         {
-//            return;
-//         }
          deselectSelectedSquadron();
-         _mapC.squadronsInfo.move(squadC.x + squadC.width / 2, squadC.y + squadC.height / 2);
+         _mapC.squadronsInfo.move(
+            squadC.x + squadC.width / 2,
+            squadC.y + squadC.height / 2
+         );
          _mapC.squadronsInfo.squadron = squadC.squadron;
          _selectedSquadC = squadC;
          _selectedSquadC.selected = true;
@@ -336,7 +335,6 @@ package components.map.space
             var containsCommandedUnits:Boolean = false;
             if (checkOrdersCtrl &&
                 ORDERS_CTRL.issuingOrders &&
-                _selectedSquadC.squadron.units != null &&
                 // this will be true when user opens up another solar system or planet:
                 // I will not have any units by that time in this collection since units
                 // in the cached maps are also kept.
