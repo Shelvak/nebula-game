@@ -1,6 +1,6 @@
 package com.tinylabproductions.stacktracer {
    import flash.system.Capabilities;
-   import flash.utils.getQualifiedClassName;
+
 
    public class StacktraceError extends Error {
       private var _cause: Error;
@@ -37,7 +37,7 @@ package com.tinylabproductions.stacktracer {
       }
       
       public function generateStacktrace(showVars: Boolean): String {
-         if (! showVars && Capabilities.isDebugger) {
+         if (!showVars && Capabilities.isDebugger) {
             // Return debugger stacktrace, because it is more accurate and
             // we don't need variables anyway.
             return _cause.getStackTrace()
@@ -72,37 +72,6 @@ package com.tinylabproductions.stacktracer {
          }
          
          return msg;
-      }
-
-      private function push(entry: StacktraceEntry): void {
-         stacktrace.push(entry);
-      }
-
-      public static function trace(
-         e: Error, currentFunction: String, variables: Object
-      ): Error {
-         var entry: StacktraceEntry =
-            new StacktraceEntry(currentFunction, variables);
-
-         if (e is StacktraceError) {
-            var ste: StacktraceError = e as StacktraceError;
-            ste.push(entry);
-            return ste;
-         }
-         else {
-            return new StacktraceError(e, entry);
-         }
-      }
-
-      public static function mergeVars(vars1: Object, vars2: Object): Object {
-         if (vars1 == null) return vars2;
-         if (vars2 == null) return vars1;
-         
-         var result: Object = new Object();
-         var name: String;
-         for (name in vars1) { result[name] = vars1[name]; }
-         for (name in vars2) { result[name] = vars2[name]; }
-         return result;
       }
    }
 }
