@@ -34,8 +34,6 @@ package controllers.combatlogs.actions
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
-         EventBroker.clearAllSubscriptions();
-         ConnectionManager.getInstance().disconnect();
          MCTopLevel.getInstance().showScreen(Screens.BATTLE);
          var log:Object = cmd.parameters.log;
          Config.setConfig(log.config);
@@ -43,10 +41,17 @@ package controllers.combatlogs.actions
       }
 
 
+      override public function result(rmo: ClientRMO): void {
+         super.result(rmo);
+         ConnectionManager.getInstance().disconnect();
+      }
+
       override public function cancel(rmo: ClientRMO, srmo: ServerRMO): void {
          super.cancel(rmo, srmo);
          Alert.show("Error while fetching combat log! Server said:\n\n" +
             ObjectUtil.toString(srmo.error));
+         EventBroker.clearAllSubscriptions();
+         ConnectionManager.getInstance().disconnect();
       }
    }
 }

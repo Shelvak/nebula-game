@@ -169,8 +169,13 @@ package models.technology
             remainder = Math.max(0, (upgradePart.upgradeEndsAt.time - new Date().time) / 1000);
             oldSci = scientists;
          }
-         var timeLeft: Number = remainder * 
-            (upgradePart.calcUpgradeTime({'scientists' : newScientists})/upgradePart.calcUpgradeTime({'scientists' :oldSci }));
+         var oldTime: Number = TechnologyUpgradable.calculateTechUpgradeTime(type, level+1,
+                        oldSci,
+            TechnologyUpgradable.getMinScientists(type, level+1), false);
+         var newTime: Number = TechnologyUpgradable.calculateTechUpgradeTime(type, level+1,
+                        newScientists,
+            TechnologyUpgradable.getMinScientists(type, level+1), false);
+         var timeLeft: Number = remainder * newTime / oldTime;
          return DateUtil.secondsToHumanString(timeLeft < 1?1: int(timeLeft));
       }
       

@@ -9,6 +9,7 @@ package components.battle
    import flash.events.Event;
    import flash.events.TimerEvent;
    import flash.utils.Timer;
+   import flash.utils.Timer;
    
    import models.battle.BFlank;
    import models.battle.BUnit;
@@ -64,6 +65,10 @@ package components.battle
       private function playStill(e: Event = null): void
       {
          //TODO remove has animation, everyone has still animation
+         if (e is TimerEvent)
+         {
+            Timer(e.target).removeEventListener(TimerEvent.TIMER, playStill);
+         }
          if (getLiving() == 0 || !hasAnimation('still'))
          {
             removeEventListener(AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE, playStill);

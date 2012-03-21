@@ -34,6 +34,7 @@ package utils.assets
    import utils.Objects;
    import utils.PropertiesTransformer;
    import utils.SingletonFactory;
+   import utils.SystemInfo;
    import utils.locale.Localizer;
 
 
@@ -71,7 +72,7 @@ package utils.assets
          return StartupInfo.getInstance();
       }
 
-      private var _movieClips:Object = {};
+      private var _movieClips:Object = new Object();
       
       
       [Bindable]
@@ -493,26 +494,31 @@ package utils.assets
       }
       private function swfLoaded(event:Event) : void
       {
-         var mLoader: LoaderObject = LoaderObject(
-            loadersHash[event.target.loader]);
-         var instance:* = mLoader.loader.content;
+         const mLoader: LoaderObject =
+                  LoaderObject(loadersHash[event.target.loader]);
+         const instance:* = mLoader.loader.content;
          if (instance is MovieClip)
          {
             MovieClip(instance).stop();
-            _movieClips[mLoader.currentName.substring(0,
-               mLoader.currentName.length - 4)] = instance;
+            const key: String = mLoader.currentName.substring(
+               0, mLoader.currentName.length - 4
+            );
+            _movieClips[key] = instance;
             /**
-             * @since Flash Player 10.3
+             * For Flash Player 10.x
              * 
-             * Devs in Adobe changed something in 10.3 version. If I deffer unpacking of frames
-             * in a MovieClip until they are actually needed, goToAndStop() does not work anymore.
-             * The MovieClip completely ignores number of a frame I pass and it stays on the 1st frame
-             * all the time. So all unpacked frames of an animation become the first frame and our
-             * animations do not seem to work anymore. All this does not happen if I unpack the frames
-             * right after the SWF has been loaded.
+             * Adobe changed something in 10.3 version. If I deffer unpacking of
+             * frames in a MovieClip until they are actually needed,
+             * goToAndStop() does not work anymore. The MovieClip completely
+             * ignores number of a frame I pass and it stays on the 1st frame
+             * all the time. So all unpacked frames of an animation become the
+             * first frame and our animations do not seem to work anymore. All
+             * this does not happen if I unpack the frames right after the SWF
+             * has been loaded.
              */
-            getVisualAsset(mLoader.currentName.substring(0,
-               mLoader.currentName.length - 4));
+            if (SystemInfo.playerMajorVersion < 11) {
+               getVisualAsset(key);
+            }
          }
          else
          {

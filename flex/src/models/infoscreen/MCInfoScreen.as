@@ -79,6 +79,7 @@ package models.infoscreen
       private static const MOD_CONSTRUCTION: String = 'mod.construction';
       private static const MOD_COOLDOWN: String = 'mod.cooldown';
       private static const MAX_VOLUME: String = 'maxVolume';
+      private static const STORAGE: String = 'storage';
       private static const ABSORPTION: String = 'mod.absorption';
       private static const CRITICAL: String = 'mod.critical';
       
@@ -395,32 +396,29 @@ package models.infoscreen
                      newValue = StringUtil.evalFormula(model.infoData[element],
                         {"level": selectedLevel + 1});
                   }
-                  else if (element == XP_NEEDED)
+                  else if (element == MAX_VOLUME)
                   {
-                     currentValue = StringUtil.evalFormula(model.infoData[element],
-                        {"level": model.usefulLevel + 1});
-                     newValue = StringUtil.evalFormula(model.infoData[element],
-                        {"level": selectedLevel + 1});
+                     currentValue = MathUtil.round(StringUtil.evalFormula(model.infoData[element],
+                        {"level": model.usefulLevel}),
+                        Config.getRoundingPrecision());
+                     newValue = MathUtil.round(StringUtil.evalFormula(model.infoData[element],
+                        {"level": selectedLevel}),
+                        Config.getRoundingPrecision());
+                     useRounding = true;
                   }
                   else
                   {
-                     if (element == MAX_VOLUME)
-                     {
-                        currentValue = MathUtil.round(StringUtil.evalFormula(model.infoData[element],
-                           {"level": model.usefulLevel}),
-                           Config.getRoundingPrecision());
-                        newValue = MathUtil.round(StringUtil.evalFormula(model.infoData[element],
-                           {"level": selectedLevel}),
-                           Config.getRoundingPrecision());
-                        useRounding = true;
-                     }
-                     else
-                     {
-                        currentValue = StringUtil.evalFormula(model.infoData[element],
-                           {"level": model.usefulLevel});
-                        newValue = StringUtil.evalFormula(model.infoData[element],
-                           {"level": selectedLevel});
-                     }
+                     currentValue = StringUtil.evalFormula(model.infoData[element],
+                        {"level": model.usefulLevel});
+                     newValue = StringUtil.evalFormula(model.infoData[element],
+                        {"level": selectedLevel});
+                  }
+
+                  if (element == STORAGE)
+                  {
+                     currentValue = Math.round(currentValue);
+                     newValue = Math.round(newValue);
+                     useRounding = true;
                   }
 
                   var bundle: String;

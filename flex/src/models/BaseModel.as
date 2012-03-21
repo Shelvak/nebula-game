@@ -3,7 +3,8 @@ package models
    import com.adobe.errors.IllegalStateError;
    
    import flash.events.EventDispatcher;
-   
+   import flash.utils.describeType;
+
    import interfaces.IEqualsComparable;
    
    import models.events.BaseModelEvent;
@@ -124,7 +125,7 @@ package models
             return;
          if (!(source is CLASS))
             throw new TypeError("'source' is " + source.className + " but " + className + " was expected.");
-         var typeInfo:XML = Objects.describeType(CLASS).factory[0];
+         var typeInfo:XML = describeType(CLASS).factory[0];
          ignoreSkipProperty = ignoreSkipProperty || props && props.length > 0;
          if (!props || props.length == 0)
             props = Objects.getPublicProperties(CLASS);
