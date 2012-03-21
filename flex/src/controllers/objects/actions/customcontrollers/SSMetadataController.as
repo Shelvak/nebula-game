@@ -3,41 +3,36 @@ package controllers.objects.actions.customcontrollers
    import controllers.galaxies.GalaxiesCommand;
    import controllers.ui.NavigationController;
 
-   import models.location.LocationMinimal;
-
    import models.map.MapType;
    import models.player.PlayerMinimal;
    import models.solarsystem.MSSMetadata;
    import models.solarsystem.MSolarSystem;
-   import models.solarsystem.SSKind;
 
    import utils.Objects;
-   
-   
+
+
    public class SSMetadataController extends BaseObjectController
    {
       public function SSMetadataController() {
          super();
       }
-      
-      public override function objectUpdated(objectSubclass:String,
-                                             object:Object,
-                                             reason:String) : void {
-         var ss:MSolarSystem = ML.latestGalaxy.getSSById(object.id);
-         if (ss == null) {
-            throw new Error("Unable to find solar system with id " + 
-               object.id + " to update its metadata!");
-         }
-         var metadata:MSSMetadata = ss.metadata;
+
+      public override function objectUpdated(objectSubclass: String,
+                                             object: Object,
+                                             reason: String): void {
+         const ss: MSolarSystem = ML.latestGalaxy.getSSById(object.id);
+         Objects.notNull(ss, "Solar system with id " + object["id"] + " not found.");
+         const metadata: MSSMetadata = ss.metadata;
          Objects.update(metadata, object);
          ML.latestGalaxy.refreshSolarSystemsWithPlayer();
       }
       
-      public override function objectDestroyed(objectSubclass:String,
-                                               objectId:int,
-                                               reason:String) : void {
-         const navCtrl:NavigationController = NavigationController.getInstance();
-         const ss:MSolarSystem = ML.latestGalaxy.getSSById(objectId);
+      public override function objectDestroyed(objectSubclass: String,
+                                               objectId: int,
+                                               reason: String): void {
+         const navCtrl: NavigationController = NavigationController.getInstance();
+         const ss: MSolarSystem = ML.latestGalaxy.getSSById(objectId);
+         Objects.notNull(ss, "Solar system with id " + objectId + " not found.");
          ML.latestGalaxy.removeObject(ss);
          if (ML.latestPlanet != null && ML.latestPlanet.solarSystemId == ss.id) {
             if (ML.activeMapType == MapType.PLANET) {
@@ -53,11 +48,11 @@ package controllers.objects.actions.customcontrollers
          }
       }
 
-      public override function objectCreated(objectSubclass:String,
-                                             object:Object,
-                                             reason:String): * {
-         var ssMetadata:MSSMetadata = Objects.create(MSSMetadata, object);
-         var ss:MSolarSystem = new MSolarSystem();
+      public override function objectCreated(objectSubclass: String,
+                                             object: Object,
+                                             reason: String): * {
+         const ssMetadata: MSSMetadata = Objects.create(MSSMetadata, object);
+         const ss: MSolarSystem = new MSolarSystem();
          ss.id = ssMetadata.id;
          ss.metadata = ssMetadata;
          ss.x = object["x"];

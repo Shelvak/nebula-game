@@ -5,7 +5,7 @@ package animation
    import flash.events.TimerEvent;
    import flash.utils.Timer;
 
-   
+
    /**
     * Dispatched whenever an <code>AnimationTimer</code> object reaches an interval specified
     * according to the <code>AnimationTimer.delay</code> property.
@@ -98,8 +98,8 @@ package animation
          }
          return _movementInstance;
       }
-      
-      
+
+
       private var _defaultDelay:Number;
       private var _timer:Timer;
       /**
