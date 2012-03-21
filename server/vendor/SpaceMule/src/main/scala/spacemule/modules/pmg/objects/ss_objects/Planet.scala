@@ -186,7 +186,7 @@ extends SSObject {
 
   val name = "Planet"
   
-  def planetName(id: Int) = map.name.format(id)
+  def planetName(id: Int) = map.name.format(id.toString(Character.MAX_RADIX))
 
   def foreachTile(block: (Coords, Int) => Unit) = map.tilesMap.foreach(block)
   def foreachFolliage(block: (Coords, Int) => Unit) = {
