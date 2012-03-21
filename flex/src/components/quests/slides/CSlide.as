@@ -272,6 +272,7 @@ package components.quests.slides
             {
                loadImages();
                t.removeEventListener(TimerEvent.TIMER, reloadLoader);
+               t = null;
             }
             t.addEventListener(TimerEvent.TIMER, reloadLoader);
             t.start();

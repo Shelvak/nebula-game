@@ -99,6 +99,7 @@ package components.map.planet
          _grid.source = map.getGrid();
          _grid.depth = Number.MIN_VALUE;
          _grid.visible = false;
+         _grid.smooth = true;
          objectsLayer.addElement(_grid);
 
          _resourceTilesIndicators = new Object();

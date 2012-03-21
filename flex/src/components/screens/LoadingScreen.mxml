@@ -5,8 +5,7 @@
                     xmlns:base="components.base.*"
                     xmlns:screens="components.screens.*"
                     width="100%" height="100%"
-                    creationComplete="this_creationCompleteHandler()"
-                    addedToStage="this_addedToStageHandler(event)">
+                    creationComplete="this_creationCompleteHandler()">
    <fx:Metadata>
       /**
       * Dispatched when data has been loaded successfully or when an error occured.
@@ -16,7 +15,6 @@
    
    <fx:Script>
       <![CDATA[
-      import controllers.DisplayManager;
       import controllers.startup.ChecksumsLoader;
       import controllers.startup.StartupInfo;
       import controllers.startup.StartupManager;
@@ -31,11 +29,6 @@
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
       import utils.locale.XMLBundlesLoader;
-
-
-      private function this_addedToStageHandler(event: Event): void {
-         DisplayManager.setFPSForStartup();
-      }
 
 
       /* ##################### */
@@ -149,7 +142,6 @@
        * Switch to login screen when download is complete.
        */
       private function imagesLoadComplete(event: Event): void {
-         DisplayManager.setFPSForGame();
          IMG.removeEventListener(ProgressEvent.PROGRESS, imageLoaded);
          IMG.removeEventListener(Event.COMPLETE, imagesLoadComplete);
          StartupManager.initializeAppAfterLoad();

@@ -24,21 +24,20 @@
          
          protected function basecontainer2_creationCompleteHandler(event:FlexEvent):void
          {
-            if (hideTimer != null)
-            {
-               hideTimer.stop();
-               hideTimer = null;
-            }
             hideTimer = new Timer(MSG_SHOW_DURRATION, 1);
-            hideTimer.addEventListener(TimerEvent.TIMER, function(e: TimerEvent): void
-            {
-               var idx: int = ML.notificationAlerts.getItemIndex(notif);
-               if (idx != -1)
-               {
-                  ML.notificationAlerts.removeItemAt(idx);
-               }
-            });
+            hideTimer.addEventListener(TimerEvent.TIMER, hideAlert, false, 0, true);
             hideTimer.start();
+         }
+
+         private function hideAlert(e: TimerEvent): void
+         {
+            hideTimer.removeEventListener(TimerEvent.TIMER, hideAlert);
+            var idx: int = ML.notificationAlerts.getItemIndex(notif);
+            if (idx != -1)
+            {
+               ML.notificationAlerts.removeItemAt(idx);
+            }
+            hideTimer = null;
          }
          
          
