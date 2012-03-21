@@ -267,6 +267,7 @@ package models.map
        */
       public function removeObject(object: BaseModel,
                                    silent: Boolean = false): * {
+         Objects.paramNotNull("object", object);
          const objectIdx: int = Collections.findFirstIndexEqualTo(
             _objects, object
          );

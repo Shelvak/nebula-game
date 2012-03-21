@@ -658,6 +658,9 @@ package controllers.battle
             //Check if all projectiles have been fired
             if (shotDelayTimer.currentCount == shotDelayTimer.repeatCount)
             {
+               //Timer should not be used more, so remove it
+               shotDelayTimer.removeEventListener(TimerEvent.TIMER, fireShot);
+               shotDelayTimer = null;
                if (lastGun)
                { 
                   var nextFireOrders: Array = attacker.finishAttack();
@@ -688,6 +691,8 @@ package controllers.battle
                         attacker.attacking--;
                         battleSpeedControl.removeEventListener(BattleControllerEvent.TOGGLE_PAUSE, togglePauseNextFire);
                         battleSpeedControl.removeEventListener(BattleControllerEvent.CHANGE_SPEED, changeNextFireDelayTimerSpeed);
+                        nextFireOrderTimer.removeEventListener(TimerEvent.TIMER, trigerNextAttacker);
+                        nextFireOrderTimer = null;
                         if (attacker.attacking == 0)
                         {
                            attacker.cleanPendingOrders();

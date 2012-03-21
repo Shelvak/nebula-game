@@ -70,7 +70,7 @@ package models.parts
                                                       speedUp: Boolean): Number
       {
          return Math.max(reduceUpgradeTime(Upgradable.calculateUpgradeTime(UpgradableType.TECHNOLOGIES, type, {'level': level}),
-         scientists, minScientists, speedUp));
+         scientists, minScientists, speedUp), 1);
       }
       
       private static function reduceUpgradeTime(oldUpgradeTime: Number, scientists: int, minScientists: int,

@@ -8,7 +8,6 @@ package utils
    import components.popups.ErrorPopUp;
 
    import flash.external.ExternalInterface;
-   import flash.system.Capabilities;
 
    import models.ModelLocator;
 
@@ -28,7 +27,7 @@ package utils
             // This is an Android FlashPlayer bug.
             // Ignore this error since we do not use IME anyway.
             // https://bugbase.adobe.com/index.cfm?event=bug&id=3101786
-            if (err.errorID == 2063 && Capabilities.version.indexOf("AND") == 0) {
+            if (err.errorID == 2063 && SystemInfo.platformAndroid) {
                return;
             }
 

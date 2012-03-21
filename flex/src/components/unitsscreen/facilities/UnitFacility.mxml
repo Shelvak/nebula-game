@@ -157,7 +157,7 @@
 
       private static const SCROLL_DELAY: int = 30;
 
-      private var scrollTimer: Timer = new Timer(SCROLL_DELAY);
+      private var scrollTimer: Timer;
 
       private var scrollType: int = 0;
 
@@ -257,17 +257,28 @@
 
       private function reset(e: GlobalEvent): void {
          facility = null;
+         if (scrollTimer != null)
+         {
+            scrollTimer.stop();
+            scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
+            scrollTimer = null;
+         }
       }
 
       protected function advancedcontainer1_addedToStageHandler(event: Event): void {
+         scrollTimer = new Timer(SCROLL_DELAY);
          scrollTimer.addEventListener(TimerEvent.TIMER, scrollViewport);
          EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
       }
 
 
       protected function advancedcontainer1_removedFromStageHandler(event: Event): void {
-         scrollTimer.stop();
-         scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
+         if (scrollTimer != null)
+         {
+            scrollTimer.stop();
+            scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
+            scrollTimer = null;
+         }
       }
 
 
