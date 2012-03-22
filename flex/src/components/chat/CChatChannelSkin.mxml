@@ -87,9 +87,11 @@
    <s:SkinnableContainer right="0" top="0" bottom="0" width="240" mouseEnabled="false"
                          skinClass="components.skins.RightSidebarContainerSkin">
       <base:Panel id="pnlMembers" left="0" right="0" top="0" bottom="0">
-         <cchat:CChatChannelMembers id="lstMembers" left="0" right="0" top="0" bottom="0"
+         <cchat:CChatChannelMembers id="lstMembers"
+                                    left="0" right="0" top="0" bottom="30"
                                     borderVisible="false"
                                     contentBackgroundAlpha="0"/>
+         <base:BaseTextInput id="inpMembersFilter" left="5" right="5" bottom="0"/>
       </base:Panel>
    </s:SkinnableContainer>
    
