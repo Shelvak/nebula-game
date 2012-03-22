@@ -67,6 +67,8 @@ class SmartInt(int: Int) {
   }
   
   def toBigDecimal = new BigDecimal(int)
+  
+  def toString(radix: Int) = Integer.toString(int, radix)
 }
 
 class SmartString(string: String) {
