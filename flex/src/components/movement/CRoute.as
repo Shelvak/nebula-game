@@ -28,50 +28,55 @@ package components.movement
 
    public class CRoute extends Group implements ICleanable
    {
-      private function get logger():ILogger {
+      private function get logger(): ILogger {
          return Log.getLogger(Objects.getClassName(this, true));
       }
 
-      public function get squadron() : MSquadron {
-         return _squadM;
-      }
-      
-      
-      private var _squadC:CSquadronMapIcon;
-      private var _squadM:MSquadron;
-      private var _grid:Grid;
-      
-      
-      /* ###################### */
-      /* ### INITIALIZATION ### */
-      /* ###################### */
-      
-      /**
-       * @param squadC model of a squadron travelling along the route
-       * @param grid reference to map grid (will be used for calculating
-       * positioning and sizing component)
-       */
-      public function CRoute(squadC:CSquadronMapIcon, grid:Grid) {
+      private var _grid: Grid;
+
+      public function CRoute(grid: Grid) {
          super();
-         left = right = top = bottom = 0;
-         mouseEnabled = mouseChildren = visible = false;
-         _squadC = Objects.paramNotNull("squadron", squadC);
+         left = 0;
+         right = 0;
+         top = 0;
+         bottom = 0;
+         mouseEnabled = false;
+         mouseChildren = false;
+         visible = false;
          _grid = Objects.paramNotNull("grid", grid);
-         _squadM = squadC.squadron;
-         addModelEventHandlers(_squadM);
       }
-      
+
       public function cleanup() : void {
-         if (_squadM != null) {
-            removeModelEventHandlers(_squadM);
-            _squadM = null;
+         if (_squadC != null) {
+            setSquad(null);
          }
       }
-      
-      
+
+
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
+
+      private var _squadC: CSquadronMapIcon;
+      public function setSquad(squadC: CSquadronMapIcon): void {
+         if (_squadC != null) {
+            removeModelEventHandlers(_squadM);
+            _squadM = null;
+         }
+         _squadC = squadC;
+         if (_squadC != null) {
+            _squadM = _squadC.squadron;
+            addModelEventHandlers(_squadM);
+         }
+         f_squadChanged = true;
+         invalidateProperties();
+         invalidateDisplayList();
+      }
+
+      private var _squadM: MSquadron;
+      public function get squadron(): MSquadron {
+         return _squadM;
+      }
 
       public override function set visible(value: Boolean): void {
          if (super.visible != value) {
@@ -83,40 +88,64 @@ package components.movement
       }
 
       private var f_visibleChanged: Boolean = true;
+      private var f_squadChanged: Boolean = true;
 
       protected override function commitProperties(): void {
          super.commitProperties();
          if (f_visibleChanged) {
             mouseEnabled = mouseChildren = visible;
          }
+         if (f_squadChanged) {
+            removeAllHopEndpoints();
+            if (_squadM != null) {
+               createHopEndpoints();
+               updateHopsEndpoints();
+            }
+         }
          f_visibleChanged = false;
+         f_squadChanged = false;
       }
-      
-      
-      /* ################ */
-      /* ### CHILDREN ### */
-      /* ################ */
 
-      private var _hopsEndpoints: Vector.<CHopInfo>;
+
+      /* ############ */
+      /* ### HOPS ### */
+      /* ############ */
+
+      private const _hopsEndpoints: Array = new Array();
+
+      private function removeAllHopEndpoints(): void {
+         while (_hopsEndpoints.length > 0) {
+            removeElement(_hopsEndpoints.pop());
+         }
+      }
+
+      private function removeFirstHopEndpoint(): void {
+         if (_hopsEndpoints.length > 1 || !_squadM.jumpPending) {
+            removeElement(_hopsEndpoints.shift());
+         }
+      }
+
+      private function createHopEndpoints(): void {
+         for each (var hop: MHop in _squadM.hops) {
+            createHopEndpoint();
+         }
+         if (_hopsEndpoints.length == 0 && _squadM.jumpPending) {
+            createHopEndpoint();
+         }
+      }
 
       private function createHopEndpoint(): void {
-         var hopInfo: CHopInfo = new CHopInfo();
-         hopInfo.squadOwner = squadron.owner;
+         const hopInfo: CHopInfo = new CHopInfo();
+         hopInfo.squadOwner = _squadM.owner;
          hopInfo.arrivesInLabelText = getLabel("arrivesIn");
          _hopsEndpoints.push(hopInfo);
          addElement(hopInfo);
       }
 
-      private function removeFirstHopEndpoint(): void {
-         if (_hopsEndpoints.length > 1 || !squadron.jumpPending) {
-            removeElement(_hopsEndpoints.shift());
-         }
-      }
-      
       private function updateHopsEndpoints() : void {
-         var hop:MHop = null;
-         var hopInfo:CHopInfo = null;
-         var coords:Point = null;
+         var hop: MHop = null;
+         var hopInfo: CHopInfo = null;
+         var coords: Point = null;
          for each (hopInfo in _hopsEndpoints) {
             hopInfo.arrivesInValueText = null;
             hopInfo.arrivesInVisible = false;
@@ -163,72 +192,19 @@ package components.movement
                   : "jumpsIn"
             );
          }
-//         if (_hopsEndpoints.length > 0
-//             && _squadM.jumpPending
-//             && (_squadM.isFriendly || !_squadM.hasHopsRemaining)) {
-//            hopInfo = _hopsEndpoints[_hopsEndpoints.length - 1];
-//            var loc:LocationMinimal = _squadM.hasHopsRemaining ?
-//               _squadM.lastHop.location :
-//               _squadM.currentHop.location;
-//            var locWrap:LocationMinimalSolarSystem =
-//               new LocationMinimalSolarSystem(loc);
-//
-//            var showJumpsAt:Boolean = false;
-//            if (loc.isGalaxy) {
-//               var galaxy:Galaxy = ModelLocator.getInstance().latestGalaxy;
-//               showJumpsAt = galaxy.getSSAt(loc.x, loc.y) != null;
-//            }
-//            else if (loc.isSolarSystem) {
-//               var ss:MMapSolarSystem = ModelLocator.getInstance().latestSSMap;
-//               var sso:MSSObject = ss.getSSObjectAt(
-//                  locWrap.position,
-//                  locWrap.angle
-//               );
-//               showJumpsAt = sso != null && (sso.isPlanet || sso.isJumpgate);
-//            }
-//
-//            hopInfo.jumpsInVisible = showJumpsAt;
-//            if (showJumpsAt) {
-//               hopInfo.jumpsInLabelText =
-//                  getLabel(
-//                     loc.isSolarSystem
-//                        && ss.getSSObjectAt(locWrap.position,
-//                                            locWrap.angle).isPlanet
-//                        ? "landsIn"
-//                        : "jumpsIn"
-//                  );
-//               coords = _grid.getSectorRealCoordinates(loc);
-//               hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occuresInString;
-//               hopInfo.x = coords.x;
-//               hopInfo.y = coords.y;
-//            }
-//         }
-      }
-      
-      protected override function createChildren() : void {
-         super.createChildren();
-         var hop:MHop = null;
-         _hopsEndpoints = new Vector.<CHopInfo>();
-         for each (hop in _squadM.hops) {
-            createHopEndpoint();
-         }
-         if (_hopsEndpoints.length == 0 && _squadM.jumpPending) {
-            createHopEndpoint();
-         }
-         updateHopsEndpoints();
       }
       
       
       /* ############### */
       /* ### VISUALS ### */
       /* ############### */
-      
+
       protected override function updateDisplayList(uw:Number, uh:Number) : void {
          super.updateDisplayList(uw, uh);
          if (_squadM != null) {
             graphics.clear();
-            var coords:Point;
-            var start:MHop = _squadM.currentHop;
+            const start: MHop = _squadM.currentHop;
+            var coords: Point;
             if (start.location.equals(_squadC.currentLocation) && _squadM.hasHopsRemaining)
                graphics.moveTo(_squadC.x + _squadC.width / 2, _squadC.y + _squadC.height / 2);
             else {
@@ -243,8 +219,8 @@ package components.movement
             updateHopsEndpoints();
          }
       }
-      
-      
+
+
       /* ############################ */
       /* ### MODEL EVENT HANDLERS ### */
       /* ############################ */
@@ -287,7 +263,9 @@ package components.movement
       }
 
       private function model_updateHandler(event:BaseModelEvent) : void {
-         updateHopsEndpoints();
+         if (_squadM != null) {
+            updateHopsEndpoints();
+         }
       }
       
       private function model_jumpsAtChangeHandler(e: MRouteEvent) : void {

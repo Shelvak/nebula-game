@@ -149,7 +149,8 @@ package components.map.space
          _squadronsContainer.addElement(squadC);
 
          if (squadM.isMoving) {
-            const routeC: CRoute = new CRoute(squadC, _grid);
+            const routeC: CRoute = new CRoute(_grid);
+            routeC.setSquad(squadC);
             _routes.addItem(routeC);
             _routesContainer.addElement(routeC);
          }
