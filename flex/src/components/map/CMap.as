@@ -111,9 +111,9 @@ package components.map
          _f_childrenCreated = true;
       }
 
-      private var _f_cleanupCalled: Boolean = false;
+      private var f_cleanupCalled: Boolean = false;
       public function cleanup(): void {
-         if (_f_cleanupCalled) {
+         if (f_cleanupCalled) {
             return;
          }
          removeGlobalEventHandlers();
@@ -127,6 +127,7 @@ package components.map
             _backgroundComponent = null;
          }
          _viewport = null;
+         f_cleanupCalled = true;
       }
 
 
@@ -135,7 +136,7 @@ package components.map
       /* ######################## */
       
       protected override function measure() : void {
-         if (_f_cleanupCalled) {
+         if (f_cleanupCalled) {
             return;
          }
          var size:Point = getSize();
