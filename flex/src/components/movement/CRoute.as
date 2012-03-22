@@ -47,9 +47,7 @@ package components.movement
       }
 
       public function cleanup() : void {
-         if (_squadC != null) {
-            setSquad(null);
-         }
+         setSquad(null);
       }
 
 
@@ -68,6 +66,7 @@ package components.movement
             _squadM = _squadC.squadron;
             addModelEventHandlers(_squadM);
          }
+         visible = _squadC != null;
          f_squadChanged = true;
          invalidateProperties();
          invalidateDisplayList();
@@ -78,32 +77,24 @@ package components.movement
          return _squadM;
       }
 
-      public override function set visible(value: Boolean): void {
-         if (super.visible != value) {
-            super.visible = value;
-            f_visibleChanged = true;
-            invalidateProperties();
-            invalidateDisplayList();
-         }
-      }
-
-      private var f_visibleChanged: Boolean = true;
       private var f_squadChanged: Boolean = true;
+      private var f_squadUpdated: Boolean = true;
 
       protected override function commitProperties(): void {
          super.commitProperties();
-         if (f_visibleChanged) {
-            mouseEnabled = mouseChildren = visible;
-         }
          if (f_squadChanged) {
             removeAllHopEndpoints();
             if (_squadM != null) {
                createHopEndpoints();
+            }
+         }
+         if (f_squadChanged || f_squadUpdated) {
+            if (_squadM != null) {
                updateHopsEndpoints();
             }
          }
-         f_visibleChanged = false;
          f_squadChanged = false;
+         f_squadUpdated = false;
       }
 
 
@@ -263,9 +254,8 @@ package components.movement
       }
 
       private function model_updateHandler(event:BaseModelEvent) : void {
-         if (_squadM != null) {
-            updateHopsEndpoints();
-         }
+         f_squadUpdated = true;
+         invalidateProperties();
       }
       
       private function model_jumpsAtChangeHandler(e: MRouteEvent) : void {
