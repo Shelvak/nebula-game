@@ -117,10 +117,9 @@ package controllers.planets.actions
          }
          // If we jumped right to this planet not going through solar system
          // create a fake solar system in model locator with correct id
-         else if (ML.latestSSMap == null || ML.latestSSMap.id != planet.solarSystemId)
-         {
-            if (ML.latestSSMap != null)
-            {
+         else if (ML.latestSSMap == null
+                     || ML.latestSSMap.id != planet.solarSystemId) {
+            if (ML.latestSSMap != null) {
                ML.latestSSMap.setFlag_destructionPending();
             }
             ss = new MSolarSystem();
@@ -141,10 +140,12 @@ package controllers.planets.actions
          SQUADS_CTRL.createSquadronsForUnits(planet.units, planet);
          SQUADS_CTRL.attachJumpsAtToHostileSquads(planet.squadrons, params["nonFriendlyJumpsAt"]);
          planet.dispatchUnitRefreshEvent();
-         if (f_createMapOnly)
+         if (f_createMapOnly) {
             NAV_CTRL.recreateMap(planet);
-         else
+         }
+         else {
             NAV_CTRL.showPlanet(planet);
+         }
          dispatchPlanetBuildingsChangeEvent();
          resetFlags();
       }
@@ -156,6 +157,7 @@ package controllers.planets.actions
       
       public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void {
          resetFlags();
+         NAV_CTRL.mapLoadFailed();
          super.cancel(rmo, srmo);
       }
       
