@@ -458,7 +458,7 @@ package models.unit
          if (!selectionClass.selectAll())
          {
             Messenger.show(Localizer.string('Units', 'message.notSelected'), 
-               Messenger.SHORT);
+               Messenger.MEDIUM);
          }
          refreshVolume();
       }

@@ -120,7 +120,6 @@ module Dev
     Unit.give_units(parse.call(defenders), planet, owner) \
       unless defenders == ""
 
-    galaxy_id = owner.galaxy_id
     attackers = []
     parse.call(offenders).each do |type, count|
       klass = "Unit::#{type.camelcase}".constantize
@@ -129,7 +128,6 @@ module Dev
           :level => 1,
           :hp => klass.hit_points,
           :location => planet,
-          :galaxy_id => galaxy_id,
           :flank => 0
         )
         unit.skip_validate_technologies = true

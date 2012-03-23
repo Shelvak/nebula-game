@@ -113,7 +113,7 @@ package components.map.space
       }
       
       
-      internal override function getAllSectors() : ModelsCollection
+      internal override function getAllSectors() : ArrayCollection
       {
          var sectors:Array = new Array();
          // If we have all sectors cached (chaching is carried out by constructor), just add
@@ -146,7 +146,7 @@ package components.map.space
                }
             }
          }
-         return new ModelsCollection(sectors);
+         return new ArrayCollection(sectors);
       }
    }
 }

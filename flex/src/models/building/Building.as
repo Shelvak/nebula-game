@@ -553,7 +553,7 @@ package models.building
       /**
        * Id of the constructable item which this building is currently constructing
        */      
-      [Required]
+      [Optional]
       public var constructableId: int = 0;
       
       /**
@@ -563,7 +563,7 @@ package models.building
       
       
       [Bindable (event="queryChange")]
-      [Required]
+      [Optional]
       public function set constructableType(value: String): void
       {
          if (value != _constructableType)

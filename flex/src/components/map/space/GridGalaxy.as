@@ -9,7 +9,9 @@ package components.map.space
    import models.location.LocationMinimal;
    import models.location.LocationMinimalGalaxy;
    import models.location.LocationType;
-   
+
+   import mx.collections.ArrayCollection;
+
    import utils.Objects;
    
    
@@ -74,8 +76,8 @@ package components.map.space
       }
       
       
-      internal override function getAllSectors() : ModelsCollection {
-         return new ModelsCollection(_map.getLocationsInVisibleArea());
+      internal override function getAllSectors() : ArrayCollection {
+         return new ArrayCollection(_map.getLocationsInVisibleArea());
       }
    }
 }

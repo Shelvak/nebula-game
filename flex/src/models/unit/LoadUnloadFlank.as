@@ -72,7 +72,7 @@ package models.unit
          {
             model.selected = false;
             Messenger.show(Localizer.string('Units', 'message.notSelected'), 
-               Messenger.SHORT);
+               Messenger.MEDIUM);
          }
       }
       
@@ -113,7 +113,7 @@ package models.unit
          if (!LS.selectionClass.selectFlank(this))
          {
             Messenger.show(Localizer.string('Units', 'message.notSelected'), 
-               Messenger.SHORT);
+               Messenger.MEDIUM);
          }
          if (dispatchEvnt)
          {

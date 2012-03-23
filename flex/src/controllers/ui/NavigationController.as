@@ -409,7 +409,7 @@ package controllers.ui
       
       
       /**
-       * If given planet is acually a jumgate, will open a galaxy instead.
+       * If given planet is actually a jumpgate, will open a galaxy instead.
        */
       public function toPlanet(planet: MSSObject,
                                completeHandler: Function = null): void {
@@ -437,6 +437,13 @@ package controllers.ui
          }
       }
 
+      /**
+       * Should be invoked by solar_systems|show or planets|show when those
+       * actions have failed.
+       */
+      public function mapLoadFailed(): void {
+         _mapLoadHandler = null;
+      }
 
       public function selectBuilding(building: Building): void {
          _mapLoadHandler = function (event: MapLoadEvent): void {
@@ -450,7 +457,6 @@ package controllers.ui
          }
          toPlanet(ssObject);
       }
-
 
       public function showGalaxy(newGalaxy: Galaxy = null): void {
          function loadMap(e: ScreensSwitchEvent = null): void {
