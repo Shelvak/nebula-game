@@ -29,6 +29,12 @@ package models
 
       private function addModelToHash(model: BaseModel): void {
          if (model.id > 0) {
+            if (_modelsHash[model.id] != null)
+            {
+               throw new ArgumentError("Failed to add model to collection, model with same id already exists\n" +
+                  "Old model: " + _modelsHash[model.id] + "\n" +
+                  "New model: " + model);
+            }
             _modelsHash[model.id] = model;
          }
       }
