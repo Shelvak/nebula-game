@@ -1,6 +1,6 @@
 module Parts::Constructor
   # Proxy class for #constructable property of constructors.
-  class ConstructableProxy < BasicObject
+  class ConstructableProxy < ActiveSupport::BasicObject
     TYPE_BUILDING = :building
     TYPE_UNIT = :unit
 
