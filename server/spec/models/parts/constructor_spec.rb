@@ -35,7 +35,22 @@ describe Building::ConstructorTest do
 
   describe "#as_json" do
     it_behaves_like "as json", Factory.create(:b_constructor_test), nil,
-      %w{construction_queue_entries build_in_2nd_flank build_hidden}, []
+      %w{
+        construction_queue_entries build_in_2nd_flank build_hidden
+        constructable_type constructable_id
+      }, []
+
+    let(:constructor) { Factory.create(:b_constructor_test) }
+
+    it "should take constructable_type from constructable.__type" do
+      constructor.as_json['constructable_type'].
+        should == constructor.constructable.__type
+    end
+
+    it "should take constructable_id from constructable.__id" do
+      constructor.as_json['constructable_id'].
+        should == constructor.constructable.__id
+    end
   end
 
   describe "#construction_queue_entries" do

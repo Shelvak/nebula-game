@@ -40,6 +40,11 @@ module Parts::Constructor
     def __db_building_id; @type == TYPE_BUILDING ? @id || @obj.id : nil; end
     def __db_unit_id; @type == TYPE_UNIT ? @id || @obj.id : nil; end
 
+    # For #as_json of constructor.
+    def __type; @type == TYPE_BUILDING ? "Building" : "Unit"; end
+    # For #as_json of constructor.
+    def __id; @id; end
+
     # #composed_of freezes object to prevent changes to it. Ignore it as we take
     # care to save that object.
     def freeze(*args); end
@@ -178,10 +183,12 @@ module Parts::Constructor
 	module InstanceMethods
     def as_json(options=nil)
       super do |hash|
-        hash["construction_queue_entries"] = construction_queue_entries.map(
-          &:as_json)
+        hash["construction_queue_entries"] = construction_queue_entries.
+          map(&:as_json)
         hash["build_in_2nd_flank"] = build_in_2nd_flank
         hash["build_hidden"] = build_hidden
+        hash["constructable_type"] = constructable.__type
+        hash["constructable_id"] = constructable.__id
       end
     end
 
