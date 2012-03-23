@@ -42,6 +42,18 @@ describe Building::ConstructorTest do
 
     let(:constructor) { Factory.create(:b_constructor_test) }
 
+    describe "when constructable is nil" do
+      let(:constructor) do
+        Factory.create(:b_constructor_test, :constructable => nil)
+      end
+
+      %w{constructable_id constructable_type}.each do |attr|
+        it "should set #{attr} to nil" do
+          constructor.as_json[attr].should be_nil
+        end
+      end
+    end
+
     it "should take constructable_type from constructable.__type" do
       constructor.as_json['constructable_type'].
         should == constructor.constructable.__type
@@ -50,6 +62,12 @@ describe Building::ConstructorTest do
     it "should take constructable_id from constructable.__id" do
       constructor.as_json['constructable_id'].
         should == constructor.constructable.__id
+    end
+
+    it "should work with id if constructable is passed via object" do
+      constructor.constructable = Factory.create(:unit)
+      constructor.as_json['constructable_id'].
+        should == constructor.constructable.id
     end
   end
 
