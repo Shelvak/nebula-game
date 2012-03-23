@@ -29,7 +29,7 @@ package controllers.constructionqueues.actions
             for each(var queueElementObj:Object in cmd.parameters.entries)
             {
                var tempQuery:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(queueElementObj);
-               planet.getBuildingById(tempQuery.constructorId).constructionQueueEntries.addItem(tempQuery);
+               currentFacility.constructionQueueEntries.addItem(tempQuery);
             }
             currentFacility.dispatchQueryChangeEvent();
          }
