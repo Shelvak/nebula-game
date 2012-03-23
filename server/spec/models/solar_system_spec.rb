@@ -344,6 +344,14 @@ describe SolarSystem do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "should remove other alliance fow ss entries" do
+      fse = Factory.create(:fse_alliance, :solar_system => solar_system)
+      solar_system.detach!
+      lambda do
+        fse.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
     it "should not remove owner fow ss entry" do
       fse = Factory.create(:fse_player, :solar_system => solar_system,
                            :player => player)

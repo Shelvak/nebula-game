@@ -208,7 +208,8 @@ class SolarSystem < ActiveRecord::Base
       EventBroker::REASON_SS_ENTRY
     )
     # Remove fow ss entries for everyone except owner.
-    fow_ss_entries.where("player_id != ?", player_id).delete_all
+    fow_ss_entries.where("player_id != ? OR player_id IS NULL", player_id).
+      delete_all
 
     # Set coordinates to detached state.
     self.x = self.y = nil
