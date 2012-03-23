@@ -432,7 +432,12 @@ sections.each do |section, values|
           ? "{}" \
           : "\n" + value.map { |k, v| "  #{k}: #{p_json(v)}" }.join("\n")
       else
-        if key =~ /
+        if key == "resource_transporter.mod.cooldown"
+          # Dirty dirty hack to add hyperbole.
+          value = "#{value.to_f} / (#{
+            values["resource_transporter.max_volume"]
+          }) / speed"
+        elsif key =~ /
           \.(
             (solar_system|galaxy)\.hop_time|
             upgrade_time|

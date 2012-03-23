@@ -532,7 +532,7 @@ QUESTS = QuestDefinition.define(:debug => false) do
   end.define(340, [s_quest, s_bg_battles, s_bg_planets, s_boss_ship, s_pulsars,
                    s_convoys, s_galaxy_battles]) do
     # Explains about arena.
-    have_victory_points :count => 500
+    have_victory_points 500
 
     reward_creds 2500
   end.define(10600) do
