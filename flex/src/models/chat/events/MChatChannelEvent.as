@@ -30,6 +30,12 @@ package models.chat.events
       public static const GENERATE_JOIN_LEAVE_MSGS_CHANGE:String = "generateJoinLeaveMsgsChange";
 
       /**
+       * Dispatched when <code>MChatMembersList.nameFilter</code> property changes.
+       * @event type membersFilterChange
+       */
+      public static const MEMBERS_FILTER_CHANGE:String = "membersFilterChange";
+
+      /**
        * Dispatched to fix url bug in chat, should be temporary, TODO ?
        * @eventType gotSomeMessage
        */
