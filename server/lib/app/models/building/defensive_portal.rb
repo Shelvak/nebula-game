@@ -1,4 +1,6 @@
 class Building::DefensivePortal < Building
+  include Parts::ArmyPoints
+
   # Raised when no units can be teleported for defense. For internal usage.
   class NoUnitsError < StandardError; end
 

@@ -4,6 +4,7 @@ package utils
 
    import flash.errors.IllegalOperationError;
    import flash.utils.Dictionary;
+   import flash.utils.describeType;
    import flash.utils.getDefinitionByName;
    import flash.utils.getQualifiedClassName;
 
@@ -716,30 +717,6 @@ package utils
       private static function throwIllegalOperationError(defaultMessage:String,
                                                          customMessage:String) : void {
          throw new IllegalOperationError(customMessage != null ? customMessage : defaultMessage);
-      }
-      
-      
-      /* ##################### */
-      /* ### DESCRIBE TYPE ### */
-      /* ##################### */
-      
-      private static const DT_CACHE:Dictionary = new Dictionary(true);
-      
-      /**
-       * Does the same as global function <code>describeType()</code> just caches the results of this function
-       * and returns the same <code>XML</code> instance for the same argument. You should always use this
-       * function instead of <code>flash.utils.describeType()</code> because the latter each time creates
-       * new XML object and does not cache them (caching makes things a lot faster).
-       */
-      public static function describeType(type:Class) : XML {
-         var typeInfo: XML = null;
-         if (DT_CACHE[type] !== undefined)
-            typeInfo = DT_CACHE[type];
-         else {
-            typeInfo = flash.utils.describeType(type);
-            DT_CACHE[type] = typeInfo;
-         }
-         return typeInfo;
       }
       
       

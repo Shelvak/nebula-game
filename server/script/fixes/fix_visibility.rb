@@ -30,12 +30,12 @@ LOGGER.suppress(:debug) do
       puts "SS: #{ss.inspect}"
       planets = ss.planets
       planet_ids = planets.map(&:id)
-      in_planets = "(location_type=#{Location::SS_OBJECT
-        } AND location_id IN (#{planet_ids.join(",")}))"
-      units = Unit.find_by_sql("SELECT * FROM units WHERE (
-        #{planet_ids.blank? ? "0=1" : in_planets} OR (
-        location_type=#{Location::SOLAR_SYSTEM} AND location_id=#{ss.id})
-      )")
+      in_planets = "location_ss_object_id IN (#{planet_ids.join(",")})"
+      units = Unit.find_by_sql(%Q{
+        SELECT * FROM units WHERE
+        #{planet_ids.blank? ? "0=1" : in_planets} OR
+        location_solar_system_id=#{ss.id}
+      })
 
       units = units.reject do |u|
         u.ground? || u.player_id.nil?

@@ -6,6 +6,7 @@ package models.location
    import flash.errors.IllegalOperationError;
    
    import models.building.Building;
+   import models.map.MMapSolarSystem;
    import models.player.PlayerMinimal;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
@@ -353,7 +354,9 @@ package models.location
       private function navigateToSolarSystem(ssId:int) : void {
          NAV_CTRL.toSolarSystem(ssId,
             function() : void {
-               ML.latestSSMap.moveToLocation(ML.latestSSMap.getSSObjectById(id).currentLocation);
+               const ssMap: MMapSolarSystem = ML.latestSSMap;
+               const ssObject: MSSObject = ssMap.getSSObjectById(id);
+               ssMap.moveToLocation(ssObject.currentLocation);
             }
          );
       }

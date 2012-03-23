@@ -76,7 +76,7 @@ homeworld:
     resources: [2000.0, 4000.0, 0.0]
     units: []
     terrain: <%= Terrain::EARTH %>
-    name: "Terra-%d"
+    name: "Terra-%s"
     # 28x33 (area 924)
     map:
       - ".-_-.-. ----. . _ . ----. _ .-_-.-_-. . #-.-# # . # . . "
@@ -118,7 +118,7 @@ expansion:
     resources: [0.0, 0.0, 0.0]
     units: []
     terrain: <%= Terrain::MUD %>
-    name: "Nova-%d"
+    name: "Nova-%s"
     # 36x27 (area 972)
     map:
       - "------------. . . . . ----. . . .-.-. .-.-. . --------. . . . . . . . . "
@@ -276,7 +276,7 @@ pulsar:
     weight: 1
     resources: [0.0, 0.0, 0.0]
     terrain: <%= Terrain::EARTH %>
-    name: Gramen-%d
+    name: Gramen-%s
     # 10 turrets
     # 19x17 (area 323)
     map:
@@ -301,7 +301,7 @@ pulsar:
     weight: 2
     resources: [0.0, 0.0, 0.0]
     terrain: <%= Terrain::DESERT %>
-    name: Inculta-%d
+    name: Orken-%s
     # 8 turrets
     # 17x15 (area 255)
     map:
@@ -325,7 +325,7 @@ pulsar:
     weight: 3
     resources: [0.0, 0.0, 0.0]
     terrain: <%= Terrain::MUD %>
-    name: Limus-%d
+    name: Limus-%s
     # 6 turrets
     # 20x10 (area 200)
     map:
@@ -346,7 +346,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x25 (area 625)
     map:
       - ".-.-.-.-# . --------. .-.-. ------------. .-_-_-_-"
@@ -378,7 +378,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 27x22 (area 594)
     map:
       - ". # # # # ----. .-.-.-.-. . .-.-. . . . . . . . . . . "
@@ -407,7 +407,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::MUD %>
-    name: "P-%d"
+    name: "P-%s"
     # 24x26 (area 624)
     map:
       - "# # # ----. . . . . . . . .-.-. . ----# # # ----"
@@ -440,7 +440,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 26x24 (area 624)
     map:
       - "^-.-^-^-. ------_ ----. . . # . # # # ----. . .-.-. "
@@ -471,7 +471,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x30 (area 900)
     map:
       - ".-.-. . . . . . . . ----. . . . ----. . . . --------. .-.-^ "
@@ -508,7 +508,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::MUD %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x20 (area 600)
     map:
       - "----. . ----. # --------------------/ /-.-. . . ------------"
@@ -535,7 +535,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x25 (area 625)
     map:
       - "----. . . ------. .-.-^ . ------. .-^-^ ------. . "
@@ -567,7 +567,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 22x27 (area 594)
     map:
       - "--------. . . . . . . . ^ ^ ^ ^ ------------"
@@ -601,7 +601,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x27 (area 810)
     map:
       - "/-/-/ / ----. . . . . . / / . . . . _ _ _ . . . . . . # # . "
@@ -635,7 +635,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::MUD %>
-    name: "P-%d"
+    name: "P-%s"
     # 20x23 (area 460)
     map:
       - "----. . ----. ------. . . . /-.---------"
@@ -665,7 +665,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 26x20 (area 520)
     map:
       - "----. . ^-^-^ . ----^ ^-^-^ ----. . . .-.-.-.-. ----"
@@ -692,7 +692,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 37x24 (area 888)
     map:
       - ". . . . / . . / / /-/-_-_-_ . / . ----. . . . # . . . . # . . # #-#-#-#-#-"
@@ -723,7 +723,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::MUD %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x36 (area 900)
     map:
       - ". / . . . / . / / . . . .-.-.-^-. ----. . . . _ _ "
@@ -766,7 +766,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 26x28 (area 728)
     map:
       - "----. ----. . . . . . . . . . . . . . . ----. . ----"
@@ -801,7 +801,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::MUD %>
-    name: "P-%d"
+    name: "P-%s"
     # 27x32 (area 864)
     map:
       - ".-.-.-.-.-. . .-.-. . .-.-.-.-. . . . . . . .-.-.-.-.-"
@@ -840,7 +840,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 29x26 (area 754)
     map:
       - ".-.-.-. . / . / ----_ . _ ----. . / _ . / / / ----. .-.-.-"
@@ -873,7 +873,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 35x21 (area 735)
     map:
       - ". . . . # .-.-. .-.-. ------. . / . ----. ----. .-.-.-.-.-. . . ^ . . "
@@ -901,7 +901,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 29x26 (area 754)
     map:
       - ".-.-.-.-.-. .-.-. . . . . . ----. ----. . / /-.-.-.-. _-.-"
@@ -934,7 +934,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 28x30 (area 840)
     map:
       - ". ----. /-/-/ / /-/-/ /-/-/ . . ----. . .-.-. /-/-/ /-/-"
@@ -971,7 +971,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x30 (area 900)
     map:
       - ". . . . . . .-.-. . . . .-.-. .-.-. . ----. . ----. . . . . "
@@ -1008,7 +1008,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x30 (area 900)
     map:
       - ". . . . / ----. .-.-/ /-/-. .-/-/-/-/ ----^ /-/-/ ----. ----"
@@ -1045,7 +1045,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x30 (area 900)
     map:
       - ". ------------. . . .-.-.-.-. . . . . . . . ----. . . . . . "
@@ -1082,7 +1082,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x30 (area 900)
     map:
       - "/ / / . .-.-. .-.-. . ----. . .-_-_-_-_ _ _ _ _ _ _ _-_-.-.-"
@@ -1119,7 +1119,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 29x30 (area 870)
     map:
       - "------------/-/-/ /-/-/-/-/ /-/-/-/-/ /-.-/-.-^ ^ ^-^-^-^-"
@@ -1156,7 +1156,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::MUD %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x25 (area 625)
     map:
       - ".-/-/-/-/-/ /-/-. . /-/-.-.-/ . . . . . . . . .-.-"
@@ -1188,7 +1188,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x25 (area 625)
     map:
       - ". / / . / /-/-/-.-. /-/-. .-.-.-.-. ----. . . .-.-"
@@ -1220,7 +1220,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x30 (area 750)
     map:
       - ". . . . . . .-.-. . . . . . . . . . # .-.-. . . . "
@@ -1257,7 +1257,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 20x30 (area 600)
     map:
       - ". . . . . . ------. ----. . . . . / .-.-"
@@ -1294,7 +1294,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x27 (area 675)
     map:
       - ". . . ----. .-.-.-.-. . . . . . .-/-/-.-. . ^-.-.-"
@@ -1328,7 +1328,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 36x25 (area 900)
     map:
       - "------------. . . ^ ^ ^ . . . . .-^-^-^-^-. . . ----. . # # #-#-#-/-/-/ "
@@ -1360,7 +1360,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x30 (area 900)
     map:
       - "/-/-.-.-/ .-.-.-.-. . ^-^-.-^-. . . ----. .-.-.-.-. .-/-.-.-"
@@ -1397,7 +1397,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 24x26 (area 624)
     map:
       - ". ----. .-.-.-------.-.-. ----_ _ ----. . .-.-. "
@@ -1430,7 +1430,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x30 (area 900)
     map:
       - ".-.-. . . . . .-.-. . . . . . ^ ^ .-.-. . .-.-. . . . . . . "
@@ -1467,7 +1467,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x30 (area 900)
     map:
       - ".-.-. . .-/-/ / /-/-/ .-.-. .-.-.-.-. . . .-.-.-.-. . . . . "
@@ -1504,7 +1504,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x30 (area 900)
     map:
       - ".-.-. / / /-.-/ . / . /-/-.-.-. /-/-.-.-/ /-.-.-/-. .-.-.-.-"
@@ -1541,7 +1541,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x22 (area 550)
     map:
       - "_ _-_-.-.-. . . . . .-.-. . ----. .-.-. . # # # # "
@@ -1570,7 +1570,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 39x23 (area 897)
     map:
       - ". _ _ . / / / / / / . . . . ------------. . . . ^ ^ ^ . . . . . . _ _ _ . . . "
@@ -1599,7 +1599,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::MUD %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x30 (area 900)
     map:
       - ".-.-.-.-. . ----# #-#-#-#-#-# #-#-. .-.-. .-.-.-.-. .-.-.-.-"
@@ -1636,7 +1636,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x28 (area 700)
     map:
       - "----. ----. . .-.-.-.-. . . . . . --------. . . # "
@@ -1671,7 +1671,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 28x29 (area 812)
     map:
       - "----. . . . . . . . . . .-.-.-.-. _-_-.-.-^-^ ^ . . . . "
@@ -1707,7 +1707,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 20x40 (area 800)
     map:
       - "----_ _-.-. .-.-. .-.-^ ^-.-^ ^-^-. ----"
@@ -1754,7 +1754,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 30x27 (area 810)
     map:
       - "----. . --------. .-.-_ /-/-/ / / /-/-. ----. . . . . . # . "
@@ -1788,7 +1788,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 21x21 (area 441)
     map:
       - "----. . ----. . ----. . --------. . # # # "
@@ -1816,7 +1816,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 50x18 (area 900)
     map:
       - "^ # # # ^ ^ _ ------------. ----. ----. . . . ----. . . _-_-_ _ _ . . . ----. . . .-.-.-.-. --------"
@@ -1841,7 +1841,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::MUD %>
-    name: "P-%d"
+    name: "P-%s"
     # 36x26 (area 936)
     map:
       - "^ ^ . . . . /-/-.-/ . . --^-^ . . . / . . . ----. / . .-.-.-/ . . . ----"
@@ -1874,7 +1874,7 @@ free:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 34x27 (area 918)
     map:
       - ". # # . # # # . .-#-.-.-. . .-.-.-.-/ / / /-.-/ /-.-.-.-. ----_ ----"
@@ -1910,7 +1910,7 @@ free_special:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 19x24 (area 456)
     map:
       - "----/ / / . ----. ----. --------. ----"
@@ -1941,7 +1941,7 @@ free_special:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 21x26 (area 546)
     map:
       - "#-#-# .-#-# .-.-_ _-_-. .-_-_ . _ _-_-_-_-"
@@ -1974,7 +1974,7 @@ free_special:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::MUD %>
-    name: "P-%d"
+    name: "P-%s"
     # 15x15 (area 225)
     map:
       - "^ . . ^ ----. ----. ----^ . ^ "
@@ -1996,7 +1996,7 @@ free_special:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::DESERT %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x10 (area 250)
     map:
       - "----# # # # # # . ----. ----. .-^-^-^-^-^ ^ ^ ^ ^ "
@@ -2013,7 +2013,7 @@ free_special:
     resources: [0.0, 0.0, 0.0]
     units: <%= units(free_units) %>
     terrain: <%= Terrain::EARTH %>
-    name: "P-%d"
+    name: "P-%s"
     # 25x40 (area 1000)
     map:
       - "--------^ ^-^-^ ^ ^ ^ ^-^-^ ^-^-^-^-^-^ ^-^-^-^-.-"

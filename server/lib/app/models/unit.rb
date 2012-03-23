@@ -234,13 +234,16 @@ class Unit < ActiveRecord::Base
     # Sometimes unit can be built without player, e.g. when planet was
     # conquered by NPC during building time. Then we should not increase
     # visibility.
-    if level == 1 && space? && ! player.nil?
-      location_id = location.type == Location::SS_OBJECT \
-        ? location.object.solar_system_id : location.id
-      FowSsEntry.increase(location_id, player, 1)
-    end
+    if level == 1
+      if space? && ! player.nil?
+        location_id = location.type == Location::SS_OBJECT \
+          ? location.object.solar_system_id : location.id
+        FowSsEntry.increase(location_id, player, 1)
+      end
 
-    Combat::LocationChecker.check_location(location) if can_fight?
+      # If the unit was just built check its location for combat.
+      Combat::LocationChecker.check_location(location) if can_fight?
+    end
   end
 
   before_save :upgrade_through_xp

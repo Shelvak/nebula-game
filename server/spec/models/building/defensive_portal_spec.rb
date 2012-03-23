@@ -3,6 +3,10 @@ require File.expand_path(
 )
 
 describe Building::DefensivePortal do
+  it "should give army points" do
+    Building::DefensivePortal.should include(Parts::ArmyPoints)
+  end
+
   describe ".get_ids_from_planet" do
     it "should raise error if planet is uninhabited" do
       planet = Factory.create(:planet)

@@ -59,7 +59,7 @@ package components.chat
             else {
                removeSelfEventHandler();
             }
-            dataProvider = _model;
+            dataProvider = _model != null ? _model.dataProvider : null;
          }
          f_modelChanged = false;
       }
@@ -88,19 +88,27 @@ package components.chat
       /* ########################### */
 
       private function addSelfEventHandlers(): void {
-         addEventListener(FocusEvent.FOCUS_OUT, this_focusOutHandler, false, 0,
-                          true);
-         addEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler,
-                          false, 0, true);
-         addEventListener(KeyboardEvent.KEY_UP, this_keyUpHandler, false, 0,
-                          true);
+         addEventListener(
+            FocusEvent.FOCUS_OUT, this_focusOutHandler, false, 0, true
+         );
+         addEventListener(
+            MouseEvent.DOUBLE_CLICK, this_doubleClickHandler, false, 0, true
+         );
+         addEventListener(
+            KeyboardEvent.KEY_UP, this_keyUpHandler, false, 0, true
+         );
       }
 
       private function removeSelfEventHandler(): void {
-         removeEventListener(FocusEvent.FOCUS_OUT, this_focusOutHandler, false);
-         removeEventListener(MouseEvent.DOUBLE_CLICK, this_doubleClickHandler,
-                             false);
-         removeEventListener(KeyboardEvent.KEY_UP, this_keyUpHandler, false);
+         removeEventListener(
+            FocusEvent.FOCUS_OUT, this_focusOutHandler, false
+         );
+         removeEventListener(
+            MouseEvent.DOUBLE_CLICK, this_doubleClickHandler, false
+         );
+         removeEventListener(
+            KeyboardEvent.KEY_UP, this_keyUpHandler, false
+         );
       }
 
       private function this_focusOutHandler(event: FocusEvent): void {

@@ -26,6 +26,7 @@ package components.chat
    import spark.components.TextArea;
    import spark.components.TextInput;
    import spark.components.supportClasses.SkinnableComponent;
+   import spark.events.TextOperationEvent;
 
    import utils.DateUtil;
    import utils.locale.Localizer;
@@ -77,12 +78,10 @@ package components.chat
                _model.removeEventListener(
                   MChatChannelEvent.GOT_SOME_MESSAGE, urlBugWorkaround
                );
-               if (inpMessage != null && _model.silenced.hasOccured)
-               {
+               if (inpMessage != null && _model.silenced.hasOccured) {
                   _model.userInput = inpMessage.text;
                }
-               else
-               {
+               else {
                   _model.userInput = "";
                }
             }
@@ -115,6 +114,10 @@ package components.chat
          super.commitProperties();
          if (f_modelChanged) {
             if (_modelOld != null) {
+               _modelOld.members.removeEventListener(
+                  MChatChannelEvent.MEMBERS_FILTER_CHANGE,
+                  members_membersFilterChangeHandler, false
+               );
                _modelOld.removeEventListener(
                   MChatChannelEvent.NUM_MEMBERS_CHANGE,
                   model_numMembersChangeHandler, false
@@ -145,6 +148,10 @@ package components.chat
                _modelOld = null;
             }
             if (_model != null) {
+               _model.members.addEventListener(
+                  MChatChannelEvent.MEMBERS_FILTER_CHANGE,
+                  members_membersFilterChangeHandler, false, 0, true
+               );
                _model.addEventListener(
                   MChatChannelEvent.NUM_MEMBERS_CHANGE,
                   model_numMembersChangeHandler, false, 0, true
@@ -186,6 +193,7 @@ package components.chat
             updateGrpFriendOfflineWarningContainer();
             updatePnlMembers();
             updateUserInput();
+            updateInpMembersFilterText();
             enableAutoScroll();
             _forceAutoScrollAfterModelChange = true;
          }
@@ -203,18 +211,30 @@ package components.chat
       /* ############ */
       /* ### SKIN ### */
       /* ############ */
-      
+
       [SkinPart(required="true")]
       /**
        * All messages are put here.
        */
-      public var txtContent:TextArea;
-      
+      public var txtContent: TextArea;
+
       [SkinPart(required="true")]
       /**
        * List of all members in the channel.
        */
-      public var lstMembers:CChatChannelMembers;
+      public var lstMembers: CChatChannelMembers;
+
+      [SkinPart(required="true")]
+      /**
+       * Input field for entering chat member name for filtering.
+       */
+      public var inpMembersFilter: TextInput;
+
+      private function updateInpMembersFilterText(): void {
+         if (inpMembersFilter != null && model != null) {
+            inpMembersFilter.text = model.members.nameFilter;
+         }
+      }
       
       [SkinPart(required="true")]
       /**
@@ -262,6 +282,18 @@ package components.chat
          super.partAdded(partName, instance);
          switch (instance)
          {
+            case inpMembersFilter:
+               inpMembersFilter.addEventListener(
+                  KeyboardEvent.KEY_UP,
+                  inpMembersFilter_keyUpHandler, false, 0, true
+               );
+               inpMembersFilter.addEventListener(
+                  TextOperationEvent.CHANGE,
+                  inpMembersFilter_changeHandler, false, 0, true
+               );
+               updateInpMembersFilterText();
+               break;
+
             case txtContent:
                _lineHeight = txtContent.getStyle("fontSize") + 10;
                txtContent.setStyle("lineHeight", _lineHeight);
@@ -307,6 +339,15 @@ package components.chat
          super.partRemoved(partName, instance);
          switch (instance)
          {
+            case inpMembersFilter:
+               inpMembersFilter.removeEventListener(
+                  KeyboardEvent.KEY_UP, inpMembersFilter_keyUpHandler, false
+               );
+               inpMembersFilter.removeEventListener(
+                  TextOperationEvent.CHANGE, inpMembersFilter_changeHandler, false
+               );
+               break;
+
             case inpMessage:
                inpMessage.removeEventListener(
                   KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false
@@ -397,6 +438,10 @@ package components.chat
       /* ### MODEL EVENT HANDLERS ### */
       /* ############################ */
 
+      private function members_membersFilterChangeHandler(event: MChatChannelEvent): void {
+         updateInpMembersFilterText();
+      }
+
       private function model_isFriendOnlineChangeHandler(event: MChatChannelEvent): void {
          updateGrpFriendOfflineWarningContainer();
       }
@@ -450,6 +495,16 @@ package components.chat
       /* ################################# */
       /* ### SKIN PARTS EVENT HANDLERS ### */
       /* ################################# */
+
+      private function inpMembersFilter_changeHandler(event: TextOperationEvent): void {
+         model.members.nameFilter = inpMembersFilter.text;
+      }
+
+      private function inpMembersFilter_keyUpHandler(event:KeyboardEvent): void {
+         if (event.keyCode == Keyboard.ESCAPE) {
+            model.members.nameFilter = null;
+         }
+      }
 
       private function inpMessage_keyUpHandler(event: KeyboardEvent): void {
          if (event.keyCode == Keyboard.ENTER) {

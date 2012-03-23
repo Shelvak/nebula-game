@@ -13,7 +13,7 @@ describe Building::ConstructorTest do
       @constructor = Factory.create(:b_constructor_test)
       set_resources(@constructor.planet, 10000, 10000, 10000)
       @type = "Unit::Trooper"
-      @params = {'galaxy_id' => @constructor.planet.solar_system.galaxy_id}
+      @params = {}
       @data = @constructor.construct!(@type, false, @params, 3)
     end
 
@@ -194,10 +194,7 @@ describe Building::ConstructorTest do
     describe "if both constructing and queued" do
       before(:each) do
         @count = 5
-        @response = @constructor.construct!(
-          "Unit::TestUnit", false,
-          {:galaxy_id => @constructor.planet.solar_system.galaxy_id}, @count
-        )
+        @response = @constructor.construct!("Unit::TestUnit", false, {}, @count)
       end
 
       it "should have :model" do
@@ -235,18 +232,15 @@ describe Building::ConstructorTest do
 
     describe "if Unit is constructed" do
       let(:unit) do
-        @constructor.construct!(
-          "Unit::TestUnit", false,
-          {:galaxy_id => @constructor.planet.solar_system.galaxy_id}
-        )
+        @constructor.construct!("Unit::TestUnit", false)
       end
 
       it "should force location_id if Unit is constructed" do
-        unit.location_id.should == @constructor.planet_id
+        unit.location.id.should == @constructor.planet_id
       end
 
       it "should force location_type if Unit is constructed" do
-        unit.location_type.should == Location::SS_OBJECT
+        unit.location.type.should == Location::SS_OBJECT
       end
 
       it "should force player_id if Unit is constructed" do
@@ -646,12 +640,13 @@ describe Building::ConstructorTest do
     end
 
     it "should set level to 0" do
-      @model.send(:construct_model!, "Unit::TestUnit", false,
+      @model.send(
+        :construct_model!,
+        "Unit::TestUnit", false,
         :player_id => @player.id,
-        :location_id => @model.planet_id,
-        :location_type => Location::SS_OBJECT,
-        :galaxy_id => @model.planet.solar_system.galaxy_id,
-        :level => 3).level.should == 0
+        :location_ss_object_id => @model.planet,
+        :level => 3
+      ).level.should == 0
     end
 
     describe "construction mod" do
@@ -660,11 +655,11 @@ describe Building::ConstructorTest do
       end
 
       it "should add construction mod for units" do
-        unit = @model.send(:construct_model!, "Unit::TestUnit", false,
+        unit = @model.send(
+          :construct_model!,
+          "Unit::TestUnit", false,
           :player_id => @player.id,
-          :location_id => @model.planet_id,
-          :location_type => Location::SS_OBJECT,
-          :galaxy_id => @model.planet.solar_system.galaxy_id
+          :location_ss_object_id => @model.planet_id
         )
         unit.construction_mod.should == @model.constructor_mod
       end

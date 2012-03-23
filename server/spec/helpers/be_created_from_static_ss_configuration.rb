@@ -35,7 +35,7 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
 
       @errors << "#{exp_to} have its name conforming to #{planet_data['name']
         } but its name was #{planet.name.inspect}" \
-        unless planet.name.gsub(/\d+/, "%d") == planet_data['name']
+        unless planet.name.sub(/-[a-z0-9]+$/, "-%s") == planet_data['name']
 
       @errors << "#{exp_to} have terrain type #{planet_data['terrain']
         }, but it was #{planet.terrain}" \

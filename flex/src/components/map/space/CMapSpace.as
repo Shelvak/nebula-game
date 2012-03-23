@@ -3,6 +3,7 @@ package components.map.space
    import components.base.viewport.ViewportZoomable;
    import components.base.viewport.events.ViewportEvent;
    import components.map.CMap;
+   import components.movement.CRoute;
    import components.movement.speedup.CSpeedControlPopup;
    import components.movement.speedup.CSpeedControlPopupM;
    import components.movement.CSquadronMapIcon;
@@ -120,6 +121,10 @@ package components.map.space
             passivateSpeedControlPopup();
             speedControlPopup = null;
          }
+         if (routeComp != null) {
+            routeComp.cleanup();
+            routeComp = null;
+         }
          removeOrdersControllerEventHandlers();
          super.cleanup();
       }
@@ -151,10 +156,8 @@ package components.map.space
       private var _backgroundObjectsCont:Group;
 
       private var _staticObjectsCont:Group;
-      /**
-       * Routes (layer above static objects)
-       */
-      internal var routeObjectsCont:Group;
+
+      internal var routeComp:CRoute;
 
       /**
        * Squadrons that move (layer above route objects).
@@ -185,8 +188,8 @@ package components.map.space
          _staticObjectsCont = createContainer();
          createStaticObjects(_staticObjectsCont);
 
-         routeObjectsCont = createContainer();
-         routeObjectsCont.mouseEnabled = true;
+         routeComp = new CRoute(grid);
+         addElement(routeComp);
 
          squadronObjectsCont = createContainer();
          squadronsController = new SquadronsController(this);
@@ -290,8 +293,8 @@ package components.map.space
          _backgroundObjectsCont.height = uh;
          _staticObjectsCont.width = uw;
          _staticObjectsCont.height = uh;
-         routeObjectsCont.width = uw;
-         routeObjectsCont.height = uh;
+         routeComp.width = uw;
+         routeComp.height = uh;
          squadronObjectsCont.width = uw;
          squadronObjectsCont.height = uh;
          if (f_objectsPositionInvalid) {

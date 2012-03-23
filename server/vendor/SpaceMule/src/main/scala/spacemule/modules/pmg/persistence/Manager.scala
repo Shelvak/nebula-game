@@ -75,8 +75,9 @@ object Manager {
   /**
    * Fow ss entry rows that were created during this save.
    */
-  private var fsesForExisting =
-    HashMap.empty[SolarSystemRow, ListBuffer[FowSsEntryRow]]
+  private val fsesForExisting = HashMap.empty[
+    SolarSystemRow, Iterable[FowSsEntryRow]
+  ]
 
   /**
    * Quest ids that need to be started when creating player.
@@ -166,10 +167,7 @@ WHERE #ss.`galaxy_id`=#galaxy.id
 
   def save(galaxy: Galaxy): SaveResult = {
     save { () => readGalaxy(galaxy) }
-    SaveResult(
-      playerRows.toSet,
-      fsesForExisting
-    )
+    SaveResult(playerRows.toSet, fsesForExisting)
   }
 
   def initDates() {
@@ -249,17 +247,18 @@ WHERE #ss.`galaxy_id`=#galaxy.id
     }
   }
 
+  @EnhanceStrings
   private def addSsVisibilityForExistingPlayers(ssRow: SolarSystemRow,
                                                 empty: Boolean,
                                                 galaxy: Galaxy,
                                                 coords: Coords) {
     val rs = DB.query(
       """SELECT counter, player_id, alliance_id
-        FROM fow_galaxy_entries WHERE galaxy_id=%d AND
-        %d BETWEEN x AND x_end AND %d BETWEEN y AND y_end""".format(
-        galaxy.id, coords.x, coords.y
-      )
+        FROM #FowGalaxyEntriesTable WHERE galaxy_id=#galaxy.id AND
+        #coords.x BETWEEN x AND x_end AND #coords.y BETWEEN y AND y_end"""
     )
+
+    val hash = HashMap.empty[FowSsEntryRow.Owner, FowSsEntryRow]
 
     while (rs.next) {
       val (counter, playerId, allianceId) = (
@@ -268,17 +267,31 @@ WHERE #ss.`galaxy_id`=#galaxy.id
       // If this is alliance row, player id will be 0
       // If this is player row, player id will be greater than 0
       val fowSseRow = if (playerId != 0) {
-        FowSsEntryRow(ssRow, Some(playerId), None, counter, empty, true)
+        FowSsEntryRow(
+          ssRow, FowSsEntryRow.Owner.Player(playerId), counter, empty, true
+        )
       }
       else {
-        FowSsEntryRow(ssRow, None, Some(allianceId), counter, empty, true)
+        FowSsEntryRow(
+          ssRow, FowSsEntryRow.Owner.Alliance(allianceId), counter, empty, true
+        )
       }
-      fowSsEntries += fowSseRow
+      val hashKey = fowSseRow.owner
 
-      if (! fsesForExisting.contains(ssRow))
-        fsesForExisting(ssRow) = ListBuffer.empty[FowSsEntryRow]
-      fsesForExisting(ssRow) += fowSseRow
+      // There might be more than one radar overlooking same area. If so -
+      // increase counter instead of creating yet another row.
+      hash(hashKey) = (hash.get(hashKey) match {
+        case Some(existing) => existing.copy(
+          counter = existing.counter + fowSseRow.counter
+        )
+        case None => fowSseRow
+      })
     }
+
+    // Finally add created rows.
+    val values = hash.values
+    values.foreach { fowSseRow => fowSsEntries += fowSseRow }
+    fsesForExisting(ssRow) = values
   }
 
   private var playerRowsCache = Map.empty[Player, PlayerRow]
@@ -343,7 +356,7 @@ WHERE #ss.`galaxy_id`=#galaxy.id
         // Add visibility, player and start quests for that player
         // if this is a homeworld.
         fowSsEntries += FowSsEntryRow(
-          ssRow, Some(playerRow.get.id), None, 1, false
+          ssRow, FowSsEntryRow.Owner.Player(playerRow.get.id), 1, false
         )
         startQuests(playerRow.get)
 
