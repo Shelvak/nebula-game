@@ -24,7 +24,10 @@ LOGGER.suppress(:debug) do
     puts "Deleting FowSsEntries"
     FowSsEntry.delete_all
 
-    SolarSystem.all.each do |ss|
+    total = SolarSystem.count
+    index = 0
+    SolarSystem.find_each do |ss|
+      index += 1
       next if ss.main_battleground? || ss.wormhole?
 
       puts "SS: #{ss.inspect}"
@@ -85,7 +88,7 @@ LOGGER.suppress(:debug) do
         fse.save!
         puts "  FSE A: #{fse.inspect}"
       end
-      puts "Recalculating FSE for #{ss.id}"
+      puts "Recalculating FSE for #{ss.id} (#{index}/#{total})"
       FowSsEntry.recalculate(ss.id)
     end
 
