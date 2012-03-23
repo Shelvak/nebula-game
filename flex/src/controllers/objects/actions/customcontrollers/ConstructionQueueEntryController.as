@@ -21,10 +21,14 @@ package controllers.objects.actions.customcontrollers
       }
       
       public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
-         var query:ConstructionQueueEntry = ConstructionQueryEntryFactory.fromObject(object);
-         var constructor:Building = ML.latestPlanet.getBuildingById(query.constructorId);
-         constructor.constructionQueueEntries.addItemAt(query, query.position); 
-         constructor.dispatchQueryChangeEvent();
+         var constructor:Building = ML.latestPlanet.getBuildingById(object.constructorId);
+         var query:ConstructionQueueEntry = constructor.constructionQueueEntries.find(object.id);
+         if (query == null)
+         {
+            query = ConstructionQueryEntryFactory.fromObject(object);
+            constructor.constructionQueueEntries.addItemAt(query, query.position);
+            constructor.dispatchQueryChangeEvent();
+         }
          if (ModelUtil.getModelClass(query.constructableType) == ObjectClass.BUILDING)
             ML.latestPlanet.buildGhost(
                Objects.toSimpleClassName(query.constructableType),
