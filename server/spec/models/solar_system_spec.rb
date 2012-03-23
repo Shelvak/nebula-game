@@ -384,10 +384,21 @@ describe SolarSystem do
 
     def create_fges(merged={})
       fge_player = Factory.create(
-        :fge_player, coords.merge(merged)
+        :fge_player, coords.merge(merged).merge(:counter => 1)
       )
       fge_alliance = Factory.create(
-        :fge_alliance, coords.merge(merged)
+        :fge_alliance, coords.merge(merged).merge(:counter => 1)
+      )
+      # Second one to check counter summing values.
+      coords2 = coords.dup
+      coords2[:x] -= 1
+      Factory.create(
+        :fge_player, coords2.merge(merged).
+          merge(:player => fge_player.player, :counter => 2)
+      )
+      Factory.create(
+        :fge_alliance, coords2.merge(merged).
+          merge(:alliance => fge_alliance.alliance, :counter => 2)
       )
       [fge_player, fge_alliance]
     end
@@ -439,7 +450,7 @@ describe SolarSystem do
       fow_galaxy_entries.each do |fge|
         FowSsEntry.where(
           :solar_system_id => solar_system.id, :player_id => fge.player_id,
-          :alliance_id => fge.alliance_id, :counter => fge.counter
+          :alliance_id => fge.alliance_id, :counter => 3
         ).exists?.should be_true
       end
     end
@@ -464,11 +475,10 @@ describe SolarSystem do
     end
 
     it "should dispatch created with FSEs" do
-      # TODO: fails, needs fixing
       entries = create_fges(:galaxy => galaxy).map do |fge|
         FowSsEntry.new(
           :solar_system_id => solar_system.id,
-          :counter => fge.counter,
+          :counter => 3,
           :player_id => fge.player_id,
           :alliance_id => fge.alliance_id,
           :enemy_planets => fse.player_planets,
