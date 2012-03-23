@@ -235,14 +235,22 @@ package models.parts
             resourcesNeeded.energy <= ssObject.energy.currentStock &&
             resourcesNeeded.zetium <= ssObject.zetium.currentStock;
       }
-      
+
+      private var costCache: Object = {};
+
+      /* using private function instead of anonymous for performance reasons */
+      private function calcCost(resourceType:String) : Number
+      {
+         if (costCache[level + '|' + resourceType] == null)
+         {
+            costCache[level + '|' + resourceType] = calculateCost(upgradableType,
+                        _parent.type, resourceType, {"level": level + 1});
+         }
+         return costCache[level + '|' + resourceType];
+      }
       
       public function resourcesNeededForNextLevel() : ResourcesAmount
       {
-         function calcCost(resourceType:String) : Number
-         {
-            return calculateCost(upgradableType, _parent.type, resourceType, {"level": level + 1});
-         }
          return new ResourcesAmount(
             calcCost(ResourceType.METAL),
             calcCost(ResourceType.ENERGY),

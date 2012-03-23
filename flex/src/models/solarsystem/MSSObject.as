@@ -743,7 +743,8 @@ package models.solarsystem
       
       private function recalculateResources(event:GlobalEvent) : void {
          var timeDiff:Number = Math.floor((DateUtil.now - lastResourcesUpdate.time) / 1000);
-         var resourceChanged: Boolean = false;
+         var resourceIncreased: Boolean = false;
+         var resourceDecreased: Boolean = false;
          for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM]) {
             var resource:Resource = this[type];
             resource.boost.refreshBoosts();
@@ -752,15 +753,20 @@ package models.solarsystem
                resource.maxStock,
                this[type + "AfterLastUpdate"] + resource.rate * timeDiff
             ));
-            if (oldStock != resource.currentStock)
+            if (oldStock > resource.currentStock)
             {
-               resourceChanged = true;
+               resourceDecreased = true;
+            }
+            else if (oldStock < resource.currentStock)
+            {
+               resourceIncreased = true;
             }
          }
          /* CHECKING FOR SS OBJECT BY ID, NOT REFERENCE, READ MSsObject DOCUMENTATION FOR REASONS */
-         if (resourceChanged && ML.latestPlanet && ML.latestPlanet.ssObject
+         if ((resourceDecreased || resourceIncreased) && ML.latestPlanet && ML.latestPlanet.ssObject
             && this.id == ML.latestPlanet.ssObject.id)
-            new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
+            new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE,
+               resourceIncreased, resourceDecreased);
          if (nextRaidAt != null)
             raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - DateUtil.now)/1000,2);
          else

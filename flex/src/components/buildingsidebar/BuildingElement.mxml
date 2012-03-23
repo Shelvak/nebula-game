@@ -54,6 +54,8 @@
          {
             return _data;
          }
+
+         private var costCache: Object = {};
          
          public override function set data(value:Object) : void
          {
@@ -83,30 +85,59 @@
             var temp: Building = BuildingFactory.createDefault(_data.type);
             NavigationController.getInstance().showInfo(temp);
          }
+
+         /* using private function instead of anonymous for performance reasons */
+         private function calcCost(resourceType:String) : Number
+         {
+            if (costCache[_data.type + '|' + resourceType] == null)
+            {
+               costCache[_data.type + '|' + resourceType] =
+                       Upgradable.calculateCost(UpgradableType.BUILDINGS, _data.type,
+                              resourceType, {"level": 1})
+            }
+            return costCache[_data.type + '|' + resourceType];
+         }
+
+
+         private function resourcesInsufficient(): Boolean
+         {
+            var planet:MSSObject = ML.latestPlanet.ssObject;
+            return calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
+                  calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
+                  calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
+         }
          
          private function refreshState(e: Event = null): void
          {
             if (_data && ML.latestPlanet && ML.latestPlanet.ssObject)
             {
-               var planet:MSSObject = ML.latestPlanet.ssObject;
-               function calcCost(resourceType:String) : Number
-               {
-                  return Upgradable.calculateCost(UpgradableType.BUILDINGS, _data.type,
-                     resourceType, {"level": 1});
+               var increased: Boolean = false;
+               var decreased: Boolean = false;
+               var same: Boolean = true;
+               var rChanged: Boolean = (e != null &&
+                 e.type == GResourcesEvent.RESOURCES_CHANGE);
+               if (rChanged) {
+                 increased = GResourcesEvent(e).someIncreased;
+                 decreased = GResourcesEvent(e).someDecreased;
+                 if (!increased && !decreased) {
+                   return;
+                 }
                }
                if (_data.constructing && ML.player.vipLevel > 0)
                {
                   _data.disabled = false;
-                  _data.query = calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
-                        calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
-                        calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
+                  if ((_data.query && increased) || (!_data.query && decreased))
+                  {
+                     _data.query = resourcesInsufficient();
+                  }
                }
                else
                {
                   _data.query = false;
-                  _data.disabled = calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
-                     calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
-                     calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
+                  if ((_data.disabled && increased) || (!_data.disabled && decreased))
+                  {
+                     _data.disabled = resourcesInsufficient();
+                  }
                }
             }
          }
