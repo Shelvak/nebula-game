@@ -205,11 +205,16 @@ package controllers.units
                squad.units, squad.currentHop.location
             );
             destroySquadron(squad.id);
+            squad = null;
          }
          SquadronFactory.attachJumpsAt(route, jumpsAtString);
          route.currentLocation = Objects.create(Location, routeData["current"]);
          route.cachedUnits.removeAll();
          route.cachedUnits.addAll(UnitFactory.createCachedUnits(routeData["cachedUnits"]));
+         if (squad != null
+                && squad.currentHop.location.equals(route.currentLocation)) {
+            squad.pending = false;
+         }
       }
       
       
