@@ -32,7 +32,13 @@ class Combat::LocationChecker
       planet_ids = SsObject::Planet.where(:player_id => player.id).
         select("id").c_select_values
       
-      unit_locations = Unit.where(:player_id => player.id).
+      unit_locations = Unit.
+        where(:player_id => player.id).
+        where(%Q{
+          location_galaxy_id IS NOT NULL OR
+          location_solar_system_id IS NOT NULL OR
+          location_ss_object_id IS NOT NULL
+        }).
         select(Unit::LOCATION_COLUMNS).group(Unit::LOCATION_COLUMNS).
         c_select_all
 

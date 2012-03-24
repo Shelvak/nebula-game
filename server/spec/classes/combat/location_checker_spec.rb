@@ -272,6 +272,15 @@ describe Combat::LocationChecker do
       klass.should_receive(:check_location).with(unit.location)
       klass.check_player_locations(@player)
     end
+
+    it "should not check inside transporters" do
+      transporter = Factory.create(:u_mule, :player => @player)
+      trooper = Factory.create(
+        :u_trooper, :player => @player, :location => transporter
+      )
+      klass.should_not_receive(:check_location).with(trooper.location)
+      klass.check_player_locations(@player)
+    end
     
     it "should not check same location twice" do
       planet = Factory.create(:planet, :player => @player)
