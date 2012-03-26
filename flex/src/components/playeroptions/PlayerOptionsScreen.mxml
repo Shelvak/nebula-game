@@ -70,6 +70,11 @@
             popUp.show();
          }
       }
+
+      private function enablePlanetAnimations_clickHandler(event: MouseEvent): void {
+         PlayerOptions.enablePlanetAnimations = !PlayerOptions.enablePlanetAnimations;
+         PlayerOptions.changed();
+      }
       ]]>
    </fx:Script>
    <fx:Declarations>
@@ -88,6 +93,10 @@
                      selected="{PlayerOptions.warnBeforeUnload}"
                      click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
                      PlayerOptions.changed()"/>
+         <s:CheckBox id="enablePlanetAnimations"
+                     label="{getString('label.enablePlanetAnimations')}"
+                     selected="{PlayerOptions.enablePlanetAnimations}"
+                     click="enablePlanetAnimations_clickHandler(event)"/>
          <s:layout>
             <s:VerticalLayout horizontalAlign="justify"
                             paddingTop="10"

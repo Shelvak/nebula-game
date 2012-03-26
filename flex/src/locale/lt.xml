@@ -5669,6 +5669,7 @@
      <label.ignoreComplete value="Pilnai ignoruoti"/>
      <label.ignoreFiltered value="Uždengti žinutes"/>
      <label.ignoreType value="Ignoravimo būdas:"/>
+     <label.enablePlanetAnimations value="Animacijos planetoje"/>
   </PlayerOptions>
 
 </locale>
