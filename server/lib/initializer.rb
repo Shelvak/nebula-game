@@ -49,7 +49,6 @@ lambda do
 
   # Scala <-> Ruby interoperability.
   class Object
-    # TODO: upon upgrade to 1.6.6 replace $plus and $plus$eq to + and +=
     def to_scala
       case self
       when Hash
@@ -60,11 +59,11 @@ lambda do
         scala_hash
       when Set
         scala_set = Java::scala.collection.immutable.HashSet.new
-        each { |item| scala_set = scala_set.send(:"$plus", item.to_scala) }
+        each { |item| scala_set = scala_set + item.to_scala }
         scala_set
       when Array
         scala_array = Java::scala.collection.mutable.ArrayBuffer.new
-        each { |value| scala_array.send(:"$plus$eq", value.to_scala) }
+        each { |value| scala_array += value.to_scala }
         scala_array.to_indexed_seq
       when Symbol
         to_s
@@ -109,14 +108,8 @@ lambda do
     None = Java::spacemule.helpers.JRuby.None
 
     def add_exception_info(exception, message)
-      if exception.is_a?(NativeException)
-        # Workaround for http://jira.codehaus.org/browse/JRUBY-6103
-        STDERR.puts message
-        raise exception
-      else
-        raise exception.class, message + "\n\n" + exception.message,
-          exception.backtrace
-      end
+      raise exception.class, message + "\n\n" + exception.message,
+        exception.backtrace
     end
   end
 end.call
