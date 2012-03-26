@@ -114,13 +114,13 @@
       }
 
       [Bindable]
-      private var metalCost: Number;
+      private var metalCost: int;
 
       [Bindable]
-      private var energyCost: Number;
+      private var energyCost: int;
 
       [Bindable]
-      private var zetiumCost: Number;
+      private var zetiumCost: int;
 
       [Bindable]
       private var timeCost: String;
@@ -524,10 +524,10 @@
                                          visible="{_selectedModel.minScientists == ML.player.scientists}"/>
                      <s:Group>
                         <s:Group width="40%">
-                           <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost.toFixed(2)}"
+                           <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalCost.toString()}"
                                                toolTip="{Localizer.string('Resources', ResourceType.METAL)}"
                                                labelStyleName="{metalCost > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"/>
-                           <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost.toFixed(2)}"
+                           <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumCost.toString()}"
                                                toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"
                                                labelStyleName="{zetiumCost > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"/>
                            <s:layout>
@@ -535,7 +535,7 @@
                            </s:layout>
                         </s:Group>
                         <s:Group width="40%">
-                           <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCost.toFixed(2)}"
+                           <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyCost.toString()}"
                                                toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"
                                                labelStyleName="{energyCost > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"/>
                            <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{timeCost}"
