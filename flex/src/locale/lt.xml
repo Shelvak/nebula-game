@@ -5657,6 +5657,7 @@
      <title.chatOptions value="Pokalbių kambario nustatymai" />
      <title.afterLoginOptions value="Prisijungimo nustatymai" />
      <title.genericOptions value="Pagrindiniai nustatymai" />
+     <title.graphicsOptions value="Grafikos nustatymai"/>
      <label.save value="Išsaugoti" />
      <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
      <label.showPopupsAfterLogin value="Atidaryti iššokančius langus prisijungus" />
