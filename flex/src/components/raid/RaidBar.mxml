@@ -12,6 +12,7 @@
       import models.planet.MPlanet;
       import models.resource.ResourceType;
       import models.solarsystem.MSSObject;
+      import models.time.IMTimeEvent;
       import models.time.MTimeEventFixedMoment;
 
       import mx.events.EffectEvent;
@@ -48,7 +49,7 @@
       }
 
       private function getPlanetCountLabel(ssObject: MSSObject, raidArg: int,
-                                           raidArrives: Date,
+                                           raidArrives: IMTimeEvent,
                                            apocalypseMoment: MTimeEventFixedMoment,
                                            planetCountDiff: int): String
       {
@@ -58,7 +59,7 @@
          }
          if (planetCountDiff == 0)
          {
-            return DateUtil.formatShortDateTime(raidArrives);
+            return raidArrives.occuresAtString();
          }
          return Localizer.string('Units',
                  ssObject.apocalypseWillBeStartedBeforeRaid
@@ -73,7 +74,7 @@
                  [
                     (
                         ssObject.apocalypseWillBeStartedBeforeRaid
-                           ? 1 + getDays(raidArrives, apocalypseMoment.occuresAt)
+                           ? 1 + getDays(raidArrives.occuresAt, apocalypseMoment.occuresAt)
                            : raidArg
                     ) + planetCountDiff
                  ]
@@ -107,7 +108,7 @@
                            ML.latestPlanet.ssObject.apocalypseWillBeStartedBeforeRaid
                               ? addPlanet - 1
                               : ML.latestPlanet.ssObject.raidArg + addPlanet - 1,
-                           ML.latestPlanet.ssObject.nextRaidAt,
+                           ML.latestPlanet.ssObject.nextRaidEvent,
                            (
                               ML.latestPlanet.ssObject.inBattleground
                               || ML.latestPlanet.ssObject.inMiniBattleground
@@ -130,7 +131,7 @@
                <s:Label fontSize="12" fontWeight="bold" 
                   text="{getPlanetCountLabel(
                      ML.latestPlanet.ssObject, ML.latestPlanet.ssObject.raidArg,
-                     ML.latestPlanet.ssObject.nextRaidAt,
+                     ML.latestPlanet.ssObject.nextRaidEvent,
                      ML.latestGalaxy.apocalypseStartEvent,
                      addPlanet)}"
                   left="0" right="0" textAlign="center"/>
@@ -142,7 +143,7 @@
                   ML.latestPlanet.ssObject.apocalypseWillBeStartedBeforeRaid
                         ? addPlanet
                         : ML.latestPlanet.ssObject.raidArg + addPlanet,
-                  ML.latestPlanet.ssObject.nextRaidAt,
+                  ML.latestPlanet.ssObject.nextRaidEvent,
                   (
                      ML.latestPlanet.ssObject.inBattleground
                      || ML.latestPlanet.ssObject.inMiniBattleground

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                xmlns:s="library://ns.adobe.com/flex/spark" 
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:mx="library://ns.adobe.com/flex/mx"
                 xmlns:solarsystem="components.gameobjects.solarsystem.*"
                 xmlns:base="components.base.*"
-                minHeight="60" minWidth="50" xmlns:battle="components.battle.*">
+                minHeight="60" minWidth="50">
    
    <fx:Declarations>
       <mx:NumberFormatter id="numFmt" precision="{PRECISION}" rounding="none" useThousandsSeparator="false"/> 
@@ -12,33 +12,29 @@
    
    <fx:Script>
       <![CDATA[
-         import config.Config;
+      import models.ModelLocator;
+      import models.planet.MPlanet;
+      import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
 
-         import models.ModelLocator;
+      import utils.NumberUtil;
 
-         import models.planet.MPlanet;
 
-         import models.resource.ResourceType;
-         import models.solarsystem.MSSObject;
-         
-         import utils.NumberUtil;
-         
-         
-         private static const PRECISION:int = 2;
-         
-         
-         private function format(number:Number) : String
-         {
-            return numFmt.format(number);
-         }
+      private static const PRECISION: int = 2;
 
-         [Bindable]
-         private var ML: ModelLocator = ModelLocator.getInstance();
-         
-         private function getResourceLabelStyle(currentStock:Number, maxStock:Number) : String
-         {
-            return NumberUtil.lessThan(currentStock, maxStock, Math.pow(0.1, PRECISION)) ? null : "full";            
-         }
+
+      private function format(number: Number): String {
+         return numFmt.format(number);
+      }
+
+      [Bindable]
+      private var ML: ModelLocator = ModelLocator.getInstance();
+
+      private function getResourceLabelStyle(currentStock: Number,
+                                             maxStock: Number): String {
+         return NumberUtil.lessThan(currentStock, maxStock,
+                                    Math.pow(0.1, PRECISION)) ? null : "full";
+      }
       ]]>
    </fx:Script>
    
@@ -81,7 +77,7 @@
         visible="{MPlanet.hasRaiders(
           MSSObject(data).apocalypseWillBeStartedBeforeRaid
                ? 0 : MSSObject(data).raidArg,
-          MSSObject(data).nextRaidAt,
+          MSSObject(data).nextRaidEvent,
           MSSObject(data).inBattleground || MSSObject(data).inMiniBattleground,
           ML.latestGalaxy.apocalypseStartEvent
         )}"/>

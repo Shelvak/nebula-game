@@ -26,6 +26,7 @@ package models.planet
    import models.solarsystem.MSSObject;
    import models.tile.Tile;
    import models.tile.TileKind;
+   import models.time.IMTimeEvent;
    import models.time.MTimeEventFixedMoment;
    import models.unit.RaidingUnitEntry;
    import models.unit.Unit;
@@ -98,17 +99,17 @@ package models.planet
       }
 
       public static function hasRaiders(
-         raidArg: int, nextRaidAt: Date, battleGround: Boolean,
+         raidArg: int, nextRaidEvent: IMTimeEvent, battleGround: Boolean,
          apocalypseMoment: MTimeEventFixedMoment
       ): Boolean
       {
          var data: Object;
          var arg: int;
          if (apocalypseMoment != null
-                 && (nextRaidAt.time > apocalypseMoment.occuresAt.time))
+                 && (nextRaidEvent.occuresAt.time > apocalypseMoment.occuresAt.time))
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  1 + Math.round((nextRaidAt.time - apocalypseMoment.occuresAt.time)/
+            arg =  1 + Math.round((nextRaidEvent.occuresAt.time - apocalypseMoment.occuresAt.time)/
                     (1000 * 60 * 60 * 24));
             // for info in raid bar for next raids
             arg += raidArg;
@@ -136,17 +137,17 @@ package models.planet
       }
       
       public static function getRaiders(
-         raidArg: int, nextRaidAt: Date, battleGround: Boolean,
+         raidArg: int, nextRaidEvent: IMTimeEvent, battleGround: Boolean,
          apocalypseMoment: MTimeEventFixedMoment): ArrayCollection
       {
          var data: Object;
          var arg: int;
          if (apocalypseMoment != null
-                 && (nextRaidAt.time > apocalypseMoment.occuresAt.time))
+                 && (nextRaidEvent.occuresAt.time > apocalypseMoment.occuresAt.time))
          {
             data = Config.getRaidingApocalypseUnits();
             arg =  1 + Math.round(
-               (nextRaidAt.time - apocalypseMoment.occuresAt.time) /
+               (nextRaidEvent.occuresAt.time - apocalypseMoment.occuresAt.time) /
                        (1000 * 60 * 60 * 24)
             );
             // for info in raid bar for next raids

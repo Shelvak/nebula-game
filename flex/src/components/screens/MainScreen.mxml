@@ -70,7 +70,7 @@ bars and so on.
                MPlanet.hasRaiders(
                   ML.latestPlanet.ssObject.apocalypseWillBeStartedBeforeRaid
                      ? 0 : ML.latestPlanet.ssObject.raidArg,
-                  ML.latestPlanet.ssObject.nextRaidAt,
+                  ML.latestPlanet.ssObject.nextRaidEvent,
                   (
                      ML.latestPlanet.ssObject.inBattleground
                      || ML.latestPlanet.ssObject.inMiniBattleground
@@ -78,7 +78,7 @@ bars and so on.
                   ML.latestGalaxy.apocalypseStartEvent
                ) &amp;&amp;
                ML.latestPlanet.ssObject.owner == Owner.PLAYER &amp;&amp;
-               ML.latestPlanet.ssObject.nextRaidAt
+               ML.latestPlanet.ssObject.nextRaidEvent
             }"/>
          <s:Group>
             <ui:IconWithLabel id="icoPlanetCooldown" toolTip="{Localizer.string('General', 'label.cooldownEndsIn')}"
