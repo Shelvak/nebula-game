@@ -6,6 +6,7 @@ package components.map.planet
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.planetmapeditor.ObjectsEditorLayer;
    import components.planetmapeditor.TerrainEditorLayer;
+   import components.playeroptions.PlayerOptionsScreen;
 
    import flash.display.BitmapData;
    import flash.geom.Point;
@@ -16,6 +17,7 @@ package components.map.planet
    import models.planet.MPlanet;
    import models.planet.MPlanetObject;
    import models.planet.events.MPlanetEvent;
+   import models.player.PlayerOptions;
    import models.solarsystem.events.MSSObjectEvent;
 
 
@@ -28,7 +30,9 @@ package components.map.planet
        * Called by <code>NavigationController</code> when planet map screen is shown.
        */
       public static function screenShowHandler(): void {
-         AnimationTimer.forPlanet.start();
+         if (PlayerOptions.enablePlanetAnimations) {
+            AnimationTimer.forPlanet.start();
+         }
       }
 
       /**

@@ -9,6 +9,8 @@ package components.map.space
 
    import interfaces.ICleanable;
 
+   import models.Owner;
+
    import models.events.BaseModelEvent;
    import models.location.LocationMinimal;
    import models.map.MMap;
@@ -216,11 +218,12 @@ package components.map.space
             // of the effect might now be obsolete
             _layout.repositionSquadrons(to, squadM.owner);
             // and fix position of squadrons popup if the squad we moved is the one which is selected
-            if (_selectedSquadC && _selectedSquadC.currentLocation
-                                      .equals(squadM.currentHop.location)) {
+            if (_selectedSquadC && _selectedSquadC.currentLocation.equals(to)) {
                selectSquadron(_selectedSquadC);
             }
-            squadM.pending = false;
+            if (squadM.route == null || to.equals(squadM.route.currentLocation)) {
+               squadM.pending = false;
+            }
          }
 
          effect.addEventListener(EffectEvent.EFFECT_END, effectEndHandler);

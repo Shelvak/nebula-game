@@ -1,10 +1,3 @@
-/**
- * Created by IntelliJ IDEA.
- * User: arturas
- * Date: 2/16/12
- * Time: 12:02 PM
- * To change this template use File | Settings | File Templates.
- */
 package models.player {
    import com.adobe.utils.ArrayUtil;
 
@@ -30,6 +23,7 @@ package models.player {
          showPopupsAfterLogin = options.showPopupsAfterLogin;
          openFirstPlanetAfterLogin = options.openFirstPlanetAfterLogin;
          warnBeforeUnload = options.warnBeforeUnload;
+         enablePlanetAnimations = options.enablePlanetAnimations;
       }
 
       private static var originalData: Object;
@@ -43,7 +37,8 @@ package models.player {
             'ignoredChatPlayers': ignoredChatPlayers,
             'showPopupsAfterLogin': showPopupsAfterLogin,
             'openFirstPlanetAfterLogin': openFirstPlanetAfterLogin,
-            'warnBeforeUnload': warnBeforeUnload
+            'warnBeforeUnload': warnBeforeUnload,
+            'enablePlanetAnimations': enablePlanetAnimations
          }
       }
 
@@ -56,6 +51,7 @@ package models.player {
          showPopupsAfterLogin = originalData.showPopupsAfterLogin;
          openFirstPlanetAfterLogin = originalData.openFirstPlanetAfterLogin;
          warnBeforeUnload = originalData.warnBeforeUnload;
+         enablePlanetAnimations = originalData.enablePlanetAnimations;
          hasChanges = false;
       }
       [Bindable]
@@ -68,7 +64,8 @@ package models.player {
          && ignoredChatPlayers.join(',') == originalIgnoredPlayers.join(',')
          && showPopupsAfterLogin == originalData.showPopupsAfterLogin
          && openFirstPlanetAfterLogin == originalData.openFirstPlanetAfterLogin
-         && warnBeforeUnload == originalData.warnBeforeUnload);
+         && warnBeforeUnload == originalData.warnBeforeUnload
+         && enablePlanetAnimations == originalData.enablePlanetAnimations);
       }
 
       public static function addIgnoredPlayer(playerName: String): void
@@ -90,7 +87,6 @@ package models.player {
       }
 
       /*### Chat options ###*/
-
       [Bindable]
       public static var chatIgnoreType: String;
       [Bindable]
@@ -111,5 +107,7 @@ package models.player {
 
       [Bindable]
       public static var warnBeforeUnload: Boolean;
+      [Bindable]
+      public static var enablePlanetAnimations: Boolean = true;
    }
 }
