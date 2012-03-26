@@ -5,18 +5,19 @@ package globalevents
       public static const RESOURCES_CHANGE: String = "resourcesAmmountChanged";
       
       public static const WRECKAGES_UPDATED: String = "wreckagesUpdated";
+
+      /* if any of resources increased */
+      public var someIncreased: Boolean;
+      /* if any of resources decreased */
+      public var someDecreased: Boolean;
       
-      //time passed from last update
-      private var _timePassed: Number;
-      
-      public function get timePassed(): Number
+      public function GResourcesEvent(type:String,
+                                      increased: Boolean = false,
+                                      decreased: Boolean = false,
+                                      eagerDispatch:Boolean=true)
       {
-         return _timePassed;
-      }
-      
-      public function GResourcesEvent(type:String, timePast: Number = 0, eagerDispatch:Boolean=true)
-      {
-         _timePassed = timePast;
+         someIncreased = increased;
+         someDecreased = decreased;
          super(type, eagerDispatch);
       }
    }

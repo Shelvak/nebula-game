@@ -14,7 +14,7 @@
                               ? '\n\n' + Localizer.string('BuildingSidebar',
                                  'tooltip.becomeVipToQueue')
                               : '\n\n' + Localizer.string('BuildingSidebar','disabled'))
-                           : (_data.query
+                           : (_data.queue
                               ? '\n\n' + Localizer.string('BuildingSidebar',
                                     'tooltip.willBeQueued')
                               : '')))
@@ -22,114 +22,139 @@
                 xmlns:components="utils.components.*" width="95" height="80">	
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.base.Filters;
-         
-         import controllers.ui.NavigationController;
+      import com.developmentarc.core.utils.EventBroker;
 
-         import globalevents.GResourcesEvent;
+      import components.base.Filters;
 
-         import globalevents.GlobalEvent;
-         
-         import models.ModelLocator;
-         import models.building.Building;
-         import models.building.MCSidebarBuilding;
-         import models.factories.BuildingFactory;
-         import models.parts.Upgradable;
-         import models.parts.UpgradableType;
-         import models.resource.ResourceType;
-         import models.solarsystem.MSSObject;
+      import controllers.ui.NavigationController;
 
-         import mx.core.FlexGlobals;
+      import globalevents.GResourcesEvent;
 
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
-         
-         [Bindable]
-         private var _data: MCSidebarBuilding;
-         
-         public override function get data():Object
-         {
-            return _data;
-         }
-         
-         public override function set data(value:Object) : void
-         {
-            if (_data != value)
-            {
-               if (_data)
-               {
-                  _data.removeEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
-               }
-               _data = MCSidebarBuilding(value);
-               if (_data)
-               {
-                  _data.addEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
-               }
+      import globalevents.GlobalEvent;
+
+      import models.ModelLocator;
+      import models.building.Building;
+      import models.building.MCSidebarBuilding;
+      import models.factories.BuildingFactory;
+      import models.parts.Upgradable;
+      import models.parts.UpgradableType;
+      import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
+
+      import mx.core.FlexGlobals;
+
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+      [Bindable]
+      private var _data: MCSidebarBuilding;
+
+      public override function get data(): Object {
+         return _data;
+      }
+
+      private var costCache: Object = {};
+
+      public override function set data(value: Object): void {
+         if (_data != value) {
+            if (_data) {
+               _data.removeEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
             }
-            refreshState();
-         }
-         
-         [Bindable]
-         private var ML: ModelLocator = ModelLocator.getInstance();
-         [Bindable]
-         private var IMG: ImagePreloader = ImagePreloader.getInstance();
-         
-         private function showInfoScreen(e: MouseEvent): void
-         {
-            e.stopImmediatePropagation();
-            var temp: Building = BuildingFactory.createDefault(_data.type);
-            NavigationController.getInstance().showInfo(temp);
-         }
-         
-         private function refreshState(e: Event = null): void
-         {
-            if (_data && ML.latestPlanet && ML.latestPlanet.ssObject)
-            {
-               var planet:MSSObject = ML.latestPlanet.ssObject;
-               function calcCost(resourceType:String) : Number
-               {
-                  return Upgradable.calculateCost(UpgradableType.BUILDINGS, _data.type,
-                     resourceType, {"level": 1});
-               }
-               if (_data.constructing && ML.player.vipLevel > 0)
-               {
-                  _data.disabled = false;
-                  _data.query = calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
-                        calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
-                        calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
-               }
-               else
-               {
-                  _data.query = false;
-                  _data.disabled = calcCost(ResourceType.METAL)  > planet.metal.currentStock  ||
-                     calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
-                     calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
-               }
-            }
-         }
-         
-         protected function itemrenderer1_addedToStageHandler(event:Event):void
-         {
-            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshState);
-            if (_data)
-            {
+            _data = MCSidebarBuilding(value);
+            if (_data) {
                _data.addEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
             }
          }
-         
-         
-         protected function itemrenderer1_removedFromStageHandler(event:Event):void
+         refreshState();
+      }
+
+      [Bindable]
+      private var ML: ModelLocator = ModelLocator.getInstance();
+      [Bindable]
+      private var IMG: ImagePreloader = ImagePreloader.getInstance();
+
+      private function showInfoScreen(e: MouseEvent): void {
+         e.stopImmediatePropagation();
+         var temp: Building = BuildingFactory.createDefault(_data.type);
+         NavigationController.getInstance().showInfo(temp);
+      }
+
+      /* using private function instead of anonymous for performance reasons */
+      private function calcCost(resourceType: String): Number {
+         if (costCache[_data.type + '|' + resourceType] == null) {
+            costCache[_data.type + '|' + resourceType] =
+                    Upgradable.calculateCost(UpgradableType.BUILDINGS, _data.type,
+                            resourceType, {"level":1})
+         }
+         return costCache[_data.type + '|' + resourceType];
+      }
+
+
+      private function resourcesInsufficient(): Boolean {
+         var planet: MSSObject = ML.latestPlanet.ssObject;
+         return calcCost(ResourceType.METAL) > planet.metal.currentStock ||
+                 calcCost(ResourceType.ENERGY) > planet.energy.currentStock ||
+                 calcCost(ResourceType.ZETIUM) > planet.zetium.currentStock;
+      }
+
+      private function refreshState(e: Event = null): void {
+         if (_data && ML.latestPlanet && ML.latestPlanet.ssObject)
          {
-            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshState);
-            if (_data)
+            var increased: Boolean = false;
+            var decreased: Boolean = false;
+            var reasonResourcesChanged: Boolean = (e != null &&
+                    e.type == GResourcesEvent.RESOURCES_CHANGE);
+            if (reasonResourcesChanged)
             {
-               _data.removeEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
+               increased = GResourcesEvent(e).someIncreased;
+               decreased = GResourcesEvent(e).someDecreased;
+               if (!increased && !decreased) {
+                  return;
+               }
+            }
+            if (_data.constructing && ML.player.vipLevel > 0)
+            {
+               _data.disabled = false;
+               if (
+                  !reasonResourcesChanged ||
+                  (
+                     (_data.queue && increased) || (!_data.queue && decreased)
+                  )
+               )
+               {
+                  _data.queue = resourcesInsufficient();
+               }
+            }
+            else {
+               _data.queue = false;
+               if (
+                  !reasonResourcesChanged ||
+                  (
+                    (_data.disabled && increased) || (!_data.disabled && decreased)
+                  )
+               )
+               {
+                  _data.disabled = resourcesInsufficient();
+               }
             }
          }
-         
+      }
+
+      protected function itemrenderer1_addedToStageHandler(event: Event): void {
+         EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, refreshState);
+         if (_data) {
+            _data.addEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
+         }
+      }
+
+
+      protected function itemrenderer1_removedFromStageHandler(event: Event): void {
+         EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, refreshState);
+         if (_data) {
+            _data.removeEventListener(DemoChangedEvent.CONSTRUCTING_CHANGED, refreshState);
+         }
+      }
       ]]>
    </fx:Script>
    <s:Group width="100%" height="80%">
@@ -140,7 +165,7 @@
             ? Filters.RED_FILTER
             : (_data.demo
                ? Filters.RED_FILTER
-               : (_data.query
+               : (_data.queue
                   ? Filters.GRAYSCALE : []))}"
          source="{IMG.getImage(AssetNames.getBuildingImageName(_data.type))}"/>
       <s:Button id="infoButton" right="0"  bottom="0" click="showInfoScreen(event)"

@@ -169,42 +169,19 @@
        (horizontalHash[y] as PointSet).addItem(point);
      }
 
-     private var oldMetal: Number = -1;
-     private var oldEnergy: Number = -1;
-     private var oldZetium: Number = -1;
-
      private function refreshPurchasableState(e: Event = null): void {
        if (ML.latestPlanet && treeCompsList.length > 0) {
          var increased: Boolean = false;
          var decreased: Boolean = false;
-         var same: Boolean = true;
          var rChanged: Boolean = (e != null &&
            e.type == GResourcesEvent.RESOURCES_CHANGE);
          var planet: MSSObject = ML.latestPlanet.ssObject;
          if (rChanged) {
-           if (oldMetal > planet.metal.currentStock
-             || oldEnergy > planet.energy.currentStock
-             || oldZetium > planet.zetium.currentStock) {
-             decreased = true;
-             same = false;
-           }
-           if (oldMetal < planet.metal.currentStock
-             || oldEnergy < planet.energy.currentStock
-             || oldZetium < planet.zetium.currentStock) {
-             increased = true;
-             same = false;
-           }
-           if (same) {
+           increased = GResourcesEvent(e).someIncreased;
+           decreased = GResourcesEvent(e).someDecreased;
+           if (!increased && !decreased) {
              return;
            }
-           oldMetal = planet.metal.currentStock;
-           oldEnergy = planet.energy.currentStock;
-           oldZetium = planet.zetium.currentStock;
-         }
-         else {
-           oldMetal = -1;
-           oldEnergy = -1;
-           oldZetium = -1;
          }
          function meetsRequirements(tComp: TechnologyComponent): Boolean {
            return comp.modelObj.minScientists <= ML.player.scientists &&

@@ -1609,6 +1609,10 @@
     <absorptionFromTechs value="Šūvio sugėrimo tikimybė iš technologijų:" />
     <damageFromTechs value="Žala iš technologijų:" />
     <criticalFromTechs value="Kritinio šūvio tikimybė iš technologijų:" />
+    <tooltip.armorFromTechs value="Sumažina kiekvieno gauto šūvio daromą žalą" />
+    <tooltip.absorptionFromTechs ref="Technologies/property.mod.absorption.tooltip" />
+    <tooltip.damageFromTechs value="Padidina kiekvieno šūvio daromą žalą" />
+    <tooltip.criticalFromTechs ref="Technologies/property.mod.critical.tooltip" />
     <forOne value="Vienam:" />
     <total value="Iš viso:" />
     <cost value="Kaina" />
