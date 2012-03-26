@@ -13,7 +13,22 @@ WORKERS_WORLD = 3
 # need two connections per actor, not one.
 DB_POOL_SIZE = (WORKERS_CHAT + WORKERS_WORLD + 1) * 2
 
-require 'rubygems'
+unless RUBY_VERSION >= '1.9.2' && JRUBY_VERSION >= '1.6.7'
+  w = 80
+  puts "#" * w
+  puts "We require JRuby 1.6 (dev version) in 1.9 mode!".center(w)
+  puts
+  puts "To install JRuby 1.6 (dev version):".center(w)
+  puts "`rvm install jruby-head-n16 --branch jruby-1_6`".center(w)
+  puts
+  puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
+  puts "`export JRUBY_OPTS='--1.9'`".center(w)
+  puts
+  puts "Aborting!".center(w)
+  puts "#" * w
+  exit
+end
+
 require 'bundler'
 
 require "timeout"

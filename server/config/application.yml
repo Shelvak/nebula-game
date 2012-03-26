@@ -8,7 +8,7 @@ server:
   chat_workers: 1
   world_workers: 3
 client:
-  required_version: 2012-0314-2205
+  required_version: 2012-0323-1150
 # Control server listening port.
 control:
   token: "u8943hgf238huin&*%Tgbuyb67532fuybvyu3cg6FV#&@GV*IUI@#}234U(**UBCU{bbsjdgbaijgbdasc}"

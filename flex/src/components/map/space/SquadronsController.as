@@ -1,15 +1,14 @@
 package components.map.space
 {
-   import components.movement.CRoute;
    import components.movement.CSquadronMapIcon;
-   
+
    import controllers.units.OrdersController;
    import controllers.units.events.OrdersControllerEvent;
-   
+
    import flash.geom.Point;
-   
+
    import interfaces.ICleanable;
-   
+
    import models.events.BaseModelEvent;
    import models.location.LocationMinimal;
    import models.map.MMap;
@@ -17,24 +16,24 @@ package components.map.space
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
    import models.unit.Unit;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.events.EffectEvent;
    import mx.logging.ILogger;
    import mx.logging.Log;
-   
+
    import spark.components.Group;
    import spark.effects.Fade;
    import spark.effects.Move;
    import spark.primitives.BitmapImage;
-   
+
    import utils.Objects;
    import utils.components.DisplayListUtil;
    import utils.datastructures.Collections;
-   
-   
+
+
    public class SquadronsController implements ICleanable
    {
       private static const SQUAD_FADE_EFFECT_DURATION:int = 500;  // milliseconds
@@ -53,7 +52,6 @@ package components.map.space
       private var _layout: SquadronsLayout;
       private var _grid: Grid;
       private var _squadronsContainer: Group;
-      private var _routesContainer: Group;
       
       
       /* ###################### */
@@ -65,7 +63,6 @@ package components.map.space
          _mapM = MMap(mapC.model);
          _grid = mapC.grid;
          _squadronsContainer = mapC.squadronObjectsCont;
-         _routesContainer = mapC.routeObjectsCont;
          _layout = new SquadronsLayout(this, _grid);
          addMapModelEventHandlers(_mapM);
          addOrdersControllerEventHandlers();
@@ -105,31 +102,24 @@ package components.map.space
       /* ######################## */
 
       private var _squads: ArrayCollection = new ArrayCollection();
-      private var _routes: ArrayCollection = new ArrayCollection();
-      
-      private function getFilterByModel(squadM:MSquadron) : Function {
-         return function(component:*) : Boolean { return squadM.equals(component.squadron) };
-      }
-      private function getFilterByLocation(loc:LocationMinimal) : Function {
-         return function(squadC:CSquadronMapIcon) : Boolean { return squadC.currentLocation.equals(loc) };
-      }
-
-      private function getCRoute(squadM: MSquadron): CRoute {
-         const routeC: IList = filter(_routes, getFilterByModel(squadM));
-         if (routeC.length > 0) {
-            return CRoute(routeC.getItemAt(0));
-         }
-         return null;
-      }
 
       private function getCSquadron(squadM: MSquadron): CSquadronMapIcon {
          return CSquadronMapIcon(
-            filter(_squads, getFilterByModel(squadM)).getItemAt(0)
+            filter(_squads,
+               function (squadC: CSquadronMapIcon): Boolean {
+                  return squadM.equals(squadC.squadron)
+               }
+            ).getItemAt(0)
          );
       }
 
       internal function getCSquadronsIn(location: LocationMinimal): ListCollectionView {
-         return filter(_squads, getFilterByLocation(location));
+         return filter(
+            _squads,
+            function (squadC: CSquadronMapIcon): Boolean {
+               return squadC.currentLocation.equals(location)
+            }
+         );
       }
       
       
@@ -148,12 +138,6 @@ package components.map.space
          _squads.addItem(squadC);
          _squadronsContainer.addElement(squadC);
 
-         if (squadM.isMoving) {
-            const routeC: CRoute = new CRoute(squadC, _grid);
-            _routes.addItem(routeC);
-            _routesContainer.addElement(routeC);
-         }
-
          if (!_mapM.flag_destructionPending && useFadeEffect) {
             const fadeIn: Fade = new Fade(squadC);
             fadeIn.duration = SQUAD_FADE_EFFECT_DURATION;
@@ -167,13 +151,6 @@ package components.map.space
       private function destroySquadron(squadM: MSquadron,
                                        useFadeEffect: Boolean = true): void {
          removeSquadronEventHandlers(squadM);
-
-         if (squadM.isMoving) {
-            const routeC: CRoute = getCRoute(squadM);
-            _routesContainer.removeElement(routeC);
-            removeItem(_routes, routeC);
-            routeC.cleanup();
-         }
 
          const squadC: CSquadronMapIcon = getCSquadron(squadM);
          squadC.endEffectsStarted();
@@ -258,7 +235,6 @@ package components.map.space
 
       private var _selectedSquadC: CSquadronMapIcon;
       private var _commandedSquadC: CSquadronMapIcon;
-      private var _selectedRouteC: CRoute;
 
       private function setCommandedSquad(value: CSquadronMapIcon): void {
          if (_commandedSquadC != value) {
@@ -314,10 +290,7 @@ package components.map.space
          _mapC.squadronsInfo.squadron = squadC.squadron;
          _selectedSquadC = squadC;
          _selectedSquadC.selected = true;
-         _selectedRouteC = getCRoute(squadC.squadron);
-         if (_selectedRouteC) {
-            _selectedRouteC.visible = true;
-         }
+         _mapC.routeComp.setSquad(_selectedSquadC);
       }
 
       internal function deselectSelectedSquadron(): void {
@@ -325,10 +298,7 @@ package components.map.space
             _mapC.squadronsInfo.squadron = null;
             _selectedSquadC.selected = false;
             _selectedSquadC = null;
-            if (_selectedRouteC != null) {
-               _selectedRouteC.visible = false;
-               _selectedRouteC = null;
-            }
+            _mapC.routeComp.setSquad(null);
          }
       }
       

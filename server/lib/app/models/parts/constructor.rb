@@ -1,8 +1,78 @@
 module Parts::Constructor
-	def self.included(receiver)
+  # Proxy class for #constructable property of constructors.
+  class ConstructableProxy < ActiveSupport::BasicObject
+    TYPE_BUILDING = :building
+    TYPE_UNIT = :unit
+
+    TYPES = [TYPE_BUILDING, TYPE_UNIT]
+
+    def self.converter(constructable)
+      case constructable
+      when ::Building then new(constructable, TYPE_BUILDING, nil)
+      when ::Unit then new(constructable, TYPE_UNIT, nil)
+      else raise ArgumentError,
+        "Unknown constructable: #{constructable.inspect}"
+      end
+    end
+
+    def self.from_mapping(building_id, unit_id)
+      if ! building_id.nil?
+        new(nil, TYPE_BUILDING, building_id)
+      elsif ! unit_id.nil?
+        new(nil, TYPE_UNIT, unit_id)
+      else
+        raise ArgumentError, "All constructor arguments are nil!"
+      end
+    end
+
+    def initialize(object, type, id)
+      # Cannot use typesig here, because of BasicObject.
+      raise ::ArgumentError, "Unknown type #{type}!" unless TYPES.include?(type)
+      raise ::ArgumentError,
+        "Cannot create proxy if both object and id is nil for type #{type}!" \
+        if object.nil? && id.nil?
+
+      @obj = object
+      @type = type
+      @id = id
+    end
+
+    # For #as_json of constructor.
+    def __type; @type == TYPE_BUILDING ? "Building" : "Unit"; end
+    # For #as_json of constructor.
+    def __id; @id || @obj.id; end
+
+    # For #composed_of mapping.
+    def __db_building_id; @type == TYPE_BUILDING ? __id : nil; end
+    # For #composed_of mapping.
+    def __db_unit_id; @type == TYPE_UNIT ? __id : nil; end
+
+    # #composed_of freezes object to prevent changes to it. Ignore it as we take
+    # care to save that object.
+    def freeze(*args); end
+
+    # Allow raising exceptions.
+    def raise(*args); ::Kernel.raise(*args); end
+
+    # Ensure methods defined in this proxy are called with #send.
+    def send(*args); __send__(*args); end
+    def method_missing(*args); __proxy_obj.send(*args); end
+
+    private
+    def __proxy_obj
+      @obj ||= case @type
+      when TYPE_BUILDING then ::Building.find(@id)
+      when TYPE_UNIT then ::Unit.find(@id)
+      else
+        raise "Unknown constructable type: #{@type.inspect} (id #{@id.inspect})"
+      end
+    end
+  end
+
+  def self.included(receiver)
     receiver.extend ConditionalExtender
     receiver.extend BaseClassMethods
-	end
+  end
 
   # Extend subclass with functionality if that subclass is a constructor.
   module ConditionalExtender
@@ -16,7 +86,22 @@ module Parts::Constructor
           has_many :construction_queue_entries,
             :foreign_key => :constructor_id
           protected :construct_model!, :params_for_type
-          belongs_to :constructable, :polymorphic => true
+          composed_of :constructable,
+            :class_name => ConstructableProxy.to_s,
+            :mapping => [
+              [:constructable_building_id, :__db_building_id],
+              [:constructable_unit_id, :__db_unit_id],
+            ],
+            :constructor => :from_mapping,
+            :converter => :converter,
+            :allow_nil => true
+
+          before_save do
+            # Ensure changes to constructable are persisted when you save the
+            # parent.
+            constructable.try(:save!)
+          end
+
           # Destroy constructable if it's currently present.
           before_destroy do
             # Reset state to active so we could deactivate.
@@ -39,7 +124,7 @@ module Parts::Constructor
     def constructor?; ! property('constructor.items').nil?; end
   end
 
-	module ClassMethods
+  module ClassMethods
     # Returns maximum number of queue elements for this constructor.
     def queue_max; property('queue.max') || 0; end
 
@@ -51,7 +136,7 @@ module Parts::Constructor
     def each_constructable_item
       (property('constructor.items') || []).each do |item|
         base, name = item.split('/')
-        
+
         yield item, base, name
       end
     end
@@ -86,13 +171,22 @@ module Parts::Constructor
     end
   end
 
-	module InstanceMethods
+  module InstanceMethods
     def as_json(options=nil)
       super do |hash|
-        hash["construction_queue_entries"] = construction_queue_entries.map(
-          &:as_json)
+        hash["construction_queue_entries"] = construction_queue_entries.
+          map(&:as_json)
         hash["build_in_2nd_flank"] = build_in_2nd_flank
         hash["build_hidden"] = build_hidden
+        # Constructable might be nil and we cannot use #try because it is
+        # proxied.
+        if constructable.nil?
+          hash["constructable_type"] = nil
+          hash["constructable_id"] = nil
+        else
+          hash["constructable_type"] = constructable.__type
+          hash["constructable_id"] = constructable.__id
+        end
       end
     end
 
@@ -325,5 +419,5 @@ module Parts::Constructor
 
       constructable
     end
-	end
+  end
 end

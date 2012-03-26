@@ -24,18 +24,21 @@ LOGGER.except(:debug) do
     puts "Deleting FowSsEntries"
     FowSsEntry.delete_all
 
+    total = SolarSystem.count
+    index = 0
     SolarSystem.find_each do |ss|
+      index += 1
       next if ss.main_battleground? || ss.wormhole?
 
       puts "SS: #{ss.inspect}"
       planets = ss.planets
       planet_ids = planets.map(&:id)
-      in_planets = "(location_type=#{Location::SS_OBJECT
-        } AND location_id IN (#{planet_ids.join(",")}))"
-      units = Unit.find_by_sql("SELECT * FROM units WHERE (
-        #{planet_ids.blank? ? "0=1" : in_planets} OR (
-        location_type=#{Location::SOLAR_SYSTEM} AND location_id=#{ss.id})
-      )")
+      in_planets = "location_ss_object_id IN (#{planet_ids.join(",")})"
+      units = Unit.find_by_sql(%Q{
+        SELECT * FROM units WHERE
+        #{planet_ids.blank? ? "0=1" : in_planets} OR
+        location_solar_system_id=#{ss.id}
+      })
 
       units = units.reject do |u|
         u.ground? || u.player_id.nil?
@@ -85,7 +88,7 @@ LOGGER.except(:debug) do
         fse.save!
         puts "  FSE A: #{fse.inspect}"
       end
-      puts "Recalculating FSE for #{ss.id}"
+      puts "Recalculating FSE for #{ss.id} (#{index}/#{total})"
       FowSsEntry.recalculate(ss.id)
     end
 

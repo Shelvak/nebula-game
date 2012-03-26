@@ -6,6 +6,7 @@ package controllers.objects.actions.customcontrollers
    import controllers.units.UnitJumps;
 
    import models.factories.UnitFactory;
+   import models.location.LocationType;
    import models.player.PlayerMinimal;
    import models.unit.Unit;
 
@@ -62,7 +63,14 @@ package controllers.objects.actions.customcontrollers
             return;
          }
          if (reason == UpdatedReason.TRANSPORTATION) {
-            ML.units.addOrUpdate(object, Unit);
+            if (object.location.type == LocationType.UNIT)
+            {
+               ML.units.remove(object.id);
+            }
+            else
+            {
+               ML.units.addOrUpdate(object, Unit);
+            }
          }
          else if (reason == UpdatedReason.COMBAT) {
             const existingUnit: Unit = ML.units.find(object["id"]);

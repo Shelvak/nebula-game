@@ -718,8 +718,9 @@ describe Building do
       nil,
       %w{id planet_id x y x_end y_end armor_mod constructor_mod
       construction_mod energy_mod level type upgrade_ends_at state
-      constructable_type constructable_id cooldown_ends_at hp overdriven},
-      %w{pause_remainder hp_percentage without_points}
+      cooldown_ends_at hp overdriven},
+      %w{pause_remainder hp_percentage without_points
+      constructable_building_id constructable_unit_id}
   end
 
   describe "on create" do

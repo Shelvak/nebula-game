@@ -179,6 +179,7 @@ package controllers.solarsystems.actions
 
       public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void {
          resetFlags();
+         NAV_CTRL.mapLoadFailed();
          super.cancel(rmo, srmo);
       }
 

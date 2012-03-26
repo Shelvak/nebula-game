@@ -212,7 +212,8 @@ class SolarSystem < ActiveRecord::Base
       EventBroker::REASON_SS_ENTRY
     )
     # Remove fow ss entries for everyone except owner.
-    fow_ss_entries.where("player_id != ?", player_id).delete_all
+    fow_ss_entries.where("player_id != ? OR player_id IS NULL", player_id).
+      delete_all
 
     # Set coordinates to detached state.
     self.x = self.y = nil
@@ -251,19 +252,26 @@ class SolarSystem < ActiveRecord::Base
       where(:galaxy_id => galaxy_id).
       where("player_id != ? OR player_id IS NULL", player_id).
       where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
-      c_select_all.map do |row|
+      c_select_all.each_with_object({}) do |row, hash|
+        # Same owner can have several FGEs covering same area, so we need to
+        # sum their counters, instead of creating several FSEs.
+        owner = {
+          :player_id => row['player_id'],
+          :alliance_id => row['alliance_id']
+        }
         # By idea player is not in the alliance so we don't need to create
         # alliance entries or view him from a different perspective instead of
         # enemy.
-        FowSsEntry.new(
+        hash[owner] ||= FowSsEntry.new(
           :solar_system_id => id,
-          :counter => row['counter'],
+          :counter => 0,
           :player_id => row['player_id'],
           :alliance_id => row['alliance_id'],
           :enemy_planets => owner_fse.player_planets,
           :enemy_ships => owner_fse.player_ships
         )
-      end
+        hash[owner].counter += row['counter']
+      end.values
 
     self.x, self.y = x, y
     save!

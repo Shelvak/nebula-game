@@ -6,6 +6,17 @@
 class FowSsEntry < ActiveRecord::Base
   include Parts::WithLocking
 
+  # Used to pass scope for #recalculate.
+  class RecalculateScope
+    attr_reader :solar_system_id, :scope
+
+    def initialize(solar_system_id, scope)
+      typesig binding, Fixnum, ActiveRecord::Relation
+      @solar_system_id = solar_system_id
+      @scope = scope
+    end
+  end
+
   # FK :dependent => :destroy_all
   belongs_to :solar_system
 
@@ -63,7 +74,17 @@ class FowSsEntry < ActiveRecord::Base
     end
 
     # Recalculate metadata for entries that cover _solar_system_id_.
-    def recalculate(solar_system_id, dispatch_event=true)
+    def recalculate(scope_or_ss_id, dispatch_event=true)
+      typesig binding, [RecalculateScope, Fixnum], Boolean
+
+      if scope_or_ss_id.is_a?(RecalculateScope)
+        scope = scope_or_ss_id.scope
+        solar_system_id = scope_or_ss_id.solar_system_id
+      else
+        scope = where(:solar_system_id => scope_or_ss_id)
+        solar_system_id = scope_or_ss_id
+      end
+
       LOGGER.block(
         "Recalculating metadata for #{solar_system_id}", :level => :debug
       ) do
@@ -102,8 +123,7 @@ class FowSsEntry < ActiveRecord::Base
         changed = []
 
         # Find all entries that relate to that solar system.
-        entries = self.where(:solar_system_id => solar_system_id)
-        entries.each do |entry|
+        scope.each do |entry|
           if entry.player_id
             # It's a Player entry
 
@@ -283,8 +303,9 @@ class FowSsEntry < ActiveRecord::Base
       recalculate(solar_system_id, should_dispatch) if increment < 0
 
       status_is = lambda do |wanted|
-        status == wanted &&
-          (player.alliance_id.nil? || alliance_status == wanted)
+        status == wanted && (
+          player.alliance_id.nil? || alliance_status == wanted
+        )
       end
 
       return false unless should_dispatch
@@ -300,13 +321,19 @@ class FowSsEntry < ActiveRecord::Base
 
         should_dispatch
       elsif status_is[:created]
-        ss = SolarSystem.find(solar_system_id)
-        fow_ss_entries = FowSsEntry.where(:solar_system_id => solar_system_id)
-        fow_ss_entries = player.alliance_id.nil? \
-          ? fow_ss_entries.where(:player_id => player.id) \
-          : fow_ss_entries.where("player_id=? OR alliance_id=?",
+        scope = where(:solar_system_id => solar_system_id)
+        scope = player.alliance_id.nil? \
+          ? scope.where(:player_id => player.id) \
+          : scope.where("player_id=? OR alliance_id=?",
             player.id, player.alliance_id
           )
+
+        # Recalculate metadata for created fse, because it was not recalculated
+        # before.
+        recalculate(RecalculateScope.new(solar_system_id, scope), false)
+
+        ss = SolarSystem.find(solar_system_id)
+        fow_ss_entries = scope.all
 
         event = Event::FowChange::SsCreated.new(
           ss.id, ss.x, ss.y, ss.kind, Player.minimal(ss.player_id),
@@ -332,10 +359,10 @@ class FowSsEntry < ActiveRecord::Base
 
     # Creates entries for _player_ for every +SolarSystem+ in _zone_.
     def increase_for_zone(zone, player, increment=1, should_dispatch=true)
-      SolarSystem.in_zone(*zone).find_all_by_galaxy_id(
-      player.galaxy_id).each do |solar_system|
-        increase(solar_system.id, player, increment, should_dispatch)
-      end
+      SolarSystem.in_zone(*zone).where(:galaxy_id => player.galaxy_id).
+        all.each do |solar_system|
+          increase(solar_system.id, player, increment, should_dispatch)
+        end
     end
 
     # Removes entries for _player_ for every +SolarSystem+ in _zone_.

@@ -712,8 +712,13 @@ describe Combat do
     ground_dmg = 'damage_dealt_to_ground'
     space_dmg = 'damage_dealt_to_space'
 
-    ground_units = lambda { azure :count => 20 }
-    space_units = lambda { avenger :count => 20 }
+    # TODO: ping headius about this. In 1.9 mode we get UnitsContainer as a
+    # parameter even if it is not passed. Cannot reproduce this as an standalone
+    # example though...
+    #
+    # So just use proc instead of lambda for now.
+    ground_units = proc { azure :count => 20 }
+    space_units = proc { avenger :count => 20 }
 
     gives_vps = lambda do |given_kind|
       Cfg::Java.combat_vp_zones.find { |kind| kind.id == given_kind }.defined? \

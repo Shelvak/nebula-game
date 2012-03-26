@@ -20,7 +20,7 @@ RSpec::Matchers.define :equal_to_hash do |target|
             target_value + SPEC_FLOAT_PRECISION
           )
         ).cover?(actual_value)
-      elsif target_value.is_a?(RSpec::Matchers::Matcher)
+      elsif target_value.is_a?(RSpec::Matchers::DSL::Matcher)
         @errors[key] = [target_value.failure_message_for_should, actual_value] \
           unless target_value.matches?(actual_value)
       else
