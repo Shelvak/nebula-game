@@ -49,7 +49,7 @@ end
 
 # Only setuped, but not required (in test env).
 group :test_setup do
-  gem "rspec", "~>2.7.0"
+  gem "rspec", "~>2.9.0"
   gem "factory_girl", "~>2.1.2"
 end
 
