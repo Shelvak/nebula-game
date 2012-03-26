@@ -2249,11 +2249,11 @@
 
     <title.disconnect.otherLogin value="Saugumo klaida!" />
     <message.disconnect.otherLogin>
-      <p>Prie žaidimo buvo prisijungtą dar kartą su tavo prisijungimo 
-      duomenimis. Jeigu tai ne tu (pvz. su kita naršykle) ir tu neseniai 
+      <p>Prie žaidimo su tavo paskyra buvo prisijungta dar kartą.
+      Jeigu tai ne tu (pvz. su kita naršykle) ir tu neseniai
       nepranešei apie klaidas žaidime (kaip tu galėjo prisijungti žaidimo 
       administratorius, patikrink savo klaidos pranešimą), mes siūlome
-      NEDELSIANT pasikeisti savo slaptažodį, kad užtikrinti savo paskyros 
+      NEDELSIANT pasikeisti savo slaptažodį, kad užtikrintum savo paskyros
       saugumą.</p>
       <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
     </message.disconnect.otherLogin>
