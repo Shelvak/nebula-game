@@ -207,6 +207,7 @@ package models.chat
 
          for (var channelName: String in channels) {
             channel = new MChatChannelPublic(channelName);
+            channel.generateJoinLeaveMsgs = _generateJoinLeaveMsgs;
             addMembersToChannel(channel, channels[channelName]);
             _channels.addChannel(channel);
             if (channel.isAlliance) {
@@ -648,7 +649,8 @@ package models.chat
        */
       private function createPublicChannel(name:String) : MChatChannelPublic
       {
-         var channel:MChatChannelPublic = new MChatChannelPublic(name);
+         const channel:MChatChannelPublic = new MChatChannelPublic(name);
+         channel.generateJoinLeaveMsgs = _generateJoinLeaveMsgs;
          _channels.addChannel(channel);
          if (channel.isAlliance)
          {
@@ -672,6 +674,7 @@ package models.chat
       private function createPrivateChannel(member:MChatMember) : MChatChannelPrivate
       {
          var channel:MChatChannelPrivate = new MChatChannelPrivate(member.name);
+         channel.generateJoinLeaveMsgs = _generateJoinLeaveMsgs;
          channel.memberJoin(player, false);
          channel.memberJoin(member, false);
          _channels.addChannel(channel);
