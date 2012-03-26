@@ -270,7 +270,16 @@ describe FowSsEntry do
         p2 = Factory.create(:player)
         increase[p2]
 
-        event = Event::FowChange::SolarSystem.new(solar_system.id)
+        Factory.create(
+          :u_crow, :player => player,
+          :location => SolarSystemPoint.new(solar_system.id, 0, 0)
+        )
+
+        # Simulate recalculate
+        changed_fse = FowSsEntry.where(:player_id => p2.id).first
+        changed_fse.enemy_ships = true
+        event = Event::FowChange::Recalculate.
+          new([changed_fse], solar_system.id)
         should_fire_event(event, EventBroker::FOW_CHANGE, event_reason) do
           increase[player]
         end
