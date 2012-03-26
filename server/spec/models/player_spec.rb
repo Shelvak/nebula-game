@@ -763,20 +763,40 @@ describe Player do
       end
     end
     
-    describe ".on_callback" do
-      before(:each) do
-        @player = Factory.create(:player)
-        Player.stub!(:find).with(@player.id).and_return(@player)
+    describe "callbacks" do
+      let(:player) { Factory.create(:player) }
+
+      describe ".vip_tick_callback" do
+        it "should have scope" do
+          Player::VIP_TICK_SCOPE
+        end
+
+        it "should invoke #vip_tick! upon tick" do
+          player.should_receive(:vip_tick!)
+          Player.vip_tick_callback(player)
+        end
       end
 
-      it "should invoke #vip_tick! upon tick" do
-        @player.should_receive(:vip_tick!)
-        Player.on_callback(@player.id, CallbackManager::EVENT_VIP_TICK)
+      describe ".vip_stop_callback" do
+        it "should have scope" do
+          Player::VIP_STOP_SCOPE
+        end
+
+        it "should invoke #vip_stop! upon stop" do
+          player.should_receive(:vip_stop!)
+          Player.vip_stop_callback(player)
+        end
       end
 
-      it "should invoke #vip_stop! upon stop" do
-        @player.should_receive(:vip_stop!)
-        Player.on_callback(@player.id, CallbackManager::EVENT_VIP_STOP)
+      describe ".check_inactive_player_callback" do
+        it "should have scope" do
+          Player::CHECK_INACTIVE_PLAYER_SCOPE
+        end
+
+        it "should find model and invoke #check_activity! on it" do
+          player.should_receive(:check_activity!)
+          Player.check_inactive_player_callback(player)
+        end
       end
     end
   end
@@ -1911,19 +1931,6 @@ describe Player do
         aggressor = player(10, 10, 10, 10, 10)
         defender = player(30, 30, 30, 30, 30)
         Player.battle_vps_multiplier(aggressor.id, defender.id).should == 3
-      end
-    end
-  end
-
-  describe "on callback" do
-    describe "inactivity check" do
-      let(:player) { Factory.create(:player) }
-
-      it "should find model and invoke #check_activity! on it" do
-        Player.should_receive(:find).with(player.id).and_return(player)
-        player.should_receive(:check_activity!)
-        Player.
-          on_callback(player.id, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
       end
     end
   end

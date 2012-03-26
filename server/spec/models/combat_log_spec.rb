@@ -64,11 +64,15 @@ describe CombatLog do
     end
   end
 
-  describe ".on_callback" do
-    describe "destroy" do
+  describe "callbacks" do
+    describe ".destroy_callback" do
+      it "should have scope" do
+        CombatLog::DESTROY_SCOPE
+      end
+
       it "should destroy combat log" do
         log = Factory.create(:combat_log)
-        CombatLog.on_callback(log.id, CallbackManager::EVENT_DESTROY)
+        CombatLog.destroy_callback(log)
         lambda do
           log.reload
         end.should raise_error(ActiveRecord::RecordNotFound)

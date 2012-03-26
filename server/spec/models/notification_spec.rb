@@ -82,16 +82,16 @@ describe Notification do
     end
   end
 
-  describe ".on_callback" do
-    before(:each) do
-      @model = Factory.create(:notification)
-    end
+  describe "callbacks" do
+    let(:model) { Factory.create(:notification) }
 
-    it "should delete notification" do
-      Notification.on_callback(@model.id, CallbackManager::EVENT_DESTROY)
-      lambda do
-        @model.reload
-      end.should raise_error(ActiveRecord::RecordNotFound)
+    describe ".destroy_callback" do
+      it "should delete notification" do
+        Notification.destroy_callback(model)
+        lambda do
+          model.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
     end
   end
 

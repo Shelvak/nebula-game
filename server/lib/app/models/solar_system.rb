@@ -299,5 +299,7 @@ class SolarSystem < ActiveRecord::Base
     solar_system.spawn!
     date = Cfg.solar_system_spawn_random_delay_date(solar_system)
     CallbackManager.register(solar_system, CallbackManager::EVENT_SPAWN, date)
+
+    date
   end
 end

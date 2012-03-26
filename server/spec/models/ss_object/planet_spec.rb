@@ -1318,30 +1318,30 @@ describe SsObject::Planet do
     end
   end
 
-  describe ".on_callback" do
-    describe "energy diminishment" do
+  describe "callbacks" do
+    describe ".energy_diminished_callback" do
       before(:each) do
         @model = Factory.create(:planet_with_player)
         @changes = [
           [Factory.create(:building), Reducer::RELEASED]
         ]
         @model.stub!(:ensure_positive_energy_rate!).and_return(@changes)
-        @id = -1
-        SsObject::Planet.stub!(:find).with(@id).and_return(@model)
+      end
+
+      it "should have scope defined" do
+        SsObject::ENERGY_DIMINISHED_SCOPE
       end
 
       it "should call #ensure_positive_energy_rate!" do
         @model.should_receive(:ensure_positive_energy_rate!)
-        SsObject::Planet.on_callback(@id,
-          CallbackManager::EVENT_ENERGY_DIMINISHED)
+        SsObject.energy_diminished_callback(@model)
       end
 
       it "should create notification with changed things" do
         Notification.should_receive(:create_for_buildings_deactivated).with(
           @model, @changes
         )
-        SsObject::Planet.on_callback(@id,
-          CallbackManager::EVENT_ENERGY_DIMINISHED)
+        SsObject.energy_diminished_callback(@model)
       end
 
       it "should not create notification with changed things " +
@@ -1349,45 +1349,45 @@ describe SsObject::Planet do
         @model.player = nil
         @model.save!
         Notification.should_not_receive(:create_for_buildings_deactivated)
-        SsObject::Planet.on_callback(@id,
-          CallbackManager::EVENT_ENERGY_DIMINISHED)
+        SsObject.energy_diminished_callback(@model)
       end
 
       it "should not create notification if nothing was changed" do
         @model.stub!(:ensure_positive_energy_rate!).and_return([])
         Notification.should_not_receive(:create_for_buildings_deactivated)
-        SsObject::Planet.on_callback(@id,
-          CallbackManager::EVENT_ENERGY_DIMINISHED)
+        SsObject.energy_diminished_callback(@model)
       end
 
       it "should fire CHANGED to EB" do
         should_fire_event(@model, EventBroker::CHANGED) do
-          SsObject::Planet.on_callback(@id,
-            CallbackManager::EVENT_ENERGY_DIMINISHED)
+          SsObject.energy_diminished_callback(@model)
         end
       end
     end
 
-    describe "exploration finished" do
+    describe ".exploration_complete_callback" do
+      it "should have scope defined" do
+        SsObject::EXPLORATION_COMPLETE_SCOPE
+      end
+
       it "should finish exploration" do
-        id = 10
         mock = mock(SsObject::Planet)
-        SsObject::Planet.should_receive(:find).with(id).and_return(mock)
         mock.should_receive(:finish_exploration!)
-        SsObject::Planet.on_callback(id,
-          CallbackManager::EVENT_EXPLORATION_COMPLETE)
+        SsObject.exploration_complete_callback(mock)
       end
     end
 
-    describe "npc raid" do
+    describe ".raid_callback" do
+      it "should have scope defined" do
+        SsObject::RAID_SCOPE
+      end
+
       it "should call RaidSpawner#raid!" do
-        id = 10
         planet = Factory.create(:planet_with_player)
-        SsObject::Planet.should_receive(:find).with(id).and_return(planet)
         spawner = mock(RaidSpawner)
         RaidSpawner.should_receive(:new).with(planet).and_return(spawner)
         spawner.should_receive(:raid!)
-        SsObject::Planet.on_callback(id, CallbackManager::EVENT_RAID)
+        SsObject.raid_callback(planet)
       end
     end
   end

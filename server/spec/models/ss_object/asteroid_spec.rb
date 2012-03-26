@@ -93,13 +93,18 @@ describe SsObject::Asteroid do
     end
   end
 
-  describe ".on_callback" do
-    it "should spawn resources" do
-      mock = mock(SsObject::Asteroid)
-      SsObject::Asteroid.should_receive(:find).with(1).and_return(mock)
-      mock.should_receive(:spawn_resources!)
+  describe "callbacks" do
+    describe ".spawn_callback" do
+      it "should have scope" do
+        SsObject::SPAWN_SCOPE
+      end
 
-      SsObject::Asteroid.on_callback(1, CallbackManager::EVENT_SPAWN)
+      it "should spawn resources" do
+        mock = mock(SsObject::Asteroid)
+        mock.should_receive(:spawn_resources!)
+
+        SsObject.spawn_callback(mock)
+      end
     end
   end
 end

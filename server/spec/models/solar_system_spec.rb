@@ -516,23 +516,22 @@ describe SolarSystem do
     end
   end
 
-  describe ".on_callback" do
-    describe "spawn" do
-      before(:each) do
-        @solar_system = Factory.create(:battleground)
-        SolarSystem.stub!(:find).with(@solar_system.id).
-          and_return(@solar_system)
+  describe "callbacks" do
+    describe ".spawn_callback" do
+      let(:solar_system) { Factory.create(:battleground) }
+
+      it "should have scope" do
+        SolarSystem::SPAWN_SCOPE
       end
 
       it "should call #spawn! on solar system" do
-        @solar_system.should_receive(:spawn!)
-        SolarSystem.on_callback(@solar_system.id, CallbackManager::EVENT_SPAWN)
+        solar_system.should_receive(:spawn!)
+        SolarSystem.spawn_callback(solar_system)
       end
 
       it "should register new callback" do
-        date = SolarSystem.
-          on_callback(@solar_system.id, CallbackManager::EVENT_SPAWN)
-        @solar_system.should have_callback(CallbackManager::EVENT_SPAWN, date)
+        date = SolarSystem.spawn_callback(solar_system)
+        solar_system.should have_callback(CallbackManager::EVENT_SPAWN, date)
       end
     end
   end
