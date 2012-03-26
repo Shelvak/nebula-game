@@ -23,12 +23,7 @@ package controllers.units.actions
       override public function applyClientAction(cmd:CommunicationCommand) : void
       {
          transporter = Unit(cmd.parameters);
-         Collections.filter(ML.units,
-            function(unit:Unit) : Boolean
-            {
-               return unit.location.type == LocationType.UNIT;
-            }
-         ).removeAll();
+         ML.units.removeStoredUnits();
          cmd.parameters = {'unitId': transporter.id};
          super.applyClientAction(cmd);
       }
