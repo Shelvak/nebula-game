@@ -197,6 +197,10 @@ describe FowSsEntry do
     end
 
     describe "recalculate" do
+      before(:each) do
+        klass.stub(:recalculate)
+      end
+
       it "should recalculate before modifying when increasing" do
         klass.should_receive(:recalculate).with(solar_system.id, true).
           and_return { lookup.call().should_not exist }
@@ -208,6 +212,18 @@ describe FowSsEntry do
         klass.should_receive(:recalculate).with(solar_system.id, true).
           and_return { lookup.call().should_not exist }
         decrease[player]
+      end
+
+      it "should recalculate after creating fse" do
+        entries = lambda { SolarSystem.visible_for(player).as_json }
+        # Enemy ship to have some metadata.
+        Factory.create!(
+          :u_crow, :location => SolarSystemPoint.new(solar_system.id, 0, 0)
+        )
+        increase[player]
+        lambda do
+          FowSsEntry.recalculate(solar_system.id)
+        end.should_not change(entries, :call)
       end
     end
 

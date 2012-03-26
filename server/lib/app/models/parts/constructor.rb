@@ -37,8 +37,15 @@ module Parts::Constructor
       @id = id
     end
 
-    def __db_building_id; @type == TYPE_BUILDING ? @id || @obj.id : nil; end
-    def __db_unit_id; @type == TYPE_UNIT ? @id || @obj.id : nil; end
+    # For #as_json of constructor.
+    def __type; @type == TYPE_BUILDING ? "Building" : "Unit"; end
+    # For #as_json of constructor.
+    def __id; @id || @obj.id; end
+
+    # For #composed_of mapping.
+    def __db_building_id; @type == TYPE_BUILDING ? __id : nil; end
+    # For #composed_of mapping.
+    def __db_unit_id; @type == TYPE_UNIT ? __id : nil; end
 
     # #composed_of freezes object to prevent changes to it. Ignore it as we take
     # care to save that object.
@@ -62,10 +69,10 @@ module Parts::Constructor
     end
   end
 
-	def self.included(receiver)
+  def self.included(receiver)
     receiver.extend ConditionalExtender
     receiver.extend BaseClassMethods
-	end
+  end
 
   # Extend subclass with functionality if that subclass is a constructor.
   module ConditionalExtender
@@ -128,7 +135,7 @@ module Parts::Constructor
     end
   end
 
-	module ClassMethods
+  module ClassMethods
     # Returns maximum number of queue elements for this constructor.
     def queue_max; property('queue.max') || 0; end
 
@@ -140,7 +147,7 @@ module Parts::Constructor
     def each_constructable_item
       (property('constructor.items') || []).each do |item|
         base, name = item.split('/')
-        
+
         yield item, base, name
       end
     end
@@ -175,13 +182,22 @@ module Parts::Constructor
     end
   end
 
-	module InstanceMethods
+  module InstanceMethods
     def as_json(options=nil)
       super do |hash|
-        hash["construction_queue_entries"] = construction_queue_entries.map(
-          &:as_json)
+        hash["construction_queue_entries"] = construction_queue_entries.
+          map(&:as_json)
         hash["build_in_2nd_flank"] = build_in_2nd_flank
         hash["build_hidden"] = build_hidden
+        # Constructable might be nil and we cannot use #try because it is
+        # proxied.
+        if constructable.nil?
+          hash["constructable_type"] = nil
+          hash["constructable_id"] = nil
+        else
+          hash["constructable_type"] = constructable.__type
+          hash["constructable_id"] = constructable.__id
+        end
       end
     end
 
@@ -414,5 +430,5 @@ module Parts::Constructor
 
       constructable
     end
-	end
+  end
 end

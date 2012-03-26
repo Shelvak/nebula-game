@@ -20,6 +20,17 @@ class LocaleChecker
     @global_keyset = Set.new
     @keys = {}
 
+    if JRUBY_VERSION == "1.6.6" && RUBY_VERSION == "1.9.2"
+      puts "#" * 80
+      puts "Due to XML bug on JRuby 1.6.6 on --1.9 mode we cannot check".
+        center(80)
+      puts "locales. Please run `JRUBY_OPTS=--1.8 rake flex:locales:check`".
+        center(80)
+      puts "if you want your locales to get checked.".center(80)
+      puts "#" * 80
+      return
+    end
+
     locale_files.each do |fpath|
       fname = File.basename(fpath)
       @keys[fname] = Set.new
