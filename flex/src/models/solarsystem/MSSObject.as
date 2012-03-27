@@ -769,12 +769,6 @@ package models.solarsystem
             && this.id == ML.latestPlanet.ssObject.id)
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE,
                resourceIncreased, resourceDecreased);
-         if (nextRaidEvent != null) {
-            raidTime = nextRaidEvent.occuresInString();
-         }
-         else {
-            raidTime = null;
-         }
       }
       
       [Bindable]
@@ -1039,15 +1033,22 @@ package models.solarsystem
 
 
       public function update(): void {
-         if (nextRaidEvent != null) {
-            nextRaidEvent.update();
+         updateItem(nextRaidEvent);
+         if (cooldown != null) {
+            cooldown.update();
+            if (cooldown.endsEvent.hasOccured) {
+               cooldown = null;
+            }
          }
+         raidTime = nextRaidEvent != null
+                       ? nextRaidEvent.occuresInString()
+                       : null;
+         dispatchUpdateEvent();
       }
 
       public function resetChangeFlags(): void {
-         if (nextRaidEvent != null) {
-            nextRaidEvent.resetChangeFlags();
-         }
+         resetChangeFlagsOf(nextRaidEvent);
+         resetChangeFlagsOf(cooldown);
       }
    }
 }
