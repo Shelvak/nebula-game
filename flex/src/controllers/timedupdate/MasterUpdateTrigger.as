@@ -7,7 +7,9 @@ package controllers.timedupdate
    import flash.utils.Timer;
    
    import interfaces.IUpdatable;
-   
+
+   import models.ModelLocator;
+
    import utils.DateUtil;
    import utils.Objects;
    import utils.TypeChecker;
@@ -92,16 +94,27 @@ package controllers.timedupdate
       /**
        * Index of a current update trigger in action.
        */
-      private var _triggerIndex:int;
+      private var _triggerIndex: int;
+
+      private function get ML(): ModelLocator {
+         return ModelLocator.getInstance();
+      }
 
       private function initTriggers() : void {
          _triggerIndex = -1;
          _triggers = Vector.<IUpdateTrigger>([
             TemporaryUpdateTrigger.getInstance(),
-            new GalaxyUpdateTrigger(),
-            new SolarSystemUpdateTrigger(),
+            new SingleUpdatableUpdateTrigger(
+               function (): IUpdatable { return ML.latestGalaxy }
+            ),
+            new SingleUpdatableUpdateTrigger(
+               function (): IUpdatable { return ML.latestSSMap }
+            ),
             new CooldownsUpdateTrigger(),
-            new PlayersUpdateTrigger(),
+            new SingleUpdatableUpdateTrigger(
+               function (): IUpdatable { return ML.player }
+            ),
+            new UIUpdateTrigger(),
             new MovementUpdateTrigger()
          ]);
          _triggersToReset = new Vector.<IUpdateTrigger>();
