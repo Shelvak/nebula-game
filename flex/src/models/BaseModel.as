@@ -471,8 +471,9 @@ package models
       }
       
       /**
-       * Call to dispatch <code>BaseModel.UPDATE</code> event. This event should only be dispached by
-       * models implementing <code>IUpdatable</code> interface.
+       * Call to dispatch <code>BaseModel.UPDATE</code> event. This event should
+       * only be dispatched by models implementing <code>IUpdatable</code>
+       * interface.
        * 
        * @see models.events.BaseModelEvent#UPDATE
        */

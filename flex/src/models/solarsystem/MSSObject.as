@@ -436,7 +436,7 @@ package models.solarsystem
        * 
        * @default 0
        */
-      public var position:int = 0;
+      public var position: int = 0;
       
       [SkipProperty]
       [Required]
@@ -451,7 +451,7 @@ package models.solarsystem
        * 
        * @default 0
        */
-      public var angle:int = 0;
+      public var angle: int = 0;
 
       private var _currentLocation: LocationMinimal;
       [Bindable(event="willNotChange")]
