@@ -24,7 +24,7 @@ class Chat::Message < ActiveRecord::Base
   # ]
   #
   def self.retrieve(player_id)
-    ActiveRecord::Base.connection.select_all(
+    connection.select_all(
       "SELECT source_id, message, created_at FROM `#{
         table_name}` WHERE target_id=#{player_id.to_i
         } ORDER BY created_at"
@@ -41,7 +41,7 @@ class Chat::Message < ActiveRecord::Base
   # See #retrieve
   def self.retrieve!(player_id)
     messages = retrieve(player_id)
-    ActiveRecord::Base.connection.execute(
+    connection.execute(
       "DELETE FROM `#{table_name}` WHERE target_id=#{player_id.to_i}"
     )
     messages

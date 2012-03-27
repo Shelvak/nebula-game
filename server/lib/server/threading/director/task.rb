@@ -3,7 +3,7 @@ class Threading::Director::Task
     "ActiveRecord::JDBCError: Deadlock found when trying to get lock"
   LOCK_WAIT_ERROR =
     "ActiveRecord::JDBCError: Lock wait timeout exceeded"
-  INFO_FROM_RETRY = 3 # From which retry should innodb info be included?
+  INFO_FROM_RETRY = 2 # From which retry should innodb info be included?
   MAX_RETRIES = 8
   SLEEP_RANGE = 100..500
 
