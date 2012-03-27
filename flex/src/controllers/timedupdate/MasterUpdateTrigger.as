@@ -98,6 +98,8 @@ package controllers.timedupdate
          _triggerIndex = -1;
          _triggers = Vector.<IUpdateTrigger>([
             TemporaryUpdateTrigger.getInstance(),
+            new GalaxyUpdateTrigger(),
+            new SolarSystemUpdateTrigger(),
             new CooldownsUpdateTrigger(),
             new PlayersUpdateTrigger(),
             new MovementUpdateTrigger()

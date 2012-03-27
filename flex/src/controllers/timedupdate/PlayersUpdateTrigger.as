@@ -18,9 +18,9 @@ package controllers.timedupdate
          return MChat.getInstance();
       }
 
-      private var _thePlayer:IUpdatable;
+      private var _thePlayer: IUpdatable;
       // TODO: Move to another trigger (perhaps special trigger for small and lonely models?)
-      private var _announcement:IUpdatable;
+      private var _announcement: IUpdatable;
       
       public function PlayersUpdateTrigger() {
          _thePlayer = ModelLocator.getInstance().player;
