@@ -18,7 +18,7 @@ bars and so on.
                     height="100%"
                     mouseEnabled="false"
                     creationComplete="MA.mainContainerCreationHandler(event)">
-   
+   <fx:Binding source="ML.latestPlanet.ssObject" destination="ssObject"/>
    <fx:Script>
       <![CDATA[
       import controllers.navigation.MCMainArea;
@@ -27,15 +27,16 @@ bars and so on.
       import models.Owner;
       import models.map.MapType;
       import models.planet.MPlanet;
+      import models.solarsystem.MSSObject;
 
       import utils.DateUtil;
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
 
-
+      [Bindable]
+      private var ssObject: MSSObject;
 
       private var MA: MCMainArea = MCMainArea.getInstance();
-
 
       private function getPlanetCooldownLabel(seconds: int): String {
          return DateUtil.secondsToHumanString(seconds, 2);
@@ -62,30 +63,27 @@ bars and so on.
          <base:layout><s:HorizontalLayout verticalAlign="bottom" gap="10"/></base:layout>
          <menus:MainMenu id="mnuMain"/>
          <bars:ResourcesBar id="resBar" visible="{ML.activeMapType == MapType.PLANET
-         &amp;&amp; !ML.latestPlanet.ssObject.metal.unknown}"/>
+         &amp;&amp; !ssObject.metal.unknown}"/>
          <raid:RaidBar id="raidBar"
             visible="{
                ML.activeMapType == MapType.PLANET &amp;&amp;
                ML.latestPlanet != null &amp;&amp;
                MPlanet.hasRaiders(
-                  ML.latestPlanet.ssObject.apocalypseWillBeStartedBeforeRaid
-                     ? 0 : ML.latestPlanet.ssObject.raidArg,
-                  ML.latestPlanet.ssObject.nextRaidEvent,
-                  (
-                     ML.latestPlanet.ssObject.inBattleground
-                     || ML.latestPlanet.ssObject.inMiniBattleground
-                  ),
+                  ssObject.apocalypseWillBeStartedBeforeRaid
+                     ? 0 : ssObject.raidArg,
+                  ssObject.nextRaidEvent,
+                  ssObject.inBattleground || ssObject.inMiniBattleground,
                   ML.latestGalaxy.apocalypseStartEvent
                ) &amp;&amp;
-               ML.latestPlanet.ssObject.owner == Owner.PLAYER &amp;&amp;
-               ML.latestPlanet.ssObject.nextRaidEvent
+               ssObject.owner == Owner.PLAYER &amp;&amp;
+               ssObject.nextRaidEvent
             }"/>
          <s:Group>
             <ui:IconWithLabel id="icoPlanetCooldown" toolTip="{Localizer.string('General', 'label.cooldownEndsIn')}"
                               icon="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'cooldown_large')}"
-                              text="{ML.latestPlanet.ssObject.cooldown.endsEvent.occuresInString()}"
+                              text="{ssObject.cooldown.endsEvent.occuresInString()}"
                               visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
-                              ML.latestPlanet.ssObject.cooldown != null}"
+                                        ssObject.cooldown != null}"
                               left="0" right="0" top="0" bottom="4"/>
          </s:Group>
       </base:AdvancedContainer>
