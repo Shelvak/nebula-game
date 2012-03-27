@@ -2,6 +2,8 @@ package models
 {
    import com.adobe.errors.IllegalStateError;
 
+   import controllers.timedupdate.MasterUpdateTrigger;
+
    import flash.events.EventDispatcher;
    import flash.utils.describeType;
 
@@ -17,26 +19,21 @@ package models
 
    import utils.Events;
    import utils.Objects;
-   import utils.TypeChecker;
    import utils.assets.ImagePreloader;
-   import utils.datastructures.iterators.IIteratorFactory;
 
 
    /**
     * @see models.events.BaseModelEvent#PENDING_CHANGE
-    * @eventType models.events.BaseModelEvent.PENDING_CHANGE
     */
    [Event(name="pendingChange", type="models.events.BaseModelEvent")]
    
    /**
     * @see models.events.BaseModelEvent#FLAG_DESTRUCTION_PENDING_SET
-    * @eventType models.events.BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET
     */
    [Event(name="flagDestructionPendingSet", type="models.events.BaseModelEvent")]
    
    /**
     * @see models.events.BaseModelEvent#MODEL_ID_CHANGE
-    * @eventType models.events.BaseModelEvent.MODEL_ID_CHANGE
     */
    [Event(name="modelIdChange", type="models.events.BaseModelEvent")]
    
@@ -47,8 +44,7 @@ package models
    
    /**
     * @see mx.events.PropertyChangeEvent
-    * @eventType mx.events.PropertyChangeEvent.PROPERTY_CHANGE
-    */   
+    */
    [Event(name="propertyChange", type="mx.events.PropertyChangeEvent")]
    
    
@@ -58,53 +54,31 @@ package models
    public class BaseModel extends EventDispatcher implements IBaseModel
    {
       /**
-       * Invokes <code>update()</code> method on given <code>IUpdatable</code>
-       * if it is not <code>null</code>.
+       * @see MasterUpdateTrigger#updateItem()
        */
-      public static function updateItem(updatable: IUpdatable): void {
-         if (updatable != null) {
-            updatable.update();
-         }
+      protected static function updateItem(updatable: IUpdatable): void {
+         MasterUpdateTrigger.updateItem(updatable);
       }
       
       /**
-       * Invokes <code>update()</code> method on each <code>IUpdatable</code>
-       * in the list if it is not <code>null</code>.
+       * @see MasterUpdateTrigger#updateList()
        */
-      public static function updateList(list:*) : void {
-         if (list != null) {
-            if (!TypeChecker.isCollection(list))
-               throw new TypeError(
-                  "[param list] must be [class Array], [class Vector] or"
-                     + "[class IList] but was " + Objects.getClass(list)
-               );
-            IIteratorFactory.getIterator(list).forEach(updateItem);
-         }
+      protected static function updateList(list:*) : void {
+         MasterUpdateTrigger.updateList(list);
       }
       
       /**
-       * Invokes <code>resetChangeFlags()</code> method on given <code>updatable</code>
-       * if it is not <code>null</code>.
+       * @see MasterUpdateTrigger.resetChangeFlagsOf()
        */
-      public static function resetChangeFlagsOf(updatable: IUpdatable): void {
-         if (updatable != null) {
-            updatable.resetChangeFlags();
-         }
+      protected static function resetChangeFlagsOf(updatable: IUpdatable): void {
+         MasterUpdateTrigger.resetChangeFlagsOf(updatable);
       }
       
       /**
-       * Invokes <code>resetChangeFlags()</code> method on each <code>IUpdatable</code> in the list
-       * if it is not <code>null</code>.
+       * @see MasterUpdateTrigger#resetChangeFlagsOfList()
        */
-      public static function resetChangeFlagsOfList(list:*) : void {
-         if (list != null) {
-            if (!TypeChecker.isCollection(list))
-               throw new TypeError(
-                  "[param list] must be [class Array], [class Vector] or "
-                     + "[class IList] but was " + Objects.getClass(list)
-               ); 
-            IIteratorFactory.getIterator(list).forEach(resetChangeFlagsOf);
-         }
+      protected static function resetChangeFlagsOfList(list:*) : void {
+         MasterUpdateTrigger.resetChangeFlagsOfList(list);
       }
       
       

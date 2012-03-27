@@ -12,7 +12,6 @@ package models.movement
    import models.Owner;
    import models.factories.UnitFactory;
    import models.location.ILocationUser;
-   import models.location.Location;
    import models.location.LocationMinimal;
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
@@ -27,7 +26,6 @@ package models.movement
    import mx.logging.Log;
 
    import utils.Objects;
-   import utils.datastructures.Collections;
 
 
    /**
@@ -516,18 +514,18 @@ package models.movement
       /* ################## */
 
       public function update(): void {
-         if (isHostile && jumpsAtEvent != null) {
-            jumpsAtEvent.update();
+         if (isHostile) {
+            MasterUpdateTrigger.updateItem(jumpsAtEvent);
          }
-         MasterUpdateTrigger.update(hops);
+         MasterUpdateTrigger.updateList(hops);
          dispatchUpdateEvent();
       }
 
       public function resetChangeFlags(): void {
-         if (isHostile && jumpsAtEvent != null) {
-            jumpsAtEvent.resetChangeFlags();
+         if (isHostile) {
+            MasterUpdateTrigger.resetChangeFlagsOf(jumpsAtEvent);
          }
-         MasterUpdateTrigger.resetChangeFlags(hops);
+         MasterUpdateTrigger.resetChangeFlagsOfList(hops);
       }
       
       
@@ -536,11 +534,13 @@ package models.movement
       /* ########################### */
       
       public override function equals(o:Object) : Boolean {
-         if (!super.equals(o))
+         if (!super.equals(o)) {
             return false;
-         var squad:MSquadron = MSquadron(o);
-         if (!squad.isMoving)
+         }
+         var squad: MSquadron = MSquadron(o);
+         if (!squad.isMoving) {
             return squad.owner == owner && squad.currentHop.equals(currentHop);
+         }
          return true;
       }
       
@@ -590,7 +590,7 @@ package models.movement
       
       private function dispatchHopAddEvent(hop:MHop) : void {
          if (hasEventListener(MRouteEvent.CHANGE)) {
-            var event:MRouteEvent = new MRouteEvent(MRouteEvent.CHANGE);
+            var event: MRouteEvent = new MRouteEvent(MRouteEvent.CHANGE);
             event.kind = MRouteEventChangeKind.HOP_ADD;
             event.hop = hop;
             dispatchEvent(event);

@@ -9,24 +9,21 @@ package controllers.timedupdate
          return ModelLocator.getInstance();
       }
 
-      public function MovementUpdateTrigger() {
-      }
-
       public function update(): void {
-         MasterUpdateTrigger.update(ML.routes);
-         MasterUpdateTrigger.update(ML.squadrons);
+         MasterUpdateTrigger.updateList(ML.routes);
+         MasterUpdateTrigger.updateList(ML.squadrons);
          // since there are no hostiles routes in ML.routes, we have to update
          // squadron in a planet directly so that jumpsAt time would be updated
          if (ML.latestPlanet != null) {
-            MasterUpdateTrigger.update(ML.latestPlanet.squadrons);
+            MasterUpdateTrigger.updateList(ML.latestPlanet.squadrons);
          }
       }
 
       public function resetChangeFlags(): void {
-         MasterUpdateTrigger.resetChangeFlags(ML.routes);
-         MasterUpdateTrigger.resetChangeFlags(ML.squadrons);
+         MasterUpdateTrigger.resetChangeFlagsOfList(ML.routes);
+         MasterUpdateTrigger.resetChangeFlagsOfList(ML.squadrons);
          if (ML.latestPlanet != null) {
-            MasterUpdateTrigger.resetChangeFlags(ML.latestPlanet.squadrons);
+            MasterUpdateTrigger.resetChangeFlagsOfList(ML.latestPlanet.squadrons);
          }
       }
    }

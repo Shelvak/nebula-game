@@ -14,61 +14,59 @@ package controllers.timedupdate
       }
 
       public function update(): void {
-         if (cooldownInPlanetAccessible) {
-            var cooldown: MCooldown = ML.latestPlanet.ssObject.cooldown;
+         if (planetAccessible) {
+            const cooldown: MCooldown = ML.latestPlanet.ssObject.cooldown;
             cooldown.update();
             if (cooldown.endsEvent.hasOccured) {
                ML.latestPlanet.ssObject.cooldown = null;
             }
          }
-         if (cooldownsInSolarSystemAccessible) {
+         if (solarSystemAccessible) {
             updateListOfCooldowns(ML.latestSSMap);
          }
-         if (cooldownsInGalaxyAccessible) {
+         if (galaxyAccessible) {
             updateListOfCooldowns(ML.latestGalaxy);
          }
       }
 
       private function updateListOfCooldowns(map: MMapSpace): void {
-         var remove: ArrayCollection = new ArrayCollection();
+         const remove: ArrayCollection = new ArrayCollection();
          for each (var cooldown: MCooldown in map.cooldowns) {
             cooldown.update();
             if (cooldown.endsEvent.hasOccured) {
                remove.addItem(cooldown);
             }
          }
-         if (cooldownsInSolarSystemAccessible) {
-            MasterUpdateTrigger.update(ML.latestSSMap.cooldowns);
+         if (solarSystemAccessible) {
+            MasterUpdateTrigger.updateList(ML.latestSSMap.cooldowns);
          }
-         if (cooldownsInGalaxyAccessible) {
-            MasterUpdateTrigger.update(ML.latestGalaxy.cooldowns);
+         if (galaxyAccessible) {
+            MasterUpdateTrigger.updateList(ML.latestGalaxy.cooldowns);
          }
          map.removeAllObjects(remove);
       }
 
       public function resetChangeFlags(): void {
-         if (cooldownInPlanetAccessible) {
-            ML.latestPlanet.ssObject.cooldown.resetChangeFlags();
+         if (planetAccessible) {
+            MasterUpdateTrigger.resetChangeFlagsOf(ML.latestPlanet.ssObject.cooldown);
          }
-         if (cooldownsInSolarSystemAccessible) {
-            MasterUpdateTrigger.resetChangeFlags(ML.latestSSMap.cooldowns);
+         if (solarSystemAccessible) {
+            MasterUpdateTrigger.resetChangeFlagsOfList(ML.latestSSMap.cooldowns);
          }
-         if (cooldownsInGalaxyAccessible) {
-            MasterUpdateTrigger.resetChangeFlags(ML.latestGalaxy.cooldowns);
+         if (galaxyAccessible) {
+            MasterUpdateTrigger.resetChangeFlagsOfList(ML.latestGalaxy.cooldowns);
          }
       }
 
-      private function get cooldownInPlanetAccessible(): Boolean {
-         return ML.latestPlanet != null &&
-                   ML.latestPlanet.ssObject != null &&
-                   ML.latestPlanet.ssObject.cooldown != null
+      private function get planetAccessible(): Boolean {
+         return ML.latestPlanet != null && ML.latestPlanet.ssObject != null;
       }
 
-      private function get cooldownsInSolarSystemAccessible(): Boolean {
+      private function get solarSystemAccessible(): Boolean {
          return ML.latestSSMap != null;
       }
 
-      private function get cooldownsInGalaxyAccessible(): Boolean {
+      private function get galaxyAccessible(): Boolean {
          return ML.latestGalaxy != null;
       }
    }
