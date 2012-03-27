@@ -9,8 +9,9 @@ package controllers.timedupdate
    
    
    /**
-    * Does not require you to unregister models because weak keys in the underlieing <code>Dictionary</code>.
-    * However doing so is recommended because models eligable for garbage collection may still be updated
+    * Does not require you to unregister models because weak keys in the
+    * underlying <code>Dictionary</code>. However doing so is recommended
+    * because models eligible for garbage collection may still be updated
     * until GC removes them.
     */
    public class TemporaryUpdateTrigger implements IUpdateTriggerTemporary
@@ -18,34 +19,25 @@ package controllers.timedupdate
       public static function getInstance() : IUpdateTriggerTemporary {
          return SingletonFactory.getSingletonInstance(TemporaryUpdateTrigger);
       }
-      
-      
-      private var _registered:Dictionary;
-      
-      
-      public function TemporaryUpdateTrigger() {
-         _registered = new Dictionary(true);
+
+      private const _registered: Dictionary = new Dictionary(true);
+
+      public function register(model: IUpdatable): void {
+         _registered[Objects.paramNotNull("model", model)] = true;
       }
-      
-      
-      public function register(model:IUpdatable) : void {
-         Objects.paramNotNull("model", model);
-         _registered[model] = true;
+
+      public function unregister(model: IUpdatable): void {
+         delete _registered[Objects.paramNotNull("model", model)];
       }
-      
-      public function unregister(model:IUpdatable) : void {
-         Objects.paramNotNull("model", model);
-         delete _registered[model];
-      }
-      
-      public function update() : void {
-         for (var model:Object in _registered) {
+
+      public function update(): void {
+         for (var model: Object in _registered) {
             IUpdatable(model).update();
          }
       }
-      
-      public function resetChangeFlags() : void {
-         for (var model:Object in _registered) {
+
+      public function resetChangeFlags(): void {
+         for (var model: Object in _registered) {
             IUpdatable(model).resetChangeFlags();
          }
       }
