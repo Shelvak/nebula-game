@@ -111,22 +111,26 @@ package models
        * otherwise
        */
       public static function modelsAreEqual(... params) : Boolean {
-         var model:BaseModel = params[0];
-         for each (var anotherModel:BaseModel in params) {
-            if (model.CLASS != anotherModel.CLASS || model.id != anotherModel.id)
+         const model: BaseModel = params[0];
+         for each (var anotherModel: BaseModel in params) {
+            if (model.CLASS != anotherModel.CLASS
+                   || model.id != anotherModel.id) {
                return false;
+            }
          }
          return true;
       }
-      
-      
-      public function BaseModel()
-      {
+
+      public function BaseModel() {
          super();
-         addSelfEventHandlers();
+         if (Objects.hasAnyProp(collectionsFilterProperties)) {
+            addEventListener(
+               PropertyChangeEvent.PROPERTY_CHANGE, this_propertyChangeHandler
+            );
+         }
       }
-      
-      
+
+
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
@@ -426,22 +430,10 @@ package models
       /* ########################### */
       /* ### SELF EVENT HANDLERS ### */
       /* ########################### */
-      
-      
-      private function addSelfEventHandlers(): void {
-         for (var collectionProp: String in collectionsFilterProperties) {
-            addEventListener(
-               PropertyChangeEvent.PROPERTY_CHANGE, this_propertyChangeHandler
-            );
-            break;
-         }
-      }
-      
-      
-      private function this_propertyChangeHandler(event:PropertyChangeEvent) : void
-      {
-         for each (var collectionProp:String in filterPropertiesCollections[event.property])
-         {
+
+      private function this_propertyChangeHandler(event: PropertyChangeEvent): void {
+         for each (var collectionProp: String
+            in filterPropertiesCollections[event.property]) {
             ICollectionView(this[collectionProp]).refresh();
          }
       }
