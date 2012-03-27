@@ -22,23 +22,23 @@ package controllers.timedupdate
 
       private const _registered: Dictionary = new Dictionary(true);
 
-      public function register(model: IUpdatable): void {
-         _registered[Objects.paramNotNull("model", model)] = true;
+      public function register(updatable: IUpdatable): void {
+         _registered[Objects.paramNotNull("updatable", updatable)] = true;
       }
 
-      public function unregister(model: IUpdatable): void {
-         delete _registered[Objects.paramNotNull("model", model)];
+      public function unregister(updatable: IUpdatable): void {
+         delete _registered[Objects.paramNotNull("updatable", updatable)];
       }
 
       public function update(): void {
-         for (var model: Object in _registered) {
-            IUpdatable(model).update();
+         for (var updatable: Object in _registered) {
+            IUpdatable(updatable).update();
          }
       }
 
       public function resetChangeFlags(): void {
-         for (var model: Object in _registered) {
-            IUpdatable(model).resetChangeFlags();
+         for (var updatable: Object in _registered) {
+            IUpdatable(updatable).resetChangeFlags();
          }
       }
    }
