@@ -2,8 +2,6 @@ package models.galaxy
 {
    import flash.geom.Point;
 
-   import interfaces.IUpdatable;
-
    import models.galaxy.events.GalaxyEvent;
    import models.location.Location;
    import models.location.LocationMinimal;
@@ -47,9 +45,9 @@ package models.galaxy
     */
    [Event(name="objectsUpdate", type="models.map.events.MMapEvent")]
    
-   public class Galaxy extends MMapSpace implements IUpdatable
+   public class Galaxy extends MMapSpace
    {
-      private var _fowMatrixBuilder:FOWMatrixBuilder;
+      private var _fowMatrixBuilder: FOWMatrixBuilder;
       
       public function Galaxy() {
          super();
@@ -77,7 +75,8 @@ package models.galaxy
             );
             _apocalypseStartEvent.addEventListener(
                     MTimeEventEvent.HAS_OCCURED_CHANGE,
-                    dispatchApocalypseStartEventChangeEvent)
+                    dispatchApocalypseStartEventChangeEvent
+            );
          }
       }
       public function get apocalypseStartEvent(): MTimeEventFixedMoment {
@@ -107,16 +106,18 @@ package models.galaxy
        * 
        * @default 0
        */
-      public var battlegroundId:int = 0;
-      
-      private var _solarSystems:ListCollectionView;
-      private function ff_solarSystems(ss:MSolarSystem) : Boolean {
+      public var battlegroundId: int = 0;
+
+      private var _solarSystems: ListCollectionView;
+      private function ff_solarSystems(ss: MSolarSystem): Boolean {
          return !ss.isWormhole;
       }
       [Bindable(event="willNotChange")]
       /**
-       * A list of all visible solar systems (not wormholes) in this galaxy (bound to
-       * <code>naturalObjects</code> list). <p><b>Never null</b>.</p>
+       * A list of all visible solar systems (not wormholes) in this galaxy
+       * (bound to <code>naturalObjects</code> list).
+       *
+       * <p><b>Never null</b>.</p>
        * 
        * <p><i><b>Metadata:</b></br>
        * [Bindable(event="willNotChange")]
@@ -125,11 +126,10 @@ package models.galaxy
       public function get solarSystems() : ListCollectionView {
          return _solarSystems;
       }
-      
-      private var _solarSystemsWithPlayer:ListCollectionView;
-      private function ff_solarSystemsWithPlayer(ss:MSolarSystem) : Boolean {
-         return ss.metadata != null &&
-                ss.metadata.playerAssets;
+
+      private var _solarSystemsWithPlayer: ListCollectionView;
+      private function ff_solarSystemsWithPlayer(ss: MSolarSystem): Boolean {
+         return ss.metadata != null && ss.metadata.playerAssets;
       }
       [Bindable(event="willNotChange")]
       /**
@@ -138,9 +138,6 @@ package models.galaxy
       public function get solarSystemsWithPlayer() : ListCollectionView {
          return _solarSystemsWithPlayer;
       }
-      /**
-       * Refreshes <code>solarSystemsWithPlayer</code> collection.
-       */
       public function refreshSolarSystemsWithPlayer() : void {
          _solarSystemsWithPlayer.refresh();
       }
@@ -332,28 +329,30 @@ package models.galaxy
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
-      private function wormholes_collectionChangeHandler(event:CollectionEvent) : void {
+
+      private function wormholes_collectionChangeHandler(event: CollectionEvent): void {
          dispatchSimpleEvent(GalaxyEvent, GalaxyEvent.HAS_WORMHOLES_CHANGE);
       }
 
-      private function dispatchApocalypseStartEventChangeEvent(e: MTimeEventEvent): void
-      {
+      private function dispatchApocalypseStartEventChangeEvent(e: MTimeEventEvent): void {
          dispatchSimpleEvent(
             GalaxyEvent, GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE
          );
       }
 
-      public function update(): void {
-         if (_apocalypseStartEvent != null) {
-            _apocalypseStartEvent.update();
-         }
+
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+
+      public override function update(): void {
+         updateItem(apocalypseStartEvent);
+         super.update();
       }
 
-      public function resetChangeFlags(): void {
-         if (_apocalypseStartEvent != null) {
-            _apocalypseStartEvent.resetChangeFlags();
-         }
+      public override function resetChangeFlags(): void {
+         resetChangeFlagsOf(apocalypseStartEvent);
+         super.resetChangeFlags();
       }
    }
 }
