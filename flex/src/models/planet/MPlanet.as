@@ -1438,16 +1438,17 @@ package models.planet
        * @param newX new x coordinate
        * @param newY new y coordinate
        */
-      public function moveBuilding(b:Building, newX:int, newY:int) : void
-      {
+      public function moveBuilding(b: Building, newX: int, newY: int): void {
+         if (b.x == newX && b.y == newY) {
+            return;
+         }
          clearObjectsMatrix(b.x, b.xEnd, b.y, b.yEnd);
          b.moveTo(newX, newY);
          checkBlockingObjectsUnder(b);
          removeNonBlockingFoliageUnder(b);
          fillObjectsMatrix(b);
          calculateZIndex();
-         if (hasEventListener(MPlanetEvent.BUILDING_MOVE))
-         {
+         if (hasEventListener(MPlanetEvent.BUILDING_MOVE)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.BUILDING_MOVE, b));
          }
       }

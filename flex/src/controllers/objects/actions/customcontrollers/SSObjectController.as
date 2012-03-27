@@ -77,7 +77,7 @@ package controllers.objects.actions.customcontrollers
             else {
                planet.ssObject.copyProperties(planetNew);
                // resources gets overwriten after update, so dispatch change event
-               new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE);
+               new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE, true, true);
             }
          }
          

@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
                     xmlns:s="library://ns.adobe.com/flex/spark"
-                    xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:base="components.base.*"
                     xmlns:screens="components.screens.*"
                     width="100%" height="100%"
-                    xmlns:unitsscreen="components.unitsscreen.*">
+                    xmlns:unitsscreen="components.unitsscreen.*"
+        creationComplete="creationCompleteHandler(event)">
    
    <fx:Script>
       <![CDATA[
-      import components.skins.RedButtonSkin;
-      import components.skins.YellowButtonSkin;
+      import controllers.navigation.MCMainArea;
+      import controllers.screens.MainAreaScreens;
+
+      import models.events.ScreensSwitchEvent;
 
       import models.healing.MCHealingScreen;
 
       import models.unit.MCUnitScreen;
-
-      import utils.ApplicationLocker;
 
       import controllers.ui.NavigationController;
 
       import models.unit.MCLoadUnloadScreen;
       import models.unit.Unit;
 
-      import utils.assets.AssetNames;
+      import mx.events.FlexEvent;
+
       import utils.locale.Localizer;
 
       protected function button1_clickHandler(event: MouseEvent): void {
@@ -56,6 +57,20 @@
 
       private function load_clickHandler(e: Event): void {
          LS.confirmTransfer();
+      }
+      
+      private function screenChanged(e: ScreensSwitchEvent = null): void
+      {
+         if (e == null || MCMainArea.getInstance().currentName == MainAreaScreens.LOAD_UNLOAD)
+         {
+            ML.units.removeStoredAfterScreenChange();
+         }
+      }
+
+      private function creationCompleteHandler(event: FlexEvent): void {
+         MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+         screenChanged);
+         screenChanged();
       }
       ]]>
    </fx:Script>

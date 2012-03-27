@@ -83,7 +83,7 @@
                <s:Group width="80%">
                   <base:ResourceSelectorComp resourceType="{ResourceType.METAL}" 
                                              maxAmmount="{LS.getMaxStock(ResourceType.METAL)}"
-                                             id="metalSelector" 
+                                             id="metalSelector"
                                              selectedVal="{LS.metalSelectedVal}"
                                              selectedResourcesChange="if (LS.metalSelectedVal != metalSelector.selectedVal)
                                              {

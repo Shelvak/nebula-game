@@ -4,10 +4,8 @@
          xmlns:base="components.base.*"
          xmlns:unitsscreen="components.unitsscreen.*"
          xmlns:screen="components.base.screen.*"
-         xmlns:screens="components.screens.*" xmlns:controls="mx.controls.*"
+         xmlns:screens="components.screens.*"
          creationComplete="creationCompleteHandler(event)"
-         addedToStage="addedToStageHandler(event)"
-         removedFromStage="removedFromStageHandler(event)"
          width="100%" height="100%">
 
 
@@ -20,11 +18,14 @@
     import config.Config;
 
     import controllers.buildings.BuildingsCommand;
+    import controllers.navigation.MCMainArea;
+    import controllers.screens.MainAreaScreens;
 
     import globalevents.GResourcesEvent;
     import globalevents.GlobalEvent;
 
     import models.building.Building;
+    import models.events.ScreensSwitchEvent;
     import models.solarsystem.MSSObject;
 
     import controllers.ui.NavigationController;
@@ -178,6 +179,9 @@
     private function creationCompleteHandler(event: FlexEvent): void {
       RT.addEventListener(ResourceTransporterEvent.SELECTED_BUILDING_CHANGE,
         setBuilding);
+      MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+              refreshScreen);
+       refreshScreen();
       //EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
       selectBuilding(RT.selectedBuilding);
     }
@@ -197,17 +201,25 @@
     [Bindable]
     private var planetsProvider: ListCollectionView;
 
-    private function addedToStageHandler(event: Event): void {
-      GlobalEvent.subscribe_TIMED_UPDATE(timedUpdate);
-      planetsProvider = Collections.filter(ML.player.planets,
-         function (item: MSSObject): Boolean {
-          return ML.latestPlanet != null && item.id != ML.latestPlanet.ssObject.id;
-        });
+    private function refreshScreen(event: ScreensSwitchEvent = null): void {
+      if ((event == null || MCMainArea.getInstance().currentName ==
+              MainAreaScreens.RESOURCE_TRANSPORTER) && !subscribed)
+      {
+         GlobalEvent.subscribe_TIMED_UPDATE(timedUpdate);
+         planetsProvider = Collections.filter(ML.player.planets,
+            function (item: MSSObject): Boolean {
+             return ML.latestPlanet != null && item.id != ML.latestPlanet.ssObject.id;
+           });
+         subscribed = true;
+      }
+      else if (subscribed)
+      {
+         GlobalEvent.unsubscribe_TIMED_UPDATE(timedUpdate);
+         subscribed = false;
+      }
     }
 
-    private function removedFromStageHandler(event: Event): void {
-      GlobalEvent.unsubscribe_TIMED_UPDATE(timedUpdate);
-    }
+    private var subscribed: Boolean = false;
     
     private function getWithoutFee(selected: int): String
     {

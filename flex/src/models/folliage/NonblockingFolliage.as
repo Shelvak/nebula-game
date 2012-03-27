@@ -6,7 +6,9 @@ package models.folliage
    import flash.errors.IllegalOperationError;
    
    import models.folliage.events.NonblockingFolliageEvent;
-   
+
+   import utils.Objects;
+
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    
@@ -93,56 +95,38 @@ package models.folliage
       }
       
       
-      [Bindable(event="planetObjectDimensionChange")]
       /**
        * This property is <strong>Read Only</strong>. It <strong>does
        * not have</strong> <code>Required</code> metadata tag defined.
        * 
        * @see models.planet.MPlanetObject#xEnd
        */
-      override public function set xEnd(v:Number) : void
-      {
-         throw new IllegalOperationError("xEnd Read Only property is.");
+      override public function set xEnd(v: Number): void {
+         Objects.throwReadOnlyPropertyError();
       }
-      /**
-       * @private
-       */
-      override public function get xEnd() : Number
-      {
+      override public function get xEnd(): Number {
          return x;
-      };
+      }
       
       
-      [Bindable(event="planetObjectDimensionChange")]
       /**
        * This property is <strong>Read Only</strong>. It <strong>does
        * not have</strong> <code>Required</code> metadata tag defined.
        * 
        * @see models.planet.MPlanetObject#yEnd
        */
-      override public function set yEnd(v:Number) : void
-      {
-         throw new IllegalOperationError("yEnd Read Only property is.");
+      override public function set yEnd(v: Number): void {
+         Objects.throwReadOnlyPropertyError();
       }
-      /**
-       * @private
-       */
-      override public function get yEnd() : Number
-      {
+      override public function get yEnd(): Number {
          return y;
-      };
-      
-      
-      [Bindable(event="planetObjectDimensionChange")]
-      override public function get width() : Number
-      {
+      }
+
+      override public function get width(): Number {
          return 1;
-      };
-      
-      
-      [Bindable(event="planetObjectDimensionChange")]
-      override public function get height() : Number
-      {
+      }
+
+      override public function get height(): Number {
          return 1;
       }
       
@@ -161,13 +145,12 @@ package models.folliage
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
-      
-      
-      public function swing() : void
-      {
-         if (animations && hasEventListener(NonblockingFolliageEvent.SWING))
-         {
-            dispatchEvent(new NonblockingFolliageEvent(NonblockingFolliageEvent.SWING));
+
+      public function swing(): void {
+         if (animations && hasEventListener(NonblockingFolliageEvent.SWING)) {
+            dispatchEvent(
+               new NonblockingFolliageEvent(NonblockingFolliageEvent.SWING)
+            );
          }
       }
    }

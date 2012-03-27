@@ -25,9 +25,6 @@
 
       import com.developmentarc.core.utils.EventBroker;
 
-      import components.skins.BuildButtonSkin;
-      import components.skins.InfoButtonSkin;
-
       import config.Config;
 
       import controllers.ui.NavigationController;
@@ -253,11 +250,13 @@
          NavigationController.getInstance().showInfo(temp);
       }
 
+      /* using private function instead of anonymous for performance reasons */
+      private function calcCost(resourceType: String): Number {
+         return Upgradable.calculateCost(UpgradableType.UNITS, type,
+                                         resourceType, {"level": 1});
+      }
+
       private function recalculateCosts(event: Event = null): void {
-         function calcCost(resourceType: String): Number {
-            return Upgradable.calculateCost(UpgradableType.UNITS, type,
-                                            resourceType, {"level": 1});
-         }
 
          selectedMetalCost = calcCost(ResourceType.METAL);
          qSelectedMetalCost = selectedMetalCost * selector.value;

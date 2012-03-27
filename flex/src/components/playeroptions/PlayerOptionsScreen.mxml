@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:screens="components.screens.*"
          xmlns:base="components.base.*"
          width="100%" height="100%">
+   <fx:Library>
+      <fx:Definition name="VerticalSectionLayout">
+         <s:VerticalLayout horizontalAlign="justify" gap="10"
+                           paddingTop="10" paddingBottom="10" paddingLeft="10"/>
+      </fx:Definition>
+   </fx:Library>
    <fx:Script>
       <![CDATA[
       import components.popups.ActionConfirmationPopUp;
@@ -70,6 +75,11 @@
             popUp.show();
          }
       }
+
+      private function enablePlanetAnimations_clickHandler(event: MouseEvent): void {
+         PlayerOptions.enablePlanetAnimations = !PlayerOptions.enablePlanetAnimations;
+         PlayerOptions.changed();
+      }
       ]]>
    </fx:Script>
    <fx:Declarations>
@@ -79,24 +89,21 @@
    </fx:Declarations>
    <base:Panel skinClass="components.skins.LargePanelSkin"
                title="{getString('title.options')}" width="900" horizontalCenter="0">
-      <base:layout><s:VerticalLayout horizontalAlign="justify"
-              paddingLeft="6"/></base:layout>
+      <base:layout>
+         <s:VerticalLayout horizontalAlign="justify" paddingLeft="6"/>
+      </base:layout>
       <base:Heading1 text="{getString('title.genericOptions')}"/>
       <s:Group>
+         <s:layout><fx:VerticalSectionLayout/></s:layout>
          <s:CheckBox id="warnBeforeUnload"
                      label="{getString('label.warnBeforeUnload')}"
                      selected="{PlayerOptions.warnBeforeUnload}"
                      click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
                      PlayerOptions.changed()"/>
-         <s:layout>
-            <s:VerticalLayout horizontalAlign="justify"
-                            paddingTop="10"
-                            paddingBottom="10"
-                            gap="10" paddingLeft="10"/>
-         </s:layout>
       </s:Group>
       <base:Heading1 text="{getString('title.afterLoginOptions')}"/>
       <s:Group>
+         <s:layout><fx:VerticalSectionLayout/></s:layout>
          <s:CheckBox id="showPopups" label="{getString('label.showPopupsAfterLogin')}"
                      selected="{PlayerOptions.showPopupsAfterLogin}"
                      click="PlayerOptions.showPopupsAfterLogin = !PlayerOptions.showPopupsAfterLogin;
@@ -105,12 +112,6 @@
                      selected="{PlayerOptions.openFirstPlanetAfterLogin}"
                      click="PlayerOptions.openFirstPlanetAfterLogin = !PlayerOptions.openFirstPlanetAfterLogin;
                      PlayerOptions.changed()"/>
-        <s:layout>
-          <s:VerticalLayout horizontalAlign="justify"
-                            paddingTop="10"
-                            paddingBottom="10"
-                            gap="10" paddingLeft="10"/>
-        </s:layout>
       </s:Group>
       <base:Heading1 text="{getString('title.chatOptions')}"/>
       <s:Group>
@@ -188,6 +189,14 @@
          <s:layout>
             <s:HorizontalLayout/>
          </s:layout>
+      </s:Group>
+      <base:Heading1 text="{getString('title.graphicsOptions')}"/>
+      <s:Group>
+         <s:layout><fx:VerticalSectionLayout/></s:layout>
+         <s:CheckBox id="enablePlanetAnimations"
+                     label="{getString('label.enablePlanetAnimations')}"
+                     selected="{PlayerOptions.enablePlanetAnimations}"
+                     click="enablePlanetAnimations_clickHandler(event)"/>
       </s:Group>
       <s:Group>
          <s:Button skinClass="components.skins.GreenButtonSkin"

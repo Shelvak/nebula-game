@@ -149,9 +149,9 @@ package controllers.timedupdate
          _triggerIndex++;
          if (_triggerIndex == _triggers.length)
             _triggerIndex = 0;
-         
+
          // update
-         var trigger:IUpdateTrigger = _triggers[_triggerIndex]; 
+         var trigger:IUpdateTrigger = _triggers[_triggerIndex];
          trigger.update();
          _triggersToReset.push(trigger);
       }

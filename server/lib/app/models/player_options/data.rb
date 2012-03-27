@@ -30,6 +30,11 @@ class PlayerOptions::Data < OptionsHash
   # Should first planet be opened after login?
   property :open_first_planet_after_login, :default => true, :valid => Boolean
 
+  ### Graphics options ###
+
+  # Show animations on planet terrain.
+  property :enable_planet_animations, :default => true, :valid => Boolean
+
   ### Generic options ###
 
   # Should game warn player before navigating away from page?

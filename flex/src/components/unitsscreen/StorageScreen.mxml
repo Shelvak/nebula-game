@@ -15,6 +15,11 @@
 
       import components.base.ResourceSelectorComp;
 
+      import controllers.navigation.MCMainArea;
+      import controllers.screens.MainAreaScreens;
+
+      import models.events.ScreensSwitchEvent;
+
       import models.unit.MCUnitScreen;
 
       import utils.ApplicationLocker;
@@ -57,10 +62,21 @@
       }
 
 
+      private function screenChanged(e: ScreensSwitchEvent = null): void
+      {
+         if (e == null || MCMainArea.getInstance().currentName == MainAreaScreens.STORAGE)
+         {
+            ML.units.removeStoredAfterScreenChange();
+         }
+      }
+
       private function this_creationCompleteHandler(event: FlexEvent): void {
          EventBroker.subscribe(GUnitsScreenEvent.OPEN_STORAGE_SCREEN,
                  setTransporter);
          NAV_CTRL.dispatchMainAreaScreenSwitchEvent();
+         MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+         screenChanged);
+         screenChanged();
       }
 
       [Bindable]

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx" width="100%">
+         width="100%">
    <fx:Metadata>
       /**
       * Dispatched when slider value property has changed.
@@ -13,7 +13,9 @@
    <fx:Script>
       <![CDATA[
          import models.unit.events.UnitEvent;
-         
+
+         import mx.controls.Alert;
+
          import mx.events.FlexEvent;
          import spark.events.TextOperationEvent;
          
@@ -30,6 +32,11 @@
          
          public function set maxAmmount(value: Number): void
          {
+            if (thumbChanging)
+            {
+               setMaxLater = value;
+               return;
+            }
             if (value != _maxAmmount)
             {
                if (selectedVal > value)
@@ -37,9 +44,11 @@
                   setValue(value);
                }
                _maxAmmount = value;
-               
+
             }
          }
+
+         private var setMaxLater: int = -1;
          
          [Bindable]
          private var _maxAmmount: Number;
@@ -47,6 +56,10 @@
          private var _selectedVal: Number = 0;
          public function set selectedVal(value: Number): void
          {
+            if (thumbChanging)
+            {
+               return;
+            }
             if (_selectedVal != value)
             {
                _selectedVal = value;
@@ -61,13 +74,18 @@
          
          public function setValue(value: Number): void
          {
+            if (thumbChanging)
+            {
+               return;
+            }
             input.value = value;
             slider.value = value;
             hslider1_changeHandler();
          }
-         
+
          protected function hslider1_changeHandler(event:Event = null):void
          {
+            thumbChanging = false;
             if (slider.value)
             {
                selectedVal = slider.value;
@@ -77,6 +95,11 @@
                selectedVal = 0;
             }
             input.value = selectedVal;
+            if (setMaxLater >= 0)
+            {
+               maxAmmount = setMaxLater;
+               setMaxLater = -1;
+            }
             dispatchEvent(new UnitEvent(UnitEvent.SELECTED_RESOURCES_CHANGE));
          }
          
@@ -101,7 +124,8 @@
             input.textDisplay.editable = false;
             input.textDisplay.selectable = false;
          }
-         
+
+         private var thumbChanging: Boolean = false;
       ]]>
    </fx:Script>
    <s:Group toolTip="{resourceType != null? Localizer.string('Resources', resourceType): ''}">
@@ -109,7 +133,9 @@
    </s:Group>
    <s:Label text="0"/>
    <s:HSlider id="slider" minimum="0" width="100%" maximum="{_maxAmmount}" value="0"
-              change="hslider1_changeHandler(event)" liveDragging="false"/>
+              valueCommit="hslider1_changeHandler(event)" liveDragging="false"
+              stepSize="1" dataTipPrecision="0" snapInterval="1"
+              thumbPress="thumbChanging = true" thumbRelease="thumbChanging = false"/>
    <s:Label text="{_maxAmmount}" width="50"/>
    <s:Button skinClass="components.skins.ZoomOutButtonSkin" click="setValue(0)"
              toolTip="{Localizer.string('Resources', 'toolTip.selectNone')}"/>

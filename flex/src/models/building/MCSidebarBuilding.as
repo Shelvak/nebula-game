@@ -11,7 +11,8 @@ package models.building
       public var constructing: Boolean = false;
       public var type: String;
       public var disabled: Boolean = false;
-      public var query: Boolean = false;
+      /* Marks {@link BuildingElement} state where building will be added to queue */
+      public var queue: Boolean = false;
       public function MCSidebarBuilding(_type: String)
       {
          type = _type;

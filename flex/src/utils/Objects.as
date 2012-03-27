@@ -689,6 +689,13 @@ package utils
       /**
        * @throws flash.errors.IllegalOperationError
        */
+      public static function throwReadOnlyPropertyError(customMessage: String = null): void {
+         throwIllegalOperationError("Property is read-only", customMessage);
+      }
+
+      /**
+       * @throws flash.errors.IllegalOperationError
+       */
       public static function throwNotSupportedPropertyError(customMessage:String = null): void {
          throwIllegalOperationError("Property not supported", customMessage);
       }
