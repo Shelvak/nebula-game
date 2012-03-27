@@ -5,7 +5,7 @@ package controllers.timedupdate
 
    import flash.events.TimerEvent;
    import flash.utils.Timer;
-   
+
    import interfaces.IUpdatable;
 
    import models.ModelLocator;
@@ -13,7 +13,6 @@ package controllers.timedupdate
    import utils.DateUtil;
    import utils.Objects;
    import utils.TypeChecker;
-   import utils.datastructures.iterators.IIterator;
    import utils.datastructures.iterators.IIteratorFactory;
    import utils.execution.GameLogicExecutionManager;
 
@@ -110,7 +109,9 @@ package controllers.timedupdate
             new SingleUpdatableUpdateTrigger(
                function (): IUpdatable { return ML.latestSSMap }
             ),
-            new CooldownsUpdateTrigger(),
+            new SingleUpdatableUpdateTrigger(
+               function (): IUpdatable { return ML.latestPlanet }
+            ),
             new SingleUpdatableUpdateTrigger(
                function (): IUpdatable { return ML.player }
             ),
