@@ -600,6 +600,7 @@ package models.player
          const now: Number = DateUtil.now;
 
          updateItem(allianceCooldown);
+         updateList(planets);
 
          if (vipCredsUntil != null && vipCredsUntil.time > now) {
             vipCredsTime = DateUtil.secondsToHumanString(
@@ -624,6 +625,7 @@ package models.player
       
       public function resetChangeFlags() : void {
          resetChangeFlagsOf(allianceCooldown);
+         resetChangeFlagsOfList(planets);
       }
       
       
