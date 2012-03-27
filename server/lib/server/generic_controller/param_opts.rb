@@ -41,7 +41,7 @@ class GenericController::ParamOpts
     raise BadParams.new(
       "Expected #{message} to have control token, but it did not or it " +
       "was invalid!"
-    ) if @data[:control_token] && message.params['token'] != Cfg.control_token
+    ) if @data[:control_token] && message.params['control_token'] != Cfg.control_token
 
     begin
       message.params.ensure_options!(
