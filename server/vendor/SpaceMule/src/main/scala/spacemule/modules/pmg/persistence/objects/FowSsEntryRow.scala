@@ -8,10 +8,10 @@ package spacemule.modules.pmg.persistence.objects
 import spacemule.persistence.{Row, RowObject, DB}
 
 object FowSsEntryRow extends RowObject {
-  sealed abstract class Owner(id: Int)
+  sealed abstract class Owner
   object Owner {
-    case class Player(id: Int) extends Owner(id)
-    case class Alliance(id: Int) extends Owner(id)
+    case class Player(row: PlayerRow) extends Owner
+    case class Alliance(id: Int) extends Owner
   }
 
   val pkColumn = Some("id")
@@ -35,7 +35,7 @@ case class FowSsEntryRow(
 
   // Used in Ruby.
   def playerId = owner match {
-    case FowSsEntryRow.Owner.Player(pid) => pid
+    case FowSsEntryRow.Owner.Player(row) => row.id
     case FowSsEntryRow.Owner.Alliance(_) => null
   }
   // Used in Ruby.
@@ -44,10 +44,10 @@ case class FowSsEntryRow(
     case FowSsEntryRow.Owner.Alliance(aid) => aid
   }
 
-  val valuesSeq = Seq(
+  lazy val valuesSeq = Seq(
     ssRow.id,
     owner match {
-      case FowSsEntryRow.Owner.Player(pid) => pid.toString
+      case FowSsEntryRow.Owner.Player(row) => row.id.toString
       case FowSsEntryRow.Owner.Alliance(_) => DB.loadInFileNull
     },
     owner match {

@@ -88,7 +88,7 @@ Message was:
   DESTROY_GALAXY_OPTIONS = control_token + required(:id => Fixnum)
   DESTROY_GALAXY_SCOPE = scope.world
   def self.destroy_galaxy_action(m)
-    Galaxy.find(m.message['id']).destroy!
+    Galaxy.find(m.params['id']).destroy!
   rescue ActiveRecord::RecordNotFound
     # If there is no galaxy, then there is no problem, right?
   end

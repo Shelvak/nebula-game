@@ -3,11 +3,10 @@ package spacemule.modules.pmg.persistence.objects
 import java.util.Calendar
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
-import spacemule.persistence.{DB, RowObject, Row}
 import ss_object.{PlanetRow, AsteroidRow}
+import spacemule.persistence.{ReferableRow, DB, RowObject, Row}
 
 object CallbackRow extends RowObject {
-  val pkColumn = None
   object Events extends Enumeration {
     type Event = Value
     
@@ -61,14 +60,14 @@ object CallbackRow extends RowObject {
 }
 
 case class CallbackRow(
-  row: Row,
+  row: ReferableRow,
   ruleset: String, 
   event: CallbackRow.Events.Event,
   time: Calendar
 ) extends Row {
   val companion = CallbackRow
 
-  val valuesSeq = Seq[Any](
+  lazy val valuesSeq = Seq[Any](
     event.id,
     DB.date(time),
     ruleset,

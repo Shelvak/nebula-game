@@ -7,23 +7,27 @@ import spacemule.helpers.BenchmarkableMock
 import spacemule.modules.pmg.objects.solar_systems.Battleground
 import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.config.objects.Config
-import spacemule.persistence.DB
 import java.util.{Calendar, Date}
+import spacemule.persistence.{ReferableRow, DB}
 
 object Runner extends BenchmarkableMock {
   /**
    * Creates galaxy with ruleset and callbackUrl. Returns galaxy id.
    */
+  @EnhanceStrings
   def createGalaxy(ruleset: String, callbackUrl: String): Int = {
     Config.withSetScope(ruleset) { () =>
       Manager.buffers.transaction { () =>
         val createdAt = DB.date(new Date())
+        val galaxyId = DB.insert("""
+          INSERT INTO `#Manager.GalaxiesTable` SET
+          `ruleset`=?, `callback_url`=?, `created_at`=?
+        """, List(ruleset, callbackUrl, createdAt))
+        val galaxyRow = new GalaxyRow(galaxyId)
+
         Manager.initDates()
 
         Manager.save { () =>
-          val galaxyRow = new GalaxyRow(ruleset, callbackUrl, createdAt)
-          Manager.galaxies += galaxyRow
-
           Manager.callbacks += CallbackRow(
             galaxyRow, ruleset, CallbackRow.Events.Spawn,
             Config.convoyTime.fromNow
@@ -41,12 +45,12 @@ object Runner extends BenchmarkableMock {
             )
           }
 
-          val galaxy = new Galaxy(galaxyRow.id, ruleset)
+          val galaxy = new Galaxy(galaxyId, ruleset)
           val battleground = new Battleground()
           battleground.createObjects()
           Manager.readSolarSystem(galaxy, None, battleground)
 
-          galaxyRow.id
+          galaxyId
         }
       }
     }
