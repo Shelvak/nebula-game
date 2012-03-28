@@ -1,11 +1,11 @@
 package models.time
 {
    import flash.events.IEventDispatcher;
-   
+
    import interfaces.IEqualsComparable;
    import interfaces.IUpdatable;
-   
-   
+
+
    /**
     * @see models.time.events.MTimeEventEvent#HAS_OCCURED_CHANGE
     * @eventType models.time.events.MTimeEventEvent.HAS_OCCURED_CHANGE
@@ -49,8 +49,8 @@ package models.time
       
       /**
        * Shortcut for <code>DateUtil.secondsToHumanString(this.occuresIn)</code>.
-       */ 
-      function occuresInString(timeParts:int = 2) : String;
+       */
+      function occuresInString(timeParts: int = 2): String;
       
       /**
        * Point in time when this event will occur (or already has occurred). When this property changes
@@ -62,6 +62,30 @@ package models.time
       /**
        * Shortcut for <code>DateUtil.formatShortDateTime(this.occuresAt)</code>.
        */
-      function occuresAtString(includeSecods:Boolean = false) : String;
+      function occuresAtString(includeSecods: Boolean = false): String;
+
+      /**
+       * Returns <code>true</code> if this instance of <code>IMTimeEvent</code>
+       * defines a moment in time before the given one.
+       *
+       * @param event | <b>not null</b>
+       */
+      function before(event: IMTimeEvent, epsilon: Number = 0): Boolean;
+
+      /**
+       * Returns <code>true</code> if this instance of <code>IMTimeEvent</code>
+       * defines a moment in time after the given one.
+       *
+       * @param event | <b>not null</b>
+       */
+      function after(event: IMTimeEvent, epsilon: Number = 0): Boolean;
+
+      /**
+       * Returns <code>true</code> if this instance of <code>IMtimeEvent</code>
+       * defines the same moment in time as the given one.
+       *
+       * @param event | <b>not null</b>
+       */
+      function sameTime(event: IMTimeEvent, epsilon: Number = 0): Boolean;
    }
 }

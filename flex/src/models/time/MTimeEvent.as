@@ -2,17 +2,17 @@ package models.time
 {
    import flash.errors.IllegalOperationError;
    import flash.events.EventDispatcher;
-   
+
    import models.time.events.MTimeEventEvent;
-   
+
    import namespaces.change_flag;
-   
+
    import utils.DateUtil;
    import utils.Events;
    import utils.NumberUtil;
    import utils.Objects;
-   
-   
+
+
    /**
     * Implements a few properties and methods common in both flavours of <code>IMTimeEvent</code>.
     * This class is abstract so don't use it directly.
@@ -48,18 +48,35 @@ package models.time
       public function get occuresAt() : Date {
          throw new IllegalOperationError("Property is abstract");
       }
-      
+
       [Bindable(event="occuresAtChange")]
       public function occuresAtString(includeSeconds: Boolean = false): String {
          return DateUtil.formatShortDateTime(occuresAt, includeSeconds);
       }
-      
-      
+
+      public function before(event: IMTimeEvent, epsilon: Number = 0): Boolean {
+         Objects.paramNotNull("event", event);
+         Objects.paramPositiveNumber("epsilon", epsilon);
+         return sameTime(event, epsilon)
+                   ? false : this.occuresAt.time < event.occuresAt.time;
+      }
+
+      public function after(event: IMTimeEvent, epsilon: Number = 0): Boolean {
+         Objects.paramNotNull("event", event);
+         Objects.paramPositiveNumber("epsilon", epsilon);
+         return sameTime(event, epsilon)
+                   ? false : this.occuresAt.time > event.occuresAt.time;
+      }
+
+      public function sameTime(event: IMTimeEvent, epsilon: Number = 0): Boolean {
+         return Math.abs(this.occuresAt.time - event.occuresAt.time) <= epsilon;
+      }
+
+
       /* ######################### */
       /* ### IEqualsComparable ### */
       /* ######################### */
-      
-      
+
       public function equals(o:Object):Boolean {
          if (!(o is MTimeEvent) || Objects.getClassName(this) != Objects.getClassName(o)) {
             return false;
@@ -71,13 +88,11 @@ package models.time
       /* ###################### */
       /* ### IMSelfUpdating ### */
       /* ###################### */
-      
-      
+
       public function update() : void {
          throw new IllegalOperationError("Method is abstract");
       }
-      
-      
+
       public function resetChangeFlags() : void {
          change_flag::hasOccured = false;
          change_flag::occuresAt = false;
@@ -99,11 +114,7 @@ package models.time
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
-      
-      /**
-       * @see utils.Events#dispatchSimpleEvent()
-       */
+
       protected function dispatchSimpleEvent(CLASS:Class, type:String) : void {
          Events.dispatchSimpleEvent(this, CLASS, type);
       }
