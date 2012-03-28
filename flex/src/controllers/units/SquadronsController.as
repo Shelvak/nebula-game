@@ -189,9 +189,9 @@ package controllers.units
          if (squad != null
                && !squad.hasHopsRemaining
                && squad.jumpPending
-               // Not using squad.jumpsAtEvent.hasOccured here to allow slight errors.
+               // Not using squad.jumpsAtEvent.hasOccurred here to allow slight errors.
                // The size of the error is worth to consider since client and server clocks are not
-               // in perfect sync. I think a situation might occure - although *very rarely* - when
+               // in perfect sync. I think a situation might occur - although *very rarely* - when
                // old jumpsAt and the new jumpsAt differ more than 200 ms but they actually define
                // the same jump. In such case ships will be removed a bit too early but players
                // might not even notice that as we have 500 ms errors anyway due to duration of effects

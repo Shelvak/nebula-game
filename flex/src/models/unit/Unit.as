@@ -409,7 +409,6 @@ package models.unit
       }
       
       
-      [SkipProperty]
       [Optional(alias="status")]
       /**
        * Owner of this unit: one of constants in <code>Owner</code> class.
