@@ -159,7 +159,7 @@ import utils.remote.rmo.ClientRMO;
 
 
 /**
- * Instances of this type are acually kept in _pendingRMOs hash table.
+ * Instances of this type are actually kept in _pendingRMOs hash table.
  */
 class PendingRMORecord
 {
