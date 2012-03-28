@@ -4,16 +4,23 @@ package models.unit
 
    import controllers.navigation.MCMainArea;
    import controllers.screens.MainAreaScreens;
+   import controllers.ui.NavigationController;
+   import controllers.units.UnitsCommand;
 
    import flash.errors.IllegalOperationError;
+
+   import globalevents.GUnitEvent;
 
    import globalevents.GlobalEvent;
 
    import models.ModelLocator;
 
    import models.ModelsCollection;
+   import models.Owner;
    import models.events.ScreensSwitchEvent;
    import models.location.LocationType;
+   import models.planet.MPlanet;
+   import models.player.PlayerOptions;
 
    import utils.datastructures.Collections;
 
@@ -51,7 +58,7 @@ package models.unit
          return removedUnits;
       }
 
-      public function removeStoredUnits(e: ScreensSwitchEvent = null): void
+      private function removeStoredUnits(e: ScreensSwitchEvent = null): void
       {
          if (e != null)
          {
@@ -93,6 +100,71 @@ package models.unit
       public override function shuffle(random:Rndm=null):void
       {
          throw new IllegalOperationError("Method is not supported");
+      }
+
+      /* show load or unload screen of given unit */
+      public function showUnit(load: Boolean, unit: Unit): void
+      {
+         removeStoredUnits();
+         unitsLoading = load;
+         unitToOpen = unit;
+         if (!unitsLoading && unitToOpen.stored > 0
+                 && (PlayerOptions.defaultTransporterTab ==
+                     PlayerOptions.TRANSPORTER_TAB_UNITS))
+         {
+            EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+            new UnitsCommand(UnitsCommand.SHOW, unitToOpen).dispatch();
+         }
+         else {
+            openUnit();
+         }
+      }
+
+      private var unitsLoading: Boolean;
+      private var unitToOpen: Unit;
+
+      private function openUnit(e: GUnitEvent = null): void {
+         var NC: NavigationController = NavigationController.getInstance();
+         var planet: MPlanet = ModelLocator.getInstance().latestPlanet;
+         var unitsReceived: Boolean = false;
+         if (e != null) {
+            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+            unitsReceived = true;
+         }
+         NC.enableActiveButton();
+         if (unitsLoading) {
+            NC.showLoadUnload(
+               planet.toLocation(),
+               unitToOpen,
+               Collections.filter(
+                  planet.units,
+                  function (_unit: Unit): Boolean {
+                     return (_unit.level > 0)
+                               && (_unit.volume > 0)
+                               && (_unit.owner == Owner.PLAYER)
+                               && _unit.location.type == LocationType.SS_OBJECT;
+                  }
+               )
+            );
+         }
+         else {
+            NC.showLoadUnload(
+               unitToOpen,
+               planet.toLocation(),
+               !unitsReceived
+                  ? null
+                  : Collections.filter(
+                     ModelLocator.getInstance().units,
+                     function (_unit: Unit): Boolean {
+                        return (_unit.level > 0)
+                           && (_unit.location.type == LocationType.UNIT)
+                           && (unitToOpen != null)
+                           && (_unit.location.id == unitToOpen.id);
+                     }
+                  )
+            );
+         }
+         unitToOpen = null;
       }
    }
 }

@@ -34,6 +34,7 @@
       import models.factories.BuildingFactory;
       import models.location.LocationType;
       import models.planet.MPlanet;
+      import models.player.PlayerOptions;
       import models.unit.MCUnit;
       import models.unit.Unit;
       import models.unit.UnitKind;
@@ -90,63 +91,6 @@
          new GSelectConstructableEvent(building);
       }
 
-      private var unitsLoading: Boolean;
-
-      /* ensure to open the same unit as requested */
-      private var unitToOpen: Unit;
-
-      private function show_inside(load: Boolean): void {
-         unitsLoading = load;
-         unitToOpen = model.unit;
-         if (model.unit.stored > 0) {
-            EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-            new UnitsCommand(UnitsCommand.SHOW, unitToOpen).dispatch();
-         }
-         else {
-            openUnit();
-         }
-      }
-
-      private function openUnit(e: GUnitEvent = null): void {
-         var planet: MPlanet = ModelLocator.getInstance().latestPlanet;
-         if (e != null) {
-            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-         }
-         NavigationController.getInstance().enableActiveButton();
-         if (unitsLoading) {
-            NavigationController.getInstance().showLoadUnload(
-               planet.toLocation(),
-               unitToOpen,
-               Collections.filter(
-                  planet
-                     .units,
-                  function (_unit: Unit): Boolean {
-                     return (_unit.level > 0)
-                               && (_unit.volume > 0)
-                               && (_unit.owner == Owner.PLAYER)
-                               && _unit.location.type == LocationType.SS_OBJECT;
-                  }
-               )
-            );
-         }
-         else {
-            NavigationController.getInstance().showLoadUnload(
-               unitToOpen,
-               planet.toLocation(),
-               Collections.filter(
-                  ModelLocator.getInstance().units,
-                  function (_unit: Unit): Boolean {
-                     return (_unit.level > 0)
-                               && (_unit.location.type == LocationType.UNIT)
-                               && (model != null) && (model.unit != null)
-                               && (_unit.location.id == model.unit.id);
-                  }
-               )
-            );
-         }
-         unitToOpen = null;
-      }
-
       [Bindable]
       private var expanded: Boolean = false;
 
@@ -191,7 +135,8 @@
             <base:layout>
                <s:VerticalLayout/>
             </base:layout>
-            <s:Button id="load" click="show_inside(true)" visible="{!(
+            <s:Button id="load" click="ML.units.showUnit(true, model.unit)"
+                      visible="{!(
                       (ML.technologies.getUnitStorage(model.unit.type, model.unit.level) == 0)
                       || (!model.unit.location.isSSObject)
                       || (!ML.latestPlanet)
@@ -202,7 +147,7 @@
                       || (ML.latestPlanet.ssObject.owner == Owner.ENEMY))}"
                       toolTip="{Localizer.string('Units', 'label.load')}"
                       skinClass="components.skins.LoadButtonSkin"/>
-            <s:Button id="unload" click="show_inside(false)" 
+            <s:Button id="unload" click="ML.units.showUnit(false, model.unit)"
                       visible="{!(model.unit.stored == 0 
                       || !model.unit.location.isSSObject
                       || (model.unit.owner != Owner.PLAYER)
