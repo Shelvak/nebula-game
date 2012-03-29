@@ -27,14 +27,14 @@ package models.movement
 
 
    /**
-    * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move
-    * occures between two different maps.
+    * Dispatched when a hop has been added to or removed from the route. Event
+    * is not dispatched when a move occurs between two different maps.
     */
    [Event(name="change", type="models.movement.events.MRouteEvent")]
    
    /**
-    * Dispatched when the squadron moves to a new location. Event is not dispatched when a move occures
-    * between two different maps.
+    * Dispatched when the squadron moves to a new location. Event is not
+    * dispatched when a move occurs between two different maps.
     */
    [Event(name="move", type="models.movement.events.MSquadronEvent")]
    
@@ -45,9 +45,12 @@ package models.movement
    
    
    /**
-    * Squadrons that have <code>pending</code> set to <code>true</code> are not moved.
+    * Squadrons that have <code>pending</code> set to <code>true</code>
+    * are not moved.
     */
-   public class MSquadron extends BaseModel implements ICleanable, ILocationUser, IUpdatable
+   public class MSquadron extends BaseModel implements ICleanable,
+                                                       ILocationUser,
+                                                       IUpdatable
    {
       private function get logger() : ILogger {
          return Log.getLogger("MOVEMENT");
@@ -399,7 +402,7 @@ package models.movement
          
          // look for the last hop the squad has to jump to
          for each (hop in hops) {
-            if (hop.arrivalEvent.occuresAt.time <= time) {
+            if (hop.arrivalEvent.occursAt.time <= time) {
                endHop = hop;
             }
             else {

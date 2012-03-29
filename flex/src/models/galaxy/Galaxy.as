@@ -74,7 +74,7 @@ package models.galaxy
                GalaxyEvent, GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE
             );
             _apocalypseStartEvent.addEventListener(
-                    MTimeEventEvent.HAS_OCCURED_CHANGE,
+                    MTimeEventEvent.HAS_OCCURRED_CHANGE,
                     dispatchApocalypseStartEventChangeEvent
             );
          }
@@ -91,7 +91,7 @@ package models.galaxy
       [Bindable(event="apocalypseStartEventChange")]
       public function get apocalypseHasStarted(): Boolean {
          return _apocalypseStartEvent != null
-                 && _apocalypseStartEvent.hasOccured;
+                 && _apocalypseStartEvent.hasOccurred;
       }
 
       [Required]

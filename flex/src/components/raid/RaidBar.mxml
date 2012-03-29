@@ -56,7 +56,7 @@
             return '';
          }
          if (planetCountDiff == 0) {
-            return raidArrives.occuresAtString();
+            return raidArrives.occursAtString();
          }
          return Localizer.string(
             'Units',
@@ -67,8 +67,8 @@
                      : 'label.withPlanetsOrMore'),
             [
                (ssObject.apocalypseWillBeStartedBeforeRaid
-                   ? 1 + getDays(raidArrives.occuresAt,
-                                 apocalypseMoment.occuresAt)
+                   ? 1 + getDays(raidArrives.occursAt,
+                                 apocalypseMoment.occursAt)
                    : raidArg)
                   + planetCountDiff
             ]

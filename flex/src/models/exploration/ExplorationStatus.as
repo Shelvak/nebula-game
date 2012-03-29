@@ -173,7 +173,7 @@ package models.exploration
       public function get timeLeft() : int {
          if (!explorationIsUnderway)
             return 0;
-         return ML.latestPlanet.ssObject.explorationEndEvent.occuresIn;
+         return ML.latestPlanet.ssObject.explorationEndEvent.occursIn;
       }
       
       [Bindable(event="statusChange")]

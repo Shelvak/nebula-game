@@ -188,11 +188,11 @@ package controllers.units
                // old jumpsAt and the new jumpsAt differ more than 200 ms but they actually define
                // the same jump. In such case ships will be removed a bit too early but players
                // might not even notice that as we have 500 ms errors anyway due to duration of effects
-               && (jumpsAt == null || (squad.jumpsAtEvent.occuresAt.time - jumpsAt.time) < -200)) {
+               && (jumpsAt == null || (squad.jumpsAtEvent.occursAt.time - jumpsAt.time) < -200)) {
             logger.debug(
                "Received new jumpsAt {0} form server for squad {1} before the old " +
                "jumpsAt {2} was cleared. Forcing the jump (removing squad) before update.",
-               jumpsAt, squad, squad.jumpsAtEvent.occuresAt
+               jumpsAt, squad, squad.jumpsAtEvent.occursAt
             );
             UnitJumps.setPreJumpLocations(
                squad.units, squad.currentHop.location
@@ -570,7 +570,7 @@ package controllers.units
                      destroySquadron(squadId);
                   }
                }
-               else if (squad.jumpPending && squad.jumpsAtEvent.hasOccured) {
+               else if (squad.jumpPending && squad.jumpsAtEvent.hasOccurred) {
                   UnitJumps.setPreJumpLocations(
                      squad.units, squad.currentHop.location
                   );

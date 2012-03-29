@@ -87,7 +87,7 @@ package models.player
          planets.sort.compareFunction = compareFunction_planets;
          planets.refresh();
          allianceCooldown.addEventListener
-            (MTimeEventEvent.HAS_OCCURED_CHANGE, allianceCooldown_hasOccurredChange,  false, 0, true);
+            (MTimeEventEvent.HAS_OCCURRED_CHANGE, allianceCooldown_hasOccurredChange,  false, 0, true);
       }
       
       [Optional]
@@ -422,11 +422,11 @@ package models.player
       public function allianceCooldownInEffect(allianceId: int = 0) : Boolean {
          Objects.paramPositiveNumber("allianceId", allianceId);
          if (allianceCooldownId == 0) {
-            return !allianceCooldown.hasOccured;
+            return !allianceCooldown.hasOccurred;
          }
          else {
             return allianceCooldownId == allianceId
-                      && !allianceCooldown.hasOccured;
+                      && !allianceCooldown.hasOccurred;
          }
       }
       

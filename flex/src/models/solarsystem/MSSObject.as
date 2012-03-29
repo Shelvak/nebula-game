@@ -1010,12 +1010,12 @@ package models.solarsystem
          updateItem(explorationEndEvent);
          if (cooldown != null) {
             cooldown.update();
-            if (cooldown.endsEvent.hasOccured) {
+            if (cooldown.endsEvent.hasOccurred) {
                cooldown = null;
             }
          }
          raidTime = nextRaidEvent != null
-                       ? nextRaidEvent.occuresInString()
+                       ? nextRaidEvent.occursInString()
                        : null;
          dispatchUpdateEvent();
       }

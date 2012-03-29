@@ -189,7 +189,7 @@ package tests.foliage.sidebar
          }
          else {
             const event: MTimeEventFixedMoment = new MTimeEventFixedMoment();
-            event.occuresAt = value;
+            event.occursAt = value;
             ssObject.explorationEndEvent = event;
          }
       }

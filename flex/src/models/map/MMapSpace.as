@@ -167,7 +167,7 @@ package models.map
          const remove: ArrayCollection = new ArrayCollection();
          for each (var cooldown: MCooldown in cooldowns) {
             cooldown.update();
-            if (cooldown.endsEvent.hasOccured) {
+            if (cooldown.endsEvent.hasOccurred) {
                remove.addItem(cooldown);
             }
          }

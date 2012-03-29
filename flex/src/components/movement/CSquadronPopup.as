@@ -442,12 +442,12 @@ package components.movement
             lblArrivesIn.text =
                getString(
                   "label.location.arrivesIn",
-                  [_squadron.route.arrivalEvent.occuresInString(3)]
+                  [_squadron.route.arrivalEvent.occursInString(3)]
                )
                + "\n" +
                getString(
                   "label.location.arrivesAt",
-                  [_squadron.route.arrivalEvent.occuresAtString(true)]
+                  [_squadron.route.arrivalEvent.occursAtString(true)]
                );
          }
       }

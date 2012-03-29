@@ -110,7 +110,7 @@ package models.planet
                 && (nextRaidEvent.after(apocalypseMoment)))
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  1 + Math.round((nextRaidEvent.occuresAt.time - apocalypseMoment.occuresAt.time)/
+            arg =  1 + Math.round((nextRaidEvent.occursAt.time - apocalypseMoment.occursAt.time)/
                     (1000 * 60 * 60 * 24));
             // for info in raid bar for next raids
             arg += raidArg;
@@ -148,7 +148,7 @@ package models.planet
          {
             data = Config.getRaidingApocalypseUnits();
             arg =  1 + Math.round(
-               (nextRaidEvent.occuresAt.time - apocalypseMoment.occuresAt.time) /
+               (nextRaidEvent.occursAt.time - apocalypseMoment.occursAt.time) /
                        (1000 * 60 * 60 * 24)
             );
             // for info in raid bar for next raids

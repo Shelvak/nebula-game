@@ -22,5 +22,5 @@
       <s:VerticalLayout horizontalAlign="center" gap="4" verticalAlign="middle"/>
    </space:layout>
    <s:Label text="{getString('label.cooldownEndsIn')}"/>
-   <s:Label text="{MCooldown(staticObject).endsEvent.occuresInString()}" fontWeight="bold"/>
+   <s:Label text="{MCooldown(staticObject).endsEvent.occursInString()}" fontWeight="bold"/>
 </space:CStaticSpaceObjectInfo>

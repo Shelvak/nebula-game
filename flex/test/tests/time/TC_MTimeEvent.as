@@ -1,9 +1,12 @@
 package tests.time
 {
-   import models.time.IMTimeEvent;
+   import ext.hamcrest.object.definesMethods;
+   import ext.hamcrest.object.metadata.withBindableTag;
+
    import models.time.MTimeEvent;
    import models.time.MTimeEventFixedInterval;
    import models.time.MTimeEventFixedMoment;
+   import models.time.events.MTimeEventEvent;
 
    import namespaces.change_flag;
 
@@ -30,18 +33,18 @@ package tests.time
          );
 
          event0 = new MTimeEventFixedInterval();
-         MTimeEventFixedInterval(event0).occuresIn = 10;
+         MTimeEventFixedInterval(event0).occursIn = 10;
          event1 = new MTimeEventFixedInterval();
-         MTimeEventFixedInterval(event1).occuresIn = 10;
+         MTimeEventFixedInterval(event1).occursIn = 10;
          assertThat(
             "instances of same subtype with same values should be equal",
             event0.equals(event1), isTrue()
          );
 
          event0 = new MTimeEventFixedInterval();
-         MTimeEventFixedInterval(event0).occuresIn = 10;
+         MTimeEventFixedInterval(event0).occursIn = 10;
          event1 = new MTimeEventFixedInterval();
-         MTimeEventFixedInterval(event1).occuresIn = 20;
+         MTimeEventFixedInterval(event1).occursIn = 20;
          assertThat(
             "instances of same subtype with different values should not be equal",
             event0.equals(event1), isFalse()
@@ -59,21 +62,21 @@ package tests.time
       [Test]
       public function shouldSetFlagsInChangeFlagNamespaceToFalse(): void {
          var event: MTimeEvent = new MTimeEvent();
-         event.change_flag::hasOccured = true;
-         event.change_flag::occuresAt = true;
-         event.change_flag::occuresIn = true;
+         event.change_flag::hasOccurred = true;
+         event.change_flag::occursAt = true;
+         event.change_flag::occursIn = true;
          event.resetChangeFlags();
          assertThat(
             "should reset hasOccurred flag",
-            event.change_flag::hasOccured, isFalse()
+            event.change_flag::hasOccurred, isFalse()
          );
          assertThat(
             "should reset occursAt flag",
-            event.change_flag::occuresAt, isFalse()
+            event.change_flag::occursAt, isFalse()
          );
          assertThat(
             "should reset occursIn flag",
-            event.change_flag::occuresIn, isFalse()
+            event.change_flag::occursIn, isFalse()
          );
       }
 
@@ -82,8 +85,8 @@ package tests.time
          const event0: MTimeEventFixedInterval = new MTimeEventFixedInterval();
          const event1: MTimeEventFixedInterval = new MTimeEventFixedInterval();
 
-         event0.occuresIn = 10;
-         event1.occuresIn = 11;
+         event0.occursIn = 10;
+         event1.occursIn = 11;
          assertThat(
             "10 seconds should be before 11",
             event0.before(event1, 0), isTrue()
@@ -99,8 +102,8 @@ package tests.time
          const event0: MTimeEventFixedMoment = new MTimeEventFixedMoment();
          const event1: MTimeEventFixedMoment = new MTimeEventFixedMoment();
 
-         event0.occuresAt = new Date(2000, 0, 1, 0, 0, 0,  0);
-         event1.occuresAt = new Date(2000, 0, 1, 0, 0, 0, 20);
+         event0.occursAt = new Date(2000, 0, 1, 0, 0, 0,  0);
+         event1.occursAt = new Date(2000, 0, 1, 0, 0, 0, 20);
          assertThat(
             "0 milliseconds should be before 20 when epsilon is 10",
             event0.before(event1, 10), isTrue()
@@ -124,8 +127,8 @@ package tests.time
          const event0: MTimeEventFixedInterval = new MTimeEventFixedInterval();
          const event1: MTimeEventFixedInterval = new MTimeEventFixedInterval();
 
-         event0.occuresIn = 10;
-         event1.occuresIn = 11;
+         event0.occursIn = 10;
+         event1.occursIn = 11;
          assertThat(
             "11 seconds should be after 10",
             event1.after(event0, 0), isTrue()
@@ -141,8 +144,8 @@ package tests.time
          const event0: MTimeEventFixedMoment = new MTimeEventFixedMoment();
          const event1: MTimeEventFixedMoment = new MTimeEventFixedMoment();
 
-         event0.occuresAt = new Date(2000, 0, 1, 0, 0, 0, 0);
-         event1.occuresAt = new Date(2000, 0, 1, 0, 0, 0, 20);
+         event0.occursAt = new Date(2000, 0, 1, 0, 0, 0, 0);
+         event1.occursAt = new Date(2000, 0, 1, 0, 0, 0, 20);
          assertThat(
             "20 milliseconds should be after 0 when epsilon is 10",
             event1.after(event0, 10), isTrue()
@@ -166,14 +169,14 @@ package tests.time
          const event0: MTimeEventFixedMoment = new MTimeEventFixedMoment();
          const event1: MTimeEventFixedMoment = new MTimeEventFixedMoment();
 
-         event0.occuresAt = new Date(2000, 0, 1, 0, 0, 0, 0);
-         event1.occuresAt = new Date(2000, 0, 1, 0, 0, 0, 0);
+         event0.occursAt = new Date(2000, 0, 1, 0, 0, 0, 0);
+         event1.occursAt = new Date(2000, 0, 1, 0, 0, 0, 0);
          assertThat(
             "should define the same time when epsilon is 0",
             event0.sameTime(event1), isTrue()
          );
 
-         event1.occuresAt.time += 10;
+         event1.occursAt.time += 10;
          assertThat(
             "should not define same time when epsilon is 0",
             event0.sameTime(event1), isFalse()
@@ -186,6 +189,16 @@ package tests.time
          assertThat(
             "should define same time when epsilon is less than or equal to time delta",
             event0.sameTime(event1, 10), isTrue()
+         );
+      }
+
+      [Test]
+      public function methodsMetadata(): void {
+         assertThat(
+            MTimeEvent, definesMethods({
+               "occursInString": withBindableTag (MTimeEventEvent.OCCURS_IN_CHANGE),
+               "occursAtString": withBindableTag (MTimeEventEvent.OCCURS_AT_CHANGE)
+            })
          );
       }
    }

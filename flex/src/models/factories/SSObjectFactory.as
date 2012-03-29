@@ -21,7 +21,7 @@ package models.factories
          if (data.cooldownEndsAt != null)
          {
             object.cooldown = new MCooldown();
-            object.cooldown.endsEvent.occuresAt = DateUtil.parseServerDTF(data.cooldownEndsAt);
+            object.cooldown.endsEvent.occursAt = DateUtil.parseServerDTF(data.cooldownEndsAt);
             object.cooldown.currentLocation = object.currentLocation;
          }
          function createResource(
