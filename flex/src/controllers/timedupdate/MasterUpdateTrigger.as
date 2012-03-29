@@ -2,6 +2,7 @@ package controllers.timedupdate
 {
    import controllers.messages.MessagesProcessor;
    import controllers.messages.ResponseMessagesTracker;
+   import controllers.units.SquadronsController;
 
    import flash.events.TimerEvent;
    import flash.utils.Timer;
@@ -115,8 +116,10 @@ package controllers.timedupdate
             new SingleUpdatableUpdateTrigger(
                function (): IUpdatable { return ML.player }
             ),
+            new SingleUpdatableUpdateTrigger(
+               function (): IUpdatable { return SquadronsController.getInstance() }
+            ),
             new UIUpdateTrigger(),
-            new MovementUpdateTrigger()
          ]);
          _triggersToReset = new Vector.<IUpdateTrigger>();
       }
