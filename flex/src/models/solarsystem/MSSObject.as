@@ -10,7 +10,6 @@ package models.solarsystem
    import flash.errors.IllegalOperationError;
 
    import globalevents.GResourcesEvent;
-   import globalevents.GlobalEvent;
 
    import interfaces.ICleanable;
    import interfaces.IUpdatable;
@@ -131,12 +130,10 @@ package models.solarsystem
       
       public function MSSObject() {
          super();
-         registerOrUnregisterTimedUpdateHandler();
          registerOtherEventHandlers();
       }
-      
-      public function cleanup() : void {
-         unregisterTimedUpdateHandler();
+
+      public function cleanup(): void {
          unregisterOtherEventHandlers();
       }
       
@@ -293,10 +290,9 @@ package models.solarsystem
        * 
        * @default <code>SSObjectType.PLANET</code>
        */
-      public function set type(value:String) : void {
+      public function set type(value: String): void {
          if (_type != value) {
             _type = value;
-            registerOrUnregisterTimedUpdateHandler();
          }
       }
       /**
@@ -516,14 +512,13 @@ package models.solarsystem
        * [Bindable(event="ownerChange")]
        * </p>
        */
-      public function set owner(value:int) : void {
+      public function set owner(value: int): void {
          if (_owner != value) {
             _owner = value;
             dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.OWNER_CHANGE);
             dispatchPropertyUpdateEvent(prop_name::owner, _owner);
             dispatchPropertyUpdateEvent(prop_name::isOwned, isOwned);
             dispatchPropertyUpdateEvent(prop_name::ownerIsPlayer, ownerIsPlayer);
-            registerOrUnregisterTimedUpdateHandler();
          }
       }
       /**
@@ -658,12 +653,10 @@ package models.solarsystem
        * <p><i><b>Metadata</b>:<br/>
        * [Optional]</i></p>
        */
-      public function set lastResourcesUpdate (value: Date): void
-      {
+      public function set lastResourcesUpdate(value: Date): void {
          _lastResourcesUpdate = value;
-         registerOrUnregisterTimedUpdateHandler();
       }
-      
+
       public function get lastResourcesUpdate (): Date
       {
          return _lastResourcesUpdate;
@@ -678,96 +671,76 @@ package models.solarsystem
       
       [Bindable]
       public var zetium:Resource;
-      
-      
-      private var timedUpdateHandlerRegistered:Boolean = false;
-      private function registerOrUnregisterTimedUpdateHandler() : void {
-         if (isPlanet && lastResourcesUpdate != null)
-            registerTimedUpdateHandler();
-         else
-            unregisterTimedUpdateHandler();
-      }
 
-      private function registerOtherEventHandlers(): void
-      {
-         if (ML.latestGalaxy != null)
-         {
+      private function registerOtherEventHandlers(): void {
+         if (ML.latestGalaxy != null) {
             registerApocalypseEventListener();
          }
-         else
-         {
-            ML.addEventListener(GalaxyEvent.GALAXY_READY,
-                    registerApocalypseEventListener);
+         else {
+            ML.addEventListener(
+               GalaxyEvent.GALAXY_READY,
+               registerApocalypseEventListener, false, 0, true
+            );
          }
       }
 
-      private function registerApocalypseEventListener(e: GalaxyEvent = null): void
-      {
-         if (e != null)
-         {
-            ML.removeEventListener(GalaxyEvent.GALAXY_READY,
-                    registerApocalypseEventListener);
+      private function registerApocalypseEventListener(e: GalaxyEvent = null): void {
+         if (e != null) {
+            ML.removeEventListener(
+               GalaxyEvent.GALAXY_READY, registerApocalypseEventListener, false
+            );
          }
          ML.latestGalaxy.addEventListener(
-                 GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE,
-                 dispatchRaidStateChangeEvent);
+            GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE,
+            dispatchRaidStateChangeEvent, false, 0, true
+         );
       }
 
-      private function unregisterOtherEventHandlers(): void
-      {
-         if (ML.latestGalaxy != null)
-         {
+      private function unregisterOtherEventHandlers(): void {
+         if (ML.latestGalaxy != null) {
             ML.latestGalaxy.removeEventListener(
-                    GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE,
-                    dispatchRaidStateChangeEvent);
+               GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE,
+               dispatchRaidStateChangeEvent, false
+            );
          }
-         else
-         {
-            ML.removeEventListener(GalaxyEvent.GALAXY_READY,
-                    registerApocalypseEventListener);
+         else {
+            ML.removeEventListener(
+               GalaxyEvent.GALAXY_READY,
+               registerApocalypseEventListener, false
+            );
          }
       }
 
-      private function registerTimedUpdateHandler() : void {
-         if (!timedUpdateHandlerRegistered) {
-            timedUpdateHandlerRegistered = true;
-            GlobalEvent.subscribe_TIMED_UPDATE(recalculateResources);
+      private function recalculateResources() : void {
+         if (!isPlanet || lastResourcesUpdate == null) {
+            return;
          }
-      }
-      private function unregisterTimedUpdateHandler() : void {
-         if (timedUpdateHandlerRegistered) {
-            timedUpdateHandlerRegistered = false;
-            GlobalEvent.unsubscribe_TIMED_UPDATE(recalculateResources);
-         }
-      }
-      
-      
-      private function recalculateResources(event:GlobalEvent) : void {
-         var timeDiff:Number = Math.floor((DateUtil.now - lastResourcesUpdate.time) / 1000);
+         const timeDiff: Number =
+                  Math.floor((DateUtil.now - lastResourcesUpdate.time) / 1000);
          var resourceIncreased: Boolean = false;
          var resourceDecreased: Boolean = false;
-         for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM]) {
-            var resource:Resource = this[type];
+         for each (var type: String in
+            [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM]) {
+            const resource: Resource = this[type];
             resource.boost.refreshBoosts();
-            var oldStock: Number = resource.currentStock;
+            const oldStock: Number = resource.currentStock;
             resource.currentStock = Math.max(0, Math.min(
                resource.maxStock,
                this[type + "AfterLastUpdate"] + resource.rate * timeDiff
             ));
-            if (oldStock > resource.currentStock)
-            {
+            if (oldStock > resource.currentStock) {
                resourceDecreased = true;
             }
-            else if (oldStock < resource.currentStock)
-            {
+            else if (oldStock < resource.currentStock) {
                resourceIncreased = true;
             }
          }
          /* CHECKING FOR SS OBJECT BY ID, NOT REFERENCE, READ MSsObject DOCUMENTATION FOR REASONS */
          if ((resourceDecreased || resourceIncreased) && ML.latestPlanet && ML.latestPlanet.ssObject
-            && this.id == ML.latestPlanet.ssObject.id)
+                && this.id == ML.latestPlanet.ssObject.id) {
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE,
-               resourceIncreased, resourceDecreased);
+                                resourceIncreased, resourceDecreased);
+         }
       }
       
       [Bindable]
@@ -1032,6 +1005,7 @@ package models.solarsystem
 
 
       public function update(): void {
+         recalculateResources();
          updateItem(nextRaidEvent);
          updateItem(explorationEndEvent);
          if (cooldown != null) {
