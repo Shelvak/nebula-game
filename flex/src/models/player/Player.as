@@ -1,9 +1,9 @@
 package models.player
 {
    import config.Config;
-   
+
    import interfaces.IUpdatable;
-   
+
    import models.Reward;
    import models.parts.events.UpgradeEvent;
    import models.player.events.PlayerEvent;
@@ -12,22 +12,20 @@ package models.player
    import models.technology.Technology;
    import models.time.MTimeEventFixedMoment;
    import models.time.events.MTimeEventEvent;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
-   import mx.events.CollectionEvent;
-   import mx.events.CollectionEventKind;
    import mx.utils.ObjectUtil;
-   
+
    import namespaces.prop_name;
-   
+
    import utils.DateUtil;
    import utils.MathUtil;
    import utils.NumberUtil;
    import utils.Objects;
    import utils.datastructures.Collections;
-   
-   
+
+
    /**
     * @see models.player.events.PlayerEvent#POPULATION_CAP_CHANGE
     * @eventType models.player.events.PlayerEvent.POPULATION_CAP_CHANGE
@@ -422,13 +420,13 @@ package models.player
       
       [Bindable(event="allianceCooldownChange")]
       public function allianceCooldownInEffect(allianceId: int = 0) : Boolean {
-         Objects.paramIsId("allianceId", allianceId);
+         Objects.paramPositiveNumber("allianceId", allianceId);
          if (allianceCooldownId == 0) {
-            return allianceCooldown.hasOccured;
+            return !allianceCooldown.hasOccured;
          }
          else {
             return allianceCooldownId == allianceId
-                      && allianceCooldown.hasOccured;
+                      && !allianceCooldown.hasOccured;
          }
       }
       
