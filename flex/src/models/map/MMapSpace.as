@@ -163,7 +163,7 @@ package models.map
       /* ### IUpdatable ### */
       /* ################## */
 
-      public function update(): void {
+      public override function update(): void {
          const remove: ArrayCollection = new ArrayCollection();
          for each (var cooldown: MCooldown in cooldowns) {
             cooldown.update();
@@ -172,11 +172,12 @@ package models.map
             }
          }
          removeAllObjects(remove);
-         dispatchUpdateEvent();
+         super.update();
       }
 
-      public function resetChangeFlags(): void {
+      public override function resetChangeFlags(): void {
          resetChangeFlagsOfList(cooldowns);
+         super.resetChangeFlags();
       }
    }
 }

@@ -1,7 +1,5 @@
 package models.movement
 {
-   import controllers.timedupdate.MasterUpdateTrigger;
-
    import flash.errors.IllegalOperationError;
 
    import interfaces.ICleanable;
@@ -241,18 +239,7 @@ package models.movement
        * [Bindable]</i></p>
        */
       public var currentHop:MHop = null;
-      
-      /**
-       * @see models.movement.MRoute#jumpsAtEvent
-       */
-      public function set jumpsAtEvent(value:MTimeEventFixedMoment) : void {
-         Objects.notNull(
-            route,
-            "[prop jumpsAtEvent] can be set only if [prop route] is not"
-               + " null.\nthis: " + this
-         );
-         route.jumpsAtEvent = value;
-      }
+
       public function get jumpsAtEvent() : MTimeEventFixedMoment {
          return route != null ? route.jumpsAtEvent : null;
       }
@@ -514,18 +501,14 @@ package models.movement
       /* ################## */
 
       public function update(): void {
-         if (isHostile) {
-            MasterUpdateTrigger.updateItem(jumpsAtEvent);
-         }
-         MasterUpdateTrigger.updateList(hops);
+         updateItem(jumpsAtEvent);
+         updateList(hops);
          dispatchUpdateEvent();
       }
 
       public function resetChangeFlags(): void {
-         if (isHostile) {
-            MasterUpdateTrigger.resetChangeFlagsOf(jumpsAtEvent);
-         }
-         MasterUpdateTrigger.resetChangeFlagsOfList(hops);
+         resetChangeFlagsOf(jumpsAtEvent);
+         resetChangeFlagsOfList(hops);
       }
       
       

@@ -1475,13 +1475,14 @@ package models.planet
       /* ### IUpdatable ### */
       /* ################## */
 
-      public function update(): void {
+      public override function update(): void {
          updateItem(ssObject);
-         dispatchUpdateEvent();
+         super.update();
       }
 
-      public function resetChangeFlags(): void {
+      public override function resetChangeFlags(): void {
          resetChangeFlagsOf(ssObject);
+         super.resetChangeFlags();
       }
 
 
