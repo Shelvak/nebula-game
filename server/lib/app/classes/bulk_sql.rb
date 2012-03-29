@@ -73,63 +73,66 @@ class BulkSql
       return if objects.size == 0
 
       table_name ||= klass.table_name
-      columns_str = create_columns_str(columns)
+      columns_str = create_columns_str(columns, update)
+      batch_id = Java::spacemule.persistence.DB.batch_id
 
-      begin
-        unless update
-          # Get a lock on a table to ensure no one else is writing to it.
-          connection.execute("LOCK TABLES `#{table_name}` WRITE")
-
-          primary_key = klass.primary_key.to_sym
-          last_pk = klass.maximum(primary_key) || 0
-        end
-
-        builder = Java::java.lang.StringBuilder.new
-        objects.each do |object|
-          # Run callbacks to simulate proper save.
-          object.run_callbacks(update ? :update : :create) do
-            object.run_callbacks(:save) do
-              unless update
-                last_pk += 1
-                object[primary_key] = last_pk
-              end
-
-              columns.each_with_index do |column, index|
-                value = object[column]
-                builder.append "\t" unless index == 0
-                builder.append encode_value(value)
-              end
-              builder.append "\n"
+      builder = Java::java.lang.StringBuilder.new
+      objects.each do |object|
+        # Run callbacks to simulate proper save.
+        object.run_callbacks(update ? :update : :create) do
+          object.run_callbacks(:save) do
+            columns.each_with_index do |column, index|
+              value = object[column]
+              builder.append "\t" unless index == 0
+              builder.append encode_value(value)
             end
+            unless update
+              builder.append "\t"
+              builder.append batch_id
+            end
+            builder.append "\n"
           end
         end
+      end
 
-        tempfile = Tempfile.new("bulk_sql-ruby")
-        begin
-          content = builder.to_s
-          tempfile.write(content)
-          tempfile.flush # Ensure file is fully written.
-          File.chmod(0644, tempfile.path) # Ensure mysql daemon can read it.
+      tempfile = Tempfile.new("bulk_sql-ruby-#{table_name}")
+      begin
+        content = builder.to_s
+        tempfile.write(content)
+        tempfile.flush # Ensure file is fully written.
+        File.chmod(0644, tempfile.path) # Ensure mysql daemon can read it.
 
-          # Execute the load infile. Use file version, because stream version
-          # silently ignores errors.
-          filename = tempfile.path.gsub("\\", "/") # Win32 support.
-          sql = "LOAD DATA INFILE '#{filename}' INTO TABLE `#{table_name
-            }` (#{columns_str})"
-          #STDERR.puts table_name
-          #STDERR.puts columns_str
-          #STDERR.puts builder.to_s
-          connection.execute(sql)
-        rescue Exception => e
-          raise ArgumentError,
-            "#{e.message}\nData was:\n#{columns_str}\n#{content}", e.backtrace
-        ensure
-          tempfile.close! unless ENV[
-            Java::spacemule.persistence.DB.KeepTmpFilesEnvVar
-          ] == "1"
+        # Execute the load infile. Use file version, because stream version
+        # silently ignores errors.
+        filename = tempfile.path.gsub("\\", "/") # Win32 support.
+        sql = "LOAD DATA INFILE '#{filename}' INTO TABLE `#{table_name
+          }` (#{columns_str})"
+        #STDERR.puts table_name
+        #STDERR.puts columns_str
+        #STDERR.puts builder.to_s
+        connection.execute(sql)
+
+        unless update
+          # Assign primary keys.
+          primary_key = klass.primary_key.to_sym
+          ids = klass.select(primary_key).where(:batch_id => batch_id).
+            c_select_values
+
+          raise "Wanted to insert #{objects.size} rows, however only #{
+            ids.size} rows inserted for #{table_name}!" \
+            if objects.size != ids.size
+
+          objects.each_with_index do |object, index|
+            object[primary_key] = ids[index]
+          end
         end
+      rescue Exception => e
+        raise ArgumentError,
+          "#{e.message}\nData was:\n#{columns_str}\n#{content}", e.backtrace
       ensure
-        connection.execute("UNLOCK TABLES") unless update
+        tempfile.close! unless ENV[
+          Java::spacemule.persistence.DB.KeepTmpFilesEnvVar
+        ] == "1"
       end
     end
 
@@ -182,8 +185,10 @@ class BulkSql
       end
     end
 
-    def create_columns_str(columns)
-      columns.map { |c| "`#{c}`" }.join(", ")
+    def create_columns_str(columns, update)
+      (
+        columns + (update ? [] : ["batch_id"])
+      ).map { |c| "`#{c}`" }.join(", ")
     end
 
     def connection

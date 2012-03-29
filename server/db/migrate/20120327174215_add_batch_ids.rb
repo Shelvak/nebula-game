@@ -5,7 +5,7 @@ class AddBatchIds < ActiveRecord::Migration
       
       execute(%Q{
         ALTER TABLE `#{table}`
-        ADD `batch_id` varchar(50),
+        ADD `batch_id` varchar(50) not null default '',
         ADD INDEX `batch_id` (`batch_id`)
       })
     end
