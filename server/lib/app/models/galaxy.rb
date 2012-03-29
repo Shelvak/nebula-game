@@ -69,7 +69,7 @@ class Galaxy < ActiveRecord::Base
   end
 
   def self.create_player(galaxy_id, web_user_id, name)
-    find(galaxy_id).create_player(web_user_id, name)
+    without_locking { find(galaxy_id) }.create_player(web_user_id, name)
   end
 
   def self.create_player_scope(galaxy_id, web_user_id, name)

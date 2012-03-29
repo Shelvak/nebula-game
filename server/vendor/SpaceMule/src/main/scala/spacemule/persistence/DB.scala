@@ -222,7 +222,7 @@ Original exception:
     }
     catch {
       case ex: Exception => throw new LoadInFileException(
-        file.getAbsolutePath, tableName, columns, builder.toString, ex
+        file.getAbsolutePath, tableName, cols, builder.toString, ex
       )
     }
     finally {

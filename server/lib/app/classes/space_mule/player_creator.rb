@@ -4,11 +4,12 @@ class SpaceMule::PlayerCreator
   # @return [Hash] {Player#web_user_id => Player#id}
   def self.invoke(galaxy_id, ruleset, players)
     # {Player#web_user_id => Player#id} of already created players.
-    already_created_players = Player.select("id, web_user_id").where(
-      :galaxy_id => galaxy_id, :web_user_id => players.keys
-    ).c_select_all.inject({}) do |hash, row|
+    already_created_players = without_locking do
+      Player.select("id, web_user_id").where(
+        :galaxy_id => galaxy_id, :web_user_id => players.keys
+      ).c_select_all
+    end.each_with_object({}) do |row, hash|
       hash[row['web_user_id']] = row['id']
-      hash
     end
 
     # Filter already created players.
@@ -18,15 +19,20 @@ class SpaceMule::PlayerCreator
 
     if to_create.size > 0
       # If we have anything to create.
-      save_result = SpaceMule::Pmg.Runner.
-        create_players(ruleset, galaxy_id, to_create.to_scala)
+      save_result = LOGGER.block("Calling SpaceMule") do
+        SpaceMule::Pmg.Runner.create_players(
+          ruleset, galaxy_id, to_create.to_scala
+        )
+      end
       # Iterate over Scala collection.
       player_ids = {}
       save_result.playerRows.foreach do |player_row|
         player_ids[player_row.player.webUserId] = player_row.id
       end
 
-      dispatch_new_solar_systems(save_result.fsesForExisting)
+      LOGGER.block("Dispatching newly created solar systems") do
+        dispatch_new_solar_systems(save_result.fsesForExisting)
+      end
 
       already_created_players.merge(player_ids)
     else

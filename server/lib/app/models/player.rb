@@ -110,7 +110,7 @@ class Player < ActiveRecord::Base
   #
   def self.minimal(id)
     if id
-      name = select("name").where(:id => id).c_select_one['name']
+      name = without_locking { select("name").where(:id => id).c_select_value }
       {"id" => id, "name" => name}
     else
       nil

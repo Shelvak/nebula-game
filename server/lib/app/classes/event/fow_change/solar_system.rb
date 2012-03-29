@@ -41,12 +41,16 @@ class Event::FowChange::SolarSystem < Event::FowChange
     player_ids = Set.new
 
     alliance_ids = fow_ss_entries.map(&:alliance_id).compact
-    alliance_players = Player.select("id, alliance_id").
-      where(:alliance_id => alliance_ids).
-      c_select_all.each_with_object({}) do |row, hash|
-        hash[row['alliance_id']] ||= []
-        hash[row['alliance_id']] << row['id']
-      end
+    alliance_players = alliance_ids.blank? \
+      ? {} \
+      : without_locking do
+        Player.select("id, alliance_id").
+          where(:alliance_id => alliance_ids).
+          c_select_all
+        end.each_with_object({}) do |row, hash|
+          hash[row['alliance_id']] ||= []
+          hash[row['alliance_id']] << row['id']
+        end
 
     fow_ss_entries.each do |fse|
       if fse.alliance_id
