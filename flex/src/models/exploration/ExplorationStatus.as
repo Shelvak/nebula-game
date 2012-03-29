@@ -116,7 +116,7 @@ package models.exploration
          );
       }
       
-      private var _foliage:BlockingFolliage
+      private var _foliage:BlockingFolliage;
       [Bindable(event="statusChange")]
       public function set foliage(value:BlockingFolliage) : void {
          if (_foliage != value) {
@@ -173,7 +173,7 @@ package models.exploration
       public function get timeLeft() : int {
          if (!explorationIsUnderway)
             return 0;
-         return Math.max(0, (ML.latestPlanet.ssObject.explorationEndsAt.time - new Date().time) / 1000);
+         return ML.latestPlanet.ssObject.explorationEndEvent.occuresIn;
       }
       
       [Bindable(event="statusChange")]
@@ -184,7 +184,7 @@ package models.exploration
        * [Bindable(event="statusChange")]</p>
        */
       public function get explorationIsUnderway() : Boolean {
-         return planet != null && planet.ssObject != null && planet.ssObject.explorationEndsAt != null;
+         return planet != null && planet.ssObject != null && planet.ssObject.explorationEndEvent != null;
       }
       
       [Bindable(event="statusChange")]
@@ -297,9 +297,7 @@ package models.exploration
        * </ul>
        */
       public function get canInstantFinish() : Boolean {
-         if (explorationIsUnderway && ML.player.creds >= instantFinishCost)
-            return true;
-         return false;
+         return explorationIsUnderway && ML.player.creds >= instantFinishCost;
       }
       
       /**
@@ -331,8 +329,8 @@ package models.exploration
       private function player_credsChangeHandler(event:PlayerEvent) : void {
          dispatchStatusChangeEvent();
       }
-      
-      private function addPlanetEventHandlers(palnet:MPlanet) : void {
+
+      private function addPlanetEventHandlers(planet: MPlanet): void {
          planet.addEventListener(MPlanetEvent.OBJECT_ADD, planet_objectsListUpdateHandler, false, 0, true);
          planet.addEventListener(MPlanetEvent.OBJECT_REMOVE, planet_objectsListUpdateHandler, false, 0, true);
          planet.ssObject.addEventListener(
@@ -366,10 +364,11 @@ package models.exploration
       }
       
       private function ssObject_propertyChangeHandler(event:PropertyChangeEvent) : void {
-         if (event.property == MSSObject.prop_name::explorationEndsAt ||
+         if (event.property == MSSObject.prop_name::explorationEndEvent ||
              event.property == MSSObject.prop_name::explorationX ||
-             event.property == MSSObject.prop_name::explorationY)
+             event.property == MSSObject.prop_name::explorationY) {
             dispatchStatusChangeEvent();
+         }
       }
       
       private function ssObject_ownerChangeHandler(event:MSSObjectEvent) : void {

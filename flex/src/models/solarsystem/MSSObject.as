@@ -153,14 +153,14 @@ package models.solarsystem
       public var solarSystemId:int = 0;
       
       /**
-       * Idicates if this <code>MSSObject</code> in a battleground solar system.
+       * Indicates if this <code>MSSObject</code> in a battleground solar system.
        */
       public function get inBattleground() : Boolean {
          return ML.latestGalaxy.isBattleground(solarSystemId);
       }
       
       /**
-       * Idicates if this <code>MSSObject</code> in a mini-battleground solar system.
+       * Indicates if this <code>MSSObject</code> in a mini-battleground solar system.
        */
       public function get inMiniBattleground() : Boolean {
          return ML.latestGalaxy.isMiniBattleground(solarSystemId);
@@ -796,11 +796,11 @@ package models.solarsystem
       /* ################### */
       /* ### EXPLORATION ### */
       /* ################### */
-      
-      prop_name static const explorationEndsAt:String = "explorationEndsAt";
-      private var _explorationEndsAt:Date = null;
+
+      prop_name static const explorationEndEvent: String = "explorationEndEvent";
+      private var _explorationEndEvent: MTimeEventFixedMoment = null;
       [Bindable]
-      [Optional]
+      [Optional(alias="explorationEndsAt")]
       /**
        * Time when exploration (if underway) will end.
        * 
@@ -808,10 +808,10 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set explorationEndsAt(value:Date) : void {
-         if (_explorationEndsAt != value) {
-            _explorationEndsAt = value;
-            if (_explorationEndsAt == null) {
+      public function set explorationEndEvent(value: MTimeEventFixedMoment): void {
+         if (_explorationEndEvent != value) {
+            _explorationEndEvent = value;
+            if (_explorationEndEvent == null) {
                explorationX = -1;
                explorationY = -1;
             }
@@ -820,8 +820,8 @@ package models.solarsystem
       /**
        * @private
        */
-      public function get explorationEndsAt() : Date {
-         return _explorationEndsAt;
+      public function get explorationEndEvent() : MTimeEventFixedMoment {
+         return _explorationEndEvent;
       }
       
       prop_name static const explorationX:String = "explorationX";
@@ -1033,6 +1033,7 @@ package models.solarsystem
 
       public function update(): void {
          updateItem(nextRaidEvent);
+         updateItem(explorationEndEvent);
          if (cooldown != null) {
             cooldown.update();
             if (cooldown.endsEvent.hasOccured) {
@@ -1047,6 +1048,7 @@ package models.solarsystem
 
       public function resetChangeFlags(): void {
          resetChangeFlagsOf(nextRaidEvent);
+         resetChangeFlagsOf(explorationEndEvent);
          resetChangeFlagsOf(cooldown);
       }
    }

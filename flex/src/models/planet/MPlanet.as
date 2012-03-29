@@ -738,7 +738,7 @@ package models.planet
        * Foliage currently being explored or <code>null</code> if exploration is not underway.
        */
       public function get exploredFoliage() : BlockingFolliage {
-         if (_ssObject.explorationEndsAt != null &&
+         if (_ssObject.explorationEndEvent != null &&
             _ssObject.explorationX >= 0 &&
             _ssObject.explorationY >= 0)
             return BlockingFolliage(getObject(_ssObject.explorationX, _ssObject.explorationY));
