@@ -105,8 +105,22 @@
       }
 
       protected function itemrenderer1_mouseDownHandler(event: MouseEvent): void {
-         model.selected = !model.selected;
-         model.flankModel.invertSelection(model, event.shiftKey);
+         if (event.ctrlKey)
+         {
+            if (!model.selected)
+            {
+               model.flankModel.selectType(model.unit.type);
+            }
+            else
+            {
+               model.flankModel.deselectType(model.unit.type);
+            }
+         }
+         else
+         {
+            model.selected = !model.selected;
+            model.flankModel.invertSelection(model, event.shiftKey);
+         }
       }
       ]]>
    </fx:Script>
