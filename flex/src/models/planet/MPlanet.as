@@ -107,7 +107,7 @@ package models.planet
          var data: Object;
          var arg: int;
          if (apocalypseMoment != null
-                 && (nextRaidEvent.occuresAt.time > apocalypseMoment.occuresAt.time))
+                && (nextRaidEvent.after(apocalypseMoment)))
          {
             data = Config.getRaidingApocalypseUnits();
             arg =  1 + Math.round((nextRaidEvent.occuresAt.time - apocalypseMoment.occuresAt.time)/
@@ -144,7 +144,7 @@ package models.planet
          var data: Object;
          var arg: int;
          if (apocalypseMoment != null
-                 && (nextRaidEvent.occuresAt.time > apocalypseMoment.occuresAt.time))
+                 && nextRaidEvent.after(apocalypseMoment))
          {
             data = Config.getRaidingApocalypseUnits();
             arg =  1 + Math.round(

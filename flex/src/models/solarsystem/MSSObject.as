@@ -329,8 +329,7 @@ package models.solarsystem
       public function get apocalypseWillBeStartedBeforeRaid(): Boolean
       {
          return ML.latestGalaxy.apocalypseActive && nextRaidEvent != null
-                 && (ML.latestGalaxy.apocalypseStartEvent.occuresIn <
-                        nextRaidEvent.occuresIn);
+                 && ML.latestGalaxy.apocalypseStartEvent.before(nextRaidEvent);
       }
       
       [Bindable(event="willNotChange")]
