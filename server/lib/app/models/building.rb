@@ -120,7 +120,7 @@ class Building < ActiveRecord::Base
 
   def as_json(options=nil)
     hash = attributes.except(*%w{pause_remainder hp_percentage without_points
-      constructable_building_id constructable_unit_id})
+      constructable_building_id constructable_unit_id flags})
     hash['hp'] = hp
     hash['overdriven'] = overdriven
     yield hash if block_given?
