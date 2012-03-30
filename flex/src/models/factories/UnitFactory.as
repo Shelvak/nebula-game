@@ -51,6 +51,7 @@ package models.factories
             // TODO: move assignment of unit.player to afterCreateModel() method like in Location?
             if (unit.playerId == 0) {
                unit.player = PlayerMinimal.NPC_PLAYER;
+               unit.owner = Owner.NPC;
             }
             else if (!players[unit.playerId]) {
                errors.push("No player for unit " + unit);
