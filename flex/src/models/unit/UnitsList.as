@@ -72,10 +72,20 @@ package models.unit
             removeStoredUnits);
             EventBroker.unsubscribe(GlobalEvent.APP_RESET, reset);
          }
-         Collections.filter(ModelLocator.getInstance().units,
+         Collections.filter(this,
             function(unit:Unit) : Boolean
             {
                return unit.location.type == LocationType.UNIT;
+            }
+         ).removeAll();
+      }
+
+      public function removeGarrisonUnits(): void
+      {
+         Collections.filter(this,
+            function(unit:Unit) : Boolean
+            {
+               return unit.location.type == LocationType.BUILDING;
             }
          ).removeAll();
       }
@@ -154,7 +164,7 @@ package models.unit
                !unitsReceived
                   ? null
                   : Collections.filter(
-                     ModelLocator.getInstance().units,
+                     this,
                      function (_unit: Unit): Boolean {
                         return (_unit.level > 0)
                            && (_unit.location.type == LocationType.UNIT)
