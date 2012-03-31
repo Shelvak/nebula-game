@@ -42,8 +42,10 @@ class Chat::Hub
   # This sends immediately and does not go through push queue!
   def send_stored(player)
     Chat::Message.retrieve!(player.id).each do |message|
-      private_msg(message['source_id'], player.id, message['message'],
-        message['created_at'])
+      private_msg(
+        message['source_id'], player.id, message['message'],
+        message['created_at']
+      )
     end
   end
 

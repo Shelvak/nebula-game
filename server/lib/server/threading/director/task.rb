@@ -7,6 +7,19 @@ class Threading::Director::Task
   MAX_RETRIES = 8
   SLEEP_RANGE = 100..500
 
+  # Creates a task, which cannot fail and crash the worker. All exceptions are
+  # catched and logged.
+  def self.non_failing(description, &block)
+    new(description) do |worker_name|
+      begin
+        block.call(worker_name)
+      rescue Exception => e
+        # Unexpected exceptions - log error, however do not crash the worker.
+        LOGGER.error "#{description} failed: #{e.to_log_str}", worker_name
+      end
+    end
+  end
+
   def initialize(description, &block)
     @description = description
     @block = block

@@ -447,6 +447,9 @@ class Dispatcher
   end
 
   def next_client_seq(client)
+    # Doesn't matter what we return if client is not connected.
+    return unless client_connected?(client)
+
     @storage[client][S_KEY_SEQ] ||= -1 # Start sequences from 0
     value = @storage[client][S_KEY_SEQ] += 1
     debug "Returning sequence number: #{value}", to_s(client)

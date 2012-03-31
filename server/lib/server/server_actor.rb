@@ -83,7 +83,7 @@ class ServerActor
         end
       end
     end
-  rescue EOFError
+  rescue EOFError, Errno::ECONNRESET
     # Our client has disconnected.
   ensure
     client_disconnected(client)
