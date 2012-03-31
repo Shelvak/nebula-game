@@ -3,7 +3,7 @@ ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
 
 # Global constants related to server tweaking
 WORKERS_CHAT = 1
-WORKERS_WORLD = 3
+WORKERS_WORLD = 1
 # Connections:
 # - initializer: migrator check, checked in.
 # - callback manager
@@ -14,21 +14,21 @@ WORKERS_WORLD = 3
 # need two connections per actor, not one.
 DB_POOL_SIZE = (WORKERS_CHAT + WORKERS_WORLD + 2) * 2
 
-#unless RUBY_VERSION >= '1.9.2' && JRUBY_VERSION >= '1.6.7'
-#  w = 80
-#  puts "#" * w
-#  puts "We require JRuby 1.6 (dev version) in 1.9 mode!".center(w)
-#  puts
-#  puts "To install JRuby 1.6 (dev version):".center(w)
-#  puts "`rvm install jruby-head-n16 --branch jruby-1_6`".center(w)
-#  puts
-#  puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
-#  puts "`export JRUBY_OPTS='--1.9'`".center(w)
-#  puts
-#  puts "Aborting!".center(w)
-#  puts "#" * w
-#  exit
-#end
+unless RUBY_VERSION >= '1.9.2' && JRUBY_VERSION >= '1.6.7'
+  w = 80
+  puts "#" * w
+  puts "We require JRuby 1.6 (dev version) in 1.9 mode!".center(w)
+  puts
+  puts "To install JRuby 1.6 (dev version):".center(w)
+  puts "`rvm install jruby-head-n16 --branch jruby-1_6`".center(w)
+  puts
+  puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
+  puts "`export JRUBY_OPTS='--1.9'`".center(w)
+  puts
+  puts "Aborting!".center(w)
+  puts "#" * w
+  exit
+end
 
 require 'bundler'
 
@@ -268,7 +268,6 @@ else
     STDERR.puts arg
     if App.server_state == App::SERVER_STATE_RUNNING
       App.server_state = App::SERVER_STATE_SHUTDOWNING
-      Celluloid.shutdown
     end
   end
 

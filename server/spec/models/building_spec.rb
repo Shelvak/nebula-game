@@ -720,7 +720,7 @@ describe Building do
       construction_mod energy_mod level type upgrade_ends_at state
       cooldown_ends_at hp overdriven},
       %w{pause_remainder hp_percentage without_points
-      constructable_building_id constructable_unit_id flags}
+      constructable_building_id constructable_unit_id flags }
   end
 
   describe "on create" do

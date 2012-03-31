@@ -11,7 +11,7 @@ DEPLOY_CONFIG = {
   :release_branch => {
     :stable1 => "master",
     :stable => "stable2",
-    :beta => "stable2"
+    :beta => "s2_par"
   },
 
   :servers => {

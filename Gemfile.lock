@@ -13,6 +13,20 @@ GIT
       jruby-pageant (>= 1.0.2)
 
 GIT
+  remote: git://github.com/celluloid/celluloid-io.git
+  revision: c2a5a5ef5b934f0c6a29157c3f5e3df497e9efe7
+  specs:
+    celluloid-io (0.10.0)
+      celluloid (~> 0.10.0)
+      nio4r (>= 0.3.1)
+
+GIT
+  remote: git://github.com/celluloid/celluloid.git
+  revision: aedf3b39fd64b70eecdc0fbbe730b1e7c938a3e7
+  specs:
+    celluloid (0.10.0)
+
+GIT
   remote: git://github.com/pry/pry.git
   revision: 9e9f6a51c3f57d8c91fda279b600bddbe84380c6
   specs:
@@ -43,13 +57,10 @@ GEM
     arel (3.0.2)
     bouncy-castle-java (1.5.0146.1)
     builder (3.0.0)
-    celluloid (0.9.0)
-    celluloid-io (0.9.0)
-      celluloid (~> 0.9.0)
-      nio4r (>= 0.3.1)
     chronic (0.6.7)
     coderay (1.0.5)
     diff-lcs (1.1.3)
+    eventmachine (0.12.10)
     eventmachine (0.12.10-java)
     factory_girl (2.1.2)
       activesupport
@@ -57,7 +68,9 @@ GEM
     jdbc-mysql (5.1.13)
     jruby-openssl (0.7.6.1)
       bouncy-castle-java (>= 1.5.0146.1)
+    jruby-pageant (1.0.2)
     jruby-pageant (1.0.2-java)
+    json (1.6.5)
     json (1.6.5-java)
     mail (2.4.4)
       i18n (>= 0.4.0)
@@ -101,8 +114,8 @@ DEPENDENCIES
   activerecord (~> 3.2.0)
   activerecord-jdbcmysql-adapter (~> 1.1)
   activesupport (~> 3.2.0)
-  celluloid (>= 0.9)
-  celluloid-io (>= 0.9)
+  celluloid!
+  celluloid-io!
   chronic (>= 0.6.2)
   eventmachine (>= 0.12.6)
   factory_girl (~> 2.1.2)
