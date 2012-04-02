@@ -194,6 +194,9 @@ namespace :build do
     fcsh_run("server", FCSH, FCSHD_PORT)
   end
 
+  desc "Compile for IntelliJ IDEA"
+  task :idea => ["build:compile:swf", "build:copy"]
+
   namespace :compile do
     desc "Compile assets into SWF files"
     task :assets do

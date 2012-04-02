@@ -6,6 +6,10 @@ package models.player {
    public class PlayerOptions {
       public static const IGNORE_TYPE_COMPLETE: String = 'complete';
       public static const IGNORE_TYPE_FILTERED: String = 'filtered';
+
+      public static const TRANSPORTER_TAB_RESOURCES: int = 0;
+      public static const TRANSPORTER_TAB_UNITS: int = 1;
+
       public static function loadOptions (options: Object, justRefreshOriginalData: Boolean = false): void
       {
          originalData = options;
@@ -23,6 +27,7 @@ package models.player {
          showPopupsAfterLogin = options.showPopupsAfterLogin;
          openFirstPlanetAfterLogin = options.openFirstPlanetAfterLogin;
          warnBeforeUnload = options.warnBeforeUnload;
+         defaultTransporterTab = options.defaultTransporterTab;
          enablePlanetAnimations = options.enablePlanetAnimations;
       }
 
@@ -38,6 +43,7 @@ package models.player {
             'showPopupsAfterLogin': showPopupsAfterLogin,
             'openFirstPlanetAfterLogin': openFirstPlanetAfterLogin,
             'warnBeforeUnload': warnBeforeUnload,
+            'defaultTransporterTab': defaultTransporterTab,
             'enablePlanetAnimations': enablePlanetAnimations
          }
       }
@@ -51,6 +57,7 @@ package models.player {
          showPopupsAfterLogin = originalData.showPopupsAfterLogin;
          openFirstPlanetAfterLogin = originalData.openFirstPlanetAfterLogin;
          warnBeforeUnload = originalData.warnBeforeUnload;
+         defaultTransporterTab = originalData.defaultTransporterTab;
          enablePlanetAnimations = originalData.enablePlanetAnimations;
          hasChanges = false;
       }
@@ -65,6 +72,7 @@ package models.player {
          && showPopupsAfterLogin == originalData.showPopupsAfterLogin
          && openFirstPlanetAfterLogin == originalData.openFirstPlanetAfterLogin
          && warnBeforeUnload == originalData.warnBeforeUnload
+         && defaultTransporterTab == originalData.defaultTransporterTab
          && enablePlanetAnimations == originalData.enablePlanetAnimations);
       }
 
@@ -107,6 +115,8 @@ package models.player {
 
       [Bindable]
       public static var warnBeforeUnload: Boolean;
+      [Bindable]
+      public static var defaultTransporterTab: int;
       [Bindable]
       public static var enablePlanetAnimations: Boolean = true;
    }

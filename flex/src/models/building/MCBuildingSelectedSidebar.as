@@ -338,25 +338,28 @@ package models.building
             dispatchSelectedBuildingChangeEvent();
             if (_selectedBuilding != null)
             {
-               _selectedBuilding.addEventListener(
-                  UpgradeEvent.LEVEL_CHANGE,
-                  refreshPriceOrientatedProperties
-               );
-               if (_selectedBuilding.npc && !_selectedBuilding.unitsCached)
+               if (ML.latestPlanet.ssObject.ownerIsPlayer)
                {
-                  new BuildingsCommand(BuildingsCommand.SHOW_GARRISON,
-                     _selectedBuilding).dispatch();
-               }
-               if (_selectedBuilding.type != BuildingType.MOTHERSHIP
-                  && !_selectedBuilding.npc)
-               {
-                  GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
-                  refreshDestructProperties();
-                  refreshRepairProperties();
-               }
-               if (_selectedBuilding.type == BuildingType.NPC_HALL)
-               {
-                  EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshBonusTime);
+                  _selectedBuilding.addEventListener(
+                     UpgradeEvent.LEVEL_CHANGE,
+                     refreshPriceOrientatedProperties
+                  );
+                  if (_selectedBuilding.npc && !_selectedBuilding.unitsCached)
+                  {
+                     new BuildingsCommand(BuildingsCommand.SHOW_GARRISON,
+                        _selectedBuilding).dispatch();
+                  }
+                  if (_selectedBuilding.type != BuildingType.MOTHERSHIP
+                     && !_selectedBuilding.npc)
+                  {
+                     GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
+                     refreshDestructProperties();
+                     refreshRepairProperties();
+                  }
+                  if (_selectedBuilding.type == BuildingType.NPC_HALL)
+                  {
+                     EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshBonusTime);
+                  }
                }
                Messenger.show(Localizer.string('BuildingSelectedSidebar', 'message.pressOnEmpty'));
             }
