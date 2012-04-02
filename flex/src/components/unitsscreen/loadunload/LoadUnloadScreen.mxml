@@ -47,17 +47,20 @@
             <base:layout>
                <s:HorizontalLayout gap="1"/>
             </base:layout>
-            <s:ToggleButton id="landButton"
-                            name="land"
-                            label="{Localizer.string('Units', 'kind.' + (LS.location is Unit?'stored':'land'), 
-                            [LS.getUnitCount(LS.flanks)])}"
-                            selected="{LS.landSelected}"
-                            click="LS.tglButton_clickHandler(event)"/>
-            <s:ToggleButton id="resourcesButton" label="{Localizer.string('Units', 'kind.resources')}"
+            <s:ToggleButton id="resourcesButton" 
+                            label="{Localizer.string('Units', 'kind.resources')}"
                             click="LS.tglButton_clickHandler(event)"
                             name="resources"
                             visible="{LS.resourcesVisible}"
                             selected="{LS.resourcesSelected}"/>
+            <s:ToggleButton id="landButton"
+                            name="land"
+                            label="{Localizer.string('Units', 'kind.' + (LS.location is Unit
+                            ? 'stored' + (LS.unitsGiven ? '' : 'Unknown')
+                            : 'land'), 
+                            [LS.getUnitCount(LS.flanks)])}"
+                            selected="{LS.landSelected}"
+                            click="LS.tglButton_clickHandler(event)"/>
          </base:AdvancedContainer>
       </unitsscreen:leftControls>
       <unitsscreen:content>

@@ -39,4 +39,13 @@ class PlayerOptions::Data < OptionsHash
 
   # Should game warn player before navigating away from page?
   property :warn_before_unload, :default => true, :valid => Boolean
+
+  TRANSPORTER_TAB_RESOURCES = 0
+  TRANSPORTER_TAB_UNITS = 1
+
+  TRANSPORTER_TABS = [TRANSPORTER_TAB_RESOURCES, TRANSPORTER_TAB_UNITS]
+
+  # Which tab should be opened first when opening a transporter
+  property :default_transporter_tab, :default => TRANSPORTER_TAB_RESOURCES,
+    :valid => lambda { |val| TRANSPORTER_TABS.include?(val) }
 end

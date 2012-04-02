@@ -210,7 +210,10 @@
     <Building_SpaceFactory-p8d value="{0 one[Space Factory] many[? Space Factories]}" />
     
     <!-- Other buildings -->
-    
+
+    <Building_ResourceTransporter value="Resource Transporter" />
+    <Building_ResourceTransporter-p8d value="{0 one[Resource Transporter] many[? Resource Transporters]}" />
+
     <Building_Market value="Market" />
     <Building_Market-p8d value="{0 one[Market] many[? Markets]}" />
 
@@ -231,43 +234,78 @@
 
     <!-- Technologies -->
 
+    <Technology_Trooper value="Trooper" />
+    <Technology_Seeker value="Seeker" />
+    <Technology_Shocker value="Shocker" />
+    <Technology_Vulcan value="Vulcan" />
+    <Technology_Screamer value="Screamer" />
+    <Technology_Thunder value="Thunder" />
     <Technology_ZetiumExtraction value="Zetium Extraction" />
-    <Technology_MetabolicChargers value="Metabolic Chargers" />
-    <Technology_HighVelocityCharges value="High Velocity Ammo" />
     <Technology_Market value="Market" />
+    <Technology_GroundFactory value="Ground Factory" />
     <Technology_SpaceFactory value="Space Factory" />
-    <Technology_ShipsArmor value="Reinforced Plates" />
-    <Technology_ShipsDamage value="Energized Plasma" />
-    <Technology_TanksDamage value="Zetium Shells" />
-    <Technology_TanksArmor value="Energized Armor" />
     <Technology_FieryMelters value="Pressurized Melting" />
     <Technology_SuperconductorTechnology value="Superconductor Technology" />
     <Technology_PowderedZetium value="Zetium Cutters" />
-    <Technology_HeavyFlight value="Gamma Thrusters" />
     <Technology_MetalStorage value="Liquid Compression" />
     <Technology_MetalExtractorT2 value="MEX T-2"/>
-    <Technology_MetalExtractorT2-whos ref="Technology_MetalExtractorT2"/>
+    <Technology_CollectorT2 value="Collector" />
+    <Technology_ZetiumExtractorT2 value="ZEX T-2" />
     <Technology_EnergyStorage value="Extended Batteries" />
     <Technology_ZetiumStorage value="Zetium Cartridges" />
     <Technology_ShipStorage value="External Cargo Decks" />
     <Technology_DefensivePortal ref="Building_DefensivePortal" />
+    <Technology_Radar value="Radar" />
     <Technology_Alliances value="Alliances" />
     <Technology_BuildingRepair value="Repair Drones" />
-    <Technology_TurretArmor value="Structural Linking" />
-    <Technology_TurretDamage value="Particle Chargers" />
+    <Technology_HealingCenter ref="Building_HealingCenter" />
     <Technology_Mdh value="Mobile Deployable Headquarters" />
     <Technology_Mantis ref="Unit_Mantis" />
+    <Technology_ResourceTransporter value="Resource Transporter" />
+
+    <Technology_SpaceDamage value="Ships Weapons" />
+    <Technology_SpaceArmor value="Ships Armor" />
+    <Technology_SpaceCritical value="Ships Computers" />
+    <Technology_SpaceAbsorption value="Ships Defense Systems" />
+    <Technology_HeavyFlight value="Gama Engines" />
+    <Technology_LightFlight value="Light body" />
+    <Technology_GroundDamage value="Ground Weapons" />
+    <Technology_GroundArmor value="Ground Armor" />
+    <Technology_GroundCritical value="Ground Computers" />
+    <Technology_GroundAbsorption value="Ground Defense Systems" />
+    <Technology_TurretDamage value="Particle Chargers" />
+    <Technology_TurretArmor value="Structural Linking" />
+    <Technology_TurretCritical value="Turret Computers" />
+    <Technology_TurretAbsorption value="Turret Defense Systems" />
+
+    <Technology_NpcSpaceDamage value="NPC Ships Weapons" />
+    <Technology_NpcSpaceArmor value="NPC Ships Armor" />
+    <Technology_NpcSpaceCritical value="NPC Ships Computers" />
+    <Technology_NpcSpaceAbsorption value="NPC Ships Def. Systems" />
+    <Technology_NpcHeavyFlight value="NPC Ships Engines" />
+    <Technology_NpcLightFlight value="Space Distortion" />
+    <Technology_NpcGroundDamage value="NPC Ground Weapons" />
+    <Technology_NpcGroundArmor value="NPC Ground Armor" />
+    <Technology_NpcGroundCritical value="NPC Ground Computers" />
+    <Technology_NpcGroundAbsorption value="NPC Ground Def. Systems" />
+
+    <Technology_DamageSpecialization value="Damage Specialization" />
+    <Technology_ArmorSpecialization value="Armor Specialization" />
+    <Technology_CriticalSpecialization value="Critical Rate Specialization" />
+    <Technology_AbsorptionSpecialization value="Absorption Rate Specialization" />
+    <Technology_SpeedSpecialization value="Flight Speed Specialization" />
+    <Technology_StorageSpecialization value="Storage Specialization" />
 
     <!-- Other stuff -->
+
+    <Technology value="Technology" />
+    <Technology-p8d value="{0 one[Technology] many[? Technologies]}" />
 
     <Unit value="Unit" />
     <Unit-p8d value="{0 one[Unit] many[? Units]}" />
     
     <Building value="Building" />
     <Building-p8d value="{0 one[Building] many[? Buildings]}" />
-    
-    <Technology value="Technology" />
-    <Technology-p8d value="{0 one[Technology] many[? Technologies]}" />
     
     <Planet value="Planet" />
     <Planet-p8d value="{0 one[Planet] many[? Planets]}" />
@@ -378,6 +416,9 @@
     <status2 value="NAP" />
     <status2.tooltip value="Non-Agression Pact" />
     <status3 value="Enemy" />
+
+    <label.loadingBattleMap value="Loading battlefield" />
+
     <space value="Space" />
     <ground value="Ground" />
     <youWon value="You won!" />
@@ -392,7 +433,7 @@
     <tooltip.play value="PLAY/PAUSE" />
     <tooltip.replay value="REPLAY" />
   </BattleMap>
-  
+
   <Messenger>
     <clickHere value="Click here for more info" />
   </Messenger>
@@ -406,6 +447,7 @@
     <status value="Status" />
     <constructing value="Constructing" />
     <upgrading value="Upgrading" />
+
     <title.rates value="Rates" />
     <title.inactiveBuilding value="Inactive building" />
     <storage value="Storage" />
@@ -458,7 +500,7 @@
     </warning.repairBuildingTechNeeded>
     <label.repairBuilding value="Repair"/>
     <label.cancelUpgrade>
-      <p>These resources will be returned if you cancel upgrade of this 
+      <p>These resources will be returned if you cancel upgrade of this
       building:</p>
     </label.cancelUpgrade>
     <label.cancelConstructor>
@@ -477,6 +519,8 @@
       to you for less than {0}.</p>
     </warning.selfDestructGuard>
     <toolTip.afterUpgrade value="After upgrade" />
+    <warning.deployCancel
+        value="Upon construction cancellation unit that is being deployed will be lost." />
     <title.boost value="Boost" />
     <title.buildingBonus value="Building bonus" />
     <label.nextBonus value="Next bonus in:" />
@@ -507,7 +551,6 @@
     </label.deactivateOverdrive>
     <button.activateOverdrive value="Activate overdrive" />
     <button.deactivateOverdrive value="Deactivate overdrive" />
-    <warning.deployCancel value="You will not get your deployed unit back" />
     <warning.attackNpc>
       <p>This is an NPC building. You can destroy it by killing all the units
         inside.</p>
@@ -1108,6 +1151,9 @@
     value="{0} VIP creds selected, you would get {1 one[one cred] many[? creds]}" />
     <label.convert value="Convert" />
     <label.accelerate value="Accelerate" />
+    <label.whouldFinish value="Upgrade would finish in" />
+    <label.selectAccelerate value="Select acceleration amount" />
+    <label.credsSum value="Total creds" />
     <message.vipOrdered value="VIP ordered successfully" />
     <message.credsConverted value="Vip creds converted successfully" />
     <title.becomeVIP value="Become a VIP" />
@@ -1141,22 +1187,19 @@
       </p>
       ]]>
     </label.totalCreds>
-    <label.vipCreds value="VIP creds" />
     <label.nextVipTick value="VIP tick in" />
     <tooltip.nextVipTick>
-      <p>Time when your current VIP creds will be reset to their maximum 
+      <p>Time when your current VIP creds will be reset to their maximum
       number</p>
     </tooltip.nextVipTick>
     <label.vipEndsIn value="VIP ends in" />
-    <label.whouldFinish value="Upgrade would finish in" />
-    <label.selectAccelerate value="Select acceleration amount" />
+    <label.vipCreds value="VIP creds" />
     <label.creds value="creds" />
     <!-- {0} amount of free creds -->
     <label.credsTooltip>
       <p>{0} of them are quest rewards.</p>
       <p>Creds received from quest rewards cannot be used in market.</p>
     </label.credsTooltip>
-    <label.credsSum value="Total creds" />
     <label.waitingCreds value="Waiting for creds..." />
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />
@@ -1186,10 +1229,14 @@
       <span fontWeight="bold">{3}</span>.</p> 
       ]]>
     </label.boostInactive>
+    <!-- {0} - metal/energy/zetium
+         {1} - rate/storage
+         {2} - int -->
     <label.boostActive1> 
       <p>You have your {0} {1 rate[extraction rate] storage[storage]} boosted 
       by {2}% for</p> 
     </label.boostActive1>
+    <!-- {0} - time (e.g. 3m) -->
     <label.boostActive2> 
       <p>You can increase this time by {0}.</p>
     </label.boostActive2>
@@ -1274,6 +1321,7 @@
   <Formatters>
     <date.shortDate value="YYYY-MM-DD" />
     <date.shortDateTime value="YYYY-MM-DD JJ:NN" />
+    <date.shortDateTimeWithSeconds value="YYYY-MM-DD JJ:NN:SS" />
   </Formatters>
 
   <Galaxy>
@@ -1342,7 +1390,7 @@
     <label.cooldownEndsIn value="Next battle in"/>
   </General>
 
-   <Errors>
+  <Errors>
       <invalidBitmap.title>Broken bitmap</invalidBitmap.title>
       <invalidBitmap.message>
          <p>
@@ -1393,6 +1441,8 @@
     <gun.dart_laser value="Phase Cannon" />
     <gun.boss_light value="Twin Phazers" />
     <gun.boss_heavy value="Shock Shells" />
+    <gun.convoyship_light value="Photon Collider" />
+    <gun.convoyship_heavy value="TR-3 Launcher" />
     <armorType value="Armor type" />
     <damageInPercent value="Percentage" />
     <damage value="Damage" />
@@ -1407,8 +1457,8 @@
     <armorShort.fortified value="Fortified" />
     <damageType value="Damage type" />
     <damage.piercing value="Piercing" />
-    <damage.explosive value="Explosive" />
     <damage.normal value="Normal" />
+    <damage.explosive value="Explosive" />
     <damage.siege value="Siege" />
     <reach value="Reach" />
     <reach.ground value="Ground" />
@@ -1420,7 +1470,13 @@
     <specialDamage value="Damage: {0} x {1} = {2}" />
     <damageCoef value="Damage coef: {0}" />
     <armorFromTechs value="Armor from technologies:" />
+    <absorptionFromTechs value="Absorption rate from technologies:" />
     <damageFromTechs value="Damage from technologies:" />
+    <criticalFromTechs value="Critical rate from technologies:" />
+    <tooltip.armorFromTechs value="Reduces damage received from every shot" />
+    <tooltip.absorptionFromTechs ref="Technologies/property.mod.absorption.tooltip" />
+    <tooltip.damageFromTechs value="Increases damage dealt" />
+    <tooltip.criticalFromTechs ref="Technologies/property.mod.critical.tooltip" />
     <forOne value="For one:" />
     <total value="Total:" />
     <cost value="Cost info" />
@@ -1482,6 +1538,21 @@
       Occupy planets in battlegrounds and pulsars to get reinforcements,
       victory points and creds.
     </tip.8>
+    <tip.9>
+      Double click player name in chat room to send private message.
+    </tip.9>
+    <tip.10>
+      Wreckages in space can be collected by flying over them with Mule
+      transporter ship.
+    </tip.10>
+    <tip.11>
+      Important notifications can be marked with star. This way notifications
+      will be stored longer.
+    </tip.11>
+    <tip.12>
+      You can heal your own and alliances units together. Just select your units,
+      switch to alliances tab, select allies units and click "Heal".
+    </tip.12>
   </Tips>
 
   <Location>
@@ -1555,6 +1626,7 @@
   </Location>
 
   <MainMenu>
+    <label.preferences value="Preferences" />
     <label.vip value="Vip" />
     <label.quests value="Quests" />
     <!-- 0- Player flying squadrons count
@@ -1564,9 +1636,9 @@
     <label.ratings value="Ratings" />
     <label.alliances value="Alliance ratings" />
     <label.alliance value="Alliance" />
+    <label.forum value="Forum" />
     <label.wiki value="Wiki"/>
     <label.inviteFriend value="Invites"/>
-    <label.forum value="Forum" />
     <tooltip.version value="Game version" />
     <panelWidth value="85" />
   </MainMenu>
@@ -1581,6 +1653,7 @@
     <label.location.source value="From:" />
     <label.location.target value="To:" />
     <label.location.arrivesIn value="Arrives in: {0}" />
+    <label.location.arrivesAt value="({0})" />
     <label.close value="Close" />
     <label.cancel value="Cancel" />
     <label.toSector value="Move to Sector" />
@@ -1601,6 +1674,8 @@
     <label.hop.jumpsIn value="Jumps in:"/>
     <label.hop.landsIn value="Lands in:"/>
     <title.killBonus value="If you destroy this fleet you will get:"/>
+    <title.noKillBonus
+      value="You won't get any additional bonus if you destroy this fleet."/>
     <label.credsKillBonus value="Creds "/>
     <label.vpsKillBonus value="Victory points "/>
     <label.honorCoef value="Honor coef."/>
@@ -1624,14 +1699,14 @@
       engage any NPC ships that are on its way.</p>
     </description.avoidNpc>
 
-     <speedup.message.combatCooldownInfo
+    <speedup.message.combatCooldownInfo
         value="Upon arrival there will be {0} cooldown before combat will ensue."/>
-     <speedup.message.cost
+    <speedup.message.cost
         value="Speed up cost: {0 one[one cred] many[? creds]}."/>
-     <speedup.label.changeSpeed value="Flight Time Control"/>
-     <speedup.label.arrivesAt value="Arrives at: {0}"/>
-     <speedup.label.arrivesIn value="Flight time: {0}"/>
-     <speedup.label.speedupValue value="{0}%"/>
+    <speedup.label.changeSpeed value="Flight Time Control"/>
+    <speedup.label.arrivesAt value="Arrives at: {0}"/>
+    <speedup.label.arrivesIn value="Flight time: {0}"/>
+    <speedup.label.speedupValue value="{0}%"/>
   </Movement>
 
   <Navigator>
@@ -1660,6 +1735,7 @@
     <label.nap value="NAPs" />
     <label.enemies value="Enemies" />
     <label.leveled value="Leveled Up" />
+    <label.stats value="Combat statistics" />
     <label.dmgDealtPlayer value="Damage dealt by you" />
     <label.dmgDealtAlly value="Damage dealt by allies" />
     <label.dmgDealtAlliance value="Damage dealt by alliance" />
@@ -1670,7 +1746,6 @@
     <label.points value="War points earned" />
     <label.victoryPoints value="Victory points earned" />
     <label.creds value="Creds earned" />
-    <label.stats value="Combat statistics" />
     <label.close value="Close" />
     <label.players value="Players" />
     <label.noNotifications value="There are no notifications" />
@@ -1693,9 +1768,31 @@
     <label.combatLog.showLog value="View replay" />
     <label.combatLog.copyToClipboard value="Copy to clipboard" />
 
+    <message.playerAttached value="You have been moved" />
+    <title.playerAttached value="Wellcome back!" />
+    <insideMessage.playerAttached>
+      <p>
+        As a consequence of being inactive for a while, you have been moved
+        to another part of the galaxy which is more suitable for you.
+      </p>
+      <p>
+        Settle in your new location, take a look around and get familiar with your new
+        neighbours. Good luck!
+      </p>
+    </insideMessage.playerAttached>
+
     <title.questCompleted value="Quest competed" />
     <message.questCompleted value="Quest '{0}' was completed." />
     <message.newQuests value="Following quests were started:" />
+
+    <title.technologiesChanged value="Your technologies have changed" />
+    <message.technologiesChanged value="Changes in technologies." />
+    <insideMessage.technologiesChanged>
+      <p>
+        Because of inefficient number of scientists or planets these changes
+        have been applied to your technologies:
+      </p>
+    </insideMessage.technologiesChanged>
 
     <title.kickedFromAlliance value="Kicked from alliance" />
     <message.kickedFromAlliance value="Kicked from alliance {0}" />
@@ -1872,44 +1969,58 @@
     <title.defaultError value="Error!" />
 
     <label.reconnect value="Reconnect" />
+    <label.refresh value="Refresh" />
     <label.cancel value="Cancel" />
     <label.confirm value="Confirm" />
     <label.ok value="Ok" />
     <label.yes value="Yes" />
     <label.no value="No" />
-    
+
+    <title.outdatedClient value="Client version outdated" />
+    <message.outdatedClient>
+      <p>Game client has been updated while you were playing.</p>
+      <p>You need to refresh the page for game to work properly.</p>
+    </message.outdatedClient>
+
+    <title.cancelUnitTraining value="Cancel unit training" />
+    <message.cancelUnitTraining
+    value="Are you sure you want to cancel training of this unit?"/>
+
+    <title.cancelUpgrade value="Cancel upgrade" />
+    <message.cancelUpgrade
+    value="Are you sure you want to cancel upgrade of this building?"/>
+
+    <title.cancelConstructor value="Cancel construction" />
+    <message.cancelConstructor
+    value="Are you sure you want to cancel construction of this building?"/>
+
+    <title.cancelPlayerOptions value="Some changes detected" />
+    <message.cancelPlayerOptions>
+      <p>You have made some changes in preferences. All changes will be canceled
+        if you close this window.</p>
+      <p>Are you sure?</p>
+    </message.cancelPlayerOptions>
+
+    <title.cancelOffer value="Cancel offer" />
+    <message.cancelOffer>
+      <p>Do you really want to cancel your offer?</p>
+    </message.cancelOffer>
+
+    <title.buyOffer value="Buy offer" />
+    <message.buyOffer>
+      <p>Do you really want to buy from this offer?</p>
+    </message.buyOffer>
+
+    <title.createOffer value="Create offer" />
+    <message.createOffer>
+      <p>Do you really want to create that offer?</p>
+    </message.createOffer>
+
     <title.convertCreds value="Convert creds" />
     <message.convertCreds>
       <p>Are you sure you want to convert {0 one[one VIP cred] many[? VIP creds]} 
       to {1 one[one cred] many[? creds]}?</p>
     </message.convertCreds>
-    
-    <title.cancelUnitTraining value="Cancel unit training" />
-    <message.cancelUnitTraining 
-    value="Are you sure you want to cancel training of this unit?"/>
-    
-    <title.cancelUpgrade value="Cancel upgrade" />
-    <message.cancelUpgrade 
-    value="Are you sure you want to cancel upgrade of this building?"/>
-    
-    <title.cancelConstructor value="Cancel construction" />
-    <message.cancelConstructor 
-    value="Are you sure you want to cancel construction of this building?"/>
-    
-    <title.cancelOffer value="Cancel offer" />
-    <message.cancelOffer>
-      <p>Do you realy want to cancel your offer?</p>
-    </message.cancelOffer>
-    
-    <title.buyOffer value="Buy offer" />
-    <message.buyOffer>
-      <p>Do you realy want to buy from this offer?</p>
-    </message.buyOffer>
-    
-    <title.createOffer value="Create offer" />
-    <message.createOffer>
-      <p>Do you realy want to create that offer?</p>
-    </message.createOffer>
     
     <title.dailyBonus value="Daily bonus" />
     <message.dailyBonus>
@@ -2028,20 +2139,6 @@
       </p>
     </message.disconnect.jsonError>
 
-    <crash>
-      <p>
-        Save yourselves! Mighty Space Bugs have infested our game client and 
-        sadly it is not Space Bug Resistant! (yet) Oh well, don't worry, you 
-        can always just press Refresh button on your browser and everything 
-        will be fine (probably). 
-      </p>
-    </crash>
-
-    <message.slowClient>
-       Your computer is not fast enough for this operation. But if you still
-       think that this is an error, feel free to report it to the forum.
-    </message.slowClient>
-
     <title.log value="Debug log" />
     <message.log.general>
       <p>This is an in-game log of your actions. Paste this to a file and 
@@ -2049,39 +2146,7 @@
       us to solve it.</p>
     </message.log.general>
     <label.log.close value="Close" />
-
-    <title.clientCrash value="Waaaargh!" />
-    <message.clientCrash.general>
-      <p>[reference:crash]</p>
-      <p>
-        However! If you want to prevent those pesky Space Bugs from infesting 
-        our client ever again you could send bits and pieces of nifty 
-        information we have collected. We assure you we WILL use that to 
-        improve our Bug-No-More formula (TM) more effective to make your gaming 
-        experience as pleasurable as humanly possible ;) 
-      </p>
-      <p>
-        So just copy that text below to clipboard (or press our conveniently 
-        placed '[reference:label.clientCrash.copy]' button) and wander to our forum to report this bug. 
-        Your hard work will be rewarded. We promise. Cosmic pinky swear. Oh 
-        yeah... 
-      </p>
-    </message.clientCrash.general>
-
-    <message.clientCrash.debugPlayer>
-      <p>[reference:crash]</p>
-      <p>
-        We could fix this however unfortunately you do not have debugger 
-        version of Flash Player so we can't collect much useful information. If 
-        you DO WANT to prevent this from happening ever again then click the 
-        '[reference:label.clientCrash.wiki]' button to get more information on 
-        how you can help us ;) We appreciate your help! 
-      </p>
-    </message.clientCrash.debugPlayer>
-
-    <label.clientCrash.copy value="Copy-O-Matic" />
-    <label.clientCrash.forum value="Report Bug" />
-    <label.clientCrash.wiki value="Get Debugger" />
+    <label.log.copy value="Copy-O-Matic" />
   </Popups>
   
   <Achievements>
@@ -2103,6 +2168,9 @@
     value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}] technology{2 one[] many[ to level ?]}" />
     <objectiveText.HaveUpgradedToTechClass 
     value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
+
+    <!-- BE_IN_ALLIANCE -->
+    <objectiveText.BeInAlliance value="Be in alliance"/>
 
     <!-- UPGRADE_TO
     0: count of objects, 
@@ -2146,15 +2214,6 @@
     value="Have {0} war {0 one[point] many[points]}" />
     <objectiveText.HavePoints 
     value="Have {0 one[? point] many[? points]}" />
-    
-    <!-- 0: count of points to have, 1: word "Point" 
-    from Objects -->
-    <objectiveText.HaveSciencePoints value="Have {0} Science {1}" />
-    <objectiveText.HaveEconomyPoints value="Have {0} Economy {1}" />
-    <objectiveText.HaveVictoryPoints value="Have {0} Victory {1}" />
-    <objectiveText.HaveArmyPoints value="Have {0} Army {1}" />
-    <objectiveText.HaveWarPoints value="Have {0} War {1}" />
-    <objectiveText.HavePoints value="Have {0} {1}" />
 
     <!-- HEAL_HP
     0: count of hit points to heal -->
@@ -2313,8 +2372,7 @@
       <p>Commander,</p>
       <p>
          Resource extraction is our top priority! Build even more
-         [obj:2:Building_MetalExtractor] so that extraction rates become
-         steady for sure.
+         extractors so that extraction rates become steady for sure.
       </p>
     </about.40>
     
@@ -2625,8 +2683,8 @@
       </p>
       <p>
         Build a [reference:Buildings/Radar.name]. It will reveal a sector of 
-        galaxy map and show other solar systems with ship movement within that 
-        sector. 
+        galaxy map. You will be able to see other solar systems ruled by other
+        players and ship movement within that sector.
       </p>
       <p>
         Keep in mind that running a [reference:Buildings/Radar.name] requires 
@@ -2663,7 +2721,7 @@
       </p>
       <p>
         Since the travel will take a great deal of time it would be
-        unpleasant if and [obj:1:Unit_Mdh] wasn't already on the planet.
+        unpleasant if an [obj:1:Unit_Mdh] wasn't already on the planet.
         So our own unit will come in handy since we want to colonise that
         third planet.
       </p>
@@ -3163,19 +3221,19 @@
       </p>
     </about.10425>
     
-    <title.10450 value="The First Reward" />
+    <title.10450 value="The fist of power" />
     <about.10450>
       <p>Commander.</p>
       <p>
-        Make sure we have enough mines to fulfill our basic needs.
-        Someone is whispering me we will need much more of them soon...
+        Make sure we have enough units to easily defend ourselves or even
+        strike first! We must be strong and prepared!
       </p>
     </about.10450>
     
     <title.10460 value="Empowering Riches" />
     <about.10460>
       <p>Commander!</p>
-      <p>In your last mission, "[reference:title.8]" you were rewarded with
+      <p>In your last mission you were rewarded with
       some creds. Go and take your reward if you haven't done so already.</p>
       <p>Creds are a useful and powerful tool. They can be spent on various
       tasks like accelerating your constructions, researches and unit
@@ -3254,6 +3312,33 @@
     <title.10575 value="[reference:DestroyingEnemies.title] (VI)" />
     <about.10575 ref="DestroyingEnemies.about" />
 
+    <title.10600 value="Breaking convoys" />
+    <about.10600>
+      <p>Commander.</p>
+      <p>
+        Our scouts has tracked alien convoys crossing near our solar system
+        from time to time. They have some weird ships in their fleets.
+      </p>
+      <p>
+        After some discussions our scientists has calculated that we could get
+        good reward after destroying these convoys! Should we give it a try?
+      </p>
+    </about.10600>
+
+    <title.10610 value="Superior danger" />
+    <about.10610>
+      <p>Commander.</p>
+      <p>
+        Morpehus has been spotted in battleground! This extremely powerful
+        alien ship shows itself from time to time and there are lots of legends
+        about them traveling around the galaxy.
+      </p>
+      <p>
+        If you could manage to destroy this ship we will get truly great
+        reward! Just be careful and don't attack this ship alone or your fleet
+        can get destroyed in a moment. You should ask for help from your allies!
+      </p>
+    </about.10610>
   </Quests>
 
   <QuestScreens>
@@ -4325,8 +4410,7 @@
     <property.zetium.cost value="Zetium cost" />
     <property.armor value="Armor" />
     <property.armorMod value="Armor modifier" />
-    <property.damageMod value="Damage modifier" />
-    <property.evasiveness value="Evasion" />
+    <property.armorMod.format value="{0}%" />
     <property.xpNeeded value="XP for level up" />
     <property.initiative value="Initiative" />
     <property.volume value="Volume" />
@@ -4336,10 +4420,6 @@
     <property.population value="Population" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
-
-    <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
-    <stance.neutral value="Neutral stance" />
-    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
     <label.showNpc value="Show"/>
 
@@ -4375,20 +4455,20 @@
         probability of appearing.
       </p>
     </tooltip.raidProbability>
-    
+
     <tooltip.freeStorage>
       <p>This ship has {0} units of storage available.</p>
     </tooltip.freeStorage>
-    
+
     <tooltip.buildSwitchCommon>
       <p>Click to change.</p>
     </tooltip.buildSwitchCommon>
-    
+
     <tooltip.buildInFlank1>
       <p>Your units will appear in first flank.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildInFlank1>
-    
+
     <tooltip.buildInFlank2>
       <p>Your units will appear in second flank.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
@@ -4403,34 +4483,34 @@
       <p>Your units will be built hidden.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildNotHidden>
-    
+
     <tooltip.populationCommon>
       <p>{0} population left</p>
     </tooltip.populationCommon>
-    
+
     <tooltip.populationLeft>
       <p>[reference:tooltip.populationCommon]</p>
       <p>Max. population: {1}</p>
     </tooltip.populationLeft>
-    
+
     <tooltip.maxPopulationReached>
       <p>[reference:tooltip.populationCommon]</p>
-      <p>You have reached your maximum population. Your pods can harbor {1} 
+      <p>You have reached your maximum population. Your pods can harbor {1}
       people but only {2} is allowed in game.</p>
     </tooltip.maxPopulationReached>
-    
+
     <tooltip.overPopulation>
       <p>Your units and buildings will be {0}% weaker due to overpopulation.</p>
     </tooltip.overPopulation>
-    
+
     <tooltip.nothingToUnload>
       <p>Nothing to unload</p>
     </tooltip.nothingToUnload>
-    
+
     <tooltip.nothingToLoad>
       <p>Nothing to load</p>
     </tooltip.nothingToLoad>
-    
+
     <title.defensivePool value="Defensive army pool" />
     <title.emptyDefensivePool>
       <p>Your defensive pool is empty. That means no units will be teleported
@@ -4456,7 +4536,9 @@
     <defensivePool.maxVolume value="Max power:" />
     <defensivePool.pickUnits value="Show other" />
 
-    <label.cancelPrepaid value="You will get"/>
+    <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
+    <stance.neutral value="Neutral stance" />
+    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
@@ -4522,6 +4604,8 @@
     <label.afterDays value="{0 one[? day] many[? days]} after apocalypse" />
     <label.resources value="Resources" />
     <label.transferResources value="Transfer" />
+    <label.cancelPrepaid value="You will get"/>
+    <message.changesCanceled value="Changes was canceled due to combat"/>
     <!-- 0 - resources string, 1 - 'is' or 'are' -->
     <label.planetFull>
       <p>You cannot unload {0} to this planet because {0} storage {1} full.</p>
@@ -4582,6 +4666,7 @@
     <kind.moving value="Moving ({0})" />
     <kind.launch value="Preparing for launch ({0})" />
     <kind.stored value="Stored ({0})" />
+    <kind.storedUnknown value="Stored" />
     <kind.land value="Land ({0})" />
     <kind.resources value="Resources" />
     <kind.squadron value="Fleet ({0})" />
@@ -4896,19 +4981,6 @@
     </MobileThunder.about>
   </Units>
 
-  <WelcomeScreen>
-    <title value="Welcome!" />
-    <greeting value="Greetings, Commander!" />
-    <instructions>
-      <p>I am Kaya, your assistant.</p>
-      <p>We have some urgent matters to attend to. Click introduction button to
-      learn the game basics and lets get started.
-      </p>
-      <p>Good luck.</p>
-    </instructions>
-    <label.intro value="Intro" />
-  </WelcomeScreen>
-
   <Chat>
      <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} joined ]"/>
@@ -4919,12 +4991,17 @@
         You have been silenced for flooding until {0}.
         You will be able to chat in {1}.
      </message.silence>
+    <tooltip.btnDoIgnore>
+      <p>Player is not ignored</p>
+    </tooltip.btnDoIgnore>
+    <tooltip.btnDoUnignore>
+      <p>Player is ignored</p>
+    </tooltip.btnDoUnignore>
      <label.send value="Send"/>
      <label.mainChannel value="#galaxy"/>
      <label.allianceChannel value="#alliance"/>
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
-     <label.generateJoinLeaveMsgs value="Show join / leave messages"/>
      <ignorePopup.title value="Ignore?"/>
      <ignorePopup.message value="Are you sure you want to ignore player {0}?"/>
   </Chat>
@@ -4995,6 +5072,31 @@
     <label.freeCreds value="You can not use free creds in the market." />
     <label.moreInfo value="Why?" />
   </Market>
+
+  <ResourceTransporter>
+    <title.resourceTransporter value="Resource Transporter" />
+    <label.maxStorage value="Volume of resources being sent" />
+    <label.storage value="{0}/{1}" />
+    <label.transferResources value="Send" />
+    <label.nothingToTransfer value="Nothing to transfer" />
+    <label.close value="Close" />
+    <label.all value="All" />
+    <label.none value="None" />
+    <label.fee value="Fee: {0}%" />
+    <label.selectPlanet value="Select planet:" />
+    <label.selectResources value="Select resources" />
+    <label.withoutFee value="After paying taxes there will be sent:" />
+    <!-- 0: cooldown as time string (10h 20m 15s) -->
+    <warning.willSend
+    value="If you send selected resources you won't be able to do it again for {0}." />
+    <tooltip.cooldownActive value="Transporter is currently cooling down." />
+    <label.noOtherPlanet
+            value="You have no other planet to send resources to." />
+    <message.noTransporter>
+      <p>There is no active transporter in selected planet.
+         Sending was canceled and resources returned.</p>
+    </message.noTransporter>
+  </ResourceTransporter>
   
   <Announcements>
     <title.popup value="Announcement"/>
@@ -5008,6 +5110,7 @@
 
   <PlanetMapEditor>
      <label.name value="Name:"/>
+     <label.area value="Area: {0}"/>
      <label.size value="Size:"/>
      <label.level value="Level:"/>
      <label.generate value="Generate"/>
@@ -5019,5 +5122,30 @@
      <title.npcBuildings value="NPC Buildings"/>
      <title.foliage value="Foliage"/>
   </PlanetMapEditor>
+
+  <PlayerOptions>
+     <title.options value="Preferences" />
+     <title.chatOptions value="Chat room options" />
+     <title.afterLoginOptions value="After login options" />
+     <title.genericOptions value="General options" />
+     <title.graphicsOptions value="Graphics options"/>
+     <label.save value="Save" />
+     <label.warnBeforeUnload value="Warn before closing game" />
+     <label.defaultTransporterTab
+       value="Tab to show first while loading or unloading transporter:" />
+     <label.transporterTabResources value="Resources" />
+     <label.transporterTabUnits value="Units" />
+     <label.showPopupsAfterLogin value="Open active popups after login" />
+     <label.openFirstPlanet value="Open first planet after login" />
+     <label.showJoinLeave value="Show join / leave messages" />
+     <label.ignoredList value="Ignored players:" />
+     <label.ignoredListEmpty value="No ignored players" />
+     <label.addIgnoredPlayer value="Add" />
+     <label.removeIgnored value="Remove"/>
+     <label.ignoreComplete value="Complete ignore"/>
+     <label.ignoreFiltered value="Show covered messages"/>
+     <label.ignoreType value="Ignore type:"/>
+     <label.enablePlanetAnimations value="Animations in planet"/>
+  </PlayerOptions>
 
 </locale>

@@ -76,6 +76,7 @@ package controllers.planets.actions
          var params:Object = cmd.parameters;
          var paramsPlanet:Object = params["planet"];
          ML.units.disableAutoUpdate();
+         ML.units.removeGarrisonUnits();
          ML.units.addAll(UnitFactory.fromObjects(params["units"], params["players"]));
          ML.units.enableAutoUpdate();
          paramsPlanet["cooldownEndsAt"] = params["cooldownEndsAt"];

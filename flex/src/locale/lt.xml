@@ -1338,7 +1338,6 @@
       <p>Laikas, kai tavo VIP kredai bus vėl užpildyti.</p>
     </tooltip.nextVipTick>
     <label.vipEndsIn value="VIP baigsis už" />
-    <label.whouldFinish value="Patobulinimas baigsis už" />
     <label.vipCreds value="VIP kredų" />
     <label.creds value="kredų" />
     <!-- {0} amount of free creds -->
@@ -1835,14 +1834,14 @@
       esančiais jo kelyje.</p>
     </description.avoidNpc>
 
-     <speedup.message.combatCooldownInfo
+    <speedup.message.combatCooldownInfo
         value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
-     <speedup.message.cost
+    <speedup.message.cost
         value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
-     <speedup.label.changeSpeed value="Skrydžio laiko valdymas" />
-     <speedup.label.arrivesAt value="Atvyks: {0}"/>
-     <speedup.label.arrivesIn value="Skrydžio laikas: {0}"/>
-     <speedup.label.speedupValue value="{0}%"/>
+    <speedup.label.changeSpeed value="Skrydžio laiko valdymas" />
+    <speedup.label.arrivesAt value="Atvyks: {0}"/>
+    <speedup.label.arrivesIn value="Skrydžio laikas: {0}"/>
+    <speedup.label.speedupValue value="{0}%"/>
   </Movement>
 
   <Navigator>
@@ -2811,7 +2810,7 @@
       O tam, kad galėtume juos persigabenti, mums reikės
       [obj:1:Unit_Mule:whos:dc] klasės laivo. Taigi, pirmyn, susirinkime tas
       nuolaužas! Pasistatykime mūsų pirmajį [obj:1:Unit_Mule:whos:dc] klasės
-      laiva!
+      laivą!
     </p>
     </about.230>
 
@@ -5229,6 +5228,7 @@
     <kind.moving value="Judantys ({0})" />
     <kind.launch value="Ruošiasi išskristi ({0})" />
     <kind.stored value="Saugoma ({0})" />
+    <kind.storedUnknown value="Saugoma" />
     <kind.land value="Žemės ({0})" />
     <kind.resources value="Resursai" />
     <kind.squadron value="Laivynas ({0})" />
@@ -5497,18 +5497,6 @@
     </MobileThunder.about>
   </Units>
 
-  <WelcomeScreen>
-    <title value="Sveiki!" />
-    <greeting value="Sveiki, Komandore!" />
-    <instructions>
-      <p>Aš esu Kaja, tavo pagalbininkė.</p>
-      <p>Mes turime svarbių reikalų. Spausk įžangos mygtuką, jog susipažintum
-      su žaidimu ir kimbam į reikalus.</p>
-      <p>Sekmės.</p>
-    </instructions>
-    <label.intro value="Įžanga" />
-  </WelcomeScreen>
-
   <Chat>
      <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} prisijungė ]"/>
@@ -5662,6 +5650,10 @@
      <title.graphicsOptions value="Grafikos nustatymai"/>
      <label.save value="Išsaugoti" />
      <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
+     <label.defaultTransporterTab
+       value="Skyrius, kurį atidaryti visų pirma, kraunant į transporterį ar iš jo:" />
+     <label.transporterTabResources value="Resursai" />
+     <label.transporterTabUnits value="Kariai" />
      <label.showPopupsAfterLogin value="Atidaryti iššokančius langus prisijungus" />
      <label.openFirstPlanet value="Automatiškai atidaryti pirmąją planetą" />
      <label.showJoinLeave value="Rodyti prisijungimo / atsijungimo pranešimus" />
