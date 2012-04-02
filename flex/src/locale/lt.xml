@@ -2810,7 +2810,7 @@
       O tam, kad galėtume juos persigabenti, mums reikės
       [obj:1:Unit_Mule:whos:dc] klasės laivo. Taigi, pirmyn, susirinkime tas
       nuolaužas! Pasistatykime mūsų pirmajį [obj:1:Unit_Mule:whos:dc] klasės
-      laiva!
+      laivą!
     </p>
     </about.230>
 
@@ -5494,18 +5494,6 @@
       <p>[reference:Buildings/Thunder.about]</p>
     </MobileThunder.about>
   </Units>
-
-  <WelcomeScreen>
-    <title value="Sveiki!" />
-    <greeting value="Sveiki, Komandore!" />
-    <instructions>
-      <p>Aš esu Kaja, tavo pagalbininkė.</p>
-      <p>Mes turime svarbių reikalų. Spausk įžangos mygtuką, jog susipažintum
-      su žaidimu ir kimbam į reikalus.</p>
-      <p>Sekmės.</p>
-    </instructions>
-    <label.intro value="Įžanga" />
-  </WelcomeScreen>
 
   <Chat>
      <format.time value="JJ:NN:SS"/>
