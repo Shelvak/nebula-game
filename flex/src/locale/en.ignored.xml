@@ -1922,44 +1922,58 @@
     <title.defaultError value="Error!" />
 
     <label.reconnect value="Reconnect" />
+    <label.refresh value="Refresh" />
     <label.cancel value="Cancel" />
     <label.confirm value="Confirm" />
     <label.ok value="Ok" />
     <label.yes value="Yes" />
     <label.no value="No" />
-    
+
+    <title.outdatedClient value="Client version outdated" />
+    <message.outdatedClient>
+      <p>Game client has been updated while you were playing.</p>
+      <p>You need to refresh the page for game to work properly.</p>
+    </message.outdatedClient>
+
+    <title.cancelUnitTraining value="Cancel unit training" />
+    <message.cancelUnitTraining
+    value="Are you sure you want to cancel training of this unit?"/>
+
+    <title.cancelUpgrade value="Cancel upgrade" />
+    <message.cancelUpgrade
+    value="Are you sure you want to cancel upgrade of this building?"/>
+
+    <title.cancelConstructor value="Cancel construction" />
+    <message.cancelConstructor
+    value="Are you sure you want to cancel construction of this building?"/>
+
+    <title.cancelPlayerOptions value="Some changes detected" />
+    <message.cancelPlayerOptions>
+      <p>You have made some changes in preferences. All changes will be canceled
+        if you close this window.</p>
+      <p>Are you sure?</p>
+    </message.cancelPlayerOptions>
+
+    <title.cancelOffer value="Cancel offer" />
+    <message.cancelOffer>
+      <p>Do you really want to cancel your offer?</p>
+    </message.cancelOffer>
+
+    <title.buyOffer value="Buy offer" />
+    <message.buyOffer>
+      <p>Do you really want to buy from this offer?</p>
+    </message.buyOffer>
+
+    <title.createOffer value="Create offer" />
+    <message.createOffer>
+      <p>Do you really want to create that offer?</p>
+    </message.createOffer>
+
     <title.convertCreds value="Convert creds" />
     <message.convertCreds>
       <p>Are you sure you want to convert {0 one[one VIP cred] many[? VIP creds]} 
       to {1 one[one cred] many[? creds]}?</p>
     </message.convertCreds>
-    
-    <title.cancelUnitTraining value="Cancel unit training" />
-    <message.cancelUnitTraining 
-    value="Are you sure you want to cancel training of this unit?"/>
-    
-    <title.cancelUpgrade value="Cancel upgrade" />
-    <message.cancelUpgrade 
-    value="Are you sure you want to cancel upgrade of this building?"/>
-    
-    <title.cancelConstructor value="Cancel construction" />
-    <message.cancelConstructor 
-    value="Are you sure you want to cancel construction of this building?"/>
-    
-    <title.cancelOffer value="Cancel offer" />
-    <message.cancelOffer>
-      <p>Do you realy want to cancel your offer?</p>
-    </message.cancelOffer>
-    
-    <title.buyOffer value="Buy offer" />
-    <message.buyOffer>
-      <p>Do you realy want to buy from this offer?</p>
-    </message.buyOffer>
-    
-    <title.createOffer value="Create offer" />
-    <message.createOffer>
-      <p>Do you realy want to create that offer?</p>
-    </message.createOffer>
     
     <title.dailyBonus value="Daily bonus" />
     <message.dailyBonus>
@@ -2078,20 +2092,6 @@
       </p>
     </message.disconnect.jsonError>
 
-    <crash>
-      <p>
-        Save yourselves! Mighty Space Bugs have infested our game client and 
-        sadly it is not Space Bug Resistant! (yet) Oh well, don't worry, you 
-        can always just press Refresh button on your browser and everything 
-        will be fine (probably). 
-      </p>
-    </crash>
-
-    <message.slowClient>
-       Your computer is not fast enough for this operation. But if you still
-       think that this is an error, feel free to report it to the forum.
-    </message.slowClient>
-
     <title.log value="Debug log" />
     <message.log.general>
       <p>This is an in-game log of your actions. Paste this to a file and 
@@ -2099,39 +2099,7 @@
       us to solve it.</p>
     </message.log.general>
     <label.log.close value="Close" />
-
-    <title.clientCrash value="Waaaargh!" />
-    <message.clientCrash.general>
-      <p>[reference:crash]</p>
-      <p>
-        However! If you want to prevent those pesky Space Bugs from infesting 
-        our client ever again you could send bits and pieces of nifty 
-        information we have collected. We assure you we WILL use that to 
-        improve our Bug-No-More formula (TM) more effective to make your gaming 
-        experience as pleasurable as humanly possible ;) 
-      </p>
-      <p>
-        So just copy that text below to clipboard (or press our conveniently 
-        placed '[reference:label.clientCrash.copy]' button) and wander to our forum to report this bug. 
-        Your hard work will be rewarded. We promise. Cosmic pinky swear. Oh 
-        yeah... 
-      </p>
-    </message.clientCrash.general>
-
-    <message.clientCrash.debugPlayer>
-      <p>[reference:crash]</p>
-      <p>
-        We could fix this however unfortunately you do not have debugger 
-        version of Flash Player so we can't collect much useful information. If 
-        you DO WANT to prevent this from happening ever again then click the 
-        '[reference:label.clientCrash.wiki]' button to get more information on 
-        how you can help us ;) We appreciate your help! 
-      </p>
-    </message.clientCrash.debugPlayer>
-
-    <label.clientCrash.copy value="Copy-O-Matic" />
-    <label.clientCrash.forum value="Report Bug" />
-    <label.clientCrash.wiki value="Get Debugger" />
+    <label.log.copy value="Copy-O-Matic" />
   </Popups>
   
   <Achievements>
