@@ -3319,39 +3319,37 @@
   <QuestScreens>
     <BuildingSidebar>
       <![CDATA[
-      <p>Buildings available for construction are at the sidebar on the right.</p>
-      <p>Once you select a building, at the bottom of the sidebar its
-      construction time and pros and cons provided by terrain under the building
-      become visible.</p>
+      <p>You can find all the buildings you can construct at the right sidebar.</p>
+      <p>Once you select a building, you can see the bonuses provided by terrain
+      under the building at the bottom of the right sidebar.</p>
       <p>If another building is already being constructed the next is added
-      to construction que.</p>
+      to the construction queue.</p>
       ]]>
     </BuildingSidebar>
 
     <ClaimReward>
       <![CDATA[
-      <p>Each completion of a quest earns you a reward. You can take it if you
-      navigate to the quests screen: click on a N44 logo at the bottom right corner
-      of the screen and click "[reference:Quests/label.title]" button.</p>
-      <p>Then you have to find a completed quest - they are yellow - and click on
-      a '[reference:Quests/label.claimReward]' button</p>
+      <p>You get reward for each quest you complete. You can take it by
+      navigating to the quests screen: open N44 menu at the bottom right corner
+      of the screen and click "[reference:MainMenu/label.quests]" button.</p>
+      <p>Then you have to find a completed quest - they are marked as yellow -
+      and click on a '[reference:Quests/label.claimReward]' button</p>
       ]]>
     </ClaimReward>
 
     <OreTile>
       <![CDATA[
-      <p>You can build [obj:2:Building_MetalExtractor:p8d] only on top of metal
-      deposits. Most of the time you will find alien structures already standing
-      on them. Those structures need to be destroyed first and only then you will
-      be able to build your own extractor. However you may come across a few
-      free deposits as well.</p>
+      <p>You can build MEX's on the top of metal deposits only. Most of the time
+      you will find alien structures standing on them already. Those structures
+      must be destroyed before building your own extractor. However you may find
+      some free deposits as well.</p>
       ]]>
     </OreTile>
 
     <BuildingUpgrade>
       <![CDATA[
-      <p>Buildings can be upgraded. To do that select a building by clicking on
-      it in a map. Then click "[reference:BuildingSelectedSidebar/upgrade]"
+      <p>Buildings can be upgraded. To do that select a building by clicking
+      it at the planet map. Then click "[reference:BuildingSelectedSidebar/upgrade]"
       button in the menu at the right.</p>
       <p>Upgraded buildings improves their characteristics: extractors produce
       more resources, factories take less time to build units, more scientists
@@ -3363,15 +3361,15 @@
       <![CDATA[
       <p>Although you are free to build power plants anywhere it is recommended
       to place them on a special terrain to boost power.</p>
-      <p>Terrain bonus can visible at the bottom of the right sidebar while
-      looking for a place to build a power plant.</p>
+      <p>Bonus of the terrain you are choosing to build your plant is displayed
+      at the bottom of the right sidebar.</p>
       ]]>
     </EnergyTiles>
 
     <ConstructionTiles>
       <![CDATA[
       <p>
-        Buildings will be erected more quickly on this terrain. By the way,
+        Buildings will be constructed more quickly on this terrain. By the way,
         if a building is able to construct other buildings, train troops or
         manufacture tanks or ships, it will take less time to complete
         its task. So this type of terrain is best for all kinds of factories.
@@ -3393,7 +3391,7 @@
         You can buy creds by clicking "Buy creds" button in the N44 menu.
       </p>
       <p>
-        Completion of some quests gives you creds also. You have been rewarded
+        You can also get some creds by completing quests. You have been rewarded
         with creds after completing your last quest. Claim that reward and
         speed up construction of a building!
       </p>
@@ -3405,16 +3403,16 @@
       <p>Some buildings are designed to train soldiers, tanks or spaceships.</p>
       <p>You can build units by selecting a building (i.e.
         [obj:1:Building_Barracks:what:dc]) and pressing
-        „[reference:BuildingSelectedSidebar/open] in the sidebar“.</p>
+        [reference:BuildingSelectedSidebar/open] in the sidebar.</p>
       ]]>
     </UnitConstructors>
 
     <UnitConstructionScreen>
       <![CDATA[
-      <p>You can reach unit building screen using any buiding. There you can
-      manage all units built in current planet.</p>
+      <p>You can reach unit building screen using any unit facility. You can
+      manage all the units being built in current planet there.</p>
       <p>In order to train soldiers, select the needed amount and press
-      the building button.</p>
+      "build" button.</p>
       ]]>
     </UnitConstructionScreen>
 
@@ -3472,8 +3470,9 @@
 
     <Exploring>
       <![CDATA[
-      <p>There are objects in the planet which you can explore. In order to do
-       that select the object and press „[reference:Exploration/label.explore]“.</p>
+      <p>There are objects in the planet which you can explore. In order to do so
+       select the object and press [reference:Exploration/label.explore] on the
+       right sidebar.</p>
       <p>Scientists will be sent to an expedition and will inform you about
       results afterwards.</p>
       ]]>
@@ -3484,17 +3483,16 @@
       <p>You can find results of finished expeditions and other events in the
       notification panel. Access it by pressing notification icon in the top
       left corner.</p>
-      <p>If you want to find out more about notification, visit Nebula 44 Wiki
-      by going to the N44 menu.</p>
+      <p>If you want to find out more about notification, visit Nebula 44 Wiki,
+      you can find it by going to the N44 menu.</p>
       ]]>
     </Notifications>
 
     <TechTree>
       <![CDATA[
-      <p>You can find the tree of technologies in
-      [obj:1:Building_ResearchCenter:what:dc]. There you can see all technologies
-      available for you.</p>
-      <p>You can't invent grey backgrounded technologies yet while technologies
+      <p>You can find the technology tree in Research Center. You can see all
+      the technologies you can research in there.</p>
+      <p>You can't invent greyed out technologies yet while technologies
       in red background requires more scientists or resources than you currently
       hold.</p>
       ]]>
@@ -3516,12 +3514,11 @@
 
     <WPInTechs>
       <![CDATA[
-
       <p>Some technologies may be locked at the beginning - you will
       have to reach certain amounts of war points.</p>
       <p>You can check your war points amount in the N44 menu.</p>
       <p>So far the easiest way to collect war points is to clear your planet
-      from aliens</p>
+      from aliens.</p>
       ]]>
     </WPInTechs>
 
@@ -3535,26 +3532,26 @@
     <Resources>
       <![CDATA[
       <p>There are three types of resources in Nebula 44: metal, energy and
-      zetium. Small amounts of them are stored in the mother ship while larger
-      amounts are stored in a specialised containers.</p>
-      <p>Metal is mostly used for building troops and buildings. Energy is also
-      needed for building and also it is consumed by buildings such as MEX's,
-      ZEX's and radars. Zetium is used for constructing powerful tanks and
-      spaceships as well as for inventing technologies.
+      zetium. Small amounts of them are stored in the Mothership while larger
+      amounts are stored in a specialized containers.</p>
+      <p>Metal is mostly used for building troops and buildings. Energy is being
+      used for construction and it is also consumed by buildings such as MEX's,
+      ZEX's, Radars and so on. Zetium is used for constructing powerful tanks and
+      spaceships as well as for researching technologies.
       ]]>
     </Resources>
 
     <ResourceBar>
       <![CDATA[
       <p>You can track your resources, see storage size and extraction speed by
-      hovering your mouse over resource zone located at the bottom of the screen</p>
+      hovering your mouse over resource zone located at the bottom of the screen.</p>
       ]]>
     </ResourceBar>
 
     <Market1>
       <![CDATA[
-      <p>Screen in the market consists of two parts: buying(left) and
-      selling(right) parts.</p>
+      <p>Market screen is splitted in two parts: buying (the large one) and
+      selling (right sidebar).</p>
       <p>In the buying screen you can see all the offers, you can filter them
       and find what you are looking for.</p>
       ]]>
@@ -3572,8 +3569,8 @@
     <Population>
       <![CDATA[
       <p>Your troops consumes vital resources - oxygen, food and water. It
-      influences the amount of troops you can maintain. This amount is seen at
-      the top right part of the screen next to the troops amount.</p>
+      influences the amount of troops you can maintain. This amount is displayed at
+      the top right corner of the screen next to the troops amount.</p>
       <p>If you exceed your vital resources, your troops will become weaker so it
       is mandatory to have enough space for them.</p>
       ]]>
@@ -3608,7 +3605,7 @@
       <![CDATA[
       <p>Your spaceships will scan the area once they reach it. If there are
       any enemy ships your fleet will prepare for a battle and attack.</p>
-      <p>If enemy fleet isn't destroyed at the firsr time your ships will
+      <p>If enemy fleet isn't destroyed at the first time your ships will
       retreat, rearrange (it takes some time) and attack again until there
       are only friendly units in the sector.</p>
       ]]>
@@ -3620,7 +3617,7 @@
       your fleet and press the „[reference:Movement/label.move]“ button. Then
       select the sector you want to move to.</p>
       <p>If you want your fleet to move into planet press on the planet and click
-        „[reference:Movement/label.toPlanet]“ button.</p>
+      "[reference:Movement/label.toPlanet]" button.</p>
       ]]>
     </MoveToPlanet>
 
@@ -3640,7 +3637,7 @@
       and put in storage containers.</p>
       <p>If a battle took place in space, debris remain in a sector until someone
       collects them. In order to collect them you have to move to the sector with
-      a mule class transportation ship.</p>
+      a mule class transporter ship.</p>
       ]]>
     </Wreckage>
 
@@ -3648,7 +3645,7 @@
       <![CDATA[
       <p>Being in a sector with debris select your fleet and press
       „[reference:Squadrons/label.manage]“</p>
-      <p>In the fallowing windows press the load button.</p>
+      <p>In the fallowing window press the load button.</p>
       ]]>
     </LoadWreckage1>
     <LoadWreckage2>

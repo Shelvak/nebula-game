@@ -3673,10 +3673,10 @@
 
     <TechTree>
       <![CDATA[
-      <p>Atsidaręs [obj:1:Building_ResearchCenter:what:dc] rasi technologijų
-        medį. Jame matomos visos technologijos, kurios yra tau prieinamos.</p>
+      <p>Atsidaręs tyrimų centrą rasi technologijų medį. Jame matomos visos
+      technologijos, kurios yra tau prieinamos.</p>
       <p>Technologijų, kurios yra pilkos, kol kas išrasti negali. Technologijoms,
-        kurios yra raudonos, trūksta resursų arba mokslininkų.</p>
+      kurios yra raudonos, trūksta resursų arba mokslininkų.</p>
       ]]>
     </TechTree>
 
@@ -3789,7 +3789,7 @@
 
     <CombatInSpace>
       <![CDATA[
-      <p>Į sektorių atskridę tavo laivai nuskanuoja erdvę. Jeigu joje yra
+      <p>Į sektorių atskridę tavo laivai nuskenuoja erdvę. Jeigu joje yra
         priešiškų laivynų - jie persirikiuoja (tai užtrunka tam tikrą laiko
         tarpą) ir puola priešų laivyną.</p>
       <p>Jeigu šis nebūna sunaikintas per vieną kovą, laivai atsitraukia,
