@@ -3359,12 +3359,16 @@
       ]]>
     </ConstructionTiles>
 
-    <SpeedupConstruction>
+    <SpeedupConstruction1>
        <!-- TODO: replace button names with references -->
       <![CDATA[
       <p>You may speed up long taking constructions using special game resource
       called <span fontWeight="bold">creds</span>. To do that, select a building.
       Then click "Speed up" button and choose the speed up level.</p>
+      ]]>
+    </SpeedupConstruction1>
+    <SpeedupConstruction2>
+      <![CDATA[
       <p>
         You can buy creds by clicking "Buy creds" button in the N44 menu.
       </p>
@@ -3374,7 +3378,434 @@
         speed up construction of a building!
       </p>
       ]]>
-    </SpeedupConstruction>
+    </SpeedupConstruction2>
+
+    <UnitConstructors>
+      <![CDATA[
+      <p>Some buildings are designed to train soldiers, tanks or spaceships.</p>
+      <p>You can build units by selecting a building (i.e.
+        [obj:1:Building_Barracks:what:dc]) and pressing
+        „[reference:BuildingSelectedSidebar/open] in the sidebar“.</p>
+      ]]>
+    </UnitConstructors>
+
+    <UnitConstructionScreen>
+      <![CDATA[
+      <p>You can reach unit building screen using any buiding. There you can
+      manage all units built in current planet.</p>
+      <p>In order to train soldiers, select the needed amount and press
+      the building button.</p>
+      ]]>
+    </UnitConstructionScreen>
+
+    <TakeUnitsReward>
+      <![CDATA[
+      <p>The quest you have just completed rewards you with troops.
+        Before starting next quest it is advised to claim this reward.</p>
+      <p>Go to the N44 menu, press the „[reference:MainMenu/label.quests]“ button,
+        select previously completed quest and click
+        „[reference:Quests/label.claimReward]“.</p>
+      ]]>
+    </TakeUnitsReward>
+
+    <UnitScreen>
+      <![CDATA[
+      <p>In the top right corner of the screen you can see the number of
+      troops you have. Pressing that number will bring you to the troops'
+      management panel where you can adjust your strategy of the battle.</p>
+      ]]>
+    </UnitScreen>
+
+    <AttackButton>
+      <![CDATA[
+      <p>In order to attack alien building you have to select it and press the
+      „[reference:BuildingSelectedSidebar/attack]“ button in the sidebar.</p>
+      ]]>
+    </AttackButton>
+
+    <AttackScreen>
+      <![CDATA[
+      <p>In the opened panel you can select troops which you want to participate
+      in the battle.</p>
+      <p>In most cases, all troops are selected. You can select them by pressing
+      „[reference:Units/label.all]“ button in the sidebar.</p>
+      <p>When you have selected troops, press „[reference:Units/label.attack]“.</p>
+      ]]>
+    </AttackScreen>
+
+    <ClaimRewardRC>
+      <![CDATA[
+      <p>You have just completed the quest which gives you necessary resources
+      for your future development - zetium. You will also receive creds
+      for your great job.</p>
+      <p>DON'T forget to claim your reward!</p>
+      ]]>
+    </ClaimRewardRC>
+
+    <DamagedUnits>
+      <![CDATA[
+      <p>Your troops had been injured in the battle. They could be healed,
+        if you invented the technology, enabling you to build
+        [obj:1:Building_HealingCenter:what:dc].</p>
+      ]]>
+    </DamagedUnits>
+
+    <Exploring>
+      <![CDATA[
+      <p>There are objects in the planet which you can explore. In order to do
+       that select the object and press „[reference:Exploration/label.explore]“.</p>
+      <p>Scientists will be sent to an expedition and will inform you about
+      results afterwards.</p>
+      ]]>
+    </Exploring>
+
+    <Notifications>
+      <![CDATA[
+      <p>You can find results of finished expeditions and other events in the
+      notification panel. Access it by pressing notification icon in the top
+      left corner.</p>
+      <p>If you want to find out more about notification, visit Nebula 44 Wiki
+      by going to the N44 menu.</p>
+      ]]>
+    </Notifications>
+
+    <TechTree>
+      <![CDATA[
+      <p>You can find the tree of technologies in
+      [obj:1:Building_ResearchCenter:what:dc]. There you can see all technologies
+      available for you.</p>
+      <p>You can't invent grey backgrounded technologies yet while technologies
+      in red background requires more scientists or resources than you currently
+      hold.</p>
+      ]]>
+    </TechTree>
+
+    <TechResearch1>
+      <![CDATA[
+      <p>In order to invent a technology you have to select it first.
+        Afterwards press the „[reference:Technologies/upgrade]“ button
+        in the sidebar.</p>
+      ]]>
+    </TechResearch1>
+    <TechResearch2>
+      <![CDATA[
+      <p>Technologies are invented by the selected amount of scientists.
+      The more scientists will work on a technology, the faster they will finish.</p>
+      ]]>
+    </TechResearch2>
+
+    <WPInTechs>
+      <![CDATA[
+
+      <p>Some technologies may be locked at the beginning - you will
+      have to reach certain amounts of war points.</p>
+      <p>You can check your war points amount in the N44 menu.</p>
+      <p>So far the easiest way to collect war points is to clear your planet
+      from aliens</p>
+      ]]>
+    </WPInTechs>
+
+    <ZetiumTile>
+      <![CDATA[
+      <p>You can built ZEX on the zetium crystals. They are rarely found unoccupied
+      so you will have to destroy alien building above crystals first.</p>
+      ]]>
+    </ZetiumTile>
+
+    <Resources>
+      <![CDATA[
+      <p>There are three types of resources in Nebula 44: metal, energy and
+      zetium. Small amounts of them are stored in the mother ship while larger
+      amounts are stored in a specialised containers.</p>
+      <p>Metal is mostly used for building troops and buildings. Energy is also
+      needed for building and also it is consumed by buildings such as MEX's,
+      ZEX's and radars. Zetium is used for constructing powerful tanks and
+      spaceships as well as for inventing technologies.
+      ]]>
+    </Resources>
+
+    <ResourceBar>
+      <![CDATA[
+      <p>You can track your resources, see storage size and extraction speed by
+      hovering your mouse over resource zone located at the bottom of the screen</p>
+      ]]>
+    </ResourceBar>
+
+    <Market1>
+      <![CDATA[
+      <p>Screen in the market consists of two parts: buying(left) and
+      selling(right) parts.</p>
+      <p>In the buying screen you can see all the offers, you can filter them
+      and find what you are looking for.</p>
+      ]]>
+    </Market1>
+    <Market2>
+      <![CDATA[
+      <p>After selecting the offer you can choose the amount you want to buy by
+      using the slider at the bottom of the screen.</p>
+      ]]>
+      <!-- Not implemented for now.
+      <p>Atkreipk dėmesį, jog mainytis gali ne tik resursais, bet ir
+        kariais.</p>-->
+    </Market2>
+
+    <Population>
+      <![CDATA[
+      <p>Your troops consumes vital resources - oxygen, food and water. It
+      influences the amount of troops you can maintain. This amount is seen at
+      the top right part of the screen next to the troops amount.</p>
+      <p>If you exceed your vital resources, your troops will become weaker so it
+      is mandatory to have enough space for them.</p>
+      ]]>
+    </Population>
+
+    <UnitScreenWithSpace>
+      <![CDATA[
+      <p>If you have spaceships as well as ground units the number of spaceships
+      will be shown next to the ground units amount in the top right corner.</p>
+      <p>By pressing that number you will find yourself in a spaceships' management
+      screen where you can send them to the space.</p>
+      <p>In that screen you can quickly switch to the ground units screen by using
+      buttons above first flank.</p>
+      ]]>
+    </UnitScreenWithSpace>
+
+    <SendingShips1>
+      <![CDATA[
+      <p>If you want to send your spaceships to the space open the spaceship
+      management panel.</p>
+      <p>Then select spaceships and press „[reference:Units/label.issueOrder]“.</p>
+      ]]>
+    </SendingShips1>
+    <SendingShips2>
+      <![CDATA[
+      <p>The map of the solar system will be opened. Press on the desired
+      sector and then click the „[reference:Movement/label.toSector]“ button.</p>
+      ]]>
+    </SendingShips2>
+
+    <CombatInSpace>
+      <![CDATA[
+      <p>Your spaceships will scan the area once they reach it. If there are
+      any enemy ships your fleet will prepare for a battle and attack.</p>
+      <p>If enemy fleet isn't destroyed at the firsr time your ships will
+      retreat, rearrange (it takes some time) and attack again until there
+      are only friendly units in the sector.</p>
+      ]]>
+    </CombatInSpace>
+
+    <MoveToPlanet>
+      <![CDATA[
+      <p>You can command your fleet even if it is in space. Just select one of
+      your fleet and press the „[reference:Movement/label.move]“ button. Then
+      select the sector you want to move to.</p>
+      <p>If you want your fleet to move into planet press on the planet and click
+        „[reference:Movement/label.toPlanet]“ button.</p>
+      ]]>
+    </MoveToPlanet>
+
+    <ClaimPlanet>
+      <![CDATA[
+      <p>If there are no enemy forces in the planet you can take it over.
+      All the buildings and resources in the planet will become yours.</p>
+      <p>To claim a planet you have to click the
+        „[reference:BuildingSidebar/label.claimPlanet]“ button in the sidebar.</p>
+      ]]>
+    </ClaimPlanet>
+
+    <Wreckage>
+      <![CDATA[
+      <p>After a battle some debris remain which can be used as resources.</p>
+      <p>If a battle took place in a planet, debris is automatically collected
+      and put in storage containers.</p>
+      <p>If a battle took place in space, debris remain in a sector until someone
+      collects them. In order to collect them you have to move to the sector with
+      a mule class transportation ship.</p>
+      ]]>
+    </Wreckage>
+
+    <LoadWreckage1>
+      <![CDATA[
+      <p>Being in a sector with debris select your fleet and press
+      „[reference:Squadrons/label.manage]“</p>
+      <p>In the fallowing windows press the load button.</p>
+      ]]>
+    </LoadWreckage1>
+    <LoadWreckage2>
+      <![CDATA[
+      <p>Select the amount of resources you want to carry and confirm your
+      decision</p>
+      <p>Close the resource and spacehip windows in order to go back to the space.</p>
+      ]]>
+    </LoadWreckage2>
+
+    <UnloadResources>
+      <![CDATA[
+      <p>When you come back to a planet go to the spaceship management panel and
+      press the unload button</p>
+      <p>Select the amount of resources you want to unload and confirm your
+      decision. Close resources and spaceships windows in order to go back to
+      the planet</p>
+      ]]>
+    </UnloadResources>
+
+    <Radar1>
+      <![CDATA[
+      <p>Galaktikoje tu toli gražu ne vienas, tačiau tam, jog galėtum matyti ir
+      išskristi iš už savo saulės sistemos ribų tau reikalingas radaras.</p>
+      ]]>
+    </Radar1>
+    <Radar2>
+      <![CDATA[
+      <p>Radaras vartoją energiją. Kol jis aktyvus, jis atidengia ir rodo aplink
+      tavo saulės sistemą ęsančios galaktikos plotą. Tobulinant radarą didėja
+      matomos erdvės plotas.</p>
+      <p>Norėdamas matyti daugiau taip pat gali užkariauti kitoje saulės
+      sistemoje ęsančią planetą ir radarą pasistatyti ten.</p>
+      ]]>
+    </Radar2>
+
+    <LoadUnits>
+      <![CDATA[
+      <p>Norint užkariauti kitą planetą, tau prireiks karių, kuriuos
+      gali pergabenti mulo klasės transportiniu laivu.</p>
+      <p>Nueik į laivų ekraną, ir paspausk įkrovimo mygtuką. Tada pasirink
+        karius, kuriuos nori įkrauti į laivą ir dešinėje juostoje spausk
+        mygtuką „[reference:Units/label.load]“.</p>
+      <p>Atmink, norint kolonizuoti planetą tau prireiks kariuomenės, bei
+        mobilaus štabo.</p>
+      ]]>
+    </LoadUnits>
+
+    <UnloadUnits>
+      <![CDATA[
+      <p>Nuskridęs į planetą paspausk iškrovimo mygtuką, pasirink karius ir
+        dešinėje juostoje spausk mygtuką „[reference:Units/label.unload]“.</p>
+      ]]>
+    </UnloadUnits>
+
+    <DeployMdh>
+      <![CDATA[
+      <p>Tavo štabas yra vis dar mobilioje savo formoje. Kolonijos įkūrimui tau
+        reikia jį išskleisti.</p>
+      <p>Nueik į karių langą, paspausk išskleidimo mygtuką ir pasirink žemės
+        plotą, kuriame statysi savo štabą.</p>
+      ]]>
+    </DeployMdh>
+
+    <DeployTurrets>
+      <![CDATA[
+      <p>Praeita užduotis tave apdovanojo mobiliais bokšteliais. Atsiimk juos į
+        savo naują koloniją, bei išskleisk - jie bus puiki pirmoji ginybos
+        linija.</p>
+      ]]>
+    </DeployTurrets>
+
+    <ThirdPlanet>
+      <![CDATA[
+      <p>Trečioji tavo planeta yra atviroje saulės sistemoje - ją bet kada gali
+        užpulti kiti žaidėjai. Be to - ją reguliariai puldinės ateivių
+        piratai.</p>
+      <p>Jeigu nori apie piratus sužinot daugiau, siūlau paskaityti apie juos
+        Nebula 44 wiki, į kurį nuorodą rasi N44 meniu.</p>
+      ]]>
+    </ThirdPlanet>
+
+    <ArmorTiles>
+      <![CDATA[
+      <p>Bokštelius išskleisk ant tamsios žemės - ji yra tvirta ir suteikia
+        papildomo tvirtumo bokšteliams - juos bus sunkiau nugriauti.</p>
+      ]]>
+    </ArmorTiles>
+
+    <EcoTier2>
+      <![CDATA[
+      <p>Išradus technologijas leidžiančias statyti geresnes kasyklas
+        rekomenduotina atnaujinti savo ekonominę bazę.</p>
+      <p>Norint atnaujinti kasyklą, ją reikia pirma nugriauti, o tada,
+        jos vietoje, pastatyti naujesnę jos versiją.</p>
+      ]]>
+    </EcoTier2>
+
+    <JoinAlliance>
+      <![CDATA[
+      <p>Prie sąjungos gali prisijungti gavęs pakvietimą, kuris atsidurs tavo
+        pranešimų centre.</p>
+      ]]>
+    </JoinAlliance>
+
+    <CreateAlliance>
+      <![CDATA[
+      <p>Norint įkurti savo sąjungą, reikia būti išradus sąjungos
+      technologiją.</p>
+      <p>Tuome nueik į N44 meniu ir paspausk
+        „[reference:MainMenu/label.alliance]“ mygtuką. Atsidariusiame ekrane
+        gali įkurti savo sąjungą.</p>
+      ]]>
+    </CreateAlliance>
+
+    <InviteToAlliance>
+      <![CDATA[
+      <p>Įkūrus sąjungą žaidėjus gali pakviesti nuėjęs į N44 meniu ir paspaudęs
+        „[reference:MainMenu/label.alliance]“ mygtuką. Tada ekrano viršuje
+        pasirink kortelę, ant kurios užrašyta
+        „[reference:Alliances/title.section.management]“ ir naudokis joje
+        ęsančiu sąrašu žaidėjams pakviesti.</p>
+      ]]>
+    </InviteToAlliance>
+
+    <BgBattles>
+      <![CDATA[
+      <p>Už mūšius arenoje su kitais žaidėjais tu ir tavo sąjunga gauna
+        pergalės taškus, kurie būtini žaidimui laimėti.</p>
+      ]]>
+    </BgBattles>
+
+    <BgPlanets>
+      <![CDATA[
+      <p>Arenoje ęsančios planetos yra ypatingos - jas užėmus valdytojui ir jo
+        sąjungai periodiškai yra duodami pergalės taškai. Kuo ilgiau valdysi
+        arenos planetas - tuo daugiau pergalės taškų gausi.</p>
+      <p>Arenoje ęsančios planetos neįtakoja paprastas planetas puolančių
+        ateivių piratų kiekio.</p>
+      ]]>
+    </BgPlanets>
+
+    <BossShip>
+      <![CDATA[
+      <p>Taip pat arenoje atsiranda Morfėjus - galingas ateivių laivas, kurį
+        nužudžius gaunama premija kredais. Už jam padarytą žalą taip pat duodami
+        pergalės taškai.</p>
+      ]]>
+    </BossShip>
+
+    <Pulsars>
+      <![CDATA[
+      <p>Pulsarai - tai mažesnės, vietinės arenos versijos. Užėmus juose
+        ęsančias planetas pergalės taškų gaunama žymiai mažiau.</p>
+      <p>Pulsaruose ęsančios planetos neįtakoja paprastas planetas puolančių
+        ateivių piratų kiekio.</p>
+      ]]>
+    </Pulsars>
+
+    <Convoys>
+      <![CDATA[
+      <p>Pro tavo galaktikos sektorių karts nuo karto gali praskristi ateivių
+        konvojai. Šie ateivių laivai yra gerai ginkluoti, tačiau juos sunaikinus
+        gaunama premija kredais. Be to už konvojų laivams padarytą žalą taip
+        pat gaunami pergalės taškai.</p>
+      ]]>
+    </Convoys>
+
+    <GalaxyBattles>
+      <![CDATA[
+      <p>Kovodamas su kitais žaidėjais galaktikoje, saulės sistemose ar
+      planetose taip pat gausi pergalės taškų, tiesa, mažiau nei arenoje.</p>
+      <p>Be to galaktikoje galioja teisingumo kodeksas - už silpnesnių žaidėjų
+        laivynų naikinimą pergalės taškų negausi.</p>
+      ]]>
+    </GalaxyBattles>
+
   </QuestScreens>
 
   <Ratings>
