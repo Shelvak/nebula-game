@@ -1338,7 +1338,6 @@
       <p>Laikas, kai tavo VIP kredai bus vėl užpildyti.</p>
     </tooltip.nextVipTick>
     <label.vipEndsIn value="VIP baigsis už" />
-    <label.whouldFinish value="Patobulinimas baigsis už" />
     <label.vipCreds value="VIP kredų" />
     <label.creds value="kredų" />
     <!-- {0} amount of free creds -->
@@ -1835,14 +1834,14 @@
       esančiais jo kelyje.</p>
     </description.avoidNpc>
 
-     <speedup.message.combatCooldownInfo
+    <speedup.message.combatCooldownInfo
         value="Atvykus į vietą bus {0} pertrauka prieš prasidedant kovai."/>
-     <speedup.message.cost
+    <speedup.message.cost
         value="Pagreitinimo kaina: {0 one[? kredas] tens[? kredų] many[? kredai]}."/>
-     <speedup.label.changeSpeed value="Skrydžio laiko valdymas" />
-     <speedup.label.arrivesAt value="Atvyks: {0}"/>
-     <speedup.label.arrivesIn value="Skrydžio laikas: {0}"/>
-     <speedup.label.speedupValue value="{0}%"/>
+    <speedup.label.changeSpeed value="Skrydžio laiko valdymas" />
+    <speedup.label.arrivesAt value="Atvyks: {0}"/>
+    <speedup.label.arrivesIn value="Skrydžio laikas: {0}"/>
+    <speedup.label.speedupValue value="{0}%"/>
   </Movement>
 
   <Navigator>
