@@ -97,7 +97,7 @@ package components.map.planet
 
          _grid = new BitmapImage();
          _grid.source = map.getGrid();
-         _grid.depth = Number.MIN_VALUE;
+         _grid.depth = -Number.MAX_VALUE;
          _grid.visible = false;
          _grid.smooth = true;
          objectsLayer.addElement(_grid);
@@ -114,7 +114,7 @@ package components.map.planet
             indicator.logicalHeight = lh;
             indicator.x = map.coordsTransform.logicalToReal_X(t.x, lyMax);
             indicator.y = map.coordsTransform.logicalToReal_Y(lxMax, lyMax);
-            indicator.depth = Number.MIN_VALUE + 1;
+            indicator.depth = -Number.MAX_VALUE + 1;
             indicator.alpha = 0.3;
             indicator.visible = false;
             _resourceTilesIndicators[t.hashKey()] = indicator;

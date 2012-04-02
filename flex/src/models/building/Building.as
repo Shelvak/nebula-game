@@ -447,7 +447,8 @@ package models.building
       {
          return hp/hpMax;
       }
-      
+
+      // TODO: make this MTimeEventFixedMoment
       [Optional]
       public var cooldownEndsAt: Date = new Date();
       

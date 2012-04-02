@@ -100,11 +100,11 @@
                                           visible="{!_currentLocIsPlanet}" includeInLayout="{!_currentLocIsPlanet}"/>
             <squadscr:CLocationWithButton location="{model.targetLocation}"/>
             <s:Label paddingTop="9" paddingLeft="26"
-                     text="{model.jumpsAtEvent.occuresAtString(true)} ({model.jumpsAtEvent.occuresInString()})"
+                     text="{model.jumpsAtEvent.occursAtString(true)} ({model.jumpsAtEvent.occursInString()})"
                      visible="{_currentLocIsPlanet}" includeInLayout="{_currentLocIsPlanet}"/>
             <s:Label paddingTop="9" paddingLeft="26"
                      text="{model.arrivalEvent != null
-                     ? model.arrivalEvent.occuresAtString(true) + ' (' + model.arrivalEvent.occuresInString() + ')'
+                     ? model.arrivalEvent.occursAtString(true) + ' (' + model.arrivalEvent.occursInString() + ')'
                      : getString('label.unknown')}"/>
          </s:Group>
       </s:Group>

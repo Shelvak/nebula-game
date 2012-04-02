@@ -100,7 +100,7 @@ package models.movement
       public override function toString() : String {
          return "[class: " + className
                    + ", routeId: " + routeId
-                   + ", arrivesAt: " + arrivalEvent.occuresAt
+                   + ", arrivesAt: " + arrivalEvent.occursAt
                    + ", index: " + index
                    + ", location: " + location + "]";
       }

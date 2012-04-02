@@ -56,7 +56,7 @@ package tests.movement
          );
          assertThat(
             "arrival date should be 10 seconds from now",
-            control.arrivalEvent.occuresAt,
+            control.arrivalEvent.occursAt,
             dateEqual (new Date(2010, 0, 1, 0, 0, 10))
          );
       }
@@ -71,7 +71,7 @@ package tests.movement
          );
          assertThat(
             "arrival date should be 10 seconds from now",
-            control.arrivalEvent.occuresAt,
+            control.arrivalEvent.occursAt,
             dateEqual (new Date(2010, 0, 1, 0, 0, 10))
          );
       }
@@ -95,7 +95,7 @@ package tests.movement
          function assertArrivalDate(date: Date, message: String): void {
             assertThat(
                "arrival date should be " + message + " from now",
-               control.arrivalEvent.occuresAt, dateEqual (date)
+               control.arrivalEvent.occursAt, dateEqual (date)
             );
          }
          function assertSpeedModifier(value: Number): void {
@@ -151,7 +151,7 @@ package tests.movement
          control.arrivalYear = 2009;
          assertThat(
             "should be impossible to set arrival time to the past",
-            control.arrivalEvent.occuresAt,
+            control.arrivalEvent.occursAt,
             dateEqual (new Date(2010, 0, 1, 0, 0, 1))
          );
       }
@@ -167,7 +167,7 @@ package tests.movement
          );
          assertThat(
             "arrival date should be 5 seconds from now",
-            control.arrivalEvent.occuresAt,
+            control.arrivalEvent.occursAt,
             dateEqual (new Date(2010, 0, 1, 0, 0, 5))
          );
 
@@ -178,7 +178,7 @@ package tests.movement
          );
          assertThat(
             "arrival date should be 20 seconds from now",
-            control.arrivalEvent.occuresAt,
+            control.arrivalEvent.occursAt,
             dateEqual(new Date(2010, 0, 1, 0, 0, 20))
          );
       }
@@ -188,7 +188,7 @@ package tests.movement
          control.resetChangeFlags();
          assertThat(
             "resetChangeFlags() should call arrivalEvent.resetChangeFlags()",
-            control.arrivalEvent.change_flag::occuresAt, isFalse()
+            control.arrivalEvent.change_flag::occursAt, isFalse()
          );
       }
 
@@ -197,7 +197,7 @@ package tests.movement
          function assertArrivalDateIsTheSame(): void {
             assertThat(
                "arrival date should stay the same",
-               control.arrivalEvent.occuresAt,
+               control.arrivalEvent.occursAt,
                dateEqual (new Date(2010, 0, 1, 0, 0, 10), 100)
             );
          }
@@ -224,7 +224,7 @@ package tests.movement
          assertThat(
             "arrival date should be shifted to compensate time advancement "
                + "when speed modifier is at minimum",
-            control.arrivalEvent.occuresAt,
+            control.arrivalEvent.occursAt,
             dateEqual (new Date(2010, 0, 1, 0, 0, 11), 100)
          );
       }
@@ -238,7 +238,7 @@ package tests.movement
             );
             assertThat(
                "arrival date should not have changed",
-               control.arrivalEvent.occuresAt,
+               control.arrivalEvent.occursAt,
                dateEqual (new Date(2010, 0, 1, 0, 0, 10))
             );
          }
@@ -257,7 +257,7 @@ package tests.movement
          );
          assertThat(
             "arrival date should be 9 seconds from now",
-            control.arrivalEvent.occuresIn, equals (9)
+            control.arrivalEvent.occursIn, equals (9)
          );
       }
 

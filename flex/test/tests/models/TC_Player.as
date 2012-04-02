@@ -15,22 +15,22 @@ package tests.models
    {
       [Before]
       public function setUp(): void {
-         DateUtil.now = new Date(1000).time;
+         DateUtil.now = 1000;
       }
 
       [Test]
       public function allianceCooldownInEffect_allianceCooldownIdIsSet(): void {
          const allianceId:int = 5;
          function newPlayer(cooldownEnded:Boolean): Player {
-            const p:Player = new Player();
+            const p: Player = new Player();
             p.allianceCooldownId = allianceId;
-            p.allianceCooldown.occuresAt = cooldownEnded
+            p.allianceCooldown.occursAt = cooldownEnded
                                               ? new Date(500)
                                               : new Date(1500);
             return p;
          }
 
-         var p:Player = newPlayer(false);
+         var p: Player = newPlayer(false);
          assertThat(
             "cooldown not in effect for another alliance",
             p.allianceCooldownInEffect(allianceId + 1), isFalse()
@@ -63,7 +63,7 @@ package tests.models
       public function allianceCooldownInEffect_allianceCooldownIdIsZero(): void {
          function newPlayer(cooldownEnded:Boolean): Player {
             const p:Player = new Player();
-            p.allianceCooldown.occuresAt = cooldownEnded
+            p.allianceCooldown.occursAt = cooldownEnded
                                               ? new Date(500)
                                               : new Date(1500);
             return p;

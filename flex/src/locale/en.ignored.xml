@@ -417,6 +417,9 @@
     <status2 value="NAP" />
     <status2.tooltip value="Non-Agression Pact" />
     <status3 value="Enemy" />
+
+    <label.loadingBattleMap value="Loading battlefield" />
+
     <space value="Space" />
     <ground value="Ground" />
     <youWon value="You won!" />
@@ -431,7 +434,7 @@
     <tooltip.play value="PLAY/PAUSE" />
     <tooltip.replay value="REPLAY" />
   </BattleMap>
-  
+
   <Messenger>
     <clickHere value="Click here for more info" />
   </Messenger>
@@ -445,6 +448,7 @@
     <status value="Status" />
     <constructing value="Constructing" />
     <upgrading value="Upgrading" />
+
     <title.rates value="Rates" />
     <title.inactiveBuilding value="Inactive building" />
     <storage value="Storage" />
@@ -497,7 +501,7 @@
     </warning.repairBuildingTechNeeded>
     <label.repairBuilding value="Repair"/>
     <label.cancelUpgrade>
-      <p>These resources will be returned if you cancel upgrade of this 
+      <p>These resources will be returned if you cancel upgrade of this
       building:</p>
     </label.cancelUpgrade>
     <label.cancelConstructor>
@@ -516,6 +520,8 @@
       to you for less than {0}.</p>
     </warning.selfDestructGuard>
     <toolTip.afterUpgrade value="After upgrade" />
+    <warning.deployCancel
+        value="Upon construction cancellation unit that is being deployed will be lost." />
     <title.boost value="Boost" />
     <title.buildingBonus value="Building bonus" />
     <label.nextBonus value="Next bonus in:" />
@@ -546,7 +552,6 @@
     </label.deactivateOverdrive>
     <button.activateOverdrive value="Activate overdrive" />
     <button.deactivateOverdrive value="Deactivate overdrive" />
-    <warning.deployCancel value="You will not get your deployed unit back" />
     <warning.attackNpc>
       <p>This is an NPC building. You can destroy it by killing all the units
         inside.</p>

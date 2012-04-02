@@ -49,7 +49,7 @@ package models.announcement
       public function reset() : void {
          _message = null;
          _messageTextFlow = null;
-         event.occuresAt = new Date(0);
+         event.occursAt = new Date(0);
          dispatchAnnouncmentEvent(MAnnouncementEvent.RESET);
       }
       
@@ -83,7 +83,7 @@ package models.announcement
       
       public function update() : void {
          event.update();
-         if (event.change_flag::hasOccured)
+         if (event.change_flag::hasOccurred)
             dispatchAnnouncmentEvent(MAnnouncementEvent.BUTTON_VISIBLE_CHANGE);
          dispatchUpdateEvent();
       }
@@ -99,7 +99,7 @@ package models.announcement
       
       [Bindable(event="buttonVisibleChange")]
       public function get buttonVisible() : Boolean {
-         return !event.hasOccured;
+         return !event.hasOccurred;
       }
       
       

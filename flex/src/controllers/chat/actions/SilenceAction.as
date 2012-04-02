@@ -11,7 +11,7 @@ package controllers.chat.actions
    public class SilenceAction extends CommunicationAction
    {
       override public function applyServerAction(cmd: CommunicationCommand): void {
-         MChat.getInstance().silenced.occuresAt =
+         MChat.getInstance().silenced.occursAt =
             DateUtil.parseServerDTF(cmd.parameters["until"]);
       }
    }

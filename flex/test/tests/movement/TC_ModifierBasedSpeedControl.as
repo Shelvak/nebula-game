@@ -56,7 +56,7 @@ package tests.movement
          );
          assertThat(
             "arrival date should be 10 seconds from now",
-            control.arrivalEvent.occuresAt,
+            control.arrivalEvent.occursAt,
             dateEqual(new Date(DateUtil.now + baseValues.tripTime * 1000))
          );
       }
@@ -83,7 +83,7 @@ package tests.movement
          control.speedModifier = 0.5;
          assertThat(
             "should take 1/2 of base trip time",
-            control.arrivalEvent.occuresIn, equals (baseValues.tripTime / 2)
+            control.arrivalEvent.occursIn, equals (baseValues.tripTime / 2)
          );
       }
 
@@ -126,12 +126,12 @@ package tests.movement
          control.resetChangeFlags();
          assertThat(
             "resetChangeFlags() should call arrivalEvent.resetChangeFlags()",
-            control.arrivalEvent.change_flag::occuresAt, isFalse()
+            control.arrivalEvent.change_flag::occursAt, isFalse()
          );
          control.update();
          assertThat(
             "update() should call arrivalEvent.update()",
-            control.arrivalEvent.change_flag::occuresAt, isTrue()
+            control.arrivalEvent.change_flag::occursAt, isTrue()
          );
       }
    }

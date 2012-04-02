@@ -52,7 +52,15 @@ var locales = { // {{{
           "kokiame ekrane buvai ir t.t. Kartais tokia informacija labai " +
           "padeda išspręsti klaidas :)"
       ];
-      return ["LOCALE: fixme"];
+      return [
+        "Details of this error will automatically be sent to our developers. " +
+          "It will help them to fix this error and ensure it will never " +
+          "bother you again.",
+        "It would also help us a lot if you would provide additional " +
+          "information: what you were doing in the game, at what screen you " +
+          "were looking and so on. Sometimes this info is crucial to solving " +
+          "problems. Thanks!"
+      ];
     },
     sending: function(locale) {
       if (locale == "lt") return "Siunčiama... Prašome palaukti ;)";
@@ -410,6 +418,8 @@ function crashRemote(summary, description, body) {
   // Show error message.
   $("#client-error").show();
 
+  // Append window URL to know which game version player is running.
+  body = "Window URL: " + window.location.href + "\n\n" + body;
   $.ajax({
     url: 'http://' + webHost + '/client/add_issue',
     type: 'POST',

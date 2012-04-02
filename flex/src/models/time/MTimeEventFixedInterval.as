@@ -1,100 +1,75 @@
 package models.time
 {
    import utils.DateUtil;
-   
-   
+
+
    /**
     * This marks an event after a fixed time interval in the future.
-    * 
-    * <p>You set <code>occuresIn</code> to some positive integer (negative is converted to 0) and this values
-    * remains the same until you set it again. Meanwhile <code>occuresAt</code> is updated when time advances. 
+    *
+    * <p>You set <code>occursIn</code> to some positive integer (negative is
+    * converted to 0) and this values remains the same until you set it again.
+    * Meanwhile <code>occursAt</code> is updated when time advances.
     */
    public class MTimeEventFixedInterval extends MTimeEvent
    {
-      public function MTimeEventFixedInterval()
-      {
-         super();
-      }
-      
-      
       /* ################### */
       /* ### IMTimeEvent ### */
       /* ################### */
-      
-      
-      private var _occuresIn:Number = 0;
-      [Bindable(event="occuresInChange")]
+
+
+      private var _occursIn: Number = 0;
+      [Bindable(event="occursInChange")]
       /**
-       * A fixed time interval between now and some future time. This property does not change over time but
-       * <code>occursAt</code> does. If you try to set this property to negative value it will be set to 0
-       * instead.
-       * 
-       * @see IMTimeEvent#occuresIn
+       * A fixed time interval between now and some future time. This property
+       * does not change over time but <code>occursAt</code> does. If you try
+       * to set this property to negative value it will be set to 0 instead.
+       *
+       * @see IMTimeEvent#occursIn
        */
-      public function set occuresIn(value:Number) : void
-      {
+      public function set occursIn(value: Number): void {
          value = Math.floor(value);
-         if (_occuresIn != value)
-         {
-            _occuresIn = value < 0 ? 0 : value;
-            occuresAtUpdated();
-            occuresInUpdated();
-            hasOccuredUpdated();
+         if (_occursIn != value) {
+            _occursIn = value < 0 ? 0 : value;
+            occursAtUpdated();
+            occursInUpdated();
+            hasOccurredUpdated();
          }
       }
-      /**
-       * @private
-       */
-      public override function get occuresIn() : Number
-      {
-         return _occuresIn;
+      public override function get occursIn(): Number {
+         return _occursIn;
       }
-      
-      
-      [Bindable(event="occuresAtChange")]
-      public override function get occuresAt() : Date
-      {
-         return new Date(DateUtil.now + _occuresIn * 1000);
+
+      [Bindable(event="occursAtChange")]
+      public override function get occursAt(): Date {
+         return new Date(DateUtil.now + _occursIn * 1000);
       }
-      
-      
-      [Bindable(event="willNotChange")]
+
       /**
-       * Allways <code>false</code>.
-       * 
-       * <p>Metadata:</br>
-       * [Bindable(event="willNotChange")]
-       * </p>
+       * Always <code>false</code>.
        */
-      public override function get hasOccured() : Boolean
-      {
+      public override function get hasOccurred(): Boolean {
          return false;
       }
-      
-      
-      /* ###################### */
-      /* ### IMSelfUpdating ### */
-      /* ###################### */
-      
-      
-      public override function update() : void
-      {
-         occuresAtUpdated();
+
+
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+
+      public override function update(): void {
+         occursAtUpdated();
       }
-      
-      
+
+
       /* ############################ */
       /* ### MTimeEvent OVERRIDES ### */
       /* ############################ */
-      
-      
-      public override function equals(o:Object):Boolean
-      {
-         if (!(o is MTimeEventFixedInterval))
-         {
+
+      public override function equals(o: Object): Boolean {
+         if (!(o is MTimeEventFixedInterval)) {
             return false;
          }
-         return _occuresIn == MTimeEventFixedInterval(o)._occuresIn;
+         return _occursIn == MTimeEventFixedInterval(o)._occursIn;
       }
    }
 }

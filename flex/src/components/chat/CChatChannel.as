@@ -78,7 +78,7 @@ package components.chat
                _model.removeEventListener(
                   MChatChannelEvent.GOT_SOME_MESSAGE, urlBugWorkaround
                );
-               if (inpMessage != null && _model.silenced.hasOccured) {
+               if (inpMessage != null && _model.silenced.hasOccurred) {
                   _model.userInput = inpMessage.text;
                }
                else {
@@ -131,11 +131,11 @@ package components.chat
                   textFlow_compositionCompleteHandler, false
                );
                _modelOld.silenced.removeEventListener(
-                  MTimeEventEvent.HAS_OCCURED_CHANGE,
+                  MTimeEventEvent.HAS_OCCURRED_CHANGE,
                   silenced_hasOccurredChangeHandler, false
                );
                _modelOld.silenced.removeEventListener(
-                  MTimeEventEvent.OCCURES_IN_CHANGE,
+                  MTimeEventEvent.OCCURS_IN_CHANGE,
                   silenced_occursInChangeHandler, false
                );
                txtContent.textFlow = null;
@@ -165,11 +165,11 @@ package components.chat
                   textFlow_compositionCompleteHandler, false, 0, true
                );
                _model.silenced.addEventListener(
-                  MTimeEventEvent.HAS_OCCURED_CHANGE,
+                  MTimeEventEvent.HAS_OCCURRED_CHANGE,
                   silenced_hasOccurredChangeHandler, false, 0, true
                );
                _model.silenced.addEventListener(
-                  MTimeEventEvent.OCCURES_IN_CHANGE,
+                  MTimeEventEvent.OCCURS_IN_CHANGE,
                   silenced_occursInChangeHandler, false, 0, true
                );
                txtContent.textFlow = _model.content.text;
@@ -463,11 +463,11 @@ package components.chat
             return;
          }
          if (btnSend != null) {
-            btnSend.enabled = _model.silenced.hasOccured;
+            btnSend.enabled = _model.silenced.hasOccurred;
          }
          if (inpMessage != null) {
-            inpMessage.enabled = _model.silenced.hasOccured;
-            if (!_model.silenced.hasOccured
+            inpMessage.enabled = _model.silenced.hasOccurred;
+            if (!_model.silenced.hasOccurred
                    && focusManager.findFocusManagerComponent(inpMessage) != null) {
                focusManager.setFocus(txtContent);
             }
@@ -477,15 +477,15 @@ package components.chat
 
       private function updateInpMessageText(): void {
          if (inpMessage != null && _model != null) {
-            if (_model.silenced.hasOccured) {
+            if (_model.silenced.hasOccurred) {
                   inpMessage.text = _model.userInput;
                   _model.userInput = "";
             }
             else {
                inpMessage.text = getString(
                   "message.silence",
-                  [DateUtil.formatShortDateTime(_model.silenced.occuresAt),
-                   _model.silenced.occuresInString()]
+                  [DateUtil.formatShortDateTime(_model.silenced.occursAt),
+                   _model.silenced.occursInString()]
                );
             }
          }
@@ -522,7 +522,7 @@ package components.chat
       /* ############# */
       
       private function sendMessage() : void {
-         if (!model.silenced.hasOccured) {
+         if (!model.silenced.hasOccurred) {
             return;
          }
          const message: String = StringUtil.trim(inpMessage.text);

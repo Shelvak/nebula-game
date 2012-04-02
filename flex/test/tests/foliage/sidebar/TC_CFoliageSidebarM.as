@@ -16,7 +16,8 @@ package tests.foliage.sidebar
    import models.solarsystem.SSKind;
    import models.solarsystem.SSObjectType;
    import models.solarsystem.MSolarSystem;
-   
+   import models.time.MTimeEventFixedMoment;
+
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
@@ -182,7 +183,15 @@ package tests.foliage.sidebar
       }
       
       private function set explorationEndsAt(value:Date) : void {
-         ML.latestPlanet.ssObject.explorationEndsAt = value;
+         const ssObject: MSSObject = ML.latestPlanet.ssObject;
+         if (value == null) {
+            ssObject.explorationEndEvent = null;
+         }
+         else {
+            const event: MTimeEventFixedMoment = new MTimeEventFixedMoment();
+            event.occursAt = value;
+            ssObject.explorationEndEvent = event;
+         }
       }
       
       private function triggersStateChangeEvent() : DispatchesMatcher {
