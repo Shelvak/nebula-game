@@ -300,11 +300,11 @@
       <p>If you wish to join an existing alliance you must get an invitation
       from that alliance.</p>
     </label.noAlly>
-    <label.totalAllianceVps value="Alliance victory points:" />
     <label.allianceOwner value="Alliance owner:" />
+    <label.totalAllianceVps value="Alliance victory points:" />
     <label.name value="Alliance name:" />
-    <label.allianceDescription value="Alliance description"/>
     <label.editDescription value="Edit description" />
+    <label.allianceDescription value="Alliance description"/>
     <label.save value="Save" />
     <label.cancel value="Cancel" />
     <label.close value="Close" />
@@ -349,7 +349,7 @@
     </giveAway.message.confirmationPopup>
     <giveAway.message.techLevelTooLow>
        Player {0} does not have alliance technology level required to
-       take over your alliance
+       take over your alliance.
     </giveAway.message.techLevelTooLow>
 
     <takeOver.header value="Take ownership"/>
@@ -370,7 +370,6 @@
        Since current owner of the alliance has been inactive for {0} d., you
        can now take over the ownership of it.
     </takeOver.message.ownerIsInactive>
-     
   </Alliances>
 
   <BattleMap>
@@ -590,19 +589,36 @@
     <property.initiative value="Initiative" />
     <property.armor value="Armor" />
     <property.armorMod value="Armor modifier" />
-    <property.damageMod value="Damage modifier" />
+    <property.armorMod.format value="{0}%" />
     <property.mod.construction value="Construction speedup" />
+    <property.mod.construction.format value="{0}%" />
+    <property.mod.cooldown value="Seconds to transport 1 volume unit" />
+    <property.mod.cooldown.format value="{0} s" />
+    <property.mod.cooldown.tooltip>
+      <p>When transporting resources duration of a cooldown is calculated by 
+      multiplying this number and volume of the resources transported.</p>
+      <p>The smaller this number is, the shorter cooldown is required after
+      transportation.</p>
+    </property.mod.cooldown.tooltip>
     <property.healing.time.mod value="Seconds to heal 1 hp" />
+    <property.healing.time.mod.format value="{0} s" />
     <property.healing.cost.mod value="Healing price modifier" />
+    <property.healing.cost.mod.tooltip>
+      <p>Healing price of units is calculated by formula:
+      unit price * damage percentage * this multiplier.</p>
+      <p>The smaller this number is, the cheaper your units can be healed.</p>
+    </property.healing.cost.mod.tooltip>
     <property.population value="Population" />
-    <property.teleportedVolume value="Volume teleported" />
+    <property.maxVolume value="Max transportable volume" />
     <property.creds value="Creds" />
     <property.victoryPoints value="Victory points" />
     <property.fee value="Fee percentage" />
+    <property.fee.format value="{0}%" />
     <property.width value="Building width" />
     <property.height value="Building height" />
     <property.vpsOnDamage value="VPs for 1 damage dealt" />
     <property.credsForKilling value="Creds for killing" />
+    <property.teleportedVolume value="Volume teleported" />
 
     <text.deactivated>
       <p>
@@ -692,20 +708,33 @@
       </p>
     </NpcJumpgate.about>
 
-
+    <!-- Player buildings -->
 
     <Mothership.name ref="Objects/Building_Mothership" />
     <Mothership.about>
       <p>
-        The Mothership is the core ship for humans who inhabit this planet. 
-        They came here in this ship and used it as their first base securing 
-        perimeter around with deadly base defense towers. 
+        [reference:Objects/Building_Mothership] is the core ship for humans who
+        inhabit this planet. They came here in this ship and used it as a
+        shelter from harsh winds on this wild planet.
       </p>
       <p>
-        Each Mothership has a basic MEX and some solar cells integrated in it 
-        and can provide a colony with core metal and energy needs. 
+        Each [reference:Objects/Building_Mothership] has a basic MEX and some
+        solar cells integrated in it and can provide a colony with most basic
+        metal and energy needs.
       </p>
     </Mothership.about>
+    
+    <ResourceTransporter.name value="Res. transporter" />
+    <ResourceTransporter.tooltip value="Allows teleporting of resources" />
+    <ResourceTransporter.about>
+      <p>Resource transporter can instantaneously transfer a certain amount of
+      resources from one planet to another. Connecting two such buildings
+      forms a space tunnel between the two planets.</p>
+      <p>Although scientists have not yet been able to successfully perform
+      transportation of a live being, this technology is suitable for
+      fast transfer of resource. However a small portion of resources
+      being transferred is lost in the process.</p>
+    </ResourceTransporter.about>
 
     <MEX.common>
       <p>
@@ -722,15 +751,15 @@
     <MetalExtractor.about>
       <p>
         Built on ore mountains they are used to extract metal from dirt and 
-        rumble. Metal Extractors (MEXes) are facilities that provide metal one 
-        require by eating up through mountains and bringing its ore supplies up 
-        to the surface. 
+        rumble. Metal Extractors (MEXes) are facilities that provide metal by
+        eating up through mountains and bringing its ore supplies up to the
+        surface. 
       </p>
       <p>[reference:MEX.common]</p>
     </MetalExtractor.about>
 
     <MetalExtractorT2.name ref="Objects/Building_MetalExtractorT2" />
-    <MetalExtractorT2.tooltip value="Extracts metal" />
+    <MetalExtractorT2.tooltip ref="MetalExtractor.tooltip" />
     <MetalExtractorT2.common>
       <p>Better, faster and more expensive version of 
       [reference:MetalExtractor.name].</p>
@@ -745,10 +774,10 @@
     <MetalStorage.tooltip value="Stores metal" />
     <MetalStorage.about>
       <p>
-        As MEXes rip through the ore not all metal is used up immediately. 
-        Excess metal is stored in these giant structures. When the time comes 
-        it is released from these containers and used in construction of our 
-        fleets and buildings. 
+        As MEXes rip through the ore not all metal is used up 
+        immediately. Excess metal is stored in these giant structures.
+        When the time comes it is released from these containers and
+        used in construction of our fleets and buildings. 
       </p>
       <p>Each upgrade level increases storage.</p>
     </MetalStorage.about>
@@ -757,9 +786,10 @@
     <CollectorT1.tooltip value="Generates energy" />
     <CollectorT1.common>
       <p>
-        These wind panels are used to provide basic needs of energy to all 
-        buildings and construction. They can be upgraded relatively easy and 
-        are cheap and cost effective to produce if you have enough space. 
+        These wind panels are used to provide basic needs of energy to
+        all buildings and construction. They can be upgraded relatively
+        easy and are cheap and cost effective to produce if you have
+        enough space.
       </p>
     </CollectorT1.common>
     <CollectorT1.about>
@@ -768,15 +798,13 @@
     </CollectorT1.about>
 
     <CollectorT2.name ref="Objects/Building_CollectorT2" />
-    <CollectorT2.tooltip value="Generates energy" />
+    <CollectorT2.tooltip ref="CollectorT1.tooltip" />
     <CollectorT2.common>
       <p>
-        These solar collectors are used to provide massive amounts of energy to 
-        all buildings and construction. By using technology from alien 
-        [reference:NpcSolarPlant.name]s their massive panels generate a 
-        formidable amount of energy. Although their advanced designs allow 
-        upgrading them beyond the limits of their former versions they cost a 
-        lot more than simple [reference:Objects/Building_CollectorT2]. 
+        These solar collectors are used to provide massive amounts of
+        energy to all buildings and construction. They have been designed
+        using technologies of Precursors and therefore generate much
+        more energy than conventional wind panels.
       </p>
     </CollectorT2.common>
     <CollectorT2.about>
@@ -788,10 +816,10 @@
     <CollectorT3.tooltip value="Generates energy" />
     <CollectorT3.common>
       <p>
-        Geothermal vents are as rarely found on the planets.
-        However they are powerful and these 
-        hubs allow you to use that power. They are the most effective means of 
-        generating energy and gives best cost to performance ratio. 
+        Geothermal vents are rarely found on planets. However they are
+        powerful and this building allow you to use that power. They are
+        the most effective means of generating energy and gives best
+        cost to performance ratio. 
       </p>
     </CollectorT3.common>
     <CollectorT3.about>
@@ -803,9 +831,9 @@
     <EnergyStorage.tooltip value="Stores energy" />
     <EnergyStorage.about>
       <p>
-        These large batteries keep vast amounts of excess energy to be used 
-        later. Due to their massiveness most of the structure are buried 
-        underground thus giving sufficient protection from enemy attacks. 
+        These large batteries keep vast amounts of excess energy to be
+        used later. Due to their massiveness most of the structure is
+        buried underground.
       </p>
       <p>Each upgrade level increases energy storage.</p>
     </EnergyStorage.about>
@@ -815,7 +843,7 @@
     <Barracks.about>
       <p>
         Finest men are trained here to do battle in our cause. They undergo 
-        best physical and mental training there are and are equipped by 
+        best physical and mental training there are equipped by 
         powerful combat suits and weapons to aid them in combat. 
       </p>
     </Barracks.about>
@@ -852,7 +880,7 @@
     </ZetiumExtractor.about>
 
     <ZetiumExtractorT2.name ref="Objects/Building_ZetiumExtractorT2" />
-    <ZetiumExtractorT2.tooltip value="Extracts zetium" />
+    <ZetiumExtractorT2.tooltip ref="ZetiumExtractor.tooltip" />
     <ZetiumExtractorT2.common>
       <p>
         Better, faster and more expensive version of 
@@ -872,8 +900,7 @@
         After extracting zetium crystals are melted and stored as liquid. This 
         is the only form allowing for later reuse of the material, however it 
         is highly unstable and even slightest distortion could leave nothing 
-        behind. Because of that when building these storages distance is kept 
-        from all other buildings. 
+        behind.
       </p>
       <p>Each upgrade level increases storage.</p>
     </ZetiumStorage.about>
@@ -924,12 +951,8 @@
       <p>These living pods create living space needed for our troops and
       crews of our tanks and ships.</p>
       <p>If you're out of living space you cannot support more units in
-      your army.</p>
+      your army. In such case you have to build new pods or upgrade existing ones.</p>
     </Housing.about>
-<!---->
-<!--    <ResourceTransporter.name ref="Objects/ResourceTransporter" />-->
-<!--    <ResourceTransporter.tooltip value="Transports resources between planets" />-->
-<!--    <ResourceTransporter.about value="Teleport resources with this one" />-->
 
     <Headquarters.name ref="Objects/Building_Headquarters" />
     <Headquarters.about>
@@ -1001,7 +1024,9 @@
     <GroundFactory.about>
       <p>
         A great technological advancement allowing us to build tanks and other 
-        advanced ground units. 
+        advanced ground units. You will require this building to 
+        construct [obj:1:Unit_Mdh:what:dc] which enables colonization
+        of other planets.
       </p>
     </GroundFactory.about>
 
@@ -1020,8 +1045,8 @@
     <HealingCenter.common>
       <p>
         [reference:HealingCenter.name] is a complex of medical care facilities 
-        and technical repair factories. It allows you to repair your wounded 
-        infantry, tanks and spaceships back to their full potential. 
+        and technical repair factories. It allows you to heal your wounded 
+        infantry and repair tanks and spaceships back to their full potential. 
       </p>
     </HealingCenter.common>
     <HealingCenter.about>
@@ -1048,8 +1073,8 @@
     <NpcInfantryFactory.name ref="Objects/Building_NpcInfantryFactory" />
     <NpcInfantryFactory.about>
       <p>
-        This ancient factory produces light units out of solar energy and 
-        silicone it synthesizes within it. 
+        This ancient factory produces light units out of solar energy
+        and silicone it synthesizes within it. 
       </p>
     </NpcInfantryFactory.about>
 
@@ -1069,7 +1094,7 @@
     <NpcHall.name ref="Objects/Building_NpcHall" />
     <NpcHall.about>
       <p>
-        Holding this buildings brings you and your alliance victory points. 
+        Holding planets with this building on them brings you and your alliance victory points. 
         Collect enough of them and become the supreme ruler of this galaxy! 
       </p>
     </NpcHall.about>
@@ -3492,10 +3517,8 @@
     <scientistsPanelTitle value="Scientists" />
     <upgradeProgress value="Upgrade progress" />
     <buildCenters>
-      <p>
-        Build or upgrade Research Centers to increase the 
-        number of your scientists. 
-      </p>
+      <p>Build or upgrade Research Centers to increase the 
+         number of your scientists. </p>
     </buildCenters>
     <notEnoughScientists>
       <p>
@@ -3513,10 +3536,21 @@
       only have {1}.</p>
       <p>You can get more war points by attacking NPCs or other players.</p>
     </warPointsNeeded>
+    <planetsNeeded>
+      <p>You need to own {0 one[? planet] many[? planets]} to be able to
+      research this technology, but you only own {1}.</p>
+    </planetsNeeded>
+    <pulsarsNeeded>
+      <p>You have to rule {0} battleground or pulsar {0 one[planet] many[planets]} to be able to research this technology, but you
+      only have {1}.
+      </p>
+    </pulsarsNeeded>
     <groupResearched>
       <p>Another technology in this group has been already researched so you
       cannot research this technology</p>
     </groupResearched>
+    <label.wasPaused value="Paused" />
+    <label.scientistsChanged value="Scientists after reduction" />
 
     <upgrade value="Upgrade" />
     <update value="Update" />
@@ -3529,8 +3563,9 @@
     <title.unlearn value="Unlearn" />
     <warning.unlearn>      
       <![CDATA[
-      <p><span fontWeight="bold">Warning!</span> It will cost you {0} creds to 
-      unlearn this technology and you won't get any resources back.</p>
+      <p><span fontWeight="bold">Warning!</span> It will cost you
+      {0 one[? cred] many[? creds]} to unlearn this technology and 
+      you won't get any resources back.</p>
       ]]>
     </warning.unlearn>
     <label.unlearn value="Unlearn" />
@@ -3552,34 +3587,68 @@
     <property.zetium.cost value="Zetium cost" />
     <property.scientists.min value="Scientists required" />
     <property.mod.zetium.generate value="Zetium generation rate boost" />
+    <property.mod.zetium.generate.format value="{0}%" />
     <property.mod.zetium.store value="Zetium storage boost" />
+    <property.mod.zetium.store.format value="{0}%" />
     <property.mod.metal.generate value="Metal generation rate boost" />
+    <property.mod.metal.generate.format value="{0}%" />
     <property.mod.metal.store value="Metal storage boost" />
+    <property.mod.metal.store.format value="{0}%" />
     <property.mod.energy.generate value="Energy generation rate boost" />
+    <property.mod.energy.generate.format value="{0}%" />
     <property.mod.energy.store value="Energy storage boost" />
+    <property.mod.energy.store.format value="{0}%" />
     <property.mod.armor value="Armor bonus" />
+    <property.mod.armor.format value="{0}%" />
     <property.mod.damage value="Damage bonus" />
-    <property.mod.movementTimeDecrease value="Movement time decrease" />
+    <property.mod.damage.format value="{0}%" />
+    <property.mod.critical value="Critical shot chance" />
+    <property.mod.critical.format value="{0}%" />
+    <property.mod.critical.tooltip>
+      <p>Chance of unit firing a critical shot.</p>
+      <p>Critical shot is a shot that inflicts {0} times more damage.</p>
+    </property.mod.critical.tooltip>
+    <property.mod.absorption value="Damage absorption chance" />
+    <property.mod.absorption.format value="{0}%" />
+    <property.mod.absorption.tooltip>
+      <p>Probability of a unit being hit by a shot that does {0} times less damage.</p>
+    </property.mod.absorption.tooltip>
+    <property.mod.speed value="Movement time divisor" />
+    <property.mod.speed.format value="{0}%" />
+    <property.mod.speed.tooltip>
+      <p>Formula for calculating: (jump time) / (1 + divisor / 100)</p>
+      <p>For example 100% means that ship will move 2 times faster.</p>
+    </property.mod.speed.tooltip>
     <property.mod.storage value="Storage bonus" />
+    <property.mod.storage.format value="{0}%" />
+    <property.planets.required value="Number of planets required" />
+    <property.pulsars.required value="Number of pulsars required" />
     <property.maxPlayers value="Maximum number of players" />
-    <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
-    <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
+    <property.healing.time.mod
+      ref="Buildings/property.healing.time.mod" />
+    <property.healing.time.mod.format
+      ref="Buildings/property.healing.time.mod.format" />
+    <property.healing.cost.mod
+      ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
-      <p>First level of this technology unlocks described unit. Other levels
-        upgrade it.</p>
+      <p>First level of this technology unlocks described unit. Other
+      levels upgrade it.</p>
     </UnitTech>
-    <UnitUpgrade>
-      <p>Each level increases unit armor and damage.</p>
-    </UnitUpgrade>
+    <GroundUpgrade>
+      <p>Each level increases unit armor, weapons damage as well as
+      chances of damage absorption and critical shot.</p>
+    </GroundUpgrade>
+    <SpaceUpgrade>
+      <p>Each level increases ship armor, weapons damage, chances of
+      damage absorption and critical shot as well as movement speed.</p>
+    </SpaceUpgrade>
 
     <BuildingTech>
       <p>First level of this technology unlocks described building. Other levels
         upgrade it.</p>
     </BuildingTech>
-    <BuildingUpgrade>
-      <p>Each level increases building armor and damage.</p>
-    </BuildingUpgrade>
+    <BuildingUpgrade ref="GroundUpgrade" />
 
     <Zetium.common>
       <p>
@@ -3590,132 +3659,249 @@
       </p>
     </Zetium.common>
 
+    <DamageSpecialization.name ref="Objects/Technology_DamageSpecialization" />
+    <DamageSpecialization.about>
+      <p>This specialization increases weapons damage.</p>
+    </DamageSpecialization.about>
+
+    <ArmorSpecialization.name ref="Objects/Technology_ArmorSpecialization" />
+    <ArmorSpecialization.about>
+      <p>This specialization increases armor and reduces damage received.</p>
+    </ArmorSpecialization.about>
+
+    <CriticalSpecialization.name
+      ref="Objects/Technology_CriticalSpecialization" />
+    <CriticalSpecialization.about>
+      <p>This specialization increases the chance of critical shot.</p>
+    </CriticalSpecialization.about>
+
+    <AbsorptionSpecialization.name
+      ref="Objects/Technology_AbsorptionSpecialization" />
+    <AbsorptionSpecialization.about>
+      <p>This specialization increases chance of absorbing a portion
+      of damage received when unit is hit.</p>
+    </AbsorptionSpecialization.about>
+
+    <SpeedSpecialization.name
+      ref="Objects/Technology_SpeedSpecialization" />
+    <SpeedSpecialization.about>
+      <p>This specialization increases movement speed of the ship.</p>
+    </SpeedSpecialization.about>
+
     <ZetiumExtraction.name ref="Objects/Technology_ZetiumExtraction" />
     <ZetiumExtraction.about>
       <p>Allows building Zetium Extractors and Storages.</p>
       <p>[reference:Zetium.common]</p>
     </ZetiumExtraction.about>
 
-    <!--
-    <Spy.name ref="Objects/Spy" />
-    <Spy.about value="Just a simple spy technology" />
-
-    <Saboteur.name ref="Objects/Saboteur" />
-    <Saboteur.about value="I think thisone has ability to ruin things" />
-
-    <SatteliteHacking.name ref="Objects/SatteliteHacking" />
-    <SatteliteHacking.about>
-      <p>This one will ruin any satelite if sysAdmin is not there</p>
-    </SatteliteHacking.about>
-
-    <CamouflageSuits.name ref="Objects/CamouflageSuits" />
-    <CamouflageSuits.about>
-      <p>You can dress with this one if you go to picnic</p>
-    </CamouflageSuits.about>
-
-    <TacticalReconnaissance.name ref="Objects/TacticalReconnaissance" />
-    <TacticalReconnaissance.about>
-      <p>
-        This is very strage technology, it is told that ancient scientists are 
-        the ones who invented it first 
-      </p>
-    </TacticalReconnaissance.about>
-
-    <R14Charges.name ref="Objects/R14Charges" />
-    <R14Charges.about value="Charge enemies with R14" />
-    
-
-    <Spaceport.name ref="Objects/Spaceport" />
-    <Spaceport.about value="Fly to the sky" />
-    -->
-
+    <DamageTech value="Researching this technology weapon damage" />
     <ArmorTech value="Researching this technology increases armor" />
-    <WeaponsTech value="Researching this technology increases damage" />
+    <CriticalTech value="Researching this technology increases chance of critical shot" />
+    <AbsorptionTech value="Researching this technology increases chance of damage absorption" />
+    <SpeedTech value="Researching this technology increases movement speed" />
+    
+    <DamageAbout>
+      <p>Incorporating zetium into projectiles and rockets increases
+      damage caused by their explosions and lets you be sure that enemy
+      troops won't leave the battlefield alive.</p>
+    </DamageAbout>
 
-    <InfantryUpgradeTech>
-      <p>
-        for ground soldiers built in [reference:Buildings/Barracks.name] like 
-        [reference:Units/Trooper.name] or [reference:Units/Seeker.name]. 
-      </p>
-    </InfantryUpgradeTech>
+    <ArmorAbout>
+      <p>This technology lets us use zetium for manufacturing firm but at the
+         same time light layered armor. This greatly increases protection from
+         enemy bullets and shells.</p>
+    </ArmorAbout>
 
-    <MetabolicChargers.name ref="Objects/Technology_MetabolicChargers" />
-    <MetabolicChargers.about>
-      <p>
-        Recent developments in armor technology allows embedding zetium shards 
-        into warrior armor thus making it more resistant to enemy hits. 
-      </p>
-      <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
-    </MetabolicChargers.about>
+    <CriticalAbout>
+      <p>Perfected targeting and navigation systems aids in
+      finding weakest spots of enemy defences and strike with a full
+      force.</p>
+    </CriticalAbout>
+    
+    <AbsorptionAbout>
+      <p>Advanced defence systems lets protect ourselves from some of the
+         incoming shells of the enemy which greatly decreases damage inflicted
+         by them.</p>
+    </AbsorptionAbout>
+    
+    <SpaceUpgradeTech>
+      <p>for spaceships.</p>
+    </SpaceUpgradeTech>
+    
+    <SpaceDamage.name ref="Objects/Technology_SpaceDamage" />
+    <SpaceDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceDamage.about>
 
-    <HighVelocityCharges.name ref="Objects/Technology_HighVelocityCharges" />
-    <HighVelocityCharges.about>
-      <p>
-        Recent developments in zetium technology allowed infantry gun ammo to 
-        be upgraded with more explosive power. Zetium enhanced bullets and 
-        rockets reach greater velocity and bigger impact speed meaning more 
-        damage to enemy. 
-      </p>
-      <p>[reference:WeaponsTech] [reference:InfantryUpgradeTech]</p>
-    </HighVelocityCharges.about>
+    <SpaceArmor.name ref="Objects/Technology_SpaceArmor" />
+    <SpaceArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceArmor.about>
 
-    <ShipUpgradeTech>
-      <p>
-        for spaceships built in [reference:Buildings/SpaceFactory.name] like 
-        [reference:Units/Crow.name] or [reference:Units/Cyrix.name]. 
-      </p>
-      <p>
-        This technology DOES NOT improve [reference:Units/Rhyno.name] and 
-        [reference:Units/Mule.name] class ships. 
-      </p>
-    </ShipUpgradeTech>
+    <SpaceCritical.name ref="Objects/Technology_SpaceCritical" />
+    <SpaceCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceCritical.about>
 
-    <ShipsArmor.name ref="Objects/Technology_ShipsArmor" />
-    <ShipsArmor.about>
-      <p>
-        This technology allows usage of zetium reinforced armor plates that are 
-        able to withstand more damage and keep ships alive in the battlefield 
-        for longer. 
-      </p>
-      <p>[reference:ArmorTech] [reference:ShipUpgradeTech]</p>
-    </ShipsArmor.about>
+    <SpaceAbsorption.name ref="Objects/Technology_SpaceAbsorption" />
+    <SpaceAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceAbsorption.about>
 
-    <ShipsDamage.name ref="Objects/Technology_ShipsDamage" />
-    <ShipsDamage.about>
-      <p>
-        Introducing zetium into plasma particle stream greatly improves their 
-        power. Ionized zetium crystals expel intense heat that is enough to 
-        wade even through thickest armor. 
-      </p>
-      <p>[reference:WeaponsTech] [reference:ShipUpgradeTech]</p>
-    </ShipsDamage.about>
+    <HeavyFlight.name ref="Objects/Technology_HeavyFlight" />
+    <HeavyFlight.about>
+      <p>Employing gamma particles in our heavy engine inner processes
+      allows us to reach higher velocities thus reducing time we need to
+      make those little hops in solar systems and galaxies.</p>
+      <p>However this technology requires UX-20 engines which can only be
+      found in our biggest ships. As it is they are also slowest, so
+      this technology is very valuable for them.</p>
+      <p>Shortens flight times for [reference:Objects/Unit_Mule] and
+      [reference:Objects/Unit_Rhyno] class ships.</p>
+    </HeavyFlight.about>
 
-    <TankUpgradeTech>
-      <p>
-        for ground tanks built in [reference:Buildings/GroundFactory.name] like 
-        [reference:Units/Scorpion.name] or [reference:Units/Azure.name]. 
-      </p>
-    </TankUpgradeTech>
+    <LightFlight.name ref="Objects/Technology_LightFlight" />
+    <LightFlight.about>
+      <p>This technology allows reducing weight of our ships which in
+      turn increases their speed.</p>
+      <p>[reference:SpeedTech] of [reference:Objects/Unit_Crow],
+         [reference:Objects/Unit_Cyrix], [reference:Objects/Unit_Avenger] and
+         [reference:Objects/Unit_Dart] class ships.</p>
+    </LightFlight.about>
+    
+    <GroundUpgradeTech>
+      <p>for grounds units.</p>
+    </GroundUpgradeTech>
+    
+    <GroundDamage.name ref="Objects/Technology_GroundDamage" />
+    <GroundDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:GroundUpgradeTech]</p>
+    </GroundDamage.about>
 
-    <TanksArmor.name ref="Objects/Technology_TanksArmor" />
-    <TanksArmor.about>
-      <p>
-        These shield generators generate point located shields that slow down 
-        incoming projectiles before impact. By minimizing their velocity they 
-        reduce damage dealt to hull of the tank. 
-      </p>
-      <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
-    </TanksArmor.about>
+    <GroundArmor.name ref="Objects/Technology_GroundArmor" />
+    <GroundArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:GroundUpgradeTech]</p>
+    </GroundArmor.about>
 
-    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
-    <TanksDamage.about>
-      <p>
-        Introducing highly unstable zetium into tank shells greatly improves
-        their firepower and ensures that enemy units do not leave the
-        battlefield alive.
-      </p>
-      <p>[reference:WeaponsTech] [reference:TankUpgradeTech]</p>
-    </TanksDamage.about>
+    <GroundCritical.name ref="Objects/Technology_GroundCritical" />
+    <GroundCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:GroundUpgradeTech]</p>
+    </GroundCritical.about>
+
+    <GroundAbsorption.name ref="Objects/Technology_GroundAbsorption" />
+    <GroundAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:GroundUpgradeTech]</p>
+    </GroundAbsorption.about>
+    
+    <NpcSpaceUpgradeTech>
+      <p>for NPC spaceships (except for [reference:Unit_Nexar] class)</p>
+    </NpcSpaceUpgradeTech>
+    
+    <NpcSpaceDamage.name ref="Objects/Technology_NpcSpaceDamage" />
+    <NpcSpaceDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceDamage.about>
+
+    <NpcSpaceArmor.name ref="Objects/Technology_NpcSpaceArmor" />
+    <NpcSpaceArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceArmor.about>
+
+    <NpcSpaceCritical.name ref="Objects/Technology_NpcSpaceCritical" />
+    <NpcSpaceCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceCritical.about>
+
+    <NpcSpaceAbsorption.name ref="Objects/Technology_NpcSpaceAbsorption" />
+    <NpcSpaceAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceAbsorption.about>
+    
+    <NpcHeavyFlight.name ref="Objects/Technology_NpcHeavyFlight" />
+    <NpcHeavyFlight.about>
+      <p>[reference:SpeedTech] of [reference:Objects/Unit_Demosis] and
+         [reference:Objects/Unit_Nexar] class ships.</p>
+    </NpcHeavyFlight.about>
+
+    <NpcLightFlight.name ref="Objects/Technology_NpcLightFlight" />
+    <NpcLightFlight.about>
+      <p>[reference:SpeedTech] or [reference:Objects/Unit_Dirak] and
+         [reference:Objects/Unit_Thor] class ships.</p>
+    </NpcLightFlight.about>
+    
+    <NpcGroundUpgradeTech>
+      <p>of NPC ground units.</p>
+    </NpcGroundUpgradeTech>
+    
+    <NpcGroundDamage.name ref="Objects/Technology_NpcGroundDamage" />
+    <NpcGroundDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundDamage.about>
+
+    <NpcGroundArmor.name ref="Objects/Technology_NpcGroundArmor" />
+    <NpcGroundArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundArmor.about>
+
+    <NpcGroundCritical.name ref="Objects/Technology_NpcGroundCritical" />
+    <NpcGroundCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundCritical.about>
+
+    <NpcGroundAbsorption.name ref="Objects/Technology_NpcGroundAbsorption" />
+    <NpcGroundAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundAbsorption.about>
+    
+    <TurretUpgradeTech>
+      <p>of defensive turrets.</p>
+    </TurretUpgradeTech>
+    
+    <TurretDamage.name ref="Objects/Technology_TurretDamage" />
+    <TurretDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:TurretUpgradeTech]</p>
+    </TurretDamage.about>
+
+    <TurretArmor.name ref="Objects/Technology_TurretArmor" />
+    <TurretArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:TurretUpgradeTech]</p>
+    </TurretArmor.about>
+
+    <TurretCritical.name ref="Objects/Technology_TurretCritical" />
+    <TurretCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:TurretUpgradeTech]</p>
+    </TurretCritical.about>
+
+    <TurretAbsorption.name ref="Objects/Technology_TurretAbsorption" />
+    <TurretAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:TurretUpgradeTech]</p>
+    </TurretAbsorption.about>
+    
+    <ResourceTransporter.name ref="Objects/Technology_ResourceTransporter" />
+    <ResourceTransporter.about>
+      <p>Enables construction of [reference:Objects/Building_ResourceTransporter].</p>
+      <p>[reference:Buildings/ResourceTransporter.about]</p>
+    </ResourceTransporter.about>
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
@@ -3848,18 +4034,61 @@
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
 
-    <HeavyFlight.name ref="Objects/Technology_HeavyFlight" />
-    <HeavyFlight.about>
-      <p>Employing gamma particles in our heavy engine inner processes
-      allows us to reach higher velocities thus reducing time we need to
-      make those little hops in solar systems and galaxies.</p>
-      <p>However this technology requires UX-20 engines which can only be
-      found in our biggest ships. As it is they are also slowest, so
-      this technology is very valuable for them.</p>
-      <p>Shortens flight times for [reference:Objects/Unit_Mule] and
-      [reference:Objects/Unit_Rhyno] class ships.</p>
-    </HeavyFlight.about>
+    <Gnat.name ref="Units/Gnat.name" />
+    <Gnat.about>
+      <p>[reference:Units/Gnat.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Gnat.about>
 
+    <Glancer.name ref="Units/Glancer.name" />
+    <Glancer.about>
+      <p>[reference:Units/Glancer.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Glancer.about>
+
+    <Spudder.name ref="Units/Spudder.name" />
+    <Spudder.about>
+      <p>[reference:Units/Spudder.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Spudder.about>
+
+    <Gnawer.name ref="Units/Gnawer.name" />
+    <Gnawer.about>
+      <p>[reference:Units/Gnawer.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Gnawer.about>
+    
+    <Dirac.name ref="Units/Dirac.name" />
+    <Dirac.about>
+      <p>[reference:Units/Dirac.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Dirac.about>
+
+    <Thor.name ref="Units/Thor.name" />
+    <Thor.about>
+      <p>[reference:Units/Thor.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Thor.about>
+
+    <Demosis.name ref="Units/Demosis.name" />
+    <Demosis.about>
+      <p>[reference:Units/Demosis.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Demosis.about>
+
+    <Mule.name ref="Units/Mule.name" />
+    <Mule.about>
+      <p>[reference:Units/Mule.about]</p>
+      <p>Upgrade increases ship's armor, volume, engines and
+      damage absorption chance.</p>
+    </Mule.about>
+    
+    <StorageSpecialization.name ref="Objects/Technology_StorageSpecialization"/>
+    <StorageSpecialization.about>
+      <p>This upgrate increases volume of [reference:Objects/Unit_Mule] 
+      class ships.</p>
+    </StorageSpecialization.about>
+    
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
       <p>
@@ -3867,7 +4096,7 @@
         numbers. This upgrade allows to further strengthen our main force by 
         upgrading their weapons and armor. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Trooper.about>
 
     <Shocker.name ref="Units/Shocker.name" />
@@ -3880,7 +4109,7 @@
         battle. Making them stronger helps them protect other units longer and 
         their zetium enhanced rockets dishes out more damage. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Shocker.about>
 
     <Seeker.name ref="Units/Seeker.name" />
@@ -3892,7 +4121,7 @@
         final winning shot upon your enemy. And even better - this technology 
         even increases their damage by fitting them with zetium plated bullets. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Seeker.about>
 
     <Scorpion.name ref="Units/Scorpion.name" />
@@ -3902,7 +4131,7 @@
         faster particle accelerators. Investing into this research gives your 
         basic unit advantage over same vehicles at your enemy side. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Scorpion.about>
 
     <Azure.name ref="Units/Azure.name" />
@@ -3914,8 +4143,17 @@
         with zetium makes them more damaging and zetium also makes 
         [reference:Units/Azure.name] hull more resistant to enemy shots. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Azure.about>
+    
+    <Mantis.name ref="Objects/Technology_Mantis" />
+    <Mantis.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Mantis.about]</p>
+      <p>This technology increases power of Mantis machine gun and strengthens
+         unit armor making it even more horrifying for our enemies.</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Mantis.about>
     
     <Zeus.name ref="Units/Zeus.name" />
     <Zeus.about>
@@ -3924,7 +4162,7 @@
       <p>This technology increases velocity of tank projectiles thus increasing
       damage it does. It also thickens its armor so it could withstand more
       damage.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Zeus.about>
 
     <Mdh.name ref="Objects/Technology_Mdh" />
@@ -3936,7 +4174,7 @@
         Upgrades [reference:Units/Crow.name] lasers and hull making it a better 
         fighter that is cheap and cost effective to produce. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Crow.about>
 
     <Cyrix.name ref="Units/Cyrix.name" />
@@ -3949,7 +4187,7 @@
         technology means your fleet can last longer and make more damage for 
         same cost. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Cyrix.about>
 
     <Rhyno.name ref="Units/Rhyno.name" />
@@ -3962,7 +4200,7 @@
         harder to destroy and gives a formidable energy boost for its weapon 
         systems making it the most fearsome ship in whole galaxy. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Rhyno.about>
 
     <Dart.name ref="Units/Dart.name" />
@@ -3974,7 +4212,7 @@
         ships making them deadlier and allowing engaging enemies in fewer 
         numbers. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Dart.about>
 
     <Avenger.name ref="Units/Avenger.name" />
@@ -3987,7 +4225,7 @@
         in unfortunate situation. Overall it makes 
         [reference:Units/Avenger.name] class ships better interceptors. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Avenger.about>
 
     <Jumper.name ref="Units/Jumper.name" />

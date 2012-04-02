@@ -511,7 +511,7 @@
     <message.joinFail value="Tu negali įstoti į šią sąjungą, nes ji yra pilna" />
     <tooltip.allianceFull>
       <p>Tavo sąjunga pilna.</p>
-      <p>Tobulink sąjungos technologija jei nori pakviesti daugiau žaidėjų.</p>
+      <p>Tobulink sąjungos technologiją, jei nori pakviesti daugiau žaidėjų.</p>
     </tooltip.allianceFull>
     <label.invitablePlayers value="Pakviesk į sąjungą" />
     <label.invite value="Pakviesti" />
@@ -866,7 +866,7 @@
     <NpcTemple.about>
       <p>
         Pirmtakai buvo nepaprastai išsivysčiusi rasė, tačiau tai netrukdė jiems
-        būti ir itin religingais. Jie rinkdavosi šiose šventyklose, jog 
+        būti ir itin religingiems. Jie rinkdavosi šiose šventyklose, jog 
         melstusi savo technologiniams dievams.</p>
       <p>Sakoma, jog žemė, ant kurios stovi šie pastatai yra šventa. Nežinia
       ar tai tiesa, tačiau ji yra ypatingai saugoma.</p>
@@ -902,7 +902,7 @@
     <Mothership.about>
       <p>[reference:Objects/Building_Mothership] - tai pagrindinis laivas žmonėms,
       kurie gyvena šioje planetoje. Jie atkeliavo čia šiuo laivu ir jis tapo 
-      jiems pirmąja saugia užuoveja šioje laukinėje planetoje.</p>
+      jiems pirmąja saugia užuovėja šioje laukinėje planetoje.</p>
       <p>[reference:Objects/Building_Mothership] turi integruotą metalo išgavėją,
       saulės baterijas generuoti energijai ir talpyklas šiems resursams saugoti.
       To pilnai užtenka, kad patenkinti bazines planetos resursų reikmes.</p>
@@ -963,10 +963,10 @@
     <MetalStorage.tooltip value="Saugo metalą" />
     <MetalStorage.about>
       <p>
-        Iškastas metalas turi būti kažkur talpinamas, jog vėliau jį būtų galima
-        panaudoti statybose ir konstravime. Taigi jis dedamas į šiuos 
-        milžiniškus pastatus ir kai ateina laikas, iš jų išimamas, jog galėtume
-        panaudoti metalą savo laivynų ir pastatų gamyboje.
+        Iškastas metalas turi būti kažkur talpinamas, jog vėliau jį būtų
+        galima panaudoti statybose ir konstravime. Taigi jis dedamas į
+        šiuos milžiniškus pastatus ir kai ateina laikas, iš jų išimamas,
+        jog galėtume panaudoti metalą savo laivynų ir pastatų gamyboje.
       </p>
       <p>Kiekvienas patobulinimo lygis padidina saugomo metalo kiekį.</p>
     </MetalStorage.about>
@@ -975,10 +975,10 @@
     <CollectorT1.tooltip value="Gamina energiją" />
     <CollectorT1.common>
       <p>
-        Šios vėjo jėgainės naudojamos užtikrinti pagrindinius energijos 
-        poreikius visiems pastatams ir statybai. Jos gali būti lengvai ir pigiai
-        tobulinamos, bei yra nebrangios savo kainai, jeigu turi pakankamai 
-        vietos.
+        Šios vėjo jėgainės naudojamos užtikrinti pagrindinius energijos
+        poreikius visiems pastatams ir statybai. Jos gali būti lengvai
+        ir pigiai tobulinamos, bei yra nebrangios savo kainai, jeigu
+        turi pakankamai vietos.
       </p>
     </CollectorT1.common>
     <CollectorT1.about>
@@ -990,10 +990,11 @@
     <CollectorT2.tooltip ref="CollectorT1.tooltip" />
     <CollectorT2.common>
       <p>
-        Šie didžiuliai saulės kolektoriai naudojami išgauti didžiulius 
-        energijos kiekius statyboms ir pastatų aprūpinimui. Jie sukonstruoti
-        naudojant technologijas iš pirmtakų pastatytų prizmių, todėl gali 
-        išgauti žymiai daugiau energijos nei paprastos vėjo jėgainės.
+        Šie didžiuliai saulės kolektoriai naudojami išgauti didžiulius
+        energijos kiekius statyboms ir pastatų aprūpinimui. Jie
+        sukonstruoti naudojant technologijas iš pirmtakų pastatytų
+        prizmių, todėl gali išgauti žymiai daugiau energijos nei
+        paprastos vėjo jėgainės.
       </p>
     </CollectorT2.common>
     <CollectorT2.about>
@@ -1005,9 +1006,9 @@
     <CollectorT3.tooltip ref="CollectorT1.tooltip" />
     <CollectorT3.common>
       <p>
-        Geoterminės angos žemėje pasitaiko pakankamai retai, tačiau yra labai
-        galingos. Šis pastatas leidžia tau panaudoti tą galią. Tai pats 
-        efektyviausias būdas išgauti energijai.
+        Geoterminės angos žemėje pasitaiko pakankamai retai, tačiau yra
+        labai galingos. Šis pastatas leidžia tau panaudoti tą galią. Tai
+        pats efektyviausias būdas išgauti energijai.
       </p>
     </CollectorT3.common>
     <CollectorT3.about>
@@ -1019,9 +1020,9 @@
     <EnergyStorage.tooltip value="Talpina energiją" />
     <EnergyStorage.about>
       <p>
-        Šios didžiulės baterijos laiko milžiniškus energijos kiekius, kurie
-        gali būti panaudoti vėliau. Dėl savo masyvumo didžioji pastato dalis
-        yra užkasta po žeme.
+        Šios didžiulės baterijos laiko milžiniškus energijos kiekius,
+        kurie gali būti panaudoti vėliau. Dėl savo masyvumo didžioji
+        pastato dalis yra užkasta po žeme.
       </p>
       <p>Kiekvienas patobulinimo lygis didina energijos talpą.</p>
     </EnergyStorage.about>
@@ -1088,8 +1089,7 @@
         Išgauti zetiumo kristalai yra išlydomi ir saugomi kaip skystis šiose
         talpyklose. Tai vienintėlė jų forma, kuri leidžia vėliau panaudoti 
         zetiumą gamyboje, tačiau ji yra labai nestabili ir net ir menkiausias
-        sudrebinimas galėtų sukelti sprogimą, kuris nieko nepaliktų. Dėl šios
-        priežasties aplink šias talpyklas paliekama didelė tuščia zona.
+        sudrebinimas galėtų sukelti sprogimą, kuris nieko nepaliktų.
       </p>
       <p>Kiekvienas patobulinimo lygis didina zetiumo talpą.</p>
     </ZetiumStorage.about>
@@ -4306,10 +4306,12 @@
     <property.planets.required value="Reikiamas planetų kiekis" />
     <property.pulsars.required value="Reikiamas pulsarų kiekis" />
     <property.maxPlayers value="Maksimalus žaidėjų skaičius" />
-    <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
+    <property.healing.time.mod
+      ref="Buildings/property.healing.time.mod" />
     <property.healing.time.mod.format
       ref="Buildings/property.healing.time.mod.format" />
-    <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
+    <property.healing.cost.mod
+      ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
       <p>Pirmas šios technologijos lygis atrakiną šį karį/laivą. Kiti jos
