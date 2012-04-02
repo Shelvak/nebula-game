@@ -227,7 +227,7 @@
                         width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
                         color="#eec500"/>
                <s:Label text="{ML.player.population + ' / ' + ML.player.populationMax}"
-                        styleName="{ML.player.population >= ML.player.populationMax?'unsatisfied':null}"/>
+                        styleName="{ML.player.population > ML.player.populationMax?'unsatisfied':null}"/>
                <s:layout>
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
                </s:layout>
