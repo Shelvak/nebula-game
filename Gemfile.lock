@@ -1,4 +1,10 @@
 GIT
+  remote: git://github.com/arturaz/celluloid.git
+  revision: 71c34a5138aaa06fcda07f1c244eb1ea9a03faea
+  specs:
+    celluloid (0.10.0)
+
+GIT
   remote: git://github.com/arturaz/flag_shih_tzu.git
   revision: 4cb1c9088e6fb33eec49bda402f92cef11c2dc69
   specs:
@@ -43,7 +49,6 @@ GEM
     arel (3.0.2)
     bouncy-castle-java (1.5.0146.1)
     builder (3.0.0)
-    celluloid (0.10.0)
     celluloid-io (0.10.0)
       celluloid (~> 0.10.0)
       nio4r (>= 0.3.1)
@@ -100,7 +105,7 @@ DEPENDENCIES
   activerecord (~> 3.2.0)
   activerecord-jdbcmysql-adapter (~> 1.1)
   activesupport (~> 3.2.0)
-  celluloid (~> 0.10.0)
+  celluloid!
   celluloid-io (~> 0.10.0)
   chronic (>= 0.6.2)
   factory_girl (~> 2.1.2)
