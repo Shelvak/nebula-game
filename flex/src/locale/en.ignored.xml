@@ -379,6 +379,9 @@
     <status2 value="NAP" />
     <status2.tooltip value="Non-Agression Pact" />
     <status3 value="Enemy" />
+
+    <label.loadingBattleMap value="Loading battlefield" />
+
     <space value="Space" />
     <ground value="Ground" />
     <youWon value="You won!" />
@@ -393,7 +396,7 @@
     <tooltip.play value="PLAY/PAUSE" />
     <tooltip.replay value="REPLAY" />
   </BattleMap>
-  
+
   <Messenger>
     <clickHere value="Click here for more info" />
   </Messenger>
