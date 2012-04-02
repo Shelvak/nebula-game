@@ -338,11 +338,11 @@
       <p>If you wish to join an existing alliance you must get an invitation
       from that alliance.</p>
     </label.noAlly>
-    <label.totalAllianceVps value="Alliance victory points:" />
     <label.allianceOwner value="Alliance owner:" />
+    <label.totalAllianceVps value="Alliance victory points:" />
     <label.name value="Alliance name:" />
-    <label.allianceDescription value="Alliance description"/>
     <label.editDescription value="Edit description" />
+    <label.allianceDescription value="Alliance description"/>
     <label.save value="Save" />
     <label.cancel value="Cancel" />
     <label.close value="Close" />
@@ -387,7 +387,7 @@
     </giveAway.message.confirmationPopup>
     <giveAway.message.techLevelTooLow>
        Player {0} does not have alliance technology level required to
-       take over your alliance
+       take over your alliance.
     </giveAway.message.techLevelTooLow>
 
     <takeOver.header value="Take ownership"/>
@@ -408,7 +408,6 @@
        Since current owner of the alliance has been inactive for {0} d., you
        can now take over the ownership of it.
     </takeOver.message.ownerIsInactive>
-     
   </Alliances>
 
   <BattleMap>
@@ -633,19 +632,36 @@
     <property.initiative value="Initiative" />
     <property.armor value="Armor" />
     <property.armorMod value="Armor modifier" />
-    <property.damageMod value="Damage modifier" />
+    <property.armorMod.format value="{0}%" />
     <property.mod.construction value="Construction speedup" />
+    <property.mod.construction.format value="{0}%" />
+    <property.mod.cooldown value="Seconds to transport 1 volume unit" />
+    <property.mod.cooldown.format value="{0} s" />
+    <property.mod.cooldown.tooltip>
+      <p>When transporting resources duration of a cooldown is calculated by 
+      multiplying this number and volume of the resources transported.</p>
+      <p>The smaller this number is, the shorter cooldown is required after
+      transportation.</p>
+    </property.mod.cooldown.tooltip>
     <property.healing.time.mod value="Seconds to heal 1 hp" />
+    <property.healing.time.mod.format value="{0} s" />
     <property.healing.cost.mod value="Healing price modifier" />
+    <property.healing.cost.mod.tooltip>
+      <p>Healing price of units is calculated by formula:
+      unit price * damage percentage * this multiplier.</p>
+      <p>The smaller this number is, the cheaper your units can be healed.</p>
+    </property.healing.cost.mod.tooltip>
     <property.population value="Population" />
-    <property.teleportedVolume value="Volume teleported" />
+    <property.maxVolume value="Max transportable volume" />
     <property.creds value="Creds" />
     <property.victoryPoints value="Victory points" />
     <property.fee value="Fee percentage" />
+    <property.fee.format value="{0}%" />
     <property.width value="Building width" />
     <property.height value="Building height" />
     <property.vpsOnDamage value="VPs for 1 damage dealt" />
     <property.credsForKilling value="Creds for killing" />
+    <property.teleportedVolume value="Volume teleported" />
 
     <text.deactivated>
       <p>
@@ -735,20 +751,33 @@
       </p>
     </NpcJumpgate.about>
 
-
+    <!-- Player buildings -->
 
     <Mothership.name ref="Objects/Building_Mothership" />
     <Mothership.about>
       <p>
-        The Mothership is the core ship for humans who inhabit this planet. 
-        They came here in this ship and used it as their first base securing 
-        perimeter around with deadly base defense towers. 
+        [reference:Objects/Building_Mothership] is the core ship for humans who
+        inhabit this planet. They came here in this ship and used it as a
+        shelter from harsh winds on this wild planet.
       </p>
       <p>
-        Each Mothership has a basic MEX and some solar cells integrated in it 
-        and can provide a colony with core metal and energy needs. 
+        Each [reference:Objects/Building_Mothership] has a basic MEX and some
+        solar cells integrated in it and can provide a colony with most basic
+        metal and energy needs.
       </p>
     </Mothership.about>
+    
+    <ResourceTransporter.name value="Res. transporter" />
+    <ResourceTransporter.tooltip value="Allows teleporting of resources" />
+    <ResourceTransporter.about>
+      <p>Resource transporter can instantaneously transfer a certain amount of
+      resources from one planet to another. Connecting two such buildings
+      forms a space tunnel between the two planets.</p>
+      <p>Although scientists have not yet been able to successfully perform
+      transportation of a live being, this technology is suitable for
+      fast transfer of resource. However a small portion of resources
+      being transferred is lost in the process.</p>
+    </ResourceTransporter.about>
 
     <MEX.common>
       <p>
@@ -765,15 +794,15 @@
     <MetalExtractor.about>
       <p>
         Built on ore mountains they are used to extract metal from dirt and 
-        rumble. Metal Extractors (MEXes) are facilities that provide metal one 
-        require by eating up through mountains and bringing its ore supplies up 
-        to the surface. 
+        rumble. Metal Extractors (MEXes) are facilities that provide metal by
+        eating up through mountains and bringing its ore supplies up to the
+        surface. 
       </p>
       <p>[reference:MEX.common]</p>
     </MetalExtractor.about>
 
     <MetalExtractorT2.name ref="Objects/Building_MetalExtractorT2" />
-    <MetalExtractorT2.tooltip value="Extracts metal" />
+    <MetalExtractorT2.tooltip ref="MetalExtractor.tooltip" />
     <MetalExtractorT2.common>
       <p>Better, faster and more expensive version of 
       [reference:MetalExtractor.name].</p>
@@ -788,10 +817,10 @@
     <MetalStorage.tooltip value="Stores metal" />
     <MetalStorage.about>
       <p>
-        As MEXes rip through the ore not all metal is used up immediately. 
-        Excess metal is stored in these giant structures. When the time comes 
-        it is released from these containers and used in construction of our 
-        fleets and buildings. 
+        As MEXes rip through the ore not all metal is used up 
+        immediately. Excess metal is stored in these giant structures.
+        When the time comes it is released from these containers and
+        used in construction of our fleets and buildings. 
       </p>
       <p>Each upgrade level increases storage.</p>
     </MetalStorage.about>
@@ -800,9 +829,10 @@
     <CollectorT1.tooltip value="Generates energy" />
     <CollectorT1.common>
       <p>
-        These wind panels are used to provide basic needs of energy to all 
-        buildings and construction. They can be upgraded relatively easy and 
-        are cheap and cost effective to produce if you have enough space. 
+        These wind panels are used to provide basic needs of energy to
+        all buildings and construction. They can be upgraded relatively
+        easy and are cheap and cost effective to produce if you have
+        enough space.
       </p>
     </CollectorT1.common>
     <CollectorT1.about>
@@ -811,15 +841,13 @@
     </CollectorT1.about>
 
     <CollectorT2.name ref="Objects/Building_CollectorT2" />
-    <CollectorT2.tooltip value="Generates energy" />
+    <CollectorT2.tooltip ref="CollectorT1.tooltip" />
     <CollectorT2.common>
       <p>
-        These solar collectors are used to provide massive amounts of energy to 
-        all buildings and construction. By using technology from alien 
-        [reference:NpcSolarPlant.name]s their massive panels generate a 
-        formidable amount of energy. Although their advanced designs allow 
-        upgrading them beyond the limits of their former versions they cost a 
-        lot more than simple [reference:Objects/Building_CollectorT2]. 
+        These solar collectors are used to provide massive amounts of
+        energy to all buildings and construction. They have been designed
+        using technologies of Precursors and therefore generate much
+        more energy than conventional wind panels.
       </p>
     </CollectorT2.common>
     <CollectorT2.about>
@@ -831,10 +859,10 @@
     <CollectorT3.tooltip value="Generates energy" />
     <CollectorT3.common>
       <p>
-        Geothermal vents are as rarely found on the planets.
-        However they are powerful and these 
-        hubs allow you to use that power. They are the most effective means of 
-        generating energy and gives best cost to performance ratio. 
+        Geothermal vents are rarely found on planets. However they are
+        powerful and this building allow you to use that power. They are
+        the most effective means of generating energy and gives best
+        cost to performance ratio. 
       </p>
     </CollectorT3.common>
     <CollectorT3.about>
@@ -846,9 +874,9 @@
     <EnergyStorage.tooltip value="Stores energy" />
     <EnergyStorage.about>
       <p>
-        These large batteries keep vast amounts of excess energy to be used 
-        later. Due to their massiveness most of the structure are buried 
-        underground thus giving sufficient protection from enemy attacks. 
+        These large batteries keep vast amounts of excess energy to be
+        used later. Due to their massiveness most of the structure is
+        buried underground.
       </p>
       <p>Each upgrade level increases energy storage.</p>
     </EnergyStorage.about>
@@ -858,7 +886,7 @@
     <Barracks.about>
       <p>
         Finest men are trained here to do battle in our cause. They undergo 
-        best physical and mental training there are and are equipped by 
+        best physical and mental training there are equipped by 
         powerful combat suits and weapons to aid them in combat. 
       </p>
     </Barracks.about>
@@ -895,7 +923,7 @@
     </ZetiumExtractor.about>
 
     <ZetiumExtractorT2.name ref="Objects/Building_ZetiumExtractorT2" />
-    <ZetiumExtractorT2.tooltip value="Extracts zetium" />
+    <ZetiumExtractorT2.tooltip ref="ZetiumExtractor.tooltip" />
     <ZetiumExtractorT2.common>
       <p>
         Better, faster and more expensive version of 
@@ -915,8 +943,7 @@
         After extracting zetium crystals are melted and stored as liquid. This 
         is the only form allowing for later reuse of the material, however it 
         is highly unstable and even slightest distortion could leave nothing 
-        behind. Because of that when building these storages distance is kept 
-        from all other buildings. 
+        behind.
       </p>
       <p>Each upgrade level increases storage.</p>
     </ZetiumStorage.about>
@@ -967,12 +994,8 @@
       <p>These living pods create living space needed for our troops and
       crews of our tanks and ships.</p>
       <p>If you're out of living space you cannot support more units in
-      your army.</p>
+      your army. In such case you have to build new pods or upgrade existing ones.</p>
     </Housing.about>
-<!---->
-<!--    <ResourceTransporter.name ref="Objects/ResourceTransporter" />-->
-<!--    <ResourceTransporter.tooltip value="Transports resources between planets" />-->
-<!--    <ResourceTransporter.about value="Teleport resources with this one" />-->
 
     <Headquarters.name ref="Objects/Building_Headquarters" />
     <Headquarters.about>
@@ -1044,7 +1067,9 @@
     <GroundFactory.about>
       <p>
         A great technological advancement allowing us to build tanks and other 
-        advanced ground units. 
+        advanced ground units. You will require this building to 
+        construct [obj:1:Unit_Mdh:what:dc] which enables colonization
+        of other planets.
       </p>
     </GroundFactory.about>
 
@@ -1063,8 +1088,8 @@
     <HealingCenter.common>
       <p>
         [reference:HealingCenter.name] is a complex of medical care facilities 
-        and technical repair factories. It allows you to repair your wounded 
-        infantry, tanks and spaceships back to their full potential. 
+        and technical repair factories. It allows you to heal your wounded 
+        infantry and repair tanks and spaceships back to their full potential. 
       </p>
     </HealingCenter.common>
     <HealingCenter.about>
@@ -1091,8 +1116,8 @@
     <NpcInfantryFactory.name ref="Objects/Building_NpcInfantryFactory" />
     <NpcInfantryFactory.about>
       <p>
-        This ancient factory produces light units out of solar energy and 
-        silicone it synthesizes within it. 
+        This ancient factory produces light units out of solar energy
+        and silicone it synthesizes within it. 
       </p>
     </NpcInfantryFactory.about>
 
@@ -1112,7 +1137,7 @@
     <NpcHall.name ref="Objects/Building_NpcHall" />
     <NpcHall.about>
       <p>
-        Holding this buildings brings you and your alliance victory points. 
+        Holding planets with this building on them brings you and your alliance victory points. 
         Collect enough of them and become the supreme ruler of this galaxy! 
       </p>
     </NpcHall.about>
@@ -1710,6 +1735,7 @@
     <label.nap value="NAPs" />
     <label.enemies value="Enemies" />
     <label.leveled value="Leveled Up" />
+    <label.stats value="Combat statistics" />
     <label.dmgDealtPlayer value="Damage dealt by you" />
     <label.dmgDealtAlly value="Damage dealt by allies" />
     <label.dmgDealtAlliance value="Damage dealt by alliance" />
@@ -1720,7 +1746,6 @@
     <label.points value="War points earned" />
     <label.victoryPoints value="Victory points earned" />
     <label.creds value="Creds earned" />
-    <label.stats value="Combat statistics" />
     <label.close value="Close" />
     <label.players value="Players" />
     <label.noNotifications value="There are no notifications" />
@@ -1743,9 +1768,31 @@
     <label.combatLog.showLog value="View replay" />
     <label.combatLog.copyToClipboard value="Copy to clipboard" />
 
+    <message.playerAttached value="You have been moved" />
+    <title.playerAttached value="Wellcome back!" />
+    <insideMessage.playerAttached>
+      <p>
+        As a consequence of being inactive for a while, you have been moved
+        to another part of the galaxy which is more suitable for you.
+      </p>
+      <p>
+        Settle in your new location, take a look around and get familiar with your new
+        neighbours. Good luck!
+      </p>
+    </insideMessage.playerAttached>
+
     <title.questCompleted value="Quest competed" />
     <message.questCompleted value="Quest '{0}' was completed." />
     <message.newQuests value="Following quests were started:" />
+
+    <title.technologiesChanged value="Your technologies have changed" />
+    <message.technologiesChanged value="Changes in technologies." />
+    <insideMessage.technologiesChanged>
+      <p>
+        Because of inefficient number of scientists or planets these changes
+        have been applied to your technologies:
+      </p>
+    </insideMessage.technologiesChanged>
 
     <title.kickedFromAlliance value="Kicked from alliance" />
     <message.kickedFromAlliance value="Kicked from alliance {0}" />
@@ -1922,44 +1969,58 @@
     <title.defaultError value="Error!" />
 
     <label.reconnect value="Reconnect" />
+    <label.refresh value="Refresh" />
     <label.cancel value="Cancel" />
     <label.confirm value="Confirm" />
     <label.ok value="Ok" />
     <label.yes value="Yes" />
     <label.no value="No" />
-    
+
+    <title.outdatedClient value="Client version outdated" />
+    <message.outdatedClient>
+      <p>Game client has been updated while you were playing.</p>
+      <p>You need to refresh the page for game to work properly.</p>
+    </message.outdatedClient>
+
+    <title.cancelUnitTraining value="Cancel unit training" />
+    <message.cancelUnitTraining
+    value="Are you sure you want to cancel training of this unit?"/>
+
+    <title.cancelUpgrade value="Cancel upgrade" />
+    <message.cancelUpgrade
+    value="Are you sure you want to cancel upgrade of this building?"/>
+
+    <title.cancelConstructor value="Cancel construction" />
+    <message.cancelConstructor
+    value="Are you sure you want to cancel construction of this building?"/>
+
+    <title.cancelPlayerOptions value="Some changes detected" />
+    <message.cancelPlayerOptions>
+      <p>You have made some changes in preferences. All changes will be canceled
+        if you close this window.</p>
+      <p>Are you sure?</p>
+    </message.cancelPlayerOptions>
+
+    <title.cancelOffer value="Cancel offer" />
+    <message.cancelOffer>
+      <p>Do you really want to cancel your offer?</p>
+    </message.cancelOffer>
+
+    <title.buyOffer value="Buy offer" />
+    <message.buyOffer>
+      <p>Do you really want to buy from this offer?</p>
+    </message.buyOffer>
+
+    <title.createOffer value="Create offer" />
+    <message.createOffer>
+      <p>Do you really want to create that offer?</p>
+    </message.createOffer>
+
     <title.convertCreds value="Convert creds" />
     <message.convertCreds>
       <p>Are you sure you want to convert {0 one[one VIP cred] many[? VIP creds]} 
       to {1 one[one cred] many[? creds]}?</p>
     </message.convertCreds>
-    
-    <title.cancelUnitTraining value="Cancel unit training" />
-    <message.cancelUnitTraining 
-    value="Are you sure you want to cancel training of this unit?"/>
-    
-    <title.cancelUpgrade value="Cancel upgrade" />
-    <message.cancelUpgrade 
-    value="Are you sure you want to cancel upgrade of this building?"/>
-    
-    <title.cancelConstructor value="Cancel construction" />
-    <message.cancelConstructor 
-    value="Are you sure you want to cancel construction of this building?"/>
-    
-    <title.cancelOffer value="Cancel offer" />
-    <message.cancelOffer>
-      <p>Do you realy want to cancel your offer?</p>
-    </message.cancelOffer>
-    
-    <title.buyOffer value="Buy offer" />
-    <message.buyOffer>
-      <p>Do you realy want to buy from this offer?</p>
-    </message.buyOffer>
-    
-    <title.createOffer value="Create offer" />
-    <message.createOffer>
-      <p>Do you realy want to create that offer?</p>
-    </message.createOffer>
     
     <title.dailyBonus value="Daily bonus" />
     <message.dailyBonus>
@@ -2078,20 +2139,6 @@
       </p>
     </message.disconnect.jsonError>
 
-    <crash>
-      <p>
-        Save yourselves! Mighty Space Bugs have infested our game client and 
-        sadly it is not Space Bug Resistant! (yet) Oh well, don't worry, you 
-        can always just press Refresh button on your browser and everything 
-        will be fine (probably). 
-      </p>
-    </crash>
-
-    <message.slowClient>
-       Your computer is not fast enough for this operation. But if you still
-       think that this is an error, feel free to report it to the forum.
-    </message.slowClient>
-
     <title.log value="Debug log" />
     <message.log.general>
       <p>This is an in-game log of your actions. Paste this to a file and 
@@ -2099,39 +2146,7 @@
       us to solve it.</p>
     </message.log.general>
     <label.log.close value="Close" />
-
-    <title.clientCrash value="Waaaargh!" />
-    <message.clientCrash.general>
-      <p>[reference:crash]</p>
-      <p>
-        However! If you want to prevent those pesky Space Bugs from infesting 
-        our client ever again you could send bits and pieces of nifty 
-        information we have collected. We assure you we WILL use that to 
-        improve our Bug-No-More formula (TM) more effective to make your gaming 
-        experience as pleasurable as humanly possible ;) 
-      </p>
-      <p>
-        So just copy that text below to clipboard (or press our conveniently 
-        placed '[reference:label.clientCrash.copy]' button) and wander to our forum to report this bug. 
-        Your hard work will be rewarded. We promise. Cosmic pinky swear. Oh 
-        yeah... 
-      </p>
-    </message.clientCrash.general>
-
-    <message.clientCrash.debugPlayer>
-      <p>[reference:crash]</p>
-      <p>
-        We could fix this however unfortunately you do not have debugger 
-        version of Flash Player so we can't collect much useful information. If 
-        you DO WANT to prevent this from happening ever again then click the 
-        '[reference:label.clientCrash.wiki]' button to get more information on 
-        how you can help us ;) We appreciate your help! 
-      </p>
-    </message.clientCrash.debugPlayer>
-
-    <label.clientCrash.copy value="Copy-O-Matic" />
-    <label.clientCrash.forum value="Report Bug" />
-    <label.clientCrash.wiki value="Get Debugger" />
+    <label.log.copy value="Copy-O-Matic" />
   </Popups>
   
   <Achievements>
@@ -2153,6 +2168,9 @@
     value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}] technology{2 one[] many[ to level ?]}" />
     <objectiveText.HaveUpgradedToTechClass 
     value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
+
+    <!-- BE_IN_ALLIANCE -->
+    <objectiveText.BeInAlliance value="Be in alliance"/>
 
     <!-- UPGRADE_TO
     0: count of objects, 
@@ -2196,15 +2214,6 @@
     value="Have {0} war {0 one[point] many[points]}" />
     <objectiveText.HavePoints 
     value="Have {0 one[? point] many[? points]}" />
-    
-    <!-- 0: count of points to have, 1: word "Point" 
-    from Objects -->
-    <objectiveText.HaveSciencePoints value="Have {0} Science {1}" />
-    <objectiveText.HaveEconomyPoints value="Have {0} Economy {1}" />
-    <objectiveText.HaveVictoryPoints value="Have {0} Victory {1}" />
-    <objectiveText.HaveArmyPoints value="Have {0} Army {1}" />
-    <objectiveText.HaveWarPoints value="Have {0} War {1}" />
-    <objectiveText.HavePoints value="Have {0} {1}" />
 
     <!-- HEAL_HP
     0: count of hit points to heal -->
@@ -2363,8 +2372,7 @@
       <p>Commander,</p>
       <p>
          Resource extraction is our top priority! Build even more
-         [obj:2:Building_MetalExtractor] so that extraction rates become
-         steady for sure.
+         extractors so that extraction rates become steady for sure.
       </p>
     </about.40>
     
@@ -2675,8 +2683,8 @@
       </p>
       <p>
         Build a [reference:Buildings/Radar.name]. It will reveal a sector of 
-        galaxy map and show other solar systems with ship movement within that 
-        sector. 
+        galaxy map. You will be able to see other solar systems ruled by other
+        players and ship movement within that sector.
       </p>
       <p>
         Keep in mind that running a [reference:Buildings/Radar.name] requires 
@@ -2713,7 +2721,7 @@
       </p>
       <p>
         Since the travel will take a great deal of time it would be
-        unpleasant if and [obj:1:Unit_Mdh] wasn't already on the planet.
+        unpleasant if an [obj:1:Unit_Mdh] wasn't already on the planet.
         So our own unit will come in handy since we want to colonise that
         third planet.
       </p>
@@ -3213,19 +3221,19 @@
       </p>
     </about.10425>
     
-    <title.10450 value="The First Reward" />
+    <title.10450 value="The fist of power" />
     <about.10450>
       <p>Commander.</p>
       <p>
-        Make sure we have enough mines to fulfill our basic needs.
-        Someone is whispering me we will need much more of them soon...
+        Make sure we have enough units to easily defend ourselves or even
+        strike first! We must be strong and prepared!
       </p>
     </about.10450>
     
     <title.10460 value="Empowering Riches" />
     <about.10460>
       <p>Commander!</p>
-      <p>In your last mission, "[reference:title.8]" you were rewarded with
+      <p>In your last mission you were rewarded with
       some creds. Go and take your reward if you haven't done so already.</p>
       <p>Creds are a useful and powerful tool. They can be spent on various
       tasks like accelerating your constructions, researches and unit
@@ -3304,44 +3312,69 @@
     <title.10575 value="[reference:DestroyingEnemies.title] (VI)" />
     <about.10575 ref="DestroyingEnemies.about" />
 
+    <title.10600 value="Breaking convoys" />
+    <about.10600>
+      <p>Commander.</p>
+      <p>
+        Our scouts has tracked alien convoys flying near our solar system
+        from time to time. They have some weird ships in their fleets.
+      </p>
+      <p>
+        After some discussions our scientists has calculated that we could get
+        good reward after destroying these convoys! Should we give it a try?
+      </p>
+    </about.10600>
+
+    <title.10610 value="Superior danger" />
+    <about.10610>
+      <p>Commander.</p>
+      <p>
+        Morpehus has been spotted in battleground! This extremely powerful
+        alien ship shows itself from time to time and there are lots of legends
+        about them traveling around the galaxy.
+      </p>
+      <p>
+        If you could manage to destroy this ship we will get truly great
+        reward! Just be careful and don't attack this ship alone or your fleet
+        can get destroyed in a moment. You should ask for help from your allies!
+      </p>
+    </about.10610>
   </Quests>
 
   <QuestScreens>
     <BuildingSidebar>
       <![CDATA[
-      <p>Buildings available for construction are at the sidebar on the right.</p>
-      <p>Once you select a building, at the bottom of the sidebar its
-      construction time and pros and cons provided by terrain under the building
-      become visible.</p>
+      <p>You can find all the buildings you can construct at the right sidebar.</p>
+      <p>Once you select a building, you can see the bonuses provided by terrain
+      under the building at the bottom of the right sidebar.</p>
       <p>If another building is already being constructed the next is added
-      to construction que.</p>
+      to the construction queue.</p>
       ]]>
     </BuildingSidebar>
 
     <ClaimReward>
       <![CDATA[
-      <p>Each completion of a quest earns you a reward. You can take it if you
-      navigate to the quests screen: click on a N44 logo at the bottom right corner
-      of the screen and click "[reference:Quests/label.title]" button.</p>
-      <p>Then you have to find a completed quest - they are yellow - and click on
-      a '[reference:Quests/label.claimReward]' button</p>
+      <p>You get reward for each quest you complete. You can take it by
+      navigating to the quests screen: open N44 menu at the bottom right corner
+      of the screen and click "[reference:MainMenu/label.quests]" button.</p>
+      <p>Then you have to find a completed quest - they are marked as yellow -
+      and click on a '[reference:Quests/label.claimReward]' button</p>
       ]]>
     </ClaimReward>
 
     <OreTile>
       <![CDATA[
-      <p>You can build [obj:2:Building_MetalExtractor:p8d] only on top of metal
-      deposits. Most of the time you will find alien structures already standing
-      on them. Those structures need to be destroyed first and only then you will
-      be able to build your own extractor. However you may come across a few
-      free deposits as well.</p>
+      <p>You can build MEX's on the top of metal deposits only. Most of the time
+      you will find alien structures standing on them already. Those structures
+      must be destroyed before building your own extractor. However you may find
+      some free deposits as well.</p>
       ]]>
     </OreTile>
 
     <BuildingUpgrade>
       <![CDATA[
-      <p>Buildings can be upgraded. To do that select a building by clicking on
-      it in a map. Then click "[reference:BuildingSelectedSidebar/upgrade]"
+      <p>Buildings can be upgraded. To do that select a building by clicking
+      it at the planet map. Then click "[reference:BuildingSelectedSidebar/upgrade]"
       button in the menu at the right.</p>
       <p>Upgraded buildings improves their characteristics: extractors produce
       more resources, factories take less time to build units, more scientists
@@ -3353,15 +3386,15 @@
       <![CDATA[
       <p>Although you are free to build power plants anywhere it is recommended
       to place them on a special terrain to boost power.</p>
-      <p>Terrain bonus can visible at the bottom of the right sidebar while
-      looking for a place to build a power plant.</p>
+      <p>Bonus of the terrain you are choosing to build your plant is displayed
+      at the bottom of the right sidebar.</p>
       ]]>
     </EnergyTiles>
 
     <ConstructionTiles>
       <![CDATA[
       <p>
-        Buildings will be erected more quickly on this terrain. By the way,
+        Buildings will be constructed more quickly on this terrain. By the way,
         if a building is able to construct other buildings, train troops or
         manufacture tanks or ships, it will take less time to complete
         its task. So this type of terrain is best for all kinds of factories.
@@ -3369,22 +3402,452 @@
       ]]>
     </ConstructionTiles>
 
-    <SpeedupConstruction>
+    <SpeedupConstruction1>
        <!-- TODO: replace button names with references -->
       <![CDATA[
       <p>You may speed up long taking constructions using special game resource
       called <span fontWeight="bold">creds</span>. To do that, select a building.
       Then click "Speed up" button and choose the speed up level.</p>
+      ]]>
+    </SpeedupConstruction1>
+    <SpeedupConstruction2>
+      <![CDATA[
       <p>
         You can buy creds by clicking "Buy creds" button in the N44 menu.
       </p>
       <p>
-        Completion of some quests gives you creds also. You have been rewarded
+        You can also get some creds by completing quests. You have been rewarded
         with creds after completing your last quest. Claim that reward and
         speed up construction of a building!
       </p>
       ]]>
-    </SpeedupConstruction>
+    </SpeedupConstruction2>
+
+    <UnitConstructors>
+      <![CDATA[
+      <p>Some buildings are designed to train soldiers, tanks or spaceships.</p>
+      <p>You can build units by selecting a building (i.e.
+        [obj:1:Building_Barracks:what:dc]) and pressing
+        [reference:BuildingSelectedSidebar/open] in the sidebar.</p>
+      ]]>
+    </UnitConstructors>
+
+    <UnitConstructionScreen>
+      <![CDATA[
+      <p>You can reach unit building screen using any unit facility. You can
+      manage all the units being built in current planet there.</p>
+      <p>In order to train soldiers, select the needed amount and press
+      "build" button.</p>
+      ]]>
+    </UnitConstructionScreen>
+
+    <TakeUnitsReward>
+      <![CDATA[
+      <p>The quest you have just completed rewards you with troops.
+        Before starting next quest it is advised to claim this reward.</p>
+      <p>Go to the N44 menu, press the „[reference:MainMenu/label.quests]“ button,
+        select previously completed quest and click
+        „[reference:Quests/label.claimReward]“.</p>
+      ]]>
+    </TakeUnitsReward>
+
+    <UnitScreen>
+      <![CDATA[
+      <p>In the top right corner of the screen you can see the number of
+      troops you have. Pressing that number will bring you to the troops'
+      management panel where you can adjust your strategy of the battle.</p>
+      ]]>
+    </UnitScreen>
+
+    <AttackButton>
+      <![CDATA[
+      <p>In order to attack alien building you have to select it and press the
+      „[reference:BuildingSelectedSidebar/attack]“ button in the sidebar.</p>
+      ]]>
+    </AttackButton>
+
+    <AttackScreen>
+      <![CDATA[
+      <p>In the opened panel you can select troops which you want to participate
+      in the battle.</p>
+      <p>In most cases, all troops are selected. You can select them by pressing
+      „[reference:Units/label.all]“ button in the sidebar.</p>
+      <p>When you have selected troops, press „[reference:Units/label.attack]“.</p>
+      ]]>
+    </AttackScreen>
+
+    <ClaimRewardRC>
+      <![CDATA[
+      <p>You have just completed the quest which gives you necessary resources
+      for your future development - zetium. You will also receive creds
+      for your great job.</p>
+      <p>DON'T forget to claim your reward!</p>
+      ]]>
+    </ClaimRewardRC>
+
+    <DamagedUnits>
+      <![CDATA[
+      <p>Your troops had been injured in the battle. They could be healed,
+        if you invented the technology, enabling you to build
+        [obj:1:Building_HealingCenter:what:dc].</p>
+      ]]>
+    </DamagedUnits>
+
+    <Exploring>
+      <![CDATA[
+      <p>There are objects in the planet which you can explore. In order to do so
+       select the object and press [reference:Exploration/label.explore] on the
+       right sidebar.</p>
+      <p>Scientists will be sent to an expedition and will inform you about
+      results afterwards.</p>
+      ]]>
+    </Exploring>
+
+    <Notifications>
+      <![CDATA[
+      <p>You can find results of finished expeditions and other events in the
+      notification panel. Access it by pressing notification icon in the top
+      left corner.</p>
+      <p>If you want to find out more about notification, visit Nebula 44 Wiki,
+      you can find it by going to the N44 menu.</p>
+      ]]>
+    </Notifications>
+
+    <TechTree>
+      <![CDATA[
+      <p>You can find the technology tree in Research Center. You can see all
+      the technologies you can research in there.</p>
+      <p>You can't invent greyed out technologies yet while technologies
+      in red background requires more scientists or resources than you currently
+      hold.</p>
+      ]]>
+    </TechTree>
+
+    <TechResearch1>
+      <![CDATA[
+      <p>In order to invent a technology you have to select it first.
+        Afterwards press the „[reference:Technologies/upgrade]“ button
+        in the sidebar.</p>
+      ]]>
+    </TechResearch1>
+    <TechResearch2>
+      <![CDATA[
+      <p>Technologies are invented by the selected amount of scientists.
+      The more scientists will work on a technology, the faster they will finish.</p>
+      ]]>
+    </TechResearch2>
+
+    <WPInTechs>
+      <![CDATA[
+      <p>Some technologies may be locked at the beginning - you will
+      have to reach certain amounts of war points.</p>
+      <p>You can check your war points amount in the N44 menu.</p>
+      <p>So far the easiest way to collect war points is to clear your planet
+      from aliens.</p>
+      ]]>
+    </WPInTechs>
+
+    <ZetiumTile>
+      <![CDATA[
+      <p>You can built ZEX on the zetium crystals. They are rarely found unoccupied
+      so you will have to destroy alien building above crystals first.</p>
+      ]]>
+    </ZetiumTile>
+
+    <Resources>
+      <![CDATA[
+      <p>There are three types of resources in Nebula 44: metal, energy and
+      zetium. Small amounts of them are stored in the Mothership while larger
+      amounts are stored in a specialized containers.</p>
+      <p>Metal is mostly used for building troops and buildings. Energy is being
+      used for construction and it is also consumed by buildings such as MEX's,
+      ZEX's, Radars and so on. Zetium is used for constructing powerful tanks and
+      spaceships as well as for researching technologies.
+      ]]>
+    </Resources>
+
+    <ResourceBar>
+      <![CDATA[
+      <p>You can track your resources, see storage size and extraction speed by
+      hovering your mouse over resource zone located at the bottom of the screen.</p>
+      ]]>
+    </ResourceBar>
+
+    <Market1>
+      <![CDATA[
+      <p>Market screen is splitted in two parts: buying (the large one) and
+      selling (right sidebar).</p>
+      <p>In the buying screen you can see all the offers, you can filter them
+      and find what you are looking for.</p>
+      ]]>
+    </Market1>
+    <Market2>
+      <![CDATA[
+      <p>After selecting the offer you can choose the amount you want to buy by
+      using the slider at the bottom of the screen.</p>
+      ]]>
+      <!-- Not implemented for now.
+      <p>Atkreipk dėmesį, jog mainytis gali ne tik resursais, bet ir
+        kariais.</p>-->
+    </Market2>
+
+    <Population>
+      <![CDATA[
+      <p>Your troops consumes vital resources - oxygen, food and water. It
+      influences the amount of troops you can maintain. This amount is displayed at
+      the top right corner of the screen next to the troops amount.</p>
+      <p>If you exceed your vital resources, your troops will become weaker so it
+      is mandatory to have enough space for them.</p>
+      ]]>
+    </Population>
+
+    <UnitScreenWithSpace>
+      <![CDATA[
+      <p>If you have spaceships as well as ground units the number of spaceships
+      will be shown next to the ground units amount in the top right corner.</p>
+      <p>By pressing that number you will find yourself in a spaceships' management
+      screen where you can send them to the space.</p>
+      <p>In that screen you can quickly switch to the ground units screen by using
+      buttons above first flank.</p>
+      ]]>
+    </UnitScreenWithSpace>
+
+    <SendingShips1>
+      <![CDATA[
+      <p>If you want to send your spaceships to the space open the spaceship
+      management panel.</p>
+      <p>Then select spaceships and press „[reference:Units/label.issueOrder]“.</p>
+      ]]>
+    </SendingShips1>
+    <SendingShips2>
+      <![CDATA[
+      <p>The map of the solar system will be opened. Press on the desired
+      sector and then click the „[reference:Movement/label.toSector]“ button.</p>
+      ]]>
+    </SendingShips2>
+
+    <CombatInSpace>
+      <![CDATA[
+      <p>Your spaceships will scan the area once they reach it. If there are
+      any enemy ships your fleet will prepare for a battle and attack.</p>
+      <p>If enemy fleet isn't destroyed at the first time your ships will
+      retreat, rearrange (it takes some time) and attack again until there
+      are only friendly units in the sector.</p>
+      ]]>
+    </CombatInSpace>
+
+    <MoveToPlanet>
+      <![CDATA[
+      <p>You can command your fleet even if it is in space. Just select one of
+      your fleet and press the „[reference:Movement/label.move]“ button. Then
+      select the sector you want to move to.</p>
+      <p>If you want your fleet to move into planet press on the planet and click
+      "[reference:Movement/label.toPlanet]" button.</p>
+      ]]>
+    </MoveToPlanet>
+
+    <ClaimPlanet>
+      <![CDATA[
+      <p>If there are no enemy forces in the planet you can take it over.
+      All the buildings and resources in the planet will become yours.</p>
+      <p>To claim a planet you have to click the
+        „[reference:BuildingSidebar/label.claimPlanet]“ button in the sidebar.</p>
+      ]]>
+    </ClaimPlanet>
+
+    <Wreckage>
+      <![CDATA[
+      <p>After a battle some debris remain which can be used as resources.</p>
+      <p>If a battle took place in a planet, debris is automatically collected
+      and put in storage containers.</p>
+      <p>If a battle took place in space, debris remain in a sector until someone
+      collects them. In order to collect them you have to move to the sector with
+      a mule class transporter ship.</p>
+      ]]>
+    </Wreckage>
+
+    <LoadWreckage1>
+      <![CDATA[
+      <p>Being in a sector with debris select your fleet and press
+      „[reference:Squadrons/label.manage]“</p>
+      <p>In the fallowing window press the load button.</p>
+      ]]>
+    </LoadWreckage1>
+    <LoadWreckage2>
+      <![CDATA[
+      <p>Select the amount of resources you want to carry and confirm your
+      decision</p>
+      <p>Close the resource and spacehip windows in order to go back to the space.</p>
+      ]]>
+    </LoadWreckage2>
+
+    <UnloadResources>
+      <![CDATA[
+      <p>When you come back to a planet go to the spaceship management
+      panel and press the "Unload" button.</p>
+      <p>Select amount of resources you want to unload and confirm your
+      decision. Close resources and spaceships screens in order to go
+      back to the planet</p>
+      ]]>
+    </UnloadResources>
+    
+    <Radar1>
+      <![CDATA[
+      <p>There are many other players in the galaxy but you need to
+      build a Radar to see other solar systems or travel there.</p>
+      ]]>
+    </Radar1>
+    <Radar2>
+      <![CDATA[
+      <p>A radar consumes energy. It reveals a small galaxy area around your solar system while it is active. The visible area expands as you upgrade the radar.</p>
+      <p>Also, you can take ownership of planets in other solar systems
+      and build radars there to expand visible area even more.</p>
+      ]]>
+    </Radar2>
+
+    <LoadUnits>
+      <![CDATA[
+      <p>If you wish to conquer other planet you need some ground units
+      which can be transported by using Mule transporter ship.</p>
+      <p>Go to your space units screen, then press "Load" button next
+      to a Mule. Afterwards, select units you want to load and click
+      "Load" button at the right sidebar.</p>
+      <p>Remember, you must have MDH and some ground units if you want
+      to colonize other planets.</p>
+      ]]>
+    </LoadUnits>
+
+    <UnloadUnits>
+      <![CDATA[
+      <p>After landing on the planet click "Unload" button next to your
+      Mule. Select your units and click "Unload" button at the right
+      sidebar.</p>
+      ]]>
+    </UnloadUnits>
+
+    <DeployMdh>
+      <![CDATA[
+      <p>Your Headquarters is still in its mobile form. You need to
+      deploy it if you want to create a colony.</p>
+      <p>Navigate to the units screen, click on the "deploy" button
+      next to the MDH and choose ground area where you want to deploy
+      the Headquarters.</p>
+      ]]>
+    </DeployMdh>
+
+    <DeployTurrets>
+      <![CDATA[
+      <p>You have been rewarded with a few mobile turrets for completing
+      your last quest. Claim and deploy them on the new colony - they
+      will serve us as a great defense line.</p>
+      ]]>
+    </DeployTurrets>
+
+    <ThirdPlanet>
+      <![CDATA[
+      <p>Your third planet is in open solar system. That means it can be
+      attacked by other players at any given time. Also it will we
+      attacked by allien pirates from time to time.</p>
+      <p>If you want to learn more about alien pirates you should read
+      info in Nebula 44 wiki which can be found in N44 menu.</p>
+      ]]>
+    </ThirdPlanet>
+
+    <ArmorTiles>
+      <![CDATA[
+      <p>Deploy your turrets on dark ground - it is strong and provides
+      additional armor for the turrets so they will be harder to destroy.</p>
+      ]]>
+    </ArmorTiles>
+
+    <EcoTier2>
+      <![CDATA[
+      <p>It is recommended to renew your economical base right after you
+      research new generation extractors.</p>
+      <p>To replace an old extractor version with a new one, one has to
+      destroy that old extractor first and build the new one at its place.</p>
+      ]]>
+    </EcoTier2>
+
+    <JoinAlliance>
+      <![CDATA[
+      <p>You may join an alliance as soon as you get an invitation which
+      appears in your notification center.</p>
+      ]]>
+    </JoinAlliance>
+
+    <CreateAlliance>
+      <![CDATA[
+      <p>If you want to create your own alliance, you need to research Alliances
+      technology.</p>
+      <p>After that go to N44 menu and click
+      [reference:MainMenu/label.alliance] button. You can create your new
+      alliance in this screen.</p>
+      ]]>
+    </CreateAlliance>
+
+    <InviteToAlliance>
+      <![CDATA[
+      <p>After you create your own alliance you can invite other players
+      to join it. To do that, go to  N44 menu and click
+      [reference:MainMenu/label.alliance] button. Then, at the top of the
+      screen choose a [reference:Alliances/title.section.management]
+      tab and use the player list to invite new allies.</p>
+      ]]>
+    </InviteToAlliance>
+
+    <BgBattles>
+      <![CDATA[
+      <p>You and your alliance get victory points for battles with other players
+      in the battleground. Victory points are vital for winning the game.</p>
+      ]]>
+    </BgBattles>
+
+    <BgPlanets>
+      <![CDATA[
+      <p>Planets in the battleground are special. Owner of such planet (as well
+      as his or her alliance) periodically gets victory points. The longer you
+      own this planet the more victory points you collect.</p>
+      <p>Owning more battleground planets does not increase the alien pirate
+      armies on ordinary planets.</p>
+      ]]>
+    </BgPlanets>
+
+    <BossShip>
+      <![CDATA[
+      <p>Morpheus also shows itself up in the battleground time to time. It is a
+      mighty alien ship which is extreamly hard to destroy.
+      You get creds for destroying this ship and victory points for damage
+      dealt.</p>
+      ]]>
+    </BossShip>
+
+    <Pulsars>
+      <![CDATA[
+      <p>Pulsars are smaller versions of battleground in localized galaxy areas. You get much less
+      victory points for owning them.</p>
+      <p>Owning more pulsar planets does not increase alien pirate
+      armies on ordinary planets.</p>
+      ]]>
+    </Pulsars>
+
+    <Convoys>
+      <![CDATA[
+      <p>
+        Alien convoys are flying near our solar system
+        from time to time. These ships are well equiped with weapons but you get creds for killing them. You get victory points for damage
+        dealt to them too.
+      </p>
+      ]]>
+    </Convoys>
+
+    <GalaxyBattles>
+      <![CDATA[
+      <p>You will also get some smaller amount of victory points for fighting
+      other players in galaxy, solar systems or planets.</p>
+      <p>Besides, justice codex is active in the galaxy - you won't get any reward if you destroy a much weaker player than yourself.</p>
+      ]]>
+    </GalaxyBattles>
   </QuestScreens>
 
   <Ratings>
@@ -3484,6 +3947,8 @@
     <label.planetArea value="Area: {0} x {1} tiles"/>
     <label.totalVolume value="Total volume: {0}"/>
     <label.wreckageVolume value="(volume: {0})"/>
+    <label.unknownHonorCoef value="unknown"/>
+    <label.honorCoef value="Honor coef:"/>
     <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
     <title.info value="{0} info" />
     <!-- {0}: Planet/Jumpgate/Asteroid  
@@ -3567,10 +4032,8 @@
     <scientistsPanelTitle value="Scientists" />
     <upgradeProgress value="Upgrade progress" />
     <buildCenters>
-      <p>
-        Build or upgrade Research Centers to increase the 
-        number of your scientists. 
-      </p>
+      <p>Build or upgrade Research Centers to increase the 
+         number of your scientists. </p>
     </buildCenters>
     <notEnoughScientists>
       <p>
@@ -3588,10 +4051,21 @@
       only have {1}.</p>
       <p>You can get more war points by attacking NPCs or other players.</p>
     </warPointsNeeded>
+    <planetsNeeded>
+      <p>You need to own {0 one[? planet] many[? planets]} to be able to
+      research this technology, but you only own {1}.</p>
+    </planetsNeeded>
+    <pulsarsNeeded>
+      <p>You have to rule {0} battleground or pulsar {0 one[planet] many[planets]} to be able to research this technology, but you
+      only have {1}.
+      </p>
+    </pulsarsNeeded>
     <groupResearched>
       <p>Another technology in this group has been already researched so you
       cannot research this technology</p>
     </groupResearched>
+    <label.wasPaused value="Paused" />
+    <label.scientistsChanged value="Scientists after reduction" />
 
     <upgrade value="Upgrade" />
     <update value="Update" />
@@ -3604,8 +4078,9 @@
     <title.unlearn value="Unlearn" />
     <warning.unlearn>      
       <![CDATA[
-      <p><span fontWeight="bold">Warning!</span> It will cost you {0} creds to 
-      unlearn this technology and you won't get any resources back.</p>
+      <p><span fontWeight="bold">Warning!</span> It will cost you
+      {0 one[? cred] many[? creds]} to unlearn this technology and 
+      you won't get any resources back.</p>
       ]]>
     </warning.unlearn>
     <label.unlearn value="Unlearn" />
@@ -3627,34 +4102,68 @@
     <property.zetium.cost value="Zetium cost" />
     <property.scientists.min value="Scientists required" />
     <property.mod.zetium.generate value="Zetium generation rate boost" />
+    <property.mod.zetium.generate.format value="{0}%" />
     <property.mod.zetium.store value="Zetium storage boost" />
+    <property.mod.zetium.store.format value="{0}%" />
     <property.mod.metal.generate value="Metal generation rate boost" />
+    <property.mod.metal.generate.format value="{0}%" />
     <property.mod.metal.store value="Metal storage boost" />
+    <property.mod.metal.store.format value="{0}%" />
     <property.mod.energy.generate value="Energy generation rate boost" />
+    <property.mod.energy.generate.format value="{0}%" />
     <property.mod.energy.store value="Energy storage boost" />
+    <property.mod.energy.store.format value="{0}%" />
     <property.mod.armor value="Armor bonus" />
+    <property.mod.armor.format value="{0}%" />
     <property.mod.damage value="Damage bonus" />
-    <property.mod.movementTimeDecrease value="Movement time decrease" />
+    <property.mod.damage.format value="{0}%" />
+    <property.mod.critical value="Critical shot chance" />
+    <property.mod.critical.format value="{0}%" />
+    <property.mod.critical.tooltip>
+      <p>Chance of unit firing a critical shot.</p>
+      <p>Critical shot is a shot that inflicts {0} times more damage.</p>
+    </property.mod.critical.tooltip>
+    <property.mod.absorption value="Damage absorption chance" />
+    <property.mod.absorption.format value="{0}%" />
+    <property.mod.absorption.tooltip>
+      <p>Probability of a unit being hit by a shot that does {0} times less damage.</p>
+    </property.mod.absorption.tooltip>
+    <property.mod.speed value="Movement time divisor" />
+    <property.mod.speed.format value="{0}%" />
+    <property.mod.speed.tooltip>
+      <p>Formula for calculating: (jump time) / (1 + divisor / 100)</p>
+      <p>For example 100% means that ship will move 2 times faster.</p>
+    </property.mod.speed.tooltip>
     <property.mod.storage value="Storage bonus" />
+    <property.mod.storage.format value="{0}%" />
+    <property.planets.required value="Number of planets required" />
+    <property.pulsars.required value="Number of pulsars required" />
     <property.maxPlayers value="Maximum number of players" />
-    <property.healing.time.mod ref="Buildings/property.healing.time.mod" />
-    <property.healing.cost.mod ref="Buildings/property.healing.cost.mod" />
+    <property.healing.time.mod
+      ref="Buildings/property.healing.time.mod" />
+    <property.healing.time.mod.format
+      ref="Buildings/property.healing.time.mod.format" />
+    <property.healing.cost.mod
+      ref="Buildings/property.healing.cost.mod" />
 
     <UnitTech>
-      <p>First level of this technology unlocks described unit. Other levels
-        upgrade it.</p>
+      <p>First level of this technology unlocks described unit. Other
+      levels upgrade it.</p>
     </UnitTech>
-    <UnitUpgrade>
-      <p>Each level increases unit armor and damage.</p>
-    </UnitUpgrade>
+    <GroundUpgrade>
+      <p>Each level increases unit armor, weapons damage as well as
+      chances of damage absorption and critical shot.</p>
+    </GroundUpgrade>
+    <SpaceUpgrade>
+      <p>Each level increases ship armor, weapons damage, chances of
+      damage absorption and critical shot as well as movement speed.</p>
+    </SpaceUpgrade>
 
     <BuildingTech>
       <p>First level of this technology unlocks described building. Other levels
         upgrade it.</p>
     </BuildingTech>
-    <BuildingUpgrade>
-      <p>Each level increases building armor and damage.</p>
-    </BuildingUpgrade>
+    <BuildingUpgrade ref="GroundUpgrade" />
 
     <Zetium.common>
       <p>
@@ -3665,132 +4174,249 @@
       </p>
     </Zetium.common>
 
+    <DamageSpecialization.name ref="Objects/Technology_DamageSpecialization" />
+    <DamageSpecialization.about>
+      <p>This specialization increases weapons damage.</p>
+    </DamageSpecialization.about>
+
+    <ArmorSpecialization.name ref="Objects/Technology_ArmorSpecialization" />
+    <ArmorSpecialization.about>
+      <p>This specialization increases armor and reduces damage received.</p>
+    </ArmorSpecialization.about>
+
+    <CriticalSpecialization.name
+      ref="Objects/Technology_CriticalSpecialization" />
+    <CriticalSpecialization.about>
+      <p>This specialization increases the chance of critical shot.</p>
+    </CriticalSpecialization.about>
+
+    <AbsorptionSpecialization.name
+      ref="Objects/Technology_AbsorptionSpecialization" />
+    <AbsorptionSpecialization.about>
+      <p>This specialization increases chance of absorbing a portion
+      of damage received when unit is hit.</p>
+    </AbsorptionSpecialization.about>
+
+    <SpeedSpecialization.name
+      ref="Objects/Technology_SpeedSpecialization" />
+    <SpeedSpecialization.about>
+      <p>This specialization increases movement speed of the ship.</p>
+    </SpeedSpecialization.about>
+
     <ZetiumExtraction.name ref="Objects/Technology_ZetiumExtraction" />
     <ZetiumExtraction.about>
       <p>Allows building Zetium Extractors and Storages.</p>
       <p>[reference:Zetium.common]</p>
     </ZetiumExtraction.about>
 
-    <!--
-    <Spy.name ref="Objects/Spy" />
-    <Spy.about value="Just a simple spy technology" />
-
-    <Saboteur.name ref="Objects/Saboteur" />
-    <Saboteur.about value="I think thisone has ability to ruin things" />
-
-    <SatteliteHacking.name ref="Objects/SatteliteHacking" />
-    <SatteliteHacking.about>
-      <p>This one will ruin any satelite if sysAdmin is not there</p>
-    </SatteliteHacking.about>
-
-    <CamouflageSuits.name ref="Objects/CamouflageSuits" />
-    <CamouflageSuits.about>
-      <p>You can dress with this one if you go to picnic</p>
-    </CamouflageSuits.about>
-
-    <TacticalReconnaissance.name ref="Objects/TacticalReconnaissance" />
-    <TacticalReconnaissance.about>
-      <p>
-        This is very strage technology, it is told that ancient scientists are 
-        the ones who invented it first 
-      </p>
-    </TacticalReconnaissance.about>
-
-    <R14Charges.name ref="Objects/R14Charges" />
-    <R14Charges.about value="Charge enemies with R14" />
-    
-
-    <Spaceport.name ref="Objects/Spaceport" />
-    <Spaceport.about value="Fly to the sky" />
-    -->
-
+    <DamageTech value="Researching this technology weapon damage" />
     <ArmorTech value="Researching this technology increases armor" />
-    <WeaponsTech value="Researching this technology increases damage" />
+    <CriticalTech value="Researching this technology increases chance of critical shot" />
+    <AbsorptionTech value="Researching this technology increases chance of damage absorption" />
+    <SpeedTech value="Researching this technology increases movement speed" />
+    
+    <DamageAbout>
+      <p>Incorporating zetium into projectiles and rockets increases
+      damage caused by their explosions and lets you be sure that enemy
+      troops won't leave the battlefield alive.</p>
+    </DamageAbout>
 
-    <InfantryUpgradeTech>
-      <p>
-        for ground soldiers built in [reference:Buildings/Barracks.name] like 
-        [reference:Units/Trooper.name] or [reference:Units/Seeker.name]. 
-      </p>
-    </InfantryUpgradeTech>
+    <ArmorAbout>
+      <p>This technology lets us use zetium for manufacturing firm but at the
+         same time light layered armor. This greatly increases protection from
+         enemy bullets and shells.</p>
+    </ArmorAbout>
 
-    <MetabolicChargers.name ref="Objects/Technology_MetabolicChargers" />
-    <MetabolicChargers.about>
-      <p>
-        Recent developments in armor technology allows embedding zetium shards 
-        into warrior armor thus making it more resistant to enemy hits. 
-      </p>
-      <p>[reference:ArmorTech] [reference:InfantryUpgradeTech]</p>
-    </MetabolicChargers.about>
+    <CriticalAbout>
+      <p>Perfected targeting and navigation systems aids in
+      finding weakest spots of enemy defences and strike with a full
+      force.</p>
+    </CriticalAbout>
+    
+    <AbsorptionAbout>
+      <p>Advanced defence systems lets protect ourselves from some of the
+         incoming shells of the enemy which greatly decreases damage inflicted
+         by them.</p>
+    </AbsorptionAbout>
+    
+    <SpaceUpgradeTech>
+      <p>for spaceships.</p>
+    </SpaceUpgradeTech>
+    
+    <SpaceDamage.name ref="Objects/Technology_SpaceDamage" />
+    <SpaceDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceDamage.about>
 
-    <HighVelocityCharges.name ref="Objects/Technology_HighVelocityCharges" />
-    <HighVelocityCharges.about>
-      <p>
-        Recent developments in zetium technology allowed infantry gun ammo to 
-        be upgraded with more explosive power. Zetium enhanced bullets and 
-        rockets reach greater velocity and bigger impact speed meaning more 
-        damage to enemy. 
-      </p>
-      <p>[reference:WeaponsTech] [reference:InfantryUpgradeTech]</p>
-    </HighVelocityCharges.about>
+    <SpaceArmor.name ref="Objects/Technology_SpaceArmor" />
+    <SpaceArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceArmor.about>
 
-    <ShipUpgradeTech>
-      <p>
-        for spaceships built in [reference:Buildings/SpaceFactory.name] like 
-        [reference:Units/Crow.name] or [reference:Units/Cyrix.name]. 
-      </p>
-      <p>
-        This technology DOES NOT improve [reference:Units/Rhyno.name] and 
-        [reference:Units/Mule.name] class ships. 
-      </p>
-    </ShipUpgradeTech>
+    <SpaceCritical.name ref="Objects/Technology_SpaceCritical" />
+    <SpaceCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceCritical.about>
 
-    <ShipsArmor.name ref="Objects/Technology_ShipsArmor" />
-    <ShipsArmor.about>
-      <p>
-        This technology allows usage of zetium reinforced armor plates that are 
-        able to withstand more damage and keep ships alive in the battlefield 
-        for longer. 
-      </p>
-      <p>[reference:ArmorTech] [reference:ShipUpgradeTech]</p>
-    </ShipsArmor.about>
+    <SpaceAbsorption.name ref="Objects/Technology_SpaceAbsorption" />
+    <SpaceAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:SpaceUpgradeTech]</p>
+    </SpaceAbsorption.about>
 
-    <ShipsDamage.name ref="Objects/Technology_ShipsDamage" />
-    <ShipsDamage.about>
-      <p>
-        Introducing zetium into plasma particle stream greatly improves their 
-        power. Ionized zetium crystals expel intense heat that is enough to 
-        wade even through thickest armor. 
-      </p>
-      <p>[reference:WeaponsTech] [reference:ShipUpgradeTech]</p>
-    </ShipsDamage.about>
+    <HeavyFlight.name ref="Objects/Technology_HeavyFlight" />
+    <HeavyFlight.about>
+      <p>Employing gamma particles in our heavy engine inner processes
+      allows us to reach higher velocities thus reducing time we need to
+      make those little hops in solar systems and galaxies.</p>
+      <p>However this technology requires UX-20 engines which can only be
+      found in our biggest ships. As it is they are also slowest, so
+      this technology is very valuable for them.</p>
+      <p>Shortens flight times for [reference:Objects/Unit_Mule] and
+      [reference:Objects/Unit_Rhyno] class ships.</p>
+    </HeavyFlight.about>
 
-    <TankUpgradeTech>
-      <p>
-        for ground tanks built in [reference:Buildings/GroundFactory.name] like 
-        [reference:Units/Scorpion.name] or [reference:Units/Azure.name]. 
-      </p>
-    </TankUpgradeTech>
+    <LightFlight.name ref="Objects/Technology_LightFlight" />
+    <LightFlight.about>
+      <p>This technology allows reducing weight of our ships which in
+      turn increases their speed.</p>
+      <p>[reference:SpeedTech] of [reference:Objects/Unit_Crow],
+         [reference:Objects/Unit_Cyrix], [reference:Objects/Unit_Avenger] and
+         [reference:Objects/Unit_Dart] class ships.</p>
+    </LightFlight.about>
+    
+    <GroundUpgradeTech>
+      <p>for grounds units.</p>
+    </GroundUpgradeTech>
+    
+    <GroundDamage.name ref="Objects/Technology_GroundDamage" />
+    <GroundDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:GroundUpgradeTech]</p>
+    </GroundDamage.about>
 
-    <TanksArmor.name ref="Objects/Technology_TanksArmor" />
-    <TanksArmor.about>
-      <p>
-        These shield generators generate point located shields that slow down 
-        incoming projectiles before impact. By minimizing their velocity they 
-        reduce damage dealt to hull of the tank. 
-      </p>
-      <p>[reference:ArmorTech] [reference:TankUpgradeTech]</p>
-    </TanksArmor.about>
+    <GroundArmor.name ref="Objects/Technology_GroundArmor" />
+    <GroundArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:GroundUpgradeTech]</p>
+    </GroundArmor.about>
 
-    <TanksDamage.name ref="Objects/Technology_TanksDamage" />
-    <TanksDamage.about>
-      <p>
-        Introducing highly unstable zetium into tank shells greatly improves
-        their firepower and ensures that enemy units do not leave the
-        battlefield alive.
-      </p>
-      <p>[reference:WeaponsTech] [reference:TankUpgradeTech]</p>
-    </TanksDamage.about>
+    <GroundCritical.name ref="Objects/Technology_GroundCritical" />
+    <GroundCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:GroundUpgradeTech]</p>
+    </GroundCritical.about>
+
+    <GroundAbsorption.name ref="Objects/Technology_GroundAbsorption" />
+    <GroundAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:GroundUpgradeTech]</p>
+    </GroundAbsorption.about>
+    
+    <NpcSpaceUpgradeTech>
+      <p>for NPC spaceships (except for [reference:Unit_Nexar] class)</p>
+    </NpcSpaceUpgradeTech>
+    
+    <NpcSpaceDamage.name ref="Objects/Technology_NpcSpaceDamage" />
+    <NpcSpaceDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceDamage.about>
+
+    <NpcSpaceArmor.name ref="Objects/Technology_NpcSpaceArmor" />
+    <NpcSpaceArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceArmor.about>
+
+    <NpcSpaceCritical.name ref="Objects/Technology_NpcSpaceCritical" />
+    <NpcSpaceCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceCritical.about>
+
+    <NpcSpaceAbsorption.name ref="Objects/Technology_NpcSpaceAbsorption" />
+    <NpcSpaceAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:NpcSpaceUpgradeTech]</p>
+    </NpcSpaceAbsorption.about>
+    
+    <NpcHeavyFlight.name ref="Objects/Technology_NpcHeavyFlight" />
+    <NpcHeavyFlight.about>
+      <p>[reference:SpeedTech] of [reference:Objects/Unit_Demosis] and
+         [reference:Objects/Unit_Nexar] class ships.</p>
+    </NpcHeavyFlight.about>
+
+    <NpcLightFlight.name ref="Objects/Technology_NpcLightFlight" />
+    <NpcLightFlight.about>
+      <p>[reference:SpeedTech] or [reference:Objects/Unit_Dirak] and
+         [reference:Objects/Unit_Thor] class ships.</p>
+    </NpcLightFlight.about>
+    
+    <NpcGroundUpgradeTech>
+      <p>of NPC ground units.</p>
+    </NpcGroundUpgradeTech>
+    
+    <NpcGroundDamage.name ref="Objects/Technology_NpcGroundDamage" />
+    <NpcGroundDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundDamage.about>
+
+    <NpcGroundArmor.name ref="Objects/Technology_NpcGroundArmor" />
+    <NpcGroundArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundArmor.about>
+
+    <NpcGroundCritical.name ref="Objects/Technology_NpcGroundCritical" />
+    <NpcGroundCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundCritical.about>
+
+    <NpcGroundAbsorption.name ref="Objects/Technology_NpcGroundAbsorption" />
+    <NpcGroundAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:NpcGroundUpgradeTech]</p>
+    </NpcGroundAbsorption.about>
+    
+    <TurretUpgradeTech>
+      <p>of defensive turrets.</p>
+    </TurretUpgradeTech>
+    
+    <TurretDamage.name ref="Objects/Technology_TurretDamage" />
+    <TurretDamage.about>
+      <p>[reference:DamageAbout]</p>
+      <p>[reference:DamageTech] [reference:TurretUpgradeTech]</p>
+    </TurretDamage.about>
+
+    <TurretArmor.name ref="Objects/Technology_TurretArmor" />
+    <TurretArmor.about>
+      <p>[reference:ArmorAbout]</p>
+      <p>[reference:ArmorTech] [reference:TurretUpgradeTech]</p>
+    </TurretArmor.about>
+
+    <TurretCritical.name ref="Objects/Technology_TurretCritical" />
+    <TurretCritical.about>
+      <p>[reference:CriticalAbout]</p>
+      <p>[reference:CriticalTech] [reference:TurretUpgradeTech]</p>
+    </TurretCritical.about>
+
+    <TurretAbsorption.name ref="Objects/Technology_TurretAbsorption" />
+    <TurretAbsorption.about>
+      <p>[reference:AbsorptionAbout]</p>
+      <p>[reference:AbsorptionTech] [reference:TurretUpgradeTech]</p>
+    </TurretAbsorption.about>
+    
+    <ResourceTransporter.name ref="Objects/Technology_ResourceTransporter" />
+    <ResourceTransporter.about>
+      <p>Enables construction of [reference:Objects/Building_ResourceTransporter].</p>
+      <p>[reference:Buildings/ResourceTransporter.about]</p>
+    </ResourceTransporter.about>
 
     <Crane.name ref="Buildings/Crane.name" />
     <Crane.about ref="Buildings/Crane.about" />
@@ -3923,18 +4549,61 @@
       <p>[reference:Buildings/SpaceFactory.about]</p>
     </SpaceFactory.about>
 
-    <HeavyFlight.name ref="Objects/Technology_HeavyFlight" />
-    <HeavyFlight.about>
-      <p>Employing gamma particles in our heavy engine inner processes
-      allows us to reach higher velocities thus reducing time we need to
-      make those little hops in solar systems and galaxies.</p>
-      <p>However this technology requires UX-20 engines which can only be
-      found in our biggest ships. As it is they are also slowest, so
-      this technology is very valuable for them.</p>
-      <p>Shortens flight times for [reference:Objects/Unit_Mule] and
-      [reference:Objects/Unit_Rhyno] class ships.</p>
-    </HeavyFlight.about>
+    <Gnat.name ref="Units/Gnat.name" />
+    <Gnat.about>
+      <p>[reference:Units/Gnat.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Gnat.about>
 
+    <Glancer.name ref="Units/Glancer.name" />
+    <Glancer.about>
+      <p>[reference:Units/Glancer.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Glancer.about>
+
+    <Spudder.name ref="Units/Spudder.name" />
+    <Spudder.about>
+      <p>[reference:Units/Spudder.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Spudder.about>
+
+    <Gnawer.name ref="Units/Gnawer.name" />
+    <Gnawer.about>
+      <p>[reference:Units/Gnawer.about]</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Gnawer.about>
+    
+    <Dirac.name ref="Units/Dirac.name" />
+    <Dirac.about>
+      <p>[reference:Units/Dirac.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Dirac.about>
+
+    <Thor.name ref="Units/Thor.name" />
+    <Thor.about>
+      <p>[reference:Units/Thor.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Thor.about>
+
+    <Demosis.name ref="Units/Demosis.name" />
+    <Demosis.about>
+      <p>[reference:Units/Demosis.about]</p>
+      <p>[reference:SpaceUpgrade]</p>
+    </Demosis.about>
+
+    <Mule.name ref="Units/Mule.name" />
+    <Mule.about>
+      <p>[reference:Units/Mule.about]</p>
+      <p>Upgrade increases ship's armor, volume, engines and
+      damage absorption chance.</p>
+    </Mule.about>
+    
+    <StorageSpecialization.name ref="Objects/Technology_StorageSpecialization"/>
+    <StorageSpecialization.about>
+      <p>This upgrate increases volume of [reference:Objects/Unit_Mule] 
+      class ships.</p>
+    </StorageSpecialization.about>
+    
     <Trooper.name ref="Units/Trooper.name" />
     <Trooper.about>
       <p>
@@ -3942,7 +4611,7 @@
         numbers. This upgrade allows to further strengthen our main force by 
         upgrading their weapons and armor. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Trooper.about>
 
     <Shocker.name ref="Units/Shocker.name" />
@@ -3955,7 +4624,7 @@
         battle. Making them stronger helps them protect other units longer and 
         their zetium enhanced rockets dishes out more damage. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Shocker.about>
 
     <Seeker.name ref="Units/Seeker.name" />
@@ -3967,7 +4636,7 @@
         final winning shot upon your enemy. And even better - this technology 
         even increases their damage by fitting them with zetium plated bullets. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Seeker.about>
 
     <Scorpion.name ref="Units/Scorpion.name" />
@@ -3977,7 +4646,7 @@
         faster particle accelerators. Investing into this research gives your 
         basic unit advantage over same vehicles at your enemy side. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Scorpion.about>
 
     <Azure.name ref="Units/Azure.name" />
@@ -3989,8 +4658,17 @@
         with zetium makes them more damaging and zetium also makes 
         [reference:Units/Azure.name] hull more resistant to enemy shots. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Azure.about>
+    
+    <Mantis.name ref="Objects/Technology_Mantis" />
+    <Mantis.about>
+      <p>[reference:UnitTech]</p>
+      <p>[reference:Units/Mantis.about]</p>
+      <p>This technology increases power of Mantis machine gun and strengthens
+         unit armor making it even more horrifying for our enemies.</p>
+      <p>[reference:GroundUpgrade]</p>
+    </Mantis.about>
     
     <Zeus.name ref="Units/Zeus.name" />
     <Zeus.about>
@@ -3999,7 +4677,7 @@
       <p>This technology increases velocity of tank projectiles thus increasing
       damage it does. It also thickens its armor so it could withstand more
       damage.</p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:GroundUpgrade]</p>
     </Zeus.about>
 
     <Mdh.name ref="Objects/Technology_Mdh" />
@@ -4011,7 +4689,7 @@
         Upgrades [reference:Units/Crow.name] lasers and hull making it a better 
         fighter that is cheap and cost effective to produce. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Crow.about>
 
     <Cyrix.name ref="Units/Cyrix.name" />
@@ -4024,7 +4702,7 @@
         technology means your fleet can last longer and make more damage for 
         same cost. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Cyrix.about>
 
     <Rhyno.name ref="Units/Rhyno.name" />
@@ -4037,7 +4715,7 @@
         harder to destroy and gives a formidable energy boost for its weapon 
         systems making it the most fearsome ship in whole galaxy. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Rhyno.about>
 
     <Dart.name ref="Units/Dart.name" />
@@ -4049,7 +4727,7 @@
         ships making them deadlier and allowing engaging enemies in fewer 
         numbers. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Dart.about>
 
     <Avenger.name ref="Units/Avenger.name" />
@@ -4062,7 +4740,7 @@
         in unfortunate situation. Overall it makes 
         [reference:Units/Avenger.name] class ships better interceptors. 
       </p>
-      <p>[reference:UnitUpgrade]</p>
+      <p>[reference:SpaceUpgrade]</p>
     </Avenger.about>
 
     <Jumper.name ref="Units/Jumper.name" />
@@ -4162,8 +4840,7 @@
     <property.zetium.cost value="Zetium cost" />
     <property.armor value="Armor" />
     <property.armorMod value="Armor modifier" />
-    <property.damageMod value="Damage modifier" />
-    <property.evasiveness value="Evasion" />
+    <property.armorMod.format value="{0}%" />
     <property.xpNeeded value="XP for level up" />
     <property.initiative value="Initiative" />
     <property.volume value="Volume" />
@@ -4173,10 +4850,6 @@
     <property.population value="Population" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
-
-    <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
-    <stance.neutral value="Neutral stance" />
-    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
     <label.showNpc value="Show"/>
 
@@ -4212,20 +4885,20 @@
         probability of appearing.
       </p>
     </tooltip.raidProbability>
-    
+
     <tooltip.freeStorage>
       <p>This ship has {0} units of storage available.</p>
     </tooltip.freeStorage>
-    
+
     <tooltip.buildSwitchCommon>
       <p>Click to change.</p>
     </tooltip.buildSwitchCommon>
-    
+
     <tooltip.buildInFlank1>
       <p>Your units will appear in first flank.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildInFlank1>
-    
+
     <tooltip.buildInFlank2>
       <p>Your units will appear in second flank.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
@@ -4240,34 +4913,34 @@
       <p>Your units will be built hidden.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildNotHidden>
-    
+
     <tooltip.populationCommon>
       <p>{0} population left</p>
     </tooltip.populationCommon>
-    
+
     <tooltip.populationLeft>
       <p>[reference:tooltip.populationCommon]</p>
       <p>Max. population: {1}</p>
     </tooltip.populationLeft>
-    
+
     <tooltip.maxPopulationReached>
       <p>[reference:tooltip.populationCommon]</p>
-      <p>You have reached your maximum population. Your pods can harbor {1} 
+      <p>You have reached your maximum population. Your pods can harbor {1}
       people but only {2} is allowed in game.</p>
     </tooltip.maxPopulationReached>
-    
+
     <tooltip.overPopulation>
       <p>Your units and buildings will be {0}% weaker due to overpopulation.</p>
     </tooltip.overPopulation>
-    
+
     <tooltip.nothingToUnload>
       <p>Nothing to unload</p>
     </tooltip.nothingToUnload>
-    
+
     <tooltip.nothingToLoad>
       <p>Nothing to load</p>
     </tooltip.nothingToLoad>
-    
+
     <title.defensivePool value="Defensive army pool" />
     <title.emptyDefensivePool>
       <p>Your defensive pool is empty. That means no units will be teleported
@@ -4293,7 +4966,9 @@
     <defensivePool.maxVolume value="Max power:" />
     <defensivePool.pickUnits value="Show other" />
 
-    <label.cancelPrepaid value="You will get"/>
+    <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
+    <stance.neutral value="Neutral stance" />
+    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
@@ -4359,6 +5034,8 @@
     <label.afterDays value="{0 one[? day] many[? days]} after apocalypse" />
     <label.resources value="Resources" />
     <label.transferResources value="Transfer" />
+    <label.cancelPrepaid value="You will get"/>
+    <message.changesCanceled value="Changes was canceled due to combat"/>
     <!-- 0 - resources string, 1 - 'is' or 'are' -->
     <label.planetFull>
       <p>You cannot unload {0} to this planet because {0} storage {1} full.</p>
@@ -4419,6 +5096,7 @@
     <kind.moving value="Moving ({0})" />
     <kind.launch value="Preparing for launch ({0})" />
     <kind.stored value="Stored ({0})" />
+    <kind.storedUnknown value="Stored" />
     <kind.land value="Land ({0})" />
     <kind.resources value="Resources" />
     <kind.squadron value="Fleet ({0})" />
@@ -4733,19 +5411,6 @@
     </MobileThunder.about>
   </Units>
 
-  <WelcomeScreen>
-    <title value="Welcome!" />
-    <greeting value="Greetings, Commander!" />
-    <instructions>
-      <p>I am Kaya, your assistant.</p>
-      <p>We have some urgent matters to attend to. Click introduction button to
-      learn the game basics and lets get started.
-      </p>
-      <p>Good luck.</p>
-    </instructions>
-    <label.intro value="Intro" />
-  </WelcomeScreen>
-
   <Chat>
      <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} joined ]"/>
@@ -4756,12 +5421,17 @@
         You have been silenced for flooding until {0}.
         You will be able to chat in {1}.
      </message.silence>
+    <tooltip.btnDoIgnore>
+      <p>Player is not ignored</p>
+    </tooltip.btnDoIgnore>
+    <tooltip.btnDoUnignore>
+      <p>Player is ignored</p>
+    </tooltip.btnDoUnignore>
      <label.send value="Send"/>
      <label.mainChannel value="#galaxy"/>
      <label.allianceChannel value="#alliance"/>
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
-     <label.generateJoinLeaveMsgs value="Show join / leave messages"/>
      <ignorePopup.title value="Ignore?"/>
      <ignorePopup.message value="Are you sure you want to ignore player {0}?"/>
   </Chat>
@@ -4832,6 +5502,31 @@
     <label.freeCreds value="You can not use free creds in the market." />
     <label.moreInfo value="Why?" />
   </Market>
+
+  <ResourceTransporter>
+    <title.resourceTransporter value="Resource Transporter" />
+    <label.maxStorage value="Volume of resources being sent" />
+    <label.storage value="{0}/{1}" />
+    <label.transferResources value="Send" />
+    <label.nothingToTransfer value="Nothing to transfer" />
+    <label.close value="Close" />
+    <label.all value="All" />
+    <label.none value="None" />
+    <label.fee value="Fee: {0}%" />
+    <label.selectPlanet value="Select planet:" />
+    <label.selectResources value="Select resources" />
+    <label.withoutFee value="After paying taxes there will be sent:" />
+    <!-- 0: cooldown as time string (10h 20m 15s) -->
+    <warning.willSend
+    value="If you send selected resources you won't be able to do it again for {0}." />
+    <tooltip.cooldownActive value="Transporter is currently cooling down." />
+    <label.noOtherPlanet
+            value="You have no other planet to send resources to." />
+    <message.noTransporter>
+      <p>There is no active transporter in selected planet.
+         Sending was canceled and resources returned.</p>
+    </message.noTransporter>
+  </ResourceTransporter>
   
   <Announcements>
     <title.popup value="Announcement"/>
@@ -4845,6 +5540,7 @@
 
   <PlanetMapEditor>
      <label.name value="Name:"/>
+     <label.area value="Area: {0}"/>
      <label.size value="Size:"/>
      <label.level value="Level:"/>
      <label.generate value="Generate"/>
@@ -4856,5 +5552,30 @@
      <title.npcBuildings value="NPC Buildings"/>
      <title.foliage value="Foliage"/>
   </PlanetMapEditor>
+
+  <PlayerOptions>
+     <title.options value="Preferences" />
+     <title.chatOptions value="Chat room options" />
+     <title.afterLoginOptions value="After login options" />
+     <title.genericOptions value="General options" />
+     <title.graphicsOptions value="Graphics options"/>
+     <label.save value="Save" />
+     <label.warnBeforeUnload value="Warn before closing game" />
+     <label.defaultTransporterTab
+       value="Tab to show first while loading or unloading transporter:" />
+     <label.transporterTabResources value="Resources" />
+     <label.transporterTabUnits value="Units" />
+     <label.showPopupsAfterLogin value="Open active popups after login" />
+     <label.openFirstPlanet value="Open first planet after login" />
+     <label.showJoinLeave value="Show join / leave messages" />
+     <label.ignoredList value="Ignored players:" />
+     <label.ignoredListEmpty value="No ignored players" />
+     <label.addIgnoredPlayer value="Add" />
+     <label.removeIgnored value="Remove"/>
+     <label.ignoreComplete value="Complete ignore"/>
+     <label.ignoreFiltered value="Show covered messages"/>
+     <label.ignoreType value="Ignore type:"/>
+     <label.enablePlanetAnimations value="Animations in planet"/>
+  </PlayerOptions>
 
 </locale>

@@ -7,8 +7,6 @@ package components.foliage
    
    import flash.events.MouseEvent;
    
-   import globalevents.GlobalEvent;
-   
    import models.exploration.ExplorationStatus;
    import models.exploration.events.ExplorationStatusEvent;
    import models.resource.ResourceType;
@@ -25,8 +23,8 @@ package components.foliage
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.locale.Localizer;
-   
-   
+
+
    [SkinState("startExploration")]
    [SkinState("noResearchCenter")]
    [SkinState("explorationUderway")]
@@ -53,7 +51,7 @@ package components.foliage
       /* ################## */
       
       private var _model:ExplorationStatus;
-      public function set model(value:ExplorationStatus) : void {
+      public function set model(value: ExplorationStatus): void {
          if (_model != value) {
             if (_model != null)
                _model.removeEventListener(ExplorationStatusEvent.STATUS_CHANGE, panelModel_statusChangeHandler, false);
@@ -61,7 +59,6 @@ package components.foliage
             if (_model != null)
                _model.addEventListener(ExplorationStatusEvent.STATUS_CHANGE, panelModel_statusChangeHandler);
             f_statusChanged = true;
-            f_timeLeftChanged = true;
             invalidateProperties();
          }
       }
@@ -70,9 +67,8 @@ package components.foliage
       }
       
       
-      private var f_statusChanged:Boolean = true,
-                  f_timeLeftChanged:Boolean = true;
-      
+      private var f_statusChanged:Boolean = true;
+
       protected override function commitProperties() : void {
          super.commitProperties();
          
@@ -88,12 +84,10 @@ package components.foliage
             }
             else {
                if (_model.explorationIsUnderway) {
-                  GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
                   lblDescription.text = getString("description.explorationUnderway");
                }
                else {
-                  GlobalEvent.unsubscribe_TIMED_UPDATE(global_timedUpdateHandler);
-                  if (!_model.planetHasReasearchCenter)
+                  if (!_model.planetHasResearchCenter)
                      lblDescription.text = getString("description.noResearchCenter");
                   else {
                      lblDescription.text = getString("description.startExploration");
@@ -106,12 +100,10 @@ package components.foliage
             updateTxtInstantFinishCost();
             updateBtnBuyCredsVisibility();
             updateBtnInstantFinishVisibility();
-         }
-         if (f_timeLeftChanged || f_statusChanged)
             updateLblTimeLeft();
-         
-         f_statusChanged =
-         f_timeLeftChanged = false;
+         }
+
+         f_statusChanged = false;
       }
       
       
@@ -138,12 +130,18 @@ package components.foliage
       }
       
       [SkinPart(required="true")]
-      public var lblTimeLeft:Label;
-      private function updateLblTimeLeft() : void {
-         if (lblTimeLeft)
-            lblTimeLeft.text = _model.explorationIsUnderway ?
-               getString("label.finishesIn", [DateUtil.secondsToHumanString(_model.timeLeft)]) :
-               "";
+      public var lblTimeLeft: Label;
+
+      private function updateLblTimeLeft(): void {
+         if (lblTimeLeft) {
+            lblTimeLeft.text =
+               _model.explorationIsUnderway
+                  ? getString(
+                        "label.finishesIn",
+                        [DateUtil.secondsToHumanString(_model.timeLeft)]
+                  )
+                  : "";
+         }
       }
       
       [SkinPart(required="true")]
@@ -239,7 +237,7 @@ package components.foliage
                break;
             
             case bmpClock:
-               bmpClock.source = IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'exploration_clock')
+               bmpClock.source = IMG.getImage(AssetNames.UI_IMAGES_FOLDER + 'exploration_clock');
                break;
             
             case pnlPanel:
@@ -282,7 +280,7 @@ package components.foliage
       
       protected override function getCurrentSkinState() : String {
          if ( _model.explorationIsUnderway)    return "explorationUderway";
-         if (!_model.planetHasReasearchCenter) return "noResearchCenter";
+         if (!_model.planetHasResearchCenter) return "noResearchCenter";
          if (!_model.planetBelongsToPlayer)    return "planetNotOwned";
          return "startExploration";
       }
@@ -313,16 +311,6 @@ package components.foliage
          f_statusChanged = true;
          invalidateProperties();
          invalidateSkinState();
-      }
-      
-      
-      /* ############################ */
-      /* ### TIMED_UPDATE HANDLER ### */
-      /* ############################ */
-      
-      private function global_timedUpdateHandler(event:GlobalEvent) : void {
-         f_timeLeftChanged = true;
-         invalidateProperties();
       }
       
       

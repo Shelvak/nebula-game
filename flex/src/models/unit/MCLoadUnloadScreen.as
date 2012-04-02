@@ -5,7 +5,12 @@ package models.unit
    import components.unitsscreen.events.LoadUnloadEvent;
    import components.unitsscreen.events.UnitsScreenEvent;
 
+   import controllers.navigation.MCMainArea;
+   import controllers.screens.MainAreaScreens;
+
    import globalevents.GUnitEvent;
+
+   import models.events.ScreensSwitchEvent;
 
    import models.location.ILocationUser;
    import models.location.LocationType;
@@ -51,7 +56,22 @@ package models.unit
       {
          super();
          EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, dispatchRefreshMaxStorageEvent);
+         MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, mainAreaChangeHandler);
          ML.additionalLocationUsers.addItem(this);
+      }
+
+      private function mainAreaChangeHandler(e: ScreensSwitchEvent): void
+      {
+         if (MCMainArea.getInstance().currentName == MainAreaScreens.LOAD_UNLOAD)
+         {
+            if (!prepared)
+            {
+               buildFlanks();
+               selectionClass.flanks = flanks;
+               dispatchRefreshMaxStorageEvent();
+            }
+            prepared = false;
+         }
       }
 
       public function updateLocationName(id: int, name: String): void {
@@ -87,10 +107,13 @@ package models.unit
       public var flanks: ArrayCollection = new ArrayCollection();
       
       public var oldProvider: ListCollectionView;
+
+      private var prepared: Boolean = false;
       
       public function prepare(sUnits: ListCollectionView, sLocation: *,
                               sTarget: *): void
       {
+         prepared = true;
          location = sLocation;
          target = sTarget;
          
@@ -120,8 +143,9 @@ package models.unit
 
             buildFlanks();
          }
-         if (location is Unit ||
-            (location is Location && Location(location).player.id == ML.player.id))
+         if ((location is Unit &&
+               (transporter.metal > 0 || transporter.energy > 0 || transporter.zetium > 0))
+            || (location is Location && Location(location).player.id == ML.player.id))
          {
             resourcesVisible = true;
          }
@@ -142,17 +166,12 @@ package models.unit
          }
          else
          {
-            if (unitsGiven)
+            landSelected = true;
+            if (!unitsGiven)
             {
-               landSelected = true;
-            }
-            else
-            {
-//                THIS SHOULD NEVER HAPPEN AS UNITS ARE PROVIDED IF UNLOADING
-//                AND OPENING UNITS FIRST, AND RESOURCES ARE ALWAYS VISIBLE
-//                WHILE UNLOADING.
-               throw new ArgumentError('Units must be provided for load/unload ' +
-                  'screen if default tab is Units, but was not.');
+               flanks.removeAll();
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+               new UnitsCommand(UnitsCommand.SHOW, location).dispatch();
             }
          }
          if (unitsGiven)
@@ -186,6 +205,8 @@ package models.unit
          oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
 
          buildFlanks();
+         selectionClass.flanks = flanks;
+         dispatchRefreshMaxStorageEvent();
       }
       
       public function refreshScreen(): void
