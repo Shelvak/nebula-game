@@ -1162,6 +1162,14 @@ assets:
         Quest.jpg:                  Quest_content0.jpg
         QuestWithImage.jpg:         Quest_content1.jpg
         OreTile.jpg:                Tutorial_OreTile.jpg
+        BgBattles.jpg: Lt_tutorial_BgBattles.jpg
+        BossShip.jpg: Lt_tutorial_BossShip.jpg
+        EcoTier2.jpg: Lt_tutorial_EcoTier2.jpg
+        GalaxyBattles.jpg: Lt_tutorial_GalaxyBattles.jpg
+        Pulsars.jpg: Lt_tutorial_Pulsars.jpg
+        Radar2.jpg: Lt_tutorial_Radar2.jpg
+        Resources.jpg: Lt_tutorial_Resources.jpg
+        ZetiumTile.jpg: Lt_tutorial_ZetiumTile.jpg
         lt_BuildingSidebar.jpg:     Lt_tutorial_BuildingSidebar.jpg
         en_BuildingSidebar.jpg:     En_tutorial_BuildingSidebar.jpg
         lt_ClaimReward.jpg:         Lt_tutorial_ClaimReward.jpg
@@ -1174,10 +1182,8 @@ assets:
         en_AttackButton.jpg: En_tutorial_AttackButton.jpg
         lt_AttackScreen.jpg: Lt_tutorial_AttackScreen.jpg
         en_AttackScreen.jpg: En_tutorial_AttackScreen.jpg
-        BgBattles.jpg: Lt_tutorial_BgBattles.jpg
         lt_BgPlanets.jpg: Lt_tutorial_BgPlanets.jpg
         en_BgPlanets.jpg: En_tutorial_BgPlanets.jpg
-        BossShip.jpg: Lt_tutorial_BossShip.jpg
         lt_BuildingUpgrade.jpg: Lt_tutorial_BuildingUpgrade.jpg
         en_BuildingUpgrade.jpg: En_tutorial_BuildingUpgrade.jpg
         lt_CombatInSpace.jpg: Lt_tutorial_CombatInSpace.jpg
@@ -1196,12 +1202,10 @@ assets:
         en_DeployMdh.jpg: En_tutorial_DeployMdh.jpg
         lt_DeployTurrets.jpg: Lt_tutorial_DeployTurrets.jpg
         en_DeployTurrets.jpg: En_tutorial_DeployTurrets.jpg
-        EcoTier2.jpg: Lt_tutorial_EcoTier2.jpg
         lt_EnergyTiles.jpg: Lt_tutorial_EnergyTiles.jpg
         en_EnergyTiles.jpg: En_tutorial_EnergyTiles.jpg
         lt_Exploring.jpg: Lt_tutorial_Exploring.jpg
         en_Exploring.jpg: En_tutorial_Exploring.jpg
-        GalaxyBattles.jpg: Lt_tutorial_GalaxyBattles.jpg
         lt_InviteToAlliance.jpg: Lt_tutorial_InviteToAlliance.jpg
         en_InviteToAlliance.jpg: En_tutorial_InviteToAlliance.jpg
         lt_JoinAlliance.jpg: Lt_tutorial_JoinAlliance.jpg
@@ -1222,13 +1226,10 @@ assets:
         en_Notifications.jpg: En_tutorial_Notifications.jpg
         lt_Population.jpg: Lt_tutorial_Population.jpg
         en_Population.jpg: En_tutorial_Population.jpg
-        Pulsars.jpg: Lt_tutorial_Pulsars.jpg
         lt_Radar1.jpg: Lt_tutorial_Radar1.jpg
         en_Radar1.jpg: En_tutorial_Radar1.jpg
-        Radar2.jpg: Lt_tutorial_Radar2.jpg
         lt_ResourceBar.jpg: Lt_tutorial_ResourceBar.jpg
         en_ResourceBar.jpg: En_tutorial_ResourceBar.jpg
-        Resources.jpg: Lt_tutorial_Resources.jpg
         lt_SendingShips1.jpg: Lt_tutorial_SendingShips1.jpg
         en_SendingShips1.jpg: En_tutorial_SendingShips1.jpg
         lt_SendingShips2.jpg: Lt_tutorial_SendingShips2.jpg
@@ -1263,4 +1264,3 @@ assets:
         en_WPInTechs.jpg: En_tutorial_WPInTechs.jpg
         lt_Wreckage.jpg: Lt_tutorial_Wreckage.jpg
         en_Wreckage.jpg: En_tutorial_Wreckage.jpg
-        ZetiumTile.jpg: Lt_tutorial_ZetiumTile.jpg
