@@ -133,5 +133,44 @@ package models.unit
             LS.refreshVolume();
          }
       }
+
+      public override function selectType(type: String):void
+      {
+         var someFailed: Boolean = false;
+         for each (var model: MCUnit in flankUnits)
+         {
+            if (model.unit.type == type && selection.getItemIndex(model) == -1)
+            {
+               if (!LS.selectionClass.selectUnit(model, this))
+               {
+                  model.selected = false;
+                  someFailed = true;
+               }
+            }
+         }
+         if (someFailed)
+         {
+            Messenger.show(Localizer.string('Units', 'message.notSelected'),
+               Messenger.MEDIUM);
+         }
+         LS.refreshVolume();
+      }
+
+      public override function deselectType(type: String):void
+      {
+         for each (var model: MCUnit in flankUnits)
+         {
+            if (model.unit.type == type)
+            {
+               var idx: int = selection.getItemIndex(model);
+               if (idx != -1)
+               {
+                  model.selected = false;
+                  selection.removeItemAt(idx);
+               }
+            }
+         }
+         LS.refreshVolume();
+      }
    }
 }

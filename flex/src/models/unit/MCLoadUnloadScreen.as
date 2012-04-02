@@ -5,7 +5,11 @@ package models.unit
    import components.unitsscreen.events.LoadUnloadEvent;
    import components.unitsscreen.events.UnitsScreenEvent;
 
+   import globalevents.GUnitEvent;
+
    import models.location.ILocationUser;
+   import models.location.LocationType;
+   import models.player.PlayerOptions;
 
    import models.solarsystem.MSSObject;
 
@@ -38,6 +42,7 @@ package models.unit
    import spark.components.ToggleButton;
    
    import utils.SingletonFactory;
+   import utils.datastructures.Collections;
    import utils.locale.Localizer;
    
    public class MCLoadUnloadScreen extends EventDispatcher implements ILocationUser
@@ -105,12 +110,16 @@ package models.unit
          {
             oldProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
          }
-         oldProvider = sUnits;
-         Unit.sortByHp(oldProvider);
-         
-         oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
-         
-         buildFlanks();
+         unitsGiven = (sUnits != null);
+         if (unitsGiven)
+         {
+            oldProvider = sUnits;
+            Unit.sortByHp(oldProvider);
+
+            oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+
+            buildFlanks();
+         }
          if (location is Unit ||
             (location is Location && Location(location).player.id == ML.player.id))
          {
@@ -121,16 +130,62 @@ package models.unit
             resourcesVisible = false;
          }
          deselectAllButtons();
-         if (getUnitCount(flanks) > 0)
-         {
-            landSelected = true;
-         }
-         else
+         if (resourcesVisible &&
+               (
+                  PlayerOptions.defaultTransporterTab ==
+                     PlayerOptions.TRANSPORTER_TAB_RESOURCES
+                  || (unitsGiven && getUnitCount(flanks) == 0)
+               )
+         )
          {
             resourcesSelected = true;
          }
-         selectionClass.flanks = flanks;
+         else
+         {
+            if (unitsGiven)
+            {
+               landSelected = true;
+            }
+            else
+            {
+//                THIS SHOULD NEVER HAPPEN AS UNITS ARE PROVIDED IF UNLOADING
+//                AND OPENING UNITS FIRST, AND RESOURCES ARE ALWAYS VISIBLE
+//                WHILE UNLOADING.
+               throw new ArgumentError('Units must be provided for load/unload ' +
+                  'screen if default tab is Units, but was not.');
+            }
+         }
+         if (unitsGiven)
+         {
+            selectionClass.flanks = flanks;
+         }
+         else
+         {
+            selectionClass.clear();
+            flanks.removeAll();
+         }
          deselectAllResources();
+      }
+
+      [Bindable]
+      public var unitsGiven: Boolean = false;
+
+      private function openUnit(e: GUnitEvent): void {
+         unitsGiven = true;
+         EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+         oldProvider = Collections.filter(
+            ML.units,
+            function (_unit: Unit): Boolean {
+               return (_unit.level > 0)
+                  && (_unit.location.type == LocationType.UNIT)
+                  && (_unit.location.id == location.id);
+            }
+         );
+         Unit.sortByHp(oldProvider);
+
+         oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
+
+         buildFlanks();
       }
       
       public function refreshScreen(): void
@@ -283,6 +338,12 @@ package models.unit
       public function tglButton_clickHandler(event:MouseEvent):void
       {
          deselectAllButtons();
+         if (!unitsGiven && ToggleButton(event.currentTarget).name == 'land')
+         {
+            flanks.removeAll();
+            EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+            new UnitsCommand(UnitsCommand.SHOW, location).dispatch();
+         }
          this[ToggleButton(event.currentTarget).name + 'Selected'] = true;
          dispatchRefreshMaxStorageEvent();
       }
@@ -360,7 +421,7 @@ package models.unit
                   }).dispatch();
             }
          }
-         deselectAllResources()
+         deselectAllResources();
          deselectAllUnits();
          refreshVolume();
       }
