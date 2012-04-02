@@ -2122,6 +2122,9 @@
     <objectiveText.HaveUpgradedToTechClass 
     value="{2 one[Research] many[Upgrade]} [obj:{0}:{1}:p8d]{2 one[] many[ to level ?]}" />
 
+    <!-- BE_IN_ALLIANCE -->
+    <objectiveText.BeInAlliance value="Be in alliance"/>
+
     <!-- UPGRADE_TO
     0: count of objects, 
     1: Subclass or class to upgrade, 
@@ -2164,15 +2167,6 @@
     value="Have {0} war {0 one[point] many[points]}" />
     <objectiveText.HavePoints 
     value="Have {0 one[? point] many[? points]}" />
-    
-    <!-- 0: count of points to have, 1: word "Point" 
-    from Objects -->
-    <objectiveText.HaveSciencePoints value="Have {0} Science {1}" />
-    <objectiveText.HaveEconomyPoints value="Have {0} Economy {1}" />
-    <objectiveText.HaveVictoryPoints value="Have {0} Victory {1}" />
-    <objectiveText.HaveArmyPoints value="Have {0} Army {1}" />
-    <objectiveText.HaveWarPoints value="Have {0} War {1}" />
-    <objectiveText.HavePoints value="Have {0} {1}" />
 
     <!-- HEAL_HP
     0: count of hit points to heal -->
@@ -2331,8 +2325,7 @@
       <p>Commander,</p>
       <p>
          Resource extraction is our top priority! Build even more
-         [obj:2:Building_MetalExtractor] so that extraction rates become
-         steady for sure.
+         extractors so that extraction rates become steady for sure.
       </p>
     </about.40>
     
@@ -2643,8 +2636,8 @@
       </p>
       <p>
         Build a [reference:Buildings/Radar.name]. It will reveal a sector of 
-        galaxy map and show other solar systems with ship movement within that 
-        sector. 
+        galaxy map. You will be able to see other solar systems ruled by other
+        players and ship movement within that sector.
       </p>
       <p>
         Keep in mind that running a [reference:Buildings/Radar.name] requires 
@@ -2681,7 +2674,7 @@
       </p>
       <p>
         Since the travel will take a great deal of time it would be
-        unpleasant if and [obj:1:Unit_Mdh] wasn't already on the planet.
+        unpleasant if an [obj:1:Unit_Mdh] wasn't already on the planet.
         So our own unit will come in handy since we want to colonise that
         third planet.
       </p>
@@ -3181,19 +3174,19 @@
       </p>
     </about.10425>
     
-    <title.10450 value="The First Reward" />
+    <title.10450 value="The fist of power" />
     <about.10450>
       <p>Commander.</p>
       <p>
-        Make sure we have enough mines to fulfill our basic needs.
-        Someone is whispering me we will need much more of them soon...
+        Make sure we have enough units to easily defend ourselves or even
+        strike first! We must be strong and prepared!
       </p>
     </about.10450>
     
     <title.10460 value="Empowering Riches" />
     <about.10460>
       <p>Commander!</p>
-      <p>In your last mission, "[reference:title.8]" you were rewarded with
+      <p>In your last mission you were rewarded with
       some creds. Go and take your reward if you haven't done so already.</p>
       <p>Creds are a useful and powerful tool. They can be spent on various
       tasks like accelerating your constructions, researches and unit
@@ -3272,6 +3265,33 @@
     <title.10575 value="[reference:DestroyingEnemies.title] (VI)" />
     <about.10575 ref="DestroyingEnemies.about" />
 
+    <title.10600 value="Breaking convoys" />
+    <about.10600>
+      <p>Commander.</p>
+      <p>
+        Our scouts has tracked alien convoys crossing near our solar system
+        from time to time. They have some weird ships in their fleets.
+      </p>
+      <p>
+        After some discussions our scientists has calculated that we could get
+        good reward after destroying these convoys! Should we give it a try?
+      </p>
+    </about.10600>
+
+    <title.10610 value="Superior danger" />
+    <about.10610>
+      <p>Commander.</p>
+      <p>
+        Morpehus has been spotted in battleground! This extremely powerful
+        alien ship shows itself from time to time and there are lots of legends
+        about them traveling around the galaxy.
+      </p>
+      <p>
+        If you could manage to destroy this ship we will get truly great
+        reward! Just be careful and don't attack this ship alone or your fleet
+        can get destroyed in a moment. You should ask for help from your allies!
+      </p>
+    </about.10610>
   </Quests>
 
   <QuestScreens>
