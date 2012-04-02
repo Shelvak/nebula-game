@@ -455,6 +455,7 @@ if ARGV.include?("basic") # {{{
   install "man less cron mc rubygems libjson-ruby irb gnupg wget host " +
     "exim4 logrotate netcat ntpdate python-software-properties"
   run "dpkg-reconfigure exim4-config"
+  File.ensure("/etc/exim4/exim4.conf.template", "disable_ipv6 = true\n")
   run "dpkg-reconfigure tzdata"
 
   run "apt-get update"
