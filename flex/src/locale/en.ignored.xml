@@ -3686,94 +3686,95 @@
 
     <UnloadResources>
       <![CDATA[
-      <p>When you come back to a planet go to the spaceship management panel and
-      press the unload button</p>
-      <p>Select the amount of resources you want to unload and confirm your
-      decision. Close resources and spaceships windows in order to go back to
-      the planet</p>
+      <p>When you come back to a planet go to the spaceship management
+      panel and press the "Unload" button.</p>
+      <p>Select amount of resources you want to unload and confirm your
+      decision. Close resources and spaceships screens in order to go
+      back to the planet</p>
       ]]>
     </UnloadResources>
     
     <Radar1>
       <![CDATA[
-      <p>There are many other players in the galaxy but you need to build Radar
-      to see other solar systems or travel there.</p>
+      <p>There are many other players in the galaxy but you need to
+      build a Radar to see other solar systems or travel there.</p>
       ]]>
     </Radar1>
     <Radar2>
       <![CDATA[
-      <p>Radar consumes energy. It reveals some galaxy area around your solar
-      system while it is active. Area increases as you upgrade your radar.</p>
-      <p>You can also occupy planets in other solar systems and build radars
-      there to increase your visible area.</p>
+      <p>A radar consumes energy. It reveals a small galaxy area around your solar system while it is active. The visible area expands as you upgrade the radar.</p>
+      <p>Also, you can take ownership of planets in other solar systems
+      and build radars there to expand visible area even more.</p>
       ]]>
     </Radar2>
 
     <LoadUnits>
       <![CDATA[
-      <p>If you wish to conquer other planet you need some ground units which
-      can be transported by using Mule transporter ship.</p>
-      <p>Go to your space units screen, then press "Load" button next to Mule.
-      Afterwards select units you want to load and click „[reference:Units/label.load]“
-      button at the right sidebar.</p>
-      <p>Remember, you must have Mdh and some ground units if you want to colonize
-      other planets.</p>
+      <p>If you wish to conquer other planet you need some ground units
+      which can be transported by using Mule transporter ship.</p>
+      <p>Go to your space units screen, then press "Load" button next
+      to a Mule. Afterwards, select units you want to load and click
+      "Load" button at the right sidebar.</p>
+      <p>Remember, you must have MDH and some ground units if you want
+      to colonize other planets.</p>
       ]]>
     </LoadUnits>
 
     <UnloadUnits>
       <![CDATA[
-      <p>After landing at the planet click "Unload" button next to your Mule,
-      select your units and click „[reference:Units/label.unload]“ button at the
-      right sidebar.</p>
+      <p>After landing on the planet click "Unload" button next to your
+      Mule. Select your units and click "Unload" button at the right
+      sidebar.</p>
       ]]>
     </UnloadUnits>
 
     <DeployMdh>
       <![CDATA[
-      <p>Your Headquarters are still in its mobile form. You need to deploy it
-      if you want to create a colony.</p>
-      <p>Navigate to your units screen, click on the "deploy" button next to the
-      Mdh and choose ground area where to deploy Headquarters.</p>
+      <p>Your Headquarters is still in its mobile form. You need to
+      deploy it if you want to create a colony.</p>
+      <p>Navigate to the units screen, click on the "deploy" button
+      next to the MDH and choose ground area where you want to deploy
+      the Headquarters.</p>
       ]]>
     </DeployMdh>
 
     <DeployTurrets>
       <![CDATA[
-      <p>Last quest reward was some mobile turrets. Claim and deploy them to the
-      new colony - they will serve us as a great defense line.</p>
+      <p>You have been rewarded with a few mobile turrets for completing
+      your last quest. Claim and deploy them on the new colony - they
+      will serve us as a great defense line.</p>
       ]]>
     </DeployTurrets>
 
     <ThirdPlanet>
       <![CDATA[
-      <p>Your third planet is in open solar system - it can be attacked by other
-      players anytime. Also it will we attacked by allien pirates from time to
-      time.</p>
-      <p>If you want to learn more about alien pirates you should read info in
-        Nebula 44 wiki which can be found in N44 menu.</p>
+      <p>Your third planet is in open solar system. That means it can be
+      attacked by other players at any given time. Also it will we
+      attacked by allien pirates from time to time.</p>
+      <p>If you want to learn more about alien pirates you should read
+      info in Nebula 44 wiki which can be found in N44 menu.</p>
       ]]>
     </ThirdPlanet>
 
     <ArmorTiles>
       <![CDATA[
-      <p>Deploy your turrets on dark ground - it is strong and provides additional
-      armor for the turret so it will be harder to destroy.</p>
+      <p>Deploy your turrets on dark ground - it is strong and provides
+      additional armor for the turrets so they will be harder to destroy.</p>
       ]]>
     </ArmorTiles>
 
     <EcoTier2>
       <![CDATA[
-      <p>It is recommended to renew your economical base right after you research
-      better new generation extractors.</p>
-      <p>If you want to renew you extractor it has to be destroyed and new
-      version must be built in its place.</p>
+      <p>It is recommended to renew your economical base right after you
+      research new generation extractors.</p>
+      <p>To replace an old extractor version with a new one, one has to
+      destroy that old extractor first and build the new one at its place.</p>
       ]]>
     </EcoTier2>
 
     <JoinAlliance>
       <![CDATA[
-      <p>You may join an alliance as soon as you get the invitation which
+      <p>You may join an alliance as soon as you get an invitation which
       appears in your notification center.</p>
       ]]>
     </JoinAlliance>
@@ -3783,16 +3784,17 @@
       <p>If you want to create your own alliance, you need to research Alliances
       technology.</p>
       <p>After that go to N44 menu and click
-      [reference:MainMenu/label.alliance] button. Now you can create your new
+      [reference:MainMenu/label.alliance] button. You can create your new
       alliance in this screen.</p>
       ]]>
     </CreateAlliance>
 
     <InviteToAlliance>
       <![CDATA[
-      <p>After you create your alliance you can invite other players by going to
-      N44 menu and clicking [reference:MainMenu/label.alliance] button. Then, at
-      the top of the screen choose a [reference:Alliances/title.section.management]
+      <p>After you create your own alliance you can invite other players
+      to join it. To do that, go to  N44 menu and click
+      [reference:MainMenu/label.alliance] button. Then, at the top of the
+      screen choose a [reference:Alliances/title.section.management]
       tab and use the player list to invite new allies.</p>
       ]]>
     </InviteToAlliance>
@@ -3800,34 +3802,35 @@
     <BgBattles>
       <![CDATA[
       <p>You and your alliance get victory points for battles with other players
-      in battleground. Victory points are necessary to win the game.</p>
+      in the battleground. Victory points are vital for winning the game.</p>
       ]]>
     </BgBattles>
 
     <BgPlanets>
       <![CDATA[
-      <p>Planets in battleground are special - after claiming them owner and
-      alliance gets victory points every amount of time. The longer you own
-      battleground planet the more Victory points you collect.</p>
-      <p>Owned battleground planets count does not increase the alien pirates
-      armies in the usual planets.</p>
+      <p>Planets in the battleground are special. Owner of such planet (as well
+      as his or her alliance) periodically gets victory points. The longer you
+      own this planet the more victory points you collect.</p>
+      <p>Owning more battleground planets does not increase the alien pirate
+      armies on ordinary planets.</p>
       ]]>
     </BgPlanets>
 
     <BossShip>
       <![CDATA[
-      <p>There are also Morpheus showing itself at the battleground from time to
-      time. Morpheus is the mighty alien ship which is extreamly hard to destroy.
-      You get creds for destroying this ship and victory points for damage dealt.</p>
+      <p>Morpheus also shows itself up in the battleground time to time. It is a
+      mighty alien ship which is extreamly hard to destroy.
+      You get creds for destroying this ship and victory points for damage
+      dealt.</p>
       ]]>
     </BossShip>
 
     <Pulsars>
       <![CDATA[
-      <p>Pulsars are the smaller, local battleground version. You get much less
+      <p>Pulsars are smaller versions of battleground in localized galaxy areas. You get much less
       victory points for owning them.</p>
-      <p>Owned pulsar planets count does not increase the alien pirates
-      armies in the usual planets.</p>
+      <p>Owning more pulsar planets does not increase alien pirate
+      armies on ordinary planets.</p>
       ]]>
     </Pulsars>
 
@@ -3835,8 +3838,7 @@
       <![CDATA[
       <p>
         Alien convoys are flying near our solar system
-        from time to time. These ships are well equiped with weapons but you get
-        reward in creds for killing them. You get victory points for damage
+        from time to time. These ships are well equiped with weapons but you get creds for killing them. You get victory points for damage
         dealt to them too.
       </p>
       ]]>
@@ -3846,8 +3848,7 @@
       <![CDATA[
       <p>You will also get some smaller amount of victory points for fighting
       other players in galaxy, solar systems or planets.</p>
-      <p>There are also justice codex active - you won't get any reward if you
-      destroy much more weaker player than yourself.</p>
+      <p>Besides, justice codex is active in the galaxy - you won't get any reward if you destroy a much weaker player than yourself.</p>
       ]]>
     </GalaxyBattles>
   </QuestScreens>
