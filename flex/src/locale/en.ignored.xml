@@ -4172,8 +4172,7 @@
     <property.zetium.cost value="Zetium cost" />
     <property.armor value="Armor" />
     <property.armorMod value="Armor modifier" />
-    <property.damageMod value="Damage modifier" />
-    <property.evasiveness value="Evasion" />
+    <property.armorMod.format value="{0}%" />
     <property.xpNeeded value="XP for level up" />
     <property.initiative value="Initiative" />
     <property.volume value="Volume" />
@@ -4183,10 +4182,6 @@
     <property.population value="Population" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
-
-    <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
-    <stance.neutral value="Neutral stance" />
-    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
     <label.showNpc value="Show"/>
 
@@ -4222,20 +4217,20 @@
         probability of appearing.
       </p>
     </tooltip.raidProbability>
-    
+
     <tooltip.freeStorage>
       <p>This ship has {0} units of storage available.</p>
     </tooltip.freeStorage>
-    
+
     <tooltip.buildSwitchCommon>
       <p>Click to change.</p>
     </tooltip.buildSwitchCommon>
-    
+
     <tooltip.buildInFlank1>
       <p>Your units will appear in first flank.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildInFlank1>
-    
+
     <tooltip.buildInFlank2>
       <p>Your units will appear in second flank.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
@@ -4250,34 +4245,34 @@
       <p>Your units will be built hidden.</p>
       <p>[reference:tooltip.buildSwitchCommon]</p>
     </tooltip.buildNotHidden>
-    
+
     <tooltip.populationCommon>
       <p>{0} population left</p>
     </tooltip.populationCommon>
-    
+
     <tooltip.populationLeft>
       <p>[reference:tooltip.populationCommon]</p>
       <p>Max. population: {1}</p>
     </tooltip.populationLeft>
-    
+
     <tooltip.maxPopulationReached>
       <p>[reference:tooltip.populationCommon]</p>
-      <p>You have reached your maximum population. Your pods can harbor {1} 
+      <p>You have reached your maximum population. Your pods can harbor {1}
       people but only {2} is allowed in game.</p>
     </tooltip.maxPopulationReached>
-    
+
     <tooltip.overPopulation>
       <p>Your units and buildings will be {0}% weaker due to overpopulation.</p>
     </tooltip.overPopulation>
-    
+
     <tooltip.nothingToUnload>
       <p>Nothing to unload</p>
     </tooltip.nothingToUnload>
-    
+
     <tooltip.nothingToLoad>
       <p>Nothing to load</p>
     </tooltip.nothingToLoad>
-    
+
     <title.defensivePool value="Defensive army pool" />
     <title.emptyDefensivePool>
       <p>Your defensive pool is empty. That means no units will be teleported
@@ -4303,7 +4298,9 @@
     <defensivePool.maxVolume value="Max power:" />
     <defensivePool.pickUnits value="Show other" />
 
-    <label.cancelPrepaid value="You will get"/>
+    <stance.defensive value="Defensive stance ({0}% damage, {1}% defence)" />
+    <stance.neutral value="Neutral stance" />
+    <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
@@ -4369,6 +4366,8 @@
     <label.afterDays value="{0 one[? day] many[? days]} after apocalypse" />
     <label.resources value="Resources" />
     <label.transferResources value="Transfer" />
+    <label.cancelPrepaid value="You will get"/>
+    <message.changesCanceled value="Changes was canceled due to combat"/>
     <!-- 0 - resources string, 1 - 'is' or 'are' -->
     <label.planetFull>
       <p>You cannot unload {0} to this planet because {0} storage {1} full.</p>
@@ -4429,6 +4428,7 @@
     <kind.moving value="Moving ({0})" />
     <kind.launch value="Preparing for launch ({0})" />
     <kind.stored value="Stored ({0})" />
+    <kind.storedUnknown value="Stored" />
     <kind.land value="Land ({0})" />
     <kind.resources value="Resources" />
     <kind.squadron value="Fleet ({0})" />
@@ -4743,19 +4743,6 @@
     </MobileThunder.about>
   </Units>
 
-  <WelcomeScreen>
-    <title value="Welcome!" />
-    <greeting value="Greetings, Commander!" />
-    <instructions>
-      <p>I am Kaya, your assistant.</p>
-      <p>We have some urgent matters to attend to. Click introduction button to
-      learn the game basics and lets get started.
-      </p>
-      <p>Good luck.</p>
-    </instructions>
-    <label.intro value="Intro" />
-  </WelcomeScreen>
-
   <Chat>
      <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} joined ]"/>
@@ -4766,12 +4753,17 @@
         You have been silenced for flooding until {0}.
         You will be able to chat in {1}.
      </message.silence>
+    <tooltip.btnDoIgnore>
+      <p>Player is not ignored</p>
+    </tooltip.btnDoIgnore>
+    <tooltip.btnDoUnignore>
+      <p>Player is ignored</p>
+    </tooltip.btnDoUnignore>
      <label.send value="Send"/>
      <label.mainChannel value="#galaxy"/>
      <label.allianceChannel value="#alliance"/>
      <label.privateChannel value="{0}"/>
      <label.channelMembers value="Players"/>
-     <label.generateJoinLeaveMsgs value="Show join / leave messages"/>
      <ignorePopup.title value="Ignore?"/>
      <ignorePopup.message value="Are you sure you want to ignore player {0}?"/>
   </Chat>
@@ -4842,6 +4834,31 @@
     <label.freeCreds value="You can not use free creds in the market." />
     <label.moreInfo value="Why?" />
   </Market>
+
+  <ResourceTransporter>
+    <title.resourceTransporter value="Resource Transporter" />
+    <label.maxStorage value="Volume of resources being sent" />
+    <label.storage value="{0}/{1}" />
+    <label.transferResources value="Send" />
+    <label.nothingToTransfer value="Nothing to transfer" />
+    <label.close value="Close" />
+    <label.all value="All" />
+    <label.none value="None" />
+    <label.fee value="Fee: {0}%" />
+    <label.selectPlanet value="Select planet:" />
+    <label.selectResources value="Select resources" />
+    <label.withoutFee value="After paying taxes there will be sent:" />
+    <!-- 0: cooldown as time string (10h 20m 15s) -->
+    <warning.willSend
+    value="If you send selected resources you won't be able to do it again for {0}." />
+    <tooltip.cooldownActive value="Transporter is currently cooling down." />
+    <label.noOtherPlanet
+            value="You have no other planet to send resources to." />
+    <message.noTransporter>
+      <p>There is no active transporter in selected planet.
+         Sending was canceled and resources returned.</p>
+    </message.noTransporter>
+  </ResourceTransporter>
   
   <Announcements>
     <title.popup value="Announcement"/>
@@ -4855,6 +4872,7 @@
 
   <PlanetMapEditor>
      <label.name value="Name:"/>
+     <label.area value="Area: {0}"/>
      <label.size value="Size:"/>
      <label.level value="Level:"/>
      <label.generate value="Generate"/>
@@ -4866,5 +4884,30 @@
      <title.npcBuildings value="NPC Buildings"/>
      <title.foliage value="Foliage"/>
   </PlanetMapEditor>
+
+  <PlayerOptions>
+     <title.options value="Preferences" />
+     <title.chatOptions value="Chat room options" />
+     <title.afterLoginOptions value="After login options" />
+     <title.genericOptions value="General options" />
+     <title.graphicsOptions value="Graphics options"/>
+     <label.save value="Save" />
+     <label.warnBeforeUnload value="Warn before closing game" />
+     <label.defaultTransporterTab
+       value="Tab to show first while loading or unloading transporter:" />
+     <label.transporterTabResources value="Resources" />
+     <label.transporterTabUnits value="Units" />
+     <label.showPopupsAfterLogin value="Open active popups after login" />
+     <label.openFirstPlanet value="Open first planet after login" />
+     <label.showJoinLeave value="Show join / leave messages" />
+     <label.ignoredList value="Ignored players:" />
+     <label.ignoredListEmpty value="No ignored players" />
+     <label.addIgnoredPlayer value="Add" />
+     <label.removeIgnored value="Remove"/>
+     <label.ignoreComplete value="Complete ignore"/>
+     <label.ignoreFiltered value="Show covered messages"/>
+     <label.ignoreType value="Ignore type:"/>
+     <label.enablePlanetAnimations value="Animations in planet"/>
+  </PlayerOptions>
 
 </locale>
