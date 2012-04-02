@@ -5,6 +5,9 @@ module Dispatcher::PlayerRegisterTask
         "#{player} register in #{dispatcher_tag}"
       ) do |worker_name|
         Chat::Pool.instance.hub_for(player).register(player)
+        # Push chat index after registering.
+        Celluloid::Actor[:dispatcher].
+          push_to_player!(ChatController::ACTION_INDEX)
       end
     end
   end

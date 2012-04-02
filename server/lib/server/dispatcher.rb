@@ -100,7 +100,7 @@ class Dispatcher
 
     @client_to_player[client] = player
     @player_id_to_client[player.id] = client
-    dispatch_task(Scope.world, PlayerRegisterTask.create(tag, player))
+    dispatch_task(Scope.chat, PlayerRegisterTask.create(tag, player))
   end
 
   # Update player entry if player is connected.

@@ -104,7 +104,6 @@ describe PlayersController do
             NotificationsController::ACTION_INDEX,
             RoutesController::ACTION_INDEX,
             PlayerOptionsController::ACTION_SHOW,
-            ChatController::ACTION_INDEX,
             GalaxiesController::ACTION_SHOW
           ].each_with_index do |action, index|
             @controller.pushed[index].should == [action, {}]
