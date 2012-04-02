@@ -24,7 +24,6 @@ end
 
 # Gems that are needed for running (not testing).
 group :run_require do
-  gem 'eventmachine', '>=0.12.6'
 end
 
 # Only needed in production.
