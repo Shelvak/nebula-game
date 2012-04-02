@@ -1640,6 +1640,7 @@
     <label.nap value="NAPs" />
     <label.enemies value="Enemies" />
     <label.leveled value="Leveled Up" />
+    <label.stats value="Combat statistics" />
     <label.dmgDealtPlayer value="Damage dealt by you" />
     <label.dmgDealtAlly value="Damage dealt by allies" />
     <label.dmgDealtAlliance value="Damage dealt by alliance" />
@@ -1650,7 +1651,6 @@
     <label.points value="War points earned" />
     <label.victoryPoints value="Victory points earned" />
     <label.creds value="Creds earned" />
-    <label.stats value="Combat statistics" />
     <label.close value="Close" />
     <label.players value="Players" />
     <label.noNotifications value="There are no notifications" />
@@ -1673,9 +1673,31 @@
     <label.combatLog.showLog value="View replay" />
     <label.combatLog.copyToClipboard value="Copy to clipboard" />
 
+    <message.playerAttached value="You have been moved" />
+    <title.playerAttached value="Wellcome back!" />
+    <insideMessage.playerAttached>
+      <p>
+        As a consequence of being inactive for a while, you have been moved
+        to another part of the galaxy which is more suitable for you.
+      </p>
+      <p>
+        Settle in your new location, take a look around and get familiar with your new
+        neighbours. Good luck!
+      </p>
+    </insideMessage.playerAttached>
+
     <title.questCompleted value="Quest competed" />
     <message.questCompleted value="Quest '{0}' was completed." />
     <message.newQuests value="Following quests were started:" />
+
+    <title.technologiesChanged value="Your technologies have changed" />
+    <message.technologiesChanged value="Changes in technologies." />
+    <insideMessage.technologiesChanged>
+      <p>
+        Because of inefficient number of scientists or planets these changes
+        have been applied to your technologies:
+      </p>
+    </insideMessage.technologiesChanged>
 
     <title.kickedFromAlliance value="Kicked from alliance" />
     <message.kickedFromAlliance value="Kicked from alliance {0}" />
