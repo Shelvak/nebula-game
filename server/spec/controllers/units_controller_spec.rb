@@ -222,7 +222,7 @@ describe UnitsController do
     end
 
     it "should raise error if some units are not in that planet" do
-      @units[0].location_id += 1
+      @units[0].location = Factory.create(:planet)
       @units[0].save!
 
       lambda do

@@ -8,7 +8,6 @@ import spacemule.helpers.{StdErrLog => L}
 import spacemule.modules.combat.objects._
 import spacemule.modules.combat.post_combat._
 import spacemule.modules.config.objects.Config
-import spacemule.modules.pmg.objects.Location
 
 object Combat {
   // alliance id -> alliance name

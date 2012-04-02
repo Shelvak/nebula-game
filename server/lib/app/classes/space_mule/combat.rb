@@ -2,7 +2,7 @@ module SpaceMule::Combat
   # Scala constants
   Combat = SpaceMule::SmModules.combat
   CO = Combat.objects
-  Location = SpaceMule::SmModules.pmg.objects.Location
+  Location = SpaceMule::SmModules.combat.objects.Location
 
   # See SpaceMule#combat for options.
   def self.invoke(location, players, nap_rules, units, loaded_units,

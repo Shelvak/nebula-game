@@ -89,6 +89,7 @@ class BulkSql
             unless update
               builder.append "\t"
               builder.append batch_id
+              object[:batch_id] = batch_id
             end
             builder.append "\n"
           end

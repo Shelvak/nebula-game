@@ -79,6 +79,12 @@ if $SPEC_INITIALIZED.nil?
   end
 
   def mock_actor(name, klass)
+    raise "Cannot mock actor #{name} because it already exists! " +
+      "Registry mocking will not clean itself up after example finishes, " +
+      "therefore its too easy to screw things up mocking running actors. " +
+      "Use stubbing on running actor instead." \
+      unless Celluloid::Actor[name].nil?
+
     mock = mock(klass)
     Celluloid::Actor.instance_eval do
       define_singleton_method(:[]) do |key|

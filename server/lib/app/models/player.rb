@@ -150,7 +150,7 @@ class Player < ActiveRecord::Base
 
   # Returns for how much seconds this player has been inactive.
   def inactivity_time
-    return 0 if Celluloid::Actor[:dispatcher].connected?(id)
+    return 0 if Celluloid::Actor[:dispatcher].player_connected?(id)
     Time.now - (last_seen.nil? ? created_at : last_seen)
   end
 

@@ -1,7 +1,5 @@
 package spacemule.modules.combat.objects
 
-import spacemule.modules.pmg.objects.Location
-
 /**
  * Location will all necessary data for game client.
  */

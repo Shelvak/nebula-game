@@ -178,7 +178,6 @@ class SolarSystem < ActiveRecord::Base
         definition, location, nil
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
-      # TODO: spec me
       Cooldown.create_unless_exists(location, Cfg.after_spawn_cooldown)
       
       location

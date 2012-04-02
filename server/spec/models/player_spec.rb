@@ -33,11 +33,13 @@ describe Player do
     end
 
     it "should set last_seen to true if currently online" do
-      dispatcher = mock(Dispatcher)
-      Dispatcher.stub!(:instance).and_return(dispatcher)
-      dispatcher.stub!(:connected?).with(@players[0].id).and_return(true)
-      dispatcher.stub!(:connected?).with(@players[1].id).and_return(false)
-      dispatcher.stub!(:connected?).with(@players[2].id).and_return(false)
+      dispatcher = Celluloid::Actor[:dispatcher]
+      dispatcher.stub!(:player_connected?).with(@players[0].id).
+        and_return(true)
+      dispatcher.stub!(:player_connected?).with(@players[1].id).
+        and_return(false)
+      dispatcher.stub!(:player_connected?).with(@players[2].id).
+        and_return(false)
       result = Player.ratings(@alliance.galaxy_id)
       result.map { |row| row["last_seen"] }.
         should == [true, @players[1].last_seen, @players[2].last_seen]
@@ -320,21 +322,23 @@ describe Player do
   describe "#inactivity_time" do
     it "should return 0 if player is connected" do
       player = Factory.create(:player)
-      Dispatcher.instance.should_receive(:connected?).with(player.id).
-        and_return(true)
+      Celluloid::Actor[:dispatcher].should_receive(:player_connected?).
+        with(player.id).and_return(true)
       player.inactivity_time.should == 0
     end
 
     it "should return time from created_at if player has never logged in" do
       player = Factory.
-        build(:player, :last_seen => nil, :created_at => 15.days.ago)
-      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).of(15.days)
+        build(:player, :last_seen => nil, :created_at => 30.minutes.ago)
+      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).
+        of(30.minutes)
     end
 
     it "should return time from last login otherwise" do
       player = Factory.
-        build(:player, :last_seen => 3.days.ago, :created_at => 15.days.ago)
-      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).of(3.days)
+        build(:player, :last_seen => 30.minutes.ago, :created_at => 15.days.ago)
+      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).
+        of(30.minutes)
     end
   end
   
@@ -803,14 +807,13 @@ describe Player do
 
   describe "updating" do
     before(:each) do
-      @dispatcher = mock(Dispatcher)
-      Dispatcher.stub!(:instance).and_return(@dispatcher)
-      @dispatcher.stub!(:connected?).and_return(false)
+      @dispatcher = Celluloid::Actor[:dispatcher]
+      @dispatcher.stub!(:player_connected?).and_return(false)
       @player = Factory.create(:player)
     end
 
     it "should update dispatcher if player is connected" do
-      @dispatcher.should_receive(:connected?).with(@player.id).
+      @dispatcher.should_receive(:player_connected?).with(@player.id).
         and_return(true)
       @dispatcher.should_receive(:update_player).with(@player)
       @player.creds += 1
@@ -818,7 +821,7 @@ describe Player do
     end
 
     it "should not update dispatcher if player is disconnected" do
-      @dispatcher.should_receive(:connected?).with(@player.id).
+      @dispatcher.should_receive(:player_connected?).with(@player.id).
         and_return(false)
       @dispatcher.should_not_receive(:update_player)
       @player.creds += 1
@@ -1387,7 +1390,7 @@ describe Player do
     
     it "should disconnect player from dispatcher if he's connected" do
       player = Factory.create(:player)
-      Dispatcher.instance.should_receive(:disconnect).
+      Celluloid::Actor[:dispatcher].should_receive(:disconnect!).
         with(player.id, Dispatcher::DISCONNECT_PLAYER_ERASED)
       player.destroy
     end
@@ -1701,7 +1704,7 @@ describe Player do
     end
 
     it "should return true if he is currently connected" do
-      Dispatcher.instance.stub(:connected?).with(player.id).
+      Celluloid::Actor[:dispatcher].stub(:player_connected?).with(player.id).
         and_return(true)
       player.should be_active
     end

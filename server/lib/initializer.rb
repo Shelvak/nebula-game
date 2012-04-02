@@ -16,24 +16,21 @@ DB_POOL_SIZE = (WORKERS_CHAT + WORKERS_WORLD + 3) * 2
 
 def rake?; File.basename($0) == 'rake'; end
 
-unless RUBY_VERSION >= '1.9.2'
-  # flex:locales:check task is broken on 1.6.6, so we have to use something
-  # else :(
-  unless rake? || JRUBY_VERSION == '1.6.6'
-    w = 80
-    puts "#" * w
-    puts "We require JRuby 1.6.6 in 1.9 mode!".center(w)
-    puts
-    puts "To install JRuby 1.6.6:".center(w)
-    puts "`rvm install jruby-1.6.6`".center(w)
-    puts
-    puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
-    puts "`export JRUBY_OPTS='--1.9'`".center(w)
-    puts
-    puts "Aborting!".center(w)
-    puts "#" * w
-    exit
-  end
+# flex:locales:check task is broken on 1.6.6, so we have to use something else.
+if RUBY_VERSION < '1.9.2' || ! (JRUBY_VERSION == '1.6.6' || rake?)
+  w = 80
+  puts "#" * w
+  puts "We require JRuby 1.6.6 in 1.9 mode!".center(w)
+  puts
+  puts "To install JRuby 1.6.6:".center(w)
+  puts "`rvm install jruby-1.6.6`".center(w)
+  puts
+  puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
+  puts "`export JRUBY_OPTS='--1.9'`".center(w)
+  puts
+  puts "Aborting!".center(w)
+  puts "#" * w
+  exit
 end
 
 require 'bundler'
