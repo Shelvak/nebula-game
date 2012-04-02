@@ -16,6 +16,7 @@ describe PlayerOptionsController do
     end
 
     it_should_behave_like "with param options", :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should respond with player options" do
       push @action, @params
@@ -37,6 +38,8 @@ describe PlayerOptionsController do
         @opts.stub!(:"#{property}=")
       end
     end
+
+    it_should_behave_like "having controller action scope"
 
     it "should set options" do
       PlayerOptions::Data.properties.each do |property|

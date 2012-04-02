@@ -34,6 +34,7 @@ describe ConstructionQueuesController do
 
     it_behaves_like "with param options", :required => %w{constructor_id},
       :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should respond with constructor id" do
       should_respond_with hash_including(
@@ -60,6 +61,7 @@ describe ConstructionQueuesController do
 
     it_behaves_like "with param options", %w{id position count}
     it_behaves_like "checking ownership"
+    it_should_behave_like "having controller action scope"
 
     it "should move the entry" do
       ConstructionQueue.should_receive(:move).with(
@@ -77,6 +79,7 @@ describe ConstructionQueuesController do
 
     it_behaves_like "with param options", %w{id count}
     it_behaves_like "checking ownership"
+    it_should_behave_like "having controller action scope"
 
     it "should reduce the entry" do
       ConstructionQueue.should_receive(:reduce).with(

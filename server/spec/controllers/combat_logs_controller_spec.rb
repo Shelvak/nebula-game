@@ -16,6 +16,7 @@ describe CombatLogsController do
 
     it_should_behave_like "with param options", :required => %w{id},
       :needs_login => false
+    it_should_behave_like "having controller action scope"
 
     it "should return log" do
       invoke @action, @params

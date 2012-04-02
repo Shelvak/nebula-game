@@ -15,7 +15,8 @@ describe ObjectsController do
     end
 
     it_behaves_like "with param options", :required => %w{objects},
-                    :only_push => true
+      :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should include prepared objects" do
       prepared = :prepared
@@ -35,7 +36,8 @@ describe ObjectsController do
     end
 
     it_behaves_like "with param options", :required => %w{objects reason},
-                    :only_push => true
+      :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should include prepared objects" do
       prepared = :prepared
@@ -60,6 +62,7 @@ describe ObjectsController do
 
     it_behaves_like "with param options", :required => %w{objects reason},
       :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should include prepared object ids" do
       prepared = :prepared

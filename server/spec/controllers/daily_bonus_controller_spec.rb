@@ -17,6 +17,7 @@ describe DailyBonusController do
     end
     
     it_behaves_like "only push"
+    it_should_behave_like "having controller action scope"
     
     it "should fail if bonus is not available" do
       player.stub!(:daily_bonus_available?).and_return(false)
@@ -41,6 +42,7 @@ describe DailyBonusController do
     end
     
     it_behaves_like "with param options", %w{planet_id}
+    it_should_behave_like "having controller action scope"
     
     it "should fail if user does not own that planet" do
       @planet.player = nil

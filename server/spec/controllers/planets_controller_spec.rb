@@ -62,6 +62,8 @@ describe PlanetsController do
       @action = "planets|show"
     end
 
+    it_should_behave_like "having controller action scope"
+
     it "should not allow player to view it if not in observable list" do
       planet = Factory.create :planet
       SsObject::Planet.stub!(:find).with(planet.id).and_return(planet)
@@ -159,6 +161,7 @@ describe PlanetsController do
     end
 
     it_should_behave_like "only push"
+    it_should_behave_like "having controller action scope"
 
     it "should unset current planet id" do
       push @action, @params
@@ -178,6 +181,7 @@ describe PlanetsController do
     end
 
     it_behaves_like "only push"
+    it_should_behave_like "having controller action scope"
 
     it "should return players planets" do
       planet0 = Factory.create :planet_with_player
@@ -209,6 +213,7 @@ describe PlanetsController do
     end
 
     it_behaves_like "with param options", %w{planet_id x y}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if planet does not belong to player" do
       @planet.player = nil
@@ -258,6 +263,7 @@ describe PlanetsController do
     end
     
     it_behaves_like "with param options", %w{id}
+    it_should_behave_like "having controller action scope"
     
     it "should fail if a planet does not belong to player" do
       @planet.update_row! ["player_id=?", Factory.create(:player).id]
@@ -288,6 +294,7 @@ describe PlanetsController do
     end
     
     it_behaves_like "with param options", %w{id x y}
+    it_should_behave_like "having controller action scope"
     
     it "should fail if planet does not belong to player" do
       @planet.update_row! ["player_id=?", Factory.create(:player).id]
@@ -318,6 +325,7 @@ describe PlanetsController do
     end
 
     it_behaves_like "with param options", %w{id}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if you are not the planet owner" do
       @planet.player = Factory.create(:player)
@@ -383,6 +391,7 @@ describe PlanetsController do
     end
 
     it_behaves_like "with param options", %w{id resource attribute}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if planet does not belong to you" do
       @planet.player = Factory.create(:player)
@@ -415,6 +424,7 @@ describe PlanetsController do
     end
 
     it_behaves_like "with param options", %w{id}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if trying to access not yours planet" do
       planet = Factory.create(:planet)
@@ -448,6 +458,7 @@ describe PlanetsController do
     end
     
     it_behaves_like "with param options", %w{id}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if it's apocalypse" do
       player.galaxy.stub(:apocalypse_started?).and_return(true)

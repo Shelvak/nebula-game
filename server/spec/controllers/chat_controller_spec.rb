@@ -18,6 +18,7 @@ describe ChatController do
     end
 
     it_should_behave_like "with param options", :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should respond with channels" do
       push @action, @params
@@ -47,6 +48,7 @@ describe ChatController do
 
     it_behaves_like "with param options", :required => %w{channel player},
       :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should have channel name" do
       push @action, @params
@@ -74,6 +76,7 @@ describe ChatController do
 
     it_behaves_like "with param options", :required => %w{channel player},
       :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should have channel name" do
       push @action, @params
@@ -97,6 +100,7 @@ describe ChatController do
     end
 
     it_behaves_like "with param options", %w{chan msg}
+    it_should_behave_like "having controller action scope"
 
     it "should invoke #channel_msg on hub" do
       hub = mock(Chat::Hub)
@@ -116,6 +120,7 @@ describe ChatController do
     end
 
     it_behaves_like "with param options", %w{pid msg}
+    it_should_behave_like "having controller action scope"
 
     it "should invoke #private_msg on hub" do
       hub = mock(Chat::Hub)
@@ -136,6 +141,7 @@ describe ChatController do
 
     it_should_behave_like "with param options", :required => %w{until},
       :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should respond with 'until'" do
       push @action, @params

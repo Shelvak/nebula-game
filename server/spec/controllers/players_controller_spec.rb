@@ -23,6 +23,7 @@ describe PlayersController do
       it_behaves_like "with param options",
         :required => %w{server_player_id web_player_id version},
         :needs_login => false
+      it_should_behave_like "having controller action scope"
 
       describe "client too old" do
         before(:each) do
@@ -186,6 +187,7 @@ describe PlayersController do
       end
 
       it_behaves_like "only push"
+      it_should_behave_like "having controller action scope"
 
       it "should respond with player" do
         should_respond_with :player => player.as_json
@@ -200,6 +202,7 @@ describe PlayersController do
       end
 
       it_behaves_like "with param options", %w{id}
+      it_should_behave_like "having controller action scope"
 
       it "should include player" do
         invoke @action, @params
@@ -223,6 +226,8 @@ describe PlayersController do
         @params = {}
       end
 
+      it_should_behave_like "having controller action scope"
+
       it "should return ratings" do
         ratings = Player.ratings(player.galaxy_id)
         invoke @action, @params
@@ -239,6 +244,8 @@ describe PlayersController do
 
         @params = {'portal_without_allies' => false}
       end
+
+      it_should_behave_like "having controller action scope"
 
       it "should change portal_without_allies" do
         lambda do
@@ -257,6 +264,7 @@ describe PlayersController do
       end
 
       it_behaves_like "with param options", %w{vip_level}
+      it_should_behave_like "having controller action scope"
 
       it "should invoke vip_start!" do
         player.should_receive(:vip_start!).with(@params['vip_level'])
@@ -282,6 +290,7 @@ describe PlayersController do
 
       it_behaves_like "with param options", :required => %w{changes},
         :only_push => true
+      it_should_behave_like "having controller action scope"
 
       it "should respond" do
         should_respond_with :changes => @params['changes']
@@ -299,6 +308,7 @@ describe PlayersController do
       end
       
       it_behaves_like "with param options", %w{amount}
+      it_should_behave_like "having controller action scope"
       
       it "should call player#vip_convert" do
         player.should_receive(:vip_convert).with(@params['amount'])
@@ -320,6 +330,7 @@ describe PlayersController do
       end
 
       it_should_behave_like "with param options", %w{target_id}
+      it_should_behave_like "having controller action scope"
 
       it "should return battle vps multiplier" do
         multiplier = 1.2

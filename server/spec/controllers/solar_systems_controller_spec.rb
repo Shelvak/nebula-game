@@ -17,6 +17,8 @@ describe SolarSystemsController do
       @params = {'id' => @solar_system.id}
     end
 
+    it_should_behave_like "having controller action scope"
+
     describe "listing" do
       describe "planets" do
         it "should include them" do

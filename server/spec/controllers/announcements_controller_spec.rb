@@ -53,6 +53,7 @@ describe AnnouncementsController do
     it_behaves_like "with param options",
       :required => %w{message ends_at},
       :only_push => true, :needs_login => true
+    it_should_behave_like "having controller action scope"
 
     %w{message ends_at}.each do |attr|
       it "should respond with #{attr}" do

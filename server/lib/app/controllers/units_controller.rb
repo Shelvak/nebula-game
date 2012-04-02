@@ -406,7 +406,7 @@ class UnitsController < GenericController
     :transporter_id => Fixnum, :metal => Fixnum, :energy => Fixnum,
     :zetium => Fixnum
   )
-  TRANSFER_SCOPE = scope.world
+  TRANSFER_RESOURCES_SCOPE = scope.world
   def self.transfer_resources_action(m)
     # Duplicate params so we could modify them.
     params = m.params.dup

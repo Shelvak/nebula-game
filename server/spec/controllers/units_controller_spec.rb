@@ -94,6 +94,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{type count constructor_id prepaid}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if not prepaid and player is not vip" do
       @params['prepaid'] = false
@@ -142,6 +143,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{updates}
+    it_should_behave_like "having controller action scope"
 
     it "should call Unit.update_combat_attributes" do
       Unit.should_receive(:update_combat_attributes).with(
@@ -160,6 +162,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{planet_id unit_ids value}
+    it_should_behave_like "having controller action scope"
 
     it "should call Unit.mass_set_hidden" do
       Unit.should_receive(:mass_set_hidden).with(
@@ -197,6 +200,7 @@ describe UnitsController do
 
     it_should_behave_like "with param options",
                           %w{planet_id target_id unit_ids}
+    it_should_behave_like "having controller action scope"
 
     it "should raise RecordNotFound if it's not that player planet" do
       @planet.player = Factory.create(:player)
@@ -307,6 +311,7 @@ describe UnitsController do
 
     it_behaves_like "with param options", %w{unit_ids source target}
     it_behaves_like "checking visibility"
+    it_should_behave_like "having controller action scope"
 
     it "should invoke UnitMover" do
       UnitMover.should_receive(:move_meta).with(
@@ -366,8 +371,10 @@ describe UnitsController do
       }
     end
 
-    it_behaves_like "with param options", %w{unit_ids source target speed_modifier}
+    it_behaves_like "with param options",
+      %w{unit_ids source target speed_modifier}
     it_behaves_like "checking visibility"
+    it_should_behave_like "having controller action scope"
 
     it "should invoke UnitMover" do
       UnitMover.should_receive(:move).with(player.id, @unit_ids, @source,
@@ -415,6 +422,7 @@ describe UnitsController do
     it_behaves_like "with param options",
       :required => %w{route unit_ids route_hops},
       :only_push => true
+    it_should_behave_like "having controller action scope"
   end
 
   describe "units|movement" do
@@ -434,6 +442,7 @@ describe UnitsController do
     it_behaves_like "with param options",
       :required => %w{units route_hops jumps_at},
       :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should respond with units with perspective" do
       push @action, @params
@@ -473,6 +482,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{planet_id unit_id x y}
+    it_should_behave_like "having controller action scope"
 
     it "should not fail if unit is in another unit in same planet" do
       @unit.location = Factory.create(:unit, :location => @planet)
@@ -560,6 +570,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{unit_ids transporter_id}
+    it_should_behave_like "having controller action scope"
     
     it_should_behave_like "checking all planet owner variations",
         {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
@@ -620,6 +631,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{unit_ids transporter_id}
+    it_should_behave_like "having controller action scope"
 
     it_should_behave_like "checking all planet owner variations",
         {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
@@ -720,6 +732,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{transporter_id metal energy zetium}
+    it_should_behave_like "having controller action scope"
 
     describe "loading" do
       it_should_behave_like "checking all planet owner variations",
@@ -859,6 +872,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{unit_id}
+    it_should_behave_like "having controller action scope"
 
     it "should not work if transporter belongs to ally" do
       player.alliance = Factory.create(:alliance)
@@ -960,6 +974,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{planet_id unit_ids}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if planet does not belong to player" do
       @planet.player = Factory.create(:player)

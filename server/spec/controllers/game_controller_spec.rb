@@ -14,6 +14,8 @@ describe GameController do
         @params = {}
       end
 
+      it_should_behave_like "having controller action scope"
+
       it "should have config filtered by regexp (default ruleset)" do
         invoke @action
         response[:config].should equal_to_hash(
@@ -35,6 +37,8 @@ describe GameController do
         @action = "game|config"
         @params = {}
       end
+
+      it_should_behave_like "having controller action scope"
 
       it "should have config filtered by regexp" do
         invoke @action

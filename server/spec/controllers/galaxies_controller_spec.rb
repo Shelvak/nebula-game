@@ -28,6 +28,8 @@ describe GalaxiesController do
       @unit3 = Factory.create :u_mule, :location => GalaxyPoint.new(
         player.galaxy_id, 0, 3)
     end
+
+    it_should_behave_like "having controller action scope"
     
     it "should include galaxy id" do
       push @action, @params
@@ -151,6 +153,7 @@ describe GalaxiesController do
     it_should_behave_like "with param options",
       :required => %w{start},
       :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should respond with start time" do
       push @action, @params

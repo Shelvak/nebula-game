@@ -21,6 +21,7 @@ describe RoutesController do
     end
 
     it_behaves_like "only push"
+    it_should_behave_like "having controller action scope"
 
     it "should respond with routes" do
       push @action, @params
@@ -42,6 +43,7 @@ describe RoutesController do
     end
 
     it_behaves_like "with param options", %w{id}
+    it_should_behave_like "having controller action scope"
 
     it "should check player" do
       route = Factory.create(:route)
