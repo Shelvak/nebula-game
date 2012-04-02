@@ -178,6 +178,19 @@ describe Chat::Control do
         end
       end
 
+      describe "/log" do
+        let(:target) { Factory.create(:player, :galaxy => player.galaxy) }
+        let(:msg) { %Q{/silence "#{target.name}" "for 1 minute"} }
+
+        it "should return logged commands" do
+          control.message(player, msg)
+          control.message(player, msg)
+          # 2 commands and 1 explanation.
+          should_transmit.exactly(3).times
+          control.message(player, "/log")
+        end
+      end
+
       describe "/silence" do
         let(:target) { Factory.create(:player, :galaxy => player.galaxy) }
         let(:name) { %Q{"#{target.name}"} }

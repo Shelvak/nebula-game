@@ -14,6 +14,7 @@ class Chat::Control
     super
     @dispatcher_actor_name = dispatcher_actor_name
     @antiflood = antiflood
+    @log = Java::java.util.LinkedList.new
   end
 
   # Processes message as a command. Returns true if it was processed, false if
@@ -41,6 +42,7 @@ class Chat::Control
         case command
         when "/help" then cmd_help(player, args)
         when "/silence" then cmd_silence(player, args)
+        when "/log" then cmd_log(player)
         else return false
         end
 
@@ -91,8 +93,10 @@ class Chat::Control
         "    /set_mod 'player name' true",
         "    /set_mod 'player name' false"
       )
+    when "log"
+      report(player.id, "/log - prints chat control log from server start")
     else
-      report(player.id, "Supported commands: silence")
+      report(player.id, "Supported commands: silence log")
       report(player.id, "Supported admin commands: adminify set_mod") \
         if player.admin?
       report(player.id,
@@ -130,6 +134,14 @@ class Chat::Control
 
     @antiflood.silence(target.id, time)
     report(player.id, %Q{Player "#{name}" silenced until "#{time}".})
+  end
+
+  def cmd_log(player)
+    messages = @log.map do |time, message|
+      "[%s] %s" % [time.strftime("%Y-%m-%d %H:%M:%S"), message]
+    end
+    messages.unshift "Chat control log:"
+    report(player.id, *messages)
   end
 
   def cmd_adminify(player, args)
@@ -201,7 +213,9 @@ class Chat::Control
   end
 
   def log(player, command, args)
-    LOGGER.info("#{player} invoked #{command} with #{args.inspect}", TAG)
+    str = "#{player} invoked #{command} with #{args.inspect}"
+    @log.add [Time.now, str]
+    LOGGER.info(str, TAG)
   end
 
   # Parses line into arguments. Arguments can be quoted with single or double
