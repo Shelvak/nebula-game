@@ -79,23 +79,24 @@ if $SPEC_INITIALIZED.nil?
   end
 
   def mock_actor(name, klass)
-    raise "Cannot mock actor #{name} because it already exists! " +
-      "Registry mocking will not clean itself up after example finishes, " +
-      "therefore its too easy to screw things up mocking running actors. " +
-      "Use stubbing on running actor instead." \
-      unless Celluloid::Actor[name].nil?
+    mock = RSpec::Mocks::Mock.new(klass)
+    old_method = Celluloid::Actor.method(:[])
 
-    mock = mock(klass)
+    # Fake our registry lookup.
     Celluloid::Actor.instance_eval do
-      define_singleton_method(:[]) do |key|
-        if name == key
-          mock
-        else
-          super(key)
-        end
+      define_singleton_method(:[]) { |key| name == key ? mock : super(key) }
+    end
+
+    begin
+      yield mock
+    ensure
+      # Restore old method.
+      Celluloid::Actor.instance_eval do
+        define_singleton_method(:[], &old_method)
       end
     end
-    mock
+
+    nil
   end
 
   def stacktrace!

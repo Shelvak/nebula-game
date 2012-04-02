@@ -35,7 +35,8 @@ object Manager {
   val foliages = new Buffer(FoliagesTable, TileRow)
   val buildings = new ReferableBuffer(BuildingsTable, BuildingRow)
   val units = new Buffer(UnitsTable, UnitRow)
-  val fowSsEntries = new Buffer(FowSsEntriesTable, FowSsEntryRow)
+  // Referable because id used in ruby.
+  val fowSsEntries = new ReferableBuffer(FowSsEntriesTable, FowSsEntryRow)
   val questProgresses = new Buffer(QuestProgressesTable, QuestProgressRow)
   val objectiveProgresses =
     new Buffer(ObjectiveProgressesTable, ObjectiveProgressRow)
@@ -263,9 +264,11 @@ WHERE #ss.`galaxy_id`=#galaxy.id
       // If this is alliance row, player id will be 0
       // If this is player row, player id will be greater than 0
       val fowSseRow = if (playerId != 0) {
+        val playerRow = PlayerRow(galaxy.id, existingPlayer)
+        playerRow.id = playerId
         FowSsEntryRow(
           ssRow,
-          FowSsEntryRow.Owner.Player(PlayerRow(galaxy.id, existingPlayer)),
+          FowSsEntryRow.Owner.Player(playerRow),
           counter, empty, true
         )
       }

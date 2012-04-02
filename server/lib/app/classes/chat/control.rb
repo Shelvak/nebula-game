@@ -1,5 +1,7 @@
 # Class that executes control commands via chat.
 class Chat::Control
+  include MonitorMixin
+
   # Player ID for system.
   SYSTEM_ID = 0
   # Player name for system.
@@ -9,6 +11,7 @@ class Chat::Control
   TAG = "chat_control"
 
   def initialize(dispatcher_actor_name, antiflood)
+    super
     @dispatcher_actor_name = dispatcher_actor_name
     @antiflood = antiflood
   end
@@ -16,37 +19,39 @@ class Chat::Control
   # Processes message as a command. Returns true if it was processed, false if
   # it is just a regular message.
   def message(player, message)
-    return false unless player.admin? || player.chat_mod?
+    synchronize do
+      return false unless player.admin? || player.chat_mod?
 
-    command, args = message.split(" ", 2)
-    args = args.nil? ? [] : self.class.parse_args(args)
+      command, args = message.split(" ", 2)
+      args = args.nil? ? [] : self.class.parse_args(args)
 
-    # Admin-only commands
-    admin_commands = lambda do
-      case command
-      when "/adminify" then cmd_adminify(player, args)
-      when "/set_mod" then cmd_set_mod(player, args)
-      else return false
+      # Admin-only commands
+      admin_commands = lambda do
+        case command
+        when "/adminify" then cmd_adminify(player, args)
+        when "/set_mod" then cmd_set_mod(player, args)
+        else return false
+        end
+
+        true
       end
 
-      true
-    end
+      # Regular commands.
+      regular_commands = lambda do
+        case command
+        when "/help" then cmd_help(player, args)
+        when "/silence" then cmd_silence(player, args)
+        else return false
+        end
 
-    # Regular commands.
-    regular_commands = lambda do
-      case command
-      when "/help" then cmd_help(player, args)
-      when "/silence" then cmd_silence(player, args)
-      else return false
+        true
       end
 
-      true
-    end
-
-    if player.admin?
-      admin_commands.call || regular_commands.call
-    else
-      regular_commands.call
+      if player.admin?
+        admin_commands.call || regular_commands.call
+      else
+        regular_commands.call
+      end
     end
   end
 

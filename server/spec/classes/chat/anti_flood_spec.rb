@@ -3,10 +3,16 @@ require File.expand_path(
 )
 
 describe Chat::AntiFlood do
+  around(:each) do |example|
+    mock_actor(:dispatcher_mock, Dispatcher) do |mock|
+      @dispatcher = mock
+      example.call
+    end
+  end
+
   let(:dispatcher) do
-    dispatcher = mock_actor(:dispatcher_mock, Dispatcher)
-    dispatcher.stub!(:push_to_player!)
-    dispatcher
+    @dispatcher.stub!(:push_to_player!)
+    @dispatcher
   end
   let(:antiflood) do
     dispatcher()

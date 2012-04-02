@@ -5,8 +5,14 @@ require File.expand_path(
 describe Chat::Channel do
   let(:dispatcher_mock_name) { :dispatcher_mock }
 
+  around(:each) do |example|
+    mock_actor(dispatcher_mock_name, Dispatcher) do |mock|
+      @dispatcher = mock
+      example.call
+    end
+  end
+
   before(:each) do
-    @dispatcher = mock_actor(dispatcher_mock_name, Dispatcher)
     @dispatcher.stub(:push_to_player!)
     @dispatcher.stub(:transmit_to_players!)
     @chan = Chat::Channel.new("c", dispatcher_mock_name)

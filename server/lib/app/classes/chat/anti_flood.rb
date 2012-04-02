@@ -1,5 +1,9 @@
 class Chat::AntiFlood
+  include MonitorMixin
+  
   def initialize(dispatcher_actor_name)
+    super
+    
     @dispatcher_actor_name = dispatcher_actor_name
     # {player_id => Fixnum}
     @silence_counters = Hash.new(0)
@@ -9,7 +13,6 @@ class Chat::AntiFlood
     @messages = Hash.new do |hash, player_id|
       hash[player_id] = Java::java.util.LinkedList.new
     end
-    @mutex = Mutex.new
   end
 
   # Registers message which arrived at _timestamp_ (Time.now is used if
@@ -17,7 +20,7 @@ class Chat::AntiFlood
   #
   # Checks if user has been silenced. If so - raises +GameLogicError+.
   def message!(player_id, timestamp=nil)
-    @mutex.synchronize do
+    synchronize do
       check_if_silenced!(player_id)
       message(player_id, timestamp || Time.now)
     end
@@ -26,7 +29,7 @@ class Chat::AntiFlood
   def silence(player_id, silence_until=nil)
     typesig binding, Fixnum, [NilClass, Time]
 
-    @mutex.synchronize do
+    synchronize do
       counter = @silence_counters[player_id] += 1
       if silence_until.nil?
         silence_period = Cfg.chat_antiflood_silence_for(counter)

@@ -13,9 +13,16 @@ describe Chat::Control do
   end
 
   describe "instance" do
+    around(:each) do |example|
+      mock_actor(dispatcher_mock_name, Dispatcher) do |mock|
+        @dispatcher = mock
+        example.call
+      end
+    end
+
     let(:dispatcher_mock_name) { :dispatcher_mock }
     let(:dispatcher) do
-      dispatcher = mock_actor(dispatcher_mock_name, Dispatcher)
+      dispatcher = @dispatcher
       dispatcher.stub(:transmit_to_players!)
       dispatcher.stub(:push_to_player!)
       dispatcher

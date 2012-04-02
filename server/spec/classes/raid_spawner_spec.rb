@@ -37,18 +37,12 @@ describe RaidSpawner do
         spawner.raid!
       end
 
-      it "should check location for combat" do
-        Combat::LocationChecker.should_receive(:check_location).
-          with(planet.location_point)
-        spawner.raid!
-      end
-
-      it "should reload planet after check" do
-        invoked = false
-        Combat::LocationChecker.should_receive(:check_location).and_return do
-          invoked = true
+      it "should create cooldown in planet" do
+        Cooldown.should_receive(:create_unless_exists).and_return do |lp, time|
+          lp.should == planet.location_point
+          time.should be_within(SPEC_TIME_PRECISION).
+            of(Cfg.after_spawn_cooldown)
         end
-        planet.should_receive(:reload).and_return { invoked.should be_true }
         spawner.raid!
       end
     end

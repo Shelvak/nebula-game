@@ -5,16 +5,17 @@
 
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.persistence.{Row, RowObject, DB}
+import spacemule.persistence._
 
-object FowSsEntryRow extends RowObject {
+
+object FowSsEntryRow extends ReferableRowObject {
   sealed abstract class Owner
   object Owner {
     case class Player(row: PlayerRow) extends Owner
     case class Alliance(id: Int) extends Owner
   }
 
-  val pkColumn = Some("id")
+  val pkColumn = "id"
   val columnsSeq = Seq(
     "solar_system_id", "player_id", "alliance_id",
     "counter", "player_planets", "player_ships", "enemy_planets"
@@ -27,7 +28,7 @@ case class FowSsEntryRow(
   counter: Int=1,
   empty: Boolean=true,
   enemy: Boolean=false
-) extends Row {
+) extends ReferableRow {
   val companion = FowSsEntryRow
 
   val playerPlanets = if (empty) false else ! enemy

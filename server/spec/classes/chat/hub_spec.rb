@@ -5,8 +5,14 @@ require File.expand_path(
 describe Chat::Hub do
   let(:dispatcher_mock_name) { :dispatcher_mock }
 
+  around(:each) do |example|
+    mock_actor(dispatcher_mock_name, Dispatcher) do |mock|
+      @dispatcher = mock
+      example.call
+    end
+  end
+
   before(:each) do
-    @dispatcher = mock_actor(dispatcher_mock_name, Dispatcher)
     @dispatcher.stub!(:transmit_to_players!).and_return(true)
     @dispatcher.stub!(:push_to_player!).and_return(true)
     @hub = Chat::Hub.new(dispatcher_mock_name)
@@ -121,7 +127,7 @@ describe Chat::Hub do
     end
 
     it "should retrieve! them" do
-      @hub.send_stored!(@player)
+      @hub.send_stored(@player)
       Chat::Message.retrieve(@player.id).should be_blank
     end
 
@@ -132,7 +138,7 @@ describe Chat::Hub do
           message['created_at']
         )
       end
-      @hub.send_stored!(@player)
+      @hub.send_stored(@player)
     end
   end
 
