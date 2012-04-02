@@ -27,7 +27,7 @@ class Chat::Message < ActiveRecord::Base
     without_locking do
       select("source_id, message, created_at").
         where(:target_id => player_id).
-        order("created_by").
+        order("created_at").
         c_select_all
     end.map do |hash|
       # JRuby compatibility

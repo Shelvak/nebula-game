@@ -113,6 +113,7 @@ class ServerActor
     end
 
     debug "Sending message: #{json}", to_s(client)
+    STDERR.puts "SA writing #{json.length}"
     socket.write "#{json}\n"
   rescue EOFError, IOError, Errno::EBADF, Errno::EPIPE
     # Our client has disconnected.
@@ -120,6 +121,7 @@ class ServerActor
   end
 
   def disconnect(client, message=nil)
+    info "#disconnect called with message '#{message}'", to_s(client)
     write(client, message) unless message.nil?
 
     socket = @sockets[client]

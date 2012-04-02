@@ -1,6 +1,7 @@
 # Ensures synchronized, ordered writing to log outputs.
 class Logging::Writer
   include Singleton
+  include MonitorMixin
 
   class Config
     attr_accessor :level, :outputs, :callbacks
@@ -36,15 +37,11 @@ class Logging::Writer
 
   attr_reader :level
   def level=(value)
-    @mutex.synchronize { @level = value }
-  end
-
-  def initialize
-    @mutex = Mutex.new
+    synchronize { @level = value }
   end
 
   def config=(config)
-    @mutex.synchronize do
+    synchronize do
       @level = TYPE_TO_LEVEL[config.level]
       @outputs = config.outputs
       @callbacks = config.callbacks
@@ -58,7 +55,7 @@ class Logging::Writer
 
   # Reopens all log outputs.
   def reopen
-    @mutex.synchronize do
+    synchronize do
       @outputs.each do |output|
         case output
         when File
@@ -70,17 +67,17 @@ class Logging::Writer
   end
 
   def write(type, message)
-    @mutex.synchronize do
-      write_raw(message) if inner_write?(type)
+    synchronize do
+      write_raw(message) if write?(type)
       # Issue callback after writing to log to ensure it is written first.
-      inner_callback(type, message)
+      callback(type, message)
     end
   end
 
   # Invoke callback based on type.
   def callback(type, message)
-    @mutex.synchronize do
-      inner_callback(type, message)
+    synchronize do
+      @callbacks[type].call(message) if @callbacks[type]
     end
   end
 
@@ -88,8 +85,8 @@ class Logging::Writer
   #
   # This is used by logger.
   def write?(type)
-    @mutex.synchronize do
-      inner_write?(type)
+    synchronize do
+      @level >= TYPE_TO_LEVEL[type]
     end
   end
 
@@ -103,16 +100,5 @@ class Logging::Writer
         # Not ready for flush
       end
     end
-  end
-
-  # Should we write this level type to log?
-  #
-  # Without mutex to use in this class methods.
-  def inner_write?(type)
-    @level >= TYPE_TO_LEVEL[type]
-  end
-
-  def inner_callback(type, message)
-    @callbacks[type].call(message) if @callbacks[type]
   end
 end

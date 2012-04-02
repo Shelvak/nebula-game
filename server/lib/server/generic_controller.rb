@@ -23,8 +23,10 @@ class GenericController
       player.last_seen = Time.now
       player.save!
 
-      dispatcher.set_player!(message.client, player)
-      set_ruleset(message, player.galaxy.ruleset)
+      atomic! do
+        dispatcher.set_player!(message.client, player)
+        set_ruleset(message, player.galaxy.ruleset)
+      end
     end
 
     # Respond to clients message.

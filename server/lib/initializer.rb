@@ -12,22 +12,28 @@ WORKERS_WORLD = 1
 #
 # Each actor uses fiber, which is a different thread in JRuby. That's why we
 # need two connections per actor, not one.
-DB_POOL_SIZE = (WORKERS_CHAT + WORKERS_WORLD + 2) * 2
+DB_POOL_SIZE = (WORKERS_CHAT + WORKERS_WORLD + 3) * 2
 
-unless RUBY_VERSION >= '1.9.2' && JRUBY_VERSION >= '1.6.7'
-  w = 80
-  puts "#" * w
-  puts "We require JRuby 1.6 (dev version) in 1.9 mode!".center(w)
-  puts
-  puts "To install JRuby 1.6 (dev version):".center(w)
-  puts "`rvm install jruby-head-n16 --branch jruby-1_6`".center(w)
-  puts
-  puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
-  puts "`export JRUBY_OPTS='--1.9'`".center(w)
-  puts
-  puts "Aborting!".center(w)
-  puts "#" * w
-  exit
+def rake?; File.basename($0) == 'rake'; end
+
+unless RUBY_VERSION >= '1.9.2'
+  # flex:locales:check task is broken on 1.6.6, so we have to use something
+  # else :(
+  unless rake? || JRUBY_VERSION == '1.6.6'
+    w = 80
+    puts "#" * w
+    puts "We require JRuby 1.6.6 in 1.9 mode!".center(w)
+    puts
+    puts "To install JRuby 1.6.6:".center(w)
+    puts "`rvm install jruby-1.6.6`".center(w)
+    puts
+    puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
+    puts "`export JRUBY_OPTS='--1.9'`".center(w)
+    puts
+    puts "Aborting!".center(w)
+    puts "#" * w
+    exit
+  end
 end
 
 require 'bundler'
@@ -181,8 +187,6 @@ def dump_environment(binding, message)
 
   message
 end
-
-def rake?; File.basename($0) == 'rake'; end
 
 setup_groups = [:default, :setup, :"#{App.env}_setup"]
 setup_groups.push :run_setup unless App.in_test?
