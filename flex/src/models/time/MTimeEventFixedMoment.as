@@ -23,84 +23,69 @@ package models.time
       /**
        * Type processor function for <code>Objects</code>.
        */
-      public static function autoCreate(currValue:MTimeEventFixedMoment,
-                                        value:String) : MTimeEventFixedMoment {
-         var event:MTimeEventFixedMoment = null;
+      public static function autoCreate(currValue: MTimeEventFixedMoment,
+                                        value: String): MTimeEventFixedMoment {
+         var event: MTimeEventFixedMoment = null;
          event = currValue != null ? currValue : new MTimeEventFixedMoment();
-         event.occuresAt = DateUtil.parseServerDTF(value);
+         event.occursAt = DateUtil.parseServerDTF(value);
          return event;
-      }
-      
-      
-      public function MTimeEventFixedMoment()
-      {
-         super();
       }
       
       
       /* ################### */
       /* ### IMTimeEvent ### */
       /* ################### */
-      
-      
-      [Bindable(event="occuresInChange")]
-      public override function get occuresIn() : Number
-      {
-         var diff:Number = _occuresAt.time - DateUtil.now;
+
+      [Bindable(event="occursInChange")]
+      public override function get occursIn(): Number {
+         var diff: Number = _occursAt.time - DateUtil.now;
          return diff < 0 ? 0 : Math.floor(diff / 1000);
       }
-      
-      
-      private var _occuresAt:Date = new Date(0);
-      [Bindable(event="occuresAtChange")]
+
+      private var _occursAt: Date = new Date(0);
+      [Bindable(event="occursAtChange")]
       /**
-       * A fixed moment in time.  This property does not change over time but <code>occuresIn</code> and
-       * <code>hasOccured</code> does. You can't set this property to <code>null</code>: error will be thrown.
+       * A fixed moment in time.  This property does not change over time but
+       * <code>occursIn</code> and <code>hasOccurred</code> does. You can't set
+       * this property to <code>null</code>: error will be thrown.
        * 
-       * @see #occuresIn
-       * @see #hasOccured
+       * @see #occursIn
+       * @see #hasOccurred
        */
-      public function set occuresAt(value:Date) : void
-      {
+      public function set occursAt(value: Date): void {
          Objects.paramNotNull("value", value);
-         if (_occuresAt != value)
-         {
-            _occuresAt = value;
-            occuresAtUpdated();
-            occuresInUpdated();
-            hasOccuredUpdated();
+         if (_occursAt != value) {
+            _occursAt = value;
+            occursAtUpdated();
+            occursInUpdated();
+            hasOccurredUpdated();
             occurredBeforeUpdated();
-            _hasOccuredDispatched = false;
+            _hasOccurredDispatched = false;
          }
       }
-      /**
-       * @private
-       */
-      public override function get occuresAt() : Date
-      {
-         return _occuresAt;
+      public override function get occursAt(): Date {
+         return _occursAt;
       }
       
       
-      [Bindable(event="hasOccuredChange")]
-      public override function get hasOccured() : Boolean
-      {
-         return _occuresAt.time <= DateUtil.now;
+      [Bindable(event="hasOccurredChange")]
+      public override function get hasOccurred(): Boolean {
+         return _occursAt.time <= DateUtil.now;
       }
 
-      change_flag var occuredBefore: Boolean = true;
+      change_flag var occurredBefore: Boolean = true;
       /**
        * Number of seconds the event has occurred before or 0 if event has not
        * yet occurred.
        */
-      [Bindable(event="occuredBeforeChange")]
+      [Bindable(event="occurredBeforeChange")]
       public function get occurredBefore(): Number {
-         var diff:Number = DateUtil.now - _occuresAt.time;
+         var diff: Number = DateUtil.now - _occursAt.time;
          return diff < 0 ? 0 : Math.floor(diff / 1000);
       }
 
-      [Bindable(event="occuredBeforeChange")]
-      public function occurredBeforeString(timeParts:int = 2): String {
+      [Bindable(event="occurredBeforeChange")]
+      public function occurredBeforeString(timeParts: int = 2): String {
          return DateUtil.secondsToHumanString(occurredBefore, timeParts);
       }
       
@@ -108,29 +93,27 @@ package models.time
       /* ###################### */
       /* ### IMSelfUpdating ### */
       /* ###################### */
-      
-      
-      private var _hasOccuredDispatched:Boolean = false;
-      
-      
-      public override function update() : void
-      {
-         if (!hasOccured) {
-            occuresInUpdated();
+
+
+      private var _hasOccurredDispatched: Boolean = false;
+
+      public override function update(): void {
+         if (!hasOccurred) {
+            occursInUpdated();
          }
-         if (!_hasOccuredDispatched && hasOccured) {
-            _hasOccuredDispatched = true;
-            hasOccuredUpdated();
-            occuresInUpdated();
+         if (!_hasOccurredDispatched && hasOccurred) {
+            _hasOccurredDispatched = true;
+            hasOccurredUpdated();
+            occursInUpdated();
          }
-         if (_occuresAt.time <= DateUtil.now) {
+         if (_occursAt.time <= DateUtil.now) {
             occurredBeforeUpdated();
          }
       }
 
       public override function resetChangeFlags(): void {
          super.resetChangeFlags();
-         change_flag::occuredBefore = false;
+         change_flag::occurredBefore = false;
       }
 
 
@@ -139,7 +122,7 @@ package models.time
       /* ############### */
 
       private function occurredBeforeUpdated(): void {
-         change_flag::occuredBefore = true;
+         change_flag::occurredBefore = true;
          dispatchSimpleEvent(
             MTimeEventEvent,
             MTimeEventEvent.OCCURRED_BEFORE_CHANGE

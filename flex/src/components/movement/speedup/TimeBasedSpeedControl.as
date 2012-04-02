@@ -60,14 +60,14 @@ package components.movement.speedup
       private const _arrivalEventFixedInterval: MTimeEventFixedInterval =
                        new MTimeEventFixedInterval();
       private function recalculateTripTime(): void {
-         _arrivalEventFixedInterval.occuresIn =
+         _arrivalEventFixedInterval.occursIn =
             _baseValues.tripTime * speedModifier;
-         const oldDate: Date = _arrivalEvent.occuresAt;
+         const oldDate: Date = _arrivalEvent.occursAt;
          oldDate.milliseconds = 0;
-         const newDate: Date = _arrivalEventFixedInterval.occuresAt;
+         const newDate: Date = _arrivalEventFixedInterval.occursAt;
          newDate.milliseconds = 0;
          if (oldDate.time != newDate.time) {
-            _arrivalEvent.occuresAt = newDate;
+            _arrivalEvent.occursAt = newDate;
             dispatchSpeedControlEvent(SpeedControlEvent.ARRIVAL_TIME_CHANGE);
          }
       }
@@ -109,7 +109,7 @@ package components.movement.speedup
       }
 
       private function get arrivalDate(): Date {
-         return _arrivalEvent.occuresAt;
+         return _arrivalEvent.occursAt;
       }
 
       [Bindable(event="arrivalTimeChange")]

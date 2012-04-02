@@ -1,7 +1,5 @@
 package models.movement
 {
-   import controllers.timedupdate.MasterUpdateTrigger;
-
    import flash.errors.IllegalOperationError;
 
    import interfaces.ICleanable;
@@ -12,7 +10,6 @@ package models.movement
    import models.Owner;
    import models.factories.UnitFactory;
    import models.location.ILocationUser;
-   import models.location.Location;
    import models.location.LocationMinimal;
    import models.movement.events.MRouteEvent;
    import models.movement.events.MRouteEventChangeKind;
@@ -27,18 +24,17 @@ package models.movement
    import mx.logging.Log;
 
    import utils.Objects;
-   import utils.datastructures.Collections;
 
 
    /**
-    * Dispatched when a hop has been added to or removed from the route. Event is not dispatched when a move
-    * occures between two different maps.
+    * Dispatched when a hop has been added to or removed from the route. Event
+    * is not dispatched when a move occurs between two different maps.
     */
    [Event(name="change", type="models.movement.events.MRouteEvent")]
    
    /**
-    * Dispatched when the squadron moves to a new location. Event is not dispatched when a move occures
-    * between two different maps.
+    * Dispatched when the squadron moves to a new location. Event is not
+    * dispatched when a move occurs between two different maps.
     */
    [Event(name="move", type="models.movement.events.MSquadronEvent")]
    
@@ -49,9 +45,12 @@ package models.movement
    
    
    /**
-    * Squadrons that have <code>pending</code> set to <code>true</code> are not moved.
+    * Squadrons that have <code>pending</code> set to <code>true</code>
+    * are not moved.
     */
-   public class MSquadron extends BaseModel implements ICleanable, ILocationUser, IUpdatable
+   public class MSquadron extends BaseModel implements ICleanable,
+                                                       ILocationUser,
+                                                       IUpdatable
    {
       private function get logger() : ILogger {
          return Log.getLogger("MOVEMENT");
@@ -243,18 +242,7 @@ package models.movement
        * [Bindable]</i></p>
        */
       public var currentHop:MHop = null;
-      
-      /**
-       * @see models.movement.MRoute#jumpsAtEvent
-       */
-      public function set jumpsAtEvent(value:MTimeEventFixedMoment) : void {
-         Objects.notNull(
-            route,
-            "[prop jumpsAtEvent] can be set only if [prop route] is not"
-               + " null.\nthis: " + this
-         );
-         route.jumpsAtEvent = value;
-      }
+
       public function get jumpsAtEvent() : MTimeEventFixedMoment {
          return route != null ? route.jumpsAtEvent : null;
       }
@@ -414,7 +402,7 @@ package models.movement
          
          // look for the last hop the squad has to jump to
          for each (hop in hops) {
-            if (hop.arrivalEvent.occuresAt.time <= time) {
+            if (hop.arrivalEvent.occursAt.time <= time) {
                endHop = hop;
             }
             else {
@@ -516,18 +504,14 @@ package models.movement
       /* ################## */
 
       public function update(): void {
-         if (isHostile && jumpsAtEvent != null) {
-            jumpsAtEvent.update();
-         }
-         MasterUpdateTrigger.update(hops);
+         updateItem(jumpsAtEvent);
+         updateList(hops);
          dispatchUpdateEvent();
       }
 
       public function resetChangeFlags(): void {
-         if (isHostile && jumpsAtEvent != null) {
-            jumpsAtEvent.resetChangeFlags();
-         }
-         MasterUpdateTrigger.resetChangeFlags(hops);
+         resetChangeFlagsOf(jumpsAtEvent);
+         resetChangeFlagsOfList(hops);
       }
       
       
@@ -536,11 +520,13 @@ package models.movement
       /* ########################### */
       
       public override function equals(o:Object) : Boolean {
-         if (!super.equals(o))
+         if (!super.equals(o)) {
             return false;
-         var squad:MSquadron = MSquadron(o);
-         if (!squad.isMoving)
+         }
+         var squad: MSquadron = MSquadron(o);
+         if (!squad.isMoving) {
             return squad.owner == owner && squad.currentHop.equals(currentHop);
+         }
          return true;
       }
       
@@ -590,7 +576,7 @@ package models.movement
       
       private function dispatchHopAddEvent(hop:MHop) : void {
          if (hasEventListener(MRouteEvent.CHANGE)) {
-            var event:MRouteEvent = new MRouteEvent(MRouteEvent.CHANGE);
+            var event: MRouteEvent = new MRouteEvent(MRouteEvent.CHANGE);
             event.kind = MRouteEventChangeKind.HOP_ADD;
             event.hop = hop;
             dispatchEvent(event);

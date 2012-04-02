@@ -1,45 +1,45 @@
 package models.solarsystem
 {
    import config.Config;
-   
+
    import controllers.alliances.AlliancesCommand;
    import controllers.alliances.actions.InviteActionParams;
    import controllers.ui.NavigationController;
-   
+
    import flash.display.BitmapData;
    import flash.errors.IllegalOperationError;
-   import flash.events.Event;
 
    import globalevents.GResourcesEvent;
-   import globalevents.GlobalEvent;
-   
+
    import interfaces.ICleanable;
-   
+   import interfaces.IUpdatable;
+
    import models.BaseModel;
-   import models.galaxy.events.GalaxyEvent;
-   import models.map.IMStaticSpaceObject;
    import models.Owner;
    import models.cooldown.MCooldown;
+   import models.galaxy.events.GalaxyEvent;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
    import models.location.LocationType;
+   import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
    import models.player.PlayerMinimal;
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.solarsystem.events.MSSObjectEvent;
    import models.tile.TerrainType;
-   
+   import models.time.MTimeEventFixedMoment;
+
    import namespaces.prop_name;
-   
+
    import utils.DateUtil;
    import utils.NameResolver;
    import utils.StringUtil;
    import utils.assets.AssetNames;
    import utils.locale.Localizer;
-   
-   
+
+
    /**
     * Dispatched when player who owns this solar system object has changed.
     * 
@@ -75,7 +75,8 @@ package models.solarsystem
     * latestPlanet ssObject model and ssMap objects list ssObject model resource...
     * so, TODO: find out the way to keep same references for ssObjects in different lists */
    public class MSSObject extends BaseModel implements IMStaticSpaceObject,
-                                                       ICleanable
+                                                       ICleanable,
+                                                       IUpdatable
    {
       /**
        * Returns variation id of a solar system object of given type, terrain and with given id.
@@ -129,12 +130,10 @@ package models.solarsystem
       
       public function MSSObject() {
          super();
-         registerOrUnregisterTimedUpdateHandler();
          registerOtherEventHandlers();
       }
-      
-      public function cleanup() : void {
-         unregisterTimedUpdateHandler();
+
+      public function cleanup(): void {
          unregisterOtherEventHandlers();
       }
       
@@ -151,14 +150,14 @@ package models.solarsystem
       public var solarSystemId:int = 0;
       
       /**
-       * Idicates if this <code>MSSObject</code> in a battleground solar system.
+       * Indicates if this <code>MSSObject</code> in a battleground solar system.
        */
       public function get inBattleground() : Boolean {
          return ML.latestGalaxy.isBattleground(solarSystemId);
       }
       
       /**
-       * Idicates if this <code>MSSObject</code> in a mini-battleground solar system.
+       * Indicates if this <code>MSSObject</code> in a mini-battleground solar system.
        */
       public function get inMiniBattleground() : Boolean {
          return ML.latestGalaxy.isMiniBattleground(solarSystemId);
@@ -291,10 +290,9 @@ package models.solarsystem
        * 
        * @default <code>SSObjectType.PLANET</code>
        */
-      public function set type(value:String) : void {
+      public function set type(value: String): void {
          if (_type != value) {
             _type = value;
-            registerOrUnregisterTimedUpdateHandler();
          }
       }
       /**
@@ -304,19 +302,19 @@ package models.solarsystem
          return _type;
       }
 
-      private var _nextRaidAt: Date;
+      private var _nextRaidEvent: MTimeEventFixedMoment;
       
-      [Optional]
+      [Optional(alias="nextRaidAt")]
       [Bindable (event="raidStateChange")]
-      public function set nextRaidAt(value: Date): void
-      {
-         _nextRaidAt = value;
-         dispatchRaidStateChangeEvent();
+      public function set nextRaidEvent(value: MTimeEventFixedMoment): void {
+         if (_nextRaidEvent != value) {
+            _nextRaidEvent = value;
+            dispatchRaidStateChangeEvent();
+         }
       }
 
-      public function get nextRaidAt(): Date
-      {
-         return _nextRaidAt;
+      public function get nextRaidEvent(): MTimeEventFixedMoment {
+         return _nextRaidEvent;
       }
 
       [Optional]
@@ -326,9 +324,8 @@ package models.solarsystem
       [Bindable (event="raidStateChange")]
       public function get apocalypseWillBeStartedBeforeRaid(): Boolean
       {
-         return ML.latestGalaxy.apocalypseActive && nextRaidAt != null
-                 && (ML.latestGalaxy.apocalypseStartEvent.occuresAt.time <
-                     nextRaidAt.time);
+         return ML.latestGalaxy.apocalypseActive && nextRaidEvent != null
+                 && ML.latestGalaxy.apocalypseStartEvent.before(nextRaidEvent);
       }
       
       [Bindable(event="willNotChange")]
@@ -434,7 +431,7 @@ package models.solarsystem
        * 
        * @default 0
        */
-      public var position:int = 0;
+      public var position: int = 0;
       
       [SkipProperty]
       [Required]
@@ -449,9 +446,9 @@ package models.solarsystem
        * 
        * @default 0
        */
-      public var angle:int = 0;
-      
-      private var _currentLocation:LocationMinimal
+      public var angle: int = 0;
+
+      private var _currentLocation: LocationMinimal;
       [Bindable(event="willNotChange")]
       public function get currentLocation() : LocationMinimal {
          if (!_currentLocation) {
@@ -515,14 +512,13 @@ package models.solarsystem
        * [Bindable(event="ownerChange")]
        * </p>
        */
-      public function set owner(value:int) : void {
+      public function set owner(value: int): void {
          if (_owner != value) {
             _owner = value;
             dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.OWNER_CHANGE);
             dispatchPropertyUpdateEvent(prop_name::owner, _owner);
             dispatchPropertyUpdateEvent(prop_name::isOwned, isOwned);
             dispatchPropertyUpdateEvent(prop_name::ownerIsPlayer, ownerIsPlayer);
-            registerOrUnregisterTimedUpdateHandler();
          }
       }
       /**
@@ -657,12 +653,10 @@ package models.solarsystem
        * <p><i><b>Metadata</b>:<br/>
        * [Optional]</i></p>
        */
-      public function set lastResourcesUpdate (value: Date): void
-      {
+      public function set lastResourcesUpdate(value: Date): void {
          _lastResourcesUpdate = value;
-         registerOrUnregisterTimedUpdateHandler();
       }
-      
+
       public function get lastResourcesUpdate (): Date
       {
          return _lastResourcesUpdate;
@@ -677,100 +671,76 @@ package models.solarsystem
       
       [Bindable]
       public var zetium:Resource;
-      
-      
-      private var timedUpdateHandlerRegistered:Boolean = false;
-      private function registerOrUnregisterTimedUpdateHandler() : void {
-         if (isPlanet && lastResourcesUpdate != null)
-            registerTimedUpdateHandler();
-         else
-            unregisterTimedUpdateHandler();
-      }
 
-      private function registerOtherEventHandlers(): void
-      {
-         if (ML.latestGalaxy != null)
-         {
+      private function registerOtherEventHandlers(): void {
+         if (ML.latestGalaxy != null) {
             registerApocalypseEventListener();
          }
-         else
-         {
-            ML.addEventListener(GalaxyEvent.GALAXY_READY,
-                    registerApocalypseEventListener);
+         else {
+            ML.addEventListener(
+               GalaxyEvent.GALAXY_READY,
+               registerApocalypseEventListener, false, 0, true
+            );
          }
       }
 
-      private function registerApocalypseEventListener(e: GalaxyEvent = null): void
-      {
-         if (e != null)
-         {
-            ML.removeEventListener(GalaxyEvent.GALAXY_READY,
-                    registerApocalypseEventListener);
+      private function registerApocalypseEventListener(e: GalaxyEvent = null): void {
+         if (e != null) {
+            ML.removeEventListener(
+               GalaxyEvent.GALAXY_READY, registerApocalypseEventListener, false
+            );
          }
          ML.latestGalaxy.addEventListener(
-                 GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE,
-                 dispatchRaidStateChangeEvent);
+            GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE,
+            dispatchRaidStateChangeEvent, false, 0, true
+         );
       }
 
-      private function unregisterOtherEventHandlers(): void
-      {
-         if (ML.latestGalaxy != null)
-         {
+      private function unregisterOtherEventHandlers(): void {
+         if (ML.latestGalaxy != null) {
             ML.latestGalaxy.removeEventListener(
-                    GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE,
-                    dispatchRaidStateChangeEvent);
+               GalaxyEvent.APOCALYPSE_START_EVENT_CHANGE,
+               dispatchRaidStateChangeEvent, false
+            );
          }
-         else
-         {
-            ML.removeEventListener(GalaxyEvent.GALAXY_READY,
-                    registerApocalypseEventListener);
+         else {
+            ML.removeEventListener(
+               GalaxyEvent.GALAXY_READY,
+               registerApocalypseEventListener, false
+            );
          }
       }
 
-      private function registerTimedUpdateHandler() : void {
-         if (!timedUpdateHandlerRegistered) {
-            timedUpdateHandlerRegistered = true;
-            GlobalEvent.subscribe_TIMED_UPDATE(recalculateResources);
+      private function recalculateResources() : void {
+         if (!isPlanet || lastResourcesUpdate == null) {
+            return;
          }
-      }
-      private function unregisterTimedUpdateHandler() : void {
-         if (timedUpdateHandlerRegistered) {
-            timedUpdateHandlerRegistered = false;
-            GlobalEvent.unsubscribe_TIMED_UPDATE(recalculateResources);
-         }
-      }
-      
-      
-      private function recalculateResources(event:GlobalEvent) : void {
-         var timeDiff:Number = Math.floor((DateUtil.now - lastResourcesUpdate.time) / 1000);
+         const timeDiff: Number =
+                  Math.floor((DateUtil.now - lastResourcesUpdate.time) / 1000);
          var resourceIncreased: Boolean = false;
          var resourceDecreased: Boolean = false;
-         for each (var type:String in [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM]) {
-            var resource:Resource = this[type];
+         for each (var type: String in
+            [ResourceType.ENERGY, ResourceType.METAL, ResourceType.ZETIUM]) {
+            const resource: Resource = this[type];
             resource.boost.refreshBoosts();
-            var oldStock: Number = resource.currentStock;
+            const oldStock: Number = resource.currentStock;
             resource.currentStock = Math.max(0, Math.min(
                resource.maxStock,
                this[type + "AfterLastUpdate"] + resource.rate * timeDiff
             ));
-            if (oldStock > resource.currentStock)
-            {
+            if (oldStock > resource.currentStock) {
                resourceDecreased = true;
             }
-            else if (oldStock < resource.currentStock)
-            {
+            else if (oldStock < resource.currentStock) {
                resourceIncreased = true;
             }
          }
          /* CHECKING FOR SS OBJECT BY ID, NOT REFERENCE, READ MSsObject DOCUMENTATION FOR REASONS */
          if ((resourceDecreased || resourceIncreased) && ML.latestPlanet && ML.latestPlanet.ssObject
-            && this.id == ML.latestPlanet.ssObject.id)
+                && this.id == ML.latestPlanet.ssObject.id) {
             new GResourcesEvent(GResourcesEvent.RESOURCES_CHANGE,
-               resourceIncreased, resourceDecreased);
-         if (nextRaidAt != null)
-            raidTime = DateUtil.secondsToHumanString((nextRaidAt.time - DateUtil.now)/1000,2);
-         else
-            raidTime = null;
+                                resourceIncreased, resourceDecreased);
+         }
       }
       
       [Bindable]
@@ -795,19 +765,15 @@ package models.solarsystem
       public function get canDestroyBuilding(): Boolean {
          return (!canDestroyBuildingAt || (canDestroyBuildingAt.time < (new Date().time)));
       }
-      
-      public function get timeLeftToDestroyBuilding() : int {
-         return 0;
-      }
-      
+
       /* ################### */
       /* ### EXPLORATION ### */
       /* ################### */
-      
-      prop_name static const explorationEndsAt:String = "explorationEndsAt";
-      private var _explorationEndsAt:Date = null;
+
+      prop_name static const explorationEndEvent: String = "explorationEndEvent";
+      private var _explorationEndEvent: MTimeEventFixedMoment = null;
       [Bindable]
-      [Optional]
+      [Optional(alias="explorationEndsAt")]
       /**
        * Time when exploration (if underway) will end.
        * 
@@ -815,10 +781,10 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set explorationEndsAt(value:Date) : void {
-         if (_explorationEndsAt != value) {
-            _explorationEndsAt = value;
-            if (_explorationEndsAt == null) {
+      public function set explorationEndEvent(value: MTimeEventFixedMoment): void {
+         if (_explorationEndEvent != value) {
+            _explorationEndEvent = value;
+            if (_explorationEndEvent == null) {
                explorationX = -1;
                explorationY = -1;
             }
@@ -827,8 +793,8 @@ package models.solarsystem
       /**
        * @private
        */
-      public function get explorationEndsAt() : Date {
-         return _explorationEndsAt;
+      public function get explorationEndEvent() : MTimeEventFixedMoment {
+         return _explorationEndEvent;
       }
       
       prop_name static const explorationX:String = "explorationX";
@@ -1025,12 +991,39 @@ package models.solarsystem
        * <p><i><b>Metadata</b>:<br/>
        * [Bindable]<br/>
        * [Optional]</i></p>
-       */      
+       */
       public var ownerChanged: Date;
 
-      private function dispatchRaidStateChangeEvent(e: GalaxyEvent = null): void
-      {
+      private function dispatchRaidStateChangeEvent(e: GalaxyEvent = null): void {
          dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.RAID_STATE_CHANGE);
+      }
+
+
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+
+
+      public function update(): void {
+         recalculateResources();
+         updateItem(nextRaidEvent);
+         updateItem(explorationEndEvent);
+         if (cooldown != null) {
+            cooldown.update();
+            if (cooldown.endsEvent.hasOccurred) {
+               cooldown = null;
+            }
+         }
+         raidTime = nextRaidEvent != null
+                       ? nextRaidEvent.occursInString()
+                       : null;
+         dispatchUpdateEvent();
+      }
+
+      public function resetChangeFlags(): void {
+         resetChangeFlagsOf(nextRaidEvent);
+         resetChangeFlagsOf(explorationEndEvent);
+         resetChangeFlagsOf(cooldown);
       }
    }
 }

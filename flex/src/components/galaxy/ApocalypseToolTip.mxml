@@ -66,15 +66,15 @@
            alpha="0.9"/>
    <s:RichText color="#EEC500" fontSize="12" fontWeight="bold"
                lineBreak="toFit" textAlign="center"
-               textFlow="{apocalypseEvent.hasOccured
+               textFlow="{apocalypseEvent.hasOccurred
                ? getFlow(true, [
-                  apocalypseEvent.occuresAtString(),
+                  apocalypseEvent.occursAtString(),
                   DateUtil.secondsToDays(apocalypseEvent.occurredBefore),
                   getReward(apocalypseEvent.occurredBefore)
                  ])
                : getFlow(false, [
-                  apocalypseEvent.occuresAtString(),
-                  getTime(apocalypseEvent.occuresIn)
+                  apocalypseEvent.occursAtString(),
+                  getTime(apocalypseEvent.occursIn)
                  ])}"
            left="5" right="5" top="5" bottom="5"/>
 </s:Group>

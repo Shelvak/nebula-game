@@ -102,7 +102,7 @@ package tests.announcement
          endsAt.setUTCFullYear(2000, 0, 1);
          endsAt.setUTCHours(0, 0, 0, 0);
          assertThat( "announcement.message updated", announcement.message, equals ("Server shutdown") );
-         assertThat( "announcement.event updated", announcement.event.occuresAt, dateEqual (endsAt) );
+         assertThat( "announcement.event updated", announcement.event.occursAt, dateEqual (endsAt) );
       }
       
       [Test]

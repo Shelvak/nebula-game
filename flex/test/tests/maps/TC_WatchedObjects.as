@@ -217,7 +217,7 @@ package tests.maps
                               arrivesAt: Date): MHop {
          var hop: MHop = new MHop();
          hop.index = index;
-         hop.arrivalEvent.occuresAt = arrivesAt;
+         hop.arrivalEvent.occursAt = arrivesAt;
          hop.location = getGalaxyLocation(GALAXY_ID, x, y);
          return hop;
       }

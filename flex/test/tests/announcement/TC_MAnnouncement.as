@@ -74,17 +74,17 @@ package tests.announcement
       public function update() : void {
          assertThat( "announcement is updatable", announcement, isA (IUpdatable) );
          announcement.update();
-         assertThat( "event is updated", announcement.event.change_flag::occuresAt, isTrue() );
+         assertThat( "event is updated", announcement.event.change_flag::occursAt, isTrue() );
          announcement.resetChangeFlags();
-         assertThat( "event is reset", announcement.event.change_flag::occuresAt, isFalse() );
+         assertThat( "event is reset", announcement.event.change_flag::occursAt, isFalse() );
       }
       
       [Test]
       public function buttonVisible() : void {
-         announcement.event.occuresAt = new Date(2000, 0, 1);
+         announcement.event.occursAt = new Date(2000, 0, 1);
          assertThat( "not visible if past event", announcement.buttonVisible, isFalse() );
          
-         announcement.event.occuresAt = new Date(2100, 0, 1);
+         announcement.event.occursAt = new Date(2100, 0, 1);
          assertThat( "visible if future event", announcement.buttonVisible, isTrue() );
 
          assertThat(
@@ -99,11 +99,11 @@ package tests.announcement
       
       [Test]
       public function reset() : void {
-         announcement.event.occuresAt = new Date(2200, 0, 1);
+         announcement.event.occursAt = new Date(2200, 0, 1);
          announcement.message = "Message";
          announcement.reset();
          assertThat( "message cleared", announcement.message, nullValue() );
-         assertThat( "event reset", announcement.event.occuresAt, dateEqual (new Date(0)) );
+         assertThat( "event reset", announcement.event.occursAt, dateEqual (new Date(0)) );
          
          assertThat(
             "resetting announcement model", function():void{ announcement.reset() },

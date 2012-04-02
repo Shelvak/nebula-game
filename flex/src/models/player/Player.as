@@ -1,9 +1,9 @@
 package models.player
 {
    import config.Config;
-   
+
    import interfaces.IUpdatable;
-   
+
    import models.Reward;
    import models.parts.events.UpgradeEvent;
    import models.player.events.PlayerEvent;
@@ -12,22 +12,20 @@ package models.player
    import models.technology.Technology;
    import models.time.MTimeEventFixedMoment;
    import models.time.events.MTimeEventEvent;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.Sort;
-   import mx.events.CollectionEvent;
-   import mx.events.CollectionEventKind;
    import mx.utils.ObjectUtil;
-   
+
    import namespaces.prop_name;
-   
+
    import utils.DateUtil;
    import utils.MathUtil;
    import utils.NumberUtil;
    import utils.Objects;
    import utils.datastructures.Collections;
-   
-   
+
+
    /**
     * @see models.player.events.PlayerEvent#POPULATION_CAP_CHANGE
     * @eventType models.player.events.PlayerEvent.POPULATION_CAP_CHANGE
@@ -88,10 +86,8 @@ package models.player
          planets.sort.fields = new Array();
          planets.sort.compareFunction = compareFunction_planets;
          planets.refresh();
-         _allianceCooldown = new MTimeEventFixedMoment();
-         _allianceCooldown.occuresAt = DateUtil.BEGINNING;
-         _allianceCooldown.addEventListener
-            (MTimeEventEvent.HAS_OCCURED_CHANGE, allianceCooldown_hasOccurredChange,  false, 0, true);
+         allianceCooldown.addEventListener
+            (MTimeEventEvent.HAS_OCCURRED_CHANGE, allianceCooldown_hasOccurredChange,  false, 0, true);
       }
       
       [Optional]
@@ -168,7 +164,7 @@ package models.player
          if (_creds != value)
          {
             _creds = value;
-            dispatchCredsChangeEvent();
+            dispatchPlayerEvent(PlayerEvent.CREDS_CHANGE);
          }
       }
       /**
@@ -222,7 +218,8 @@ package models.player
       public function set populationCap(value: int): void
       {
          _populationCap = value;
-         dispatchPopulationCapChangeEvent();
+         dispatchPlayerEvent(PlayerEvent.POPULATION_CAP_CHANGE);
+         dispatchPopulationChangeEvent();
       }
       
       [Bindable (event="populationCapChange")]
@@ -260,7 +257,7 @@ package models.player
          if (_scientists != value)
          {
             _scientists = value;
-            dispatchScientistsChangeEvent();
+            dispatchPlayerEvent(PlayerEvent.SCIENTISTS_CHANGE);
             dispatchPropertyUpdateEvent(prop_name::scientists, value);
          }
       }
@@ -414,10 +411,8 @@ package models.player
          return _allianceCooldownId;
       }
 
-      private var _allianceCooldown:MTimeEventFixedMoment;
-      public function get allianceCooldown() : MTimeEventFixedMoment {
-         return _allianceCooldown;
-      }
+      public const allianceCooldown: MTimeEventFixedMoment
+                      = new MTimeEventFixedMoment();
       
       private function allianceCooldown_hasOccurredChange(event:MTimeEventEvent) : void {
          dispatchPlayerEvent(PlayerEvent.ALLIANCE_COOLDOWN_CHANGE);
@@ -426,12 +421,12 @@ package models.player
       [Bindable(event="allianceCooldownChange")]
       public function allianceCooldownInEffect(allianceId: int = 0) : Boolean {
          Objects.paramPositiveNumber("allianceId", allianceId);
-         if (_allianceCooldownId == 0) {
-            return !_allianceCooldown.hasOccured;
+         if (allianceCooldownId == 0) {
+            return !allianceCooldown.hasOccurred;
          }
          else {
-            return _allianceCooldownId == allianceId
-                      && !_allianceCooldown.hasOccured;
+            return allianceCooldownId == allianceId
+                      && !allianceCooldown.hasOccurred;
          }
       }
       
@@ -598,35 +593,44 @@ package models.player
       /* ################## */
       /* ### IUpdatable ### */
       /* ################## */
-      
-      public function update() : void {
-         var now:Number = DateUtil.now;
-         
-         _allianceCooldown.update();
-         
-         if (vipCredsUntil != null && vipCredsUntil.time > now)
-            vipCredsTime = DateUtil.secondsToHumanString((vipCredsUntil.time - now) / 1000, 2);
-         else
+
+      public function update(): void {
+         const now: Number = DateUtil.now;
+
+         updateItem(allianceCooldown);
+         updateList(planets);
+
+         if (vipCredsUntil != null && vipCredsUntil.time > now) {
+            vipCredsTime = DateUtil.secondsToHumanString(
+               (vipCredsUntil.time - now) / 1000, 2
+            );
+         }
+         else {
             vipCredsTime = null;
-         
-         if (vipUntil != null && vipUntil.time > now)
-            vipTime = DateUtil.secondsToHumanString((vipUntil.time - now) / 1000, 2);
-         else
+         }
+
+         if (vipUntil != null && vipUntil.time > now) {
+            vipTime = DateUtil.secondsToHumanString(
+               (vipUntil.time - now) / 1000, 2
+            );
+         }
+         else {
             vipTime = null;
+         }
          
          dispatchUpdateEvent();
       }
       
       public function resetChangeFlags() : void {
-         _allianceCooldown.resetChangeFlags();
+         resetChangeFlagsOf(allianceCooldown);
+         resetChangeFlagsOfList(planets);
       }
       
       
       /* ########################### */
       /* ### BaseModel OVERRIDES ### */
       /* ########################### */
-      
-      
+
       public override function toString() : String {
          return "[class: " + className + ", id: " + id + ", name: " + name + "]";
       }
@@ -635,32 +639,16 @@ package models.player
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
-      
-      private function dispatchPlayerEvent(type:String) : void {
-         dispatchSimpleEvent(PlayerEvent as Class, type);
+
+      private function dispatchPlayerEvent(type: String): void {
+         dispatchSimpleEvent(PlayerEvent, type);
       }
 
-      private function dispatchPlanetCountChangeEvent(): void
-      {
+      private function dispatchPlanetCountChangeEvent(): void {
          dispatchPlayerEvent(PlayerEvent.PLANET_COUNT_CHANGE);
       }
-      
-      private function dispatchScientistsChangeEvent(): void {
-         dispatchPlayerEvent(PlayerEvent.SCIENTISTS_CHANGE);
-      }
-      
-      private function dispatchCredsChangeEvent(): void {
-         dispatchPlayerEvent(PlayerEvent.CREDS_CHANGE);
-      }
-      
-      private function dispatchPopulationCapChangeEvent() : void
-      {
-         dispatchPlayerEvent(PlayerEvent.POPULATION_CAP_CHANGE);
-         dispatchPopulationChangeEvent();
-      }
-      
-      private function dispatchPopulationChangeEvent() : void
-      {
+
+      private function dispatchPopulationChangeEvent(): void {
          dispatchPlayerEvent(PlayerEvent.POPULATION_CHANGE);
       }
    }

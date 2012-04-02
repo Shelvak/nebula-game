@@ -62,7 +62,7 @@ package components.movement.speedup
       [Bindable(event="arrivalTimeChange")]
       public function get label_arrivesAt(): String {
          return Localizer.string(
-            "Movement", "speedup.label.arrivesAt", [arrivalEvent.occuresAtString(true)]
+            "Movement", "speedup.label.arrivesAt", [arrivalEvent.occursAtString(true)]
          );
       }
 
@@ -78,7 +78,7 @@ package components.movement.speedup
       }
 
       private function recalculateActualTripTime(): void {
-         _arrivalEvent.occuresIn = _baseValues.tripTime * speedModifier;
+         _arrivalEvent.occursIn = _baseValues.tripTime * speedModifier;
       }
 
       public function reset(): void {

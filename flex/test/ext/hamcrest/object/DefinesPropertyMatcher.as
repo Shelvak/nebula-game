@@ -2,7 +2,6 @@ package ext.hamcrest.object
 {
    import flash.utils.describeType;
 
-   import org.hamcrest.BaseMatcher;
    import org.hamcrest.Description;
    import org.hamcrest.Matcher;
    import org.hamcrest.TypeSafeMatcher;
@@ -30,11 +29,20 @@ package ext.hamcrest.object
       override public function matchesSafely(item: Object): Boolean {
          _matchedClass = item as Class;
          const typeInfo: XML = describeType(_matchedClass).factory[0];
+         const typeName: String = typeInfo.@type[0];
          var propInfo: XMLList = new XMLList();
          function findPropertyInfo(propertyType: String): void {
             if (propInfo.length() == 0) {
-               propInfo =
-                  typeInfo.child(propertyType).(@name == _expectedPropertyName);
+               // TODO: does not match correctly overridden properties
+               if (propertyType == "accessor") {
+                  propInfo = typeInfo.child(propertyType).
+                                (@name == _expectedPropertyName &&
+                                   @declaredBy == typeName);
+               }
+               else {
+                  propInfo = typeInfo.child(propertyType).
+                                (@name == _expectedPropertyName);
+               }
             }
          }
          findPropertyInfo("accessor");
@@ -67,9 +75,13 @@ package ext.hamcrest.object
       }
 
       override public function describeTo(description: Description): void {
+         if (_matchedClass != null) {
+            description
+               .appendValue(_matchedClass)
+               .appendText(" ");
+         }
          description
-            .appendValue(_matchedClass)
-            .appendText(" to define property ")
+            .appendText("to define property ")
             .appendValue(_expectedPropertyName)
             .appendText(" with ")
             .appendDescriptionOf(_propertyInfoMatcher);

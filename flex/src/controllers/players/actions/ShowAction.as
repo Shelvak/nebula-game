@@ -20,7 +20,7 @@ package controllers.players.actions
          Objects.update(ML.player, player);
          ML.player.allianceCooldownId = player["allianceCooldownId"];
          if (allianceCooldown != null) {
-            ML.player.allianceCooldown.occuresAt = DateUtil.parseServerDTF(allianceCooldown);
+            ML.player.allianceCooldown.occursAt = DateUtil.parseServerDTF(allianceCooldown);
          }
       }
    }

@@ -100,7 +100,7 @@
       <s:layout>
          <s:VerticalLayout horizontalAlign="center" gap="0"/>
       </s:layout>
-      <s:Label styleName="h1" text="{ANNOUNCEMENT.event.occuresAtString()}"/>
-      <s:Label styleName="h2" text="{ANNOUNCEMENT.event.occuresInString()}"/>
+      <s:Label styleName="h1" text="{ANNOUNCEMENT.event.occursAtString()}"/>
+      <s:Label styleName="h2" text="{ANNOUNCEMENT.event.occursInString()}"/>
    </s:Group>
 </popups:ActionConfirmationPopUp>

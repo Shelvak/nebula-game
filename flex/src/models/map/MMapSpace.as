@@ -1,10 +1,15 @@
 package models.map
 {
 
+   import interfaces.IUpdatable;
+
    import models.BaseModel;
+   import models.cooldown.MCooldown;
    import models.map.events.MMapEvent;
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
+
+   import mx.collections.ArrayCollection;
 
    import mx.collections.ListCollectionView;
 
@@ -19,11 +24,11 @@ package models.map
     */
    [Event(name="squadronMove", type="models.map.events.MMapEvent")]
    
-   public class MMapSpace extends MMap
+   public class MMapSpace extends MMap implements IUpdatable
    {
-      public static const STATIC_OBJECT_COOLDOWN:int = 0;
-      public static const STATIC_OBJECT_NATURAL:int = 1;
-      public static const STATIC_OBJECT_WRECKAGE:int = 2;
+      public static const STATIC_OBJECT_COOLDOWN: int = 0;
+      public static const STATIC_OBJECT_NATURAL: int = 1;
+      public static const STATIC_OBJECT_WRECKAGE: int = 2;
       
       public function MMapSpace() {
          super();
@@ -80,51 +85,52 @@ package models.map
             dispatchEvent(mapEvent);
          }
       }
-      
-      private var _wreckages:ListCollectionView;
-      private function ff_wreckages(object:IMStaticSpaceObject) : Boolean {
+
+      private var _wreckages: ListCollectionView;
+      private function ff_wreckages(object: IMStaticSpaceObject): Boolean {
          return object.objectType == STATIC_OBJECT_WRECKAGE;
       }
       [Bindable(event="willNotChange")]
       /**
        * List of all wreckages on this map (bound to <code>objects</code> collection).
        */
-      public function get wreckages() : ListCollectionView {
+      public function get wreckages(): ListCollectionView {
          return _wreckages;
       }
-      
-      private var _naturalObjects:ListCollectionView;
-      private function ff_naturalObjects(object:IMStaticSpaceObject) : Boolean {
+
+      private var _naturalObjects: ListCollectionView;
+      private function ff_naturalObjects(object: IMStaticSpaceObject): Boolean {
          return object.objectType == STATIC_OBJECT_NATURAL;
       }
       [Bindable(event="willNotChange")]
       /**
        * List of all naturalObjects on this map (bound to <code>objects</code> collection).
        */
-      public function get naturalObjects() : ListCollectionView {
+      public function get naturalObjects(): ListCollectionView {
          return _naturalObjects;
       }
-      
-      private var _cooldowns:ListCollectionView;
-      private function ff_cooldowns(object:IMStaticSpaceObject) : Boolean {
+
+      private var _cooldowns: ListCollectionView;
+      private function ff_cooldowns(object: IMStaticSpaceObject): Boolean {
          return object.objectType == STATIC_OBJECT_COOLDOWN;
       }
       [Bindable(event="willNotChange")]
       /**
        * List of all cooldowns on this map (bound to <code>objects</code> collection).
        */
-      public function get cooldowns() : ListCollectionView {
+      public function get cooldowns(): ListCollectionView {
          return _cooldowns;
       }
       
       private const _staticObjectsHash:StaticObjectsHash = new StaticObjectsHash();
-      
-      public override function addObject(object:BaseModel) : void {
+
+      public override function addObject(object: BaseModel): void {
          super.addObject(object);
          _staticObjectsHash.put(IMStaticSpaceObject(object));
       }
-      
-      public override function removeObject(object:BaseModel, silent:Boolean = false) : * {
+
+      public override function removeObject(object: BaseModel,
+                                            silent: Boolean = false): * {
          Objects.paramNotNull("object", object);
          const removedObject: IMStaticSpaceObject =
                   super.removeObject(object, silent);
@@ -133,10 +139,11 @@ package models.map
          }
          return removedObject;
       }
-      
-      protected function getAllStaticObjectsAt(x:int, y:int) : Array {
-         var objects:Array = new Array();
-         var sectorObjects:SectorObjects = _staticObjectsHash.getObjects(x, y);
+
+      protected function getAllStaticObjectsAt(x: int, y: int): Array {
+         const objects:Array = new Array();
+         const sectorObjects: SectorObjects =
+                  _staticObjectsHash.getObjects(x, y);
          if (sectorObjects != null) {
             if (sectorObjects.natural != null) objects.push(sectorObjects.natural);
             if (sectorObjects.wreckage != null) objects.push(sectorObjects.wreckage);
@@ -144,10 +151,33 @@ package models.map
          }
          return objects;
       }
-      
-      protected function getNaturalObjectAt(x:int, y:int) : IMStaticSpaceObject {
+
+      protected function getNaturalObjectAt(x: int,
+                                            y: int): IMStaticSpaceObject {
          var sectorObjects:SectorObjects = _staticObjectsHash.getObjects(x, y);
          return sectorObjects != null ? sectorObjects.natural : null;
+      }
+
+
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+
+      public override function update(): void {
+         const remove: ArrayCollection = new ArrayCollection();
+         for each (var cooldown: MCooldown in cooldowns) {
+            cooldown.update();
+            if (cooldown.endsEvent.hasOccurred) {
+               remove.addItem(cooldown);
+            }
+         }
+         removeAllObjects(remove);
+         super.update();
+      }
+
+      public override function resetChangeFlags(): void {
+         resetChangeFlagsOfList(cooldowns);
+         super.resetChangeFlags();
       }
    }
 }
@@ -163,26 +193,26 @@ class SectorObjects
 {
    public function SectorObjects() {
    }
-   
-   public var cooldown:IMStaticSpaceObject;
-   public var wreckage:IMStaticSpaceObject;
-   public var natural:IMStaticSpaceObject;
-   
-   public function get hasObjects() : Boolean {
+
+   public var cooldown: IMStaticSpaceObject;
+   public var wreckage: IMStaticSpaceObject;
+   public var natural: IMStaticSpaceObject;
+
+   public function get hasObjects(): Boolean {
       return cooldown != null || wreckage != null || natural != null;
    }
 }
 
 class StaticObjectsHash
 {
-   private const _hash:Dictionary = new Dictionary();
+   private const _hash: Dictionary = new Dictionary();
 
-   public function put(object:IMStaticSpaceObject) : void {
-      var hashCode:String = computeHashCode(
+   public function put(object: IMStaticSpaceObject): void {
+      var hashCode: String = computeHashCode(
          object.currentLocation.x,
          object.currentLocation.y
       );
-      var objects:SectorObjects = _hash[hashCode];
+      var objects: SectorObjects = _hash[hashCode];
       if (objects == null) {
          objects = new SectorObjects();
          _hash[hashCode] = objects;
@@ -203,14 +233,14 @@ class StaticObjectsHash
             );
       }
    }
-   
-   public function removeObject(object:IMStaticSpaceObject) : void {
-      var hashCode:String = computeHashCode(
+
+   public function removeObject(object: IMStaticSpaceObject): void {
+      var hashCode: String = computeHashCode(
          object.currentLocation.x,
          object.currentLocation.y
       );
 
-      var objects:SectorObjects = _hash[hashCode];
+      var objects: SectorObjects = _hash[hashCode];
       switch (object.objectType) {
          case MMapSpace.STATIC_OBJECT_NATURAL:
             objects.natural = null;
@@ -226,17 +256,17 @@ class StaticObjectsHash
                "Unknown object type " + object.objectType + "!"
             );
       }
-      
+
       if (!objects.hasObjects) {
          delete _hash[hashCode];
       }
    }
-   
-   public function getObjects(x:int, y:int) : SectorObjects {
+
+   public function getObjects(x: int, y: int): SectorObjects {
       return _hash[computeHashCode(x, y)];
    }
 
-   private function computeHashCode(x:int, y:int) : String {
+   private function computeHashCode(x: int, y: int): String {
       return x + "," + y;
    }
 }

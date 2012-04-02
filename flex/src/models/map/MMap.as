@@ -3,6 +3,7 @@ package models.map
    import flash.errors.IllegalOperationError;
 
    import interfaces.ICleanable;
+   import interfaces.IUpdatable;
 
    import models.BaseModel;
    import models.location.Location;
@@ -69,7 +70,7 @@ package models.map
     */
    [Event(name="objectRemove", type="models.map.events.MMapEvent")]
    
-   public class MMap extends BaseModel implements ICleanable
+   public class MMap extends BaseModel implements ICleanable, IUpdatable
    {
       private function get logger() : ILogger {
          return Log.getLogger("MAP");
@@ -146,8 +147,21 @@ package models.map
             "units":     ["id"]
          };
       }
-      
-      
+
+
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+
+      public function update(): void {
+         updateList(squadrons);
+         dispatchUpdateEvent();
+      }
+
+      public function resetChangeFlags(): void {
+         resetChangeFlagsOfList(squadrons);
+      }
+
       /* ################## */
       /* ### PROPERTIES ### */
       /* ################## */
@@ -229,12 +243,8 @@ package models.map
       public function get units() : ListCollectionView {
          return _units
       }
-      
-      public function get hasUnits() : Boolean {
-         return _units.length > 0;
-      }
-      
-      
+
+
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
