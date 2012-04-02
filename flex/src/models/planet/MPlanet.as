@@ -8,6 +8,7 @@ package models.planet
    import controllers.objects.ObjectClass;
 
    import interfaces.ICleanable;
+   import interfaces.IUpdatable;
 
    import models.BaseModel;
    import models.Owner;
@@ -26,6 +27,7 @@ package models.planet
    import models.solarsystem.MSSObject;
    import models.tile.Tile;
    import models.tile.TileKind;
+   import models.time.IMTimeEvent;
    import models.time.MTimeEventFixedMoment;
    import models.unit.RaidingUnitEntry;
    import models.unit.Unit;
@@ -69,12 +71,11 @@ package models.planet
    [Event(name="buildingUpgraded", type="models.planet.events.MPlanetEvent")]
    
    [Bindable]
-   public class MPlanet extends MMap
+   public class MPlanet extends MMap implements IUpdatable
    {
-      private var _zIndexCalculator:ZIndexCalculator = null;
-      
-      private var _foliageAnimator:PlanetFolliagesAnimator = null;
-      private var _suppressFoliageAnimatorUpdate:Boolean = false;
+      private var _zIndexCalculator: ZIndexCalculator = null;
+      private var _foliageAnimator: PlanetFolliagesAnimator = null;
+      private var _suppressFoliageAnimatorUpdate: Boolean = false;
 
       private function updateFoliageAnimator(): void {
          if (_suppressFoliageAnimatorUpdate) {
@@ -82,33 +83,34 @@ package models.planet
          }
          _foliageAnimator.setFolliages(nonblockingFolliages);
       }
-      
-      public function MPlanet(ssObject:MSSObject)
-      {
+
+      public function MPlanet(ssObject: MSSObject) {
          _ssObject = ssObject;
          super();
          _zIndexCalculator = new ZIndexCalculator(this);
          _foliageAnimator = new PlanetFolliagesAnimator();
          initMatrices();
-         _nonblockingFolliages = Collections.filter(objects, filterFunction_nonblockingFolliages);
-         _blockingFolliages = Collections.filter(objects, filterFunction_blockingFolliages);
-         _blockingObjects = Collections.filter(objects, filterFunction_blockingObjects);
+         _nonblockingFolliages =
+            Collections.filter(objects, filterFunction_nonblockingFolliages);
+         _blockingFolliages =
+            Collections.filter(objects, filterFunction_blockingFolliages);
+         _blockingObjects =
+            Collections.filter(objects, filterFunction_blockingObjects);
          _buildings = Collections.filter(objects, filterFunction_buildings);
          _folliages = Collections.filter(objects, filterFunction_folliages);
       }
 
-      public static function hasRaiders(
-         raidArg: int, nextRaidAt: Date, battleGround: Boolean,
-         apocalypseMoment: MTimeEventFixedMoment
-      ): Boolean
-      {
+      public static function hasRaiders(raidArg: int,
+                                        nextRaidEvent: IMTimeEvent,
+                                        battleGround: Boolean,
+                                        apocalypseMoment: MTimeEventFixedMoment): Boolean {
          var data: Object;
          var arg: int;
          if (apocalypseMoment != null
-                 && (nextRaidAt.time > apocalypseMoment.occuresAt.time))
+                && (nextRaidEvent.after(apocalypseMoment)))
          {
             data = Config.getRaidingApocalypseUnits();
-            arg =  1 + Math.round((nextRaidAt.time - apocalypseMoment.occuresAt.time)/
+            arg =  1 + Math.round((nextRaidEvent.occursAt.time - apocalypseMoment.occursAt.time)/
                     (1000 * 60 * 60 * 24));
             // for info in raid bar for next raids
             arg += raidArg;
@@ -136,17 +138,17 @@ package models.planet
       }
       
       public static function getRaiders(
-         raidArg: int, nextRaidAt: Date, battleGround: Boolean,
+         raidArg: int, nextRaidEvent: IMTimeEvent, battleGround: Boolean,
          apocalypseMoment: MTimeEventFixedMoment): ArrayCollection
       {
          var data: Object;
          var arg: int;
          if (apocalypseMoment != null
-                 && (nextRaidAt.time > apocalypseMoment.occuresAt.time))
+                 && nextRaidEvent.after(apocalypseMoment))
          {
             data = Config.getRaidingApocalypseUnits();
             arg =  1 + Math.round(
-               (nextRaidAt.time - apocalypseMoment.occuresAt.time) /
+               (nextRaidEvent.occursAt.time - apocalypseMoment.occursAt.time) /
                        (1000 * 60 * 60 * 24)
             );
             // for info in raid bar for next raids
@@ -191,15 +193,13 @@ package models.planet
          resultCollection.refresh();
          return resultCollection;
       }
-      
-      public override function get cached() : Boolean
-      {
+
+      public override function get cached(): Boolean {
          return ML.latestPlanet != null
                    && !ML.latestPlanet.fake
                    && ML.latestPlanet.id == id;
       }
-      
-      
+
       private var f_cleanupStarted:Boolean = false;
       private var f_cleanupComplete:Boolean = false;
       
@@ -211,37 +211,30 @@ package models.planet
        * 
        * @see MMap#cleanup()
        */
-      public override function cleanup() : void
-      {
+      public override function cleanup(): void {
          f_cleanupStarted = true;
-         if (_ssObject != null)
-         {
+         if (_ssObject != null) {
             _ssObject.cleanup();
             _ssObject = null;
          }
-         if (_zIndexCalculator != null)
-         {
+         if (_zIndexCalculator != null) {
             _zIndexCalculator = null;
          }
-         if (_foliageAnimator != null)
-         {
+         if (_foliageAnimator != null) {
             _foliageAnimator.cleanup();
             _foliageAnimator = null;
          }
-         if (_blockingObjects != null)
-         {
+         if (_blockingObjects != null) {
             _blockingObjects.list = null;
             _blockingObjects.filterFunction = null;
             _blockingObjects = null;
          }
-         if (_blockingFolliages != null)
-         {
+         if (_blockingFolliages != null) {
             _blockingFolliages.list = null;
             _blockingFolliages.filterFunction = null;
             _blockingFolliages = null;
          }
-         if (_buildings != null)
-         {
+         if (_buildings != null) {
             ML.units.disableAutoUpdate();
             units.disableAutoUpdate();
             Collections.cleanListOfICleanables(_buildings);
@@ -251,20 +244,17 @@ package models.planet
             _buildings.filterFunction = null;
             _buildings = null;
          }
-         if (_folliages != null)
-         {
+         if (_folliages != null) {
             _folliages.list = null;
             _folliages.filterFunction = null;
             _folliages = null;
          }
-         if (_nonblockingFolliages != null)
-         {
+         if (_nonblockingFolliages != null) {
             _nonblockingFolliages.list = null;
             _nonblockingFolliages.filterFunction = null;
             _nonblockingFolliages = null;
          }
-         if (_blockingFolliages != null)
-         {
+         if (_blockingFolliages != null) {
             _blockingFolliages.list = null;
             _blockingFolliages.filterFunction = null;
             _blockingFolliages = null;
@@ -272,16 +262,14 @@ package models.planet
          super.cleanup();
          f_cleanupComplete = true;
       }
-      
-      
+
       [Bindable(event="willNotChange")]
       /**
        * Returns <code>MapType.PLANET</code>.
        * 
        * @see models.map.MMap#mapType
        */
-      override public function get mapType() : int
-      {
+      override public function get mapType(): int {
          return MapType.PLANET;
       }
       
@@ -289,24 +277,22 @@ package models.planet
       /* ################ */
       /* ### SSOBJECT ### */
       /* ################ */
-      
-      
-      private var _ssObject:MSSObject;
+
+
+      private var _ssObject: MSSObject;
       [Bindable(event="willNotChange")]
       /**
-       * Reference to a generic <code>SSObject</code> wich represents a planet and holds some
-       * necessary information for the map.
+       * Reference to a generic <code>SSObject</code> which represents a planet
+       * and holds some necessary information for the map.
        * 
        * <p>Metadata:<br/>
        * [Bindable(event="willNotChange")]
        * </p>
        */
-      public function get ssObject() : MSSObject
-      {
+      public function get ssObject(): MSSObject {
          return _ssObject;
       }
-      
-      
+
       [Bindable(event="flagDestructionPendingSet")]
       /**
        * Proxy to <code>ssObject.flag_destructionPending</code>.
@@ -317,23 +303,19 @@ package models.planet
        * 
        * @see MSSObject#flag_destructionPending
        */
-      public override function get flag_destructionPending() : Boolean
-      {
+      public override function get flag_destructionPending(): Boolean {
          return _ssObject.flag_destructionPending;
       }
-      
-      
+
       /**
        * Proxy to <code>ssObject.setFlag_destructionPending()</code>.
-       * 
+       *
        * @see MSSObject#setFlag_destructionPending()
        */
-      public override function setFlag_destructionPending():void
-      {
+      public override function setFlag_destructionPending(): void {
          _ssObject.setFlag_destructionPending();
       }
-      
-      
+
       [Bindable(event="modelIdChange")]
       /**
        * Proxy to <code>ssObject.id</code>.
@@ -344,107 +326,73 @@ package models.planet
        * 
        * @see MSSObject#id
        */
-      public override function set id(value:int) : void
-      {
+      public override function set id(value: int): void {
          if (_ssObject != null && _ssObject.id != value) {
             _ssObject.id = value;
             // this will dispatch all necessary events
             super.id = value;
          }
       }
-      /**
-       * @private
-       */
-      public override function get id() : int
-      {
+      public override function get id(): int {
          return _ssObject != null ? _ssObject.id : 0;
       }
-      
-      
+
       /**
-       * Proxy to <code>ssObject.fake</code>.
-       * 
        * @see MSSObject#fake
        */
-      public override function set fake(value:Boolean) : void
-      {
-         if (_ssObject.fake != value)
-         {
+      public override function set fake(value: Boolean): void {
+         if (_ssObject.fake != value) {
             ssObject.fake = value;
             // this will dispatch all necessary events
             super.fake = value;
          }
       }
-      /**
-       * @private
-       */
-      public override function get fake() : Boolean
-      {
+      public override function get fake(): Boolean {
          return _ssObject.fake;
       }
-      
-      
+
       /**
        * Proxy to <code>ssObject.width</code>.
        * 
        * @see MSSObject#width
        */
-      public function set width(value:int) : void
-      {
+      public function set width(value: int): void {
          _ssObject.width = value;
       }
-      /**
-       * @private
-       */
-      public function get width() : int
-      {
+      public function get width(): int {
          return _ssObject.width;
       }
-      
-      
+
       /**
        * Proxy to <code>ssObject.height</code>.
        * 
        * @see MSSObject#height
        */
-      public function set height(value:int) : void
-      {
+      public function set height(value: int): void {
          _ssObject.height = value;
       }
-      /**
-       * @private
-       */
-      public function get height() : int
-      {
+      public function get height(): int {
          return _ssObject.height;
       }
-      
-      
+
       /**
        * Proxy to <code>ssObject.solarSystemId</code>.
        * 
        * @see MSSObject#solarSystemId
        */
-      public function set solarSystemId(value:int) : void
-      {
+      public function set solarSystemId(value: int): void {
          _ssObject.solarSystemId = value;
       }
-      /**
-       * @private
-       */
-      public function get solarSystemId() : int
-      {
+      public function get solarSystemId(): int {
          return _ssObject.solarSystemId;
       }
-      
-      
+
       /**
        * Proxy to <code>ssObject.inBattleground</code>.
        * 
        * @see MSSObject#inBattleground
        */
-      public function get inBattleground() : Boolean
-      {
+      public function get inBattleground(): Boolean {
          return _ssObject.inBattleground;
       }
       
@@ -456,6 +404,7 @@ package models.planet
       public function get inMiniBattleground() : Boolean {
          return _ssObject.inMiniBattleground;
       }
+
 
       /* ############################ */
       /* ### AREA LOOPING HELPERS ### */
@@ -505,8 +454,7 @@ package models.planet
       /* ################ */
       /* ### LOCATION ### */
       /* ################ */
-      
-      
+
       public override function get currentLocation() : LocationMinimal {
          return _ssObject.currentLocation;
       }
@@ -790,7 +738,7 @@ package models.planet
        * Foliage currently being explored or <code>null</code> if exploration is not underway.
        */
       public function get exploredFoliage() : BlockingFolliage {
-         if (_ssObject.explorationEndsAt != null &&
+         if (_ssObject.explorationEndEvent != null &&
             _ssObject.explorationX >= 0 &&
             _ssObject.explorationY >= 0)
             return BlockingFolliage(getObject(_ssObject.explorationX, _ssObject.explorationY));
@@ -1520,6 +1468,21 @@ package models.planet
                tUnit.upgradePart.startUpgrade();
             }
          }
+      }
+
+
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
+
+      public override function update(): void {
+         updateItem(ssObject);
+         super.update();
+      }
+
+      public override function resetChangeFlags(): void {
+         resetChangeFlagsOf(ssObject);
+         super.resetChangeFlags();
       }
 
 

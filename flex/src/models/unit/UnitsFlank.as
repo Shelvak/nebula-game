@@ -238,6 +238,36 @@ package models.unit
             US.dispatchSelectionChangeEvent();
          }
       }
+
+      public function deselectType(type: String): void
+      {
+         for each (var unit: MCUnit in flankUnits)
+         {
+            if (unit.unit.type == type)
+            {
+               var idx: int = selection.getItemIndex(unit);
+               if (idx != -1)
+               {
+                  unit.selected = false;
+                  selection.removeItemAt(idx);
+               }
+            }
+         }
+         US.dispatchSelectionChangeEvent();
+      }
+
+      public function selectType(type: String): void
+      {
+         for each (var unit: MCUnit in flankUnits)
+         {
+            if (unit.unit.type == type && selection.getItemIndex(unit) == -1)
+            {
+               unit.selected = true;
+               selection.addItem(unit);
+            }
+         }
+         US.dispatchSelectionChangeEvent();
+      }
       
       public function deselectUnit(unitId: int): void
       {

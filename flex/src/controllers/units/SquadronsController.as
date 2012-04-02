@@ -3,8 +3,9 @@ package controllers.units
    import components.map.space.SquadronsController;
 
    import controllers.Messenger;
+   import controllers.timedupdate.MasterUpdateTrigger;
 
-   import globalevents.GlobalEvent;
+   import interfaces.IUpdatable;
 
    import models.ModelLocator;
    import models.ModelsCollection;
@@ -40,7 +41,7 @@ package controllers.units
    /**
     * Works with <code>MSquadron</code> objects and <code>ModelLocator.squadrons</code> list.
     */
-   public class SquadronsController
+   public class SquadronsController implements IUpdatable
    {
       public static function getInstance() : SquadronsController {
          return SingletonFactory.getSingletonInstance(SquadronsController);
@@ -53,21 +54,13 @@ package controllers.units
       private static const MOVE_EFFECT_DURATION: int = // milliseconds
                               components.map.space.SquadronsController
                                  .MOVE_EFFECT_DURATION;
-      
-      
-      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
-      private var ML:ModelLocator = ModelLocator.getInstance();
-      private var SQUADS:SquadronsList = ML.squadrons;
-      private var ROUTES:ModelsCollection = ML.routes;
-      private var UNITS:ModelsCollection = ML.units;
+      private var ML: ModelLocator = ModelLocator.getInstance();
+      private var SQUADS: SquadronsList = ML.squadrons;
+      private var ROUTES: ModelsCollection = ML.routes;
+      private var UNITS: ModelsCollection = ML.units;
       
       private function get logger() : ILogger {
          return Log.getLogger("MOVEMENT");
-      }
-      
-      public function SquadronsController()
-      {
-         GlobalEvent.subscribe_TIMED_UPDATE(global_timedUpdateHandler);
       }
       
       
@@ -189,17 +182,17 @@ package controllers.units
          if (squad != null
                && !squad.hasHopsRemaining
                && squad.jumpPending
-               // Not using squad.jumpsAtEvent.hasOccured here to allow slight errors.
+               // Not using squad.jumpsAtEvent.hasOccurred here to allow slight errors.
                // The size of the error is worth to consider since client and server clocks are not
-               // in perfect sync. I think a situation might occure - although *very rarely* - when
+               // in perfect sync. I think a situation might occur - although *very rarely* - when
                // old jumpsAt and the new jumpsAt differ more than 200 ms but they actually define
                // the same jump. In such case ships will be removed a bit too early but players
                // might not even notice that as we have 500 ms errors anyway due to duration of effects
-               && (jumpsAt == null || (squad.jumpsAtEvent.occuresAt.time - jumpsAt.time) < -200)) {
+               && (jumpsAt == null || (squad.jumpsAtEvent.occursAt.time - jumpsAt.time) < -200)) {
             logger.debug(
                "Received new jumpsAt {0} form server for squad {1} before the old " +
                "jumpsAt {2} was cleared. Forcing the jump (removing squad) before update.",
-               jumpsAt, squad, squad.jumpsAtEvent.occuresAt
+               jumpsAt, squad, squad.jumpsAtEvent.occursAt
             );
             UnitJumps.setPreJumpLocations(
                squad.units, squad.currentHop.location
@@ -334,14 +327,15 @@ package controllers.units
       /**
        * Use when new routes are pushed by the server in the middle of the game. This method removes all
        * existing routes, creates new ones, adds them to routes list and attaches them to squadrons.
-       */ 
-      public function recreateRoutes(routes:Array, playersHash:Object) : void {
+       */
+      public function recreateRoutes(routes: Array, playersHash: Object): void {
          ROUTES.removeAll();
          createRoutes(routes, playersHash);
-         for each (var route:MRoute in ROUTES) {
-            var squad:MSquadron = SQUADS.find(route.id);
-            if (squad != null)
+         for each (var route: MRoute in ROUTES) {
+            var squad: MSquadron = SQUADS.find(route.id);
+            if (squad != null) {
                squad.route = route;
+            }
          }
       }
       
@@ -350,13 +344,14 @@ package controllers.units
        * Use to create all routes and add them to </code>ModelLocator</code> when they are received
        * from the server after player has logged in.
        */
-      public function createRoutes(routes:Array, playersHash:Object) : void
-      {
-         var players:Object = PlayerFactory.fromHash(playersHash);
-         for each (var routeData:Object in routes)
-         {
-            var route:MRoute = createRoute
-               (routeData, routeData["player"]["id"] == ML.player.id ? Owner.PLAYER : Owner.ALLY);
+      public function createRoutes(routes: Array, playersHash: Object): void {
+         const players: Object = PlayerFactory.fromHash(playersHash);
+         for each (var routeData: Object in routes) {
+            const route: MRoute = createRoute(
+               routeData, routeData["player"]["id"] == ML.player.id
+                             ? Owner.PLAYER
+                             : Owner.ALLY
+            );
             route.player = players[route.player.id];
          }
       }
@@ -416,34 +411,37 @@ package controllers.units
        * when units moving already need to be dispatched different way.
        * 
        * @param route generic object representing a squadron. It must have hops array
-       * @param unitIds array of ids on units to be moved
+       * @param $unitIds array of ids on units to be moved
        */
-      public function startMovement(route:Object, $unitIds:Array) : void
-      {
-         var squad:MSquadron;
-         var unitIds:ArrayCollection = new ArrayCollection($unitIds);
-         var currentLocation:LocationMinimal =
+      public function startMovement(route:Object, $unitIds:Array) : void {
+         var squad: MSquadron;
+         var unitIds: ArrayCollection = new ArrayCollection($unitIds);
+         var currentLocation: LocationMinimal =
                 Objects.create(LocationMinimal, route["current"]);
          if (currentLocation.isSSObject) {
             currentLocation.setDefaultCoordinates();
          }
-         
+
          // get the units we need to move
-         var units:ListCollectionView = Collections.filter(UNITS,
-            function(unit:Unit) : Boolean {
-               return unitIds.contains(unit.id);
-            }
+         var units: ListCollectionView = Collections.filter(UNITS,
+                                                            function (unit: Unit): Boolean {
+                                                               return unitIds.contains(unit.id);
+                                                            }
          );
-         
+
          // we found units
          // that means we have a cached map in which those units are located: create a squadron
+         const ordersCtrl: OrdersController = OrdersController.getInstance();
          if (units.length != 0) {
-            var unit:Unit = Unit(units.getItemAt(0));
-            var squadExisting:MSquadron = findSquad(unit.squadronId, unit.playerId, currentLocation);
-            route["status"] = unit.owner; 
+            var unit: Unit = Unit(units.getItemAt(0));
+            var squadExisting: MSquadron = findSquad(unit.squadronId,
+                                                     unit.playerId,
+                                                     currentLocation);
+            route["status"] = unit.owner;
             squad = SquadronFactory.fromObject(route);
             squad.player = unit.player;
-            squad.addAllHops(Objects.fillCollection(new ArrayCollection(), MHop, route["hops"]));
+            squad.addAllHops(Objects.fillCollection(new ArrayCollection(), MHop,
+                                                    route["hops"]));
             units.disableAutoUpdate();
             for each (unit in units) {
                unit.squadronId = squad.id;
@@ -471,20 +469,23 @@ package controllers.units
                }
             }
             SQUADS.addItem(squad);
-            if (squad.owner == Owner.PLAYER && ORDERS_CTRL.issuingOrders) {
-               ORDERS_CTRL.orderComplete();
-               Messenger.show(Localizer.string("Movement", "message.orderComplete"), Messenger.MEDIUM);
+            if (squad.owner == Owner.PLAYER && ordersCtrl.issuingOrders) {
+               ordersCtrl.orderComplete();
+               Messenger.show(Localizer.string("Movement",
+                                               "message.orderComplete"),
+                              Messenger.MEDIUM);
             }
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
          else if (route["target"] !== undefined) {
-            var owner:int = route["player"]["id"] == ML.player.id ? Owner.PLAYER : Owner.ALLY;
+            var owner: int = route["player"]["id"] == ML.player.id
+                                ? Owner.PLAYER : Owner.ALLY;
             createRoute(route, owner);
-            if (owner == Owner.PLAYER && ORDERS_CTRL.issuingOrders) {
-               ORDERS_CTRL.orderComplete();
+            if (owner == Owner.PLAYER && ordersCtrl.issuingOrders) {
+               ordersCtrl.orderComplete();
             }
          }
-         
+
          units.list = null;
          units.filterFunction = null;
       }
@@ -550,11 +551,13 @@ package controllers.units
       }
       
       
-      /* ################################## */
-      /* ### SQUADS MOVEMENT AUTOMATION ### */
-      /* ################################## */
+      /* ################## */
+      /* ### IUpdatable ### */
+      /* ################## */
 
-      private function global_timedUpdateHandler(event: GlobalEvent): void {
+
+      public function update(): void {
+         MasterUpdateTrigger.updateList(ROUTES);
          const currentTime: Number = DateUtil.now;
          for each (var squad: MSquadron in SQUADS.toArray()) {
             if (squad.isMoving && !squad.pending) {
@@ -567,7 +570,7 @@ package controllers.units
                      destroySquadron(squadId);
                   }
                }
-               else if (squad.jumpPending && squad.jumpsAtEvent.hasOccured) {
+               else if (squad.jumpPending && squad.jumpsAtEvent.hasOccurred) {
                   UnitJumps.setPreJumpLocations(
                      squad.units, squad.currentHop.location
                   );
@@ -575,6 +578,9 @@ package controllers.units
                }
             }
          }
+      }
+
+      public function resetChangeFlags(): void {
       }
       
       

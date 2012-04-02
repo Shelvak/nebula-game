@@ -1,39 +1,39 @@
 package models
 {
    import com.adobe.errors.IllegalStateError;
-   
+
+   import controllers.timedupdate.MasterUpdateTrigger;
+
    import flash.events.EventDispatcher;
    import flash.utils.describeType;
 
    import interfaces.IEqualsComparable;
-   
+   import interfaces.IUpdatable;
+
    import models.events.BaseModelEvent;
-   
+
    import mx.collections.ICollectionView;
    import mx.events.PropertyChangeEvent;
-   
+
    import namespaces.prop_name;
-   
+
    import utils.Events;
    import utils.Objects;
    import utils.assets.ImagePreloader;
-   
-   
-   /** 
+
+
+   /**
     * @see models.events.BaseModelEvent#PENDING_CHANGE
-    * @eventType models.events.BaseModelEvent.PENDING_CHANGE
     */
    [Event(name="pendingChange", type="models.events.BaseModelEvent")]
    
    /**
     * @see models.events.BaseModelEvent#FLAG_DESTRUCTION_PENDING_SET
-    * @eventType models.events.BaseModelEvent.FLAG_DESTRUCTION_PENDING_SET
     */
    [Event(name="flagDestructionPendingSet", type="models.events.BaseModelEvent")]
    
    /**
     * @see models.events.BaseModelEvent#MODEL_ID_CHANGE
-    * @eventType models.events.BaseModelEvent.MODEL_ID_CHANGE
     */
    [Event(name="modelIdChange", type="models.events.BaseModelEvent")]
    
@@ -44,8 +44,7 @@ package models
    
    /**
     * @see mx.events.PropertyChangeEvent
-    * @eventType mx.events.PropertyChangeEvent.PROPERTY_CHANGE
-    */   
+    */
    [Event(name="propertyChange", type="mx.events.PropertyChangeEvent")]
    
    
@@ -54,6 +53,35 @@ package models
     */
    public class BaseModel extends EventDispatcher implements IBaseModel
    {
+      /**
+       * @see MasterUpdateTrigger#updateItem()
+       */
+      protected static function updateItem(updatable: IUpdatable): void {
+         MasterUpdateTrigger.updateItem(updatable);
+      }
+      
+      /**
+       * @see MasterUpdateTrigger#updateList()
+       */
+      protected static function updateList(list:*) : void {
+         MasterUpdateTrigger.updateList(list);
+      }
+      
+      /**
+       * @see MasterUpdateTrigger.resetChangeFlagsOf()
+       */
+      protected static function resetChangeFlagsOf(updatable: IUpdatable): void {
+         MasterUpdateTrigger.resetChangeFlagsOf(updatable);
+      }
+      
+      /**
+       * @see MasterUpdateTrigger#resetChangeFlagsOfList()
+       */
+      protected static function resetChangeFlagsOfList(list:*) : void {
+         MasterUpdateTrigger.resetChangeFlagsOfList(list);
+      }
+      
+      
       /**
        * Reference to <code>ImagePreloader</code> singleton.
        */
@@ -83,22 +111,26 @@ package models
        * otherwise
        */
       public static function modelsAreEqual(... params) : Boolean {
-         var model:BaseModel = params[0];
-         for each (var anotherModel:BaseModel in params) {
-            if (model.CLASS != anotherModel.CLASS || model.id != anotherModel.id)
+         const model: BaseModel = params[0];
+         for each (var anotherModel: BaseModel in params) {
+            if (model.CLASS != anotherModel.CLASS
+                   || model.id != anotherModel.id) {
                return false;
+            }
          }
          return true;
       }
-      
-      
-      public function BaseModel()
-      {
+
+      public function BaseModel() {
          super();
-         addSelfEventHandlers();
+         if (Objects.hasAnyProp(collectionsFilterProperties)) {
+            addEventListener(
+               PropertyChangeEvent.PROPERTY_CHANGE, this_propertyChangeHandler
+            );
+         }
       }
-      
-      
+
+
       /* ######################### */
       /* ### INTERFACE METHODS ### */
       /* ######################### */
@@ -398,22 +430,10 @@ package models
       /* ########################### */
       /* ### SELF EVENT HANDLERS ### */
       /* ########################### */
-      
-      
-      private function addSelfEventHandlers(): void {
-         for (var collectionProp: String in collectionsFilterProperties) {
-            addEventListener(
-               PropertyChangeEvent.PROPERTY_CHANGE, this_propertyChangeHandler
-            );
-            break;
-         }
-      }
-      
-      
-      private function this_propertyChangeHandler(event:PropertyChangeEvent) : void
-      {
-         for each (var collectionProp:String in filterPropertiesCollections[event.property])
-         {
+
+      private function this_propertyChangeHandler(event: PropertyChangeEvent): void {
+         for each (var collectionProp: String
+            in filterPropertiesCollections[event.property]) {
             ICollectionView(this[collectionProp]).refresh();
          }
       }
@@ -451,8 +471,9 @@ package models
       }
       
       /**
-       * Call to dispatch <code>BaseModel.UPDATE</code> event. This event should only be dispached by
-       * models implementing <code>IUpdatable</code> interface.
+       * Call to dispatch <code>BaseModel.UPDATE</code> event. This event should
+       * only be dispatched by models implementing <code>IUpdatable</code>
+       * interface.
        * 
        * @see models.events.BaseModelEvent#UPDATE
        */

@@ -86,6 +86,9 @@
      <s:RadioButtonGroup id="ignoreType" selectedValue="{PlayerOptions.chatIgnoreType}"
        change="PlayerOptions.chatIgnoreType = String(ignoreType.selectedValue);
                PlayerOptions.changed();"/>
+      <s:RadioButtonGroup id="defaultTransporterTab" selectedValue="{PlayerOptions.defaultTransporterTab}"
+        change="PlayerOptions.defaultTransporterTab = int(defaultTransporterTab.selectedValue);
+                PlayerOptions.changed();"/>
    </fx:Declarations>
    <base:Panel skinClass="components.skins.LargePanelSkin"
                title="{getString('title.options')}" width="900" horizontalCenter="0">
@@ -100,6 +103,20 @@
                      selected="{PlayerOptions.warnBeforeUnload}"
                      click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
                      PlayerOptions.changed()"/>
+         <s:Label text="{getString('label.defaultTransporterTab')}" paddingTop="6"/>
+         <s:Group>
+           <s:RadioButton id="transporterResources" group="{defaultTransporterTab}"
+                          label="{getString('label.transporterTabResources')}"
+                          value="{PlayerOptions.TRANSPORTER_TAB_RESOURCES}"
+                          skinClass="components.skins.RadioButtonSkin"/>
+           <s:RadioButton id="transporterUnits" group="{defaultTransporterTab}"
+                          label="{getString('label.transporterTabUnits')}"
+                          value="{PlayerOptions.TRANSPORTER_TAB_UNITS}"
+                          skinClass="components.skins.RadioButtonSkin"/>
+           <s:layout>
+             <s:HorizontalLayout paddingLeft="15"/>
+           </s:layout>
+         </s:Group>
       </s:Group>
       <base:Heading1 text="{getString('title.afterLoginOptions')}"/>
       <s:Group>

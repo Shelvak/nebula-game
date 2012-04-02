@@ -428,7 +428,7 @@ package tests.galaxy
          hop.id = id;
          hop.routeId = routeId;
          hop.location = makeGalaxyLoc(x, y);
-         hop.arrivalEvent.occuresAt = arrivesAt;
+         hop.arrivalEvent.occursAt = arrivesAt;
          return hop;
       }
       

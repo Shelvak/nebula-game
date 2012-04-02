@@ -4,79 +4,74 @@
                     xmlns:base="components.base.*"
                     xmlns:battle="components.battle.*"
                     width="{barGroup.width}">
+   <fx:Binding source="ML.latestPlanet.ssObject" destination="ssObject"/>
    <fx:Script>
       <![CDATA[
-      import config.Config;
       import config.Config;
 
       import models.planet.MPlanet;
       import models.resource.ResourceType;
       import models.solarsystem.MSSObject;
-      import models.time.MTimeEventFixedMoment;
+      import models.time.IMTimeEvent;
 
       import mx.events.EffectEvent;
 
-      import utils.DateUtil;
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
 
-      private static const DURATION_TIME:int = 100;
 
-      protected function shorten_effectEndHandler(event:EffectEvent):void {
+      private static const DURATION_TIME: int = 100;
+
+      [Bindable]
+      private var addPlanet: int = 0;
+
+      [Bindable]
+      private var ssObject: MSSObject;
+
+      protected function shorten_effectEndHandler(event: EffectEvent): void {
          infoPanel.visible = false;
          addPlanet = 0;
       }
 
-
-      protected function widen_effectStartHandler(event:EffectEvent):void {
+      protected function widen_effectStartHandler(event: EffectEvent): void {
          infoPanel.visible = true;
       }
 
-      [Bindable]
-      private var addPlanet:int = 0;
-
-      private function getDays(toDate:Date, fromDate: Date): int {
+      private function getDays(toDate: Date, fromDate: Date): int {
          return Math.round((toDate.time - fromDate.time) /
-                 (1000 * 60 * 60 * 24));
+                              (1000 * 60 * 60 * 24));
       }
 
-      private function getMaxArg(ssObject: MSSObject): int
-      {
+      private function getMaxArg(ssObject: MSSObject): int {
          return (ssObject.inBattleground || ssObject.inMiniBattleground)
-                    ? Config.getRaidingBattlegroundMaxArg()
-                    : Config.getRaidingPlanetsMaxArg();
+                   ? Config.getRaidingBattlegroundMaxArg()
+                   : Config.getRaidingPlanetsMaxArg();
       }
 
       private function getPlanetCountLabel(ssObject: MSSObject, raidArg: int,
-                                           raidArrives: Date,
-                                           apocalypseMoment: MTimeEventFixedMoment,
-                                           planetCountDiff: int): String
-      {
-         if (raidArrives == null)
-         {
+                                           raidArrives: IMTimeEvent,
+                                           apocalypseMoment: IMTimeEvent,
+                                           planetCountDiff: int): String {
+         if (raidArrives == null) {
             return '';
          }
-         if (planetCountDiff == 0)
-         {
-            return DateUtil.formatShortDateTime(raidArrives);
+         if (planetCountDiff == 0) {
+            return raidArrives.occursAtString();
          }
-         return Localizer.string('Units',
-                 ssObject.apocalypseWillBeStartedBeforeRaid
-                 ? 'label.afterDays'
-                 : (
-                     getMaxArg(ssObject) > (
-                        ML.latestPlanet.ssObject.raidArg + planetCountDiff
-                     )
-                        ? 'label.withPlanets'
-                        : 'label.withPlanetsOrMore'
-                   ),
-                 [
-                    (
-                        ssObject.apocalypseWillBeStartedBeforeRaid
-                           ? 1 + getDays(raidArrives, apocalypseMoment.occuresAt)
-                           : raidArg
-                    ) + planetCountDiff
-                 ]
+         return Localizer.string(
+            'Units',
+            ssObject.apocalypseWillBeStartedBeforeRaid
+               ? 'label.afterDays'
+               : (getMaxArg(ssObject) > (this.ssObject.raidArg + planetCountDiff)
+                     ? 'label.withPlanets'
+                     : 'label.withPlanetsOrMore'),
+            [
+               (ssObject.apocalypseWillBeStartedBeforeRaid
+                   ? 1 + getDays(raidArrives.occursAt,
+                                 apocalypseMoment.occursAt)
+                   : raidArg)
+                  + planetCountDiff
+            ]
          );
       }
       ]]>
@@ -104,14 +99,11 @@
                          left="28" top="2"
                          click="addPlanet--"
                          visible="{MPlanet.hasRaiders(
-                           ML.latestPlanet.ssObject.apocalypseWillBeStartedBeforeRaid
+                           ssObject.apocalypseWillBeStartedBeforeRaid
                               ? addPlanet - 1
-                              : ML.latestPlanet.ssObject.raidArg + addPlanet - 1,
-                           ML.latestPlanet.ssObject.nextRaidAt,
-                           (
-                              ML.latestPlanet.ssObject.inBattleground
-                              || ML.latestPlanet.ssObject.inMiniBattleground
-                           ),
+                              : ssObject.raidArg + addPlanet - 1,
+                           ssObject.nextRaidEvent,
+                           ssObject.inBattleground || ssObject.inMiniBattleground,
                            ML.latestGalaxy.apocalypseStartEvent
                         )}"/>
                <s:Label top="7" left="48" right="32" textAlign="center" fontSize="12" fontWeight="bold" color="#f4c300" 
@@ -124,13 +116,13 @@
                              || ML.latestPlanet.inMiniBattleground)
                                 ? Config.getRaidingBattlegroundMaxArg()
                                 : Config.getRaidingPlanetsMaxArg())
-                             > (ML.latestPlanet.ssObject.raidArg + addPlanet))}"/>
+                             > (ssObject.raidArg + addPlanet))}"/>
             
             <s:Group top="25" left="20" right="30">
                <s:Label fontSize="12" fontWeight="bold" 
                   text="{getPlanetCountLabel(
-                     ML.latestPlanet.ssObject, ML.latestPlanet.ssObject.raidArg,
-                     ML.latestPlanet.ssObject.nextRaidAt,
+                     ssObject, ssObject.raidArg,
+                     ssObject.nextRaidEvent,
                      ML.latestGalaxy.apocalypseStartEvent,
                      addPlanet)}"
                   left="0" right="0" textAlign="center"/>
@@ -139,14 +131,11 @@
             <s:DataGroup left="7" top="40" bottom="30"
                itemRenderer="components.unit.IRRaidUnitEntry"
                dataProvider="{MPlanet.getRaiders(
-                  ML.latestPlanet.ssObject.apocalypseWillBeStartedBeforeRaid
+                  ssObject.apocalypseWillBeStartedBeforeRaid
                         ? addPlanet
-                        : ML.latestPlanet.ssObject.raidArg + addPlanet,
-                  ML.latestPlanet.ssObject.nextRaidAt,
-                  (
-                     ML.latestPlanet.ssObject.inBattleground
-                     || ML.latestPlanet.ssObject.inMiniBattleground
-                  ),
+                        : ssObject.raidArg + addPlanet,
+                  ssObject.nextRaidEvent,
+                  ssObject.inBattleground || ssObject.inMiniBattleground,
                   ML.latestGalaxy.apocalypseStartEvent
                )}">
                <s:layout>
@@ -160,7 +149,7 @@
                rollOut="{widen.stop(); shorten.play([infoPanel])}" >
          <battle:DarkBackground width="{raidLabel.width+6}" left="3" height="{raidLabel.height+4}"/>
          <base:ImageAndLabel left="6" bottom="1" type="{ResourceType.RAID_TIME}" userLargeIcon="true"
-                             textToDisplay="{ML.latestPlanet.ssObject.raidTime}"
+                             textToDisplay="{ssObject.raidTime}"
                              id="raidLabel"/>
       </s:Group>
       <s:layout>

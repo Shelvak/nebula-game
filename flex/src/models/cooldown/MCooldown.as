@@ -146,7 +146,7 @@ package models.cooldown
          return "[class: " + CLASS + 
                 ", id: " + id +
                 ", currentLocation: " + currentLocation +
-                ", endsAt: " + endsEvent.occuresAt +
+                ", endsAt: " + endsEvent.occursAt +
                 "]";
       }
       

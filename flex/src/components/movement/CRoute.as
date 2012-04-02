@@ -147,7 +147,7 @@ package components.movement
             hop = MHop(_squadM.hops.getItemAt(idx));
             coords = _grid.getSectorRealCoordinates(hop.location);
             hopInfo = _hopsEndpoints[idx];
-            hopInfo.arrivesInValueText = hop.arrivalEvent.occuresInString();
+            hopInfo.arrivesInValueText = hop.arrivalEvent.occursInString();
             hopInfo.arrivesInVisible = true;
             hopInfo.x = coords.x;
             hopInfo.y = coords.y;
@@ -176,7 +176,7 @@ package components.movement
                }
             }
             hopInfo.jumpsInVisible = true;
-            hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occuresInString();
+            hopInfo.jumpsInValueText = _squadM.jumpsAtEvent.occursInString();
             hopInfo.jumpsInLabelText = getLabel(
                loc.isSolarSystem && ssObject.isPlanet
                   ? "landsIn"

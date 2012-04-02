@@ -86,7 +86,8 @@
                <s:Button label="{Localizer.string ('Units', 'label.none')}" click="selectNone()"/>
             </base:Panel>
             
-            <unitsscreen:NoSelectionPanel visible="{LS.volume == 0}"/>
+            <unitsscreen:NoSelectionPanel visible="{LS.volume == 0
+               &amp;&amp; !LS.resourcesSelected}"/>
             
             <base:Panel width="100%" title="{Localizer.string ('Units', 'label.transfer')}">
                <base:AdvancedContainer width="100%">

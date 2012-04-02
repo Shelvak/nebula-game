@@ -121,7 +121,7 @@ package controllers.connection
       private var _gotDisconnectWarning:Boolean = false;
       /**
        * Called by <code>controllers.players.action.DisconnectAction</code> when a message warning about
-       * upcomming disconnection is received.
+       * upcoming disconnection is received.
        */
       public function serverWillDisconnect(reason:String) : void
       {

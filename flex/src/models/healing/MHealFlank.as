@@ -81,6 +81,36 @@ package models.healing
          }
          HS.refreshPrice();
       }
+
+      public override function deselectType(type: String): void
+      {
+         for each (var unit: MCUnit in flankUnits)
+         {
+            if (unit.unit.type == type)
+            {
+               var idx: int = selection.getItemIndex(unit);
+               if (idx != -1)
+               {
+                  unit.selected = false;
+                  selection.removeItemAt(idx);
+               }
+            }
+         }
+         HS.refreshPrice();
+      }
+
+      public override function selectType(type: String): void
+      {
+         for each (var unit: MCUnit in flankUnits)
+         {
+            if (unit.unit.type == type && selection.getItemIndex(unit) == -1)
+            {
+               unit.selected = true;
+               selection.addItem(unit);
+            }
+         }
+         HS.refreshPrice();
+      }
       
       public override function invertSelection(model:MCUnit, shiftPressed:Boolean):void
       {

@@ -1,51 +1,51 @@
 package models.time.events
 {
    import flash.events.Event;
-   
-   
+
+
    public class MTimeEventEvent extends Event
    {
       /**
        * Dispatched when <code>models.time.IMTimeEvent.hasOccured</code> property changes.
-       * 
-       * @eventType hasOccuredChange
-       * 
-       * @see models.time.IMTimeEvent#hasOccured
+       *
+       * @eventType hasOccurredChange
+       *
+       * @see models.time.IMTimeEvent#hasOccurred
        */
-      public static const HAS_OCCURED_CHANGE:String = "hasOccuredChange";
-      
-      
-      /**
-       * Dispatched when <code>models.time.IMTimeEvent.occuresIn</code> property changes.
-       * 
-       * @eventType occuresInChange
-       * 
-       * @see models.time.IMTimeEvent#occuresIn
-       */
-      public static const OCCURES_IN_CHANGE:String = "occuresInChange";
-      
-      
-      /**
-       * Dispatched when <code>models.time.IMTimeEvent.occuresAt</code> property changes.
-       * 
-       * @eventType occuresAtChange
-       * 
-       * @see models.time.IMTimeEvent#occuresAt
-       */
-      public static const OCCURES_AT_CHANGE:String = "occuresAtChange";
+      public static const HAS_OCCURRED_CHANGE: String = "hasOccurredChange";
 
       /**
-       * Dispatched when <code>models.time.MTimeEventFixedMoment.occurredBefore</code> property changes.
+       * Dispatched when <code>models.time.IMTimeEvent.occursIn</code>
+       * property changes.
        *
-       * @eventType occuredBeforeChange
+       * @eventType occursInChange
        *
-       * @see models.time.MTimeEventFixedMoment#occuredBefore
+       * @see models.time.IMTimeEvent#occursIn
        */
-      public static const OCCURRED_BEFORE_CHANGE:String = "occurredBeforeChange";
-      
-      
-      public function MTimeEventEvent(type:String)
-      {
+      public static const OCCURS_IN_CHANGE: String = "occursInChange";
+
+      /**
+       * Dispatched when <code>models.time.IMTimeEvent.occursAt</code> property
+       * changes.
+       *
+       * @eventType occursAtChange
+       *
+       * @see models.time.IMTimeEvent#occursAt
+       */
+      public static const OCCURS_AT_CHANGE: String = "occursAtChange";
+
+      /**
+       * Dispatched when
+       * <code>models.time.MTimeEventFixedMoment.occurredBefore</code> property
+       * changes.
+       *
+       * @eventType occurredBeforeChange
+       *
+       * @see models.time.MTimeEventFixedMoment#occurredBefore
+       */
+      public static const OCCURRED_BEFORE_CHANGE: String = "occurredBeforeChange";
+
+      public function MTimeEventEvent(type: String) {
          super(type);
       }
    }

@@ -63,7 +63,7 @@ package models.factories
          Objects.paramNotNull("route", route);
          if (jumpsAt != null) {
             route.jumpsAtEvent = new MTimeEventFixedMoment();
-            route.jumpsAtEvent.occuresAt = DateUtil.parseServerDTF(jumpsAt);
+            route.jumpsAtEvent.occursAt = DateUtil.parseServerDTF(jumpsAt);
          }
          else {
             route.jumpsAtEvent = null;

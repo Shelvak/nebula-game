@@ -47,7 +47,7 @@ package ext.hamcrest.object.metadata
          }
          else {
             mismatchDescription
-               .appendText("does not have [" + _expectedTagName + "] tag attached with attributes matching ")
+               .appendText("does not have [" + _expectedTagName + "] tag attached with ")
                .appendDescriptionOf(_attributesMatcher)
          }
       }

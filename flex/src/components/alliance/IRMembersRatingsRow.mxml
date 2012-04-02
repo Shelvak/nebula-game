@@ -120,7 +120,7 @@
       <s:Label text="{player.deathDate == null ? ''
                : Localizer.string('Ratings', 'label.deathDay',
                   [MRatingPlayer.getDays(
-                     ML.latestGalaxy.apocalypseStartEvent.occuresAt,
+                     ML.latestGalaxy.apocalypseStartEvent.occursAt,
                      player.deathDate)
                   ])}"
                toolTip="{player.deathDate == null ? ''

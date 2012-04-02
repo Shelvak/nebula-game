@@ -29,7 +29,7 @@ package controllers.announcements.actions
          var announcement:MAnnouncement = MAnnouncement.getInstance();
          try {
             announcement.message = params["message"];
-            announcement.event.occuresAt = DateUtil.parseServerDTF(params["endsAt"]);
+            announcement.event.occursAt = DateUtil.parseServerDTF(params["endsAt"]);
             AnnouncementPopup.getInstance().show();
          }
          catch (err:Error) {
