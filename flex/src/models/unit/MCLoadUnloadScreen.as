@@ -5,7 +5,12 @@ package models.unit
    import components.unitsscreen.events.LoadUnloadEvent;
    import components.unitsscreen.events.UnitsScreenEvent;
 
+   import controllers.navigation.MCMainArea;
+   import controllers.screens.MainAreaScreens;
+
    import globalevents.GUnitEvent;
+
+   import models.events.ScreensSwitchEvent;
 
    import models.location.ILocationUser;
    import models.location.LocationType;
@@ -51,7 +56,22 @@ package models.unit
       {
          super();
          EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE, dispatchRefreshMaxStorageEvent);
+         MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, mainAreaChangeHandler);
          ML.additionalLocationUsers.addItem(this);
+      }
+
+      private function mainAreaChangeHandler(e: ScreensSwitchEvent): void
+      {
+         if (MCMainArea.getInstance().currentName == MainAreaScreens.LOAD_UNLOAD)
+         {
+            if (!prepared)
+            {
+               buildFlanks();
+               selectionClass.flanks = flanks;
+               dispatchRefreshMaxStorageEvent();
+            }
+            prepared = false;
+         }
       }
 
       public function updateLocationName(id: int, name: String): void {
@@ -87,10 +107,13 @@ package models.unit
       public var flanks: ArrayCollection = new ArrayCollection();
       
       public var oldProvider: ListCollectionView;
+
+      private var prepared: Boolean = false;
       
       public function prepare(sUnits: ListCollectionView, sLocation: *,
                               sTarget: *): void
       {
+         prepared = true;
          location = sLocation;
          target = sTarget;
          
@@ -149,7 +172,6 @@ package models.unit
                flanks.removeAll();
                EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
                new UnitsCommand(UnitsCommand.SHOW, location).dispatch();
-               dispatchRefreshMaxStorageEvent();
             }
          }
          if (unitsGiven)
@@ -184,6 +206,7 @@ package models.unit
 
          buildFlanks();
          selectionClass.flanks = flanks;
+         dispatchRefreshMaxStorageEvent();
       }
       
       public function refreshScreen(): void

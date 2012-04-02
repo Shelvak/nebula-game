@@ -3,7 +3,12 @@ package models.healing
    import com.developmentarc.core.utils.EventBroker;
    
    import components.unitsscreen.events.UnitsScreenEvent;
-   
+
+   import controllers.navigation.MCMainArea;
+   import controllers.screens.MainAreaScreens;
+
+   import models.events.ScreensSwitchEvent;
+
    import utils.ApplicationLocker;
    import controllers.Messenger;
    import controllers.units.UnitsCommand;
@@ -38,6 +43,19 @@ package models.healing
       public function MCHealingScreen()
       {
          super();
+         MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, mainAreaChangeHandler);
+      }
+
+      private function mainAreaChangeHandler(e: ScreensSwitchEvent): void
+      {
+         if (MCMainArea.getInstance().currentName == MainAreaScreens.HEAL)
+         {
+            if (!prepared)
+            {
+               rebuildFlanks();
+            }
+            prepared = false;
+         }
       }
       
       private static const MAX_FLANKS: int = 2;
@@ -46,9 +64,12 @@ package models.healing
       {
          return SingletonFactory.getSingletonInstance(MCHealingScreen);
       }
+
+      private var prepared: Boolean = false;
       
       public function prepare(sUnits: ListCollectionView, sLocation: *): void
       {
+         prepared = true;
          //Set screen values
          location = sLocation;
          selectionClass.clear();
@@ -64,7 +85,11 @@ package models.healing
          Unit.sortByHp(oldProvider);
          
          oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
-         
+         rebuildFlanks();
+      }
+
+      private function rebuildFlanks(): void
+      {
          buildFlanks();
          deselectAllButtons();
          if (getUnitCount(selfFlanks) > 0)
