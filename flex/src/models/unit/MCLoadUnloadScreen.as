@@ -120,8 +120,9 @@ package models.unit
 
             buildFlanks();
          }
-         if (location is Unit ||
-            (location is Location && Location(location).player.id == ML.player.id))
+         if ((location is Unit &&
+               (transporter.metal > 0 || transporter.energy > 0 || transporter.zetium > 0))
+            || (location is Location && Location(location).player.id == ML.player.id))
          {
             resourcesVisible = true;
          }
@@ -142,17 +143,13 @@ package models.unit
          }
          else
          {
-            if (unitsGiven)
+            landSelected = true;
+            if (!unitsGiven)
             {
-               landSelected = true;
-            }
-            else
-            {
-//                THIS SHOULD NEVER HAPPEN AS UNITS ARE PROVIDED IF UNLOADING
-//                AND OPENING UNITS FIRST, AND RESOURCES ARE ALWAYS VISIBLE
-//                WHILE UNLOADING.
-               throw new ArgumentError('Units must be provided for load/unload ' +
-                  'screen if default tab is Units, but was not.');
+               flanks.removeAll();
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
+               new UnitsCommand(UnitsCommand.SHOW, location).dispatch();
+               dispatchRefreshMaxStorageEvent();
             }
          }
          if (unitsGiven)
@@ -186,6 +183,7 @@ package models.unit
          oldProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
 
          buildFlanks();
+         selectionClass.flanks = flanks;
       }
       
       public function refreshScreen(): void
