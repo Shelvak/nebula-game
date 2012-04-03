@@ -26,9 +26,12 @@ class Callback
   end
 
   # Removes callback from the database.
-  def destroy!
+  def destroy!; self.class.destroy!(@id); end
+
+  # Removes callback from the database by id.
+  def self.destroy!(id)
     ActiveRecord::Base.connection.execute(
-      "DELETE FROM `callbacks` WHERE id=#{@id}"
+      "DELETE FROM `callbacks` WHERE id=#{id}"
     )
   end
 
