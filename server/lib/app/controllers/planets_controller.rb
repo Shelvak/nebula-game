@@ -260,9 +260,5 @@ class PlanetsController < GenericController
     
     planet.player = player
     planet.save!
-    
-    # Push planet show because player now needs garissoned units and other
-    # owner-related stuff.
-    push ACTION_SHOW, 'id' => planet.id if current_planet_id == planet.id
   end
 end

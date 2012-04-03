@@ -1,24 +1,24 @@
 package models.chat.msgconverters
 {
-   import flash.errors.IllegalOperationError;
-   
    import flashx.textLayout.elements.FlowElement;
    import flashx.textLayout.elements.FlowGroupElement;
    import flashx.textLayout.elements.LinkElement;
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
-   
+   import flashx.textLayout.events.FlowElementMouseEvent;
+   import flashx.textLayout.formats.TextDecoration;
+
    import models.chat.ChatTextStyles;
    import models.chat.MChatMessage;
-   
+
    import mx.formatters.DateFormatter;
 
    import styles.LinkStyle;
 
    import utils.Objects;
    import utils.locale.Localizer;
-   
-   
+
+
    /**
     * All converted messages have three parts: firts is time, then there is player name and after that is
     * text. Base class only creates time and player name (<code>addPlayer()</code> method) parts and adds
@@ -38,12 +38,13 @@ package models.chat.msgconverters
          _timeFormatter = new DateFormatter();
          _timeFormatter.formatString = Localizer.string("Chat", "format.time");
       }
-      
-      
-      public function toFlowElement(message:MChatMessage):FlowElement {
+
+
+      public function toFlowElement(message: MChatMessage,
+                                    onPlayerElementClick: Function = null): FlowElement {
          var p:ParagraphElement = new ParagraphElement();
          addTime(message, p);
-         addPlayer(message, p);
+         addPlayer(message, p, onPlayerElementClick);
          addText(message, p);
          return p;
       }
@@ -59,18 +60,42 @@ package models.chat.msgconverters
       }
       
       /**
-       * Adds player name to the message. If you don't need it, override this to no-op.
+       * Adds player name to the message. If you don't need it, override this
+       * to no-op.
+       *
+       * @param onClick if not <code>null</code> will be called when
+       * user clicks on the player name. The function will be passed the
+       * <code>message</code> the only parameter.
        */
-      protected function addPlayer(message:MChatMessage, p:ParagraphElement) : void {
-         var name:SpanElement = new SpanElement();
+      protected function addPlayer(message: MChatMessage,
+                                   p: ParagraphElement,
+                                   onClick: Function = null): void {
+         const playerId: int = message.playerId;
+         const playerName: String = message.playerName;
+         const name: SpanElement = new SpanElement();
          name.color = ChatTextStyles.PLAYER_NAME_COLOR;
          name.fontWeight = ChatTextStyles.PLAYER_NAME_FONT_WEIGHT;
-         name.text = "<" + message.playerName + "> ";
-         p.addChild(name);
+         name.text = "<" + playerName + "> ";
+         name.textDecoration = TextDecoration.NONE;
+         if (onClick != null) {
+            const link: LinkElement = new LinkElement();
+            link.addChild(name);
+            link.addEventListener(
+               FlowElementMouseEvent.CLICK,
+               function (event: FlowElementMouseEvent): void {
+                  onClick.call(null, playerId, playerName);
+               }
+            );
+            p.addChild(link);
+         }
+         else {
+            p.addChild(name);
+         }
       }
       
       protected function get textColor() : uint {
-         throw new IllegalOperationError("Property is abstract");
+         Objects.throwAbstractPropertyError();
+         return 0;   // unreachable
       }
       
       /**
@@ -86,13 +111,12 @@ package models.chat.msgconverters
          var msgText:String = message.message;
          var match:Object;
          while ( (match = URL_REGEXP.exec(msgText)) != null ) {
-            var matchWhole:String = match[0];
-            var matchBeforeUrl:String = match[1] != null ? match[1] : "";
-            var matchUrl:String = match[2];
-            var link:String = matchUrl.indexOf("www.") == 0 
+            const matchBeforeUrl:String = match[1] != null ? match[1] : "";
+            const matchUrl:String = match[2];
+            const link:String = matchUrl.indexOf("www.") == 0
                ? "http://" + matchUrl : matchUrl;
-            var matchUrlIdx:int = match["index"] + matchBeforeUrl.length;
-            var textBeforeURL:String = msgText.substr(0, matchUrlIdx);
+            const matchUrlIdx:int = match["index"] + matchBeforeUrl.length;
+            const textBeforeURL:String = msgText.substr(0, matchUrlIdx);
             
             addSpan(paragraph, textBeforeURL, textColor);
             addUrl(paragraph, link);
@@ -108,7 +132,7 @@ package models.chat.msgconverters
          Objects.paramNotNull("parent", parent);
          Objects.paramNotEquals("url", url, [null, ""]);
          url = decodeURIComponent(url);
-         var link:LinkElement = new LinkElement();
+         const link:LinkElement = new LinkElement();
          link.href = url;
          link.target = "_blank";
          addSpan(link, url, LinkStyle.CHAT_URL.normalState.color);
