@@ -89,6 +89,9 @@
       <s:RadioButtonGroup id="defaultTransporterTab" selectedValue="{PlayerOptions.defaultTransporterTab}"
         change="PlayerOptions.defaultTransporterTab = int(defaultTransporterTab.selectedValue);
                 PlayerOptions.changed();"/>
+      <s:RadioButtonGroup id="sortTypeGroup" selectedValue="{PlayerOptions.technologiesSortType}"
+        change="PlayerOptions.technologiesSortType = int(sortTypeGroup.selectedValue);
+                PlayerOptions.changed();"/>
    </fx:Declarations>
    <base:Panel skinClass="components.skins.LargePanelSkin"
                title="{getString('title.options')}" width="900" horizontalCenter="0">
@@ -103,6 +106,7 @@
                      selected="{PlayerOptions.warnBeforeUnload}"
                      click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
                      PlayerOptions.changed()"/>
+
          <s:Label text="{getString('label.defaultTransporterTab')}" paddingTop="6"/>
          <s:Group>
            <s:RadioButton id="transporterResources" group="{defaultTransporterTab}"
@@ -116,6 +120,21 @@
            <s:layout>
              <s:HorizontalLayout paddingLeft="15"/>
            </s:layout>
+         </s:Group>
+
+         <s:Label text="{getString('label.technologiesSortType')}" paddingTop="6"/>
+         <s:Group>
+            <s:RadioButton label="{getString('label.techSortScientists')}"
+                    value="{PlayerOptions.TECH_SORT_TYPE_SCIENTISTS}"
+                    group="{sortTypeGroup}"
+                    skinClass="components.skins.RadioButtonSkin"/>
+            <s:RadioButton label="{getString('label.techSortTime')}"
+                    value="{PlayerOptions.TECH_SORT_TYPE_TIME}"
+                    group="{sortTypeGroup}"
+                    skinClass="components.skins.RadioButtonSkin"/>
+            <s:layout>
+              <s:HorizontalLayout paddingLeft="15"/>
+            </s:layout>
          </s:Group>
       </s:Group>
       <base:Heading1 text="{getString('title.afterLoginOptions')}"/>

@@ -4072,6 +4072,7 @@
     <update value="Update" />
 
     <paused value="Paused" />
+    <pausedLeft value="{0} remaining" />
 
     <upgradeCost value="Upgrade cost" />
     <forceOvertime value="Force overtime" />
@@ -5577,6 +5578,10 @@
      <label.ignoreFiltered value="Show covered messages"/>
      <label.ignoreType value="Ignore type:"/>
      <label.enablePlanetAnimations value="Animations in planet"/>
+    <label.technologiesSortType
+     value="Sort researched technologies in technology tree:" />
+    <label.techSortScientists value="By scientists"/>
+    <label.techSortTime value="By remaining time" />
   </PlayerOptions>
 
 </locale>
