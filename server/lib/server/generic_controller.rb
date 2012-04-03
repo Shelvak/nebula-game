@@ -24,9 +24,30 @@ class GenericController
       player.save!
 
       atomic! do
+        # If this player was connected from other session this will disconnect
+        # the old session.
         dispatcher.set_player!(message.client, player)
         set_ruleset(message, player.galaxy.ruleset)
       end
+
+      # TODO: spec
+      hub = Chat::Pool.instance.hub_for(player)
+      # Wait until other thread disconnects player from chat hub to prevent
+      # this scenario:
+      # A) connect & register
+      # B) unregister & disconnect
+      # Result: Player connected but not registered to chat.
+      if hub.connected?(player)
+        LOGGER.info(
+          "Reconnect to chat, waiting until old player disconnects from hub."
+        )
+        sleep(0.01) while hub.connected?(player)
+        LOGGER.info "Old player has disconnected from chat hub, continuing."
+      end
+      # Register to chat hub. This needs to be done on the same thread as
+      # players|login action, because we need to ensure register has finished
+      # before pushing chat|index.
+      hub.register(player)
     end
 
     # Respond to clients message.

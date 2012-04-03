@@ -94,13 +94,12 @@ class Dispatcher
     debug "Registering #{client} as #{player}.", tag
 
     if player_connected?(player.id)
-      client = @player_id_to_client[player.id]
-      disconnect(client, DISCONNECT_OTHER_LOGIN)
+      old_client = @player_id_to_client[player.id]
+      disconnect(old_client, DISCONNECT_OTHER_LOGIN)
     end
 
     @client_to_player[client] = player
     @player_id_to_client[player.id] = client
-    dispatch_task(Scope.chat, PlayerRegisterTask.create(tag, player))
   end
 
   # Update player entry if player is connected.
@@ -441,7 +440,7 @@ class Dispatcher
       message['action'] || "",
       message['params'] || {},
       client,
-      @client_to_player[client],
+      resolve_player(client),
       pushed
     )
   end

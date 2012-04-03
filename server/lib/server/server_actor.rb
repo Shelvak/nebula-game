@@ -95,7 +95,7 @@ class ServerActor
   def write(client, message)
     socket = @sockets[client]
     if socket.nil?
-      info "Message write aborted, socket not found:\n#{message}", to_s(client)
+      info "Message write aborted, socket not found: #{message}", to_s(client)
       return
     end
 
@@ -121,18 +121,26 @@ class ServerActor
     client_disconnected(client)
   end
 
-  def disconnect(client, message=nil)
-    info "#disconnect called with message '#{message}'", to_s(client)
-    write(client, message) unless message.nil?
+  def disconnect(client)
+    tag = to_s(client)
+
+    info "Disconnecting.", tag
 
     socket = @sockets[client]
-    socket.close if socket && ! socket.closed?
+    if socket
+      socket.close unless socket.closed?
+      @sockets.delete client
+      info "Disconnected.", tag
+    else
+      info "Already disconnected.", tag
+    end
   end
 
   private
   def client_disconnected(client)
-    Actor[:dispatcher].unregister!(client)
-    @sockets.delete client
-    info "Disconnected.", to_s(client)
+    if @sockets.has_key?(client)
+      Actor[:dispatcher].unregister!(client)
+      disconnect(client)
+    end
   end
 end
