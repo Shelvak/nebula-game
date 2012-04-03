@@ -58,7 +58,7 @@ package models.unit
          return removedUnits;
       }
 
-      private function removeStoredUnits(e: ScreensSwitchEvent = null): void
+      public function removeStoredUnits(e: ScreensSwitchEvent = null): void
       {
          if (e != null)
          {

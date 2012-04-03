@@ -201,9 +201,9 @@
                <s:Group toolTip="{Localizer.string('Credits','tooltip.nextVipTick')}">
                   <s:Label text="{Localizer.string('Credits','label.nextVipTick') + ':'}" 
                            width="{int(Localizer.string('MainMenu', 'panelWidth'))}" 
-                           color="{ML.player.vipLevel > 0?0xeec500:0x636363}"/>
-                  <s:Label text="{ML.player.vipLevel > 0?ML.player.vipCredsTime:'---'}"
-                           color="{ML.player.vipLevel > 0?0xffffff:0x636363}"/>
+                           color="{ML.player.hasNextVipTick ? 0xeec500:0x636363}"/>
+                  <s:Label text="{ML.player.hasNextVipTick ? ML.player.vipCredsTime:'---'}"
+                           color="{ML.player.hasNextVipTick ? 0xffffff:0x636363}"/>
                   <s:layout>
                      <s:HorizontalLayout paddingLeft="6" paddingTop="6"/>
                   </s:layout>
@@ -227,7 +227,7 @@
                         width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
                         color="#eec500"/>
                <s:Label text="{ML.player.population + ' / ' + ML.player.populationMax}"
-                        styleName="{ML.player.population >= ML.player.populationMax?'unsatisfied':null}"/>
+                        styleName="{ML.player.population > ML.player.populationMax?'unsatisfied':null}"/>
                <s:layout>
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
                </s:layout>

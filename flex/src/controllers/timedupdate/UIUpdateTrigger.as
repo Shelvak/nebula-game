@@ -2,6 +2,7 @@ package controllers.timedupdate
 {
    import models.announcement.MAnnouncement;
    import models.chat.MChat;
+   import models.exploration.ExplorationStatus;
 
 
    /**
@@ -18,14 +19,20 @@ package controllers.timedupdate
          return MAnnouncement.getInstance();
       }
 
+      private function get explorationStatus(): ExplorationStatus {
+         return ExplorationStatus.getInstance();
+      }
+
       public function update(): void {
          chat.update();
          announcement.update();
+         explorationStatus.update();
       }
 
       public function resetChangeFlags(): void {
          chat.resetChangeFlags();
          announcement.resetChangeFlags();
+         explorationStatus.resetChangeFlags();
       }
    }
 }
