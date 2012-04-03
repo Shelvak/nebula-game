@@ -591,60 +591,105 @@ describe Player do
     end
 
     describe "#vip_tick!" do
-      before(:each) do
-        vip_level = 1
-        @creds_needed, @per_day = CONFIG['creds.vip'][vip_level - 1]
-        @vip_creds = 345
-
-        @player = Factory.create(:player, :creds => 1200,
-          :vip_level => vip_level, :vip_creds => @vip_creds)
+      let(:vip_level) { 1 }
+      let(:creds_needed) { CONFIG['creds.vip'][vip_level - 1][0] }
+      let(:per_day) { CONFIG['creds.vip'][vip_level - 1][1] }
+      let(:vip_creds) { 345 }
+      let(:player) do
+        Factory.create(
+          :player, :creds => 1200, :vip_level => vip_level,
+          :vip_creds => vip_creds
+        )
       end
 
       it "should fail if not a vip" do
-        @player.stub!(:vip?).and_return(false)
+        player.stub!(:vip?).and_return(false)
         lambda do
-          @player.vip_tick!
+          player.vip_tick!
         end.should raise_error(GameLogicError)
       end
 
-      it "should set vip_creds" do
-        @player.vip_tick!
-        @player.vip_creds.should == @per_day
+      shared_examples_for "vip tick" do
+        it "should set vip_creds" do
+          player.vip_tick!
+          player.vip_creds.should == per_day
+        end
+
+        it "should add new batch of creds" do
+          lambda do
+            player.vip_tick!
+          end.should change(player, :creds).
+            to(player.creds - vip_creds + per_day)
+        end
+
+        it "should reset vip creds counter" do
+          lambda do
+            player.vip_tick!
+          end.should change(player, :vip_creds).to(per_day)
+        end
       end
 
-      it "should write #vip_creds_until if #vip_creds_until is nil" do
-        @player.vip_creds_until = nil
-        @player.vip_tick!
-        @player.vip_creds_until.should \
-          be_within(SPEC_TIME_PRECISION).of(1.day.from_now)
+      shared_examples_for "vip tick (except last day)" do
+        it "should add tick callback" do
+          player.vip_tick!
+          player.should have_callback(
+            CallbackManager::EVENT_VIP_TICK, player.vip_creds_until
+          )
+        end
       end
 
-      it "should write #vip_creds_until based on previous #vip_creds_until" do
-        time = 5.minutes.ago
-        @player.vip_creds_until = time
-        @player.vip_tick!
-        @player.vip_creds_until.should \
-          be_within(SPEC_TIME_PRECISION).of(time + 1.day)
+      describe "vip start" do
+        before(:each) do
+          player.vip_creds_until = nil
+          player.vip_until = nil
+        end
+
+        it_should_behave_like "vip tick"
+        it_should_behave_like "vip tick (except last day)"
+
+        it "should write #vip_creds_until if #vip_creds_until is nil" do
+          player.vip_tick!
+          player.vip_creds_until.should be_within(SPEC_TIME_PRECISION).
+            of(Cfg.player_vip_tick_duration.from_now)
+        end
       end
 
-      it "should add tick callback" do
-        @player.vip_tick!
-        @player.should have_callback(
-          CallbackManager::EVENT_VIP_TICK,
-          CONFIG['creds.vip.tick.duration'].from_now)
+      describe "ongoing vip" do
+        let(:time) { 5.minutes.ago }
+        before(:each) do
+          player.vip_creds_until = time
+          player.vip_until = 1.month.from_now
+        end
+
+        it_should_behave_like "vip tick"
+        it_should_behave_like "vip tick (except last day)"
+
+        it "should write #vip_creds_until based on previous #vip_creds_until" do
+          player.vip_tick!
+          player.vip_creds_until.should be_within(SPEC_TIME_PRECISION).
+            of(time + Cfg.player_vip_tick_duration)
+        end
       end
 
-      it "should add new batch of creds" do
-        lambda do
-          @player.vip_tick!
-        end.should change(@player, :creds).
-          to(@player.creds - @vip_creds + @per_day)
-      end
+      describe "last vip day" do
+        let(:time) { Time.now }
+        before(:each) do
+          player.vip_creds_until = time
+          player.vip_until = time + Cfg.player_vip_tick_duration
+        end
 
-      it "should reset vip creds counter" do
-        lambda do
-          @player.vip_tick!
-        end.should change(@player, :vip_creds).to(@per_day)
+        it_should_behave_like "vip tick"
+
+        it "should not update vip_creds_until" do
+          lambda do
+            player.vip_tick!
+          end.should_not change(player, :vip_creds_until)
+        end
+
+        it "should not register vip tick callback" do
+          player.vip_tick!
+          player.should_not have_callback(CallbackManager::EVENT_VIP_TICK)
+        end
       end
     end
 
