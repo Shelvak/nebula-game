@@ -1068,7 +1068,7 @@
       <p>
         A great technological advancement allowing us to build tanks and other 
         advanced ground units. You will require this building to 
-        construct [obj:1:Unit_Mdh:what:dc] which enables colonization
+        construct [reference:Objects/Unit_Mdh] which enables colonization
         of other planets.
       </p>
     </GroundFactory.about>
@@ -2495,7 +2495,7 @@
       <p>Commander!</p>
       <p>
         Our troops have been injured! We need some way to heal them. Tell scientists
-        to begin researching [obj:1:HealingCenter:what:dc] technology. Once they
+        to begin researching [reference:Objects/Technology_HealingCenter] technology. Once they
         have completed the task, build it immediately.
       </p>
     </about.120>
@@ -3427,7 +3427,7 @@
       <![CDATA[
       <p>Some buildings are designed to train soldiers, tanks or spaceships.</p>
       <p>You can build units by selecting a building (i.e.
-        [obj:1:Building_Barracks:what:dc]) and pressing
+        [reference:Objects/Building_Barracks]) and pressing
         [reference:BuildingSelectedSidebar/open] in the sidebar.</p>
       ]]>
     </UnitConstructors>
@@ -3489,7 +3489,7 @@
       <![CDATA[
       <p>Your troops had been injured in the battle. They could be healed,
         if you invented the technology, enabling you to build
-        [obj:1:Building_HealingCenter:what:dc].</p>
+        [reference:Objects/Building_HealingCenter].</p>
       ]]>
     </DamagedUnits>
 
@@ -3949,7 +3949,8 @@
     <label.wreckageVolume value="(volume: {0})"/>
     <label.unknownHonorCoef value="unknown"/>
     <label.honorCoef value="Honor coef:"/>
-    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->    
+    <tooltip.honorCoef ref="Movement/tooltip.honorCoef"/>
+    <!-- {0}: Planet/Jumpgate/Asteroid/Wreckage/Cooldown -->
     <title.info value="{0} info" />
     <!-- {0}: Planet/Jumpgate/Asteroid  
          {1}: item name -->
@@ -4317,7 +4318,7 @@
     </GroundAbsorption.about>
     
     <NpcSpaceUpgradeTech>
-      <p>for NPC spaceships (except for [reference:Unit_Nexar] class)</p>
+      <p>for NPC spaceships (except for [reference:Objects/Unit_ConvoyShip] class)</p>
     </NpcSpaceUpgradeTech>
     
     <NpcSpaceDamage.name ref="Objects/Technology_NpcSpaceDamage" />
@@ -4347,12 +4348,12 @@
     <NpcHeavyFlight.name ref="Objects/Technology_NpcHeavyFlight" />
     <NpcHeavyFlight.about>
       <p>[reference:SpeedTech] of [reference:Objects/Unit_Demosis] and
-         [reference:Objects/Unit_Nexar] class ships.</p>
+         [reference:Objects/Unit_ConvoyShip] class ships.</p>
     </NpcHeavyFlight.about>
 
     <NpcLightFlight.name ref="Objects/Technology_NpcLightFlight" />
     <NpcLightFlight.about>
-      <p>[reference:SpeedTech] or [reference:Objects/Unit_Dirak] and
+      <p>[reference:SpeedTech] or [reference:Objects/Unit_Dirac] and
          [reference:Objects/Unit_Thor] class ships.</p>
     </NpcLightFlight.about>
     
