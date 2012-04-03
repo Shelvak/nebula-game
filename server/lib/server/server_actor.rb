@@ -4,6 +4,8 @@ class ServerActor
   include Celluloid
   include Celluloid::IO
 
+  IO_ERRORS = [EOFError, IOError, Errno::ECONNRESET, Errno::EBADF, Errno::EPIPE]
+
   def initialize(port)
     @server = Celluloid::IO::TCPServer.new("0.0.0.0", port)
 
@@ -83,7 +85,7 @@ class ServerActor
         end
       end
     end
-  rescue EOFError, Errno::ECONNRESET
+  rescue *IO_ERRORS
     # Our client has disconnected.
   ensure
     client_disconnected(client)
@@ -113,9 +115,8 @@ class ServerActor
     end
 
     debug "Sending message: #{json}", to_s(client)
-    STDERR.puts "SA writing #{json.length}"
     socket.write "#{json}\n"
-  rescue EOFError, IOError, Errno::EBADF, Errno::EPIPE
+  rescue *IO_ERRORS
     # Our client has disconnected.
     client_disconnected(client)
   end
