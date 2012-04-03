@@ -9,6 +9,7 @@ package models.player.events
       public static const POPULATION_CAP_CHANGE: String = "populationCapChange";
       public static const POPULATION_CHANGE: String = "populationChange";
       public static const PLANET_COUNT_CHANGE: String = "planetCountChange";
+      public static const HAS_NEXT_VIP_TICK_CHANGE: String = "hasNextVipTickChange";
       
       /**
        * Dispatched when <code>Player.allianceId</code> property changes.

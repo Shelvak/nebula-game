@@ -194,6 +194,20 @@ package models.player
       [Optional]
       public var vipCredsUntil: Date;
       public var vipCredsTime: String = null;
+
+      private var _hasNextVipTick: Boolean = false;
+      [Bindable(event="hasNextVipTickChange")]
+      public function get hasNextVipTick(): Boolean {
+         return _hasNextVipTick;
+      }
+      private function updateHasNextVipTick(): void {
+         const newValue: Boolean = vipCredsTime != null
+                                      && vipCredsUntil.time > DateUtil.now;
+         if (_hasNextVipTick != newValue) {
+            _hasNextVipTick = newValue;
+            dispatchPlayerEvent(PlayerEvent.HAS_NEXT_VIP_TICK_CHANGE);
+         }
+      }
       
       [Optional]
       public var vipUntil: Date;
@@ -617,6 +631,7 @@ package models.player
          else {
             vipTime = null;
          }
+         updateHasNextVipTick();
          
          dispatchUpdateEvent();
       }
