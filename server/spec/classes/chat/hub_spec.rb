@@ -33,6 +33,13 @@ describe Chat::Hub do
       @dispatcher.stub!(:player_connected?).with(@player.id).and_return(true)
     end
 
+    it "should fail if player is already registered" do
+      @hub.register(@player)
+      lambda do
+        @hub.register(@player)
+      end.should raise_error(ArgumentError)
+    end
+
     it "should join to galaxy channel" do
       @hub.register(@player)
       @hub.joined?(@player, Chat::Hub::GLOBAL_CHANNEL).should be_true
@@ -74,6 +81,13 @@ describe Chat::Hub do
       @player = Factory.create(:player)
       @dispatcher.stub!(:player_connected?).with(@player.id).and_return(true)
       @hub.register(@player)
+    end
+
+    it "should fail if player is not connected" do
+      @hub.unregister(@player)
+      lambda do
+        @hub.unregister(@player)
+      end.should raise_error(ArgumentError)
     end
 
     it "should leave from galaxy channel" do

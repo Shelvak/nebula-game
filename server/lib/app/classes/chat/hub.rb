@@ -32,6 +32,8 @@ class Chat::Hub
   # Registers player to this hub.
   def register(player)
     synchronize do
+      raise ArgumentError, "#{player} is already connected to #{self}!" \
+        if connected?(player)
       join_or_leave(player, :join)
     end
   end
@@ -39,6 +41,8 @@ class Chat::Hub
   # Unregisters player from this hub.
   def unregister(player)
     synchronize do
+      raise ArgumentError, "#{player} is not connected to #{self}!" \
+        unless connected?(player)
       join_or_leave(player, :leave)
     end
   end
