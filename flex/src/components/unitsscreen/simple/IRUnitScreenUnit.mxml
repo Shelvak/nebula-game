@@ -101,16 +101,27 @@
 
       protected function showStorage(): void {
          if (model.unit != null && !model.unit.pending) {
+            ML.units.removeStoredUnits();
             unitToOpen = model.unit;
-            EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
-            new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
+            if (unitToOpen.stored > 0)
+            {
+               EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
+               new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
+            }
+            else
+            {
+               switchToStorage();
+            }
          }
       }
 
       private var uScreen: MCUnitScreen = MCUnitScreen.getInstance();
 
-      private function switchToStorage(e: GUnitEvent): void {
-         EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
+      private function switchToStorage(e: GUnitEvent = null): void {
+         if (e != null)
+         {
+            EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
+         }
          NavigationController.getInstance().enableActiveButton();
          uScreen.switchToStorage(unitToOpen);
       }

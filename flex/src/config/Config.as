@@ -543,7 +543,7 @@ package config
       }
 
       /* Const of creds for killing one unit */
-      public static function getUnitCredsBonus(type: String): Number
+      public static function getUnitCredsBonus(type: String): int
       {
          return getUnitProperty(type, 'credsForKilling');
       }

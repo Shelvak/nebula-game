@@ -945,6 +945,7 @@ package components.base.viewport
       protected function this_rollOverHandler(event:MouseEvent) : void
       {
          f_keyboardControlActive = true;
+         setFocus();
       }
       
       
