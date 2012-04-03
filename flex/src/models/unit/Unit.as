@@ -551,8 +551,9 @@ package models.unit
       
       public override function toString() : String
       {
-         return "[class: " + className + ", id: " + id + ", type: " + type + ", squadronId: " + squadronId +
-            ", owner: " + owner + ", palyerId: " + playerId + ", location: " + location + "]";
+         return "[class: " + className + ", id: " + id + ", type: " + type +
+            ", squadronId: " + squadronId + ", owner: " + owner +
+            ", playerId: " + playerId + ", location: " + location + "]";
       }
       
    }
