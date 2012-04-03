@@ -133,6 +133,14 @@
          _researchModel.dispatchEvent(new Event(TechnologyEvent.SELECTED_CHANGE));
          MCSidebar.getInstance().replaceCurrentWith(SidebarScreens.TECH_TREE_INFO);
       }
+
+      private function getPausedTimeLeft(minScientists: int,
+                                         pauseReminder: int,  //Just for binding
+                                         pauseScientists: int //Just for binding
+              ): String
+      {
+         return _researchModel.getNewTimeToFinishString(minScientists, 2);
+      }
       ]]>
    </fx:Script>
    <s:Group left="0" right="0">
@@ -159,7 +167,15 @@
          </s:Group>
          <base:ImageAndLabel type="{ResourceType.SCIENTISTS}" 
                              textToDisplay="{_researchModel.scientists.toString()}"
-                             visible="{_researchModel.scientists != 0}"/>
+                             visible="{_researchModel.scientists != 0}"
+                             includeInLayout="{_researchModel.scientists != 0}"/>
+         <s:Label text="{Localizer.string('Technologies', 'pausedLeft',
+                     [getPausedTimeLeft(_researchModel.minScientists,
+                     _researchModel.pauseRemainder,
+                     _researchModel.pauseScientists)])}"
+                  paddingLeft="3"
+                  visible="{_researchModel.scientists == 0}"
+                  includeInLayout="{_researchModel.scientists == 0}"/>
          <s:layout>
             <s:VerticalLayout gap="1"/>
          </s:layout>
