@@ -29,8 +29,8 @@ class PlanetsController < GenericController
         data = {
           :planet => planet.as_json(
             :owner => planet.player_id == m.player.id,
-              :view => true,
-              :perspective => m.player
+            :view => true,
+            :perspective => m.player
           ),
           :tiles => Tile.fast_find_all_for_planet(planet),
           :folliages => Folliage.fast_find_all_for_planet(planet),
@@ -294,9 +294,5 @@ class PlanetsController < GenericController
     
     planet.player = m.player
     planet.save!
-    
-    # Push planet show because player now needs garrisoned units and other
-    # owner-related stuff.
-    push m, ACTION_SHOW, :id => planet.id if current_planet_id(m) == planet.id
   end
 end
