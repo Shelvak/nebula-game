@@ -2,7 +2,10 @@ require 'rubygems'
 require 'socket'
 require 'yaml'
 require 'json'
-
+require File.dirname(__FILE__) +
+  "/../../vendor/plugins/game_server_connector/init.rb"
+require 'logger'
+require 'stringio'
 # Control client for usage in scripts.
 class ControlClient
   class ConnectionError < RuntimeError; end
@@ -13,8 +16,8 @@ class ControlClient
   
   def initialize
     @connection = GameServerConnector.new(
-      Logger.new(stderr), "127.0.0.1",
-      CONFIG['control']['port'],
+      Logger.new(STDOUT), "127.0.0.1",
+      CONFIG['server']['port'],
       CONFIG['control']['token']
     )
   end
