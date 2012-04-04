@@ -12,19 +12,16 @@ class ControlClient
   CONFIG = YAML.load(File.read(CONFIG_FILE))
   
   def initialize
-    begin
-      @socket = TCPSocket.open("127.0.0.1", CONFIG['control']['port'])
-    rescue Errno::ECONNREFUSED, Errno::ECONNRESET
-      raise ConnectionError
-    end
+    @connection = GameServerConnector.new(
+      Logger.new(stderr), "127.0.0.1",
+      CONFIG['control']['port'],
+      CONFIG['control']['token']
+    )
   end
   
   def message(action, params={})
-    message = JSON.generate(params.merge(
-      :token => CONFIG['control']['token'],
-      :action => action
-    ))
-    @socket.write message
-    JSON.parse(@socket.gets)
+    @connection.request(action, params)
+  rescue GameServerConnector::RemoteError => e
+    raise ConnectionError, e
   end
 end
