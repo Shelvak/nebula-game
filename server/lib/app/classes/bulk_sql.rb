@@ -12,7 +12,7 @@ class BulkSql
 
         # Create the data holders.
         insert_objects = Java::java.util.LinkedList.new
-        insert_columns = Set.new([primary_key])
+        insert_columns = Set.new
 
         update_objects = Java::java.util.LinkedList.new
         update_columns = Set.new([primary_key])
@@ -27,7 +27,6 @@ class BulkSql
               # Simulate record save.
               object.instance_variable_set(:"@new_record", false)
 
-              insert_columns.add(primary_key)
               changes.each { |column| insert_columns.add(column.to_sym) }
               insert_objects.push object
             else
@@ -116,8 +115,10 @@ class BulkSql
         unless update
           # Assign primary keys.
           primary_key = klass.primary_key.to_sym
-          ids = klass.select(primary_key).where(:batch_id => batch_id).
-            c_select_values
+          ids = without_locking do
+            klass.select(primary_key).where(:batch_id => batch_id).
+              c_select_values
+          end
 
           raise "Wanted to insert #{objects.size} rows, however only #{
             ids.size} rows inserted for #{table_name}!" \
