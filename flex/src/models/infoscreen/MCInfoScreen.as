@@ -406,19 +406,16 @@ package models.infoscreen
                         Config.getRoundingPrecision());
                      useRounding = true;
                   }
-                  else
+                  else if (element == STORAGE && model.objectType == ObjectClass.UNIT)
                   {
+                     currentValue = ML.technologies.getUnitStorage(model.type, model.usefulLevel);
+                     newValue = ML.technologies.getUnitStorage(model.type, selectedLevel);
+                  }
+                  else {
                      currentValue = StringUtil.evalFormula(model.infoData[element],
                         {"level": model.usefulLevel});
                      newValue = StringUtil.evalFormula(model.infoData[element],
                         {"level": selectedLevel});
-                  }
-
-                  if (element == STORAGE)
-                  {
-                     currentValue = Math.round(currentValue);
-                     newValue = Math.round(newValue);
-                     useRounding = true;
                   }
 
                   var bundle: String;
@@ -484,11 +481,9 @@ package models.infoscreen
                           || element == Unit.JUMP_IN_SS)
                   {
                      currentValueString = Unit.getJumpTime(model.infoData[element],
-                             model.type,
-                             model.usefulLevel);
+                             model.type);
                      newValueString = Unit.getJumpTime(model.infoData[element],
-                             model.type,
-                             model.usefulLevel);
+                             model.type);
                   }
                   
                   if (Localizer.hasProperty(bundle,  'property.' + element + '.format'))

@@ -38,7 +38,7 @@ package models.unit
    {
       public static const JUMP_IN_SS: String = "move.solarSystem.hopTime";
       public static const JUMP_IN_GALAXY: String = "move.galaxy.hopTime";
-      public static const JUMP_SPEED_MOD: String = "movementTimeDecrease";
+      public static const JUMP_SPEED_MOD: String = "speed";
 
 
       public static function sortByHp(list: ListCollectionView): void
@@ -58,16 +58,13 @@ package models.unit
          }
       }
 
-      public static function getJumpTime(formula: String, type: String,
-                             level: int): String
+      public static function getJumpTime(defaultTime: int, type: String): String
       {
-         var mod: Number = ML.technologies.getTechnologiesPropertyMod(
+         var mod: Number = 1 + (ML.technologies.getTechnologiesPropertyMod(
              JUMP_SPEED_MOD, ObjectClass.UNIT + '/' +
                          StringUtil.camelCaseToUnderscore(type)
-         );
-         return DateUtil.secondsToHumanString(
-                 Math.round(StringUtil.evalFormula(formula,
-                        {"level": level}) * (100 - mod) / 100));
+         ) / 100);
+         return DateUtil.secondsToHumanString(defaultTime / mod);
       }
 
       public static function getValidUnits(facility: Building): ArrayCollection
