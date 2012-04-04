@@ -1,6 +1,7 @@
 package controllers.messages
 {
    import controllers.CommunicationCommand;
+   import controllers.startup.StartupInfo;
 
    import utils.SingletonFactory;
    import utils.execution.GameLogicExecutionManager;
@@ -12,8 +13,8 @@ package controllers.messages
 
 
    /**
-    * Responsible for processing messages, received form server as well as sending messages to the server
-    * via <code>IServerProxy</code>.
+    * Responsible for processing messages, received form server as well as
+    * sending messages to the server via <code>IServerProxy</code>.
     */
    public class MessagesProcessor
    {
@@ -34,8 +35,8 @@ package controllers.messages
       }
 
 
-      private var _buffer: Vector.<ServerRMO>;
-      private var _sequence: RMOSequence;
+      private var _bufferOutOfOrder: Vector.<ServerRMO>;
+      private var _bufferInOrder: RMOSequence;
       private var _nextSequenceNumber: int;
 
       public function MessagesProcessor() {
@@ -43,8 +44,8 @@ package controllers.messages
       }
 
       public function reset(): void {
-         _buffer = new Vector.<ServerRMO>();
-         _sequence = new RMOSequence();
+         _bufferOutOfOrder = new Vector.<ServerRMO>();
+         _bufferInOrder = new RMOSequence();
          _nextSequenceNumber = 0;
       }
 
@@ -56,42 +57,45 @@ package controllers.messages
        * provided, all available messages will be processed.
        */
       public function process(count: uint = 0): void {
-         var messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
+         const messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
          if (messages != null) {
-            _buffer = _buffer.concat(messages);
-         }
-         processBuffer(count);
-      }
-
-      private function get canProcessSequence(): Boolean {
-         return _sequence.hasItems
-                   && _sequence.firstNumber == _nextSequenceNumber;
-      }
-
-      private function processBuffer(count: uint): void {
-         const logicExecutionManager: GameLogicExecutionManager
-                  = GameLogicExecutionManager.getInstance();
-         var processed: uint = 0;
-         while (logicExecutionManager.executionEnabled
-                   && (count == 0 || processed < count)
-                   && (_buffer.length > 0 || canProcessSequence)) {
-            var processSequence: Boolean = true;
-            if (_buffer.length > 0) {
-               const rmo: ServerRMO = _buffer.shift();
+            for each (var rmo: ServerRMO in messages) {
                if (rmo.inSequence) {
-                  _sequence.insert(rmo);
+                  _bufferInOrder.insert(rmo);
                }
                else {
-                  processMessage(rmo);
-                  processed++;
-                  processSequence = false;
+                  _bufferOutOfOrder.push(rmo);
                }
             }
-            if (processSequence && canProcessSequence) {
+         }
+         processBuffers(count);
+      }
+
+      private function get canProcessInOrder(): Boolean {
+         return _bufferInOrder.hasItems
+                   && _bufferInOrder.firstNumber == _nextSequenceNumber;
+      }
+      
+      private function get canProcessOutOfOrder(): Boolean {
+         return _bufferOutOfOrder.length > 0
+                   && StartupInfo.getInstance().initializationComplete;
+      }
+
+      private function processBuffers(count: uint): void {
+         const executionManager: GameLogicExecutionManager
+                           = GameLogicExecutionManager.getInstance();
+         var processed: uint = 0;
+         while (executionManager.executionEnabled
+                   && (canProcessInOrder || canProcessOutOfOrder)
+                   && (count == 0 || processed < count)) {
+            if (canProcessInOrder) {
                _nextSequenceNumber++;
-               processMessage(_sequence.removeFirst());
-               processed++;
+               processMessage(_bufferInOrder.removeFirst());
             }
+            else {
+               processMessage(_bufferOutOfOrder.shift());
+            }
+            processed++;
          }
       }
 
