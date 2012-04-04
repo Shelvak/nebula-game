@@ -5,14 +5,9 @@ ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
 WORKERS_CHAT = 1
 WORKERS_WORLD = 1
 # Connections:
-# - initializer: migrator check, checked in.
 # - callback manager
-# - chat hub, for retrieving stored messages from db.
 # - workers
-#
-# Each actor uses fiber, which is a different thread in JRuby. That's why we
-# need two connections per actor, not one.
-DB_POOL_SIZE = (WORKERS_CHAT + WORKERS_WORLD + 3) * 2
+DB_POOL_SIZE = WORKERS_CHAT + WORKERS_WORLD + 1
 
 def rake?; File.basename($0) == 'rake'; end
 
@@ -195,15 +190,7 @@ Bundler.setup(*(setup_groups | require_groups))
 Bundler.require(*require_groups)
 
 require 'active_support/dependencies'
-
-# We don't need our #destroy, #save and #save! automatically wrapped under
-# transaction because we wrap whole request in one and can't use nested
-# transactions due to BulkSql.
-module ActiveRecord::Transactions
-  def destroy; super; end
-  def save(*); super; end
-  def save!(*); super; end
-end
+require "#{ROOT_DIR}/lib/server/ar_monkey_squad"
 
 # Unshift current directory for factory girl (ruby 1.9)
 $LOAD_PATH.unshift File.expand_path(ROOT_DIR) if App.in_test?

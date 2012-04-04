@@ -11,7 +11,7 @@ class Chat::Control
   TAG = "chat_control"
 
   def initialize(dispatcher_actor_name, antiflood)
-    super
+    super()
     @dispatcher_actor_name = dispatcher_actor_name
     @antiflood = antiflood
     @log = Java::java.util.LinkedList.new

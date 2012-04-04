@@ -6,7 +6,7 @@ class Chat::Channel
 
   def initialize(name, dispatcher_actor_name)
     typesig binding, String, Symbol
-    super
+    super()
 
     @name = name
     # Hash of {player_id => Player} values.

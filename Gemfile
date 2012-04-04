@@ -9,7 +9,7 @@ gem 'json', '>=1.4.6', :require => "json/ext"
 gem 'activerecord-jdbcmysql-adapter', '~>1.1'
 gem 'flag_shih_tzu', :git => "git://github.com/arturaz/flag_shih_tzu.git"
 gem "celluloid",
-  :git => "git://github.com/arturaz/celluloid.git"
+  :git => "git://github.com/celluloid/celluloid.git"
 #gem "celluloid-io", :require => "celluloid/io",
 #  :git => "git://github.com/celluloid/celluloid-io.git"
 #gem "celluloid", '~>0.10.0'

@@ -137,6 +137,10 @@ class ServerActor
   end
 
   private
+  def connected
+    @sockets.size
+  end
+
   def client_disconnected(client)
     if @sockets.has_key?(client)
       Actor[:dispatcher].unregister!(client)
