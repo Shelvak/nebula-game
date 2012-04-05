@@ -18,6 +18,9 @@ if $SPEC_INITIALIZED.nil?
   )
   Dir[glob].each { |file| require file }
 
+  # Pretend we're in #with_connection
+  Thread.current[ActiveRecord::WC_CHECKING_OUT] = true
+
   # Truncate test tables
   def cleanup_database
     c = ActiveRecord::Base.connection

@@ -191,9 +191,8 @@ class LocationPoint
   end
 
   def as_json(options=nil)
-    ATTRIBUTES.inject({}) do |hash, attribute|
+    ATTRIBUTES.each_with_object({}) do |attribute, hash|
       hash[attribute.to_s] = send(attribute).as_json
-      hash
     end
   end
 end

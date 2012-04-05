@@ -13,6 +13,11 @@ package controllers.objects.actions.customcontrollers
       }
       
       public override function objectCreated(objectSubclass:String, object:Object, reason:String) : * {
+         var oldQuest: Quest = ML.quests.find(object.id);
+         if (oldQuest != null)
+         {
+            return oldQuest;
+         }
          var quest:Quest = QuestFactory.fromObject(object);
          ML.quests.addItem(quest);
          quest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));

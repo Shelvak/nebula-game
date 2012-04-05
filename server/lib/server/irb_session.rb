@@ -22,7 +22,11 @@ module IRB # :nodoc:
     @CONF[:IRB_RC].call(irb.context) if @CONF[:IRB_RC]
     @CONF[:MAIN_CONTEXT] = irb.context
 
-    catch(:IRB_EXIT) { irb.eval_input }
+    catch(:IRB_EXIT) do
+      ActiveRecord::Base.connection_pool.with_connection do
+        irb.eval_input
+      end
+    end
   ensure
     $IRB_RUNNING = false
     Celluloid::Actor[:callback_manager].resume!

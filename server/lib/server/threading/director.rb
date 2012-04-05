@@ -4,6 +4,7 @@ class Threading::Director
 
   def initialize(name, pool)
     @name = name
+    Actor[to_s] = current_actor
 
     @workers = {}
     @free_workers = Java::java.util.LinkedList.new

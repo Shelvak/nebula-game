@@ -5,6 +5,7 @@ class Threading::Worker
   def initialize(director, name)
     @director = director
     @name = name
+    Actor[to_s] = current_actor
   end
 
   def to_s

@@ -3,7 +3,11 @@ package controllers.objects.actions.customcontrollers
    import models.objectives.QuestObjective;
    import models.quest.Quest;
    import models.quest.events.QuestEvent;
-   
+
+   import mx.logging.ILogger;
+
+   import mx.logging.Log;
+
    import utils.PropertiesTransformer;
    
    
@@ -23,12 +27,21 @@ package controllers.objects.actions.customcontrollers
          objective.completed = object.completed;
          pQuest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
       }
-      
+
+      private function get logger(): ILogger
+      {
+         return Log.getLogger(
+            "controllers.objects.actions.customcontrollers.ObjectiveProgressController");
+      }
       
       public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void {
          var quest:Quest = ML.quests.findQuestByProgress(objectId);
-         if (quest == null) 
-            throw new Error("Quest with objective progress id " + objectId + " was not found");
+         if (quest == null)
+         {
+            logger.warn("Quest with objective progress id " +
+               objectId + " was not found");
+            return;
+         }
          var objective:QuestObjective = quest.findObjectiveByProgress(objectId);
          if (objective == null)
             throw new Error("quest objective with progress id " + objectId + " was not found");

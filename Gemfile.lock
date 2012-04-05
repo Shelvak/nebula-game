@@ -1,10 +1,4 @@
 GIT
-  remote: git://github.com/arturaz/celluloid.git
-  revision: 71c34a5138aaa06fcda07f1c244eb1ea9a03faea
-  specs:
-    celluloid (0.10.0)
-
-GIT
   remote: git://github.com/arturaz/flag_shih_tzu.git
   revision: 4cb1c9088e6fb33eec49bda402f92cef11c2dc69
   specs:
@@ -17,6 +11,12 @@ GIT
   specs:
     net-ssh (2.3.1)
       jruby-pageant (>= 1.0.2)
+
+GIT
+  remote: git://github.com/celluloid/celluloid.git
+  revision: 62f219250e082b4f8969730811f42002f12d2b7e
+  specs:
+    celluloid (0.10.0)
 
 GIT
   remote: git://github.com/pry/pry.git

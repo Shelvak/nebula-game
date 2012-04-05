@@ -77,20 +77,17 @@ class CallbackManager
     # there that will never be processed if we don't restart.
     current_actor.link Actor[:dispatcher]
 
-    @connection = ActiveRecord::Base.connection_pool.checkout
     @running = false
     @pause = false
-    tick!(true) # Tick first time with failed callbacks.
     run!
-  end
-
-  def finalize
-    ActiveRecord::Base.connection_pool.checkin(@connection)
   end
 
   def run
     raise "Cannot run callback manager while it is running!" if @running
     @running = true
+
+    # Tick first time with failed callbacks. This should not be async.
+    tick(true)
 
     loop do
       if @pause
@@ -98,8 +95,8 @@ class CallbackManager
         wait :resume
       end
 
-      tick
       sleep 1 # Wait 1 second before next tick.
+      tick
     end
   end
 
@@ -117,46 +114,57 @@ class CallbackManager
   # Run every callback that is not processed and should have happened by now.
   def tick(include_all=false)
     exclusive do
-      now = Time.now.to_s(:db)
-      conditions = include_all \
-        ? "ends_at <= '#{now}'" \
-        : "ends_at <= '#{now}' AND processing=0"
+      with_db_connection do
+        now = Time.now.to_s(:db)
+        conditions = include_all \
+          ? "ends_at <= '#{now}'" \
+          : "ends_at <= '#{now}' AND processing=0"
 
-      get_callback = lambda do |last_id|
-        LOGGER.except(:debug) do
-          # Ensure we don't end up in an endless loop trying to execute same
-          # callback over and over again if it fails.
-          skip_failed = last_id.nil? ? "" : " AND id > #{last_id.to_i}"
-          sql = "WHERE #{conditions}#{skip_failed} ORDER BY ends_at"
+        get_callback = lambda do |last_id|
+          LOGGER.except(:debug) do
+            # Ensure we don't end up in an endless loop trying to execute same
+            # callback over and over again if it fails.
+            skip_failed = last_id.nil? ? "" : " AND id > #{last_id.to_i}"
+            sql = "WHERE #{conditions}#{skip_failed} ORDER BY ends_at"
 
-          row = self.class.get(sql, @connection)
-          if row.nil?
-            nil
-          else
-            klass, obj_id = self.class.parse_row(row)
-            Callback.new(
-              row['id'], klass, obj_id, row['event'],
-              row['ruleset'], row['ends_at']
-            )
+            row = self.class.get(sql, connection)
+            if row.nil?
+              nil
+            else
+              klass, obj_id = self.class.parse_row(row)
+              Callback.new(
+                row['id'], klass, obj_id, row['event'],
+                row['ruleset'], row['ends_at']
+              )
+            end
           end
         end
-      end
 
-      # Request unprocessed entries that have hit.
-      callback = get_callback.call(nil)
+        # Request unprocessed entries that have hit.
+        callback = get_callback.call(nil)
 
-      until callback.nil?
-        info "Fetched: #{callback}"
+        until callback.nil?
+          info "Fetched: #{callback}"
 
-        # Mark this row as sent to processing.
-        @connection.execute(
-          "UPDATE `callbacks` SET processing=1 WHERE id=#{callback.id}"
-        )
-        Actor[:dispatcher].callback!(callback)
+          # Mark this row as sent to processing.
+          connection.execute(
+            "UPDATE `callbacks` SET processing=1 WHERE id=#{callback.id}"
+          )
+          Actor[:dispatcher].callback!(callback)
 
-        callback = get_callback.call(callback.id)
+          callback = get_callback.call(callback.id)
+        end
       end
     end
+  end
+
+  private
+  def with_db_connection(&block)
+    ActiveRecord::Base.connection_pool.with_connection(&block)
+  end
+
+  def connection
+    ActiveRecord::Base.connection
   end
 
   class << self

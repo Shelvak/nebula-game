@@ -1,5 +1,7 @@
 package utils
 {
+   import com.adobe.errors.IllegalStateError;
+
    import errors.AppError;
 
    import flash.errors.IllegalOperationError;
@@ -688,6 +690,17 @@ package utils
       /* ######################## */
       /* ### FAIL-FAST ERRORS ### */
       /* ######################## */
+
+      /**
+       * @throws flash.errors.IllegalOperationError
+       */
+      public static function throwStateOutOfSyncError(oldObject: Object, newObject: Object): void
+      {
+         throw new IllegalStateError("Object can not be created, old mismatching " +
+            "object detected!\n" +
+            "old object: " + ObjectUtil.toString(oldObject) + "\n" +
+            "new object: " + ObjectUtil.toString(newObject));
+      }
 
       /**
        * @throws flash.errors.IllegalOperationError
