@@ -367,6 +367,7 @@ package controllers.startup
          bindPair(BuildingsCommand.SET_BUILD_IN_2ND_FLANK, new SetBuildIn2ndFlankAction());
          bindPair(BuildingsCommand.SET_BUILD_HIDDEN, new SetBuildHiddenAction());
          bindPair(BuildingsCommand.SHOW_GARRISON, new ShowGarrisonAction());
+         bindPair(BuildingsCommand.SHOW_GARRISON_GROUPS, new ShowGarrisonGroupsAction());
          bindPair(BuildingsCommand.TRANSPORT_RESOURCES, new TransportResourcesAction());
       }
       private static function bindTechnologiesCommands() : void

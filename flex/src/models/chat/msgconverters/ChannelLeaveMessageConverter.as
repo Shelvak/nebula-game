@@ -25,17 +25,23 @@ package models.chat.msgconverters
       }
       
       
-      public override function toFlowElement(message:MChatMessage) : FlowElement {
+      public override function toFlowElement(message: MChatMessage,
+                                             onPlayerElementClick: Function = null): FlowElement {
          message.time = new Date();
-         message.message = Localizer.string("Chat", "message.channelLeave", [message.playerName]);
+         message.message = Localizer.string(
+            "Chat", "message.channelLeave", [message.playerName]
+         );
          return super.toFlowElement(message);
       }
       
       /**
        * No-op.
        */
-      protected override function addPlayer(message:MChatMessage, p:ParagraphElement) : void {}
-      
+      protected override function addPlayer(message: MChatMessage,
+                                            p: ParagraphElement,
+                                            onClick: Function = null): void {
+      }
+
       protected override function get textColor() : uint {
          return ChatTextStyles.CHAN_LEAVE_MESSAGE_COLOR;
       }

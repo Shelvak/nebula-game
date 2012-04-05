@@ -2,7 +2,9 @@ package components.buildingselectedsidebar
 {
    import components.base.Panel;
    import components.skins.NpcFlankSkin;
-   
+
+   import models.unit.MNpcFlank;
+
    public class NpcFlank extends Panel
    {
       public function NpcFlank()
@@ -11,11 +13,7 @@ package components.buildingselectedsidebar
          setStyle('skinClass', NpcFlankSkin);
       }
       
-      import models.unit.UnitsFlank;
-      
-      import utils.locale.Localizer;
-      
       [Bindable]
-      public var flankModel: UnitsFlank;
+      public var flankModel: MNpcFlank;
    }
 }

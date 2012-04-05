@@ -16,9 +16,13 @@
          
          import models.events.ScreensSwitchEvent;
          import models.parts.events.UpgradeEvent;
+         import models.player.PlayerOptions;
          import models.resource.ResourceType;
          import models.technology.Technology;
-         
+
+         import mx.collections.ArrayCollection;
+         import mx.collections.Sort;
+
          import mx.events.FlexEvent;
          
          import utils.locale.Localizer;		
@@ -44,31 +48,92 @@
          {
             SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, prepareList);
             EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
+            techsResearching.disableAutoUpdate();
             prepareList();
          }
+
+         private function sortByTime(): void
+         {
+            researchContainer.removeAllElements();
+            techsResearching.sort = new Sort();
+            techsResearching.sort.compareFunction = techsCompareFunctionTime;
+            techsResearching.refresh();
+            for each (var activeTech: Technology in techsResearching)
+            {
+               var temp: ResearchElement = new ResearchElement();
+               temp.researchModel = activeTech;
+               temp.width = 210;
+               researchContainer.addElement(temp);
+            }
+         }
+
+         private function sortByScientists(): void
+         {
+            researchContainer.removeAllElements();
+            techsResearching.sort = new Sort();
+            techsResearching.sort.compareFunction = techsCompareFunctionScientists;
+            techsResearching.refresh();
+            for each (var activeTech: Technology in techsResearching)
+            {
+               var temp: ResearchElement = new ResearchElement();
+               temp.researchModel = activeTech;
+               temp.width = 210;
+               researchContainer.addElement(temp);
+            }
+         }
+
+         private function techsCompareFunctionTime(a: Technology,  b: Technology,  fields: Array = null): int
+         {
+            var aTime: int = a.scientists == 0
+                    ? a.getNewTimeToFinish(a.minScientists)
+                    : a.getNewTimeToFinish(a.scientists);
+            var bTime: int = b.scientists == 0
+                    ? b.getNewTimeToFinish(b.minScientists)
+                    : b.getNewTimeToFinish(b.scientists);
+            return aTime < bTime ? 1 : (aTime > bTime ? -1 : 0);
+         }
+
+         private function techsCompareFunctionScientists(a: Technology,  b: Technology,  fields: Array = null): int
+         {
+            var aScientists: int = a.scientists == 0
+                    ? a.minScientists
+                    : a.scientists;
+            var bScientists: int = b.scientists == 0
+                    ? b.minScientists
+                    : b.scientists;
+            return aScientists < bScientists ? 1 : (aScientists > bScientists ? -1 : 0);
+         }
+
+         private var techsResearching: ArrayCollection = new ArrayCollection();
          
          private function refreshResearchElements(): void
          {
-            for each (var oldTech: ResearchElement in researchContainer)
+            for each (var oldTech: Technology in techsResearching)
             {
-               if (oldTech.researchModel && oldTech.researchModel.upgradePart)
+               if (oldTech && oldTech.upgradePart)
                {
-                  oldTech.researchModel.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_FINISHED, handleUpgradeComplete);
+                  oldTech.upgradePart.removeEventListener(UpgradeEvent.UPGRADE_FINISHED, handleUpgradeComplete);
                }
             }
             researchContainer.removeAllElements();
+            techsResearching.removeAll();
             hasActive = false;
             for each(var element: Technology in ML.technologies.technologies)
             {
                if ((!element.upgradePart.upgradeCompleted) || (element.pauseRemainder > 0))
                {
-                  var temp: ResearchElement = new ResearchElement();
-                  temp.researchModel = element;
-                  temp.width = 210;
+                  techsResearching.addItem(element);
                   element.upgradePart.addEventListener(UpgradeEvent.UPGRADE_FINISHED, handleUpgradeComplete);
-                  researchContainer.addElement(temp);
                   hasActive = true;
                }
+            }
+            if (PlayerOptions.technologiesSortType == PlayerOptions.TECH_SORT_TYPE_SCIENTISTS)
+            {
+               sortByScientists();
+            }
+            else
+            {
+               sortByTime();
             }
          }
          
@@ -84,8 +149,6 @@
          {
             refreshResearchElements();
          }
-         
-         
          
       ]]>
    </fx:Script>
@@ -104,7 +167,8 @@
       
       <base:Panel id="researchPanel" visible="{hasActive}" height="100%"
                   title="{Localizer.string ('Technologies', 'currentlyResearching')}">
-         <base:Scroller top="0" bottom="0" left="0" right="0" horizontalScrollPolicy="off">
+         <base:Scroller top="0" bottom="0" left="0" right="0"
+                        horizontalScrollPolicy="off">
             <base:AdvancedContainer id="researchContainer" left="0" right="0">
                <base:layout>
                   <s:VerticalLayout paddingTop="6" gap="15"/>

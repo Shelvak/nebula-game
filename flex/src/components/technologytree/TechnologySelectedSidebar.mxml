@@ -481,7 +481,7 @@
                                         label="{_selectedModel.scientists == 0?
                                         Localizer.string('Technologies','paused'):
                                         Localizer.string('Technologies','finishedIn', [
-                                        _selectedModel.upgradePart.timeToFinishString])}"/> 
+                                        _selectedModel.upgradePart.timeToFinishString])}"/>
                         <s:ToggleButton id="pauseButton" skinClass="components.skins.PauseButtonSkin" right="0" 
                                         click="pause_clickHandler(event)"
                                         enabled="{

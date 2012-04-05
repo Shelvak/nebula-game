@@ -333,6 +333,10 @@ package models.building
                {
                   constructor.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
                }
+               if (_selectedBuilding is Npc)
+               {
+                  Npc(_selectedBuilding).unitsCached = null;
+               }
             }
             _selectedBuilding = value;
             dispatchSelectedBuildingChangeEvent();
@@ -344,9 +348,9 @@ package models.building
                      UpgradeEvent.LEVEL_CHANGE,
                      refreshPriceOrientatedProperties
                   );
-                  if (_selectedBuilding.npc && !_selectedBuilding.unitsCached)
+                  if (_selectedBuilding.npc)
                   {
-                     new BuildingsCommand(BuildingsCommand.SHOW_GARRISON,
+                     new BuildingsCommand(BuildingsCommand.SHOW_GARRISON_GROUPS,
                         _selectedBuilding).dispatch();
                   }
                   if (_selectedBuilding.type != BuildingType.MOTHERSHIP

@@ -10,6 +10,9 @@ package models.player {
       public static const TRANSPORTER_TAB_RESOURCES: int = 0;
       public static const TRANSPORTER_TAB_UNITS: int = 1;
 
+      public static const TECH_SORT_TYPE_SCIENTISTS: int = 0;
+      public static const TECH_SORT_TYPE_TIME: int = 1;
+
       public static function loadOptions (options: Object, justRefreshOriginalData: Boolean = false): void
       {
          originalData = options;
@@ -28,6 +31,7 @@ package models.player {
          openFirstPlanetAfterLogin = options.openFirstPlanetAfterLogin;
          warnBeforeUnload = options.warnBeforeUnload;
          defaultTransporterTab = options.defaultTransporterTab;
+         technologiesSortType = options.technologiesSortType;
          enablePlanetAnimations = options.enablePlanetAnimations;
       }
 
@@ -44,6 +48,7 @@ package models.player {
             'openFirstPlanetAfterLogin': openFirstPlanetAfterLogin,
             'warnBeforeUnload': warnBeforeUnload,
             'defaultTransporterTab': defaultTransporterTab,
+            'technologiesSortType': technologiesSortType,
             'enablePlanetAnimations': enablePlanetAnimations
          }
       }
@@ -58,6 +63,7 @@ package models.player {
          openFirstPlanetAfterLogin = originalData.openFirstPlanetAfterLogin;
          warnBeforeUnload = originalData.warnBeforeUnload;
          defaultTransporterTab = originalData.defaultTransporterTab;
+         technologiesSortType = originalData.technologiesSortType;
          enablePlanetAnimations = originalData.enablePlanetAnimations;
          hasChanges = false;
       }
@@ -73,6 +79,7 @@ package models.player {
          && openFirstPlanetAfterLogin == originalData.openFirstPlanetAfterLogin
          && warnBeforeUnload == originalData.warnBeforeUnload
          && defaultTransporterTab == originalData.defaultTransporterTab
+         && technologiesSortType == originalData.technologiesSortType
          && enablePlanetAnimations == originalData.enablePlanetAnimations);
       }
 
@@ -117,6 +124,8 @@ package models.player {
       public static var warnBeforeUnload: Boolean;
       [Bindable]
       public static var defaultTransporterTab: int;
+      [Bindable]
+      public static var technologiesSortType: int;
       [Bindable]
       public static var enablePlanetAnimations: Boolean = true;
    }

@@ -24,19 +24,16 @@ class DispatcherEventHandler::LocationResolver
         unit = location.object
         parent = unit.location.object
         raise(
-          "Support for dispatching when parent is #{parent
-          } is not supported for units"
+          "Support for dispatching when parent is #{parent} is not supported " +
+          "for units"
         ) unless parent.is_a?(SsObject::Planet)
         [
           parent.observer_player_ids,
           Dispatcher::PushFilter.ss_object(parent.id)
         ]
       when Location::BUILDING
-        building = location.object
-        [
-          building.observer_player_ids,
-          Dispatcher::PushFilter.ss_object(building.planet_id)
-        ]
+        # Do not dispatch events for units in buildings.
+        [[], nil]
       else
         raise ArgumentError.new("Unknown location type #{location.type}!")
       end
