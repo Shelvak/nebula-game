@@ -970,11 +970,14 @@ package controllers.ui
          afterScreenChange();
       }
       
-      public function showPreviousScreen(): void
+      public function showPreviousScreen(resetActiveBtn: Boolean = true): void
       {
          beforeScreenChange();
          MA.showPrevious();
-         resetActiveButton(_screenProperties[MA.currentName].button);
+         if (resetActiveBtn)
+         {
+            resetActiveButton(_screenProperties[MA.currentName].button);
+         }
          resetSidebarToCurrentScreenDefault();
          updateContainerState();
          afterScreenChange();
@@ -1057,6 +1060,8 @@ package controllers.ui
          if (_oldActiveButton)
          {
             _oldActiveButton.enabled = false;
+            _activeButton = _oldActiveButton;
+            _oldActiveButton = null;
          }
       }
       

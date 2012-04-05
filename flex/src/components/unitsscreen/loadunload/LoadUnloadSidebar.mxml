@@ -31,7 +31,7 @@
          NavigationController.getInstance().disableActiveButton();
          MCUnitScreen.getInstance().deselectUnits();
          MCHealingScreen.getInstance().selectNone();
-         NavigationController.getInstance().showPreviousScreen();
+         NavigationController.getInstance().showPreviousScreen(false);
       }
 
       [Bindable]
