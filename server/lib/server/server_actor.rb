@@ -1,7 +1,6 @@
 class ServerActor
   include NamedLogMessages
   include FlashPolicyHandler
-  include Celluloid
   include Celluloid::IO
 
   IO_ERRORS = [EOFError, IOError, Errno::ECONNRESET, Errno::EBADF, Errno::EPIPE]

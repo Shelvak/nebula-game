@@ -32,6 +32,17 @@ class SolarSystemsController < GenericController
       solar_system = SolarSystem.galaxy_battleground(m.player.galaxy_id) \
         if solar_system.wormhole?
 
+      current_planet_ss_id = current_planet_ss_id(m)
+
+      atomic! do
+        # Only change planet if client opened other solar system.
+        if current_planet_ss_id != solar_system.id
+          set_current_planet_id(m, nil)
+          set_current_planet_ss_id(m, nil)
+        end
+        set_current_ss_id(m, solar_system.id)
+      end
+
       resolver = StatusResolver.new(m.player)
 
       ss_objects = solar_system.ss_objects.includes(:player).map do
@@ -59,8 +70,8 @@ class SolarSystemsController < GenericController
         scope.where(:player_id => nil, :route_id => nil)
       )
 
-      data = {
-        :solar_system => solar_system,
+      respond m, {
+        :solar_system => solar_system.as_json,
         :ss_objects => ss_objects,
         :units => units.map {
           |unit| unit.as_json(:perspective => resolver)
@@ -76,19 +87,6 @@ class SolarSystemsController < GenericController
         :wreckages => Wreckage.in_zone(solar_system).all.map(&:as_json),
         :cooldowns => Cooldown.in_zone(solar_system).all.map(&:as_json)
       }
-
-      current_planet_ss_id = current_planet_ss_id(m)
-
-      atomic! do
-        # Only change planet if client opened other solar system.
-        if current_planet_ss_id != solar_system.id
-          set_current_planet_id(m, nil)
-          set_current_planet_ss_id(m, nil)
-        end
-        set_current_ss_id(m, solar_system.id)
-
-        respond m, data
-      end
     end
   end
 end

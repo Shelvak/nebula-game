@@ -23,10 +23,18 @@ class PlanetsController < GenericController
   def self.show_action(m)
     without_locking do
       planet = SsObject::Planet.find(m.params['id'])
+      current_ss_id = current_ss_id(m)
+
+      atomic! do
+        set_current_ss_id(m, nil) if current_ss_id != planet.solar_system_id
+        set_current_planet_ss_id(m, planet.solar_system_id)
+        set_current_planet_id(m, planet.id)
+      end
 
       if planet.observer_player_ids.include?(m.player.id)
         resolver = StatusResolver.new(m.player)
-        data = {
+
+        respond m, {
           :planet => planet.as_json(
             :owner => planet.player_id == m.player.id,
             :view => true,
@@ -44,17 +52,6 @@ class PlanetsController < GenericController
           :players => Player.minimal_from_objects(planet.units),
           :cooldown_ends_at => Cooldown.for_planet(planet).as_json
         }
-
-        # Set after response to prevent race conditions, where player does not
-        # yet have planet but other threads think it has it.
-        current_ss_id = current_ss_id(m)
-
-        atomic! do
-          set_current_ss_id(m, nil) if current_ss_id != planet.solar_system_id
-          set_current_planet_ss_id(m, planet.solar_system_id)
-          set_current_planet_id(m, planet.id)
-          respond m, data
-        end
       else
         raise GameLogicError, "Player #{m.player} cannot view this #{planet}!"
       end
@@ -74,8 +71,10 @@ class PlanetsController < GenericController
   UNSET_CURRENT_OPTIONS = logged_in + only_push
   UNSET_CURRENT_SCOPE = scope.world
   def self.unset_current_action(m)
-    set_current_planet_ss_id(m, nil)
-    set_current_planet_id(m, nil)
+    atomic! do
+      set_current_planet_ss_id(m, nil)
+      set_current_planet_id(m, nil)
+    end
   end
 
   # Sends a list of planets player currently owns.

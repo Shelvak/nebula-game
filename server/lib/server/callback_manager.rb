@@ -79,7 +79,6 @@ class CallbackManager
 
     @running = false
     @pause = false
-    tick!(true) # Tick first time with failed callbacks.
     run!
   end
 
@@ -87,14 +86,17 @@ class CallbackManager
     raise "Cannot run callback manager while it is running!" if @running
     @running = true
 
+    # Tick first time with failed callbacks. This should not be async.
+    tick(true)
+
     loop do
       if @pause
         @pause = false
         wait :resume
       end
 
-      tick
       sleep 1 # Wait 1 second before next tick.
+      tick
     end
   end
 

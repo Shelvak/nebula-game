@@ -18,10 +18,29 @@ module ActiveRecord
     alias_method :unsafe_with_connection, :with_connection
 
     def with_connection(&block)
+      name = Celluloid.actor? ? Celluloid::Actor.name : "main"
+
+      synchronize do
+        @wc_connections ||= {}
+        @wc_connections[name] ||= 0
+        @wc_connections[name] += 1
+      end
+
       Thread.current[ActiveRecord::FIBER_SAFETY_KEY] = true
-      unsafe_with_connection(&block)
-    ensure
-      Thread.current[ActiveRecord::FIBER_SAFETY_KEY] = false
+      unsafe_with_connection do
+        # The connection has been checked out.
+        Thread.current[ActiveRecord::FIBER_SAFETY_KEY] = false
+        block.call
+      end
+
+      synchronize do
+        @wc_connections[name] -= 1
+      end
+    rescue ActiveRecord::ConnectionTimeoutError => e
+      synchronize do
+        LOGGER.error("Connections: #{@wc_connections.inspect}")
+      end
+      raise e
     end
   end
 
