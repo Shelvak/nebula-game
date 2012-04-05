@@ -171,7 +171,7 @@ Message was:
 
   PLAYER_STATS_OPTIONS = control_token
   PLAYER_STATS_SCOPE = scope.world
-  def self.player_stats_actions(m)
+  def self.player_stats_action(m)
     without_locking do
       # Returns how much players were logged in in last _time_ seconds.
       get_player_count_in = lambda do |time|

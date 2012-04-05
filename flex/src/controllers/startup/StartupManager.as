@@ -187,6 +187,7 @@ package controllers.startup
        */
       public static function resetApp() : void {
          logger.info("-------------- APPLICATION RESET --------------");
+         StartupInfo.getInstance().initializationComplete = false;
          new GlobalEvent(GlobalEvent.APP_RESET);
          JobExecutorsManager.getInstance().stopAll();
          ServerProxyInstance.getInstance().reset();

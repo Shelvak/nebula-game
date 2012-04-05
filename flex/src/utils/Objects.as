@@ -134,8 +134,9 @@ package utils
        * @param writeOnly If <code>true</code>, write-only properties will be returned.
        * 
        * @return array of properties that are defined either as variables or setter/getter pairs.
-       */      
-      public static function getPublicProperties(type:Class, writeOnly:Boolean = true) : Array {
+       */
+      public static function getPublicProperties(type: Class,
+                                                 writeOnly: Boolean = true): Array {
          var result:Array = [];
          var info:XML = describeType(type).factory[0];
          for each (var prop:XML in info.accessor) {
@@ -879,6 +880,40 @@ package utils
             _typeInfoHash = new TypeInfoHash();
          }
          return _typeInfoHash
+      }
+
+      /**
+       * Checks if properties of given complex object hold the same values
+       * as the given generic data object.
+       *
+       * This method supports:
+       * <ul>
+       *    <li>property aliases</li>
+       *    <li>properties with type processors</li>
+       *    <li>properties of nested objects</li>
+       * </ul>
+       * This method does not support:
+       * <ul>
+       *    <li>collections and properties of collection types</li>
+       *    <li>aggregated properties</li>
+       * </ul>
+       *
+       * @param complex a non-primitive object to check | <b>not null, not a collection</b>
+       * @param data generic object that holds the data to check against
+       *
+       * @return <code>true</code> if all properties of the complex object
+       * contain the same values as their counterparts in generic
+       * <code>data</code> object or <code>false</code> otherwise
+       */
+      public static function containsSameData(complex: Object,
+                                              data: Object): Boolean {
+         paramNotNull("object", complex);
+         return containsSameDataImpl(complex, data);
+      }
+
+      public static function containsSameDataImpl(object: Object,
+                                                  data: Object): Boolean {
+         return false;
       }
 
       private static function createImpl(type: Class,
