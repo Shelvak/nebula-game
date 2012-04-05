@@ -1,6 +1,6 @@
 # Monkey-patches for active-record.
 module ActiveRecord
-  FIBER_SAFETY_KEY =
+  WC_CHECKING_OUT =
     "ActiveRecord::ConnectionAdapters::ConnectionPool.with_connection"
 
   # We don't need our #destroy, #save and #save! automatically wrapped under
@@ -26,10 +26,10 @@ module ActiveRecord
         @wc_connections[name] += 1
       end
 
-      Thread.current[ActiveRecord::FIBER_SAFETY_KEY] = true
+      Thread.current[ActiveRecord::WC_CHECKING_OUT] = true
       unsafe_with_connection do
         # The connection has been checked out.
-        Thread.current[ActiveRecord::FIBER_SAFETY_KEY] = false
+        Thread.current[ActiveRecord::WC_CHECKING_OUT] = false
         block.call
       end
 
@@ -48,13 +48,14 @@ module ActiveRecord
     class << self
       alias_method :unsafe_connection_id, :connection_id
 
-      # Ensure Fiber safety for connections. Each fiber has its own thread locals
-      # and Celluloid uses a lot of fibers...
+      # Ensure Fiber safety for connections. Each fiber has its own thread
+      # locals and Celluloid uses a lot of fibers...
       def connection_id
         id = unsafe_connection_id
         # Raise error if not checking connection out with #with_connection
         raise "Connection not checked out!" \
-          if ! Thread.current[ActiveRecord::FIBER_SAFETY_KEY] && id.nil?
+          unless Thread.current[ActiveRecord::WC_CHECKING_OUT] || ! id.nil? ||
+            rake?
         id
       end
     end

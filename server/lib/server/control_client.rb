@@ -15,9 +15,10 @@ class ControlClient
   CONFIG = YAML.load(File.read(CONFIG_FILE))
   
   def initialize
+    logger = Logger.new(STDERR)
+    logger.level = Logger::WARN
     @connection = GameServerConnector.new(
-      Logger.new(STDOUT), "127.0.0.1",
-      CONFIG['server']['port'],
+      logger, "127.0.0.1", CONFIG['server']['port'],
       CONFIG['control']['token']
     )
   end
