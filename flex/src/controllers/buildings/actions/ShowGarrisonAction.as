@@ -27,6 +27,7 @@ package controllers.buildings.actions {
       /* takes building as parameters*/
       override public function applyClientAction(cmd: CommunicationCommand): void {
          building = Npc(cmd.parameters);
+         ML.units.removeGarrisonUnits();
          sendMessage(new ClientRMO({'id': cmd.parameters.id}));
       }
 
