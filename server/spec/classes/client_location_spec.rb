@@ -59,4 +59,14 @@ describe ClientLocation do
       end
     end
   end
+
+  describe "#as_json" do
+    it_should_behave_like "as json",
+      ClientLocation.new(
+        Factory.create(:planet).id, Location::SS_OBJECT, nil, nil
+      ), {}, (
+        ClientLocation::ATTRIBUTES + ClientLocation::SS_ATTRIBUTES +
+        ClientLocation::SS_OBJECT_ATTRIBUTES
+      )
+  end
 end
