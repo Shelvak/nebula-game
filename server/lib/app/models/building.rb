@@ -104,15 +104,27 @@ class Building < ActiveRecord::Base
     ]
   end
 
-  # Return Array of player ids which can observe this building (see it's
-  # units).
-  def observer_player_ids
-    if npc?
-      planet = self.planet
-      planet.player_id.nil? ? [] : [planet.player_id]
-    else
-      []
-    end
+  # Returns grouped unit counts that are in this building.
+  #
+  # Example:
+  # {
+  #   0 (flank) => {"Gnat" => 5, "Glancer" => 2},
+  #   1 (flank) => {"Gnat" => 15, "Glancer" => 2}
+  # }
+  #
+  def unit_groups
+    # TODO: add without_locking for s2_par
+    Unit.
+      select("type, flank, COUNT(*) as count").
+      where(:location_building_id => id).
+      group("type, flank").
+      c_select_all.each_with_object({}) do |row, hash|
+        flank = row['flank'].to_i
+        type = row['type']
+        hash[flank] ||= {}
+        hash[flank][type] ||= 0
+        hash[flank][type] += row['count']
+      end
   end
 
   def as_json(options=nil)

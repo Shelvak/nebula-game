@@ -39,6 +39,24 @@ describe BuildingsController do
     end
   end
 
+  describe "buildings|show_garrison_groups" do
+    let(:planet) { Factory.create(:planet, :player => player) }
+    let(:building) { Factory.create(:building, :planet => planet) }
+
+    before(:each) do
+      @action = "buildings|show_garrison_groups"
+      @params = {'id' => building.id}
+    end
+
+    it_behaves_like "finding building"
+
+    it "should return building#unit_groups" do
+      Building.any_instance.should_receive(:unit_groups).and_return(:groups)
+      invoke @action, @params
+      response_should_include(:groups => :groups)
+    end
+  end
+
   describe "buildings|show_garrison" do
     let(:planet) { Factory.create(:planet, :player => player) }
     let(:building) { Factory.create(:building, :planet => planet) }
@@ -53,7 +71,7 @@ describe BuildingsController do
       @params = {'id' => building.id}
     end
 
-    it_should_behave_like "with param options", %w{id}
+    it_behaves_like "finding building"
 
     it "should fail if building cannot be found" do
       building.destroy
