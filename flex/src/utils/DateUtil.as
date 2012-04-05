@@ -15,15 +15,23 @@ package utils
    public class DateUtil
    {
       /**
-       * Type processor function for <code>Objects</code>.
+       * Auto creation function for <code>Objects</code>.
        */
-      public static function autoCreate(currValue:Date, value:String) : Date {
+      public static function autoCreate(currValue: Date, value: String): Date {
          var valueDate:Date = parseServerDTF(value);
          if (currValue != null) {
             currValue.time = valueDate.time;
             return currValue;
          }
          return valueDate;
+      }
+
+      /**
+       * Same data check function for <code>Objects</code>.
+       */
+      public static function sameDataCheck(currValue: Date,
+                                           value: String): Boolean {
+         return currValue.time == parseServerDTF(value).time;
       }
       
       /**

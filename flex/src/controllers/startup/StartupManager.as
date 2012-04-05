@@ -242,8 +242,16 @@ package controllers.startup
       
       
       private static function setupObjects() : void {
-         Objects.setTypeProcessor(Date, DateUtil.autoCreate);
-         Objects.setTypeProcessor(MTimeEventFixedMoment, MTimeEventFixedMoment.autoCreate);
+         Objects.setTypeProcessors(
+            Date,
+            DateUtil.autoCreate,
+            DateUtil.sameDataCheck
+         );
+         Objects.setTypeProcessors(
+            MTimeEventFixedMoment,
+            MTimeEventFixedMoment.autoCreate,
+            MTimeEventFixedMoment.sameDataCheck
+         );
       }
       
       
