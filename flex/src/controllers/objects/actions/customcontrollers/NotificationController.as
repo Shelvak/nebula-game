@@ -18,7 +18,7 @@ package controllers.objects.actions.customcontrollers
       public override function objectDestroyed(objectSubclass: String,
                                                objectId: int,
                                                reason: String): void {
-         ML.notifications.remove(objectId);
+         ML.notifications.remove(objectId, true);
       }
    }
 }

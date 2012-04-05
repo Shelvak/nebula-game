@@ -23,6 +23,15 @@ package models.factories {
    public class NotificationFactory {
       public static function fromObject(data:Object) : Notification
       {
+         var oldNotif: Notification = ML.notifications.find(data.id);
+         if (oldNotif != null)
+         {
+            if (!Objects.containsSameData(oldNotif, data))
+            {
+               Objects.throwStateOutOfSyncError(oldNotif, data);
+            }
+            return oldNotif;
+         }
          var notification: Notification = Objects.create(Notification, data);
          notification.isNew = true;
          ML.notifications.addItem(notification);
