@@ -1,119 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx" 
+         xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:buildingselectedsidebar="components.buildingselectedsidebar.*">
    <fx:Script>
       <![CDATA[
       import components.skins.YellowButtonSkin;
 
-      import controllers.ui.NavigationController;
-
-      import models.ModelsCollection;
-         import models.Owner;
-         import models.building.Building;
-         import models.building.Npc;
+      import controllers.buildings.BuildingsCommand;
+      import models.building.Building;
+      import models.building.Npc;
       import models.building.events.BuildingEvent;
-      import models.unit.Unit;
-      import models.unit.UnitKind;
-      import models.unit.UnitsFlank;
+      import models.unit.MNpcFlank;
          
-         import mx.collections.ArrayCollection;
-         import mx.collections.Sort;
-         import mx.collections.SortField;
-      import mx.events.CollectionEvent;
-      import mx.events.CollectionEventKind;
+      import mx.collections.ArrayCollection;
+      import mx.collections.Sort;
+      import mx.collections.SortField;
 
       import utils.locale.Localizer;
 
-         [Bindable]
-         private var flanks: ArrayCollection = new ArrayCollection();
-         
-         private var _building: Npc;
-         
-         private var flanksHash: Object = {};
-         
-         public function set building(value: Building): void
-         {
-            _building = value as Npc;
-            if (!_building.unitsCached)
-            {
-              _building.addEventListener(BuildingEvent.CACHED_UNITS_CHANGE,
-                 rebuildFlanks);
-            }
-            else
-            {
-              rebuildFlanks();
-            }
-         }
-      
-         private function refreshUnitsDisplayType(e: CollectionEvent): void
-         {
-           if (e.kind == CollectionEventKind.ADD ||
-             e.kind == CollectionEventKind.REMOVE ||
-             e.kind == CollectionEventKind.RESET)
-           {
-             displayAsCached = false;
-             for (var flankKey: String in flanksHash)
-             {
-               if ((flanksHash[flankKey] as Array).length > 6)
-               {
-                 displayAsCached = true;
-               }
-             }
-           
-             for each (var flnk: UnitsFlank in flanks)
-             {
-               flnk.showCachedUnits = displayAsCached;
-             }
-           }
-         }
+      [Bindable]
+      private var flanks: ArrayCollection = new ArrayCollection();
 
-         [Bindable]
-         private var displayAsCached: Boolean = false;
-         
-         private function rebuildFlanks(e: BuildingEvent = null): void
+      private var _building: Npc;
+
+      private var flanksHash: Object = {};
+
+      public function set building(value: Building): void
+      {
+         _building = value as Npc;
+         if (_building.unitsCached == null)
          {
-            if (e != null)
-            {
-               e.building.removeEventListener(
-                  BuildingEvent.CACHED_UNITS_CHANGE, rebuildFlanks
-               );
-            }
             flanks.removeAll();
-            flanksHash = {};
-            if (_building != null) {
-               for each (var unit: Unit in _building.units) {
-                  if (flanksHash[unit.flank] == null)
-                     flanksHash[unit.flank] = new Array();
-                  (flanksHash[unit.flank] as Array).push(unit);
-               }
-
-               displayAsCached = false;
-               for (var flankKey: String in flanksHash)
-               {
-                 if ((flanksHash[flankKey] as Array).length > 6)
-                 {
-                    displayAsCached = true;
-                 }
-               }
-               
-               for (flankKey in flanksHash)
-               {
-                  var flnk: UnitsFlank = new UnitsFlank(int(flankKey), Owner.ENEMY);
-                  flnk.flankUnits = new ArrayCollection(flanksHash[flankKey] as Array);
-                  flnk.showCachedUnits = displayAsCached;
-                  flanks.addItem(flnk);
-               }
-              
-               _building.units.addEventListener(CollectionEvent.COLLECTION_CHANGE, 
-                        refreshUnitsDisplayType);
-               
-               flanks.sort = new Sort();
-               flanks.sort.fields = [new SortField('nr', false, false, true)];
-               flanks.refresh();
-            }
+           _building.addEventListener(BuildingEvent.CACHED_UNITS_CHANGE,
+              rebuildFlanks);
          }
+         else
+         {
+           rebuildFlanks();
+         }
+      }
+
+      private function rebuildFlanks(e: BuildingEvent = null): void
+      {
+         if (e != null)
+         {
+            e.building.removeEventListener(
+               BuildingEvent.CACHED_UNITS_CHANGE, rebuildFlanks
+            );
+         }
+         flanks.removeAll();
+         flanksHash = {};
+         if (_building != null) {
+            for (var flankKey: String in _building.unitsCached)
+            {
+               var flnk: MNpcFlank = new MNpcFlank(int(flankKey), _building.unitsCached[flankKey]);
+               flanks.addItem(flnk);
+            }
+
+            flanks.sort = new Sort();
+            flanks.sort.fields = [new SortField('flank', false, false, true)];
+            flanks.refresh();
+         }
+      }
+
+      private function show_clickHandler(e: MouseEvent): void
+      {
+         new BuildingsCommand(BuildingsCommand.SHOW_GARRISON,
+            _building).dispatch();
+      }
       ]]>
    </fx:Script>
    <s:DataGroup dataProvider="{flanks}" width="100%"> 
@@ -131,9 +85,7 @@
 
    <s:Button label="{Localizer.string('Units', 'label.showNpc')}"
              skinClass="{YellowButtonSkin}"
-             click="NavigationController.getInstance().showUnits(_building.units,
-               _building, null, UnitKind.GROUND, Owner.ENEMY)"
-             visible="{displayAsCached}" includeInLayout="{displayAsCached}"/>
+             click="show_clickHandler(event)"/>
 
    <s:layout><s:VerticalLayout horizontalAlign="center"/></s:layout>
 </s:Group>

@@ -8,19 +8,15 @@
 package controllers.buildings.actions {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.ui.NavigationController;
-
-   import models.Owner;
 
    import models.building.Building;
    import models.building.Npc;
 
    import models.factories.UnitFactory;
-   import models.unit.UnitKind;
 
    import utils.remote.rmo.ClientRMO;
 
-   public class ShowGarrisonAction extends CommunicationAction {
+   public class ShowGarrisonGroupsAction extends CommunicationAction {
       
       private var building: Npc;
 
@@ -31,9 +27,7 @@ package controllers.buildings.actions {
       }
 
       public override function applyServerAction(cmd: CommunicationCommand): void {
-         ML.units.addAll(UnitFactory.fromObjects(cmd.parameters.units, new Object()));
-         NavigationController.getInstance().showUnits(building.units,
-                        building, null, UnitKind.GROUND, Owner.ENEMY);
+         building.unitsCached = cmd.parameters.groups;
       }
    }
 }
