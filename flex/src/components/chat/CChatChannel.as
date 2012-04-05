@@ -122,6 +122,10 @@ package components.chat
                   MChatChannelEvent.NUM_MEMBERS_CHANGE,
                   model_numMembersChangeHandler, false
                );
+               _modelOld.removeEventListener(
+                  MChatChannelEvent.USER_INPUT_CHANGE,
+                  model_userInputChangeHandler, false
+               );
                _modelOld.content.removeEventListener(
                   MChatChannelContentEvent.MESSAGE_REMOVE,
                   modelContent_messageRemoveHandler, false
@@ -156,6 +160,10 @@ package components.chat
                   MChatChannelEvent.NUM_MEMBERS_CHANGE,
                   model_numMembersChangeHandler, false, 0, true
                );
+               _model.addEventListener(
+                  MChatChannelEvent.USER_INPUT_CHANGE,
+                  model_userInputChangeHandler, false, 0, true
+               );
                _model.content.addEventListener(
                   MChatChannelContentEvent.MESSAGE_REMOVE,
                   modelContent_messageRemoveHandler, false, 0, true
@@ -189,7 +197,7 @@ package components.chat
             inpMessage.setFocus();
             // Focus will be gained at the next frame so we also have to
             // invoke this code later.
-            inpMessage.callLater(inpMessage_selectRangeCallback);
+            invokeSelectRangeCallbackLater();
             updateGrpFriendOfflineWarningContainer();
             updatePnlMembers();
             updateUserInput();
@@ -198,6 +206,10 @@ package components.chat
             _forceAutoScrollAfterModelChange = true;
          }
          f_modelChanged = false;
+      }
+
+      private function invokeSelectRangeCallbackLater(): void {
+         inpMessage.callLater(inpMessage_selectRangeCallback);
       }
 
       private function inpMessage_selectRangeCallback(): void {
@@ -268,7 +280,9 @@ package components.chat
       private function updateGrpFriendOfflineWarningContainer() : void {
          grpFriendOfflineWarningContainer.visible =
          grpFriendOfflineWarningContainer.includeInLayout =
-            _model != null && !_model.isPublic && !MChatChannelPrivate(_model).isFriendOnline;
+            model != null
+               && !model.isPublic
+               && !MChatChannelPrivate(model).isFriendOnline;
       }
       
       [SkinPart(required="true")]
@@ -309,6 +323,10 @@ package components.chat
                inpMessage.maxChars = ChatConstants.MAX_CHARS_IN_MESSAGE;
                inpMessage.addEventListener(
                   KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false, 0, true
+               );
+               inpMessage.addEventListener(
+                  TextOperationEvent.CHANGE,
+                  inpMessage_changeHandler, false, 0, true
                );
                updateUserInput();
                break;
@@ -351,6 +369,9 @@ package components.chat
             case inpMessage:
                inpMessage.removeEventListener(
                   KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false
+               );
+               inpMessage.removeEventListener(
+                  TextOperationEvent.CHANGE, inpMessage_changeHandler, false
                );
                break;
             
@@ -450,6 +471,18 @@ package components.chat
          updatePnlMembers();
       }
 
+      private function model_userInputChangeHandler(event: MChatChannelEvent): void {
+         if (model != null
+                && inpMessage != null
+                && model.userInput != inpMessage.text
+                && model.silenced.hasOccurred) {
+            updateInpMessageText();
+            // Focus will be gained at the next frame so we also have to
+            // invoke this code later.
+            invokeSelectRangeCallbackLater();
+         }
+      }
+
       private function silenced_hasOccurredChangeHandler(event: MTimeEventEvent): void {
          updateUserInput();
       }
@@ -459,14 +492,14 @@ package components.chat
       }
 
       private function updateUserInput(): void {
-         if (_model == null) {
+         if (model == null) {
             return;
          }
          if (btnSend != null) {
-            btnSend.enabled = _model.silenced.hasOccurred;
+            btnSend.enabled = model.silenced.hasOccurred;
          }
          if (inpMessage != null) {
-            inpMessage.enabled = _model.silenced.hasOccurred;
+            inpMessage.enabled = model.silenced.hasOccurred;
             if (!_model.silenced.hasOccurred
                    && focusManager.findFocusManagerComponent(inpMessage) != null) {
                focusManager.setFocus(txtContent);
@@ -476,16 +509,15 @@ package components.chat
       }
 
       private function updateInpMessageText(): void {
-         if (inpMessage != null && _model != null) {
-            if (_model.silenced.hasOccurred) {
-                  inpMessage.text = _model.userInput;
-                  _model.userInput = "";
+         if (inpMessage != null && model != null) {
+            if (model.silenced.hasOccurred) {
+               inpMessage.text = model.userInput;
             }
             else {
                inpMessage.text = getString(
                   "message.silence",
-                  [DateUtil.formatShortDateTime(_model.silenced.occursAt),
-                   _model.silenced.occursInString()]
+                  [model.silenced.occursAtString(),
+                   model.silenced.occursInString()]
                );
             }
          }
@@ -498,6 +530,12 @@ package components.chat
 
       private function inpMembersFilter_changeHandler(event: TextOperationEvent): void {
          model.members.nameFilter = inpMembersFilter.text;
+      }
+
+      private function inpMessage_changeHandler(event: TextOperationEvent): void {
+         if (model.silenced.hasOccurred) {
+            model.userInput = inpMessage.text;
+         }
       }
 
       private function inpMembersFilter_keyUpHandler(event:KeyboardEvent): void {
@@ -527,7 +565,7 @@ package components.chat
          }
          const message: String = StringUtil.trim(inpMessage.text);
          if (message.length > 0) {
-            _model.sendMessage(message);
+            model.sendMessage(message);
          }
          inpMessage.text = "";
          enableAutoScroll();

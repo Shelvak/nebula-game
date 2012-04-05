@@ -20,23 +20,10 @@ package models.chat
    import utils.Objects;
 
 
-   /**
-    * @see models.chat.events.MChatChannelEvent#HAS_UNREAD_MESSAGES_CHANGE
-    * @eventType models.chat.events.MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE
-    */
    [Event(name="hasUnreadMessagesChange", type="models.chat.events.MChatChannelEvent")]
-   
-   /**
-    * @see models.chat.events.MChatChannelEvent#NUM_MEMBERS_CHANGE
-    * @eventType models.chat.events.MChatChannelEvent.NUM_MEMBERS_CHANGE
-    */
    [Event(name="numMembersChange", type="models.chat.events.MChatChannelEvent")]
-   
-   /**
-    * @see models.chat.events.MChatChannelEvent#GENERATE_JOIN_LEAVE_MSGS_CHANGE
-    * @eventType models.chat.events.MChatChannelEvent.GENERATE_JOIN_LEAVE_MSGS_CHANGE
-    */
    [Event(name="generateJoinLeaveMsgsChange", type="models.chat.events.MChatChannelEvent")]
+   [Event(name="userInputChange", type="models.chat.events.MChatChannelEvent")]
    
    /**
     * A channel of the chat.
@@ -87,7 +74,16 @@ package models.chat
          throw new IllegalOperationError("Property is abstract!");
       }
 
-      public var userInput: String = "";
+      private var _userInput: String = "";
+      public function set userInput(value: String): void {
+         if (_userInput != value) {
+            _userInput = value;
+            dispatchChannelEvent(MChatChannelEvent.USER_INPUT_CHANGE);
+         }
+      }
+      public function get userInput(): String {
+         return _userInput;
+      }
       
       /* ########## */
       /* ### UI ### */
@@ -176,21 +172,28 @@ package models.chat
        * 
        * @param message a <code>MChatMessage</code> received to be added to the channel content.
        */
-      public function receiveMessage(message:MChatMessage) : void {
-         if (message.time == null)
+      public function receiveMessage(message: MChatMessage): void {
+         if (message.time == null) {
             message.time = new Date();
+         }
          message.converter = MemberMessageConverter.getInstance();
-         content.addMessage(message.toFlowElement());
+         content.addMessage(message.toFlowElement(onPlayerElementClick));
          MCHAT.messagePool.returnObject(message);
-         if (!_visible)
+         if (!_visible) {
             setHasUnreadMessages(true);
+         }
          dispatchChannelEvent(MChatChannelEvent.GOT_SOME_MESSAGE);
+      }
+
+      private function onPlayerElementClick(playerId: int,
+                                            playerName: String): void {
+         userInput = playerName + ": ";
       }
       
       /**
        * Posts given message to this channel. Once response is received from the server,
        * either <code>messageSendSuccess()</code> or <code>messageSendFailure()</code> is invoked.
-       * This method is abstract and must be overriden.
+       * This method is abstract and must be overridden.
        * 
        * @param message message text to post to the channel.
        */
@@ -226,8 +229,8 @@ package models.chat
       /* ############### */
       /* ### MEMBERS ### */
       /* ############### */
-      
-      private var _members:MChatMembersList;
+
+      private var _members: MChatMembersList;
       /**
        * List of all channel members. Never null.
        * 
