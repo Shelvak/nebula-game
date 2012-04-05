@@ -10,6 +10,7 @@ package tests.utils
       public var tc_NumberUtil:TC_NumberUtil;
       public var tc_ModelUtil:TC_ModelUtil;
       public var tc_Objects:TC_Objects;
+      public var tc_Objects_containsSameData:TC_Objects_containsSameData;
       public var tc_Localizer:TC_Localizer;
    }
 }
