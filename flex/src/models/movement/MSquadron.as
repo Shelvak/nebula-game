@@ -547,11 +547,6 @@ package models.movement
             + ", player: " + player + "]";
       }
       
-      
-      /* ############### */
-      /* ### HELPERS ### */
-      /* ############### */
-      
       /**
        * Lets you check if a location in hops list already defines the point in space defined by
        * the given location.
@@ -561,7 +556,7 @@ package models.movement
        * @return <code>true</code> if a location defining the same point in space defined by the
        * given hop already exists in the route of the squadron or <code>false</code> otherwise
        */
-      private function hasLocationEqualTo(location:LocationMinimal) : Boolean {
+      public function hasLocationEqualTo(location:LocationMinimal) : Boolean {
          return !hops.filter(
             function(hopInRoute:MHop) : Boolean {
                return hopInRoute.location.equals(location);

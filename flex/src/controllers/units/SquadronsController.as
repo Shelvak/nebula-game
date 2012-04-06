@@ -69,8 +69,8 @@ package controllers.units
        * ignore given hop if squadron to add the hop to can't be found.
        */
       public function addHopToSquadron(hop:MHop) : void {
-         var squad:MSquadron = findSquad(hop.routeId);
-         if (squad != null) {
+         var squad: MSquadron = findSquad(hop.routeId);
+         if (squad != null && squad.hasLocationEqualTo(hop.location)) {
             squad.addHop(hop);
          }
       }
