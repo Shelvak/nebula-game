@@ -22,9 +22,6 @@ package utils
 
    import namespaces.client_internal;
 
-   import org.flemit.reflection.PropertyInfo;
-
-
    /**
     * Has a bunch of methods for working with objects and classes. 
     */
