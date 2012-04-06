@@ -12,6 +12,7 @@ package controllers.objects.actions.customcontrollers
    import models.planet.MPlanetObject;
 
    import utils.Objects;
+   import utils.locale.Localizer;
 
 
    public class NotificationController extends BaseObjectController
@@ -30,9 +31,12 @@ package controllers.objects.actions.customcontrollers
          ML.notifications.addItem(notification);
          if (MA.currentName != MainAreaScreens.NOTIFICATIONS) {
             if (ExternalInterface.available) {
-               ExternalInterface.call(
-                  "setUnreadNotifications", ML.notifications.unreadNotifsTotal
+               var windowTitle: String = Localizer.string(
+                  "Notifications", "windowTitle",
+                  [ML.notifications.unreadNotifsTotal]
                );
+
+               ExternalInterface.call("setUnreadNotifications", windowTitle);
             }
             ML.notificationAlerts.addItem(notification);
          }
