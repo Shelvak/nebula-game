@@ -154,7 +154,8 @@ var windowTitles = new Hashtable();
 windowTitles.currentTitleIndex = -1;
 windowTitles.KeyMain = "000main";
 windowTitles.KeyNotifications = "001notifications";
-windowTitles.KeyPrivateMsgs = "002privateMsgs";
+windowTitles.KeyAllianceMsgs = "002allianceMsgs";
+windowTitles.KeyPrivateMsgs = "003privateMsgs";
 
 // Run a timer that changes window titles.
 windowTitles.changerId = setInterval(function() {
@@ -178,6 +179,26 @@ function notificationsOpened() { // {{{
 function setUnreadNotifications(title) { // {{{
   windowTitles.put(windowTitles.KeyNotifications, title);
 } // }}}
+
+// Call me when alliance channel has unread messages.
+function allianceChannelHasMessages(title) {
+  windowTitles.put(windowTitles.KeyAllianceMsgs, title);
+}
+
+// Call me when alliance channel is opened.
+function allianceChannelRead() {
+  windowTitles.remove(windowTitles.KeyAllianceMsgs);
+}
+
+// Call me when player has unread private messages.
+function unreadPrivateMessages(title) {
+  windowTitles.put(windowTitles.KeyPrivateMsgs, title);
+}
+
+// Call me when player has read all his private messages.
+function privateMessagesRead() {
+  windowTitles.remove(windowTitles.KeyPrivateMsgs);
+}
 
 function missingParam(name) {
   window.alert("Missing query parameter: " + name);
