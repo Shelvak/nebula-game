@@ -7,7 +7,7 @@ package utils.execution
        *
        * @param job | <b>not null</b>
        */
-      function addSubJob(job: Function): void;
+      function addSubJob(job: Function): IJobExecutor;
 
       /**
        * Call this to start processing after you have added all sub jobs.

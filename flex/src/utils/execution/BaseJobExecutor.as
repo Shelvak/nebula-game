@@ -20,8 +20,9 @@ package utils.execution
          _pauseOtherProcessing = pauseOtherProcessing;
       }
 
-      public function addSubJob(subJob: Function): void {
+      public function addSubJob(subJob: Function): IJobExecutor {
          _jobs.push(Objects.paramNotNull("subJob", subJob));
+         return this;
       }
 
       /**

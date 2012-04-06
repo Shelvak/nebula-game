@@ -2,7 +2,6 @@ package controllers.objects.actions.customcontrollers
 {
    import models.factories.NotificationFactory;
 
-
    public class NotificationController extends BaseObjectController
    {
       public function NotificationController() {
