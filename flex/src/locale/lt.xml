@@ -1855,6 +1855,12 @@
 
   <Notifications>
     <screenTitle value="Pranešimai" />
+    <windowTitle>* {0
+      one[Neperskaitytas pranešimas]
+      tens[? neperskaitytų pranešimų]
+      1sts[? neperskaitytas pranešimas]
+      many[? neperskaityti pranešimai]
+    } *</windowTitle>
     <label.notifications.normal value="{0}" />
     <label.notifications.hasUnread value="{0}" />
     <label.notifications.hasNew value="{0}" />

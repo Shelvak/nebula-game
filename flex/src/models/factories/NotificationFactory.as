@@ -19,6 +19,7 @@ package models.factories {
    import models.planet.MPlanetObject;
 
    import utils.Objects;
+   import utils.locale.Localizer;
 
    public class NotificationFactory {
       public static function fromObject(data:Object) : Notification
@@ -37,9 +38,12 @@ package models.factories {
          ML.notifications.addItem(notification);
          if (MA.currentName != MainAreaScreens.NOTIFICATIONS) {
             if (ExternalInterface.available) {
-               ExternalInterface.call(
-                  "setUnreadNotifications", ML.notifications.unreadNotifsTotal
+               var windowTitle: String = Localizer.string(
+                  "Notifications", "windowTitle",
+                  [ML.notifications.unreadNotifsTotal]
                );
+
+               ExternalInterface.call("setUnreadNotifications", windowTitle);
             }
             ML.notificationAlerts.addItem(notification);
          }
