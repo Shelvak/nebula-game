@@ -20,7 +20,6 @@ package utils
 
    import namespaces.client_internal;
 
-
    /**
     * Has a bunch of methods for working with objects and classes. 
     */
