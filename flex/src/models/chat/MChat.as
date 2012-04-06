@@ -955,27 +955,21 @@ package models.chat
       
       
       /**
-       * Called when a message to a public or private channel has been successfully posted.
+       * Called when a message to a public or private channel has been
+       * successfully posted.
        * 
-       * @param message the same instance of <code>MChatMessage</code> which was passed to the
-       *                <code>MChatChannel.sendMessage()</code> method. Don't return it to the pool in the
-       *                action: it will be returned by the <code>MChatChannelContent</code>.
+       * @param message the same instance of <code>MChatMessage</code> which
+       *                was passed to the <code>MChatChannel.sendMessage()</code>
+       *                method. Don't return it to the pool in the action: it
+       *                will be returned by the <code>MChatChannelContent</code>.
        *                <b>Not null.</b>
        */
-      public function messageSendSuccess(message:MChatMessage) : void
-      {
+      public function messageSendSuccess(message: MChatMessage): void {
          Objects.paramNotNull("message", message);
-         
-         var channel:MChatChannel = _channels.getChannel(message.channel);
-         if (channel == null)
-         {
-            throwChannelNotFoundError(
-               "Unable to add player message " + message + " to channel",
-               message.channel
-            );
+         const channel: MChatChannel = _channels.getChannel(message.channel);
+         if (channel != null) {
+            channel.messageSendSuccess(message);
          }
-         
-         channel.messageSendSuccess(message);
       }
       
       
