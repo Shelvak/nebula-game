@@ -14,12 +14,10 @@ package components.map.space
          super();
          filters = [new GlowFilter(0, 1, 24, 24, 3.5)];
       }
-      
-      private var _image:BitmapImage;
-      
-      protected override function createChildren() : void {
-         super.createChildren();
-         
+
+      private var _image: BitmapImage;
+
+      override protected function createChildrenImpl(): void {
          _image = new BitmapImage();
          _image.left = 0;
          _image.right = 0;
@@ -28,7 +26,7 @@ package components.map.space
          _image.smooth = true;
          addElement(_image);
       }
-      
+
       private var f_staticObjectChanged:Boolean = true;
       
       protected override function commitProperties() : void {
