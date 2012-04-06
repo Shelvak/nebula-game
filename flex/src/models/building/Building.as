@@ -42,6 +42,9 @@ package models.building
    ZetiumExtractor;
    ZetiumExtractorT2;
    CollectorT3;
+   NpcMetalExtractor;
+   NpcZetiumExtractor;
+   NpcGeothermalPlant;
 
 
    /**
