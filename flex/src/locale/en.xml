@@ -1740,6 +1740,10 @@
 
   <Notifications>
     <screenTitle value="Notifications" />
+    <windowTitle>* {0
+      one[Unread notification]
+      many[? unread notifications]
+    } *</windowTitle>
     <label.notifications.normal value="{0}" />
     <label.notifications.hasUnread value="{0}" />
     <label.notifications.hasNew value="{0}" />

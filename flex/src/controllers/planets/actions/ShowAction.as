@@ -21,7 +21,7 @@ package controllers.planets.actions
 
 
    /**
-    * Dispached from <code>EventBroker</code> when list of buildings in current
+    * Dispatched from <code>EventBroker</code> when list of buildings in current
     * planet changes.
     */
    [Event(name="planetBuildingsChange", type="globalevents.GPlanetEvent")]
