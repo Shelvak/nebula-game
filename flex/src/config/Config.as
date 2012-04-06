@@ -802,6 +802,11 @@ package config
       {
          return Number(getValue('buildings.constructor.minTimePercentage'));
       }
+
+      public static function getConstructAllTimeCoef(): Number
+      {
+         return Number(getValue('buildings.constructor.massAccelerate.coef'));
+      }
       
       public static function getBuildingConstructableItems(type:String) : ArrayCollection
       {

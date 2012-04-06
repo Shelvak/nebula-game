@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                        xmlns:s="library://ns.adobe.com/flex/spark" 
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
                         xmlns:base="components.base.*"
+                        xmlns:credits="components.credits.*"
                         addedToStage="advancedcontainer1_addedToStageHandler(event)"
                         removedFromStage="advancedcontainer1_removedFromStageHandler(event)"
                         width="100%" xmlns:components="utils.components.*"
@@ -15,6 +16,9 @@
    <fx:Script>
       <![CDATA[
       import com.developmentarc.core.utils.EventBroker;
+
+      import components.credits.ConstructorCompleteAll;
+      import components.popups.ActionConfirmationPopUp;
 
       import components.unitsscreen.UnitScreenAnimationDurations;
 
@@ -38,6 +42,8 @@
       import mx.events.DragEvent;
       import mx.events.FlexEvent;
       import mx.managers.DragManager;
+
+      import utils.UrlNavigate;
 
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
@@ -117,9 +123,9 @@
                        content.selectedIndex : content.selectedIndex + 1;
                new ConstructionQueuesCommand(
                        ConstructionQueuesCommand.MOVE,
-                       {id: tempElement.id,
-                          count: tempElement.countSelected,
-                          position: newPosition}
+                       {id:tempElement.id,
+                          count:tempElement.countSelected,
+                          position:newPosition}
                ).dispatch();
             }
             isMoving = false;
@@ -257,8 +263,7 @@
 
       private function reset(e: GlobalEvent): void {
          facility = null;
-         if (scrollTimer != null)
-         {
+         if (scrollTimer != null) {
             scrollTimer.stop();
             scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
             scrollTimer = null;
@@ -273,8 +278,7 @@
 
 
       protected function advancedcontainer1_removedFromStageHandler(event: Event): void {
-         if (scrollTimer != null)
-         {
+         if (scrollTimer != null) {
             scrollTimer.stop();
             scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
             scrollTimer = null;
@@ -300,25 +304,71 @@
       protected function btnFlank_clickHandler(event: Event): void {
          new BuildingsCommand(BuildingsCommand.SET_BUILD_IN_2ND_FLANK,
                  {
-                    'model': _facility,
-                    'enable': ! _facility.buildIn2ndFlank
+                    'model':_facility,
+                    'enable':!_facility.buildIn2ndFlank
                  }
          ).dispatch();
       }
 
-      private function getProvider(_list: ArrayCollection, 
-                                   _constructableId: int): ArrayCollection
-      {
+      private function getProvider(_list: ArrayCollection, _constructableId: int): ArrayCollection {
          return _constructableId > 0 ? _list : null;
       }
 
       protected function btnHidden_clickHandler(event: Event): void {
          new BuildingsCommand(BuildingsCommand.SET_BUILD_HIDDEN,
                  {
-                    'model': _facility,
-                    'enable': ! _facility.buildHidden
+                    'model':_facility,
+                    'enable':!_facility.buildHidden
                  }
          ).dispatch();
+      }
+
+      private function coinComp1_clickHandler(event: MouseEvent): void {
+         var accelerator: ConstructorCompleteAll = new ConstructorCompleteAll();
+         var speedPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
+         accelerator.popUp = speedPopUp;
+         accelerator.constructor = _facility;
+         speedPopUp.confirmButtonEnabled = true;
+         speedPopUp.confirmButtonClickHandler = function (): void {
+            if (_facility != null) {
+               if (accelerator.hasEnoughCredits()) {
+                  new BuildingsCommand(
+                     BuildingsCommand.CONSTRUCT_ALL, {
+                        'constructorId': _facility.id}).dispatch();
+               }
+               else {
+                  UrlNavigate.getInstance().showBuyCreds();
+               }
+            }
+         }
+         speedPopUp.addElement(accelerator);
+         speedPopUp.show();
+      }
+
+      private static const CONSTRUCT_ALL_HIDDEN: int = 0;
+      private static const CONSTRUCT_ALL_DISABLED: int = 1;
+      private static const CONSTRUCT_ALL_ENABLED: int = 2;
+
+      private function getConstructAllState(entries: ArrayCollection): int
+      {
+         var hasPrepaid: Boolean = false;
+         var hasUnprepaid: Boolean = false;
+         for each (var entry: ConstructionQueueEntry in entries)
+         {
+            if (entry.prepaid)
+            {
+               hasPrepaid = true;
+            }
+            else
+            {
+               hasUnprepaid = true;
+            }
+         }
+         return hasPrepaid
+                 ? (hasUnprepaid
+                     ? CONSTRUCT_ALL_DISABLED
+                     : CONSTRUCT_ALL_ENABLED)
+                 : CONSTRUCT_ALL_HIDDEN;
       }
       ]]>
    </fx:Script>  
@@ -414,6 +464,16 @@
                width="100%" height="100%"/>
             <base:BackgroundedLabel right="3" bottom="3" visible="{_facility.totalConstructorMod > 0}"
                                     text="{_facility.totalConstructorMod + '%'}"/>
+            <s:Group top="3" left="3" visible="{getConstructAllState(
+            _facility.constructionQueueEntries) != CONSTRUCT_ALL_HIDDEN}"
+                    toolTip="{getConstructAllState(
+                        _facility.constructionQueueEntries) == CONSTRUCT_ALL_DISABLED
+                        ? Localizer.string('Credits', 'tooltip.hasUnprepaid')
+                        : ''}">
+               <credits:CoinComp top="3" left="3" enabled="{getConstructAllState(
+                  _facility.constructionQueueEntries) == CONSTRUCT_ALL_ENABLED}"
+                                 click="coinComp1_clickHandler(event)"/>
+            </s:Group>
          </s:Group>
       </s:Group>
 
