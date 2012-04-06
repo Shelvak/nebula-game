@@ -24,8 +24,8 @@ class ControlClient
   end
   
   def message(action, params={})
-    @connection.request(action, params)
+    @connection.request("tasks|#{action}", params)
   rescue GameServerConnector::RemoteError => e
-    raise ConnectionError, e
+    raise ConnectionError, e.message, e.backtrace
   end
 end

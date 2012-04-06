@@ -12,8 +12,10 @@ class Dispatcher::Message
   def initialize(id, seq, action, params, client, player, pushed)
     @id = id
     @seq = seq
+    raise Dispatcher::UnhandledMessage, "action is nil!" if action.nil?
     @controller_name, @action = action.split(SPLITTER, 2)
-    @params = params.freeze
+    raise Dispatcher::UnhandledMessage, "@action is nil!" if @action.nil?
+    @params = (params || {}).freeze
     @client = client
     @player = player
     @pushed = pushed
