@@ -75,18 +75,16 @@ package components.map.space
       /* ################ */
       /* ### CHILDREN ### */
       /* ################ */
-      
-      private var imgImage:SSObjectImage;
-      private var lblName:Label;
-      
-      protected override function createChildren() : void {
-         super.createChildren();
-         
+
+      private var imgImage: SSObjectImage;
+      private var lblName: Label;
+
+      override protected function createChildrenImpl(): void {
          imgImage = new SSObjectImage();
          imgImage.verticalCenter = 0;
          imgImage.horizontalCenter = 0;
          addElement(imgImage);
-         
+
          lblName = new Label();
          lblName.horizontalCenter = 0;
          lblName.bottom = -16;

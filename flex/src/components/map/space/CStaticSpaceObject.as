@@ -58,7 +58,24 @@ package components.map.space
          
          f_visibleChanged = true;
       }
-      
+
+      public var f_childrenCreated: Boolean = false;
+
+      override protected function createChildren(): void {
+         super.createChildren();
+         if (!f_childrenCreated) {
+            createChildrenImpl();
+            f_childrenCreated = true;
+         }
+      }
+
+      /**
+       * Contrary to <code>createChildren()</code> this method is called only
+       * once during component existence.
+       */
+      protected function createChildrenImpl(): void {
+      }
+
       /**
        * Called when object becomes visible to activate it:
        * start animations, register event listeners etc. Override if necessary.
