@@ -27,6 +27,18 @@ describe Dispatcher::Message do
       message
     end
 
+    it "should fail if id is nil" do
+      lambda do
+        message(:id => nil)
+      end.should raise_error(Dispatcher::UnhandledMessage)
+    end
+
+    it "should not fail if id is nil but message is pushed" do
+      lambda do
+        message(:id => nil, :pushed => true)
+      end.should_not raise_error(Dispatcher::UnhandledMessage)
+    end
+
     it "should fail if action is nil" do
       lambda do
         message(:action => nil)
