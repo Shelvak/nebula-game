@@ -2,6 +2,7 @@
 <s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
                 xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:components="utils.components.*"
+                xmlns:credits="components.credits.*"
                 minWidth="100">
 
    <components:CenteredBitmapImage width="100%" height="100%"
@@ -18,12 +19,33 @@
            AssetNames.BUTTONS_IMAGE_FOLDER + 'build_up')}"
            top="0" left="0"
            visible="{facility.constructableType != null}"/>
+   <s:Group top="3" right="3" visible="{getConstructAllState(
+   facility.constructionQueueEntries) != CONSTRUCT_ALL_HIDDEN}"
+           toolTip="{getConstructAllState(
+               facility.constructionQueueEntries) == CONSTRUCT_ALL_DISABLED
+               ? Localizer.string('Credits', 'tooltip.hasUnprepaid')
+               : ''}">
+      <credits:CoinComp top="3" left="3" enabled="{getConstructAllState(
+         facility.constructionQueueEntries) == CONSTRUCT_ALL_ENABLED}"
+                        click="coinComp1_clickHandler(event)"/>
+   </s:Group>
 
    <fx:Script><![CDATA[
+      import components.credits.ConstructorCompleteAll;
+      import components.popups.ActionConfirmationPopUp;
+
+      import controllers.buildings.BuildingsCommand;
+
       import models.building.Building;
+      import models.constructionqueueentry.ConstructionQueueEntry;
+
+      import mx.collections.ArrayCollection;
+
+      import utils.UrlNavigate;
 
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
 
 
       [Bindable]
@@ -41,6 +63,56 @@
          else {
             return ("");
          }
+      }
+
+
+
+      private function coinComp1_clickHandler(event: MouseEvent): void {
+         var accelerator: ConstructorCompleteAll = new ConstructorCompleteAll();
+         var speedPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
+         accelerator.popUp = speedPopUp;
+         accelerator.constructor = facility;
+         speedPopUp.confirmButtonEnabled = true;
+         speedPopUp.confirmButtonClickHandler = function (): void {
+            if (facility != null) {
+               if (accelerator.hasEnoughCredits()) {
+                  new BuildingsCommand(
+                     BuildingsCommand.CONSTRUCT_ALL, {
+                        'constructorId': facility.id}).dispatch();
+               }
+               else {
+                  UrlNavigate.getInstance().showBuyCreds();
+               }
+            }
+         }
+         speedPopUp.addElement(accelerator);
+         speedPopUp.show();
+      }
+
+      private static const CONSTRUCT_ALL_HIDDEN: int = 0;
+      private static const CONSTRUCT_ALL_DISABLED: int = 1;
+      private static const CONSTRUCT_ALL_ENABLED: int = 2;
+
+      private function getConstructAllState(entries: ArrayCollection): int
+      {
+         var hasPrepaid: Boolean = false;
+         var hasUnprepaid: Boolean = false;
+         for each (var entry: ConstructionQueueEntry in entries)
+         {
+            if (entry.prepaid)
+            {
+               hasPrepaid = true;
+            }
+            else
+            {
+               hasUnprepaid = true;
+            }
+         }
+         return hasPrepaid
+                 ? (hasUnprepaid
+                     ? CONSTRUCT_ALL_DISABLED
+                     : CONSTRUCT_ALL_ENABLED)
+                 : CONSTRUCT_ALL_HIDDEN;
       }
       ]]></fx:Script>
 </s:ItemRenderer>

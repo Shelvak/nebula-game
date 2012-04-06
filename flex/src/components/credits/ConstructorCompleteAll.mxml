@@ -176,7 +176,8 @@
       }
 
       public function hasEnoughCredits(): Boolean {
-         return ModelLocator.getInstance().player.creds >= currentModel.credits;
+         return ModelLocator.getInstance().player.creds >= Math.min(
+                 currentModel.credits, usualCost);
       }
 
       [Bindable]
@@ -233,12 +234,13 @@
    </fx:Script>
 
    <s:Label text="{Localizer.string('Credits', 'label.buildAllEntries',
-                     [currentModel.credits, usualCost])}" paddingBottom="2"/>
+                     [Math.min(currentModel.credits, usualCost), usualCost])}"
+            paddingBottom="2" textAlign="center"/>
 
    <s:Group left="0" right="0" height="{unitLayout.rowCount * 72}">
       <s:DataGroup dataProvider="{getProvider(_constructor,
                    _constructor.constructionQueueEntries)}"
-                   left="0" right="0"
+                   horizontalCenter="0"
                    itemRenderer="components.unit.IRUnitBuildingEntrySmall">
          <s:layout>
             <s:TileLayout id="unitLayout"/>
@@ -247,14 +249,17 @@
    </s:Group>
 
    <s:RichText textFlow="{getTextFlow(Localizer.string('Credits', 'label.buildAllCreds',
-                     [currentModel.credits, usualCost]))}" paddingBottom="2"/>
+                     [Math.min(currentModel.credits, usualCost), usualCost]))}" paddingBottom="2"
+               fontSize="12" textAlign="center"/>
 
-   <s:Label visible="{ModelLocator.getInstance().player.creds &lt; currentModel.credits}"
+   <s:Label visible="{ModelLocator.getInstance().player.creds &lt;
+            Math.min(currentModel.credits, usualCost)}"
             text="{Localizer.string('Credits', 'label.notEnough', 
-            [currentModel.credits - ModelLocator.getInstance().player.creds])}"
+            [Math.min(currentModel.credits, usualCost) -
+               ModelLocator.getInstance().player.creds])}"
             width="100%" paddingLeft="6" paddingRight="6" textAlign="center"
             styleName="unsatisfied" fontWeight="bold"/>
    <base:layout>
-      <s:VerticalLayout/>
+      <s:VerticalLayout horizontalAlign="center"/>
    </base:layout>
 </base:AdvancedContainer>
