@@ -464,13 +464,21 @@
                width="100%" height="100%"/>
             <base:BackgroundedLabel right="3" bottom="3" visible="{_facility.totalConstructorMod > 0}"
                                     text="{_facility.totalConstructorMod + '%'}"/>
-            <s:Group top="3" left="3" visible="{getConstructAllState(
+            <s:Group top="0" right="0" visible="{getConstructAllState(
             _facility.constructionQueueEntries) != CONSTRUCT_ALL_HIDDEN}"
                     toolTip="{getConstructAllState(
                         _facility.constructionQueueEntries) == CONSTRUCT_ALL_DISABLED
                         ? Localizer.string('Credits', 'tooltip.hasUnprepaid')
-                        : ''}">
-               <credits:CoinComp top="3" left="3" enabled="{getConstructAllState(
+                        : ''}"
+                    clipAndEnableScrolling="true">
+               <s:Rect top="-5" bottom="0" left="0" right="-5" alpha="0.9"
+                       radiusX="5" radiusY="5">
+                  <s:fill>
+                     <s:SolidColor color="#000000"/>
+                  </s:fill>
+               </s:Rect>
+               <credits:CoinComp top="6" right="6" left="6" bottom="6"
+                                 enabled="{getConstructAllState(
                   _facility.constructionQueueEntries) == CONSTRUCT_ALL_ENABLED}"
                                  click="coinComp1_clickHandler(event)"/>
             </s:Group>

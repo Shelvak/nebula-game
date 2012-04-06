@@ -1412,17 +1412,17 @@
     <label.additionalPrivileges value="Tu taip pat gausi šias privilegijas:"/>
     <label.queueBuilding
     value="● Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
-    <label.buildAllEntries value="Gali užbaigti šios eilės statyma akimirksniu:"/>
+    <label.buildAllEntries value="Gali užbaigti šios eilės statymą akimirksniu"/>
     <!-- 0: creds for construct all,
          1: creds to pay if accelerate one by one -->
     <label.buildAllCreds>
       <![CDATA[
-       <p>Visos eilės statymo užbaigimas tau kainuos:</p>
+       <p>Visos eilės statymo užbaigimas tau kainuos</p>
        <p />
        <p><span fontWeight="bold"
         >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
        <p />
-       <p>Jei greitintum statybą po vieną elementą, sumokėtum:</p>
+       <p>Jei greitintum statybą po vieną elementą, sumokėtum</p>
        <p />
        <p><span fontWeight="bold"
         >{1 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
