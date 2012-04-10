@@ -463,7 +463,8 @@ function crashRemote(summary, description, body) {
     data: {
       summary: summary,
       error_description: description,
-      error_body: body
+      error_body: body,
+      tag: server
     }
   }).done(function() {
     ajaxStatus.html(ce.sent(locale));
