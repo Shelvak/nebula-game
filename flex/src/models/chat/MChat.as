@@ -763,21 +763,18 @@ package models.chat
        * 
        * @param channel channel to remove (close).
        *                <b>Not null.</b>
-       */      
-      private function removeChannel(channel:MChatChannel) : void
-      {
+       */
+      private function removeChannel(channel: MChatChannel): void {
          Objects.paramNotNull("channel", channel);
-         
-         var removeIndex:int = _channels.getItemIndex(channel); 
+
+         var removeIndex: int = _channels.getItemIndex(channel);
          _channels.removeChannel(channel);
-         
-         if (_selectedChannel == channel)
-         {
-            // select next channel when slected channel was closed
-            if (removeIndex == _channels.length)
-            {
-               removeIndex--;
+
+         if (_selectedChannel == channel) {
+            // select next channel when selected channel was closed
+            if (removeIndex == _channels.length) {
                // or the previous channel if the last channel was selected
+               removeIndex--;
             }
             selectChannel(MChatChannel(_channels.getItemAt(removeIndex)).name);
          }
@@ -822,7 +819,7 @@ package models.chat
       public function get allianceChannelOpen() : Boolean {
          return _allianceChannelOpen;
       }
-      private function setAllianceChannelOpen(value:Boolean) : void
+      private function setAllianceChannelOpen(value: Boolean): void
       {
          if (_allianceChannelOpen != value) {
             _allianceChannelOpen = value;
@@ -836,8 +833,7 @@ package models.chat
       /* ############################### */
       /* ### PUBLIC CHANNEL MESSAGES ### */
       /* ############################### */
-      
-      
+
       /**
        * Called when a message to a public channel has been sent by some chat member.
        * 
@@ -850,20 +846,23 @@ package models.chat
       public function receivePublicMessage(message: MChatMessage): void {
          Objects.paramNotNull("message", message);
 
-         var channel: MChatChannelPublic =
+         const channel: MChatChannelPublic =
                 MChatChannelPublic(_channels.getChannel(message.channel));
          if (channel == null) {
-            throwChannelNotFoundError(
-               "Unable to process message " + message, message.channel
+            logger.warn(
+               "Unable to process message {0}: channel {1} not found! Ignoring.",
+               message, message.channel
             );
+            return;
          }
 
-         var member: MChatMember = _members.getMember(message.playerId);
+         const member: MChatMember = _members.getMember(message.playerId);
          if (member == null) {
-            throw new Error(
-               "Unable to process message " + message + ": member with id "
-                  + message.playerId + " is not joined to chat"
+            logger.warn(
+               "Unable to process message {0}: member with id {1} not found! Ignoring.",
+               message, message.playerId
             );
+            return;
          }
 
          message.playerName = member.name;
@@ -888,8 +887,7 @@ package models.chat
       /* ################################ */
       /* ### PRIVATE CHANNEL MESSAGES ### */
       /* ################################ */
-      
-      
+
       /**
        * Called when a message to a private channel has been sent by some chat member.
        * 
@@ -944,8 +942,7 @@ package models.chat
       /* ################################# */
       /* ### MESSAGE SEND CONFIRMATION ### */
       /* ################################# */
-      
-      
+
       /**
        * Called when a message to a public or private channel has been
        * successfully posted.
