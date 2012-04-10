@@ -2,7 +2,6 @@ package controllers.objects.actions.customcontrollers
 {
    import models.factories.NotificationFactory;
 
-
    public class NotificationController extends BaseObjectController
    {
       public function NotificationController() {
@@ -18,7 +17,7 @@ package controllers.objects.actions.customcontrollers
       public override function objectDestroyed(objectSubclass: String,
                                                objectId: int,
                                                reason: String): void {
-         ML.notifications.remove(objectId);
+         ML.notifications.remove(objectId, true);
       }
    }
 }

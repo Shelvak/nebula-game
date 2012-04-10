@@ -29,6 +29,13 @@ package controllers.objects.actions.customcontrollers
             constructor.constructionQueueEntries.addItemAt(query, query.position);
             constructor.dispatchQueryChangeEvent();
          }
+         else
+         {
+            if (!Objects.containsSameData(query, object))
+            {
+               Objects.throwStateOutOfSyncError(query, object);
+            }
+         }
          if (ModelUtil.getModelClass(query.constructableType) == ObjectClass.BUILDING)
             ML.latestPlanet.buildGhost(
                Objects.toSimpleClassName(query.constructableType),

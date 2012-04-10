@@ -88,19 +88,19 @@ package components.map.space
       /* ################ */
       /* ### CHILDREN ### */
       /* ################ */
-      
-      private var _planetIcons:SSPlanetsStatusIcons;
-      private var _shipsIcons:SSShipsStatusIcons;
-      private var _imgGroup:Group;
-      private var _bmpImage:BitmapImage;
-      private var _bmpShield:BitmapImage;
-      private var _lblName:Label;
-      
-      protected override function createChildren() : void {
-         super.createChildren();
-         
-         var vLayout:VerticalLayout;
-         
+
+      private var _planetIcons: SSPlanetsStatusIcons;
+      private var _shipsIcons: SSShipsStatusIcons;
+      private var _imgGroup: Group;
+      private var _bmpImage: BitmapImage;
+      private var _bmpShield: BitmapImage;
+      private var _lblName: Label;
+
+      override protected function createChildrenImpl(): void {
+         super.createChildrenImpl();
+
+         var vLayout: VerticalLayout;
+
          _bmpImage = new BitmapImage();
          _bmpImage.smooth = true;
          _bmpImage.fillMode = BitmapFillMode.SCALE;
@@ -118,7 +118,7 @@ package components.map.space
          _imgGroup.verticalCenter = 0;
          _imgGroup.addElement(_bmpImage);
          _imgGroup.addElement(_lblName);
-         
+
          vLayout = new VerticalLayout();
          vLayout.verticalAlign = HorizontalAlign.CENTER;
          vLayout.gap = 2;
@@ -127,7 +127,7 @@ package components.map.space
          _planetIcons.left = 0;
          _planetIcons.layout = vLayout;
          addElement(_planetIcons);
-         
+
          vLayout = new VerticalLayout();
          vLayout.horizontalAlign = HorizontalAlign.CENTER;
          vLayout.gap = 2;

@@ -14,10 +14,15 @@ package models.chat.msgconverters
        * content.
        * 
        * @param message <code>MChatMessage</code> to convert. <b>Not null</b>.
+       * @param onPlayerElementClick if not <code>null</code> and if
+       * implementation of this method creates a clickable player element, the
+       * callback will be invoked whenever user clicks on this element. Callback
+       * will be passed the id and name of the player clicked.
        * 
        * @return <code>FlowElement</code> which is a visual representation of the given
        * <code>MChatMessage</code>.
        */
-      function toFlowElement(message:MChatMessage) : FlowElement;
+      function toFlowElement(message: MChatMessage,
+                             onPlayerElementClick: Function = null): FlowElement;
    }
 }

@@ -1855,6 +1855,12 @@
 
   <Notifications>
     <screenTitle value="Pranešimai" />
+    <windowTitle>* {0
+      one[Neperskaitytas pranešimas]
+      tens[? neperskaitytų pranešimų]
+      1sts[? neperskaitytas pranešimas]
+      many[? neperskaityti pranešimai]
+    } *</windowTitle>
     <label.notifications.normal value="{0}" />
     <label.notifications.hasUnread value="{0}" />
     <label.notifications.hasNew value="{0}" />
@@ -4236,6 +4242,7 @@
     <update value="Atnaujinti" />
 
     <paused value="Sustabdyta" />
+    <pausedLeft value="Liko {0}" />
 
     <upgradeCost value="Tobulinimo kaina" />
     <forceOvertime value="Dirbti viršvalandžius" />
@@ -5665,6 +5672,10 @@
      <label.ignoreFiltered value="Uždengti žinutes"/>
      <label.ignoreType value="Ignoravimo būdas:"/>
      <label.enablePlanetAnimations value="Animacijos planetoje"/>
+     <label.technologiesSortType
+      value="Išradinėjamų technologijų rikiavimo būdas technologijų medyje:" />
+     <label.techSortScientists value="Pagal mokslininkus"/>
+     <label.techSortTime value="Pagal likusį laiką" />
   </PlayerOptions>
 
 </locale>

@@ -1,8 +1,8 @@
 class Threading::Director::Task
-  DEADLOCK_ERROR =
-    "ActiveRecord::JDBCError: Deadlock found when trying to get lock"
-  LOCK_WAIT_ERROR =
-    "ActiveRecord::JDBCError: Lock wait timeout exceeded"
+  DEADLOCK_ERRORS = [
+    "Deadlock found when trying to get lock",
+    "Lock wait timeout exceeded"
+  ]
   INFO_FROM_RETRY = 2 # From which retry should innodb info be included?
   MAX_RETRIES = 8
   SLEEP_RANGE = 100..500
@@ -56,10 +56,8 @@ class Threading::Director::Task
         log_method = :info
       end
 
-      if (
-        e.message.starts_with?(DEADLOCK_ERROR) ||
-        e.message.starts_with?(LOCK_WAIT_ERROR)
-      ) && current_retry < MAX_RETRIES
+      if DEADLOCK_ERRORS.find { |err| e.message.include?(err) } &&
+          current_retry < MAX_RETRIES
         current_retry += 1
 
         sleep_for = SLEEP_RANGE.random_element / 1000.0

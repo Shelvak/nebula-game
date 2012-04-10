@@ -69,8 +69,8 @@ package controllers.units
        * ignore given hop if squadron to add the hop to can't be found.
        */
       public function addHopToSquadron(hop:MHop) : void {
-         var squad:MSquadron = findSquad(hop.routeId);
-         if (squad != null) {
+         var squad: MSquadron = findSquad(hop.routeId);
+         if (squad != null && squad.hasLocationEqualTo(hop.location)) {
             squad.addHop(hop);
          }
       }
@@ -363,10 +363,22 @@ package controllers.units
        * 
        * @return route model which has been created.
        */
-      public function createRoute(data:Object, owner:int = Owner.NPC) : MRoute
-      {
-         var route:MRoute = Objects.create(MRoute, data);
-         route.cachedUnits.addAll(UnitFactory.createCachedUnits(data["cachedUnits"]));
+      public function createRoute(data: Object,
+                                  owner: int = Owner.NPC): MRoute {
+         var route: MRoute = ROUTES.find(data["id"]);
+         if (route != null) {
+            if (!Objects.containsSameData(route, data)) {
+               Objects.throwStateOutOfSyncError(route, data);
+            }
+            else {
+               // TODO: do we really need to check cached units?
+               return route;
+            }
+         }
+         route = Objects.create(MRoute, data);
+         route.cachedUnits.addAll(
+            UnitFactory.createCachedUnits(data["cachedUnits"])
+         );
          if (owner != Owner.NPC) {
             route.owner = owner;
          }
@@ -378,13 +390,15 @@ package controllers.units
        * Call this when any units have made a jump between maps (new batch of hops is received form 
        * the server) or when some units have jumped into player's visible area.
        */
-      public function executeJump(units:IList, hops:IList, jumpsAt:String) : void {
+      public function executeJump(units: IList,
+                                  hops: IList,
+                                  jumpsAt: String): void {
          Objects.paramNotNull("units", units);
          Objects.paramNotNull("hops", hops);
-         var sampleUnit:Unit = Unit(units.getItemAt(0));
+         const sampleUnit: Unit = Unit(units.getItemAt(0));
          // OK. We do this the simple way: if we got squad already, we wipe it out and we will recreate it.
          // Because update is too difficult and I always get it wrong.
-         var squad:MSquadron = findSquad(sampleUnit.squadronId);
+         var squad: MSquadron = findSquad(sampleUnit.squadronId);
          if (squad != null) {
             destroySquadron(squad.id);
          }
@@ -413,35 +427,37 @@ package controllers.units
        * @param route generic object representing a squadron. It must have hops array
        * @param $unitIds array of ids on units to be moved
        */
-      public function startMovement(route:Object, $unitIds:Array) : void {
-         var squad: MSquadron;
-         var unitIds: ArrayCollection = new ArrayCollection($unitIds);
-         var currentLocation: LocationMinimal =
+      public function startMovement(route: Object, $unitIds: Array): void {
+         const unitIds: ArrayCollection = new ArrayCollection($unitIds);
+         const currentLocation: LocationMinimal =
                 Objects.create(LocationMinimal, route["current"]);
          if (currentLocation.isSSObject) {
             currentLocation.setDefaultCoordinates();
          }
 
          // get the units we need to move
-         var units: ListCollectionView = Collections.filter(UNITS,
-                                                            function (unit: Unit): Boolean {
-                                                               return unitIds.contains(unit.id);
-                                                            }
+         const units: ListCollectionView = Collections.filter(
+            UNITS,
+            function (unit: Unit): Boolean {
+               return unitIds.contains(unit.id);
+            }
          );
 
          // we found units
-         // that means we have a cached map in which those units are located: create a squadron
+         // that means we have a cached map in which those units are located:
+         // create a squadron
          const ordersCtrl: OrdersController = OrdersController.getInstance();
          if (units.length != 0) {
             var unit: Unit = Unit(units.getItemAt(0));
-            var squadExisting: MSquadron = findSquad(unit.squadronId,
-                                                     unit.playerId,
-                                                     currentLocation);
+            const oldUnitsSquad: MSquadron = findSquad(
+               unit.squadronId, unit.playerId, currentLocation
+            );
             route["status"] = unit.owner;
-            squad = SquadronFactory.fromObject(route);
+            const squad: MSquadron = SquadronFactory.fromObject(route);
             squad.player = unit.player;
-            squad.addAllHops(Objects.fillCollection(new ArrayCollection(), MHop,
-                                                    route["hops"]));
+            squad.addAllHops(Objects.fillCollection(
+               new ArrayCollection(), MHop, route["hops"]
+            ));
             units.disableAutoUpdate();
             for each (unit in units) {
                unit.squadronId = squad.id;
@@ -457,23 +473,32 @@ package controllers.units
             else {
                SquadronFactory.createHostileRoute(squad, route["jumpsAt"]);
             }
-            if (squadExisting != null) {
-               if (squadExisting.hasUnits) {
-                  if (squadExisting.route != null) {
-                     squadExisting.rebuildCachedUnits();
+            if (oldUnitsSquad != null) {
+               if (oldUnitsSquad.hasUnits) {
+                  if (oldUnitsSquad.route != null) {
+                     oldUnitsSquad.rebuildCachedUnits();
                   }
                }
                else {
-                  SQUADS.removeExact(squadExisting);
-                  squadExisting.cleanup();
+                  SQUADS.removeExact(oldUnitsSquad);
+                  oldUnitsSquad.cleanup();
                }
             }
-            SQUADS.addItem(squad);
+            const duplicate: MSquadron = SQUADS.find(squad.id);
+            if (duplicate != null) {
+               if (!Objects.containsSameData(duplicate, route)) {
+                  Objects.throwStateOutOfSyncError(duplicate, route);
+               }
+            }
+            else {
+               SQUADS.addItem(squad);
+            }
             if (squad.owner == Owner.PLAYER && ordersCtrl.issuingOrders) {
                ordersCtrl.orderComplete();
-               Messenger.show(Localizer.string("Movement",
-                                               "message.orderComplete"),
-                              Messenger.MEDIUM);
+               Messenger.show(
+                  Localizer.string("Movement", "message.orderComplete"),
+                  Messenger.MEDIUM
+               );
             }
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open: create route then

@@ -121,7 +121,7 @@ class Dispatcher
 
       message = message_object(client, message_hash)
       LOGGER.block(
-        "Received message. (player: #{message.player || "none"})",
+        "Received message: #{message}",
         :component => log_tag
       ) { process_message(message) }
     end

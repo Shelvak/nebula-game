@@ -8,7 +8,7 @@ class Chat::Hub
   GLOBAL_CHANNEL_LANGUAGE = 'en'
 
   def initialize(dispatcher_actor_name)
-    super
+    super()
     typesig binding, Symbol
 
     @dispatcher_actor_name = dispatcher_actor_name

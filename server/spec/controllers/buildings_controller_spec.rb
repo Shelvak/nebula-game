@@ -11,15 +11,16 @@ describe BuildingsController do
     it_behaves_like "with param options", %w{id}
     
     it "should raise error if building is not found" do
-      @building.destroy
+      (@building || building).destroy
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "should fail if player does not own planet" do
-      @planet.player = nil
-      @planet.save!
+      planet = (@planet || self.planet)
+      planet.player = nil
+      planet.save!
 
       lambda do
         invoke @action, @params
@@ -39,6 +40,28 @@ describe BuildingsController do
     end
   end
 
+  describe "buildings|show_garrison_groups" do
+    let(:planet) { Factory.create(:planet, :player => player) }
+    let(:building) do
+      building = Factory.create(:building, :planet => planet)
+      Factory.create(:u_gnat, :location => building)
+      building
+    end
+
+    before(:each) do
+      @action = "buildings|show_garrison_groups"
+      @params = {'id' => building.id}
+    end
+
+    it_should_behave_like "having controller action scope"
+    it_behaves_like "finding building"
+
+    it "should return building#unit_groups" do
+      invoke @action, @params
+      response_should_include(:groups => building.unit_groups)
+    end
+  end
+
   describe "buildings|show_garrison" do
     let(:planet) { Factory.create(:planet, :player => player) }
     let(:building) { Factory.create(:building, :planet => planet) }
@@ -53,21 +76,14 @@ describe BuildingsController do
       @params = {'id' => building.id}
     end
 
-    it_should_behave_like "with param options", %w{id}
     it_should_behave_like "having controller action scope"
+    it_should_behave_like "finding building"
 
     it "should fail if building cannot be found" do
       building.destroy
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should fail if player cannot view npc units" do
-      planet.update_row! :player_id => Factory.create(:player).id
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
     end
 
     it "should return units otherwise" do

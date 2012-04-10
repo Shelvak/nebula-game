@@ -19,18 +19,31 @@ package models.factories {
    import models.planet.MPlanetObject;
 
    import utils.Objects;
+   import utils.locale.Localizer;
 
    public class NotificationFactory {
       public static function fromObject(data:Object) : Notification
       {
+         var oldNotif: Notification = ML.notifications.find(data.id);
+         if (oldNotif != null)
+         {
+            if (!Objects.containsSameData(oldNotif, data))
+            {
+               Objects.throwStateOutOfSyncError(oldNotif, data);
+            }
+            return oldNotif;
+         }
          var notification: Notification = Objects.create(Notification, data);
          notification.isNew = true;
          ML.notifications.addItem(notification);
          if (MA.currentName != MainAreaScreens.NOTIFICATIONS) {
             if (ExternalInterface.available) {
-               ExternalInterface.call(
-                  "setUnreadNotifications", ML.notifications.unreadNotifsTotal
+               var windowTitle: String = Localizer.string(
+                  "Notifications", "windowTitle",
+                  [ML.notifications.unreadNotifsTotal]
                );
+
+               ExternalInterface.call("setUnreadNotifications", windowTitle);
             }
             ML.notificationAlerts.addItem(notification);
          }

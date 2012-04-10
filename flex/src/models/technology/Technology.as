@@ -153,9 +153,8 @@ package models.technology
       {
          return Config.getTechnologyCoords(type);
       }
-      
-      [Bindable(event="upgradeProgress")]
-      public function getNewTimeToFinishString(newScientists: int): String
+
+      public function getNewTimeToFinish(newScientists: int): int
       {
          var remainder: Number = 0;
          var oldSci: Number = 0;
@@ -176,7 +175,14 @@ package models.technology
                         newScientists,
             TechnologyUpgradable.getMinScientists(type, level+1), false);
          var timeLeft: Number = remainder * newTime / oldTime;
-         return DateUtil.secondsToHumanString(timeLeft < 1?1: int(timeLeft));
+         return timeLeft;
+      }
+      
+      [Bindable(event="upgradeProgress")]
+      public function getNewTimeToFinishString(newScientists: int, parts: int = 0): String
+      {
+         var timeLeft: int = getNewTimeToFinish(newScientists);
+         return DateUtil.secondsToHumanString(timeLeft < 1 ? 1 : timeLeft, parts);
       }
       
       public var speedUp: Boolean = false;

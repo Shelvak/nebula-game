@@ -48,4 +48,13 @@ class PlayerOptions::Data < OptionsHash
   # Which tab should be opened first when opening a transporter
   property :default_transporter_tab, :default => TRANSPORTER_TAB_RESOURCES,
     :valid => lambda { |val| TRANSPORTER_TABS.include?(val) }
+
+  TECH_SORT_TYPE_SCIENTISTS = 0
+  TECH_SORT_TYPE_TIME = 1
+
+  TECH_SORT_TYPES = [TECH_SORT_TYPE_SCIENTISTS, TECH_SORT_TYPE_TIME]
+
+  # Which property should technologies by sorted by in technology sidebar
+  property :technologies_sort_type, :default => TECH_SORT_TYPE_SCIENTISTS,
+    :valid => lambda { |val| TECH_SORT_TYPES.include?(val) }
 end

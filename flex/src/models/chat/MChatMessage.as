@@ -1,12 +1,11 @@
 package models.chat
 {
    import flashx.textLayout.elements.FlowElement;
-   import flashx.textLayout.elements.ParagraphElement;
-   
+
    import models.BaseModel;
    import models.chat.msgconverters.IChatMessageConverter;
-   
-   
+
+
    /**
     * A chat message. The same class is used for private, public and system messages. Differentiation of
     * the first two is controlled by two different implementations of <code>ChatMessageProcessor</code>.
@@ -82,11 +81,10 @@ package models.chat
       
       
       /**
-       * @see IMChatMessageConverter#toFlowElement()
+       * @see IChatMessageConverter#toFlowElement()
        */
-      public function toFlowElement() : FlowElement
-      {
-         return converter.toFlowElement(this);
+      public function toFlowElement(onPlayerElementClick: Function = null): FlowElement {
+         return converter.toFlowElement(this, onPlayerElementClick);
       }
       
       

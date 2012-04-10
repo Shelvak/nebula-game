@@ -2,7 +2,7 @@ class Chat::AntiFlood
   include MonitorMixin
   
   def initialize(dispatcher_actor_name)
-    super
+    super()
     
     @dispatcher_actor_name = dispatcher_actor_name
     # {player_id => Fixnum}

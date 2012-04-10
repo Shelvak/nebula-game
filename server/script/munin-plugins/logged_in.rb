@@ -29,7 +29,7 @@ else
   
   begin
     client = ControlClient.new
-    data = client.message('tasks|player_stats')
+    data = client.message('player_stats')
   rescue ControlClient::ConnectionError
     # Stub data if server is down.
     data = {}

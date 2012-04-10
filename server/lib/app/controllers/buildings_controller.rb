@@ -19,6 +19,28 @@ class BuildingsController < GenericController
     end
   end
 
+  # Show grouped unit counts for units garrisoned in that building.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum) - building id which we want to view.
+  #
+  # Response:
+  # - groups(Building#unit_groups) - units inside that building.
+  #
+  ACTION_SHOW_GARRISON_GROUPS = 'buildings|show_garrison_groups'
+
+  SHOW_GARRISON_GROUPS_OPTIONS = logged_in + find_building_options
+  SHOW_GARRISON_GROUPS_SCOPE = scope.world
+  def self.show_garrison_groups_action(m)
+    without_locking do
+      building = find_building(m)
+      units = building.unit_groups
+      respond m, :groups => units
+    end
+  end
+
   # Show units garrisoned in building.
   #
   # Invocation: by client
@@ -31,15 +53,11 @@ class BuildingsController < GenericController
   #
   ACTION_SHOW_GARRISON = 'buildings|show_garrison'
 
-  SHOW_GARRISON_OPTIONS = logged_in + required(:id => Fixnum)
+  SHOW_GARRISON_OPTIONS = logged_in + find_building_options
   SHOW_GARRISON_SCOPE = scope.world
   def self.show_garrison_action(m)
     without_locking do
-      building = Building.find(m.params['id'])
-      planet = building.planet
-      raise GameLogicError, "You cannot view NPC units in planet #{planet}!" \
-        if planet.player_id != m.player.id
-
+      building = find_building(m)
       units = building.units
       respond m, :units => units.map(&:as_json)
     end

@@ -4,7 +4,7 @@ class Chat::Pool
   include MonitorMixin
 
   def initialize
-    super
+    super()
     @hubs = {}
   end
 

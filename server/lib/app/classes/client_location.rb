@@ -89,8 +89,8 @@ class ClientLocation < LocationPoint
 
   def as_json(options=nil)
     hash = super
-    (ATTRIBUTES + SS_ATTRIBUTES + SS_OBJECT_ATTRIBUTES).each do |attribute|
-      hash[attribute.to_sym] = send(attribute)
+    (SS_ATTRIBUTES + SS_OBJECT_ATTRIBUTES).each do |attribute|
+      hash[attribute.to_s] = send(attribute)
     end
     hash
   end

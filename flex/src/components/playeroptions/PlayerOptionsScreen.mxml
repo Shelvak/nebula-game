@@ -89,141 +89,167 @@
       <s:RadioButtonGroup id="defaultTransporterTab" selectedValue="{PlayerOptions.defaultTransporterTab}"
         change="PlayerOptions.defaultTransporterTab = int(defaultTransporterTab.selectedValue);
                 PlayerOptions.changed();"/>
+      <s:RadioButtonGroup id="sortTypeGroup" selectedValue="{PlayerOptions.technologiesSortType}"
+        change="PlayerOptions.technologiesSortType = int(sortTypeGroup.selectedValue);
+                PlayerOptions.changed();"/>
    </fx:Declarations>
-   <base:Panel skinClass="components.skins.LargePanelSkin"
-               title="{getString('title.options')}" width="900" horizontalCenter="0">
-      <base:layout>
-         <s:VerticalLayout horizontalAlign="justify" paddingLeft="6"/>
-      </base:layout>
-      <base:Heading1 text="{getString('title.genericOptions')}"/>
-      <s:Group>
-         <s:layout><fx:VerticalSectionLayout/></s:layout>
-         <s:CheckBox id="warnBeforeUnload"
-                     label="{getString('label.warnBeforeUnload')}"
-                     selected="{PlayerOptions.warnBeforeUnload}"
-                     click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
-                     PlayerOptions.changed()"/>
-         <s:Label text="{getString('label.defaultTransporterTab')}" paddingTop="6"/>
-         <s:Group>
-           <s:RadioButton id="transporterResources" group="{defaultTransporterTab}"
-                          label="{getString('label.transporterTabResources')}"
-                          value="{PlayerOptions.TRANSPORTER_TAB_RESOURCES}"
-                          skinClass="components.skins.RadioButtonSkin"/>
-           <s:RadioButton id="transporterUnits" group="{defaultTransporterTab}"
-                          label="{getString('label.transporterTabUnits')}"
-                          value="{PlayerOptions.TRANSPORTER_TAB_UNITS}"
-                          skinClass="components.skins.RadioButtonSkin"/>
-           <s:layout>
-             <s:HorizontalLayout paddingLeft="15"/>
-           </s:layout>
-         </s:Group>
-      </s:Group>
-      <base:Heading1 text="{getString('title.afterLoginOptions')}"/>
-      <s:Group>
-         <s:layout><fx:VerticalSectionLayout/></s:layout>
-         <s:CheckBox id="showPopups" label="{getString('label.showPopupsAfterLogin')}"
-                     selected="{PlayerOptions.showPopupsAfterLogin}"
-                     click="PlayerOptions.showPopupsAfterLogin = !PlayerOptions.showPopupsAfterLogin;
-                     PlayerOptions.changed()"/>
-         <s:CheckBox id="openPlanet" label="{getString('label.openFirstPlanet')}"
-                     selected="{PlayerOptions.openFirstPlanetAfterLogin}"
-                     click="PlayerOptions.openFirstPlanetAfterLogin = !PlayerOptions.openFirstPlanetAfterLogin;
-                     PlayerOptions.changed()"/>
-      </s:Group>
-      <base:Heading1 text="{getString('title.chatOptions')}"/>
-      <s:Group>
-         <s:Group width="50%">
-            <s:CheckBox id="showJoinLeave" label="{getString('label.showJoinLeave')}"
-                        selected="{PlayerOptions.chatShowJoinLeave}"
-                        click="PlayerOptions.chatShowJoinLeave = !PlayerOptions.chatShowJoinLeave;
-                            PlayerOptions.changed()"/>
-            <s:Label text="{getString('label.ignoredList')}" paddingTop="6"/>
-
-            <s:Group>
-              <s:TextInput width="200" id="inpIgnoredPlayer"
-                enter="inpIgnoredPlayer_enterHandler(event)"/>
-              <s:Button label="{getString('label.addIgnoredPlayer')}"
-                enabled="{inpIgnoredPlayer.text.length > 0
-                &amp;&amp;
-                  PlayerOptions.ignoredPlayersDataProvider.getItemIndex(
-                    inpIgnoredPlayer.text) == -1}"
-                click="{addIgnored()}"/>
-              <s:layout>
-                <s:HorizontalLayout/>
-              </s:layout>
-            </s:Group>
-            <s:Label text="{getString('label.ignoreType')}" paddingTop="6"/>
-            <s:Group>
-              <s:RadioButton id="ignoreFull" group="{ignoreType}"
-                             label="{getString('label.ignoreComplete')}"
-                             value="{PlayerOptions.IGNORE_TYPE_COMPLETE}"
-                             skinClass="components.skins.RadioButtonSkin"/>
-              <s:RadioButton id="ignoreHalf" group="{ignoreType}"
-                             label="{getString('label.ignoreFiltered')}"
-                             value="{PlayerOptions.IGNORE_TYPE_FILTERED}"
-                             skinClass="components.skins.RadioButtonSkin"/>
-              <s:layout>
-                <s:HorizontalLayout paddingLeft="15"/>
-              </s:layout>
-            </s:Group>
-            <s:layout>
-               <s:VerticalLayout paddingTop="10"
-                                 paddingBottom="10"
-                                 gap="10" paddingLeft="10"/>
-            </s:layout>
-         </s:Group>
-         <s:Group width="50%" height="160">
-            <base:Scroller id="scroller" left="0" right="0" top="6" bottom="9"
-                           stepMultiplier="15">
+   <s:Group left="0" right="0" top="0" bottom="0">
+      <base:Scroller id="mainScroller" left="0" right="0" top="0" bottom="0"
+            stepMultiplier="5">
+         <s:Group left="0" right="0">
+            <base:Panel skinClass="components.skins.LargePanelSkin"
+                        title="{getString('title.options')}" width="900" horizontalCenter="0">
+               <base:layout>
+                  <s:VerticalLayout horizontalAlign="justify" paddingLeft="6"/>
+               </base:layout>
+               <base:Heading1 text="{getString('title.genericOptions')}"/>
                <s:Group>
-                  <s:DataGroup dataProvider="{PlayerOptions.ignoredPlayersDataProvider}"
-                          maxWidth="250">
-                    <s:itemRenderer><fx:Component>
-                      <s:ItemRenderer autoDrawBackground="false" width="100%">
-                        <s:Label text="{data}" width="100%" maxDisplayedLines="1"
-                                 showTruncationTip="true"/>
-                        <s:Button label="{Localizer.string('PlayerOptions', 'label.removeIgnored')}"
-                                  click="{PlayerOptions.removeIgnoredPlayer(String(data))}"/>
-                        <s:layout><s:HorizontalLayout verticalAlign="middle"/></s:layout>
-                        <fx:Script><![CDATA[
-                          import models.player.PlayerOptions;
+                  <s:layout><fx:VerticalSectionLayout/></s:layout>
+                  <s:CheckBox id="warnBeforeUnload"
+                              label="{getString('label.warnBeforeUnload')}"
+                              selected="{PlayerOptions.warnBeforeUnload}"
+                              click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
+                              PlayerOptions.changed()"/>
 
-                          import utils.locale.Localizer;
-                          ]]></fx:Script>
-                      </s:ItemRenderer>
-                    </fx:Component></s:itemRenderer>
+                  <s:Label text="{getString('label.defaultTransporterTab')}" paddingTop="6"/>
+                  <s:Group>
+                    <s:RadioButton id="transporterResources" group="{defaultTransporterTab}"
+                                   label="{getString('label.transporterTabResources')}"
+                                   value="{PlayerOptions.TRANSPORTER_TAB_RESOURCES}"
+                                   skinClass="components.skins.RadioButtonSkin"/>
+                    <s:RadioButton id="transporterUnits" group="{defaultTransporterTab}"
+                                   label="{getString('label.transporterTabUnits')}"
+                                   value="{PlayerOptions.TRANSPORTER_TAB_UNITS}"
+                                   skinClass="components.skins.RadioButtonSkin"/>
                     <s:layout>
-                      <s:VerticalLayout paddingLeft="15"/>
+                      <s:HorizontalLayout paddingLeft="15"/>
                     </s:layout>
-                  </s:DataGroup>
-                  <s:Label color="#eec500" text="{getString('label.ignoredListEmpty')}"
-                           visible="{PlayerOptions.ignoredPlayersDataProvider.length == 0}"
-                           includeInLayout="{
-                                PlayerOptions.ignoredPlayersDataProvider.length == 0}"/>
+                  </s:Group>
+
+                  <s:Label text="{getString('label.technologiesSortType')}" paddingTop="6"/>
+                  <s:Group>
+                     <s:RadioButton label="{getString('label.techSortScientists')}"
+                             value="{PlayerOptions.TECH_SORT_TYPE_SCIENTISTS}"
+                             group="{sortTypeGroup}"
+                             skinClass="components.skins.RadioButtonSkin"/>
+                     <s:RadioButton label="{getString('label.techSortTime')}"
+                             value="{PlayerOptions.TECH_SORT_TYPE_TIME}"
+                             group="{sortTypeGroup}"
+                             skinClass="components.skins.RadioButtonSkin"/>
+                     <s:layout>
+                       <s:HorizontalLayout paddingLeft="15"/>
+                     </s:layout>
+                  </s:Group>
                </s:Group>
-            </base:Scroller>
+               <base:Heading1 text="{getString('title.afterLoginOptions')}"/>
+               <s:Group>
+                  <s:layout><fx:VerticalSectionLayout/></s:layout>
+                  <s:CheckBox id="showPopups" label="{getString('label.showPopupsAfterLogin')}"
+                              selected="{PlayerOptions.showPopupsAfterLogin}"
+                              click="PlayerOptions.showPopupsAfterLogin = !PlayerOptions.showPopupsAfterLogin;
+                              PlayerOptions.changed()"/>
+                  <s:CheckBox id="openPlanet" label="{getString('label.openFirstPlanet')}"
+                              selected="{PlayerOptions.openFirstPlanetAfterLogin}"
+                              click="PlayerOptions.openFirstPlanetAfterLogin = !PlayerOptions.openFirstPlanetAfterLogin;
+                              PlayerOptions.changed()"/>
+               </s:Group>
+               <base:Heading1 text="{getString('title.chatOptions')}"/>
+               <s:Group>
+                  <s:Group width="50%">
+                     <s:CheckBox id="showJoinLeave" label="{getString('label.showJoinLeave')}"
+                                 selected="{PlayerOptions.chatShowJoinLeave}"
+                                 click="PlayerOptions.chatShowJoinLeave = !PlayerOptions.chatShowJoinLeave;
+                                     PlayerOptions.changed()"/>
+                     <s:Label text="{getString('label.ignoredList')}" paddingTop="6"/>
+
+                     <s:Group>
+                       <s:TextInput width="200" id="inpIgnoredPlayer"
+                         enter="inpIgnoredPlayer_enterHandler(event)"/>
+                       <s:Button label="{getString('label.addIgnoredPlayer')}"
+                         enabled="{inpIgnoredPlayer.text.length > 0
+                         &amp;&amp;
+                           PlayerOptions.ignoredPlayersDataProvider.getItemIndex(
+                             inpIgnoredPlayer.text) == -1}"
+                         click="{addIgnored()}"/>
+                       <s:layout>
+                         <s:HorizontalLayout/>
+                       </s:layout>
+                     </s:Group>
+                     <s:Label text="{getString('label.ignoreType')}" paddingTop="6"/>
+                     <s:Group>
+                       <s:RadioButton id="ignoreFull" group="{ignoreType}"
+                                      label="{getString('label.ignoreComplete')}"
+                                      value="{PlayerOptions.IGNORE_TYPE_COMPLETE}"
+                                      skinClass="components.skins.RadioButtonSkin"/>
+                       <s:RadioButton id="ignoreHalf" group="{ignoreType}"
+                                      label="{getString('label.ignoreFiltered')}"
+                                      value="{PlayerOptions.IGNORE_TYPE_FILTERED}"
+                                      skinClass="components.skins.RadioButtonSkin"/>
+                       <s:layout>
+                         <s:HorizontalLayout paddingLeft="15"/>
+                       </s:layout>
+                     </s:Group>
+                     <s:layout>
+                        <s:VerticalLayout paddingTop="10"
+                                          paddingBottom="10"
+                                          gap="10" paddingLeft="10"/>
+                     </s:layout>
+                  </s:Group>
+                  <s:Group width="50%" height="160">
+                     <base:Scroller id="scroller" left="0" right="0" top="6" bottom="9"
+                                    stepMultiplier="15">
+                        <s:Group>
+                           <s:DataGroup dataProvider="{PlayerOptions.ignoredPlayersDataProvider}"
+                                   maxWidth="250">
+                             <s:itemRenderer><fx:Component>
+                               <s:ItemRenderer autoDrawBackground="false" width="100%">
+                                 <s:Label text="{data}" width="100%" maxDisplayedLines="1"
+                                          showTruncationTip="true"/>
+                                 <s:Button label="{Localizer.string('PlayerOptions', 'label.removeIgnored')}"
+                                           click="{PlayerOptions.removeIgnoredPlayer(String(data))}"/>
+                                 <s:layout><s:HorizontalLayout verticalAlign="middle"/></s:layout>
+                                 <fx:Script><![CDATA[
+                                   import models.player.PlayerOptions;
+
+                                   import utils.locale.Localizer;
+                                   ]]></fx:Script>
+                               </s:ItemRenderer>
+                             </fx:Component></s:itemRenderer>
+                             <s:layout>
+                               <s:VerticalLayout paddingLeft="15"/>
+                             </s:layout>
+                           </s:DataGroup>
+                           <s:Label color="#eec500" text="{getString('label.ignoredListEmpty')}"
+                                    visible="{PlayerOptions.ignoredPlayersDataProvider.length == 0}"
+                                    includeInLayout="{
+                                         PlayerOptions.ignoredPlayersDataProvider.length == 0}"/>
+                        </s:Group>
+                     </base:Scroller>
+                  </s:Group>
+                  <s:layout>
+                     <s:HorizontalLayout/>
+                  </s:layout>
+               </s:Group>
+               <base:Heading1 text="{getString('title.graphicsOptions')}"/>
+               <s:Group>
+                  <s:layout><fx:VerticalSectionLayout/></s:layout>
+                  <s:CheckBox id="enablePlanetAnimations"
+                              label="{getString('label.enablePlanetAnimations')}"
+                              selected="{PlayerOptions.enablePlanetAnimations}"
+                              click="enablePlanetAnimations_clickHandler(event)"/>
+               </s:Group>
+               <s:Group>
+                  <s:Button skinClass="components.skins.GreenButtonSkin"
+                            label="{getString('label.save')}"
+                            enabled="{PlayerOptions.hasChanges}"
+                            click="saveClickHandler(event)"
+                            horizontalCenter="0"/>
+               </s:Group>
+            </base:Panel>
          </s:Group>
-         <s:layout>
-            <s:HorizontalLayout/>
-         </s:layout>
-      </s:Group>
-      <base:Heading1 text="{getString('title.graphicsOptions')}"/>
-      <s:Group>
-         <s:layout><fx:VerticalSectionLayout/></s:layout>
-         <s:CheckBox id="enablePlanetAnimations"
-                     label="{getString('label.enablePlanetAnimations')}"
-                     selected="{PlayerOptions.enablePlanetAnimations}"
-                     click="enablePlanetAnimations_clickHandler(event)"/>
-      </s:Group>
-      <s:Group>
-         <s:Button skinClass="components.skins.GreenButtonSkin"
-                   label="{getString('label.save')}"
-                   enabled="{PlayerOptions.hasChanges}"
-                   click="saveClickHandler(event)"
-                   horizontalCenter="0"/>
-      </s:Group>
-   </base:Panel>
+      </base:Scroller>
+   </s:Group>
    <screens:ScreenCloseButton label="{Localizer.string('Players', 'label.close')}"
                               click="screenCloseButton1_clickHandler(event)"
-                              right="0" bottom="0"/>
+                              right="0" bottom="0" scroller="{mainScroller}"/>
 </s:Group>

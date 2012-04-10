@@ -93,10 +93,7 @@ class Logging::Logger
 
   private
   def data_for(component, type, message)
-    Celluloid::Actor
-    name = Celluloid.actor? \
-      ? "Ax#{Celluloid.current_actor.object_id.to_s(16)}" \
-      : "main"
+    name = Celluloid.actor? ? Celluloid::Actor.name : "main"
     "%s[%s|%s|%s|%-5s] %s\n" % [
       ' ' * @indent,
       Time.now.strftime(DATETIME_FORMAT),

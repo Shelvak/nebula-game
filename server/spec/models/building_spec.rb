@@ -521,23 +521,25 @@ describe Building do
     end
   end
 
-  describe "#observer_player_ids" do
-    it "should return [] if planet has no player" do
-      planet = Factory.create(:planet)
-      Factory.create(:b_npc_solar_plant, :planet => planet
-        ).observer_player_ids.should == []
-    end
+  describe "#unit_groups" do
+    it "should return grouped unit counts" do
+      building = Factory.create(:building)
+      data = {
+        0 => {"Gnat" => 1, "Glancer" => 2},
+        1 => {"Spudder" => 1, "Gnawer" => 2},
+      }
+      data.each do |flank, inner_data|
+        inner_data.each do |type, count|
+          count.times do
+            Factory.create(
+              :unit_built, :location => building, :flank => flank,
+              :type => type, :flank => flank
+            )
+          end
+        end
+      end
 
-    it "should return [] if it's not an npc building" do
-      planet = Factory.create(:planet_with_player)
-      Factory.create(:b_collector_t1, :planet => planet
-        ).observer_player_ids.should == []
-    end
-
-    it "should return [planet.player_id]" do
-      planet = Factory.create(:planet_with_player)
-      Factory.create(:b_npc_solar_plant, :planet => planet
-        ).observer_player_ids.should == [planet.player_id]
+      building.unit_groups.should == data
     end
   end
 
