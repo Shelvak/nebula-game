@@ -255,7 +255,7 @@ package components.map.space
          const unit: Unit = Unit(units.getItemAt(0));
          if (_mapM.squadrons == null) {
             logger.warn(
-               "selectSquadWithUnits(): Map model {0} most likely has been "
+               "@selectSquadWithUnits(): Map model {0} most likely has been "
                + "cleaned up and _mapM.squadrons is null. Unable to select units:"
                + "\n   {1}"
                + "\nReturning",
@@ -271,7 +271,7 @@ package components.map.space
             function (squad: MSquadron): Boolean {
                if (squad.units.length == 0) {
                   logger.warn(
-                     "selectSquadWithUnits()=> Collections.findFirst(=> testFunction):"
+                     "@selectSquadWithUnits()=> Collections.findFirst(=> testFunction):"
                         + "\n   Squad {0} has most likely been cleaned up and has no units."
                         + "\n   Assuming the squad should not be selected.",
                      squad
@@ -281,7 +281,16 @@ package components.map.space
                return Collections.findFirstEqualTo(squad.units, unit) != null;
             }
          );
-         selectSquadron(getCSquadron(squad));
+         if (squad != null) {
+            selectSquadron(getCSquadron(squad));
+         }
+         else {
+            logger.warn(
+               "@selectSquadWithUnits(): Unable to find squad with unit {0}."
+                  + "Deselecting currently selected squad.", unit
+            );
+            deselectSelectedSquadron();
+         }
       }
 
       internal function selectSquadron(squadC: CSquadronMapIcon): void {
