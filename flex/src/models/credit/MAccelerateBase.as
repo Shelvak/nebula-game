@@ -14,11 +14,14 @@ package models.credit
       
       [Bindable]
       public var credits: int;
+
+      public var index: int;
       
-      public function MAccelerateBase(_time: String, _credits: int)
+      public function MAccelerateBase(_time: String, _credits: int, _index: int)
       {
          time = Math.ceil(StringUtil.evalFormula(_time, {'speed': Config.getSpeed()}));
          credits = _credits;
+         index = _index;
       }
       
       public function getAccelerateTimeString(): String

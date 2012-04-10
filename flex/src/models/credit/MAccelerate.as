@@ -6,14 +6,11 @@ package models.credit
    {
       [Bindable]
       public var group: RadioButtonGroup;
-
-      public var index: int;
       
       public function MAccelerate(_time: String, _credits: int, rGroup: RadioButtonGroup, _index: int)
       {
-         super(_time, _credits);
+         super(_time, _credits, _index);
          group = rGroup;
-         index = _index;
       }
    }
 }

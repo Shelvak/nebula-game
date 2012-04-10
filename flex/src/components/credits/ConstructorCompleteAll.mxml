@@ -91,15 +91,17 @@
       }
 
       [Bindable]
-      private var currentModel: MAccelerateBase = null;
+      public var currentModel: MAccelerateBase = null;
       [Bindable]
       private var usualCost: int;
 
       private function refreshList(): void {
          accelerateInfo = new ArrayCollection();
+         var i: int = 0;
          for each (var obj: Array in Config.getAccelerateInfo()) {
-            var model: MAccelerateBase = new MAccelerateBase(obj[0], obj[1]);
+            var model: MAccelerateBase = new MAccelerateBase(obj[0], obj[1], i);
             accelerateInfo.addItem(model);
+            i++;
          }
       }
 

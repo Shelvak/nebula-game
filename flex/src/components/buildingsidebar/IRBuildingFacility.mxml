@@ -78,7 +78,8 @@
                if (accelerator.hasEnoughCredits()) {
                   new BuildingsCommand(
                      BuildingsCommand.CONSTRUCT_ALL, {
-                        'constructorId': facility.id}).dispatch();
+                             'constructorId': facility.id,
+                             'index': accelerator.currentModel.index}).dispatch();
                }
                else {
                   UrlNavigate.getInstance().showBuyCreds();
