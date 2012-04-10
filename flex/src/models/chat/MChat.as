@@ -10,6 +10,8 @@ package models.chat
    import models.chat.events.MChatEvent;
    import models.time.MTimeEventFixedMoment;
 
+   import mx.logging.ILogger;
+
    import mx.logging.Log;
    import mx.utils.ObjectUtil;
 
@@ -96,6 +98,10 @@ package models.chat
       
       private function get ML() : ModelLocator {
          return ModelLocator.getInstance();
+      }
+
+      private function get logger(): ILogger {
+         return Log.getLogger(Objects.getClassName(this, true));
       }
 
       public function MChat() {
@@ -497,8 +503,9 @@ package models.chat
                                                      m2: MChatMember,
                                                      fields: Array = null) : int {
          var compareResult:int = ObjectUtil.stringCompare(m1.name, m2.name, true);
-         if (compareResult != 0)
+         if (compareResult != 0) {
             return compareResult;
+         }
          return ObjectUtil.numericCompare(m1.id, m2.id);
       }
       
@@ -538,39 +545,32 @@ package models.chat
        *        <b>Not null</b>.
        * @param memberId id of a chat channel member who has left the channel
        */
-      public function channelLeave(channelName:String, memberId:int) : void
-      {
+      public function channelLeave(channelName: String, memberId: int): void {
          Objects.paramNotNull("channelName", channelName);
-         
-         var channel:MChatChannelPublic = MChatChannelPublic(_channels.getChannel(channelName));
-         if (channel == null)
-         {
-            throw new ArgumentError("Unable to remove member from channel '" + channelName + "': channel " +
-                                    "with name '" + channelName + "' not found");
+
+         const channel: MChatChannelPublic =
+                  MChatChannelPublic(_channels.getChannel(channelName));
+         if (channel == null) {
+            return;
          }
-         
-         var member:MChatMember = _members.getMember(memberId);
-         if (member == null)
-         {
-            throw new ArgumentError("Unable to remove member from channel '" + channelName + "': member " +
-                                    "with id " + memberId + " is not in the channel");
+
+         const member: MChatMember = _members.getMember(memberId);
+         if (member == null) {
+            return;
          }
          
          channel.memberLeave(member);
          
          // remove the channel if it is an alliance channel and current player has left the channel
-         if (channel.isAlliance && member.id == ML.player.id)
-         {
+         if (channel.isAlliance && member.id == ML.player.id) {
             removeChannel(channel);
             setAllianceChannelOpen(false);
          }
          
          // make member to be offline if it is not in any of public channels
-         var isOnline:Boolean = false;
-         for each (var chan:MChatChannel in _channels)
-         {
-            if (chan.isPublic && chan.members.containsMember(member.id))
-            {
+         var isOnline: Boolean = false;
+         for each (var chan: MChatChannel in _channels) {
+            if (chan.isPublic && chan.members.containsMember(member.id)) {
                isOnline = true;
                break;
             }
@@ -579,33 +579,25 @@ package models.chat
          
          removeMemberIfNotInChannel(memberId);
       }
-      
-      
+
       /**
        * Finds <code>MChatMember</code> instance representing current player and returns it.
        */
-      private function get player() : MChatMember
-      {
+      private function get player(): MChatMember {
          return _members.getMember(ML.player.id);
       }
-      
-      
+
       /**
        * Removes a member with a given id from the members list if it can't be found in any of open channels.
        */
-      private function removeMemberIfNotInChannel(memberId:int) : void
-      {
-         for each (var chan:MChatChannel in _channels)
-         {
-            if (chan.members.containsMember(memberId))
-            {
+      private function removeMemberIfNotInChannel(memberId: int): void {
+         for each (var chan: MChatChannel in _channels) {
+            if (chan.members.containsMember(memberId)) {
                return;
             }
          }
-         
-         var member:MChatMember = _members.getMember(memberId);
-         if (member != null)
-         {
+         const member: MChatMember = _members.getMember(memberId);
+         if (member != null) {
             // remove member if it is actually in the list
             _members.removeMember(member);
          }
