@@ -718,7 +718,7 @@
     <tooltip.willBeQueued>
       <p>Šis pastatas bus įdėtas į statymo eilę.</p>
       <p>Už pastatą nebus sumokėta iš anksto ir jo statyba bus atšaukta jei
-        statymo metu Tau pritruks resursų.</p>
+        statymo metu tau pritruks resursų.</p>
     </tooltip.willBeQueued>
 
     <tooltip.becomeVipToQueue>
@@ -1289,7 +1289,7 @@
 
   <Credits>
     <title.vip value="VIP" />
-    <label.currentVipLvl value="Dabar Tu esi {0} lygio VIP" />
+    <label.currentVipLvl value="Dabar tu esi {0} lygio VIP" />
     <label.convertRate value="Tu gali iškeisti {0} VIP kredų į 1 kredą" />
     <label.selectedConvert>
       <p>Parinkta 
@@ -1391,7 +1391,7 @@
       <![CDATA[
        <p>Šio pastato išankstinis sunaikinimas tau kainuos</p>
        <p />
-       <p><span fontWeight="bold"
+       <p><span fontWeight="bold" color="#eec500"
         >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
       ]]>
     </label.destructPrice>
@@ -1399,7 +1399,7 @@
       <![CDATA[
        <p>Šios technologijos pamiršimas tau kainuos</p>
        <p />
-       <p><span fontWeight="bold"
+       <p><span fontWeight="bold" color="#eec500"
         >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
       ]]>
     </label.unlearnPrice>
@@ -1412,6 +1412,26 @@
     <label.additionalPrivileges value="Tu taip pat gausi šias privilegijas:"/>
     <label.queueBuilding
     value="● Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
+    <label.buildAllEntries value="Gali užbaigti šios eilės statymą akimirksniu"/>
+    <!-- 0: creds for construct all,
+         1: creds to pay if accelerate one by one -->
+    <label.buildAllCreds>
+      <![CDATA[
+       <p>Visos eilės statymo užbaigimas tau kainuos</p>
+       <p />
+       <p><span fontWeight="bold"
+        >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
+       <p />
+       <p>Jei greitintum statybą po vieną elementą, sumokėtum</p>
+       <p />
+       <p><span fontWeight="bold"
+        >{1 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
+      ]]>
+    </label.buildAllCreds>
+    <tooltip.hasUnprepaid>
+      <p>Tu negali užbaigti statymo eilės akimirksniu, nes eilėje yra
+        neapmokėtų elementų.</p>
+    </tooltip.hasUnprepaid>
   </Credits>
 
   <Exploration>
@@ -1808,9 +1828,9 @@
     <label.hop.arrivesIn value="Atvyks po:"/>
     <label.hop.jumpsIn value="Šoks po:"/>
     <label.hop.landsIn value="Leisis po:"/>
-    <title.killBonus value="Sunaikinus šį laivyną Tu gausi:"/>
+    <title.killBonus value="Sunaikinus šį laivyną tu gausi:"/>
     <title.noKillBonus
-      value="Sunaikinus šį laivyna Tu negausi jokio papildomo priedo."/>
+      value="Sunaikinus šį laivyna tu negausi jokio papildomo priedo."/>
     <label.credsKillBonus value="Kredai "/>
     <label.vpsKillBonus value="Pergalės taškai "/>
     <label.honorCoef value="Garbės koef."/>
@@ -1955,7 +1975,7 @@
     <credsConverted.personalCreds value="● Asmeniniai kredai: {0}"/>
     <credsConverted.allianceCreds
       value="● Kredai iš sąjungos: {0} (Iš viso sąjunga gavo: {1})"/>
-    <credsConverted.personalCredsTotal value="● Iš viso Tu gavai: {0}"/>
+    <credsConverted.personalCredsTotal value="● Iš viso tu gavai: {0}"/>
 
     <title.achievementCompleted value="Pasiekimas įgytas" />
     <message.achievementCompleted ref="title.achievementCompleted" />
@@ -2007,7 +2027,7 @@
     </label.planetAnnexed.allyLose>
     <label.planetAnnexed.emptyWin>
       <p>Tavo kariai atvyko į neapgyvendintą planetą '{0}'. 
-      Jei nori Tu gali pasisavinti šią planetą.</p>
+      Jei nori tu gali pasisavinti šią planetą.</p>
     </label.planetAnnexed.emptyWin>
     <label.planetAnnexed.claimPlanet value="Dabar tu gali perimti šią planetą." />
     
@@ -2170,7 +2190,7 @@
     <message.dailyBonus>
       <p>Sugrįžk kiekvieną dieną ir atsiimk savo dienos prizą!</p>
     </message.dailyBonus>
-    <label.todayYouGot value="Šiandien Tu gavai:" />
+    <label.todayYouGot value="Šiandien tu gavai:" />
     
     <title.stopFleet value="Sustabdyti flotilę" />
     <message.stopFleet value="Ar tikrai nori sustabdyti savo flotilę?" />
@@ -2187,7 +2207,7 @@
 
     <title.dismissUnits value="Karių pašalinimas!" />
     <message.dismissUnits>
-      <p>Pašalinus savo karius Tu negalėsi jų susigražinti atgal.</p>
+      <p>Pašalinus savo karius tu negalėsi jų susigražinti atgal.</p>
       <p>Ar esi tikras?</p>
     </message.dismissUnits>
 
@@ -2278,8 +2298,8 @@
     
     <title.log value="Derinimo žurnalas" />
     <message.log.general>
-      <p>Tai yra žaidime atliktų Tavo veiksmų žurnalas. Nukopijuok jį į tekstinį 
-      failą ir pridėk prie savo pranešimo forume, kur apibudinai Tau iškilusias 
+      <p>Tai yra žaidime atliktų tavo veiksmų žurnalas. Nukopijuok jį į tekstinį
+      failą ir pridėk prie savo pranešimo forume, kur apibudinai tau iškilusias
       bėdas ir tai padės mums jas išspręsti.</p>
     </message.log.general>
     <label.log.close value="Uždaryti" />
@@ -5096,8 +5116,8 @@
     <defensivePool.dontIncludeAlliance 
       value="Nesusisiekti su sąjungos portalais" />
     <defensivePool.tooltip.dontIncludeAlliance>
-      <p>Jei pažymėta, Tavo kariai nebus keliami į sąjungininkų planetas,
-      o sąjungininkų kariai nebus keliami į Tavo planetas.</p>
+      <p>Jei pažymėta, tavo kariai nebus keliami į sąjungininkų planetas,
+      o sąjungininkų kariai nebus keliami į tavo planetas.</p>
     </defensivePool.tooltip.dontIncludeAlliance>
     <defensivePool.volume value="Apimtis: {0}" />
     <defensivePool.poolEmpty value="Rezervas tuščias" />

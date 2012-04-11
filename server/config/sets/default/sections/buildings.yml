@@ -7,6 +7,8 @@ resources.rounding_precision: 4
 # How much constructor mods can reduce construction time to?
 # I.e. 5 would mean that min construction time can be 5%.
 constructor.min_time_percentage: 5
+# Multiplier for summed up time of constructable when mass accelerating.
+constructor.mass_accelerate.coef: 1.25
 
 # When you self-destruct a building, how much time must pass for you to destroy
 # another one in same planet?

@@ -1270,6 +1270,26 @@
     <label.additionalPrivileges value="You will also get these privileges:"/>
     <label.queueBuilding
     value="● Adding buildings and units to construction queue without paying first."/>
+    <label.buildAllEntries value="You can finish this construction queue instantly:"/>
+    <!-- 0: creds for construct all,
+         1: creds to pay if accelerate one by one -->
+    <label.buildAllCreds>
+      <![CDATA[
+       <p>To finish all construction queue you will have to pay:</p>
+       <p />
+       <p><span fontWeight="bold" color="#eec500"
+        >{0 one[? cred] many[? creds]}</span></p>
+       <p />
+       <p>If you used accelerate on each entry you whould pay:</p>
+       <p />
+       <p><span fontWeight="bold" color="#eec500"
+        >{1 one[? cred] many[? creds]}</span></p>
+      ]]>
+    </label.buildAllCreds>
+    <tooltip.hasUnprepaid>
+      <p>You can't finish construction queue instantly because it contains
+        elements that are not paid for.</p>
+    </tooltip.hasUnprepaid>
   </Credits>
 
   <Exploration>
