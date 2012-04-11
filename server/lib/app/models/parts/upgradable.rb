@@ -47,7 +47,7 @@ module Parts
 
         (
           evalproperty('upgrade_time', nil, 'level' => for_level) *
-          (constructor_percentage) / 100.0
+          constructor_percentage / 100.0
         ).floor
       end
 

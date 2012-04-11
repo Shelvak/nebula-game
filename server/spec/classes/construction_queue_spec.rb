@@ -214,42 +214,69 @@ describe ConstructionQueue do
   end
 
   describe ".clear" do
+    let(:prepaid) { false }
+
+    before(:each) do
+      ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, prepaid, 10)
+      @planet.reload
+      @player.reload
+    end
+
     it "should clear the queue" do
-      ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, false)
       ConstructionQueue.clear(@constructor.id)
       ConstructionQueue.count(@constructor.id).should == 0
     end
 
-    it "should not return resources for not prepaid items" do
-      lambda do
-        ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, false, 10)
-        ConstructionQueue.clear(@constructor.id)
-        @planet.reload
-      end.should_not change_resources_of(@planet)
+    describe "non-prepaid entries" do
+      let(:prepaid) { false }
+
+      it "should not return resources" do
+        lambda do
+          ConstructionQueue.clear(@constructor.id)
+          @planet.reload
+        end.should_not change_resources_of(@planet)
+      end
+
+      it "should not free population" do
+        lambda do
+          ConstructionQueue.clear(@constructor.id)
+          @player.reload
+        end.should_not change(@player, :population)
+      end
     end
 
-    it "should not free population for not prepaid items" do
-      lambda do
-        ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, false, 10)
-        ConstructionQueue.clear(@constructor.id)
-        @player.reload
-      end.should_not change(@player, :population)
-    end
+    describe "prepaid entries" do
+      let(:prepaid) { true }
 
-    it "should return resources for prepaid items" do
-      lambda do
-        ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, true, 10)
-        ConstructionQueue.clear(@constructor.id)
-        @planet.reload
-      end.should_not change_resources_of(@planet)
-    end
+      it "should return resources" do
+        lambda do
+          ConstructionQueue.clear(@constructor.id)
+          @planet.reload
+        end.should change_resources_of(@planet)
+      end
 
-    it "should free population for prepaid items" do
-      lambda do
-        ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, true, 10)
-        ConstructionQueue.clear(@constructor.id)
-        @player.reload
-      end.should_not change(@player, :population)
+      it "should free population for prepaid items" do
+        lambda do
+          ConstructionQueue.clear(@constructor.id)
+          @player.reload
+        end.should change(@player, :population)
+      end
+
+      describe "when asked not to return resources" do
+        it "should not return resources for prepaid items" do
+          lambda do
+            ConstructionQueue.clear(@constructor.id, false)
+            @planet.reload
+          end.should_not change_resources_of(@planet)
+        end
+
+        it "should free population for prepaid items" do
+          lambda do
+            ConstructionQueue.clear(@constructor.id, false)
+            @player.reload
+          end.should_not change(@player, :population)
+        end
+      end
     end
   end
 
