@@ -1422,10 +1422,11 @@
        <p><span fontWeight="bold"
         >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
        <p />
-       <p>Jei greitintum statybą po vieną elementą, sumokėtum</p>
+       <p>Jei greitintum statybą po vieną karį/laivą, sumokėtum</p>
        <p />
        <p><span fontWeight="bold"
         >{1 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
+       <p />
       ]]>
     </label.buildAllCreds>
     <tooltip.hasUnprepaid>

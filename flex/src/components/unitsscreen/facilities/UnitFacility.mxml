@@ -334,7 +334,7 @@
                if (accelerator.hasEnoughCredits()) {
                   new BuildingsCommand(
                      BuildingsCommand.CONSTRUCT_ALL, {
-                        'constructorId': _facility.id,
+                        'id': _facility.id,
                         'index': accelerator.currentModel.index}).dispatch();
                }
                else {

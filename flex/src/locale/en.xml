@@ -1280,7 +1280,7 @@
        <p><span fontWeight="bold" color="#eec500"
         >{0 one[? cred] many[? creds]}</span></p>
        <p />
-       <p>If you used accelerate on each entry you whould pay:</p>
+       <p>If you used accelerate on each unit you would pay:</p>
        <p />
        <p><span fontWeight="bold" color="#eec500"
         >{1 one[? cred] many[? creds]}</span></p>
