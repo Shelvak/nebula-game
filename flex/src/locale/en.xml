@@ -1268,10 +1268,13 @@
     <warning.notEnoughVipCreds 
     value="To convert VIP creds you must at least have {0} of them" />
     <label.additionalPrivileges value="You will also get these privileges:"/>
-    <label.additionalPrivileges.queueBuilding
-       value="● Adding buildings and units to construction queue without paying first."/>
-    <label.additionalPrivileges.buildAllEntries
-       value="● Instantly finish construction of units in this queue."/>
+    <label.additionalPrivileges.queueBuilding>
+      ● Adding buildings and units to construction queue without paying first.
+    </label.additionalPrivileges.queueBuilding>
+    <label.additionalPrivileges.buildAllEntries>
+      ● Instantly finishing construction of all pre-paid units in queue with
+      discounts (compared to finishing them one by one)!
+    </label.additionalPrivileges.buildAllEntries>
     <label.buildAllEntries value="You can finish this construction queue instantly:"/>
     <!-- 0: creds for construct all,
          1: creds to pay if accelerate one by one -->

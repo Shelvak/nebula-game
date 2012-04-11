@@ -1412,8 +1412,10 @@
     <label.additionalPrivileges value="Tu taip pat gausi šias privilegijas:"/>
     <label.additionalPrivileges.queueBuilding
        value="● Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
-    <label.additionalPrivileges.buildAllEntries
-       value="● Užbaigti visų karių ar laivų, esančių statymo eilėje, gamybą akimirksniu."/>
+    <label.additionalPrivileges.buildAllEntries>
+       ● Akimirksniu užbaigti visų karių ar laivų, esančių statymo eilėje,
+      gamybą (su nuolaida, palyginus su užbaigimu po vieną)!
+    </label.additionalPrivileges.buildAllEntries>
     <label.buildAllEntries value="Gali užbaigti šios eilės statymą akimirksniu"/>
     <!-- 0: creds for construct all,
          1: creds to pay if accelerate one by one -->
