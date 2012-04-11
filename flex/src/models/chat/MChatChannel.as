@@ -158,7 +158,6 @@ package models.chat
       private function setNumUnreadMessages(value: int): void {
          if (_numUnreadMessages != value) {
             _numUnreadMessages = value;
-            dispatchChannelEvent(MChatChannelEvent.NUM_UNREAD_MESSAGES_CHANGE);
             setHasUnreadMessages(_numUnreadMessages > 0);
          }
       }

@@ -9,11 +9,6 @@ package models.chat.events
        * Dispatched when <code>MChatChannel.hasUnreadMessages</code> property changes.
        */
       public static const HAS_UNREAD_MESSAGES_CHANGE: String = "hasUnreadMessagesChange";
-
-      /**
-       * Dispatched when <code>MChatChannel.numUnreadMessages</code> property changes.
-       */
-      public static const NUM_UNREAD_MESSAGES_CHANGE: String = "numUnreadMessagesChange";
       
       /**
        * Dispatched when <code>MChatChannelPrivate.isFriendOnline</code> property changes.

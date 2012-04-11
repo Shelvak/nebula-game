@@ -2,24 +2,23 @@ package tests.chat.models.channel
 {
    import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
-   
+
    import models.chat.MChatChannel;
    import models.chat.MChatChannelPrivate;
    import models.chat.MChatChannelPublic;
    import models.chat.MChatMember;
    import models.chat.MChatMessage;
    import models.chat.events.MChatChannelEvent;
-   
+
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.collection.hasItem;
-   import org.hamcrest.core.not;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
-   
-   
+
+
    public class TC_MChatChannel extends TC_BaseMChatChannel
    {
       public function TC_MChatChannel()
@@ -183,10 +182,7 @@ package tests.chat.models.channel
             channel.numUnreadMessages, equals (0)
          );
 
-         assertThat(
-            function():void{ channel.receiveMessage(message) },
-            not (causes (channel) .toDispatchEvent (MChatChannelEvent.NUM_UNREAD_MESSAGES_CHANGE))
-         );
+         channel.receiveMessage(message);
          assertThat(
             "unread messages counter should not be incremented when messages is received",
             channel.numUnreadMessages, equals (0)
@@ -196,10 +192,7 @@ package tests.chat.models.channel
       [Test]
       public function numberOfUnreadMessages_whenChannelIsInvisible(): void {
          channel.visible = false;
-         assertThat(
-            function():void{ channel.receiveMessage(message) },
-            causes (channel) .toDispatchEvent (MChatChannelEvent.NUM_UNREAD_MESSAGES_CHANGE)
-         );
+         channel.receiveMessage(message);
          assertThat(
             "should increment unread messages counter when message is received",
             channel.numUnreadMessages, equals (1)
@@ -211,10 +204,7 @@ package tests.chat.models.channel
          channel.visible = false;
          channel.receiveMessage(message);
 
-         assertThat(
-            function():void{ channel.visible = true },
-            causes (channel) .toDispatchEvent (MChatChannelEvent.NUM_UNREAD_MESSAGES_CHANGE)
-         );
+         channel.visible = true;
          assertThat(
             "should reset unread messages counter",
             channel.numUnreadMessages, equals (0)
