@@ -1,12 +1,9 @@
 package components.map.planet.objects
 {
-   import components.markers.IActiveCursorUser;
-
-
    /**
     * Interface of planet map object that responds to user interaction.
     */
-   public interface IInteractivePlanetMapObject extends IPrimitivePlanetMapObject, IActiveCursorUser
+   public interface IInteractivePlanetMapObject extends IPrimitivePlanetMapObject
    {
       /**
        * Indicates if the object is selected.

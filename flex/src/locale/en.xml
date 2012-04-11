@@ -1268,8 +1268,10 @@
     <warning.notEnoughVipCreds 
     value="To convert VIP creds you must at least have {0} of them" />
     <label.additionalPrivileges value="You will also get these privileges:"/>
-    <label.queueBuilding
-    value="● Adding buildings and units to construction queue without paying first."/>
+    <label.additionalPrivileges.queueBuilding
+       value="● Adding buildings and units to construction queue without paying first."/>
+    <label.additionalPrivileges.buildAllEntries
+       value="● Instantly finish construction of units in this queue."/>
     <label.buildAllEntries value="You can finish this construction queue instantly:"/>
     <!-- 0: creds for construct all,
          1: creds to pay if accelerate one by one -->
@@ -1290,6 +1292,10 @@
       <p>You can't finish construction queue instantly because it contains
         elements that are not paid for.</p>
     </tooltip.hasUnprepaid>
+    <tooltip.buildAllEntries.mustBeVip>
+       <p>You must be vip to use instantly finish construction of units
+          in this queue.</p>
+    </tooltip.buildAllEntries.mustBeVip>
   </Credits>
 
   <Exploration>
