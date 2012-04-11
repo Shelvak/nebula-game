@@ -19,7 +19,8 @@
            AssetNames.BUTTONS_IMAGE_FOLDER + 'build_up')}"
            top="0" left="0"
            visible="{facility.constructableType != null}"/>
-   <s:Group top="3" right="3" visible="{getConstructAllState(
+<!-- TODO: JHO: Actually remove it.
+<s:Group top="3" right="3" visible="{getConstructAllState(
    facility.constructionQueueEntries) != CONSTRUCT_ALL_HIDDEN}"
            toolTip="{getConstructAllState(
                facility.constructionQueueEntries) == CONSTRUCT_ALL_DISABLED
@@ -28,7 +29,7 @@
       <credits:CoinComp top="3" left="3" enabled="{getConstructAllState(
          facility.constructionQueueEntries) == CONSTRUCT_ALL_ENABLED}"
                         click="coinComp1_clickHandler(event)"/>
-   </s:Group>
+   </s:Group>-->
 
    <fx:Script><![CDATA[
       import components.credits.ConstructorCompleteAll;
@@ -66,29 +67,29 @@
       }
 
 
-
-      private function coinComp1_clickHandler(event: MouseEvent): void {
-         var accelerator: ConstructorCompleteAll = new ConstructorCompleteAll();
-         var speedPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
-         accelerator.popUp = speedPopUp;
-         accelerator.constructor = facility;
-         speedPopUp.confirmButtonEnabled = true;
-         speedPopUp.confirmButtonClickHandler = function (): void {
-            if (facility != null) {
-               if (accelerator.hasEnoughCredits()) {
-                  new BuildingsCommand(
-                     BuildingsCommand.CONSTRUCT_ALL, {
-                             'constructorId': facility.id,
-                             'index': accelerator.currentModel.index}).dispatch();
-               }
-               else {
-                  UrlNavigate.getInstance().showBuyCreds();
-               }
-            }
-         }
-         speedPopUp.addElement(accelerator);
-         speedPopUp.show();
-      }
+// TODO: JHO: actually remove it
+//      private function coinComp1_clickHandler(event: MouseEvent): void {
+//         var accelerator: ConstructorCompleteAll = new ConstructorCompleteAll();
+//         var speedPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
+//         accelerator.popUp = speedPopUp;
+//         accelerator.constructor = facility;
+//         speedPopUp.confirmButtonEnabled = true;
+//         speedPopUp.confirmButtonClickHandler = function (): void {
+//            if (facility != null) {
+//               if (accelerator.hasEnoughCredits()) {
+//                  new BuildingsCommand(
+//                     BuildingsCommand.CONSTRUCT_ALL, {
+//                             'constructorId': facility.id,
+//                             'index': accelerator.currentModel.index}).dispatch();
+//               }
+//               else {
+//                  UrlNavigate.getInstance().showBuyCreds();
+//               }
+//            }
+//         }
+//         speedPopUp.addElement(accelerator);
+//         speedPopUp.show();
+//      }
 
       private static const CONSTRUCT_ALL_HIDDEN: int = 0;
       private static const CONSTRUCT_ALL_DISABLED: int = 1;
