@@ -1151,12 +1151,25 @@ assets:
   "unbundled":
     flex_unbundled:
       "images/tips":
-        <% languages.each do |language| %><% 0.upto(10) do |tip_no| %>
-        "<%= language %>_<%= tip_no %>.png": "Tip<%= tip_no %>.png"
-        <% end %><% end %>
-        lt_10.png:                  Tip_load_res.png
-        lt_11.png:                  Tip_notif_star.png
-        lt_12.png:                  Tip_heal.png
+        <% 0.upto(10) do |tip_no| %>
+        "lt_<%= tip_no %>.png": "Tip<%= tip_no %>.png"
+        <% end %>
+        lt_10.png:            Tip_load_res.png
+        lt_11.png:            Tip_notif_star.png
+        lt_12.png:            Tip_heal.png
+        en_0.png:             Tip0.png
+        en_1.png:             En_tip_const0.png
+        en_2.png:             En_tip_info.png
+        en_3.png:             En_tip_minus_armor.png
+        en_4.png:             En_tip_plus_armor.png
+        en_5.png:             Tip5.png
+        en_6.png:             En_tip_flanks.png
+        en_7.png:             En_tip_blue_arrow.png
+        en_8.png:             En_tip_pulsars.png
+        en_9.png:             Tip9.png
+        en_10.png:            En_tip_load_res.png
+        en_11.png:            En_tip_notif_star.png
+        en_12.png:            En_tip_heal.png
 
       "images/quest_screens/backgrounds":
         Quest.jpg:                  Quest_content0.jpg
