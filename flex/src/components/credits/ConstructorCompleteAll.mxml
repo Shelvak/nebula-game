@@ -87,7 +87,7 @@
                             : _constructor.constructorMod
             );
          }
-         return Math.round(wholeTime * Config.getConstructAllTimeCoef());
+         return Math.round(wholeTime);
       }
 
       [Bindable]
