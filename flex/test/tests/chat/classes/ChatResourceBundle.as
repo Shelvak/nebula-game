@@ -26,7 +26,9 @@ package tests.chat.classes
          "label.privateChannel": "Private channel: {0}",
          "label.mainChannel": "Galaxy",
          "label.allianceChannel": "Alliance",
-         "label.channelMembers": "Players"
+         "label.channelMembers": "Players",
+         "js.title.allianceMessages": "{0} alliance messages",
+         "js.title.privateMessages": "{0} private messages"
       };
       public function get content() : Object
       {

@@ -6,6 +6,8 @@ package tests.chat.models.chat
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
 
+   import tests.chat.classes.IChatJSCallbacksInvokerMock;
+
 
    public class TC_MChat extends TC_BaseMChat
    {
@@ -23,6 +25,7 @@ package tests.chat.models.chat
          ML.player.id = 1;
          ML.player.name = "mikism";
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {
                "1": ML.player.name,
                "2": "jho",

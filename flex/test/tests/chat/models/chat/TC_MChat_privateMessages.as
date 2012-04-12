@@ -2,22 +2,22 @@ package tests.chat.models.chat
 {
    import asmock.framework.Expect;
    import asmock.framework.SetupResult;
-   
+
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.object.equals;
-   
+
    import models.chat.MChatChannelPrivate;
    import models.chat.MChatMember;
    import models.chat.MChatMessage;
-   
+
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.core.allOf;
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
-   
-   
+
+
    public class TC_MChat_privateMessages extends TC_BaseMChat
    {
       public function TC_MChat_privateMessages()

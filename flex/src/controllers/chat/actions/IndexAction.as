@@ -1,13 +1,13 @@
 package controllers.chat.actions
 {
    import controllers.CommunicationCommand;
-   
-   import models.chat.MChat;
-   
-   
+
+   import models.chat.IChatJSCallbacksInvokerImpl;
+
+
    /**
     * Server sends this to initialize the chat.
-    * 
+    *
     * <p>
     * Client <<-- Server
     * <ul>
@@ -25,16 +25,12 @@ package controllers.chat.actions
     */
    public class IndexAction extends BaseChatAction
    {
-      public function IndexAction()
-      {
-         super();
-      }
-      
-      
-      public override function applyServerAction(cmd:CommunicationCommand) : void
-      {
-         var params:Object = cmd.parameters;
-         MCHAT.initialize(params.players, params.channels);
+      public override function applyServerAction(cmd: CommunicationCommand): void {
+         const params: Object = cmd.parameters;
+         MCHAT.initialize(
+            new IChatJSCallbacksInvokerImpl(),
+            params["players"], params["channels"]
+         );
       }
    }
 }

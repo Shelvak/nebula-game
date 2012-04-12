@@ -9,9 +9,10 @@ package tests.chat.models.chat
    import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
-   
-   
-   
+
+   import tests.chat.classes.IChatJSCallbacksInvokerMock;
+
+
    public class TC_MChat_closeChannel extends TC_BaseMChat
    {
       public function TC_MChat_closeChannel()
@@ -28,6 +29,7 @@ package tests.chat.models.chat
          ML.player.id = 1;
          ML.player.name = "mikism";
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {
                "1": "mikism",
                "2": "jho",

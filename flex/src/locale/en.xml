@@ -5469,6 +5469,12 @@
      <label.channelMembers value="Players"/>
      <ignorePopup.title value="Ignore?"/>
      <ignorePopup.message value="Are you sure you want to ignore player {0}?"/>
+     <js.title.allianceMessages>
+        {0 one[Alliance message] many[? alliance messages]}
+     </js.title.allianceMessages>
+     <js.title.privateMessages>
+        {0 one[Private message] many[? private messages]}
+     </js.title.privateMessages>
   </Chat>
   
   <Market>
