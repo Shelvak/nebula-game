@@ -42,7 +42,8 @@
          if (value != null) {
            constructor = ML.latestPlanet.getBuildingById(value.constructorId);
            //Setting properties not in oreder, so refresh things later
-           if (constructor.constructableType == null)
+           if (constructor.constructableType == null
+                   || constructor.constructableId == 0)
            {
              return;
            }
