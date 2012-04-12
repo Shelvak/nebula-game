@@ -16,6 +16,8 @@ package tests.chat.models.chat
    import org.hamcrest.object.isTrue;
    import org.hamcrest.text.startsWith;
 
+   import tests.chat.classes.IChatJSCallbacksInvokerMock;
+
 
    public class TC_MChat_initialization extends TC_BaseMChat
    {
@@ -29,6 +31,7 @@ package tests.chat.models.chat
       public function should_initialize_all_members() : void
       {
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {
                "1": "mikism",
                "2": "jho",
@@ -51,7 +54,10 @@ package tests.chat.models.chat
       [Test]
       public function should_initialize_all_public_channels() : void
       {
-         chat.initialize({}, {"galaxy": [], "alliance": []});
+         chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
+            {}, {"galaxy": [], "alliance": []}
+         );
          
          assertThat( chat.channels, arrayWithSize (2) );
          assertThat( chat.channels, hasItems (
@@ -65,6 +71,7 @@ package tests.chat.models.chat
       public function main_public_channel_should_be_first_in_channels_list() : void
       {
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {},
             {
                "alliance-1": [],
@@ -85,6 +92,7 @@ package tests.chat.models.chat
       public function should_add_members_to_corresponding_channels() : void
       {
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {
                "1": "mikism",
                "2": "jho",
@@ -127,6 +135,7 @@ package tests.chat.models.chat
       public function should_select_first_channel_in_the_list() : void
       {
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {
                "1": "mikism",
                "2": "jho",
@@ -145,7 +154,7 @@ package tests.chat.models.chat
       [Test]
       public function should_not_have_private_channel() : void
       {
-         chat.initialize({}, {"galaxy": []});
+         chat.initialize(new IChatJSCallbacksInvokerMock(), {}, {"galaxy": []});
          
          assertThat( chat.privateChannelOpen, isFalse() );
       }
@@ -154,7 +163,7 @@ package tests.chat.models.chat
       [Test]
       public function should_not_have_alliance_channel_when_initialized_without_it() : void
       {
-         chat.initialize({}, {"galaxy": []});
+         chat.initialize(new IChatJSCallbacksInvokerMock(), {}, {"galaxy": []});
          
          assertThat( chat.allianceChannelOpen, isFalse() );
       }
@@ -163,7 +172,10 @@ package tests.chat.models.chat
       [Test]
       public function should_have_alliance_channel_when_initialized_with_it() : void
       {
-         chat.initialize({}, {"galaxy": [], "alliance-1": []});
+         chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
+            {}, {"galaxy": [], "alliance-1": []}
+         );
          
          assertThat( chat.allianceChannelOpen, isTrue() );
       }
@@ -172,7 +184,10 @@ package tests.chat.models.chat
       [Test]
       public function if_present_alliance_channel_should_be_second_in_the_list() : void
       {
-         chat.initialize({}, {"alliance-1": [], "a-team":[], "galaxy": []});
+         chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
+            {}, {"alliance-1": [], "a-team":[], "galaxy": []}
+         );
          
          assertThat(
             MChatChannel(chat.channels.getItemAt(MChat.ALLIANCE_CHANNEL_INDEX)).name,
