@@ -622,6 +622,13 @@ describe Building::ConstructorTest do
       constructor.mass_accelerate!(time, cost)
     end
 
+    it "should save cred stats" do
+      scope = CredStats.where(:action => CredStats::ACTION_MASS_ACCELERATE)
+      lambda do
+        constructor.mass_accelerate!(time, cost)
+      end.should change(scope, :count).by(1)
+    end
+
     it "should call Unit.give_units_raw" do
       Unit.should_receive(:give_units_raw).and_return do
         |m_unit, m_location, m_player|

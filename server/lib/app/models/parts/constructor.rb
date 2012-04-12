@@ -380,7 +380,7 @@ module Parts::Constructor
       grouped_counts = all_units.grouped_counts { |unit| unit.class.to_s }
       CredStats.mass_accelerate(
         player, self, cost, total_time, time, grouped_counts
-      )
+      ).save!
 
       # Return constructed units.
       all_units
