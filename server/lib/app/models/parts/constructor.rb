@@ -363,7 +363,6 @@ module Parts::Constructor
         if cost > player.creds
 
       # TODO: s2_par - modify deh_buffer to discard events on failure.
-      # TODO: add credstats
 
       player.population -= population # Unit.give_units_raw will increase pop.
       player.creds -= cost
