@@ -41,7 +41,13 @@ describe BuildingsController do
 
   describe "buildings|show_garrison_groups" do
     let(:planet) { Factory.create(:planet, :player => player) }
-    let(:building) { Factory.create(:building, :planet => planet) }
+    let(:building) do
+      building = Factory.create(:building, :planet => planet)
+      Factory.create(:u_gnat, :location => building)
+      Factory.create(:u_gnat, :location => building)
+      Factory.create(:u_glancer, :location => building)
+      building
+    end
 
     before(:each) do
       @action = "buildings|show_garrison_groups"
@@ -51,9 +57,8 @@ describe BuildingsController do
     it_behaves_like "finding building"
 
     it "should return building#unit_groups" do
-      Building.any_instance.should_receive(:unit_groups).and_return(:groups)
       invoke @action, @params
-      response_should_include(:groups => :groups)
+      response_should_include(:groups => building.unit_groups)
     end
   end
 
