@@ -15,6 +15,8 @@
          import components.skins.LargePanelSkin;
          import components.skins.ListNonScrollableSkin;
 
+         import config.Config;
+
          import controllers.objects.ObjectClass;
 
          import models.infoscreen.ArmorTypes;
@@ -141,10 +143,10 @@
                            </s:Group>
                            <s:Group visible="{!(INFO.model.objectType != 'building' || INFO.getTechArmorMod(INFO.model.type) == 0)
                                      || !(INFO.model.objectType != 'unit' || INFO.getTechArmorMod(INFO.model.type) == 0)}"
-                                    toolTip="{getString('tooltip.absorptionFromTechs')}">
+                                    toolTip="{getString('tooltip.absorptionFromTechs', [Config.getAbsorptionDivider()])}">
 
                              <s:Label text="{getString('absorptionFromTechs')}"/>
-                             <s:Label text="{(INFO.getTechAbsorptionMod(INFO.model.type) > 0? '+':'') + INFO.getTechAbsorptionMod(INFO.model.type) + '%'}"
+                             <s:Label text="{INFO.getTechAbsorptionMod(INFO.model.type) + '%'}"
                                       color="{INFO.getTechAbsorptionMod(INFO.model.type) > 0?0x00ff00 : 0xff0000}"/>
                              <s:layout>
                                <s:HorizontalLayout/>
@@ -195,10 +197,10 @@
                                  </s:layout>
                               </s:Group>
                               <s:Group visible="{INFO.getTechCriticalMod(INFO.model.type) != 0}"
-                                       toolTip="{getString('tooltip.criticalFromTechs')}">
+                                       toolTip="{getString('tooltip.criticalFromTechs', [Config.getCriticalMultiplier()])}">
 
                                 <s:Label text="{getString('criticalFromTechs')}"/>
-                                <s:Label text="{(INFO.getTechCriticalMod(INFO.model.type) > 0? '+':'') + INFO.getTechCriticalMod(INFO.model.type) + '%'}"
+                                <s:Label text="{INFO.getTechCriticalMod(INFO.model.type) + '%'}"
                                          color="{INFO.getTechCriticalMod(INFO.model.type) > 0?0x00ff00 : 0xff0000}"/>
                                 <s:layout>
                                   <s:HorizontalLayout/>
