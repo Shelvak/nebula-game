@@ -41,7 +41,13 @@ describe BuildingsController do
 
   describe "buildings|show_garrison_groups" do
     let(:planet) { Factory.create(:planet, :player => player) }
-    let(:building) { Factory.create(:building, :planet => planet) }
+    let(:building) do
+      building = Factory.create(:building, :planet => planet)
+      Factory.create(:u_gnat, :location => building)
+      Factory.create(:u_gnat, :location => building)
+      Factory.create(:u_glancer, :location => building)
+      building
+    end
 
     before(:each) do
       @action = "buildings|show_garrison_groups"
@@ -51,9 +57,8 @@ describe BuildingsController do
     it_behaves_like "finding building"
 
     it "should return building#unit_groups" do
-      Building.any_instance.should_receive(:unit_groups).and_return(:groups)
       invoke @action, @params
-      response_should_include(:groups => :groups)
+      response_should_include(:groups => building.unit_groups)
     end
   end
 
@@ -359,6 +364,42 @@ describe BuildingsController do
       @controller.should_receive(:find_building).and_return(@building)
       Creds.should_receive(:accelerate_construction!).with(
         @building, @params['index'])
+      invoke @action, @params
+    end
+
+    it "should work" do
+      invoke @action, @params
+    end
+  end
+
+  describe "buildings|construct_all" do
+    before(:each) do
+      player.creds += 100000
+      player.vip_level = 1
+      player.save!
+      @planet = Factory.create(:planet, :player => player)
+      @constructor_opts = opts_active + {:planet => @planet}
+      @building = Factory.create(:b_barracks, @constructor_opts)
+      @constructable = @building.
+        construct!(Unit::Trooper.to_s, true, {}, @building.queue_max)
+
+      @action = "buildings|construct_all"
+      @params = {
+        'id' => @building.id,
+        'index' => Cfg.creds_upgradable_speed_up_data.size - 1
+      }
+    end
+
+    it_behaves_like "finding building"
+    it_should_behave_like "only for constructors", 'id'
+    it_behaves_like "accelerate"
+
+    it "should work" do
+      invoke @action, @params
+    end
+
+    it "should mass accelerate" do
+      Creds.should_receive(:mass_accelerate!).with(@building, @params['index'])
       invoke @action, @params
     end
   end

@@ -12,6 +12,18 @@ describe CredStats do
     end
   end
 
+  describe ".mass_accelerate" do
+    it "should work" do
+      player = Factory.create(:player)
+      constructor = Factory.create(:b_constructor_test)
+      stats = CredStats.mass_accelerate(
+        player, constructor, 500, 1000, 1500, {"Unit::Trooper" => 3}
+      )
+      stats.action.should == CredStats::ACTION_MASS_ACCELERATE
+      stats.save!
+    end
+  end
+
   describe ".self_destruct" do
     it "should work" do
       planet = Factory.create(:planet, :player => Factory.create(:player))

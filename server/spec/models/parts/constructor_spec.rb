@@ -511,6 +511,20 @@ describe Building::ConstructorTest do
     let(:cost) { 500 }
     let(:first_cqe) { constructor.construction_queue_entries[0] }
 
+    def check_units(units)
+      units.map do |unit|
+        {
+          :type => unit.type, :flank => unit.flank, :level => unit.level,
+          :player_id => unit.player_id, :location => unit.location
+        }
+      end.uniq.should == [
+        {
+          :type => class_name.demodulize, :flank => 1, :level => 1,
+          :player_id => player.id, :location => planet.location_point
+        }
+      ]
+    end
+
     it "should fail if player is not vip" do
       player.vip_level = 0
       player.save!
@@ -598,21 +612,35 @@ describe Building::ConstructorTest do
       end.should change(player, :creds).by(-cost)
     end
 
-    it "should register to cred stats"
+    it "should register to cred stats" do
+      grouped_counts = {class_name => count}
+      CredStats.should_receive(:mass_accelerate).with(
+        player, constructor, cost, an_instance_of(Fixnum), time, grouped_counts
+      ).and_return do |_, _, _, total_time, _, _|
+        total_time.should be_within(10).of(time)
+      end
+      constructor.mass_accelerate!(time, cost)
+    end
+
+    it "should call Unit.give_units_raw" do
+      Unit.should_receive(:give_units_raw).and_return do
+        |m_unit, m_location, m_player|
+
+        # player_id is assigned by #give_units_raw but #check_units expects it
+        # to be set.
+        m_unit.each { |unit| unit.player_id = player.id }
+        check_units(m_unit)
+        m_location.should == planet
+        m_player.should == player
+
+        true
+      end
+      constructor.mass_accelerate!(time, cost)
+    end
 
     it "should create units" do
       units = constructor.mass_accelerate!(time, cost)
-      units.map do |unit|
-        {
-          :type => unit.type, :flank => unit.flank, :level => unit.level,
-          :player_id => unit.player_id, :location => unit.location
-        }
-      end.uniq.should == [
-        {
-          :type => class_name.demodulize, :flank => 1, :level => 1,
-          :player_id => player.id, :location => planet.location_point
-        }
-      ]
+      check_units(units)
     end
 
     it "should clear construction queue" do

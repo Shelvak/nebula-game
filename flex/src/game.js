@@ -349,6 +349,8 @@ function authorizationFailed() {
 
 // Called when client version is too old.
 function versionTooOld(requiredVersion, currentVersion) {
+  // Remove leave confirmation.
+  window.onbeforeunload = null;
   window.alert(locales.versionTooOld(locale, requiredVersion, currentVersion));
   window.location.reload();
 }
