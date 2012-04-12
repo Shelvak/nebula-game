@@ -219,7 +219,6 @@ class BuildingsController < GenericController
   # Response: None
   #
   def action_construct_all
-    # TODO: SPEC!
     param_options :required => {:id => Fixnum, :index => Fixnum}
     building = find_building
     check_for_constructor!(building)

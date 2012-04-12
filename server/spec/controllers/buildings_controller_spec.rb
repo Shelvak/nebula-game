@@ -361,6 +361,42 @@ describe BuildingsController do
         @building, @params['index'])
       invoke @action, @params
     end
+
+    it "should work" do
+      invoke @action, @params
+    end
+  end
+
+  describe "buildings|construct_all" do
+    before(:each) do
+      player.creds += 100000
+      player.vip_level = 1
+      player.save!
+      @planet = Factory.create(:planet, :player => player)
+      @constructor_opts = opts_active + {:planet => @planet}
+      @building = Factory.create(:b_barracks, @constructor_opts)
+      @constructable = @building.
+        construct!(Unit::Trooper.to_s, true, {}, @building.queue_max)
+
+      @action = "buildings|construct_all"
+      @params = {
+        'id' => @building.id,
+        'index' => Cfg.creds_upgradable_speed_up_data.size - 1
+      }
+    end
+
+    it_behaves_like "finding building"
+    it_should_behave_like "only for constructors", 'id'
+    it_behaves_like "accelerate"
+
+    it "should work" do
+      invoke @action, @params
+    end
+
+    it "should mass accelerate" do
+      Creds.should_receive(:mass_accelerate!).with(@building, @params['index'])
+      invoke @action, @params
+    end
   end
 
   describe "buildings|accelerate_upgrade" do

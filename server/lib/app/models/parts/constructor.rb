@@ -324,31 +324,33 @@ module Parts::Constructor
       construction_mod = model_construction_mod
       class_cache = {}
 
-      units, total_time =
-        # Cannot explode data into (array, time) because time is a primitive
-        # value ant we need to increment it.
-        construction_queue_entries.each_with_object([[], 0]) do |entry, data|
-          raise GameLogicError,
-            "Cannot only mass accelerate units, but wanted to accelerate #{
-            entry.constructable_type}!" \
-            unless entry.constructable_type.starts_with?("Unit::")
+      units = []
+      total_time = 0
+      population = 0
+      # Cannot explode data into (array, time) because time is a primitive
+      # value ant we need to increment it.
+      construction_queue_entries.each do |entry|
+        raise GameLogicError,
+          "Cannot only mass accelerate units, but wanted to accelerate #{
+          entry.constructable_type}!" \
+          unless entry.constructable_type.starts_with?("Unit::")
 
-          entry.count.times do
-            type = entry.constructable_type
-            klass = class_cache[type] ||= type.constantize
-            model = klass.new(entry.params)
-            # To get time calculations right.
-            model.construction_mod = construction_mod
-            model.level = 1
-            model.player_id = player_id
-            model.flank = flank
-            model.hidden = hidden
-            model.location = location
-            data[0] << model
+        entry.count.times do
+          type = entry.constructable_type
+          klass = class_cache[type] ||= type.constantize
+          model = klass.new(entry.params)
+          # To get time calculations right.
+          model.construction_mod = construction_mod
+          model.level = 1
+          model.flank = flank
+          model.hidden = hidden
+          model.location = location
 
-            data[1] += model.upgrade_time(1)
-          end
+          units << model
+          total_time += model.upgrade_time(1)
+          population += model.population
         end
+      end
 
       total_time += constructable.calculate_pause_remainder
 
@@ -360,12 +362,13 @@ module Parts::Constructor
         "Needed #{cost} creds, but player only had #{player.creds}!" \
         if cost > player.creds
 
-      player.creds -= cost
-      player.save!
-
       # TODO: s2_par - modify deh_buffer to discard events on failure.
       # TODO: add credstats
-      Unit.save_all_units(units, nil, EventBroker::CREATED)
+
+      player.population -= population # Unit.give_units_raw will increase pop.
+      player.creds -= cost
+      Unit.give_units_raw(units, planet, player) # This also saves player
+
       ConstructionQueue.clear(id, false)
       # Reload queue entries after clearing.
       construction_queue_entries(true)
@@ -373,8 +376,14 @@ module Parts::Constructor
       CallbackManager.
         unregister(self, CallbackManager::EVENT_CONSTRUCTION_FINISHED)
 
+      all_units = [constructable] + units
+      grouped_counts = all_units.grouped_counts { |unit| unit.class.to_s }
+      CredStats.mass_accelerate(
+        player, self, cost, total_time, time, grouped_counts
+      )
+
       # Return constructed units.
-      [constructable] + units
+      all_units
     end
 
     def on_construction_finished!(finish_constructable=true)
