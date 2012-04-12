@@ -26,11 +26,17 @@
 
       import mx.collections.ArrayCollection;
       import mx.events.FlexEvent;
+      import mx.logging.ILogger;
+      import mx.logging.Log;
 
       import utils.ModelUtil;
       import utils.StringUtil;
       import utils.TextFlowUtil;
       import utils.locale.Localizer;
+
+      private static function get logger(): ILogger {
+         return Log.getLogger("ConstructorCompleteAll.mxml");
+      }
 
       public function set constructor(value: Building): void
       {
@@ -87,7 +93,7 @@
                             : _constructor.constructorMod
             );
          }
-         return Math.round(wholeTime * Config.getConstructAllTimeCoef());
+         return Math.round(wholeTime);
       }
 
       [Bindable]
@@ -192,6 +198,14 @@
       private function getProvider(building: Building, entries: ArrayCollection): ArrayCollection
       {
          var types: Object = {};
+         if (building.constructableType == null) {
+            logger.info(
+               "Constructable type is null for " + building.toString() +
+               ", returning."
+            );
+            return null;
+         }
+
          var constructableClass: String =
                  ModelUtil.getModelClass(building.constructableType);
          var constructable: String;

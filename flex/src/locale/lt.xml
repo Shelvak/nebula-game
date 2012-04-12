@@ -1410,8 +1410,12 @@
     <warning.notEnoughVipCreds 
     value="Tu turi turėti bent {0} VIP kredus, kad galėtum juos keisti" />
     <label.additionalPrivileges value="Tu taip pat gausi šias privilegijas:"/>
-    <label.queueBuilding
-    value="● Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
+    <label.additionalPrivileges.queueBuilding
+       value="● Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
+    <label.additionalPrivileges.buildAllEntries>
+       ● Akimirksniu užbaigti visų karių ar laivų, esančių statymo eilėje,
+      gamybą (su nuolaida, palyginus su užbaigimu po vieną)!
+    </label.additionalPrivileges.buildAllEntries>
     <label.buildAllEntries value="Gali užbaigti šios eilės statymą akimirksniu"/>
     <!-- 0: creds for construct all,
          1: creds to pay if accelerate one by one -->
@@ -1422,16 +1426,21 @@
        <p><span fontWeight="bold"
         >{0 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
        <p />
-       <p>Jei greitintum statybą po vieną elementą, sumokėtum</p>
+       <p>Jei greitintum statybą po vieną karį/laivą, sumokėtum</p>
        <p />
        <p><span fontWeight="bold"
         >{1 one[? kredą] tens[? kredų] many[? kredus]}</span></p>
+       <p />
       ]]>
     </label.buildAllCreds>
     <tooltip.hasUnprepaid>
       <p>Tu negali užbaigti statymo eilės akimirksniu, nes eilėje yra
         neapmokėtų elementų.</p>
     </tooltip.hasUnprepaid>
+     <tooltip.buildAllEntries.mustBeVip>
+        <p>Tik VIP nariai gali užbaigti karių ar laivų, esančių statymo eilėje,
+           gamybą akimirksniu.</p>
+     </tooltip.buildAllEntries.mustBeVip>
   </Credits>
 
   <Exploration>

@@ -17,6 +17,11 @@ module Creds
     constructor.accelerate_construction!(time, cost)
   end
 
+  def self.mass_accelerate!(constructor, index)
+    time, cost = resolve_accelerate_index(index)
+    constructor.mass_accelerate!(time, cost)
+  end
+
   def self.resolve_accelerate_index(index)
     entry = CONFIG['creds.upgradable.speed_up'][index]
     raise ArgumentError.new("Unknown speed up index #{index.inspect

@@ -209,6 +209,26 @@ class BuildingsController < GenericController
     raise GameLogicError.new(e.message)
   end
 
+  # Constructs all units which constructor is currently building or has in
+  # queue. Does not work with buildings.
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the constructor
+  # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
+  #
+  # Response: None
+  #
+  def action_construct_all
+    # TODO: SPEC!
+    param_options :required => {:id => Fixnum, :index => Fixnum}
+    building = find_building
+    check_for_constructor!(building)
+    Creds.mass_accelerate!(building, params['index'])
+  rescue ArgumentError => e
+    # In case client provides invalid index.
+    raise GameLogicError.new(e.message)
+  end
+
   # Accelerates building upgrade.
   #
   # Invocation: by client

@@ -70,11 +70,12 @@ class ConstructionQueue
   end
 
   # Clear constructor queue.
-  def self.clear(constructor_id)
-    typesig binding, Fixnum
+  def self.clear(constructor_id, return_resources=true)
+    typesig binding, Fixnum, Boolean
 
     condition = ConstructionQueueEntry.where(:constructor_id => constructor_id)
-    condition.prepaid.each { |entry| entry.return_resources!(entry.count) }
+    condition.prepaid.each { |entry| entry.return_resources!(entry.count) } \
+      if return_resources
     condition.delete_all
   end
 

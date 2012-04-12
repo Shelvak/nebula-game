@@ -257,7 +257,9 @@ module Parts::Constructor
 
       free_slots = self.free_slots
       free_slots += 1 unless working?
-      count = free_slots if count > free_slots
+      raise GameLogicError,
+        "Tried to construct #{count} entries, but only #{free_slots
+        } are available!" if count > free_slots
 
       if working?
         enqueue!(type, prepaid, count, params)
@@ -274,9 +276,7 @@ module Parts::Constructor
     end
 
     def accelerate_construction!(time, cost)
-      raise GameLogicError.new(
-        "Cannot accelerate if not working!"
-      ) unless working?
+      raise GameLogicError, "Cannot accelerate if not working!" unless working?
 
       # #accelerate! might complete the constructable, so make sure its flank
       # is set. This is a hack and I know it. :( - arturaz
@@ -301,6 +301,82 @@ module Parts::Constructor
       true
     end
 
+    # Accelerate all prepaid entries in the queue + currently constructing one.
+    # Fails if there are non-prepaid entries.
+    def mass_accelerate!(time, cost)
+      player = self.planet.player
+      raise GameLogicError, "You must be VIP to mass accelerate!" \
+        unless player.vip?
+
+      has_not_prepaid = construction_queue_entries.
+        where(ConstructionQueueEntry.not_prepaid_condition).exists?
+      raise GameLogicError,
+        "Cannot accelerate all if constructor has non-prepaid entries in " +
+        "queue!" if has_not_prepaid
+
+      constructable = self.constructable
+      raise GameLogicError, "Cannot mass accelerate if not constructing!" \
+        if constructable.nil?
+
+      flank = build_in_2nd_flank? ? 1 : 0
+      hidden = build_hidden?
+      location = planet.location_point
+      construction_mod = model_construction_mod
+      class_cache = {}
+
+      units, total_time =
+        # Cannot explode data into (array, time) because time is a primitive
+        # value ant we need to increment it.
+        construction_queue_entries.each_with_object([[], 0]) do |entry, data|
+          raise GameLogicError,
+            "Cannot only mass accelerate units, but wanted to accelerate #{
+            entry.constructable_type}!" \
+            unless entry.constructable_type.starts_with?("Unit::")
+
+          entry.count.times do
+            type = entry.constructable_type
+            klass = class_cache[type] ||= type.constantize
+            model = klass.new(entry.params)
+            # To get time calculations right.
+            model.construction_mod = construction_mod
+            model.level = 1
+            model.player_id = player_id
+            model.flank = flank
+            model.hidden = hidden
+            model.location = location
+            data[0] << model
+
+            data[1] += model.upgrade_time(1)
+          end
+        end
+
+      total_time += constructable.calculate_pause_remainder
+
+      raise GameLogicError,
+        "Time for all units is #{total_time}s, but only #{time}s were given!" \
+        if total_time > time
+
+      raise GameLogicError,
+        "Needed #{cost} creds, but player only had #{player.creds}!" \
+        if cost > player.creds
+
+      player.creds -= cost
+      player.save!
+
+      # TODO: s2_par - modify deh_buffer to discard events on failure.
+      # TODO: add credstats
+      Unit.save_all_units(units, nil, EventBroker::CREATED)
+      ConstructionQueue.clear(id, false)
+      # Reload queue entries after clearing.
+      construction_queue_entries(true)
+      on_construction_finished!
+      CallbackManager.
+        unregister(self, CallbackManager::EVENT_CONSTRUCTION_FINISHED)
+
+      # Return constructed units.
+      [constructable] + units
+    end
+
     def on_construction_finished!(finish_constructable=true)
       # Store aggregated queue errors.
       not_enough_resources = []
@@ -308,28 +384,19 @@ module Parts::Constructor
       # We might not need to finish constructable if it was cancelled.
       if finish_constructable
         constructable = self.constructable
-
-        # Temp. workaround to prevent constructors getting stuck - still need
-        # to understand what is wrong with it.
-        begin
-          before_finishing_constructable(constructable)
-          # Call #on_upgrade_finished! because we have no callback registered.
-          constructable.send(:on_upgrade_finished!)
-        rescue Exception => e
-          if App.in_production?
-            LOGGER.error("FAIL @ constructor #{self.inspect}:\n#{e.to_log_str}")
-          else
-            raise e
-          end
-        end
+        before_finishing_constructable(constructable)
+        # Call #on_upgrade_finished! because we have no callback registered.
+        constructable.send(:on_upgrade_finished!)
       end
 
       begin
         queue_entry = ConstructionQueue.shift(id)
 
         if queue_entry
-          construct_model!(queue_entry.constructable_type, queue_entry.prepaid?,
-                           queue_entry.params)
+          construct_model!(
+            queue_entry.constructable_type, queue_entry.prepaid?,
+            queue_entry.params
+          )
         else
           construct_model!(nil, nil, nil)
         end
@@ -338,8 +405,8 @@ module Parts::Constructor
       rescue ActiveRecord::RecordInvalid
         # Well, if we somehow got an invalid request just dump it then.
         retry
-      # Iterate through construction finished until queue is empty
       rescue NotEnoughResources => error
+        # Iterate through construction finished until queue is empty
         not_enough_resources.push error.constructable
         retry
       rescue GameNotifiableError => error
@@ -376,7 +443,7 @@ module Parts::Constructor
       model = type.constantize.new(params)
       model.player_id = SsObject.
         select("player_id").where(:id => model.location.id).c_select_value \
-        if type =~ /^Unit/
+        if type.starts_with?("Unit")
       model.level = 0
 
       model
@@ -398,8 +465,7 @@ module Parts::Constructor
         self.state = Building::STATE_ACTIVE
       else
         model = build_model(type, params)
-        model.construction_mod = self.constructor_mod +
-          self.level_constructor_mod
+        model.construction_mod = model_construction_mod
         # Don't register upgrade finished callback, because we will call it
         # for the model when we get #on_construction_finished! called.
         model.register_upgrade_finished_callback = false
@@ -410,22 +476,32 @@ module Parts::Constructor
         self.constructable = model
         self.state = Building::STATE_WORKING
 
-        CallbackManager.register(self,
-          CallbackManager::EVENT_CONSTRUCTION_FINISHED,
-          model.upgrade_ends_at)
+        CallbackManager.register(
+          self, CallbackManager::EVENT_CONSTRUCTION_FINISHED,
+          model.upgrade_ends_at
+        )
       end
 
       save!
-      EventBroker.fire(self, EventBroker::CHANGED,
-        EventBroker::REASON_CONSTRUCTABLE_CHANGED)
+      dispatch_changed
 
       model
+    end
+
+    def dispatch_changed
+      EventBroker.fire(
+        self, EventBroker::CHANGED, EventBroker::REASON_CONSTRUCTABLE_CHANGED
+      )
+    end
+
+    def model_construction_mod
+      constructor_mod + level_constructor_mod
     end
 
     def before_finishing_constructable(constructable)
       if constructable.is_a?(Unit)
         constructable.flank = 1 if build_in_2nd_flank?
-        constructable.hidden = true if build_hidden?
+        constructable.hidden = build_hidden?
       end
 
       constructable

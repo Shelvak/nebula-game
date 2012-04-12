@@ -486,6 +486,173 @@ describe Building::ConstructorTest do
     end
   end
 
+  describe "#mass_accelerate!" do
+    let(:player) { Factory.create(:player, :vip_level => 1, :creds => 500) }
+    let(:planet) do
+      planet = Factory.create(:planet, :player => player)
+      set_resources(planet)
+      planet
+    end
+    let(:klass) { Unit::Scorpion }
+    let(:class_name) { klass.to_s }
+    let(:idle_constructor) do
+      Factory.create(
+        :b_constructor_test, :planet => planet, :build_in_2nd_flank => true,
+        :build_hidden => true
+      )
+    end
+    let(:count) { idle_constructor.queue_max }
+    let(:constructor) do
+      idle_constructor.construct!(class_name, true, {}, count)
+      player.reload
+      idle_constructor
+    end
+    let(:time) { count * klass.new.upgrade_time(1) }
+    let(:cost) { 500 }
+    let(:first_cqe) { constructor.construction_queue_entries[0] }
+
+    it "should fail if player is not vip" do
+      player.vip_level = 0
+      player.save!
+
+      lambda do
+        constructor.mass_accelerate!(time, cost)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if there are non-prepaid entries" do
+      first_cqe.prepaid = false
+      first_cqe.save!
+
+      lambda do
+        constructor.mass_accelerate!(time, cost)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if constructor is not currently constructing" do
+      lambda do
+        idle_constructor.mass_accelerate!(time, cost)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if one of the constructables is a building" do
+      first_cqe.constructable_type = "Building::Barracks"
+      first_cqe.save!
+
+      lambda do
+        constructor.mass_accelerate!(time, cost)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if player does not have enough creds" do
+      lambda do
+        constructor.mass_accelerate!(time, cost + 1)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if we don't give enough time" do
+      lambda do
+        constructor.mass_accelerate!(time - 10, cost)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should dispatch created event" do
+      SPEC_EVENT_HANDLER.clear_events!
+      units = constructor.mass_accelerate!(time, cost)
+      units.shift # First one is dispatched as update.
+      SPEC_EVENT_HANDLER.events.find do |e_units, e_event, e_reason|
+        e_units == units && e_event == EventBroker::CREATED && e_reason == nil
+      end.should_not be_nil
+    end
+
+    it "should set construction mods on built units" do
+      idle_constructor.constructor_mod = 20
+      idle_constructor.level = 2
+      constructor.mass_accelerate!(time - 10, cost).map(&:construction_mod).
+        uniq.should == [20 + constructor.level_constructor_mod]
+    end
+
+    it "should not change player population" do
+      constructor # To reload player population.
+      lambda do
+        constructor.mass_accelerate!(time, cost)
+        player.reload
+      end.should_not change(player, :population)
+    end
+
+    Resources::TYPES.each do |resource|
+      it "should not change planet #{resource}" do
+        constructor # To reduce planet resources..
+        planet.reload
+        lambda do
+          constructor.mass_accelerate!(time, cost)
+          planet.reload
+        end.should_not change(planet, resource)
+      end
+    end
+
+    it "should reduce player creds" do
+      lambda do
+        constructor.mass_accelerate!(time, cost)
+        player.reload
+      end.should change(player, :creds).by(-cost)
+    end
+
+    it "should register to cred stats"
+
+    it "should create units" do
+      units = constructor.mass_accelerate!(time, cost)
+      units.map do |unit|
+        {
+          :type => unit.type, :flank => unit.flank, :level => unit.level,
+          :player_id => unit.player_id, :location => unit.location
+        }
+      end.uniq.should == [
+        {
+          :type => class_name.demodulize, :flank => 1, :level => 1,
+          :player_id => player.id, :location => planet.location_point
+        }
+      ]
+    end
+
+    it "should clear construction queue" do
+      constructor.mass_accelerate!(time, cost)
+      constructor.construction_queue_entries(true).should be_blank
+    end
+
+    it "should end constructor work" do
+      constructor.mass_accelerate!(time, cost)
+      constructor.should_not be_working
+    end
+
+    it "should put constructor into active state" do
+      constructor.mass_accelerate!(time, cost)
+      constructor.should be_active
+    end
+
+    it "should dispatch building with cleared queue entries" do
+      SPEC_EVENT_HANDLER.clear_events!
+      constructor.mass_accelerate!(time, cost)
+      found = SPEC_EVENT_HANDLER.events.find do |objects, event, reason|
+        if objects == [constructor] && event == EventBroker::CHANGED &&
+            reason == EventBroker::REASON_CONSTRUCTABLE_CHANGED
+          objects[0].construction_queue_entries.should == []
+
+          true
+        end
+      end
+
+      raise "Cannot find constructor changed event" unless found
+    end
+
+    it "should unregister construction finished callback" do
+      constructor.mass_accelerate!(time, cost)
+      constructor.should_not have_callback(
+        CallbackManager::EVENT_CONSTRUCTION_FINISHED
+      )
+    end
+  end
+
   describe ".on_callback" do
     before(:each) do
       @model = Factory.create :b_constructor_test
