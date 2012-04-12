@@ -8,17 +8,24 @@ package tests.chat.models.chat
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
-   
-   
+   import org.hamcrest.object.nullValue;
+
+   import tests.chat.classes.IChatJSCallbacksInvokerMock;
+
+
    public class TC_MChat_hasUnreadPrivateMsg extends TC_BaseMChat
    {
+      private var jsCallbacksInvoker: IChatJSCallbacksInvokerMock;
+
       [Before]
       public override function setUp(): void {
          super.setUp();
          ML.player.reset();
          ML.player.id = 1;
          ML.player.name = "mikism";
+         jsCallbacksInvoker = new IChatJSCallbacksInvokerMock();
          chat.initialize(
+            jsCallbacksInvoker,
             {
                "1": ML.player.name,
                "2": "jho",
@@ -35,6 +42,7 @@ package tests.chat.models.chat
       [After]
       public override function tearDown(): void {
          super.tearDown();
+         jsCallbacksInvoker = null;
       }
 
       [Test]
@@ -187,6 +195,51 @@ package tests.chat.models.chat
             chat.numUnreadPrivateMessages, equals (1)
          );
       }
+
+      [Test]
+      public function IChatJSCallbacksInvokerUsage(): void {
+         chat.visible = false;
+         chat.openPrivateChannel(2);
+         chat.openPrivateChannel(3);
+         jsCallbacksInvoker.reset();
+
+         function assertTitleParam(numMessages: int): void {
+            assertThat(
+               "hasUnreadPrivateMessages() param title",
+               jsCallbacksInvoker.hasUnreadPrivateMessagesParam,
+               equals (numMessages + " private messages")
+            );
+            assertThat(
+               "privateMessagesRead() not called",
+               jsCallbacksInvoker.privateMessagesReadCalled, isFalse()
+            );
+            jsCallbacksInvoker.reset();
+         }
+
+         function receivePrivateMessage(memberId: int): void {
+            chat.receivePrivateMessage(makePrivateMessage(memberId, null, "test"));
+         }
+
+         receivePrivateMessage(2);
+         assertTitleParam(1);
+
+         receivePrivateMessage(3);
+         assertTitleParam(2);
+
+         chat.selectChannel(chat.members.getMember(2).name);
+         chat.visible = true;
+         assertTitleParam(1);
+
+         chat.selectChannel(chat.members.getMember(3).name);
+         assertThat(
+            "should not call hasUnreadPrivateMessages()",
+            jsCallbacksInvoker.hasUnreadPrivateMessagesParam, nullValue()
+         );
+         assertThat(
+            "should have called privateMessagesRead()",
+            jsCallbacksInvoker.privateMessagesReadCalled, isTrue()
+         );
+      }
       
       
       /* ############### */
@@ -201,7 +254,8 @@ package tests.chat.models.chat
          chat.receivePrivateMessage(makePrivateMessage(3, null, "Hi!"));
       }
 
-      private function makePrivateMessage(playerId: int, playerName: String,
+      private function makePrivateMessage(playerId: int,
+                                          playerName: String,
                                           message: String): MChatMessage {
          const msg: MChatMessage = MChatMessage(chat.messagePool.borrowObject());
          msg.playerId = playerId;

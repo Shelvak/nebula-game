@@ -9,17 +9,24 @@ package tests.chat.models.chat
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
-   
-   
+   import org.hamcrest.object.nullValue;
+
+   import tests.chat.classes.IChatJSCallbacksInvokerMock;
+
+
    public class TC_MChat_hasUnreadAllianceMsg extends TC_BaseMChat
    {
+      private var jsCallbacksInvoker: IChatJSCallbacksInvokerMock;
+
       [Before]
       public override function setUp(): void {
          super.setUp();
          ML.player.reset();
          ML.player.id = 1;
          ML.player.name = "mikism";
+         jsCallbacksInvoker = new IChatJSCallbacksInvokerMock();
          chat.initialize(
+            jsCallbacksInvoker,
             {
                "1": ML.player.name
             },
@@ -40,7 +47,7 @@ package tests.chat.models.chat
       }
 
       [Test]
-      public function should_not_have_unread_alliance_messsage_if_alliance_channel_does_not_have_unread_messages(): void {
+      public function should_not_have_unread_alliance_message_if_alliance_channel_does_not_have_unread_messages(): void {
          chat.visible = true;
          chat.selectAllianceChannel();
          assertThat( chat.hasUnreadAllianceMsg, isFalse() );
@@ -190,6 +197,50 @@ package tests.chat.models.chat
          assertThat(
             "should not have unread alliance messages",
             chat.numUnreadAllianceMessages, equals (0)
+         );
+      }
+
+      [Test]
+      public function IChatJSCallbacksInvokerUsage(): void {
+         chat.visible = false;
+         chat.channelJoin("alliance-1", makeMember(2, "jho"));
+         chat.selectMainChannel();
+         jsCallbacksInvoker.reset();
+
+         function assertTitleParam(numMessages: int): void {
+            assertThat(
+               "hasUnreadAllianceMessages() param title",
+               jsCallbacksInvoker.hasUnreadAllianceMessagesParam,
+               equals (numMessages + " alliance messages")
+            );
+            assertThat(
+               "allianceMessagesRead() not called",
+               jsCallbacksInvoker.allianceMessagesReadCalled, isFalse()
+            );
+            jsCallbacksInvoker.reset();
+         }
+
+         function receiveMessage(): void {
+            chat.receivePublicMessage(
+               makeMessage(2, "jho", "alliance-1", "test", null)
+            );
+         }
+
+         receiveMessage();
+         assertTitleParam(1);
+
+         receiveMessage();
+         assertTitleParam(2);
+
+         chat.selectAllianceChannel();
+         chat.visible = true;
+         assertThat(
+            "should not call hasUnreadAllianceMessages()",
+            jsCallbacksInvoker.hasUnreadAllianceMessagesParam, nullValue()
+         );
+         assertThat(
+            "should have called allianceMessagesRead()",
+            jsCallbacksInvoker.allianceMessagesReadCalled, isTrue()
          );
       }
       

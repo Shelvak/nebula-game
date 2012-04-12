@@ -17,6 +17,8 @@ package tests.chat.models.chat
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
 
+   import tests.chat.classes.IChatJSCallbacksInvokerMock;
+
 
    public class TC_MChat_ignoredMembers extends TC_BaseMChat
    {
@@ -31,6 +33,7 @@ package tests.chat.models.chat
       public function shouldMarkIgnoredPlayersWhenInitialized(): void {
          PlayerOptions.addIgnoredPlayer("ignored");
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {"1": "player", "2": "normal", "3": "ignored"},
             {"galaxy": [1, 2, 3]}
          );
@@ -42,7 +45,9 @@ package tests.chat.models.chat
       public function offlineMemberCreationShouldDependOnItsIgnoreStatus(): void {
          const name: String = "test";
          PlayerOptions.addIgnoredPlayer(name);
-         chat.initialize({"1": "player"}, {"galaxy": [1]});
+         chat.initialize(
+            new IChatJSCallbacksInvokerMock(), {"1": "player"}, {"galaxy": [1]}
+         );
 
          ignoreComplete();
          chat.openPrivateChannel(2, name);
@@ -71,7 +76,9 @@ package tests.chat.models.chat
       public function openingPrivateChannelShouldDependOnMemberIgnoreStatus(): void {
          const name: String = "test";
          PlayerOptions.addIgnoredPlayer(name);
-         chat.initialize({"1": "player", "2": name}, {"galaxy": [1, 2]});
+         chat.initialize(
+            new IChatJSCallbacksInvokerMock(), {"1": "player", "2": name}, {"galaxy": [1, 2]}
+         );
 
          ignoreComplete();
          chat.openPrivateChannel(2);
@@ -97,6 +104,7 @@ package tests.chat.models.chat
          PlayerOptions.addIgnoredPlayer(nameOnline);
          PlayerOptions.addIgnoredPlayer(nameOffline);
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {"1": "player", "2": nameOnline},
             {"galaxy": [1, idOnline]}
          );
@@ -162,7 +170,9 @@ package tests.chat.models.chat
       [Test]
       public function updatesMemberInstancesWhenIgnoreStatusChanges(): void {
          const name:String = "test";
-         chat.initialize({"2": name}, {"galaxy": [2]});
+         chat.initialize(
+            new IChatJSCallbacksInvokerMock(), {"2": name}, {"galaxy": [2]}
+         );
 
          PlayerOptions.addIgnoredPlayer(name);
          assertThat(
@@ -179,7 +189,11 @@ package tests.chat.models.chat
 
       [Test]
       public function addingOfflineMembersToAndRemovingFromIgnoreListDoesNotCauseErrors(): void {
-         chat.initialize({"1": ML.player.name}, {"galaxy": [ML.player.id]});
+         chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
+            {"1": ML.player.name},
+            {"galaxy": [ML.player.id]}
+         );
          PlayerOptions.addIgnoredPlayer("notInChat");
          PlayerOptions.removeIgnoredPlayer("notInChat");
       }

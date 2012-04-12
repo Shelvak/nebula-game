@@ -11,7 +11,6 @@ package models.chat
    import models.time.MTimeEventFixedMoment;
 
    import mx.logging.ILogger;
-
    import mx.logging.Log;
    import mx.utils.ObjectUtil;
 
@@ -185,7 +184,8 @@ package models.chat
       /* ###################### */
       /* ### INITIALIZATION ### */
       /* ###################### */
-      
+
+      private var _jsCallbacksInvoker: IChatJSCallbacksInvoker;
       
       /**
        * Initializes the chat:
@@ -200,7 +200,10 @@ package models.chat
        * 
        * @see controllers.chat.actions.IndexAction
        */
-      public function initialize(members: Object, channels: Object): void {
+      public function initialize(jsCallbacksInvoker: IChatJSCallbacksInvoker,
+                                 members: Object,
+                                 channels: Object): void {
+         _jsCallbacksInvoker = jsCallbacksInvoker;
          for (var chatMemberId: String in members) {
             const memberId: int = int(chatMemberId);
             const memberName: String = members[chatMemberId];
@@ -331,6 +334,16 @@ package models.chat
             if (hasUnreadAllianceMsg != hasUnreadAllianceMsgOld) {
                dispatchChatEvent(MChatEvent.HAS_UNREAD_ALLIANCE_MSG_CHANGE);
             }
+            if (_jsCallbacksInvoker != null) {
+               if (numMessages > 0) {
+                  _jsCallbacksInvoker.hasUnreadAllianceMessages(
+                     getString("js.title.allianceMessages", [numMessages])
+                  );
+               }
+               else {
+                  _jsCallbacksInvoker.allianceMessagesRead();
+               }
+            }
          }
       }
 
@@ -365,6 +378,16 @@ package models.chat
             if (oldHasUnreadPrivateMsg != hasUnreadPrivateMsg) {
                dispatchChatEvent(MChatEvent.HAS_UNREAD_PRIVATE_MSG_CHANGE);
             }
+            if (_jsCallbacksInvoker != null) {
+               if (numMessages > 0) {
+                  _jsCallbacksInvoker.hasUnreadPrivateMessages(
+                     getString("js.title.privateMessages", [numMessages])
+                  );
+               }
+               else {
+                  _jsCallbacksInvoker.privateMessagesRead();
+               }
+            }
          }
       }
       
@@ -378,11 +401,13 @@ package models.chat
       public function selectChannel(channelName:String) : void {
          Objects.paramNotEquals("channelName", channelName, [null, ""]);
 
-         var toSelect:MChatChannel = _channels.getChannel(channelName);
-         if (toSelect == null)
+         var toSelect: MChatChannel = _channels.getChannel(channelName);
+         if (toSelect == null) {
             throwChannelNotFoundError("Unable to select channel", channelName);
-         if (_selectedChannel == toSelect)
+         }
+         if (_selectedChannel == toSelect) {
             return;
+         }
          if (_visible) {
             _selectedChannel.visible = false;
             toSelect.visible = true;
@@ -1046,8 +1071,9 @@ package models.chat
       /* ### HELPERS ### */
       /* ############### */
 
-      private function getString(property: String): String {
-         return Localizer.string("Chat", property);
+      private function getString(property: String,
+                                 parameters: Array = null): String {
+         return Localizer.string("Chat", property, parameters);
       }
 
       public function dispatchChatEvent(type:String) : void {

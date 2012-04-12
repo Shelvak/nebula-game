@@ -5527,6 +5527,12 @@
      <label.channelMembers value="Žaidėjai"/>
      <ignorePopup.title value="Ignoruoti?"/>
      <ignorePopup.message value="Ar tikrai nori ignoruoti žaidėją {0}?"/>
+     <js.title.allianceMessages>
+        {0 one[Sąjungos žinutė] tens[? sąjungos žinučių] 1sts[? sąjungos žinutė] many[? sąjungos žinutės]}
+     </js.title.allianceMessages>
+     <js.title.privateMessages>
+        {0 one[Privati žinutė] tens[? privačių žinučių] 1sts[? privati žinutė] many[? privačios žinutės]}
+     </js.title.privateMessages>
   </Chat>
   
   <Market>

@@ -16,6 +16,9 @@ package tests.chat.models.chat
    import org.hamcrest.object.nullValue;
    import org.hamcrest.text.startsWith;
 
+   import tests.chat.classes.IChatJSCallbacksInvokerMock;
+
+
    public class TC_MChat_members extends TC_BaseMChat
    {
       public function TC_MChat_members()
@@ -36,7 +39,10 @@ package tests.chat.models.chat
          ML.player.reset();
          ML.player.id = 1;
          ML.player.name = "mikism";
-         chat.initialize({}, {"galaxy": [], "alliance-1": []});
+         chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
+            {}, {"galaxy": [], "alliance-1": []}
+         );
          channelGalaxy = MChatChannelPublic(chat.channels.getChannel("galaxy"));
          channelAlliance = MChatChannelPublic(chat.channels.getChannel("alliance-1"));
       };
@@ -174,6 +180,7 @@ package tests.chat.models.chat
       {
          chat = new MChat();
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {
                "1": ML.player.name,
                "2": "jho"
