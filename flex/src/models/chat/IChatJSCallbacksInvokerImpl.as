@@ -17,7 +17,7 @@ package models.chat
          ExternalInterface.call("unreadPrivateMessages", title);
       }
 
-      public function privateMessagesRead() {
+      public function privateMessagesRead(): void {
          ExternalInterface.call("privateMessagesRead");
       }
    }

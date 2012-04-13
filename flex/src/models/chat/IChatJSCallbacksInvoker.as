@@ -5,6 +5,6 @@ package models.chat
       function hasUnreadAllianceMessages(title:String): void;
       function allianceMessagesRead(): void;
       function hasUnreadPrivateMessages(title:String):void;
-      function privateMessagesRead();
+      function privateMessagesRead(): void;
    }
 }

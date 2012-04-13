@@ -88,11 +88,9 @@ package models.factories
                                          y: int,
                                          constructorId: int,
                                          prepaid: Boolean): Building {
-         var ghost:Building = new Building();
+         const ghost: Building = createDefault(type);
          ghost.type = type;
-         ghost.x = x;
-         ghost.y = y;
-         Building.setSize(ghost);
+         ghost.moveTo(x, y);
          ghost.constructorId = constructorId;
          ghost.prepaid = prepaid;
          return ghost;
