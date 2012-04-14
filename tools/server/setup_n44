@@ -306,6 +306,9 @@ def apache_status!
        Allow from localhost ip6-localhost 127.0.0.1
    #    Allow from .example.com
    </Location>
+
+# For apache munin plugins.
+ExtendedStatus On
    
 </IfModule>})
   run "/etc/init.d/apache2 reload"
