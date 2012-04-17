@@ -1292,12 +1292,14 @@
       ]]>
     </label.buildAllCreds>
     <tooltip.hasUnprepaid>
-      <p>You can't finish construction queue instantly because it contains
-        elements that are not paid for.</p>
+      <p>You can't instantly finish construction queue because it contains
+        units that are not paid for.</p>
     </tooltip.hasUnprepaid>
     <tooltip.buildAllEntries.mustBeVip>
-       <p>You must be vip to use instantly finish construction of units
-          in this queue.</p>
+       <p>
+         You must be VIP player to instantly finish construction of all units
+         in this queue.
+       </p>
     </tooltip.buildAllEntries.mustBeVip>
   </Credits>
 
@@ -3488,8 +3490,8 @@
     <UnitScreen>
       <![CDATA[
       <p>In the top right corner of the screen you can see the number of
-      troops you have. Pressing that number will bring you to the troops'
-      management panel where you can adjust your strategy of the battle.</p>
+      units you have. Pressing that number will bring you to the unit
+      management panel where you can adjust your battle strategy.</p>
       ]]>
     </UnitScreen>
 
@@ -3596,7 +3598,7 @@
       <p>Metal is mostly used for building troops and buildings. Energy is being
       used for construction and it is also consumed by buildings such as MEX's,
       ZEX's, Radars and so on. Zetium is used for constructing powerful tanks and
-      spaceships as well as for researching technologies.
+      spaceships as well as for researching technologies.</p>
       ]]>
     </Resources>
 
