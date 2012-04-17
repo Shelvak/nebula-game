@@ -32,7 +32,7 @@ package tests.chat.classes
       }
 
       public var privateMessagesReadCalled: Boolean;
-      public function privateMessagesRead() {
+      public function privateMessagesRead(): void {
          privateMessagesReadCalled = true;
       }
    }
