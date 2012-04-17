@@ -14,7 +14,12 @@ FORUM_LANGS = {
 
 # Configuration {{{
 ARTURAZ_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAvQixOdHtH572+yAkRxyDNdo/Q6BLyhUrAtw1E9oOEg6VtECFEEUbQijncU0iMerPpyjbzboX2bGRvA9LRwJEoSrW4pDGV3KTMIUpIMdZzt0n49HsCja8+03++B0HBEjbpeqql9EMDOfTjXQqIE78WNFCsPEBxyKRQDdUQyfXo2f1/0k/WKUScASj3zfTdUKWZPDiuqwVB+v0uR+8n/5dkGaviBxH1Uji82y5c1o+Xpn872FaiJyEtsOfZWS1AN8YKbNL3MZJ+S+bJeCNM3wg7zF0Y1BVXqQrDME2IUhekR5XpkO0UfIcPRZmIKCjl4x//URcNbcT6ihLu/cRru2xcQ== arturaz"
+JHO_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmYVjgKrRV3wltV7yTmBKo/Z0ENjA8GaYuJOaw2QTJyoS/5NYiyd+dygCfoS3u+RzbrCyTQppnOaf+zuaOdiRQyqonhEI64kmJJXzmGwL+C8udu798PeWdfw2Lj1ACSYOZBn4utXnK/iK2XqPOjhIGttEo2/PhtVfAFIFB0gWsRw== Jonas Abromaitis"
+MIKISM_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIB7B6kL0+oQ37yeMhy3MTyWfGXLtEwas9dfZH9IU5lhebIMGqz5VkdvvT/AD3nNInrGzgVc16S1H8fffKqH5YwtaRQLePWrJ1Aq/L9R+Fb9T7OWOOdHiTK6OZ2vPbYeitQzWQzJ1uUBsZpq3ddibnjv+cS37/DwbCDxZOyfkqpfXQ== Mykolas Mickus"
 HENRIKAS_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQ43QAmFhlC4K7BmG1boe2CTIIGC42GPjpFrAkR2kkDCeAXNZF8PYhHcrAy3D2XCBKoA3np+esxOjG3fPbxlOJQPXQp5bMhaR8YABUc58yvrBjtKA/zZRLPf6YebaF20fil5t0TbLFoskNOrEuzRhr0IwvEbPJtXcp3zcXUl09jBFa5OP4a++d3eVHDhUllT+tM8ECZGXaN3S7jSSrf89Ifgd2L3JLu2JVXm4+xkkev1lrUjop5GD6sm2yc+AQ/tdlZMoWbmVrlYZqL5t4UfBWAWM6jRLQNrmLcSG13/rZleiDbEYIWirBQTTt8pZQZpTW6LQ6Ujd8c5R7ZdGvKH85 netyciuks@gmail.com"
+
+CLIENT_PUBKEYS = [ARTURAZ_PUBKEY, JHO_PUBKEY, MIKISM_PUBKEY]
+WEB_PUBKEYS = [ARTURAZ_PUBKEY, HENRIKAS_PUBKEY]
 
 CRONTAB = %Q{
 SHELL=/bin/bash
@@ -128,16 +133,20 @@ def cron(conf)
   end
 end
 
-def adduser(user)
-  puts "Checking for user #{user}."
-  system "adduser #{user}"
-
+def pubkeys(user, *keys)
   dir = "/home/#{user}/.ssh"
   Dir.mkdir(dir, "700", "#{user}:") unless File.exists?(dir)
 
   file = "#{dir}/authorized_keys"
   File.write(file, "", "600", "#{user}:") unless file.exists?
   File.ensure(file, "#{ARTURAZ_PUBKEY}\n")
+
+end
+
+def adduser(user)
+  puts "Checking for user #{user}."
+  system "adduser #{user}"
+  pubkeys(user, ARTURAZ_PUBKEY)yy
 end
 
 def apache_vhost(vhost, path, hostname="")
@@ -571,6 +580,7 @@ production:
 end # }}}
 
 if ARGV.include?("client") # {{{
+  pubkeys(USER, *CLIENT_PUBKEYS)
   install "apache2"
   File.modify("/etc/apache2/apache2.conf") do |content|
     content.sub(/^Timeout\s+\d+$/, "Timeout 15").
@@ -586,6 +596,7 @@ if ARGV.include?("client") # {{{
 end # }}}
 
 if ARGV.include?("web") # {{{
+  pubkeys(USER, *WEB_PUBKEYS)
   system "addgroup www-shared"
   system "adduser www-data www-shared"
   system "adduser #{USER} www-shared"
