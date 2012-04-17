@@ -11,7 +11,7 @@ class TasksController < GenericController
   REOPEN_LOGS_SCOPE = scope.world
   def self.reopen_logs_action(m)
     LOGGER.info "Reopening log outputs."
-    Celluloid::Actor[:log_writer].reopen!
+    Logging::Writer.instance.reopen!
   end
 
   # Applies hotfix. Only accepts this action if connected from localhost.

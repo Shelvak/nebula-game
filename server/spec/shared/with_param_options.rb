@@ -2,9 +2,12 @@ shared_examples_for "with param options" do |required_params|
   options = required_params.is_a?(Array) \
     ? {:required => required_params} \
     : required_params
-  options.assert_valid_keys(:required, :only_push, :needs_login)
+  options.assert_valid_keys(
+    :required, :only_push, :needs_login, :needs_control_token
+  )
   options.reverse_merge!(
-    :required => [], :only_push => false, :needs_login => true
+    :required => [], :only_push => false, :needs_login => true,
+    :needs_control_token => false
   )
 
   options[:required].each do |param|
@@ -66,6 +69,32 @@ shared_examples_for "with param options" do |required_params|
     it "should not fail when without player" do
       message = create_message @action, @params, options[:only_push], false
       check_options!(message)
+    end
+  end
+
+  if options[:needs_control_token]
+    it "should fail without control token" do
+      lambda do
+        message = create_message(
+          @action,
+          @params.except(GenericController::ParamOpts::CONTROL_TOKEN_KEY),
+          options[:only_push]
+        )
+        check_options!(message)
+      end.should raise_error(GenericController::ParamOpts::BadParams)
+    end
+
+    it "should fail with bad control token" do
+      lambda do
+        message = create_message(
+          @action,
+          @params.merge(
+            GenericController::ParamOpts::CONTROL_TOKEN_KEY => "asdfasasdgfdgdf"
+          ),
+          options[:only_push]
+        )
+        check_options!(message)
+      end.should raise_error(GenericController::ParamOpts::BadParams)
     end
   end
 end

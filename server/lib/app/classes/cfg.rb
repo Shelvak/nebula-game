@@ -63,6 +63,7 @@ class Cfg
 
     def after_spawn_cooldown
       CONFIG.evalproperty('combat.cooldown.after_spawn.duration').from_now
+    end
 
     ### creds.yml ###
 

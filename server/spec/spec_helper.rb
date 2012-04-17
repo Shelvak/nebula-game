@@ -174,7 +174,7 @@ if $SPEC_INITIALIZED.nil?
     end
 
     def restore_logging
-      Celluloid::Actor[:log_writer].level = Logging::Writer::LEVEL_DEBUG
+      Logging::Writer.instance.level = Logging::Writer::LEVEL_DEBUG
     end
 
     config.before(:each) do
@@ -184,6 +184,16 @@ if $SPEC_INITIALIZED.nil?
 
     config.after(:each) do
       break_transaction
+      unless example.exception.nil?
+        Threading::Director::Task::DEADLOCK_ERRORS.each do |err|
+          if example.exception.message.include?(err)
+            innodb_info = ActiveRecord::Base.connection.
+              select_one("SHOW ENGINE INNODB STATUS")["Status"]
+            STDERR.puts "InnoDB info:"
+            STDERR.puts innodb_info
+          end
+        end
+      end
     end
   end
 

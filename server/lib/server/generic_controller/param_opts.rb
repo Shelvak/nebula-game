@@ -1,4 +1,6 @@
 class GenericController::ParamOpts
+  CONTROL_TOKEN_KEY = 'control_token'
+
   class BadParams < ArgumentError; end
 
   attr_reader :data
@@ -12,7 +14,7 @@ class GenericController::ParamOpts
   def self.only_push; new(:only_push => true); end
   def self.logged_in; new(:logged_in => true); end
   def self.control_token
-    new(:required => {'control_token' => String}, :control_token => true)
+    new(:required => {CONTROL_TOKEN_KEY => String}, :control_token => true)
   end
   def self.no_options; new({}); end
 
@@ -41,7 +43,8 @@ class GenericController::ParamOpts
     raise BadParams.new(
       "Expected #{message} to have control token, but it did not or it " +
       "was invalid!"
-    ) if @data[:control_token] && message.params['control_token'] != Cfg.control_token
+    ) if @data[:control_token] &&
+      message.params[CONTROL_TOKEN_KEY] != Cfg.control_token
 
     begin
       message.params.ensure_options!(

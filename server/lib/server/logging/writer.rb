@@ -54,7 +54,7 @@ class Logging::Writer
   end
 
   # Reopens all log outputs.
-  def reopen
+  def reopen!
     synchronize do
       @outputs.each do |output|
         case output
