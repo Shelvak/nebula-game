@@ -1,22 +1,20 @@
 package models.quest.slides
 {
-   import models.quest.*;
+   import components.base.paging.IPageModel;
+   import components.base.paging.PageModelEvent;
+
    import flash.events.EventDispatcher;
 
-   import models.quest.events.MMainQuestSlideEvent;
+   import models.quest.*;
 
    import utils.Events;
 
    import utils.Objects;
 
 
-   [Event(
-      name="visibleChange",
-      type="models.quest.events.MMainQuestSlideEvent")]
-
-   public class MSlide extends EventDispatcher
+   public class MSlide extends EventDispatcher implements IPageModel
    {
-      public function MSlide(key:String, quest:Quest) {
+      public function MSlide(key: String, quest: Quest) {
          _key = Objects.paramNotEmpty("key", key);
          _quest = quest;
       }
@@ -26,28 +24,37 @@ package models.quest.slides
          return _quest;
       }
 
-      private var _key:String;
+      private var _key: String;
       public function get key(): String {
          return _key;
       }
 
-      private var _visible:Boolean = false;
+      private var _visible: Boolean = false;
       [Bindable(event="visibleChange")]
       public function set visible(value: Boolean): void {
          if (_visible != value) {
             _visible = value;
-            Events.dispatchSimpleEvent(
-               this,
-               MMainQuestSlideEvent,
-               MMainQuestSlideEvent.VISIBLE_CHANGE
-            );
+            dispatchPageModelEvent(PageModelEvent.VISIBLE_CHANGE);
          }
       }
       public function get visible(): Boolean {
          return _visible;
       }
 
-      [Bindable]
-      public var loading:Boolean = false;
+      private var _loading: Boolean = false;
+      [Bindable(event="loadingChange")]
+      public function set loading(value: Boolean): void {
+         if (_loading != value) {
+            _loading = value;
+            dispatchPageModelEvent(PageModelEvent.LOADING_CHANGE);
+         }
+      }
+      public function get loading(): Boolean {
+         return _loading;
+      }
+
+      private function dispatchPageModelEvent(type: String): void {
+         Events.dispatchSimpleEvent(this, PageModelEvent, type);
+      }
    }
 }

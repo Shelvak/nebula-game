@@ -12,6 +12,11 @@ package components.base.paging
 
    public class CPageSwitcher extends SkinnableComponent
    {
+      public function CPageSwitcher(): void {
+         super();
+         setStyle("skinClass", CPageSwitcherSkin);
+      }
+
       /* ############# */
       /* ### MODEL ### */
       /* ############# */
@@ -66,6 +71,8 @@ package components.base.paging
                currentPage_loadingChangeHandler, false, 0, true
             );
          }
+         f_currentPageChanged = true;
+         invalidateProperties();
       }
 
       private function updateVisibility(): void {
@@ -99,6 +106,9 @@ package components.base.paging
             }
          }
          if (model != null && (f_modelChanged || f_currentPageChanged)) {
+            if (btnClose != null) {
+               btnClose.visible = !model.hasNextPage;
+            }
             btnNextPage.visible = model.hasNextPage;
             btnPreviousPage.visible = model.hasPreviousPage;
             lblPageNumber.text = model.currentPageNum + " / " + model.numPages;
@@ -145,6 +155,15 @@ package components.base.paging
          }
       }
 
+      [SkinPart(required="false")]
+      public var btnClose: Button;
+
+      private function btnClose_clickHandler(event: MouseEvent): void {
+         if (model != null) {
+            model.close();
+         }
+      }
+
       [SkinPart(required="true")]
       public var grpPageContainer: Group;
 
@@ -162,6 +181,12 @@ package components.base.paging
             case btnPreviousPage:
                btnPreviousPage.addEventListener(
                   MouseEvent.CLICK, btnPreviousPage_clickHandler, false, 0, true
+               );
+               break;
+
+            case btnClose:
+               btnClose.addEventListener(
+                  MouseEvent.CLICK, btnClose_clickHandler, false, 0, true
                );
                break;
 

@@ -6,6 +6,7 @@ package components.quests.slides
    import com.greensock.loading.data.LoaderMaxVars;
    import com.greensock.loading.display.ContentDisplay;
 
+   import components.base.paging.PageModelEvent;
    import components.popups.ErrorPopUp;
 
    import controllers.startup.ChecksumsLoader;
@@ -18,11 +19,9 @@ package components.quests.slides
    import flash.external.ExternalInterface;
    import flash.utils.Timer;
 
-   import models.quest.events.MMainQuestSlideEvent;
    import models.quest.slides.MSlide;
 
    import spark.components.Button;
-
    import spark.components.Group;
    import spark.primitives.BitmapImage;
 
@@ -84,14 +83,14 @@ package components.quests.slides
          if (_model != value) {
             if (_model != null) {
                _model.removeEventListener(
-                  MMainQuestSlideEvent.VISIBLE_CHANGE,
+                  PageModelEvent.VISIBLE_CHANGE,
                   model_visibleChangeHandler, false
                );
             }
             _model = value;
             if (_model != null) {
                _model.addEventListener(
-                  MMainQuestSlideEvent.VISIBLE_CHANGE,
+                  PageModelEvent.VISIBLE_CHANGE,
                   model_visibleChangeHandler, false, 0, true
                );
             }
@@ -107,7 +106,7 @@ package components.quests.slides
          return _model;
       }
 
-      private function model_visibleChangeHandler(event:MMainQuestSlideEvent): void {
+      private function model_visibleChangeHandler(event: PageModelEvent): void {
          updateVisibility();
       }
 
@@ -139,7 +138,7 @@ package components.quests.slides
                   imageUrl + "!\n\n" + e.name + "\n\n" + e.message);
             }
          }
-         activeLoaderChilds = getImageUrlsToLoad().length;
+         activeLoaderChildren = getImageUrlsToLoad().length;
          loader = new LoaderMax(
             new LoaderMaxVars()
                .loaders(imageLoaders)
@@ -152,14 +151,14 @@ package components.quests.slides
          loader.load(true);
       }
 
-      private var activeLoaderChilds: int = 0;
+      private var activeLoaderChildren: int = 0;
       private var failedCount: int = 0;
       private static const MAX_FAILED_COUNT: int = 10;
       private var loader: LoaderMax;
 
       private function loader_completeHandler(failed: Boolean = false): void {
-         activeLoaderChilds--;
-         if (activeLoaderChilds > 0 && !failed)
+         activeLoaderChildren--;
+         if (activeLoaderChildren > 0 && !failed)
          {
             return;
          }

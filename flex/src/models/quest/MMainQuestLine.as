@@ -1,5 +1,7 @@
 package models.quest
 {
+   import components.base.paging.MPageSwitcher;
+
    import flash.errors.IllegalOperationError;
    import flash.events.EventDispatcher;
 
@@ -16,9 +18,6 @@ package models.quest
       type="models.quest.events.MMainQuestLineEvent")]
    [Event(
       name="showButtonChange",
-      type="models.quest.events.MMainQuestLineEvent")]
-   [Event(
-      name="isOpenChange",
       type="models.quest.events.MMainQuestLineEvent")]
 
    public class MMainQuestLine extends EventDispatcher
@@ -42,7 +41,6 @@ package models.quest
             quests_countersUpdatedHandler, false, 0, true
          );
          setCurrentPresentation(null);
-         close();
          dispatchMQLEvent(MMainQuestLineEvent.SHOW_BUTTON_CHANGE);
       }
 
@@ -51,7 +49,7 @@ package models.quest
       }
 
       public function openCurrentUncompletedQuest(): void {
-         if (! hasUncompletedMainQuest()) {
+         if (!hasUncompletedMainQuest()) {
             throw new IllegalOperationError(
                "There is no uncompleted main quest in the quests list"
             );
@@ -62,29 +60,34 @@ package models.quest
       public function open(quest:Quest): void {
          Objects.paramNotNull("quest", quest);
          setCurrentPresentation(quest);
-         setIsOpen(true);
-         _currentPresentation.firstSlide();
+         _currentPresentation.firstPage();
+         _currentPresentation.open();
       }
 
       public function close(): void {
-         setIsOpen(false);
+         _currentPresentation.close();
       }
 
       private var _currentQuest:Quest;
       public function get currentQuest(): Quest {
          return _currentQuest;
       }
-      private var _currentPresentation:MMainQuestPresentation;
+
+      private var _currentPresentation: MPageSwitcher;
       [Bindable(event="currentPresentationChange")]
-      public function get currentPresentation(): MMainQuestPresentation {
+      public function get currentPresentation(): MPageSwitcher {
          return _currentPresentation;
       }
       private function setCurrentPresentation(quest:Quest): void {
          if (_currentQuest != quest) {
             _currentQuest = quest;
+            if (_currentPresentation != null) {
+               _currentPresentation.close();
+            }
             if (quest != null) {
-               _currentPresentation = new MMainQuestPresentation(quest);
-               _currentPresentation.firstSlide();
+               const factory: MainQuestPresentationFactory =
+                        MainQuestPresentationFactory.getInstance();
+               _currentPresentation = factory.getPresentation(quest);
             }
             else {
                _currentPresentation = null;
@@ -93,17 +96,17 @@ package models.quest
          }
       }
 
-      private var _isOpen:Boolean = false;
-      [Bindable(event="isOpenChange")]
-      public function get isOpen(): Boolean {
-         return _isOpen;
-      }
-      private function setIsOpen(value:Boolean) : void {
-         if (_isOpen != value) {
-            _isOpen = value;
-            dispatchMQLEvent(MMainQuestLineEvent.IS_OPEN_CHANGE);
-         }
-      }
+//      private var _isOpen: Boolean = false;
+//      [Bindable(event="isOpenChange")]
+//      public function get isOpen(): Boolean {
+//         return _isOpen;
+//      }
+//      private function setIsOpen(value:Boolean) : void {
+//         if (_isOpen != value) {
+//            _isOpen = value;
+//            dispatchMQLEvent(MMainQuestLineEvent.IS_OPEN_CHANGE);
+//         }
+//      }
 
       private function quests_countersUpdatedHandler(event:QuestCollectionEvent): void {
          dispatchMQLEvent(MMainQuestLineEvent.SHOW_BUTTON_CHANGE);

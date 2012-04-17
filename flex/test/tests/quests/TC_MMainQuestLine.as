@@ -1,14 +1,16 @@
 package tests.quests
 {
+   import components.base.paging.MPageSwitcher;
+
    import ext.hamcrest.events.causes;
    import ext.hamcrest.events.event;
    import ext.hamcrest.object.equals;
 
    import models.quest.MMainQuestLine;
-   import models.quest.MMainQuestPresentation;
    import models.quest.Quest;
    import models.quest.QuestsCollection;
    import models.quest.events.MMainQuestLineEvent;
+   import models.quest.slides.MSlide;
 
    import org.flexunit.assertThat;
    import org.hamcrest.core.allOf;
@@ -32,18 +34,16 @@ package tests.quests
 
       [Test]
       public function setQuests(): void {
-         const mql:MMainQuestLine = new MMainQuestLine();
+         const mql: MMainQuestLine = new MMainQuestLine();
          mql.open(getQuest());
          assertThat(
             "setting quests dispatches events when MQL is open",
             function():void{ mql.setQuests(new QuestsCollection()) },
             causes (mql) .toDispatch (
-               event (MMainQuestLineEvent.IS_OPEN_CHANGE),
                event (MMainQuestLineEvent.CURRENT_PRESENTATION_CHANGE),
                event (MMainQuestLineEvent.SHOW_BUTTON_CHANGE)
             )
          );
-         assertThat( "MQL is closed", mql.isOpen, isFalse() );
          assertThat(
             "currentPresentation is nullified",
             mql.currentPresentation, nullValue()
@@ -52,25 +52,26 @@ package tests.quests
 
       [Test]
       public function open(): void {
-         const mql:MMainQuestLine = new MMainQuestLine();
-         const quest:Quest = getQuest();
-         var presentation:MMainQuestPresentation = null;
+         const mql: MMainQuestLine = new MMainQuestLine();
+         const quest: Quest = getQuest();
+         var presentation: MPageSwitcher = null;
          assertThat(
-            "events dispatched when MQL is opened",
+            "CURRENT_PRESENTATION_CHANGE event dispatched when MQL is opened",
             function():void{ mql.open(quest) },
-            causes (mql) .toDispatch(
-               event (MMainQuestLineEvent.CURRENT_PRESENTATION_CHANGE),
-               event (MMainQuestLineEvent.IS_OPEN_CHANGE)
-            )
+            causes (mql) .toDispatchEvent
+               (MMainQuestLineEvent.CURRENT_PRESENTATION_CHANGE)
          );
-         assertThat( "is open", mql.isOpen, isTrue() );
          assertThat(
             "currentPresentation changed",
             mql.currentPresentation, notNullValue()
          );
          assertThat(
+            "currentPresentation should be open",
+            mql.currentPresentation.isOpen, isTrue()
+         );
+         assertThat(
             "currentPresentation has first slide opened",
-            mql.currentPresentation.currentSlide,
+            mql.currentPresentation.currentPage,
             allOf(
                notNullValue(),
                hasProperty("key", equals ("A"))
@@ -81,12 +82,8 @@ package tests.quests
          assertThat(
             "events not dispatched if MQL is already open",
             function():void{ mql.open(quest) },
-            allOf(
-               not (causes (mql) .toDispatchEvent
-                  (MMainQuestLineEvent.IS_OPEN_CHANGE)),
-               not (causes (mql) .toDispatchEvent
-                  (MMainQuestLineEvent.CURRENT_PRESENTATION_CHANGE))
-            )
+            not (causes (mql) .toDispatchEvent
+                    (MMainQuestLineEvent.CURRENT_PRESENTATION_CHANGE))
          );
          assertThat(
             "currentPresentation not changed",
@@ -99,44 +96,37 @@ package tests.quests
          const mql:MMainQuestLine = new MMainQuestLine();
          const quest:Quest = getQuest();
          mql.open(quest);
-         mql.currentPresentation.nextSlide();
+         mql.currentPresentation.nextPage();
          mql.close();
          mql.open(quest);
          assertThat(
             "first slide is shown",
-            mql.currentPresentation.currentSlide.key, equals("A")
+            MSlide(mql.currentPresentation.currentPage).key, equals("A")
          );
       }
 
       [Test]
       public function close(): void {
-         const mql:MMainQuestLine = new MMainQuestLine();
+         const mql: MMainQuestLine = new MMainQuestLine();
          mql.open(getQuest());
-         const presentation:MMainQuestPresentation = mql.currentPresentation;
+         const presentation: MPageSwitcher = mql.currentPresentation;
          assertThat(
-            "IS_OPEN_CHANGE event is dispatched when MQL is closed",
-            mql.close,
-            allOf(
-               causes (mql) .toDispatchEvent
-                  (MMainQuestLineEvent.IS_OPEN_CHANGE),
-               not (causes (mql) .toDispatchEvent
-                  (MMainQuestLineEvent.CURRENT_PRESENTATION_CHANGE))
-            )
+            "CURRENT_PRESENTATION_CHANGE event is not dispatched when MQL is closed",
+            mql.close, not (causes (mql) .toDispatchEvent
+                               (MMainQuestLineEvent.CURRENT_PRESENTATION_CHANGE))
          );
-         assertThat( "is closed", mql.isOpen, isFalse() );
          assertThat(
             "currentPresentation not changed",
             mql.currentPresentation, sameInstance (presentation)
          );
          assertThat(
+            "currentPresentation should be closed",
+            mql.currentPresentation.isOpen, isFalse()
+         );
+         assertThat(
             "repeated close() invocations are ignored",
-            mql.close,
-            allOf(
-               not (causes (mql) .toDispatchEvent
-                  (MMainQuestLineEvent.IS_OPEN_CHANGE)),
-               not (causes (mql) .toDispatchEvent
-                  (MMainQuestLineEvent.CURRENT_PRESENTATION_CHANGE))
-            )
+            mql.close, not (causes (mql) .toDispatchEvent
+                               (MMainQuestLineEvent.CURRENT_PRESENTATION_CHANGE))
          );
       }
 
@@ -149,8 +139,13 @@ package tests.quests
          mql.setQuests(quests);
          
          mql.openCurrentUncompletedQuest();
-         assertThat( "MQL is open", mql.isOpen, isTrue() );
-         assertThat( "currentPresentation set", mql.currentPresentation, notNullValue() );
+         assertThat(
+            "currentPresentation set", mql.currentPresentation, notNullValue()
+         );
+         assertThat(
+            "currentPresentation should be open",
+            mql.currentPresentation.isOpen, isTrue()
+         );
          assertThat(
             "currentQuest is uncompleted main quest from quests list",
             mql.currentQuest, sameInstance (quest)
@@ -189,8 +184,8 @@ package tests.quests
          );
       }
 
-      private function getQuest(slides:String = "A,B"): Quest {
-         const quest:Quest = new Quest();
+      private function getQuest(slides: String = "A,B"): Quest {
+         const quest: Quest = new Quest();
          quest.mainQuestSlides = slides;
          quest.status = Quest.STATUS_STARTED;
          return quest;
