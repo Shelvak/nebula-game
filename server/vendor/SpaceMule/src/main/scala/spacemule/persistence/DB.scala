@@ -60,55 +60,15 @@ Original exception:
     case None | null => loadInFileNull
   }
 
-  private var connection: Connection = null
-  private var connStr: String = null
+  private var _connection: Connection = null
+  // JRuby converts from connection = to setConnection().
+  def setConnection(connector: Connection) { _connection = connector }
 
-  def connect(connStr: String): Unit = {
-    // Load the driver
-    Class.forName("com.mysql.jdbc.Driver").newInstance
-
-    // Setup the connection
-    connection = DriverManager.getConnection(connStr)
-  }
-
-  def connect(host: String, port: Int, user: String, password: String, 
-              dbName: String): Unit = {
-    connStr = (
-      "jdbc:mysql://%s:%d/%s?user=%s&password=%s&characterEncoding=UTF8"
-    ).format(
-      host, port, dbName, user, password
-    )
-    connect(connStr)
-  }
-  
-  def connect(host: String, user: String, password: String, 
-              dbName: String): Unit = {
-    connect(host, 3306, user, password, dbName)
-  }
-
-  private[this] def reconnect() {
-    connect(connStr)
-  }
-
-  /**
-   * This prevents dreaded
-   *
-   * "com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: The last packet
-   * successfully received from the server was 88,235,472 milliseconds ago.
-   * The last packet sent successfully to the server was 88,235,472
-   * milliseconds ago. is longer than the server configured value of
-   * 'wait_timeout'. You should consider either expiring and/or testing
-   * connection validity before use in your application, increasing the server
-   * configured values for client timeouts, or using the Connector/J
-   * connection property 'autoReconnect=true' to avoid this problem."
-   *
-   * exception by ensuring we have a live connection.
-   */
-  private[this] def ensureConnection() {
-    if (! connection.isValid(1)) reconnect()
-  }
-
-  def close() = if (connection != null) connection.close
+  def connection =
+    if (_connection == null)
+      throw new IllegalStateException("DB connection not set yet!")
+    else
+      _connection
 
   def exec(sql: String): Int = {
     val statement = connection.createStatement
@@ -128,28 +88,6 @@ Original exception:
     val resultSet = statement.getGeneratedKeys()
     if (resultSet != null && resultSet.next()) resultSet.getInt(1)
     else 0
-  }
-
-  def transaction[T](func: () => T): T = {
-    ensureConnection()
-
-    val autocommit = connection.getAutoCommit
-    
-    try {
-      connection.setAutoCommit(false)
-
-      val retVal = func()
-      connection.commit()
-      retVal
-    }
-    catch {
-      case e: Exception =>
-        connection.rollback()
-        throw e
-    }
-    finally {
-      connection.setAutoCommit(autocommit)
-    }
   }
 
   /**
@@ -205,8 +143,6 @@ Original exception:
         }
     }
 
-    ensureConnection()
-
     // First create a statement off the connection
     val statement = connection.createStatement.asInstanceOf[
       com.mysql.jdbc.Statement]
@@ -232,8 +168,6 @@ Original exception:
   }
 
   def query(sql: String): ResultSet = {
-    ensureConnection()
-
     // Configure to be Read Only
     val statement = connection.createStatement(
       ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY

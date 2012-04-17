@@ -9,7 +9,7 @@ package spacemule.modules.config
  */
 
 trait ScalaConfig {
-  def get[T](key: String, set: String): T
+  def get[T](key: String): T
 
-  def getOpt[T](key: String, set: String): Option[T]
+  def getOpt[T](key: String): Option[T]
 }

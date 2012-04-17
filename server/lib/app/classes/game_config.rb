@@ -43,10 +43,6 @@ class GameConfig
     @fallbacks[set] = fallback unless fallback.nil?
   end
 
-  def scala_wrapper
-    ScalaWrapper.new(self)
-  end
-
   # Store
   def store(key, set, value)
     ensure_setup!

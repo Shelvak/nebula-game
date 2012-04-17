@@ -5,37 +5,33 @@ class SpaceMule
   # Scala constants
   SmModules = Java::spacemule.modules
   Pmg = SmModules.pmg
+  DB = Java::spacemule.persistence.DB
 
   def initialize
-    SmModules.config.Runner.run(
-      USED_DB_CONFIG.to_scala,
-      CONFIG.scala_wrapper
-    )
-    # Pretend that all SpaceMule actions have shared state for now. In reality
-    # this is only needed because SpaceMule uses its own configuration which
-    # does not support thread-local set scope.
-    @mutex = Mutex.new
+    SmModules.config.objects.Config.data = GameConfig::ScalaWrapper.new
   end
 
   # Create a new galaxy with battleground solar system. Returns id of that
   # galaxy.
   def create_galaxy(ruleset, callback_url)
-    @mutex.synchronize do
-      Pmg.Runner.create_galaxy(ruleset, callback_url)
+    with_db_connection do
+      CONFIG.with_set_scope(ruleset) do
+        Pmg.Runner.create_galaxy(ruleset, callback_url)
+      end
     end
   end
 
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
   # {web_user_id => player_name} pairs.
   def create_players(galaxy_id, ruleset, players)
-    @mutex.synchronize do
+    with_db_connection do
       PlayerCreator.invoke(galaxy_id, ruleset, players)
     end
   end
 
   # Creates a new, empty zone with only non-player solar systems.
   def create_zone(galaxy_id, ruleset, slot, quarter)
-    @mutex.synchronize do
+    with_db_connection do
       PlayerCreator.create_zone(galaxy_id, ruleset, slot, quarter)
     end
   end
@@ -51,11 +47,9 @@ class SpaceMule
   # _buildings_ is Array of +Building+s.
   def combat(location, players, nap_rules, units, loaded_units,
              unloaded_unit_ids, buildings)
-    @mutex.synchronize do
-      response = Combat.invoke(location, players, nap_rules, units, loaded_units,
-                               unloaded_unit_ids, buildings)
-      response.empty? ? nil : response.get
-    end
+    response = Combat.invoke(location, players, nap_rules, units, loaded_units,
+                             unloaded_unit_ids, buildings)
+    response.empty? ? nil : response.get
   end
 
   # Finds traveling path from _source_ to _target_ and returns path.
@@ -73,8 +67,14 @@ class SpaceMule
   #   timeMultiplier: Double
   #
   def find_path(source, target, avoid_npc=true)
-    @mutex.synchronize do
-      Pathfinder.invoke(source, target, avoid_npc)
-    end
+    Pathfinder.invoke(source, target, avoid_npc)
+  end
+
+  private
+  def with_db_connection
+    DB.connection = ActiveRecord::Base.connection.jdbc_connection
+    yield
+  ensure
+    DB.connection = nil
   end
 end

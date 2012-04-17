@@ -17,7 +17,7 @@ class GameConfig::ThreadLocal
     @global_config.store(key, set, value)
   end
 
-  delegate :store, :scala_wrapper, :to => :@global_config
+  delegate :store, :to => :@global_config
 
   # Return random value by from config range.
   def hashrand(key, set=nil)
@@ -57,12 +57,12 @@ class GameConfig::ThreadLocal
     end
   end
 
-  def with_set_scope(set, &block)
-    raise ArgumentError.new("Block required but not passed!") if block.nil?
+  def with_set_scope(set)
+    raise ArgumentError, "Block required but not passed!" unless block_given?
 
     prev_scope = @set_scope
     @set_scope = set
-    value = block.call(self)
+    value = yield
     @set_scope = prev_scope
     value
   end

@@ -14,25 +14,7 @@ import spacemule.persistence.{Row, DB}
 class BufferManager(buffers: BufferLike[Row]*) {
   def clear() { buffers.foreach(_.clear()) }
 
-  // Are we currently in a transaction?
-  private[this] var inTransaction = false
-
-  def transaction[T](func: () => T): T = {
-    try {
-      inTransaction = true
-      DB.transaction(func)
-    }
-    finally {
-      inTransaction = false
-    }
-  }
-
   def save() {
-    if (! inTransaction)
-      throw new IllegalStateException(
-        "You should not save buffers while not in transaction!"
-      )
-
     val batchId = DB.batchId
     buffers.foreach { _.save(batchId) }
   }
