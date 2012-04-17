@@ -559,10 +559,10 @@ package models.building
             if (_selectedBuilding.isDamaged)
             {
                var ssObject: MSSObject = ML.latestPlanet.ssObject;
-               missingRepairStorageString = Resource.getMissingStoragesString(
+                missingRepairStorageString = Resource.getMissingStoragesString(
                        ssObject, metalRepairCost, energyRepairCost, zetiumRepairCost);
 
-               enoughRepairStorage = (missingStorageString == ''?true:false);
+               enoughRepairStorage = (missingRepairStorageString == ''?true:false);
 
                if (!enoughRepairStorage)
                {
