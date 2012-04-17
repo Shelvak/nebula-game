@@ -18,8 +18,8 @@
            AssetNames.BUTTONS_IMAGE_FOLDER + 'build_up')}"
            top="0" left="0"
            visible="{facility.constructableType != null}"/>
-
    <fx:Script><![CDATA[
+
       import models.building.Building;
 
       import utils.assets.AssetNames;

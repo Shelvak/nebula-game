@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                        xmlns:s="library://ns.adobe.com/flex/spark" 
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
                         xmlns:base="components.base.*"
+                        xmlns:credits="components.credits.*"
                         addedToStage="advancedcontainer1_addedToStageHandler(event)"
                         removedFromStage="advancedcontainer1_removedFromStageHandler(event)"
                         width="100%" xmlns:components="utils.components.*"
                         xmlns:facilities="components.unitsscreen.facilities.*">
-   
+   <fx:Binding source="ML.player.vipLevel != 0" destination="playerIsVip"/>
    <base:states>
       <s:State name="collapsed"/>
       <s:State name="expanded"/>
@@ -16,6 +17,8 @@
       <![CDATA[
       import com.developmentarc.core.utils.EventBroker;
 
+      import components.credits.ConstructorCompleteAll;
+      import components.popups.ActionConfirmationPopUp;
       import components.unitsscreen.UnitScreenAnimationDurations;
 
       import controllers.buildings.BuildingsCommand;
@@ -24,63 +27,62 @@
       import globalevents.GTechnologiesEvent;
       import globalevents.GlobalEvent;
 
-      import models.ModelsCollection;
-
       import models.building.Building;
       import models.building.events.BuildingEvent;
       import models.constructionqueueentry.ConstructionQueueEntry;
       import models.unit.Unit;
 
       import mx.collections.ArrayCollection;
-      import mx.controls.Alert;
       import mx.core.IUIComponent;
       import mx.core.UIComponent;
       import mx.events.DragEvent;
       import mx.events.FlexEvent;
       import mx.managers.DragManager;
 
+      import utils.UrlNavigate;
       import utils.assets.AssetNames;
       import utils.locale.Localizer;
 
-      public static const SHOP_PART_HEIGHT: Number = 180;
 
+      public static const SHOP_PART_HEIGHT: Number = 180;
       [Bindable]
       private var _facility: Building;
-
       public function set facility(value: Building): void {
          var oldBuilding: Building = _facility;
          if (_facility != null) {
-            _facility.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDragIfNeeded);
+            _facility.removeEventListener(
+               BuildingEvent.QUERY_CHANGE, cancelDragIfNeeded
+            );
             _facility.removeEventListener(BuildingEvent.COLLAPSE, collapseList);
             _facility.removeEventListener(BuildingEvent.EXPAND, expandList);
          }
          _facility = value;
          if (_facility != null) {
-            _facility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDragIfNeeded);
+            _facility.addEventListener(
+               BuildingEvent.QUERY_CHANGE, cancelDragIfNeeded
+            );
             _facility.addEventListener(BuildingEvent.COLLAPSE, collapseList);
             _facility.addEventListener(BuildingEvent.EXPAND, expandList);
          }
          if ((oldBuilding != null) && (_facility != null)) {
-            if (oldBuilding.id != _facility.id)
+            if (oldBuilding.id != _facility.id) {
                recalculateUnitsList();
+            }
          }
          else
-         if (_facility != null)
+         if (_facility != null) {
             recalculateUnitsList();
-
+         }
       }
-
+      [Bindable]
+      private var playerIsVip: Boolean = false;
       [Bindable]
       private var purchasableList: ArrayCollection = null;
-
       private static const imageSize: int = 172;
-
       [Bindable]
       private var isMoving: Boolean = false;
-
       [Bindable]
       private var unitsList: ArrayCollection = null;
-
       private function cancelDragIfNeeded(e: BuildingEvent): void {
          if (isMoving) {
             isMoving = false;
@@ -90,7 +92,6 @@
             content.drawFocus(false);
          }
       }
-
       public function expandList(e: Event = null): void {
          if (currentState != "expanded") {
             collapse.stop();
@@ -98,7 +99,6 @@
             (currentState = "expanded");
          }
       }
-
       public function collapseList(e: Event = null): void {
          if (currentState != "collapsed") {
             expand.stop();
@@ -106,37 +106,32 @@
             currentState = "collapsed"
          }
       }
-
-
       protected function content_dragCompleteHandler(event: DragEvent = null): void {
          if (isMoving) {
             var tempElement: ConstructionQueueEntry = (content.selectedItems[0] as ConstructionQueueEntry);
             if (_facility.constructionQueueEntries.getItemIndex(tempElement) !=
-                    tempElement.position) {
-               var newPosition: int = tempElement.position > _facility.constructionQueueEntries.getItemIndex(tempElement) ?
-                       content.selectedIndex : content.selectedIndex + 1;
+                   tempElement.position) {
+               var newPosition: int = tempElement.position > _facility.constructionQueueEntries.getItemIndex(tempElement)
+                                         ?
+                                      content.selectedIndex
+                                         : content.selectedIndex + 1;
                new ConstructionQueuesCommand(
-                       ConstructionQueuesCommand.MOVE,
-                       {id: tempElement.id,
-                          count: tempElement.countSelected,
-                          position: newPosition}
+                  ConstructionQueuesCommand.MOVE,
+                  {id:         tempElement.id,
+                     count:    tempElement.countSelected,
+                     position: newPosition}
                ).dispatch();
             }
             isMoving = false;
          }
       }
-
-
       protected function content_dragStartHandler(event: DragEvent): void {
          isMoving = true;
       }
-
-
       protected function shop_creationCompleteHandler(event: FlexEvent): void {
-         EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED, recalculateUnitsList);
+         EventBroker.subscribe(GTechnologiesEvent.TECHNOLOGY_LEVEL_CHANGED,
+                               recalculateUnitsList);
       }
-
-
       private function recalculateUnitsList(e: Event = null): void {
          if (_facility != null) {
             unitsList = Unit.getAllUnits(_facility);
@@ -145,180 +140,211 @@
             unitsList = new ArrayCollection();
          }
       }
-
       private static const PREVIOUS_QUEUE: int = 1;
       private static const NEXT_QUEUE: int = 2;
       private static const PREVIOUS_SHOP: int = 3;
       private static const NEXT_SHOP: int = 4;
-
       private static const QUEUE_SCROLL_STEP: int = 10;
       private static const SHOP_SCROLL_STEP: int = 10;
       private static const SHOP_SKIP_STEP: int = 200;
-
       private static const SCROLL_DELAY: int = 30;
-
       private var scrollTimer: Timer;
-
       private var scrollType: int = 0;
-
       protected function nextQueue_rollOverHandler(event: Event): void {
          scrollType = NEXT_QUEUE;
          scrollTimer.start();
       }
-
-
       protected function previousQueue_rollOverHandler(event: Event): void {
          scrollType = PREVIOUS_QUEUE;
          scrollTimer.start();
       }
-
       protected function nextShop_rollOverHandler(event: Event): void {
          scrollType = NEXT_SHOP;
          scrollTimer.start();
       }
-
-
       protected function previousShop_rollOverHandler(event: Event): void {
          scrollType = PREVIOUS_SHOP;
          scrollTimer.start();
       }
-
       private function scrollViewport(e: TimerEvent): void {
          switch (scrollType) {
             case PREVIOUS_QUEUE:
                if (queueViewport.horizontalScrollPosition > 0) {
                   queueViewport.horizontalScrollPosition -=
-                          Math.min(queueViewport.horizontalScrollPosition, QUEUE_SCROLL_STEP);
+                     Math.min(queueViewport.horizontalScrollPosition,
+                              QUEUE_SCROLL_STEP);
                }
                break;
             case NEXT_QUEUE:
                if (queueViewport.horizontalScrollPosition < (content.width - queueCont.width)) {
                   queueViewport.horizontalScrollPosition +=
-                          Math.min((content.width - queueCont.width) - queueViewport.horizontalScrollPosition, QUEUE_SCROLL_STEP);
+                     Math.min((content.width - queueCont.width) - queueViewport.horizontalScrollPosition,
+                              QUEUE_SCROLL_STEP);
                }
                break;
             case PREVIOUS_SHOP:
                if (shopViewport.horizontalScrollPosition > 0) {
                   shopViewport.horizontalScrollPosition -=
-                          Math.min(shopViewport.horizontalScrollPosition, SHOP_SCROLL_STEP);
+                     Math.min(shopViewport.horizontalScrollPosition,
+                              SHOP_SCROLL_STEP);
                }
                break;
             case NEXT_SHOP:
                if (shopViewport.horizontalScrollPosition < (shop.width - shopCont.width)) {
                   shopViewport.horizontalScrollPosition +=
-                          Math.min((shop.width - shopCont.width) - shopViewport.horizontalScrollPosition, SHOP_SCROLL_STEP);
+                     Math.min((shop.width - shopCont.width) - shopViewport.horizontalScrollPosition,
+                              SHOP_SCROLL_STEP);
                }
                break;
             default:
                throw new Error('Scrolling failed, with uknown scroll type: ' + scrollType);
          }
       }
-
-
       protected function scroll_rollOutHandler(event: Event): void {
          scrollType = 0;
          scrollTimer.stop();
       }
-
-
       protected function nextQueue_dragEnterHandler(event: DragEvent): void {
          DragManager.acceptDragDrop(event.target as IUIComponent);
          nextQueue_rollOverHandler(event);
          content.dragMoveEnabled = false;
       }
-
-
       protected function previousQueue_dragEnterHandler(event: DragEvent): void {
          DragManager.acceptDragDrop(event.target as IUIComponent);
          previousQueue_rollOverHandler(event);
          content.dragMoveEnabled = false;
       }
-
-
       protected function nextShop_dragEnterHandler(event: DragEvent): void {
          DragManager.acceptDragDrop(event.target as IUIComponent);
          nextShop_rollOverHandler(event);
          content.dragMoveEnabled = false;
       }
-
-
       protected function previousShop_dragEnterHandler(event: DragEvent): void {
          DragManager.acceptDragDrop(event.target as IUIComponent);
          previousShop_rollOverHandler(event);
          content.dragMoveEnabled = false;
       }
-
-
       protected function button_dragDropHandler(event: Event): void {
          callLater(function (): void {
             content.dragMoveEnabled = true;
          });
       }
-
       private function reset(e: GlobalEvent): void {
          facility = null;
-         if (scrollTimer != null)
-         {
+         if (scrollTimer != null) {
             scrollTimer.stop();
             scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
             scrollTimer = null;
          }
       }
-
       protected function advancedcontainer1_addedToStageHandler(event: Event): void {
          scrollTimer = new Timer(SCROLL_DELAY);
          scrollTimer.addEventListener(TimerEvent.TIMER, scrollViewport);
          EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
       }
-
-
       protected function advancedcontainer1_removedFromStageHandler(event: Event): void {
-         if (scrollTimer != null)
-         {
+         if (scrollTimer != null) {
             scrollTimer.stop();
             scrollTimer.removeEventListener(TimerEvent.TIMER, scrollViewport);
             scrollTimer = null;
          }
       }
-
-
       protected function nextShop_clickHandler(event: MouseEvent): void {
          if (shopViewport.horizontalScrollPosition < (shop.width - shopCont.width)) {
             shopViewport.horizontalScrollPosition +=
-                    Math.min((shop.width - shopCont.width) - shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
+               Math.min((shop.width - shopCont.width) - shopViewport.horizontalScrollPosition,
+                        SHOP_SKIP_STEP);
          }
       }
-
-
       protected function previousShop_clickHandler(event: MouseEvent): void {
          if (shopViewport.horizontalScrollPosition > 0) {
             shopViewport.horizontalScrollPosition -=
-                    Math.min(shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
+               Math.min(shopViewport.horizontalScrollPosition, SHOP_SKIP_STEP);
+         }
+      }
+      protected function btnFlank_clickHandler(event: Event): void {
+         new BuildingsCommand(BuildingsCommand.SET_BUILD_IN_2ND_FLANK,
+                              {
+                                 'model':  _facility,
+                                 'enable': !_facility.buildIn2ndFlank
+                              }
+         ).dispatch();
+      }
+      private function getProvider(_list: ArrayCollection,
+                                   _constructableId: int): ArrayCollection {
+         return _constructableId > 0 ? _list : null;
+      }
+      protected function btnHidden_clickHandler(event: Event): void {
+         new BuildingsCommand(BuildingsCommand.SET_BUILD_HIDDEN,
+                              {
+                                 'model':  _facility,
+                                 'enable': !_facility.buildHidden
+                              }
+         ).dispatch();
+      }
+      private function coinComp1_clickHandler(event: MouseEvent): void {
+         var accelerator: ConstructorCompleteAll = new ConstructorCompleteAll();
+         var speedPopUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
+         accelerator.popUp = speedPopUp;
+         accelerator.constructor = _facility;
+         speedPopUp.confirmButtonEnabled = true;
+         speedPopUp.confirmButtonClickHandler = function (): void {
+            if (_facility != null) {
+               if (accelerator.hasEnoughCredits()) {
+                  new BuildingsCommand(
+                     BuildingsCommand.CONSTRUCT_ALL, {
+                        'id': _facility.id,
+                        'index': accelerator.currentModel.index}).dispatch();
+               }
+               else {
+                  UrlNavigate.getInstance().showBuyCreds();
+               }
+            }
+         };
+         speedPopUp.addElement(accelerator);
+         speedPopUp.show();
+      }
+      private static const CONSTRUCT_ALL_HIDDEN: int = 0;
+      private static const CONSTRUCT_ALL_DISABLED: int = 1;
+      private static const CONSTRUCT_ALL_NOT_VIP: int = 3;
+      private static const CONSTRUCT_ALL_ENABLED: int = 2;
+
+      private function getConstructAllState(entries: ArrayCollection,
+                                            playerIsVip: Boolean): int {
+         var hasPrepaid: Boolean = false;
+         var hasUnprepaid: Boolean = false;
+         for each (var entry: ConstructionQueueEntry in entries) {
+            if (entry.prepaid) {
+               hasPrepaid = true;
+            }
+            else {
+               hasUnprepaid = true;
+            }
+         }
+         if (hasPrepaid) {
+            if (hasUnprepaid) {
+               return CONSTRUCT_ALL_DISABLED;
+            }
+            else if (playerIsVip) {
+               return CONSTRUCT_ALL_ENABLED;
+            }
+            return CONSTRUCT_ALL_NOT_VIP;
+         }
+         else {
+            return CONSTRUCT_ALL_HIDDEN;
          }
       }
 
-      protected function btnFlank_clickHandler(event: Event): void {
-         new BuildingsCommand(BuildingsCommand.SET_BUILD_IN_2ND_FLANK,
-                 {
-                    'model': _facility,
-                    'enable': ! _facility.buildIn2ndFlank
-                 }
-         ).dispatch();
-      }
-
-      private function getProvider(_list: ArrayCollection, 
-                                   _constructableId: int): ArrayCollection
-      {
-         return _constructableId > 0 ? _list : null;
-      }
-
-      protected function btnHidden_clickHandler(event: Event): void {
-         new BuildingsCommand(BuildingsCommand.SET_BUILD_HIDDEN,
-                 {
-                    'model': _facility,
-                    'enable': ! _facility.buildHidden
-                 }
-         ).dispatch();
+      private function getConstructAllTooltip(entries: ArrayCollection,
+                                              playerIsVip: Boolean): String {
+         const state: int = getConstructAllState(entries, playerIsVip);
+         if (state == CONSTRUCT_ALL_DISABLED) {
+            return Localizer.string('Credits', 'tooltip.hasUnprepaid');
+         }
+         if (state == CONSTRUCT_ALL_NOT_VIP) {
+            return Localizer.string('Credits', 'tooltip.buildAllEntries.mustBeVip')
+         }
+         return "";
       }
       ]]>
    </fx:Script>  
@@ -414,6 +440,28 @@
                width="100%" height="100%"/>
             <base:BackgroundedLabel right="3" bottom="3" visible="{_facility.totalConstructorMod > 0}"
                                     text="{_facility.totalConstructorMod + '%'}"/>
+            <s:Group top="0" right="0"
+                     visible="{_facility != null &amp;&amp; getConstructAllState(
+                                  _facility.constructionQueueEntries,
+                                  playerIsVip) != CONSTRUCT_ALL_HIDDEN}"
+                    toolTip="{_facility == null
+                                 ? ''
+                                 : getConstructAllTooltip(
+                                    _facility.constructionQueueEntries,
+                                    playerIsVip)}"
+                    clipAndEnableScrolling="true">
+               <s:Rect top="-5" bottom="0" left="0" right="-5" alpha="0.9"
+                       radiusX="5" radiusY="5">
+                  <s:fill>
+                     <s:SolidColor color="#000000"/>
+                  </s:fill>
+               </s:Rect>
+               <credits:CoinComp top="6" right="6" left="6" bottom="6"
+                                 enabled="{getConstructAllState(
+                                              _facility.constructionQueueEntries,
+                                              playerIsVip) == CONSTRUCT_ALL_ENABLED}"
+                                 click="coinComp1_clickHandler(event)"/>
+            </s:Group>
          </s:Group>
       </s:Group>
 

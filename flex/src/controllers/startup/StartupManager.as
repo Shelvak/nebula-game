@@ -368,6 +368,7 @@ package controllers.startup
          bindPair(BuildingsCommand.ACTIVATE_OVERDRIVE, new ActivateOverdriveAction());
          bindPair(BuildingsCommand.DEACTIVATE_OVERDRIVE, new DeactivateOverdriveAction());
          bindPair(BuildingsCommand.ACCELERATE_CONSTRUCTOR, new AccelerateConstructorAction());
+         bindPair(BuildingsCommand.CONSTRUCT_ALL, new ConstructAllAction());
          bindPair(BuildingsCommand.ACCELERATE_UPGRADE, new AccelerateUpgradeAction());
          bindPair(BuildingsCommand.CANCEL_CONSTRUCTOR, new CancelConstructorAction());
          bindPair(BuildingsCommand.CANCEL_UPGRADE, new CancelUpgradeAction());

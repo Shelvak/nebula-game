@@ -63,6 +63,23 @@ class Cfg
 
     def after_spawn_cooldown
       CONFIG.evalproperty('combat.cooldown.after_spawn.duration').from_now
+
+    ### creds.yml ###
+
+    def creds_upgradable_speed_up_data
+      CONFIG['creds.upgradable.speed_up']
+    end
+
+    # Returns [time, cost] for _index_.
+    def creds_upgradable_speed_up_entry(index)
+      entry = creds_upgradable_speed_up_data[index]
+      raise ArgumentError, "Unknown speed up index #{index.inspect
+        }, max index: #{creds_upgradable_speed_up_data.size - 1}!" \
+        if entry.nil?
+
+      time, cost = entry
+      time = CONFIG.safe_eval(time) # Evaluate because it contains speed.
+      [time, cost]
     end
 
     ### daily_bonus.yml ###

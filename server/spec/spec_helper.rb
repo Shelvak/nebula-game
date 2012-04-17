@@ -54,8 +54,11 @@ if $SPEC_INITIALIZED.nil?
     [io, player.id]
   end
 
-  def set_resources(planet, metal, energy, zetium,
+  def set_resources(planet, metal=nil, energy=nil, zetium=nil,
       metal_storage=nil, energy_storage=nil, zetium_storage=nil)
+    metal  ||= 1_000_000
+    energy ||= 1_000_000
+    zetium ||= 1_000_000
     planet.metal_storage = metal_storage || metal
     planet.metal = metal
     planet.energy_storage = energy_storage || energy

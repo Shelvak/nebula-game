@@ -10,6 +10,9 @@ package tests.chat.models.chat
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
 
+   import tests.chat.classes.IChatJSCallbacksInvokerMock;
+
+
    public class TC_MChat_memberOnlineStatus extends TC_BaseMChat
    {
       public function TC_MChat_memberOnlineStatus()
@@ -26,6 +29,7 @@ package tests.chat.models.chat
          ML.player.id = 1;
          ML.player.name = "mikism";
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {
                "1": ML.player.name,
                "2": "jho",

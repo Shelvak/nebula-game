@@ -349,6 +349,8 @@ function authorizationFailed() {
 
 // Called when client version is too old.
 function versionTooOld(requiredVersion, currentVersion) {
+  // Remove leave confirmation.
+  window.onbeforeunload = null;
   window.alert(locales.versionTooOld(locale, requiredVersion, currentVersion));
   window.location.reload();
 }
@@ -463,7 +465,8 @@ function crashRemote(summary, description, body) {
     data: {
       summary: summary,
       error_description: description,
-      error_body: body
+      error_body: body,
+      tag: server
     }
   }).done(function() {
     ajaxStatus.html(ce.sent(locale));

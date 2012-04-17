@@ -1,18 +1,16 @@
 package components.base
 {
-   import components.markers.ISystemCursorUser;
-   
    import flash.events.FocusEvent;
-   
+
    import spark.components.TextInput;
-   
-   
+
+
    /**
     * Component enters this state when it gains focus. 
     */   
    [SkinState("focused")]
    
-   public class BaseTextInput extends TextInput implements ISystemCursorUser
+   public class BaseTextInput extends TextInput
    {
       public function BaseTextInput ()
       {

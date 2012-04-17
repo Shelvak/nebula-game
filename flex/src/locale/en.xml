@@ -1268,8 +1268,39 @@
     <warning.notEnoughVipCreds 
     value="To convert VIP creds you must at least have {0} of them" />
     <label.additionalPrivileges value="You will also get these privileges:"/>
-    <label.queueBuilding
-    value="● Adding buildings and units to construction queue without paying first."/>
+    <label.additionalPrivileges.queueBuilding>
+      ● Adding buildings and units to construction queue without paying first.
+    </label.additionalPrivileges.queueBuilding>
+    <label.additionalPrivileges.buildAllEntries>
+      ● Instantly finishing construction of all pre-paid units in queue with
+      discounts (compared to finishing them one by one)!
+    </label.additionalPrivileges.buildAllEntries>
+    <label.buildAllEntries value="You can finish this construction queue instantly:"/>
+    <!-- 0: creds for construct all,
+         1: creds to pay if accelerate one by one -->
+    <label.buildAllCreds>
+      <![CDATA[
+       <p>To finish all construction queue you will have to pay:</p>
+       <p />
+       <p><span fontWeight="bold" color="#eec500"
+        >{0 one[? cred] many[? creds]}</span></p>
+       <p />
+       <p>If you used accelerate on each unit you would pay:</p>
+       <p />
+       <p><span fontWeight="bold" color="#eec500"
+        >{1 one[? cred] many[? creds]}</span></p>
+      ]]>
+    </label.buildAllCreds>
+    <tooltip.hasUnprepaid>
+      <p>You can't instantly finish construction queue because it contains
+        units that are not paid for.</p>
+    </tooltip.hasUnprepaid>
+    <tooltip.buildAllEntries.mustBeVip>
+       <p>
+         You must be VIP player to instantly finish construction of all units
+         in this queue.
+       </p>
+    </tooltip.buildAllEntries.mustBeVip>
   </Credits>
 
   <Exploration>
@@ -2332,8 +2363,9 @@
       
       <p>
         We have landed in this planet with our
-        [reference:Buildings/Mothership.name] and it seems we are not alone. We 
-        have set up our defenses but they are draining more energy than our 
+        [reference:Buildings/Mothership.name] and our preliminary scouting
+        have reported that it seems we are not alone. We
+        have set up our base but is is draining more energy than our
         generators can produce. This cannot continue for long!
       </p>
       
@@ -3449,24 +3481,24 @@
       <![CDATA[
       <p>The quest you have just completed rewards you with troops.
         Before starting next quest it is advised to claim this reward.</p>
-      <p>Go to the N44 menu, press the „[reference:MainMenu/label.quests]“ button,
+      <p>Go to the N44 menu, press the "[reference:MainMenu/label.quests]" button,
         select previously completed quest and click
-        „[reference:Quests/label.claimReward]“.</p>
+        "[reference:Quests/label.claimReward]".</p>
       ]]>
     </TakeUnitsReward>
 
     <UnitScreen>
       <![CDATA[
       <p>In the top right corner of the screen you can see the number of
-      troops you have. Pressing that number will bring you to the troops'
-      management panel where you can adjust your strategy of the battle.</p>
+      units you have. Pressing that number will bring you to the unit
+      management panel where you can adjust your battle strategy.</p>
       ]]>
     </UnitScreen>
 
     <AttackButton>
       <![CDATA[
       <p>In order to attack alien building you have to select it and press the
-      „[reference:BuildingSelectedSidebar/attack]“ button in the sidebar.</p>
+      "[reference:BuildingSelectedSidebar/attack]" button in the sidebar.</p>
       ]]>
     </AttackButton>
 
@@ -3475,8 +3507,8 @@
       <p>In the opened panel you can select troops which you want to participate
       in the battle.</p>
       <p>In most cases, all troops are selected. You can select them by pressing
-      „[reference:Units/label.all]“ button in the sidebar.</p>
-      <p>When you have selected troops, press „[reference:Units/label.attack]“.</p>
+      "[reference:Units/label.all]" button in the sidebar.</p>
+      <p>When you have selected troops, press "[reference:Units/label.attack]".</p>
       ]]>
     </AttackScreen>
 
@@ -3530,7 +3562,7 @@
     <TechResearch1>
       <![CDATA[
       <p>In order to invent a technology you have to select it first.
-        Afterwards press the „[reference:Technologies/upgrade]“ button
+        Afterwards press the "[reference:Technologies/upgrade]" button
         in the sidebar.</p>
       ]]>
     </TechResearch1>
@@ -3566,7 +3598,7 @@
       <p>Metal is mostly used for building troops and buildings. Energy is being
       used for construction and it is also consumed by buildings such as MEX's,
       ZEX's, Radars and so on. Zetium is used for constructing powerful tanks and
-      spaceships as well as for researching technologies.
+      spaceships as well as for researching technologies.</p>
       ]]>
     </Resources>
 
@@ -3620,13 +3652,13 @@
       <![CDATA[
       <p>If you want to send your spaceships to the space open the spaceship
       management panel.</p>
-      <p>Then select spaceships and press „[reference:Units/label.issueOrder]“.</p>
+      <p>Then select spaceships and press "[reference:Units/label.issueOrder]".</p>
       ]]>
     </SendingShips1>
     <SendingShips2>
       <![CDATA[
       <p>The map of the solar system will be opened. Press on the desired
-      sector and then click the „[reference:Movement/label.toSector]“ button.</p>
+      sector and then click the "[reference:Movement/label.toSector]" button.</p>
       ]]>
     </SendingShips2>
 
@@ -3643,7 +3675,7 @@
     <MoveToPlanet>
       <![CDATA[
       <p>You can command your fleet even if it is in space. Just select one of
-      your fleet and press the „[reference:Movement/label.move]“ button. Then
+      your fleet and press the "[reference:Movement/label.move]" button. Then
       select the sector you want to move to.</p>
       <p>If you want your fleet to move into planet press on the planet and click
       "[reference:Movement/label.toPlanet]" button.</p>
@@ -3655,7 +3687,7 @@
       <p>If there are no enemy forces in the planet you can take it over.
       All the buildings and resources in the planet will become yours.</p>
       <p>To claim a planet you have to click the
-        „[reference:BuildingSidebar/label.claimPlanet]“ button in the sidebar.</p>
+        "[reference:BuildingSidebar/label.claimPlanet]" button in the sidebar.</p>
       ]]>
     </ClaimPlanet>
 
@@ -3673,7 +3705,7 @@
     <LoadWreckage1>
       <![CDATA[
       <p>Being in a sector with debris select your fleet and press
-      „[reference:Squadrons/label.manage]“</p>
+      "[reference:Squadrons/label.manage]"</p>
       <p>In the fallowing window press the load button.</p>
       ]]>
     </LoadWreckage1>
@@ -5440,6 +5472,12 @@
      <label.channelMembers value="Players"/>
      <ignorePopup.title value="Ignore?"/>
      <ignorePopup.message value="Are you sure you want to ignore player {0}?"/>
+     <js.title.allianceMessages>
+        {0 one[Alliance message] many[? alliance messages]}
+     </js.title.allianceMessages>
+     <js.title.privateMessages>
+        {0 one[Private message] many[? private messages]}
+     </js.title.privateMessages>
   </Chat>
   
   <Market>

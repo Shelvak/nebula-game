@@ -1,5 +1,7 @@
 package controllers.objects.actions.customcontrollers
 {
+   import controllers.objects.UpdatedReason;
+
    import globalevents.GPlanetEvent;
 
    import models.building.Building;
@@ -72,6 +74,10 @@ package controllers.objects.actions.customcontrollers
             buildingOld.dispatchEvent(
                new BuildingEvent(BuildingEvent.CONSTRUCTION_FINISHED)
             );
+            if (reason == UpdatedReason.CONSTRUCTABLE_CHANGED)
+            {
+               buildingOld.dispatchQueryChangeEvent();
+            }
             new GPlanetEvent(GPlanetEvent.BUILDINGS_CHANGE, planet);
          }
       }

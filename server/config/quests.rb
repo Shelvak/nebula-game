@@ -255,17 +255,17 @@ QUESTS = QuestDefinition.define(:debug => false) do
 
     # Technologies side quest line
     tech_side = [
-      [10300, Technology::Trooper,                  3, 0.7 ],
-      [10305, Technology::Seeker,                   2, 0.65],
-      [10310, Technology::Shocker,                  2, 0.6 ],
-      [10315, Technology::FieryMelters,             4, 0.55],
-      [10320, Technology::SuperconductorTechnology, 4, 0.5 ],
-      [10325, Technology::PowderedZetium,           4, 0.45],
-      [10330, Technology::Vulcan,                   1, 0.4 ],
-      [10335, Technology::Screamer,                 1, 0.35],
-      [10340, Technology::Thunder,                  1, 0.3 ],
-      [10345, Technology::BuildingRepair,           1, 0.25],
-      [10350, Technology::ShipStorage,              3, 0.2 ],
+      [10300, Technology::Trooper,                  3, 0.95],
+      [10305, Technology::Seeker,                   2, 0.90],
+      [10310, Technology::Shocker,                  2, 0.85],
+      [10315, Technology::FieryMelters,             4, 0.80],
+      [10320, Technology::SuperconductorTechnology, 4, 0.75],
+      [10325, Technology::PowderedZetium,           4, 0.70],
+      [10330, Technology::Vulcan,                   1, 0.75],
+      [10335, Technology::Screamer,                 1, 0.70],
+      [10340, Technology::Thunder,                  1, 0.65],
+      [10345, Technology::BuildingRepair,           1, 0.60],
+      [10350, Technology::ShipStorage,              3, 0.55],
       [10355, Technology::DefensivePortal,          1, nil ],
     ]
 
@@ -279,7 +279,11 @@ QUESTS = QuestDefinition.define(:debug => false) do
           # Last item
           reward_creds 2500
         else
-          reward_cost tech_side[index + 1][1], :count => next_reward_multiplier
+          _, next_tech, next_tech_level, _ = tech_side[index + 1]
+          next_tech_level.downto(1) do |lvl|
+            reward_cost next_tech, :count => next_reward_multiplier,
+              :level => lvl
+          end
         end
       end
     end
@@ -552,8 +556,8 @@ QUESTS = QuestDefinition.define(:debug => false) do
   end
 
   [
-    100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000,
-    100000, 250000, 500000, 1_000000
+    100, 250, 500, 1_000, 2_500, 5_000, 10_000, 25_000, 50_000, 100_000, 250_000,
+    500_000, 1_000_000, 2_500_000, 5_000_000, 10_000_000
   ].each_with_index do |count, index|
     achievement(20020 + index) { destroy Unit, :count => count }
   end

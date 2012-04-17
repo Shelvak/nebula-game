@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                        xmlns:s="library://ns.adobe.com/flex/spark" 
-                        xmlns:mx="library://ns.adobe.com/flex/mx" 
+                        xmlns:s="library://ns.adobe.com/flex/spark"
                         xmlns:base="components.base.*"
                         creationComplete="group1_creationCompleteHandler(event)"
                         horizontalCenter="0">
@@ -10,27 +9,19 @@
    </fx:Declarations>
    <fx:Script>
       <![CDATA[
-      import com.developmentarc.core.utils.EventBroker;
-
       import components.credits.events.CreditEvent;
       import components.popups.ActionConfirmationPopUp;
 
       import config.Config;
 
-      import controllers.buildings.actions.AccelerateConstructorAction;
-
-      import globalevents.GCreditEvent;
-
       import models.ModelLocator;
       import models.credit.MAccelerate;
       import models.parts.Upgradable;
-      import models.parts.events.UpgradeEvent;
 
       import mx.collections.ArrayCollection;
       import mx.events.FlexEvent;
 
       import utils.DateUtil;
-      import utils.StringUtil;
       import utils.locale.Localizer;
 
 

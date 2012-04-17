@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009" 
-        xmlns:s="library://ns.adobe.com/flex/spark" 
-        xmlns:mx="library://ns.adobe.com/flex/mx">
+        xmlns:s="library://ns.adobe.com/flex/spark">
    
    <fx:Metadata>
       [HostComponent("components.notifications.parts.IRAllianceInvitation")]
@@ -11,13 +10,11 @@
       <s:VerticalLayout gap="5"/>
    </s:layout>
 
-   <s:RichEditableText editable="false" id="message"/>
-   <s:Label id="joinRestrictionMessage"/>
+   <s:RichEditableText editable="false" id="message"
+                       width="100%" lineBreak="toFit"/>
+   <s:Group width="100%">
+      <s:Label id="joinRestrictionMessage" left="0" right="0" lineBreak="toFit"/>
+   </s:Group>
    <s:Button id="joinButton"/>
    
-   <!-- SkinParts
-   name=message, type=spark.components.RichEditableText, required=true
-   name=joinRestrictionMessage, type=spark.components.Label, required=true
-   name=joinButton, type=spark.components.Button, required=true
-   -->
 </s:Skin>

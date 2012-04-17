@@ -25,6 +25,12 @@ class CredStats < ActiveRecord::Base
   ACTION_MARKET_FEE = 10
   # Unlearn technology
   ACTION_UNLEARN_TECHNOLOGY = 11
+  # Mass accelerate constructor building units.
+  ACTION_MASS_ACCELERATE = 12
+
+  custom_serialize :objects,
+    :serialize => lambda { |obj| obj.try(:to_json) },
+    :unserialize => lambda { |json| json.nil? ? nil : JSON.parse(json) }
 
   # Creates a new record which you can save later.
   def self.new_record(player, action, cost, attributes={})
@@ -48,6 +54,20 @@ class CredStats < ActiveRecord::Base
       :level => model.level,
       :time => time,
       :actual_time => seconds_reduced
+    )
+  end
+
+  # Registers mass accelerate on a constructor.
+  def self.mass_accelerate(
+    player, constructor, cost, summed_up_time, given_time, grouped_counts
+  )
+    new_record(
+      player, ACTION_MASS_ACCELERATE, cost,
+      :class_name => constructor.class.to_s,
+      :level => constructor.level,
+      :time => given_time,
+      :actual_time => summed_up_time,
+      :objects => grouped_counts
     )
   end
 

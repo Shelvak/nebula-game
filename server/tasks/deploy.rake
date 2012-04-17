@@ -4,24 +4,33 @@ PROJECT_ROOT = File.expand_path(
   File.join(File.dirname(__FILE__), '..', '..'))
 CLIENT_TARGET = File.join(PROJECT_ROOT, 'flex', 'target', 'dist')
 
+STABLE_BRANCH = "stable2"
+STABLE_LT_SERVERS = ["nexar.nebula44.lt"]
+STABLE_COM_SERVERS = ["spudder.nebula44.com"]
+
 DEPLOY_CONFIG = {
   :username => "spacegame",
   # Number of releases kept in server (including current)
   :releases_kept => 6,
   :release_branch => {
-    :stable1 => "master",
-    :stable => "stable2",
+    :stable => STABLE_BRANCH,
+    :stable_com => STABLE_BRANCH,
+    :stable_lt => STABLE_BRANCH,
     :beta => "s2_par"
   },
 
   :servers => {
-    :stable1 => {
-      :client => ["morpheus.nebula44.lt"],
-      :server => ["morpheus.nebula44.lt"],
-    },
     :stable => {
-      :client => ["nexar.nebula44.lt"],
-      :server => ["nexar.nebula44.lt"],
+      :client => STABLE_LT_SERVERS + STABLE_COM_SERVERS,
+      :server => STABLE_LT_SERVERS + STABLE_COM_SERVERS,
+    },
+    :stable_com => {
+      :client => STABLE_COM_SERVERS,
+      :server => STABLE_COM_SERVERS,
+    },
+    :stable_lt => {
+      :client => STABLE_LT_SERVERS,
+      :server => STABLE_LT_SERVERS,
     },
     :beta => {
       :client => ["static-beta.nebula44.com"],

@@ -79,6 +79,26 @@ describe Cfg do
     end
   end
 
+  describe ".creds_upgradable_speed_up_entry" do
+    it "should return ArgumentError if index is out of bounds" do
+      lambda do
+        Cfg.creds_upgradable_speed_up_entry(
+          CONFIG['creds.upgradable.speed_up'].size
+        )
+      end.should raise_error(ArgumentError)
+    end
+
+    it "should return evaled time" do
+      Cfg.creds_upgradable_speed_up_entry(0)[0].
+        should == CONFIG.safe_eval(CONFIG['creds.upgradable.speed_up'][0][0])
+    end
+
+    it "should return cost" do
+      Cfg.creds_upgradable_speed_up_entry(0)[1].
+        should == CONFIG['creds.upgradable.speed_up'][0][1]
+    end
+  end
+
   describe "Java" do
     describe ".fairnessPoints" do
       it "should use the formula" do

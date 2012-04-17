@@ -13,8 +13,10 @@ package tests.chat.models.chat
    import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.text.startsWith;
-   
-   
+
+   import tests.chat.classes.IChatJSCallbacksInvokerMock;
+
+
    public class TC_MChat_ui extends TC_BaseMChat
    {
       public function TC_MChat_ui()
@@ -31,6 +33,7 @@ package tests.chat.models.chat
          ML.player.id = 1;
          ML.player.name = "mikism";
          chat.initialize(
+            new IChatJSCallbacksInvokerMock(),
             {
                "1": ML.player.name
             },

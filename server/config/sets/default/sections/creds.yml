@@ -4,6 +4,10 @@
 # 1 LTL/EUR/USD equals to 2000 creds.
 
 # [time, cost]
+#
+# We need a lot of entries for the mass accelerate feature. If total time
+# exceeds max time in this list, client will crash and server won't be able to
+# complete the operation too (due to unknown cost for given total time).
 upgradable.speed_up:
   - [<%= 10.minutes %> / speed, 50]
   - [<%= 30.minutes %> / speed, 125]
@@ -15,6 +19,11 @@ upgradable.speed_up:
   - [<%= 2.days %> / speed, 1500]
   - [<%= 4.days %> / speed, 3000]
   - [<%= 6.days %> / speed, 4500]
+  - [<%= 8.days %> / speed, 6000]
+  - [<%= 10.days %> / speed, 7500]
+  - [<%= 12.days %> / speed, 9000]
+  - [<%= 14.days %> / speed, 10500]
+  - [<%= 16.days %> / speed, 12000]
 
 # How much does it cost to remove a foliage.
 foliage.remove: 1000.0 * width * height / 9

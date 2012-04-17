@@ -8,23 +8,18 @@ module Creds
   # _index_ is index of CONFIG['creds.upgradable.speed_up'].
   #
   def self.accelerate!(model, index)
-    time, cost = resolve_accelerate_index(index)
+    time, cost = Cfg.creds_upgradable_speed_up_entry(index)
     model.accelerate!(time, cost)
   end
 
   def self.accelerate_construction!(constructor, index)
-    time, cost = resolve_accelerate_index(index)
+    time, cost = Cfg.creds_upgradable_speed_up_entry(index)
     constructor.accelerate_construction!(time, cost)
   end
 
-  def self.resolve_accelerate_index(index)
-    entry = CONFIG['creds.upgradable.speed_up'][index]
-    raise ArgumentError.new("Unknown speed up index #{index.inspect
-      }, max index: #{CONFIG['creds.upgradable.speed_up'].size - 1}!") \
-      if entry.nil?
-
-    time, cost = entry
-    time = CONFIG.safe_eval(time) # Evaluate because it contains speed.
-    [time, cost]
+  def self.mass_accelerate!(constructor, index)
+    time, cost = Cfg.creds_upgradable_speed_up_entry(index)
+    constructor.mass_accelerate!(time, cost)
   end
 end
+

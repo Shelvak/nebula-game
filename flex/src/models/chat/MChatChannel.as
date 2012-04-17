@@ -20,15 +20,26 @@ package models.chat
    import utils.Objects;
 
 
-   [Event(name="hasUnreadMessagesChange", type="models.chat.events.MChatChannelEvent")]
-   [Event(name="numMembersChange", type="models.chat.events.MChatChannelEvent")]
-   [Event(name="generateJoinLeaveMsgsChange", type="models.chat.events.MChatChannelEvent")]
-   [Event(name="userInputChange", type="models.chat.events.MChatChannelEvent")]
+   [Event(
+      name="hasUnreadMessagesChange",
+      type="models.chat.events.MChatChannelEvent")]
+   [Event(
+      name="numUnreadMessagesChange",
+      type="models.chat.events.MChatChannelEvent")]
+   [Event(
+      name="numMembersChange",
+      type="models.chat.events.MChatChannelEvent")]
+   [Event(
+      name="generateJoinLeaveMsgsChange",
+      type="models.chat.events.MChatChannelEvent")]
+   [Event(
+      name="userInputChange",
+      type="models.chat.events.MChatChannelEvent")]
    
    /**
     * A channel of the chat.
     * 
-    * <p>Holds a list of <code>MChatMember</code>s in this channel as an intance of
+    * <p>Holds a list of <code>MChatMember</code>s in this channel as an instance of
     * <code>MChatMembersList</code> as well as all its content as an instance of
     * <code>MChatChannelContent</code>.
     */   
@@ -92,19 +103,21 @@ package models.chat
       /**
        * Name of this channel that should be displayed for the user. Property is abstract.
        */
-      public function get displayName() : String {
-         throw new IllegalOperationError("Property is abstract");
+      public function get displayName(): String {
+         Objects.throwAbstractPropertyError();
+         return null;   // unreachable
       }
-      
-      private var _visible:Boolean = false;
+
+      private var _visible: Boolean = false;
       /**
        * Is <code>true</code> if player is looking at this channel right now.
        */
       public function set visible(value:Boolean) : void {
          if (_visible != value) {
             _visible = value;
-            if (_visible)
-               setHasUnreadMessages(false);
+            if (_visible) {
+               setNumUnreadMessages(0);
+            }
          }
       }
       /**
@@ -117,15 +130,11 @@ package models.chat
       private var _hasUnreadMessages:Boolean = false;
       [Bindable(event="hasUnreadMessagesChange")]
       /**
-       * Indicates if player has read all the messages in this channel. It is immediately assumed to be true
-       * when player selects this channel. When this property changes
-       * <code>MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE</code> event is dispatched.
-       * 
-       * <p>Metadata:</br>
-       * [Bindable(event="hasUnreadMessagesChange")]
-       * </p>
-       * 
-       * <p>No property change event.</p>
+       * Indicates if player has read all the messages in this channel. It is
+       * immediately assumed to be true when player selects this channel.
+       * When this property changes
+       * <code>MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE</code> event
+       * is dispatched.
        */
       public function get hasUnreadMessages() : Boolean {
          return _hasUnreadMessages;
@@ -136,15 +145,31 @@ package models.chat
             dispatchChannelEvent(MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE);
          }
       }
-      
-      private var _membersListIRFactory:ClassFactory =
+
+      private var _numUnreadMessages: int = 0;
+      /**
+       * Number of unread messages.
+       *
+       * @see #hasUnreadMessages
+       */
+      public function get numUnreadMessages(): int {
+         return _numUnreadMessages;
+      }
+      private function setNumUnreadMessages(value: int): void {
+         if (_numUnreadMessages != value) {
+            _numUnreadMessages = value;
+            setHasUnreadMessages(_numUnreadMessages > 0);
+         }
+      }
+
+      private var _membersListIRFactory: ClassFactory =
                      new ClassFactory(IRChatMember);
       /**
        * Item renderer function to use by <code>MChatMembersList</code>.
        * <code>MChatChannel.membersListIRFunction</code> returns the same <code>ClassFactory</code> instance
        * for <code>DefaultItemRenderer</code>.
        */
-      public function membersListIRFactory(member:MChatMember) : IFactory {
+      public function membersListIRFactory(member: MChatMember): IFactory {
          return _membersListIRFactory;
       }
       
@@ -152,16 +177,16 @@ package models.chat
       /* ############### */
       /* ### CONTENT ### */
       /* ############### */
-      
-      private var _content:MChatChannelContent;
+
+      private var _content: MChatChannelContent;
       /**
        * Content (messages) of this channel. Never null.
        */
-      public function get content() : MChatChannelContent {
+      public function get content(): MChatChannelContent {
          return _content;
       }
-      
-      
+
+
       /* ############################## */
       /* ### MESSAGE RECEIVE / SEND ### */
       /* ############################## */
@@ -180,7 +205,7 @@ package models.chat
          content.addMessage(message.toFlowElement(onPlayerElementClick));
          MCHAT.messagePool.returnObject(message);
          if (!_visible) {
-            setHasUnreadMessages(true);
+            setNumUnreadMessages(numUnreadMessages + 1);
          }
          dispatchChannelEvent(MChatChannelEvent.GOT_SOME_MESSAGE);
       }
@@ -197,17 +222,16 @@ package models.chat
        * 
        * @param message message text to post to the channel.
        */
-      public function sendMessage(message:String) : void {
-         throw new IllegalOperationError("This method is abstract");
+      public function sendMessage(message: String): void {
+         Objects.throwAbstractMethodError();
       }
-      
-      
+
       /**
        * Called when a message has successfully been posted to the channel.
        * 
        * @param message <code>MChatMessage</code> which has successfully been posted to the channel.
        */
-      public function messageSendSuccess(message:MChatMessage) : void {
+      public function messageSendSuccess(message: MChatMessage): void {
          message.converter = PlayerMessageConverter.getInstance();
          message.time = new Date();
          content.addMessage(message.toFlowElement());
@@ -221,7 +245,7 @@ package models.chat
        * 
        * @param message <code>MChatMessage</code> which was rejected by the server for some reason.
        */
-      public function messageSendFailure(message:MChatMessage) : void {
+      public function messageSendFailure(message: MChatMessage): void {
          MCHAT.messagePool.returnObject(message);
       }
       
@@ -283,10 +307,14 @@ package models.chat
        * 
        * @see MChatMembersList#addMember()
        */
-      public function memberJoin(member:MChatMember, addMessage:Boolean = true) : void {
+      public function memberJoin(member: MChatMember,
+                                 addMessage: Boolean = true): void {
          _members.addMember(member);
-         if (_generateJoinLeaveMsgs && addMessage)
-            addMemberExistanceChangeMessage(member, ChannelJoinMessageConverter.getInstance());
+         if (_generateJoinLeaveMsgs && addMessage) {
+            addMemberExistanceChangeMessage(
+               member, ChannelJoinMessageConverter.getInstance()
+            );
+         }
          dispatchChannelEvent(MChatChannelEvent.NUM_MEMBERS_CHANGE);
       }
       
@@ -297,16 +325,19 @@ package models.chat
        * 
        * @see MChatMembersList#removeMember()
        */
-      public function memberLeave(member:MChatMember) : void {
+      public function memberLeave(member: MChatMember): void {
          _members.removeMember(member);
-         if (_generateJoinLeaveMsgs)
-            addMemberExistanceChangeMessage(member, ChannelLeaveMessageConverter.getInstance());
+         if (_generateJoinLeaveMsgs) {
+            addMemberExistanceChangeMessage(
+               member, ChannelLeaveMessageConverter.getInstance()
+            );
+         }
          dispatchChannelEvent(MChatChannelEvent.NUM_MEMBERS_CHANGE);
       }
-      
-      private function addMemberExistanceChangeMessage(member:MChatMember,
-                                                       messageConverter:IChatMessageConverter) : void {
-         var msg:MChatMessage = MChatMessage(MCHAT.messagePool.borrowObject());
+
+      private function addMemberExistanceChangeMessage(member: MChatMember,
+                                                       messageConverter: IChatMessageConverter): void {
+         const msg: MChatMessage = MChatMessage(MCHAT.messagePool.borrowObject());
          msg.playerId = member.id;
          msg.playerName = member.name;
          msg.converter = messageConverter;
@@ -318,12 +349,13 @@ package models.chat
       /* ########################### */
       /* ### BaseModel OVERRIDES ### */
       /* ########################### */
-      
-      
-      public override function equals(o:Object) : Boolean {
-         if (!(o is MChatChannel))
+
+
+      public override function equals(o: Object): Boolean {
+         if (!(o is MChatChannel)) {
             return false;
-         var chan:MChatChannel = MChatChannel(o);
+         }
+         var chan: MChatChannel = MChatChannel(o);
          return this == chan || this.name == chan.name;
       }
       

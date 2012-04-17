@@ -20,6 +20,8 @@ package tests.chat.models
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
 
+   import tests.chat.classes.IChatJSCallbacksInvokerMock;
+
    import utils.SingletonFactory;
    
    
@@ -97,7 +99,9 @@ package tests.chat.models
       [Test]
       public function setIsIgnored():void {
          const chat:MChat = MCHAT;
-         chat.initialize({"2": "test"}, {"galaxy": [2]});
+         chat.initialize(
+            new IChatJSCallbacksInvokerMock(), {"2": "test"}, {"galaxy": [2]}
+         );
          member = chat.members.getMember(2);
 
          member.setIsIgnored(true);
