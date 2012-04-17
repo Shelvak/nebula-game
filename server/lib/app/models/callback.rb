@@ -31,8 +31,15 @@ class Callback
   # Removes callback from the database by id.
   def self.destroy!(id)
     ActiveRecord::Base.connection.execute(
-      "DELETE FROM `callbacks` WHERE id=#{id}"
+      "DELETE FROM `callbacks` WHERE id=#{id.to_i}"
     )
+  end
+
+  # Does this callback exist?
+  def self.exists?(id)
+    ! ActiveRecord::Base.connection.select_value(
+      "SELECT 1 FROM callbacks WHERE id=#{id.to_i}"
+    ).nil?
   end
 
   def type
