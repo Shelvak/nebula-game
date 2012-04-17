@@ -125,6 +125,9 @@ class Dispatcher
         :component => log_tag
       ) { process_message(message) }
     end
+  rescue UnhandledMessage => e
+    info "Cannot process #{message} - #{e.class}: #{e.message}", to_s(client)
+    confirm_receive(message, e)
   end
 
   def callback(callback)
