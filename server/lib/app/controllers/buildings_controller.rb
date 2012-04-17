@@ -277,11 +277,15 @@ class BuildingsController < GenericController
   #
   # Response: None
   #
-  def action_construct_all
-    param_options :required => {:id => Fixnum, :index => Fixnum}
-    building = find_building
+  ACTION_CONSTRUCT_ALL = 'buildings|construct_all'
+
+  CONSTRUCT_ALL_OPTIONS = logged_in + find_building_options +
+    required(:id => Fixnum, :index => Fixnum)
+  CONSTRUCT_ALL_SCOPE = scope.world
+  def self.construct_all_action(m)
+    building = find_building(m)
     check_for_constructor!(building)
-    Creds.mass_accelerate!(building, params['index'])
+    Creds.mass_accelerate!(building, m.params['index'])
   rescue ArgumentError => e
     # In case client provides invalid index.
     raise GameLogicError.new(e.message)
