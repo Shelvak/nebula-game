@@ -466,7 +466,10 @@ class Dispatcher
   # Set message id and push it into outgoing messages stack for given IO.
   def transmit_to_client(client, message_hash)
     message_hash[MESSAGE_ID_KEY] = next_message_id
-    Actor[:server].write!(client, message_hash)
+    EventMachine.next_tick do
+      client.em_connection.write(message_hash)
+    end
+    #Actor[:server].write!(client, message_hash)
   end
 end
 
