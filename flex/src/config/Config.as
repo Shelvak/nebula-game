@@ -7,6 +7,8 @@ package config
 
    import mx.collections.ArrayCollection;
 
+   import namespaces.client_internal;
+
    import utils.ModelUtil;
    import utils.StringUtil;
    import utils.StringUtil;
@@ -38,6 +40,14 @@ package config
          allBuildingTypes;
          
          unlockHash = getUnlockingHash();
+      }
+
+      private static var _numberOfTips:int = 0;
+      client_internal static function setNumberOfTips(value: int): void {
+         _numberOfTips = value;
+      }
+      public static function getNumberOfTips():int {
+         return _numberOfTips;
       }
       
       

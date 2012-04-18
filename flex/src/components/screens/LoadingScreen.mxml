@@ -4,6 +4,7 @@
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*"
                     xmlns:screens="components.screens.*"
+                    xmlns:tips="components.tips.*"
                     width="100%" height="100%"
                     creationComplete="this_creationCompleteHandler()">
    <fx:Metadata>
@@ -15,18 +16,22 @@
    
    <fx:Script>
       <![CDATA[
+      import config.Config;
+
       import controllers.startup.ChecksumsLoader;
       import controllers.startup.StartupInfo;
       import controllers.startup.StartupManager;
 
       import models.events.LocaleEvent;
+      import models.tips.MTip;
 
       import mx.binding.utils.BindingUtils;
       import mx.controls.Alert;
 
+      import namespaces.client_internal;
+
       import utils.Events;
       import utils.MathUtil;
-      import utils.assets.AssetNames;
       import utils.locale.Localizer;
       import utils.locale.XMLBundlesLoader;
 
@@ -92,16 +97,18 @@
          if (_bundlesLoader.loadSuccessful) {
             dispatchBundlesLoadedEvent();
             lblPleaseWait.text = getString("label.pleaseWait");
-            lblTipLabel.text = getString("label.tip");
+//            lblTipLabel.text = getString("label.tip");
             BindingUtils.bindSetter(setLblDownloadProgressText,
                                     downloadProgress, "value", false, true);
 
-            var tipsTotal: int = _bundlesLoader.data.child("Tips").children()
-                                    .length();
-            var randomTip: int = Math.round(MathUtil.randomBetween(0,
-                                                                   tipsTotal - 1));
-            lblTipText.text = Localizer.string("Tips", "tip." + randomTip);
-            imgTip.source = AssetNames.getTipImageUrl(randomTip);
+            const tipsTotal: int =
+                     _bundlesLoader.data.child("Tips").children().length();
+            Config.client_internal::setNumberOfTips(tipsTotal);
+            const randomTip: int =
+                     Math.round(MathUtil.randomBetween(0, tipsTotal - 1));
+            tipComponent.model = new MTip(randomTip, false);
+//            lblTipText.text = tip.text;
+//            imgTip.source = tip.imageUrl;
 
             loadImages();
          }
@@ -198,27 +205,28 @@
                     color="0xAFAFAF"/>
          </s:Group>
       </s:Group>
-      <s:Group width="675" height="214">
-         <s:Rect left="0" right="0" top="0" bottom="0" radiusX="16">
-            <s:fill><s:SolidColor alpha="0.3"/></s:fill>
-         </s:Rect>
-         <s:Group left="12" right="12" top="12" bottom="12">
-            <s:layout>
-               <s:HorizontalLayout gap="13" verticalAlign="middle"/>
-            </s:layout>
-            <mx:Image maintainAspectRatio="true" id="imgTip"/>
-            <s:Group width="100%" fontSize="13">
-               <s:layout>
-                  <s:VerticalLayout horizontalAlign="left" gap="3"/>
-               </s:layout>
-               <s:Label id="lblTipLabel" fontWeight="bold"/>
-               <s:Group width="100%">
-                  <s:Label id="lblTipText" text="" lineBreak="toFit"
-                           left="0" right="0"/>
-               </s:Group>
-            </s:Group>
-         </s:Group>
-      </s:Group>
+      <tips:CTip id="tipComponent"/>
+      <!--<s:Group width="675" height="214">-->
+         <!--<s:Rect left="0" right="0" top="0" bottom="0" radiusX="16">-->
+            <!--<s:fill><s:SolidColor alpha="0.3"/></s:fill>-->
+         <!--</s:Rect>-->
+         <!--<s:Group left="12" right="12" top="12" bottom="12">-->
+            <!--<s:layout>-->
+               <!--<s:HorizontalLayout gap="13" verticalAlign="middle"/>-->
+            <!--</s:layout>-->
+            <!--<mx:Image maintainAspectRatio="true" id="imgTip"/>-->
+            <!--<s:Group width="100%" fontSize="13">-->
+               <!--<s:layout>-->
+                  <!--<s:VerticalLayout horizontalAlign="left" gap="3"/>-->
+               <!--</s:layout>-->
+               <!--<s:Label id="lblTipLabel" fontWeight="bold"/>-->
+               <!--<s:Group width="100%">-->
+                  <!--<s:Label id="lblTipText" text="" lineBreak="toFit"-->
+                           <!--left="0" right="0"/>-->
+               <!--</s:Group>-->
+            <!--</s:Group>-->
+         <!--</s:Group>-->
+      <!--</s:Group>-->
    </s:Group>
    
 </base:BaseContainer>
