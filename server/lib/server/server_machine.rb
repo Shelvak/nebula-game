@@ -16,6 +16,9 @@ module ServerMachine
   end
 
   def receive_data(data)
+    # Force incoming data into utf-8 encoding.
+    data.force_encoding(Encoding::UTF_8)
+
     if flash_policy_request?(data)
       info "Policy request got, responding."
       send_data policy_data
