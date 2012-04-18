@@ -5,11 +5,13 @@ module Combat::Simulation
   # Options:
   # :cooldown (true) - should we create cooldown for that location after
   # combat?
+  # :push_notification (true) - should we push notification after combat?
   #
   # Returns +Combat::Assets+ object or nil if no combat happened.
   def run(location, players, nap_rules, units, buildings, options={})
     LOGGER.block("Running combat simulation in #{location.to_s}") do
-      options.reverse_merge!(:cooldown => true)
+      options.reverse_merge!(:cooldown => true, :push_notification => true)
+      options.assert_valid_keys(:cooldown, :push_notification)
 
       # Units which are loaded into transporters.
       loaded_units, unloaded_unit_ids = loaded_units(
@@ -89,7 +91,7 @@ module Combat::Simulation
     wreckages = add_wreckages(location, buildings, units)
     notification_ids = create_notifications(
       response, client_location, filter_leveled_up(units), combat_log,
-      wreckages
+      wreckages, options[:push_notification]
     )
     save_players(players, response['statistics'])
     save_updated_participants(units, buildings, killed_by)

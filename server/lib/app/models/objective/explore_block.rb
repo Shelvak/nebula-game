@@ -5,16 +5,16 @@ class Objective::ExploreBlock < Objective
   def filter(models)
     planet = models[0]
 
-    if limit.nil?
-      valid = true
-    else
-      width, height = Tile::BLOCK_SIZES[
-        planet.tile_kind(planet.exploration_x, planet.exploration_y)
-      ]
+    valid = limit.nil? \
+      ? true \
+      : without_locking do
+          width, height = Tile::BLOCK_SIZES[
+            planet.tile_kind(planet.exploration_x, planet.exploration_y)
+          ]
 
-      valid = width * height >= limit
-    end
-    
+          width * height >= limit
+        end
+
     valid ? [planet] : []
   end
 

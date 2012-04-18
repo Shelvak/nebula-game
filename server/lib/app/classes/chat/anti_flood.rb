@@ -1,7 +1,10 @@
 class Chat::AntiFlood
-  def initialize(dispatcher)
-    @dispatcher = dispatcher
-
+  include MonitorMixin
+  
+  def initialize(dispatcher_actor_name)
+    super()
+    
+    @dispatcher_actor_name = dispatcher_actor_name
     # {player_id => Fixnum}
     @silence_counters = Hash.new(0)
     # {player_id => Time}
@@ -17,27 +20,35 @@ class Chat::AntiFlood
   #
   # Checks if user has been silenced. If so - raises +GameLogicError+.
   def message!(player_id, timestamp=nil)
-    check_if_silenced!(player_id)
-    message(player_id, timestamp || Time.now)
+    synchronize do
+      check_if_silenced!(player_id)
+      message(player_id, timestamp || Time.now)
+    end
   end
 
   def silence(player_id, silence_until=nil)
     typesig binding, Fixnum, [NilClass, Time]
 
-    counter = @silence_counters[player_id] += 1
-    if silence_until.nil?
-      silence_period = Cfg.chat_antiflood_silence_for(counter)
-      silence_until = silence_period.from_now
+    synchronize do
+      counter = @silence_counters[player_id] += 1
+      if silence_until.nil?
+        silence_period = Cfg.chat_antiflood_silence_for(counter)
+        silence_until = silence_period.from_now
+      end
+
+      @silence_until[player_id] = silence_until
     end
 
-    @silence_until[player_id] = silence_until
-
-    @dispatcher.push_to_player(
+    dispatcher.push_to_player!(
       player_id, ChatController::ACTION_SILENCE, {'until' => silence_until}
     )
   end
 
   private
+
+  def dispatcher
+    Celluloid::Actor[@dispatcher_actor_name]
+  end
 
   def message(player_id, timestamp)
     timestamp = timestamp.to_f

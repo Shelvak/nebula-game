@@ -37,6 +37,7 @@ describe TechnologiesController do
     end
 
     it_behaves_like "only push"
+    it_should_behave_like "having controller action scope"
 
     it "should return list of player technologies" do
       should_respond_with :technologies => player.technologies
@@ -70,6 +71,7 @@ describe TechnologiesController do
     end
 
     it_behaves_like "with param options", %w{type planet_id scientists speed_up}
+    it_should_behave_like "having controller action scope"
 
     it "should set technology as belonging to player" do
       invoke @action, @params
@@ -96,6 +98,7 @@ describe TechnologiesController do
     end
 
     it_behaves_like "with param options", %w{id planet_id scientists speed_up}
+    it_should_behave_like "having controller action scope"
 
     it_behaves_like "technology upgradable"
     it_behaves_like "technology existing"
@@ -114,6 +117,7 @@ describe TechnologiesController do
     end
 
     it_behaves_like "with param options", %w{id}
+    it_should_behave_like "having controller action scope"
 
     it_behaves_like "technology existing"
 
@@ -134,6 +138,7 @@ describe TechnologiesController do
     end
 
     it_behaves_like "with param options", %w{id}
+    it_should_behave_like "having controller action scope"
 
     it_behaves_like "technology existing"
 
@@ -156,6 +161,7 @@ describe TechnologiesController do
     end
 
     it_behaves_like "with param options", %w{id scientists}
+    it_should_behave_like "having controller action scope"
 
     it_behaves_like "technology existing"
 
@@ -181,6 +187,9 @@ describe TechnologiesController do
       }
     end
 
+    it_behaves_like "with param options", %w{id index}
+    it_should_behave_like "having controller action scope"
+
     it "should raise error when providing wrong index" do
       lambda do
         invoke @action, @params.merge('index' => @params['index'] + 1)
@@ -200,6 +209,9 @@ describe TechnologiesController do
       @action = "technologies|unlearn"
       @params = {'id' => technology.id}
     end
+
+    it_behaves_like "with param options", %w{id}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if technology does not belong to player" do
       technology.player = Factory.create(:player)

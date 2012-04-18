@@ -38,6 +38,7 @@ package controllers.startup
    import controllers.planets.PlanetsCommand;
    import controllers.planets.actions.*;
    import controllers.playeroptions.PlayerOptionsCommand;
+   import controllers.playeroptions.actions.SetAction;
    import controllers.playeroptions.actions.ShowAction;
    import controllers.players.AuthorizationManager;
    import controllers.players.PlayersCommand;
@@ -64,8 +65,6 @@ package controllers.startup
    import models.chat.MChat;
    import models.quest.MainQuestSlideFactory;
    import models.time.MTimeEventFixedMoment;
-
-   import mx.controls.Alert;
 
    import mx.logging.ILogger;
    import mx.logging.Log;
@@ -188,11 +187,12 @@ package controllers.startup
        */
       public static function resetApp() : void {
          logger.info("-------------- APPLICATION RESET --------------");
+         StartupInfo.getInstance().initializationComplete = false;
          new GlobalEvent(GlobalEvent.APP_RESET);
          JobExecutorsManager.getInstance().stopAll();
          ServerProxyInstance.getInstance().reset();
-         MessagesProcessor.getInstance().reset();
          ResponseMessagesTracker.getInstance().reset();
+         MessagesProcessor.getInstance().reset();
          PopUpManager.getInstance().reset();
          StringUtil.reset();
          ML.reset();
@@ -242,8 +242,16 @@ package controllers.startup
       
       
       private static function setupObjects() : void {
-         Objects.setTypeProcessor(Date, DateUtil.autoCreate);
-         Objects.setTypeProcessor(MTimeEventFixedMoment, MTimeEventFixedMoment.autoCreate);
+         Objects.setTypeProcessors(
+            Date,
+            DateUtil.autoCreate,
+            DateUtil.sameDataCheck
+         );
+         Objects.setTypeProcessors(
+            MTimeEventFixedMoment,
+            MTimeEventFixedMoment.autoCreate,
+            MTimeEventFixedMoment.sameDataCheck
+         );
       }
       
       
@@ -409,7 +417,7 @@ package controllers.startup
       private static function bindPlayerOptionsCommands() : void
       {
          bindPair(PlayerOptionsCommand.SHOW, new controllers.playeroptions.actions.ShowAction());
-         bindPair(PlayerOptionsCommand.SET, new controllers.playeroptions.actions.SetAction());
+         bindPair(PlayerOptionsCommand.SET, new SetAction());
       }
       private static function bindAlliancesCommands() : void
       {

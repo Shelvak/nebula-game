@@ -123,7 +123,9 @@ package tests.utils
       
       [Test]
       public function create_errors() : void {
-         Objects.setTypeProcessor(Date, DateUtil.autoCreate);
+         Objects.setTypeProcessors(
+            Date, DateUtil.autoCreate, DateUtil.sameDataCheck
+         );
          assertThat(
             "same property - both tags",
             $_creating (InvalidMetadata, {"invalid": "invalid"}), throws (AppError)
@@ -192,7 +194,9 @@ package tests.utils
 
          data = {"date": "2009-09-25T18:45:26+03:00"};
          DateUtil.timeDiff = 0;
-         Objects.setTypeProcessor(Date, DateUtil.autoCreate);
+         Objects.setTypeProcessors(
+            Date, DateUtil.autoCreate, DateUtil.sameDataCheck
+         );
          object = Objects.create(DateProp, data);
          delete Objects.client_internal::TYPE_PROCESSORS[Date];
          var date:Date = object.date;
@@ -687,12 +691,18 @@ package tests.utils
       }
       
       private function addPointProcessor() : void {
-         Objects.setTypeProcessor(Point, function(currValue:*, value:Object) : Object {
-            var point:Point = currValue == null ? new Point() : currValue;
-            point.x = value["x"];
-            point.y = value["y"];
-            return point;
-         });
+         Objects.setTypeProcessors(
+            Point,
+            function (currValue: Point, value: Object): Object {
+               const point: Point = currValue == null ? new Point() : currValue;
+               point.x = value["x"];
+               point.y = value["y"];
+               return point;
+            },
+            function (currValue: Point, value: Object): Boolean {
+               return currValue.x == value["x"] && currValue.y == value["y"];
+            }
+         );
       }
       
       private function removePointProcessor() : void {
@@ -700,14 +710,24 @@ package tests.utils
       }
       
       private function addRectangleProcessor() : void {
-         Objects.setTypeProcessor(Rectangle, function(currValue:*, value:Object) : Object {
-            var rect:Rectangle = currValue == null ? new Rectangle() : currValue;
-            rect.x = value["x"];
-            rect.y = value["y"];
-            rect.width = value["width"];
-            rect.height = value["height"];
-            return rect;
-         });
+         Objects.setTypeProcessors(
+            Rectangle,
+            function (currValue: Rectangle, value: Object): Object {
+               const rect: Rectangle =
+                      currValue == null ? new Rectangle() : currValue;
+               rect.x = value["x"];
+               rect.y = value["y"];
+               rect.width = value["width"];
+               rect.height = value["height"];
+               return rect;
+            },
+            function (currValue: Rectangle, value: Object): Boolean {
+               return currValue.x == value["x"]
+                         && currValue.y == value["y"]
+                         && currValue.width == value["width"]
+                         && currValue.height == value["height"];
+            }
+         );
       }
       
       private function removeRectangleProcessor() : void {

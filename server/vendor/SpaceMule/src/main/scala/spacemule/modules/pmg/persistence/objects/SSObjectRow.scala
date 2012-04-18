@@ -5,13 +5,12 @@ import spacemule.modules.pmg.objects.ss_objects._
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.objects.SSObject
 import spacemule.modules.config.objects.Config
-import spacemule.persistence.{DB, RowObject, Row}
 import java.util.Calendar
 import ss_object._
-import spacemule.modules.pmg.persistence.manager.Buffer
+import spacemule.persistence._
 
-object SSObjectRow extends RowObject {
-  val pkColumn = Some("id")
+object SSObjectRow extends RowObject with ReferableRowObject {
+  val pkColumn = "id"
   val columnsSeq = List(
     "type", "solar_system_id", "angle", "position", "width", "height",
     "terrain", "player_id", "name", "size", "owner_changed",
@@ -55,15 +54,15 @@ object SSObjectRow extends RowObject {
 abstract class SSObjectRow(
   solarSystemRow: SolarSystemRow, coord: Coords,
   ssObject: SSObject
-) extends Row {
+) extends LocationRow {
   val companion = SSObjectRow
   val width = 0
   val height = 0
   val size = Config.ssObjectSize.random
   val terrain = 0
-  val playerId = DB.loadInFileNull
   // Initialize this lazily, to allow subclasses to have lazy eval too.
-  lazy val name = "" // not null!
+  lazy val playerId = DB.loadInFileNull
+  val name = "" // not null!
   val resources = SSObjectRow.Resources(
     SSObjectRow.Resources.Resource(0, 0, 0, 0),
     SSObjectRow.Resources.Resource(0, 0, 0, 0),

@@ -1,4 +1,6 @@
 class ObjectiveProgress < ActiveRecord::Base
+  include Parts::WithLocking
+
   belongs_to :objective
   belongs_to :player
 
@@ -10,17 +12,21 @@ class ObjectiveProgress < ActiveRecord::Base
   # or this progress is for achievement.
   # 
   def notify_broker_update
-    (completed? || objective.quest.achievement?) ? true : super
+    (completed? || achievement?) ? true : super
   end
 
   # Do not notify client about destroy if it's for achievement.
   def notify_broker_destroy
-    objective.quest.achievement? ? true : super
+    achievement? ? true : super
+  end
+
+  def achievement?
+    without_locking { objective.quest.achievement? }
   end
 
   # Is this progress completed?
   def completed?
-    completed >= objective.count
+    completed >= without_locking { objective.count }
   end
 
   # {
@@ -47,8 +53,8 @@ class ObjectiveProgress < ActiveRecord::Base
     destroy!
 
     # Record this objective as completed
-    qp = objective.quest.quest_progresses.where(
-      :player_id => player_id).first
+    qp = without_locking { objective.quest }.quest_progresses.
+      where(:player_id => player_id).first
     qp.completed += 1
     qp.save!
   end

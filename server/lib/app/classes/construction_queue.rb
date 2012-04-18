@@ -29,7 +29,7 @@ class ConstructionQueue
     # Find last entry in constructor queue.
     model = ConstructionQueueEntry.unscoped {
       ConstructionQueueEntry.where(:constructor_id => constructor_id).
-        order("position DESC").first
+        order("position DESC").lock(true).first
     }
     position = model ? model.position + 1 : 0
 

@@ -20,7 +20,10 @@ describe PlayersController do
           'version' => Cfg.required_client_version}
       end
 
-      it_behaves_like "with param options", %w{server_player_id web_player_id version}
+      it_behaves_like "with param options",
+        :required => %w{server_player_id web_player_id version},
+        :needs_login => false
+      it_should_behave_like "having controller action scope"
 
       describe "client too old" do
         before(:each) do
@@ -43,7 +46,8 @@ describe PlayersController do
         end
         
         it "should disconnect on invalid login" do
-          @controller.should_receive(:disconnect)
+          @controller.should_receive(:disconnect).
+            with(an_instance_of(Dispatcher::Message))
           invoke @action, @params
         end
       end
@@ -92,16 +96,18 @@ describe PlayersController do
           invoke @action, @params
 
           [
-            "game|config", "players|show", "planets|player_index",
-            "technologies|index", "quests|index", "notifications|index",
+            GameController::ACTION_CONFIG,
+            PlayersController::ACTION_SHOW,
+            PlanetsController::ACTION_PLAYER_INDEX,
+            TechnologiesController::ACTION_INDEX,
+            QuestsController::ACTION_INDEX,
+            NotificationsController::ACTION_INDEX,
             RoutesController::ACTION_INDEX,
             PlayerOptionsController::ACTION_SHOW,
             ChatController::ACTION_INDEX,
             GalaxiesController::ACTION_SHOW
           ].each_with_index do |action, index|
-            message = {'action' => action, 'params' => {}}
-            @dispatcher.pushed_messages[@test_player.id][index].should ==
-              message
+            @controller.pushed[index].should == [action, {}]
           end
         end
 
@@ -112,10 +118,10 @@ describe PlayersController do
             and_return([ends_at, message])
           invoke @action, @params
 
-          @dispatcher.pushed_messages[@test_player.id].should include(
-            {'action' => AnnouncementsController::ACTION_NEW,
-              'params' => {'ends_at' => ends_at, 'message' => message}}
-          )
+          @controller.pushed.should include([
+            AnnouncementsController::ACTION_NEW,
+            {'ends_at' => ends_at, 'message' => message}
+          ])
         end
 
         it "should not push announcement if it is not set" do
@@ -123,8 +129,8 @@ describe PlayersController do
             and_return([nil, nil])
           invoke @action, @params
 
-          @dispatcher.pushed_messages[@test_player.id].find do |message|
-            message['action'] == AnnouncementsController::ACTION_NEW
+          @controller.pushed.find do |action, params|
+            action == AnnouncementsController::ACTION_NEW
           end.should be_nil
         end
 
@@ -134,9 +140,7 @@ describe PlayersController do
           @test_player.save!
           invoke @action, @params
 
-          @dispatcher.pushed_messages[@test_player.id].should include(
-            {'action' => DailyBonusController::ACTION_SHOW, 'params' => {}}
-          )
+          should_have_pushed DailyBonusController::ACTION_SHOW
         end
 
         it "should not push daily_bonus|show if there is no bonus" do
@@ -144,7 +148,7 @@ describe PlayersController do
           @test_player.save!
           invoke @action, @params
 
-          @dispatcher.pushed_messages[@test_player.id].should_not include(
+          @controller.pushed.should_not include(
             {'action' => DailyBonusController::ACTION_SHOW, 'params' => {}}
           )
         end
@@ -163,7 +167,8 @@ describe PlayersController do
         end
 
         it "should disconnect on invalid login" do
-          @controller.should_receive(:disconnect)
+          @controller.should_receive(:disconnect).
+            with(an_instance_of(Dispatcher::Message))
           invoke @action, @params
         end
       end
@@ -182,6 +187,7 @@ describe PlayersController do
       end
 
       it_behaves_like "only push"
+      it_should_behave_like "having controller action scope"
 
       it "should respond with player" do
         should_respond_with :player => player.as_json
@@ -196,6 +202,7 @@ describe PlayersController do
       end
 
       it_behaves_like "with param options", %w{id}
+      it_should_behave_like "having controller action scope"
 
       it "should include player" do
         invoke @action, @params
@@ -219,6 +226,8 @@ describe PlayersController do
         @params = {}
       end
 
+      it_should_behave_like "having controller action scope"
+
       it "should return ratings" do
         ratings = Player.ratings(player.galaxy_id)
         invoke @action, @params
@@ -235,6 +244,8 @@ describe PlayersController do
 
         @params = {'portal_without_allies' => false}
       end
+
+      it_should_behave_like "having controller action scope"
 
       it "should change portal_without_allies" do
         lambda do
@@ -253,6 +264,7 @@ describe PlayersController do
       end
 
       it_behaves_like "with param options", %w{vip_level}
+      it_should_behave_like "having controller action scope"
 
       it "should invoke vip_start!" do
         player.should_receive(:vip_start!).with(@params['vip_level'])
@@ -273,12 +285,13 @@ describe PlayersController do
     describe "players|status_change" do
       before(:each) do
         @action = "players|status_change"
-        @params = {'changes' => :changes}
+        @params = {'changes' => [:changes]}
       end
 
-      it_behaves_like "with param options", %w{changes}
-      it_behaves_like "only push"
-      
+      it_behaves_like "with param options", :required => %w{changes},
+        :only_push => true
+      it_should_behave_like "having controller action scope"
+
       it "should respond" do
         should_respond_with :changes => @params['changes']
         push @action, @params
@@ -295,6 +308,7 @@ describe PlayersController do
       end
       
       it_behaves_like "with param options", %w{amount}
+      it_should_behave_like "having controller action scope"
       
       it "should call player#vip_convert" do
         player.should_receive(:vip_convert).with(@params['amount'])
@@ -316,6 +330,7 @@ describe PlayersController do
       end
 
       it_should_behave_like "with param options", %w{target_id}
+      it_should_behave_like "having controller action scope"
 
       it "should return battle vps multiplier" do
         multiplier = 1.2

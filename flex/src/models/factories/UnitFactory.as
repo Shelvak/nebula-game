@@ -71,9 +71,9 @@ package models.factories
        * Creates a list of <code>UnitBuildingEntry</code> from the given cached units generic object. 
        */
       public static function createCachedUnits(cachedUnits: Object): ArrayCollection {
-         var result: ArrayCollection = new ArrayCollection();
+         const result: ArrayCollection = new ArrayCollection();
          for (var unitType: String in cachedUnits) {
-            var entry: UnitBuildingEntry = new UnitBuildingEntry(
+            const entry: UnitBuildingEntry = new UnitBuildingEntry(
                "unit::" + StringUtil.underscoreToCamelCase(unitType),
                cachedUnits[unitType]
             );

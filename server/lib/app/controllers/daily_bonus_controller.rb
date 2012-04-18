@@ -1,5 +1,4 @@
 class DailyBonusController < GenericController
-  ACTION_SHOW = "daily_bonus|show"
   # Get todays reward for this player. Raises error if reward is already
   # taken.
   # 
@@ -10,10 +9,14 @@ class DailyBonusController < GenericController
   # Response:
   # - bonus (Hash): Rewards#as_json
   #
-  def action_show
-    only_push!
-    
-    respond :bonus => get_bonus.as_json
+  ACTION_SHOW = "daily_bonus|show"
+
+  SHOW_OPTIONS = logged_in + only_push
+  SHOW_SCOPE = scope.world
+  def self.show_action(m)
+    without_locking do
+      respond m, :bonus => get_bonus(m.player).as_json
+    end
   end
   
   # Reclaim todays reward for this player to some planet. 
@@ -26,22 +29,26 @@ class DailyBonusController < GenericController
   # 
   # Response: None
   #
-  def action_claim
-    param_options :required => %w{planet_id}
+  ACTION_CLAIM = 'daily_bonus|claim'
+
+  CLAIM_OPTIONS = logged_in + required(:planet_id => Fixnum)
+  CLAIM_SCOPE = scope.world
+  def self.claim_action(m)
+    planet = SsObject::Planet.where(:player_id => m.player.id).
+      find(m.params['planet_id'])
     
-    planet = SsObject::Planet.where(:player_id => player.id).
-      find(params['planet_id'])
-    
-    get_bonus.claim!(planet, player, true)
-    player.set_next_daily_bonus!
+    get_bonus(m.player).claim!(planet, m.player, true)
+    m.player.set_next_daily_bonus!
   end
   
-  private
-  def get_bonus
-    raise GameLogicError.new(
-      "Cannot get daily bonus, as it will only be available at #{
-      player.daily_bonus_at || "nil"}") unless player.daily_bonus_available?
-    
-    DailyBonus.get_bonus(player.id, player.points)
+  class << self
+    private
+    def get_bonus(player)
+      raise GameLogicError.new(
+        "Cannot get daily bonus, as it will only be available at #{
+        player.daily_bonus_at || "nil"}") unless player.daily_bonus_available?
+
+      DailyBonus.get_bonus(player.id, player.points)
+    end
   end
 end

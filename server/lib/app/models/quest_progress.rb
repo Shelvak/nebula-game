@@ -5,6 +5,8 @@
 # - completed (Fixnum): number of objectives completed.
 #
 class QuestProgress < ActiveRecord::Base
+  include Parts::WithLocking
+
   # Methods must be before include.
 
   def self.notify_on_create?; false; end

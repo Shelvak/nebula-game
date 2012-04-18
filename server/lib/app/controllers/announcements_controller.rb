@@ -1,4 +1,6 @@
 class AnnouncementsController < GenericController
+  @mutex = Mutex.new
+
   class << self
     # Returns [ends_at, announcement]
     def get
@@ -10,7 +12,7 @@ class AnnouncementsController < GenericController
       LOGGER.info("Setting new announcement #{message.inspect
         } which expires @ #{ends_at}.")
 
-      Dispatcher.instance.push_to_logged_in(
+      Celluloid::Actor[:dispatcher].push_to_logged_in!(
         ACTION_NEW, 
         {'ends_at' => ends_at, 'message' => message}
       )
@@ -39,12 +41,10 @@ class AnnouncementsController < GenericController
     
     protected
     def synchronized(&block)
-      @mutex ||= Mutex.new
       @mutex.synchronize(&block)
     end
   end
   
-  ACTION_NEW = 'announcements|new'
   # Send announcement to client.
   # 
   # Invocation: by server
@@ -56,10 +56,12 @@ class AnnouncementsController < GenericController
   # 
   # Response: Same as parameters.
   #
-  def action_new
-    only_push!
-    param_options :required => {:message => String, :ends_at => Time}
-    
-    respond :message => params['message'], :ends_at => params['ends_at']
+  ACTION_NEW = 'announcements|new'
+  NEW_OPTIONS = logged_in + only_push + required(
+    :message => String, :ends_at => Time
+  )
+  NEW_SCOPE = scope.chat
+  def self.new_action(m)
+    respond m, :message => m.params['message'], :ends_at => m.params['ends_at']
   end
 end

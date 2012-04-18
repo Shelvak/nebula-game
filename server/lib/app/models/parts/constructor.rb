@@ -122,17 +122,6 @@ module Parts::Constructor
   # Class methods for base class.
   module BaseClassMethods
     def constructor?; ! property('constructor.items').nil?; end
-
-    def on_callback(id, event)
-      if event == CallbackManager::EVENT_CONSTRUCTION_FINISHED
-        model = find(id)
-        model.send(:on_construction_finished!)
-      elsif defined?(super)
-        super(id, event)
-      else
-        raise CallbackManager::UnknownEvent.new(self, id, event)
-      end
-    end
   end
 
   module ClassMethods

@@ -112,7 +112,7 @@ class QuestDefinition
     ) if @defined_quest_ids.include?(quest_id)
     @defined_quest_ids.add quest_id
 
-    dsl = Quest::DSL.new(parent_id, quest_id, main_quest_slides, achievement)
+    dsl = Quest::Dsl.new(parent_id, quest_id, main_quest_slides, achievement)
     dsl.instance_eval(&block)
     @dsls_for_checking.push dsl
     

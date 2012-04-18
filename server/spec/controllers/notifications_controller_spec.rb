@@ -22,19 +22,20 @@ describe NotificationsController do
       @action = "notifications|index"
       @limit = 2
       @notifications = [
-        Factory.create(:notification, :player => player, 
+        Factory.create(:notification, :player => player,
           :created_at => 7.minutes.ago, :starred => false, :read => true),
-        Factory.create(:notification, :player => player, 
+        Factory.create(:notification, :player => player,
           :created_at => 10.minutes.ago, :starred => false, :read => true),
-        Factory.create(:notification, :player => player, 
+        Factory.create(:notification, :player => player,
           :created_at => 9.minutes.ago, :starred => false, :read => true),
-        Factory.create(:notification, :player => player, 
+        Factory.create(:notification, :player => player,
           :created_at => 6.minutes.ago, :starred => false, :read => true),
       ]
       @params = {}
     end
-    
+
     it_behaves_like "only push"
+    it_should_behave_like "having controller action scope"
 
     it "should limit number of notifications sent" do
       with_config_values('notifications.limit' => @limit) do
@@ -95,6 +96,7 @@ describe NotificationsController do
     end
 
     it_behaves_like "with param options", %w{ids}
+    it_should_behave_like "having controller action scope"
 
     it "should mark notifications as read" do
       invoke @action, @params
@@ -119,6 +121,7 @@ describe NotificationsController do
     end
 
     it_behaves_like "with param options", %w{id mark}
+    it_should_behave_like "having controller action scope"
 
     [
       ['starred', :should, true],

@@ -6,10 +6,8 @@
 package spacemule.modules.pmg.persistence.objects
 
 import spacemule.persistence.{Row, RowObject}
-import spacemule.modules.pmg.persistence.manager.Buffer
 
 object QuestProgressRow extends RowObject {
-  val pkColumn = Some("id")
   val columnsSeq = List("quest_id", "player_id", "status")
 
   // Quest is just started by +Player+.
@@ -22,11 +20,11 @@ object QuestProgressRow extends RowObject {
 }
 
 case class QuestProgressRow(
-  questId: Int, playerId: Int
+  questId: Int, player: PlayerRow
 ) extends Row {
   val companion = QuestProgressRow
 
-  val valuesSeq = List(
-    questId, playerId, QuestProgressRow.StatusStarted
+  lazy val valuesSeq = List(
+    questId, player.id, QuestProgressRow.StatusStarted
   )
 }

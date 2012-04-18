@@ -1,4 +1,5 @@
 source "http://rubygems.org"
+#source 'http://production.cf.rubygems.org' # in case rubygems is down
 source "http://gems.github.com"
 
 # Gems that are necessary for correct functioning of the server.
@@ -7,6 +8,12 @@ gem 'activerecord', '~>3.2.0', :require => 'active_record'
 gem 'json', '>=1.4.6', :require => "json/ext"
 gem 'activerecord-jdbcmysql-adapter', '~>1.1'
 gem 'flag_shih_tzu', :git => "git://github.com/arturaz/flag_shih_tzu.git"
+gem "celluloid",
+  :git => "git://github.com/celluloid/celluloid.git"
+#gem "celluloid", '~>0.10.0'
+gem "celluloid-io", :require => "celluloid/io",
+  :git => "git://github.com/celluloid/celluloid-io.git"
+#gem "celluloid-io", '~>0.10.0', :require => "celluloid/io"
 # For natural date parsing, e.g. "in 5 minutes"
 gem "chronic", ">=0.6.2"
 
@@ -17,7 +24,6 @@ end
 
 # Gems that are needed for running (not testing).
 group :run_require do
-  gem 'eventmachine', '>=0.12.6'
 end
 
 # Only needed in production.

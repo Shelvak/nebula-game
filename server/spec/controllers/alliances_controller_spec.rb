@@ -29,6 +29,7 @@ describe AlliancesController do
     end
 
     it_behaves_like "with param options", %w{name}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if player does not have level 1 technology" do
       @tech.level = 0
@@ -112,6 +113,7 @@ describe AlliancesController do
 
     it_behaves_like "with param options", %w{player_id}
     it_behaves_like "only by owner"
+    it_should_behave_like "having controller action scope"
 
     it "should fail if player does not see that planet" do
       Alliance.stub(:visible_enemy_player_ids).with(@alliance.id).
@@ -153,10 +155,11 @@ describe AlliancesController do
         player)
 
       @action = "alliances|join"
-      @params = {'notification_id' => @notification}
+      @params = {'notification_id' => @notification.id}
     end
 
     it_behaves_like "with param options", %w{notification_id}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if notification belongs to other player" do
       @notification.player = Factory.create(:player)
@@ -230,6 +233,8 @@ describe AlliancesController do
       @params = {}
     end
 
+    it_should_behave_like "having controller action scope"
+
     it "should call #leave_alliance! on player" do
       player.should_receive(:leave_alliance!)
       invoke @action, @params
@@ -253,6 +258,7 @@ describe AlliancesController do
 
     it_behaves_like "with param options", %w{player_id}
     it_behaves_like "only by owner"
+    it_should_behave_like "having controller action scope"
 
     it "should fail if current player is not in alliance" do
       player.alliance = nil
@@ -291,7 +297,7 @@ describe AlliancesController do
   describe "alliances|show" do
     before(:each) do
       @alliance = Factory.create(:alliance)
-      @players = (1..10).map do
+      @players = (1..10).map do |i|
         Factory.create(:player_for_ratings, :alliance => @alliance)
       end
 
@@ -300,6 +306,7 @@ describe AlliancesController do
     end
 
     it_behaves_like "with param options", %w{id}
+    it_should_behave_like "having controller action scope"
 
     it "should respond with alliance name" do
       invoke @action, @params
@@ -359,6 +366,7 @@ describe AlliancesController do
     end
 
     it_behaves_like "only by owner"
+    it_should_behave_like "having controller action scope"
 
     it "should reduce creds" do
       lambda do
@@ -405,6 +413,7 @@ describe AlliancesController do
     end
 
     it_behaves_like "with param options", %w{description}
+    it_should_behave_like "having controller action scope"
 
     it "should change alliance description" do
       invoke @action, @params
@@ -427,6 +436,8 @@ describe AlliancesController do
       @params = {}
     end
 
+    it_should_behave_like "having controller action scope"
+
     it "should respond with ratings for this galaxy" do
       invoke @action, @params
       response_should_include(:ratings => Alliance.ratings(player.galaxy_id))
@@ -441,6 +452,8 @@ describe AlliancesController do
       player.alliance.stub!(:take_over!)
     end
 
+    it_should_behave_like "having controller action scope"
+
     it "should fail if player is not in the alliance" do
       player.alliance = nil
       lambda do
@@ -454,7 +467,7 @@ describe AlliancesController do
     end
 
     it "should push alliances|show on success" do
-      should_push(AlliancesController::ACTION_SHOW, 'id' => @player.alliance_id)
+      should_push(AlliancesController::ACTION_SHOW, :id => @player.alliance_id)
       invoke @action, @params
     end
   end
@@ -470,6 +483,7 @@ describe AlliancesController do
     end
 
     it_should_behave_like "with param options", %w{player_id}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if player is not in alliance" do
       player.alliance = nil
@@ -487,7 +501,7 @@ describe AlliancesController do
     end
 
     it "should fail if new owner is not found" do
-      @member.destroy
+      @member.destroy!
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
@@ -505,8 +519,8 @@ describe AlliancesController do
     end
 
     it "should push alliances|show on success" do
-      should_push(AlliancesController::ACTION_SHOW, 'id' => @alliance.id)
       invoke @action, @params
+      should_have_pushed(AlliancesController::ACTION_SHOW, 'id' => @alliance.id)
     end
 
     it "should respond with error if technology is too low" do

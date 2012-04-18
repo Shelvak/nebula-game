@@ -1,2 +1,1 @@
-LOGGER.outputs +=  []
-LOGGER.level = GameLogger::LEVEL_INFO
+log_writer_config.level = :info

@@ -4,7 +4,8 @@
 # ConstructionQueue class that will manage these objects.
 #
 class ConstructionQueueEntry < ActiveRecord::Base
-  default_scope :order => :position
+  include Parts::WithLocking
+  default_scope order(:position)
   belongs_to :constructor, :class_name => "Building"
   serialize :params, Hash
 
@@ -16,7 +17,7 @@ class ConstructionQueueEntry < ActiveRecord::Base
   include FlagShihTzu
   has_flags(
     1 => :prepaid,
-    :check_flag_column => false
+    :check_for_column => false
   )
 
   def as_json(options=nil)

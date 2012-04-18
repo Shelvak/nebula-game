@@ -1,4 +1,6 @@
 class Alliance < ActiveRecord::Base
+  include Parts::WithLocking
+
   # Foreign key
   belongs_to :galaxy
   # FK

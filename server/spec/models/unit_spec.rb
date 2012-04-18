@@ -41,19 +41,22 @@ describe Unit do
     end
   end
   
-  describe ".on_callback" do
-    describe "destroy" do
+  describe "callbacks" do
+    let(:unit) { Factory.create(:unit) }
+
+    describe ".destroy_callback" do
+      it "should have scope" do
+        Unit::DESTROY_SCOPE
+      end
+
       it "should destroy unit" do
-        unit = Factory.create(:unit)
-        Unit.stub!(:find).with(unit.id).and_return(unit)
         unit.should_receive(:destroy!)
-        Unit.on_callback(unit.id, CallbackManager::EVENT_DESTROY)
+        Unit.destroy_callback(unit)
       end
       
       it "should fire destroy on unit" do
-        unit = Factory.create(:unit)
         should_fire_event(unit, EventBroker::DESTROYED) do
-          Unit.on_callback(unit.id, CallbackManager::EVENT_DESTROY)
+          Unit.destroy_callback(unit)
         end
       end
     end

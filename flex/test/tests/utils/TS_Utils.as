@@ -12,5 +12,6 @@ package tests.utils
       public var tc_Objects: TC_Objects;
       public var tc_Localizer: TC_Localizer;
       public var tc_MPageSwitcher: TC_MPageSwitcher;
+      public var tc_Objects_containsSameData:TC_Objects_containsSameData;
    }
 }

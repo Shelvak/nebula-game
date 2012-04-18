@@ -11,6 +11,8 @@
 # #creds include normal creds + vip creds if player is a VIP.
 #
 class Player < ActiveRecord::Base
+  include Parts::WithLocking
+
   belongs_to :alliance
   belongs_to :galaxy
   # FK :dependent => :delete_all
@@ -47,6 +49,8 @@ class Player < ActiveRecord::Base
   # because buildings do not technically belong to a player, but instead to
   # a planet.
   has_many :construction_queue_entries
+
+  DScope = Dispatcher::Scope
 
   def self.notify_on_create?; false; end
   def self.notify_on_destroy?; false; end
@@ -106,7 +110,7 @@ class Player < ActiveRecord::Base
   #
   def self.minimal(id)
     if id
-      name = select("name").where(:id => id).c_select_one['name']
+      name = without_locking { select("name").where(:id => id).c_select_value }
       {"id" => id, "name" => name}
     else
       nil
@@ -146,7 +150,7 @@ class Player < ActiveRecord::Base
 
   # Returns for how much seconds this player has been inactive.
   def inactivity_time
-    return 0 if Dispatcher.instance.connected?(id)
+    return 0 if Celluloid::Actor[:dispatcher].player_connected?(id)
     Time.now - (last_seen.nil? ? created_at : last_seen)
   end
 
@@ -266,7 +270,8 @@ class Player < ActiveRecord::Base
         row['alliance'] = alliance_id \
           ? {'id' => alliance_id, 'name' => alliance_name} \
           : nil
-        row['last_seen'] = true if Dispatcher.instance.connected?(row['id'])
+        row['last_seen'] = true \
+          if Celluloid::Actor[:dispatcher].player_connected?(row['id'])
         row['last_seen'] = Time.parse(row['last_seen']) \
           if row['last_seen'].is_a?(String)
         row['death_date'] = Time.parse(row['death_date']) \
@@ -293,7 +298,7 @@ class Player < ActiveRecord::Base
         row['alliance'] = alliance_id \
           ? {'id' => alliance_id, 'name' => alliance_name} \
           : nil
-        row['last_seen'] = true if Dispatcher.instance.connected?(row['id'])
+        row['last_seen'] = true if Celluloid::Actor[:dispatcher].connected?(row['id'])
         row['last_seen'] = Time.parse(row['last_seen']) \
           if row['last_seen'].is_a?(String)
         row
@@ -462,17 +467,19 @@ class Player < ActiveRecord::Base
     true
   end
 
-  attr_accessor :invoked_from_control_manager
+  attr_accessor :invoked_from_web
 
   # Destroy player in WEB unless this destroy was invoked from control
   # manager.
-  after_destroy :unless => :invoked_from_control_manager do
+  after_destroy :unless => :invoked_from_web do
     ControlManager.instance.player_destroyed(self) unless galaxy.dev?
     true
   end
   # Disconnect erased player from server.
   after_destroy do
-    Dispatcher.instance.disconnect(id, Dispatcher::DISCONNECT_PLAYER_ERASED)
+    Celluloid::Actor[:dispatcher].disconnect!(
+      id, Dispatcher::DISCONNECT_PLAYER_ERASED
+    )
   end
 
   # Update player in dispatcher if it is connected so alliance ids and other
@@ -483,8 +490,8 @@ class Player < ActiveRecord::Base
   # This is why DataMapper is great - it keeps one object in memory for one
   # row in DB.
   after_save do
-    dispatcher = Dispatcher.instance
-    dispatcher.update_player(self) if dispatcher.connected?(id)
+    dispatcher = Celluloid::Actor[:dispatcher]
+    dispatcher.update_player(self) if dispatcher.player_connected?(id)
 
     Objective::BeInAlliance.progress(self) \
       if alliance_id_changed? && ! alliance_id.nil?
@@ -579,7 +586,7 @@ class Player < ActiveRecord::Base
 
   # Is this player active?
   def active?
-    Dispatcher.instance.connected?(id) || (
+    Celluloid::Actor[:dispatcher].player_connected?(id) || (
       ! last_seen.nil? &&
         last_seen >= Cfg.player_inactivity_time(points).ago
     )
@@ -671,17 +678,12 @@ class Player < ActiveRecord::Base
     )
   end
 
-  def self.on_callback(id, event)
-    case event
-    when CallbackManager::EVENT_CHECK_INACTIVE_PLAYER
-      player = find(id)
-      player.check_activity!
-    else
-      if defined?(super)
-        super(id, event)
-      else
-        raise CallbackManager::UnknownEvent.new(self, id, event)
-      end
-    end
-  end
+  CHECK_INACTIVE_PLAYER_SCOPE = DScope.world
+  def self.check_inactive_player_callback(player); player.check_activity!; end
+
+  VIP_TICK_SCOPE = DScope.world
+  def self.vip_tick_callback(player); player.vip_tick!; end
+
+  VIP_STOP_SCOPE = DScope.world
+  def self.vip_stop_callback(player); player.vip_stop!; end
 end

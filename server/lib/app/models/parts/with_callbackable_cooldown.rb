@@ -1,5 +1,8 @@
 module Parts::WithCallbackableCooldown
   def self.included(receiver)
+    raise "I can only be included in Building, not #{receiver}!" \
+      unless receiver < Building # Check for inheritance
+
     receiver.send :include, Parts::WithCooldown
     receiver.send :include, InstanceMethods
   end

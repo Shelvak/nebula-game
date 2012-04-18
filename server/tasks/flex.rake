@@ -41,8 +41,9 @@ namespace :flex do
   namespace :assets do
     desc "Generate assets Flex class"
     task :build => :environment do
-      BUNDLED_FILE_HASHES = File.join(Assets::HASHES_DIR,
-        'flex_bundled_file_hashes.txt')
+      BUNDLED_FILE_HASHES = File.join(
+        Assets::HASHES_DIR, 'flex_bundled_file_hashes.txt'
+      )
       SUPPORTED_EXTENSIONS = "{jpg,png,swf}"
       FileUtils.mkdir_p File.dirname(BUNDLED_FILE_HASHES)
 

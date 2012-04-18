@@ -1,4 +1,6 @@
 class Folliage < ActiveRecord::Base
+  include Parts::WithLocking
+
   include FastFind
   def self.fast_find_columns
     {:x => :to_i, :y => :to_i, :kind => :to_i}

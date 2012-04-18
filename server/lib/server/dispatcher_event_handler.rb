@@ -1,18 +1,17 @@
 # Handles events that should push messages to Dispatcher.
 class DispatcherEventHandler
-  def initialize(dispatcher)
-    @dispatcher = dispatcher
+  def initialize
     EventBroker.register(self)
   end
 
   def fire(object, event_name, reason)
     case event_name
     when EventBroker::CREATED
-      Handler::Created.handle(@dispatcher, object, reason)
+      Handler::Created.handle(dispatcher, object, reason)
     when EventBroker::CHANGED
-      Handler::Changed.handle(@dispatcher, object, reason)
+      Handler::Changed.handle(dispatcher, object, reason)
     when EventBroker::DESTROYED
-      Handler::Destroyed.handle(@dispatcher, object, reason)
+      Handler::Destroyed.handle(dispatcher, object, reason)
     when EventBroker::MOVEMENT_PREPARE
       handle_movement_prepare(object)
     when EventBroker::MOVEMENT
@@ -49,7 +48,7 @@ class DispatcherEventHandler
         route_hops = [zone_route_hops[0]].compact
       end
 
-      @dispatcher.push_to_player(
+      dispatcher.push_to_player!(
         player_id,
         UnitsController::ACTION_MOVEMENT_PREPARE,
         {
@@ -113,7 +112,8 @@ class DispatcherEventHandler
           # If unit appeared from invisible zone.
           case state_change
           when STATE_CHANGED_TO_VISIBLE
-            units = movement_event.route.units
+            # Eagerly load collection to ensure threading safety.
+            units = movement_event.route.units.all
             route_hops = [next_hop].compact
             jumps_at = movement_event.route.jumps_at
           when STATE_UNCHANGED
@@ -134,6 +134,7 @@ class DispatcherEventHandler
         end
       when EventBroker::REASON_BETWEEN_ZONES
         # Movement was between zones.
+        # Eagerly load collection to ensure threading safety.
         units = movement_event.route.units
 
         # Dispatch units that arrived at zone and their route hops for their
@@ -165,7 +166,7 @@ class DispatcherEventHandler
       case reason
       when EventBroker::REASON_SS_ENTRY
         if fow_change_event.is_a?(Event::FowChange::SsDestroyed)
-          @dispatcher.push_to_player(player_id,
+          dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_DESTROYED,
             {
               'objects' => [fow_change_event.metadata],
@@ -174,7 +175,7 @@ class DispatcherEventHandler
           )
         elsif fow_change_event.is_a?(Event::FowChange::SsCreated)
           # Create single solar system
-          @dispatcher.push_to_player(player_id,
+          dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_CREATED,
             {
               'objects' => [fow_change_event.metadatas[player_id]],
@@ -183,7 +184,7 @@ class DispatcherEventHandler
           )
         else
           # Update single solar system
-          @dispatcher.push_to_player(player_id,
+          dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_UPDATED,
             {
               'objects' => [fow_change_event.metadatas[player_id]],
@@ -193,7 +194,7 @@ class DispatcherEventHandler
         end
       when EventBroker::REASON_GALAXY_ENTRY
         # Update galaxy map
-        @dispatcher.push_to_player(player_id, GalaxiesController::ACTION_SHOW)
+        dispatcher.push_to_player!(player_id, GalaxiesController::ACTION_SHOW)
       end
     end
   end
@@ -212,20 +213,38 @@ class DispatcherEventHandler
 
   # Dispatches movement action to player
   def dispatch_movement(filter, player_id, units, route_hops, jumps_at)
-    @dispatcher.push_to_player(
+    typesig binding, [NilClass, Dispatcher::PushFilter], Fixnum, Array, Array,
+            [NilClass, Time]
+
+    dispatcher.push_to_player!(
       player_id,
       UnitsController::ACTION_MOVEMENT,
-      {'units' => units, 'route_hops' => route_hops, 'jumps_at' => jumps_at},
+      {
+        # #to_a to ensure collections are eagerly loaded
+        'units' => units.to_a,
+        'route_hops' => route_hops.to_a,
+        'jumps_at' => jumps_at
+      },
       filter
     )
   end
+
+  # Buffer messages until commit instead of dispatching them right now.
+  #
+  # This allows us to restart tasks and not flood client with messages that
+  # should have never been dispatched.
+  #
+  # TODO: spec
+  def dispatcher; DispatcherEventHandler::Buffer.instance; end
 
   def debug(message, &block); self.class.debug(message, &block); end
 
   def self.debug(message, &block)
     if block
-      LOGGER.block message, {:level => :debug,
-        :server_name => "DispatcherEventHandler"}, &block
+      LOGGER.block(
+        message, {:level => :debug, :component => "DispatcherEventHandler"},
+        &block
+      )
     else
       LOGGER.debug message, "DispatcherEventHandler"
     end

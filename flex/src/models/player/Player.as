@@ -114,18 +114,6 @@ package models.player
        */
       public var galaxyId:int = 0;
       
-      
-      [SkipProperty]
-      /**
-       * Makes sense only for the player instance in <code>ModelLocator</code>.
-       * 
-       * <p><i><b>Metadata</b>:<br/>
-       * [SkipProperty]</i></p>
-       * 
-       * @default null
-       */
-      public var loggedIn:Boolean = false;
-      
       prop_name static const dailyBonus:String = "dailyBonus";
       [SkipProperty]
       public var dailyBonus: Reward = null;
@@ -584,7 +572,6 @@ package models.player
       
       public function reset() : void {
          Collections.cleanListOfICleanables(planets);
-         loggedIn = false;
          scientists = 0;
          scientistsTotal = 0;
          xp = 0;

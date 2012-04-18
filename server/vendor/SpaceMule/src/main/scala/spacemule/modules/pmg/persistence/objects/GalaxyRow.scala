@@ -1,25 +1,24 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.persistence.{Row, RowObject}
+import spacemule.persistence.{ReferableRowObject, ReferableRow}
 
-object GalaxyRow extends RowObject {
-  val pkColumn = Some("id")
-  val columnsSeq = List("ruleset", "callback_url", "created_at")
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: arturas
+ * Date: 3/28/12
+ * Time: 1:16 PM
+ * To change this template use File | Settings | File Templates.
+ */
+
+object GalaxyRow extends ReferableRowObject {
+  val columnsSeq = Seq.empty
+  val pkColumn = "id"
 }
 
-class GalaxyRow(
-  ruleset: String, callbackUrl: String, createdAt: String
-) extends Row {
-  val companion = GalaxyRow
+class GalaxyRow extends ReferableRow {
+  def this(id: Int) { this(); _id = id }
 
-  val valuesSeq = List(
-    ruleset,
-    callbackUrl,
-    createdAt
-  )
+  val companion = GalaxyRow
+  val valuesSeq = Seq.empty
 }

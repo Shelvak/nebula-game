@@ -569,7 +569,7 @@ describe Building::ConstructorTest do
         constructor.mass_accelerate!(time - 10, cost)
       end.should raise_error(GameLogicError)
     end
-    
+
     it "should dispatch created event" do
       SPEC_EVENT_HANDLER.clear_events!
       units = constructor.mass_accelerate!(time, cost)
@@ -688,18 +688,17 @@ describe Building::ConstructorTest do
     end
   end
 
-  describe ".on_callback" do
-    before(:each) do
-      @model = Factory.create :b_constructor_test
-      @klass = Building
-      @klass.stub!(:find).with(@model.id).and_return(@model)
-    end
+  describe "callbacks" do
+    let(:model) { Factory.create :b_constructor_test }
 
-    describe "on construction finished" do
+    describe ".construction_finished_callback" do
+      it "should have scope" do
+        Building::CONSTRUCTION_FINISHED_SCOPE
+      end
+
       it "should call #on_construction_finished!" do
-        @model.should_receive(:on_construction_finished!)
-        @klass.on_callback(@model.id,
-          CallbackManager::EVENT_CONSTRUCTION_FINISHED)
+        model.should_receive(:on_construction_finished!)
+        Building.construction_finished_callback(model)
       end
     end
   end
