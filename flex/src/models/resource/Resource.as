@@ -37,46 +37,40 @@ package models.resource
       public static function getMissingStoragesString(planet: MSSObject,
                                               metalCost: Number, 
                                               energyCost: Number, 
-                                              zetiumCost: Number,
-                                              credsCost: Number = 0): String
+                                              zetiumCost: Number): String
       {
-         var missingStorages: Array = [];
-         if (ML.latestPlanet)
+         var missingStorages: Array = new Array();
+         if (metalCost  > planet.metal.maxStock)
          {
-            var planet:MSSObject = ML.latestPlanet.ssObject;
-            if (metalCost  > planet.metal.maxStock)
-            {
-               missingStorages.push(ResourceType.METAL);
-            }
-            if (energyCost  > planet.energy.maxStock)
-            {
-               missingStorages.push(ResourceType.ENERGY);
-            }
-            if (zetiumCost  > planet.zetium.maxStock)
-            {
-               missingStorages.push(ResourceType.ZETIUM);
-            }
-            var tempStorageString: String = '';
-            var i: int = 0;
-            for each (var res: String in missingStorages)
-            {
-               if (i > 0)
-               {
-                  if (i == missingStorages.length - 1)
-                  {
-                     tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
-                  }
-                  else
-                  {
-                     tempStorageString += ', ';
-                  }
-               }
-               i++;
-               tempStorageString += Localizer.string('Resources', 'additionalStorage.resource', [res]);
-            }
-            return tempStorageString;
+            missingStorages.push(ResourceType.METAL);
          }
-         return '';
+         if (energyCost  > planet.energy.maxStock)
+         {
+            missingStorages.push(ResourceType.ENERGY);
+         }
+         if (zetiumCost  > planet.zetium.maxStock)
+         {
+            missingStorages.push(ResourceType.ZETIUM);
+         }
+         var tempStorageString: String = '';
+         var i: int = 0;
+         for each (var res: String in missingStorages)
+         {
+            if (i > 0)
+            {
+               if (i == missingStorages.length - 1)
+               {
+                  tempStorageString += ' '+Localizer.string('Resources', 'and')+' ';
+               }
+               else
+               {
+                  tempStorageString += ', ';
+               }
+            }
+            i++;
+            tempStorageString += Localizer.string('Resources', 'additionalStorage.resource', [res]);
+         }
+         return tempStorageString;
       }
       
       public static function getNotFittingResourcesString(planet: MSSObject,
