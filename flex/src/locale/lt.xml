@@ -2133,6 +2133,8 @@
     <title.achievements value="PASIEKIMAI" />
     <label.close value="Uždaryti" />
     <label.noPlanets value="Tu neturi planetų"/>
+    <label.registerNow value="Užsiregistruoti" />
+    <label.registerLater value="Priminti vėliau" />
   </Players>
 
   <Popups>
@@ -2147,6 +2149,15 @@
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+
+    <title.registration value="Reikalinga registracija" />
+    <message.registration>
+      <p>Primename, kad tu dar neužsiregistravęs.</p>
+      <p>Jei atsijungsi nuo žaidimo kol neesi užsiregistravęs kitą kartą teks
+        žaisti nuo pradžių. Jei nori žaisti toliau ir plėsti savo imperiją -
+        užsiregistruok. Tai</p>
+      <p>Tai trunka tik minutę ar dvi.</p>
+    </message.registration>
 
     <title.outdatedClient value="Žaidimo versija pasenusi" />
     <message.outdatedClient>

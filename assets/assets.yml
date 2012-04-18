@@ -794,6 +794,11 @@ assets:
         button_over.png:  Dailybonus_over.png
         button_blink.png:  Dailybonus_up2.png
 
+      "registration":
+        button_up.png:  Register_up.png
+        button_over.png:  Register_over.png
+        button_blink.png:  Register_up2.png
+
       "announcements":
         button_up.png:        Shutdown_button_up.png
         button_fade.png:      Shutdown_button_up2.png

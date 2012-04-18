@@ -3,6 +3,7 @@
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:base="components.base.*"
          xmlns:announcement="components.announcement.*"
+         xmlns:registerrequired="components.registerrequired.*"
          currentState="visible"
          visible="{ML.player.dailyBonus != null
          || MQL.showButton
@@ -112,6 +113,7 @@
       <base:layout>
          <s:VerticalLayout gap="10" horizontalAlign="left"/>
       </base:layout>
+      <registerrequired:RegisterButton/>
       <s:Button
          skinClass="components.skins.DailyBonusButtonSkin"
          visible="{ML.player.dailyBonus != null}"

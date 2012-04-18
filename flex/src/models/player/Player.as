@@ -181,6 +181,9 @@ package models.player
       {
          return _creds - vipCreds - freeCreds
       }
+
+      [Required]
+      public var trial: Boolean;
       
       [Optional]
       public var vipLevel: int = 0;
