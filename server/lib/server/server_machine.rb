@@ -68,7 +68,12 @@ module ServerMachine
     end
 
     debug "Sending message: #{json}", to_s
-    send_data "#{json}\n"
+    begin
+      send_data "#{json}\n"
+    rescue Java::java.lang.NullPointerException
+      info "Failed while sending message, closing."
+      close_connection_after_writing
+    end
   end
 
   def unbind
