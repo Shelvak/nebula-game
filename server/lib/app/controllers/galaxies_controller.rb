@@ -1,5 +1,4 @@
 class GalaxiesController < GenericController
-  ACTION_SHOW = 'galaxies|show'
   # Show galaxy for current player.
   #
   # Invocation: by server
@@ -25,31 +24,35 @@ class GalaxiesController < GenericController
   # - wreckages (Wreckage[]): Wreckage#as_json
   # - cooldowns (Cooldown[]): Cooldown#as_json
   #
-  def action_show
-    player = self.player
-    fow_entries = FowGalaxyEntry.for(player)
-    units = Galaxy.units(player, fow_entries)
+  ACTION_SHOW = 'galaxies|show'
 
-    route_hops = RouteHop.find_all_for_player(player,
-      player.galaxy, units)
-    resolver = StatusResolver.new(player)
-    respond \
-      :galaxy_id => player.galaxy_id,
-      :solar_systems => SolarSystem.visible_for(player).as_json,
-      :battleground_id => Galaxy.battleground_id(player.galaxy_id),
-      :apocalypse_start => Galaxy.apocalypse_start(player.galaxy_id),
-      :units => units.map { |unit| unit.as_json(:perspective => resolver) },
-      :players => Player.minimal_from_objects(units),
-      :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
-        Route.non_friendly_for_galaxy(fow_entries, player.friendly_ids)
-      ),
-      :route_hops => route_hops.map(&:as_json),
-      :fow_entries => fow_entries.map(&:as_json),
-      :wreckages => Wreckage.by_fow_entries(fow_entries).map(&:as_json),
-      :cooldowns => Cooldown.by_fow_entries(fow_entries).map(&:as_json)
+  SHOW_OPTIONS = logged_in + only_push
+  SHOW_SCOPE = scope.world
+  def self.show_action(m)
+    without_locking do
+      player = m.player
+      fow_entries = FowGalaxyEntry.for(player)
+      units = Galaxy.units(player, fow_entries)
+
+      route_hops = RouteHop.find_all_for_player(player, player.galaxy, units)
+      resolver = StatusResolver.new(player)
+      respond m,
+        :galaxy_id => player.galaxy_id,
+        :solar_systems => SolarSystem.visible_for(player).as_json,
+        :battleground_id => Galaxy.battleground_id(player.galaxy_id),
+        :apocalypse_start => Galaxy.apocalypse_start(player.galaxy_id),
+        :units => units.map { |unit| unit.as_json(:perspective => resolver) },
+        :players => Player.minimal_from_objects(units),
+        :non_friendly_jumps_at => Route.jumps_at_hash_from_collection(
+          Route.non_friendly_for_galaxy(fow_entries, player.friendly_ids)
+        ),
+        :route_hops => route_hops.map(&:as_json),
+        :fow_entries => fow_entries.map(&:as_json),
+        :wreckages => Wreckage.by_fow_entries(fow_entries).map(&:as_json),
+        :cooldowns => Cooldown.by_fow_entries(fow_entries).map(&:as_json)
+    end
   end
 
-  ACTION_APOCALYPSE = 'galaxies|apocalypse'
   # Notifies client that the apocalypse has started.
   #
   # Invocation: by server
@@ -59,10 +62,11 @@ class GalaxiesController < GenericController
   # Response:
   # - start (Time): start date of apocalypse
   #
-  def action_apocalypse
-    param_options :required => {:start => Time}
+  ACTION_APOCALYPSE = 'galaxies|apocalypse'
 
-    only_push!
-    respond :start => params['start']
+  APOCALYPSE_OPTIONS = logged_in + only_push + required(:start => Time)
+  APOCALYPSE_SCOPE = scope.world
+  def self.apocalypse_action(m)
+    respond m, :start => m.params['start']
   end
 end

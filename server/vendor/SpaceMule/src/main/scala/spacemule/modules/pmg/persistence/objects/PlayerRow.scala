@@ -9,10 +9,10 @@ import java.util.regex.Pattern
 import spacemule.modules.pmg.objects.Player
 import spacemule.modules.config.objects.Config
 import java.util.Calendar
-import spacemule.persistence.{DB, Row, RowObject}
+import spacemule.persistence._
 
-object PlayerRow extends RowObject {
-  val pkColumn = Some("id")
+object PlayerRow extends RowObject with ReferableRowObject {
+  val pkColumn = "id"
   val columnsSeq = Seq(
     "galaxy_id", "web_user_id", "name", "population_cap",
     "planets_count", "created_at"
@@ -21,8 +21,7 @@ object PlayerRow extends RowObject {
 }
 
 case class PlayerRow(galaxyId: Int, player: Player)
-  extends Row
-{
+extends Row with ReferableRow {
   val companion = PlayerRow
   
   val valuesSeq = Seq(

@@ -5,29 +5,35 @@ class SpaceMule
   # Scala constants
   SmModules = Java::spacemule.modules
   Pmg = SmModules.pmg
+  DB = Java::spacemule.persistence.DB
 
   def initialize
-    SmModules.config.Runner.run(
-      USED_DB_CONFIG.to_scala,
-      CONFIG.scala_wrapper
-    )
+    SmModules.config.objects.Config.data = GameConfig::ScalaWrapper.new
   end
 
   # Create a new galaxy with battleground solar system. Returns id of that
   # galaxy.
   def create_galaxy(ruleset, callback_url)
-    Pmg.Runner.create_galaxy(ruleset, callback_url)
+    with_db_connection do
+      CONFIG.with_set_scope(ruleset) do
+        Pmg.Runner.create_galaxy(ruleset, callback_url)
+      end
+    end
   end
 
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
   # {web_user_id => player_name} pairs.
   def create_players(galaxy_id, ruleset, players)
-    PlayerCreator.invoke(galaxy_id, ruleset, players)
+    with_db_connection do
+      PlayerCreator.invoke(galaxy_id, ruleset, players)
+    end
   end
 
   # Creates a new, empty zone with only non-player solar systems.
   def create_zone(galaxy_id, ruleset, slot, quarter)
-    PlayerCreator.create_zone(galaxy_id, ruleset, slot, quarter)
+    with_db_connection do
+      PlayerCreator.create_zone(galaxy_id, ruleset, slot, quarter)
+    end
   end
 
   # Sends message to space mule for combat simulation.
@@ -62,5 +68,13 @@ class SpaceMule
   #
   def find_path(source, target, avoid_npc=true)
     Pathfinder.invoke(source, target, avoid_npc)
+  end
+
+  private
+  def with_db_connection
+    DB.connection = ActiveRecord::Base.connection.jdbc_connection
+    yield
+  ensure
+    DB.connection = nil
   end
 end

@@ -1,8 +1,4 @@
-# Routes controller. Routes are sent via index action after galaxies|select.
-# Updated routes are sent via objects controller.
-#
 class RoutesController < GenericController
-  ACTION_INDEX = 'routes|index'
   # Return an array of all routes for current player and his alliance.
   #
   # Invocation: by server
@@ -14,13 +10,18 @@ class RoutesController < GenericController
   # - players (Hash): Player#minimal_from_objects. Used to show to
   # whom routes belong.
   #
-  def action_index
-    only_push!
+  ACTION_INDEX = 'routes|index'
 
-    routes = Route.where(:player_id => player.friendly_ids).all
+  INDEX_OPTIONS = logged_in + only_push
+  INDEX_SCOPE = scope.world
+  def self.index_action(m)
+    without_locking do
+      routes = Route.where(:player_id => m.player.friendly_ids).all
 
-    respond :routes => routes.map(&:as_json),
-      :players => Player.minimal_from_objects(routes)
+      respond m,
+        :routes => routes.map(&:as_json),
+        :players => Player.minimal_from_objects(routes)
+    end
   end
 
   # Destroys a route stopping all units which belonged to it.
@@ -32,10 +33,12 @@ class RoutesController < GenericController
   #
   # Response: None. However objects|destroyed will be pushed with Route.
   #
-  def action_destroy
-    param_options :required => %w{id}
+  ACTION_DESTROY = 'routes|destroy'
 
-    route = Route.where(:player_id => player.id).find(params['id'])
+  DESTROY_OPTIONS = logged_in + required(:id => Fixnum)
+  DESTROY_SCOPE = scope.world
+  def self.destroy_action(m)
+    route = Route.where(:player_id => m.player.id).find(m.params['id'])
     route.destroy!
   end
 end

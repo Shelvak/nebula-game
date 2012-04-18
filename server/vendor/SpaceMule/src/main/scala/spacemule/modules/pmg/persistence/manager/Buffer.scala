@@ -1,7 +1,7 @@
 package spacemule.modules.pmg.persistence.manager
 
 import collection.mutable.ListBuffer
-import spacemule.persistence.{Row, DB, RowObject}
+import spacemule.persistence._
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,39 +11,12 @@ import spacemule.persistence.{Row, DB, RowObject}
  * To change this template use File | Settings | File Templates.
  */
 
-class Buffer(val tableName: String, rowObject: RowObject) {
-  private[this] val buffer = ListBuffer[String]()
-
-  private[this] var id = 0
-  private[this] var idInitialized = false
-
-  private[this] def nextId() = {
-    if (! idInitialized) {
-      id = DB.getOne[Int]("SELECT MAX(id) FROM `%s`".format(tableName)) match {
-        case Some(id: Int) => id
-        case None => 0
-      }
-      idInitialized = true
-    }
-
-    id += 1
-
-    id
-  }
-
-  def clear() {
-    buffer.clear()
-    idInitialized = false
-  }
-  def save() {
-    if (buffer.isEmpty) return
-
-    DB.loadInFile(tableName, rowObject.columns, buffer)
-  }
-
+class Buffer(
+  val tableName: String, protected val rowObject: RowObject
+) extends BufferLike[Row] {
   def +=(row: Row) {
-    if (row.companion.pkColumn.isDefined)
-      row.id = nextId()
-    buffer += row.values
+    buffer += row
   }
+
+  protected def batchIdToOpt(batchId: String) = None
 }

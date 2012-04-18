@@ -1,10 +1,6 @@
 class CallbackManager
-  class UnknownEvent < ArgumentError
-    def initialize(klass, id, event)
-      super("Unrecognized event #{CallbackManager::STRING_NAMES[event]} (#{
-        event} for #{klass} ID #{id}")
-    end
-  end
+  include Celluloid
+  include NamedLogMessages
   
   # Constructable has finished upgrading.
   EVENT_UPGRADE_FINISHED = 0
@@ -37,22 +33,22 @@ class CallbackManager
   # Create system offer for creds -> zetium in galaxy.
   EVENT_CREATE_ZETIUM_SYSTEM_OFFER = 14
   
-  STRING_NAMES = {
-    EVENT_UPGRADE_FINISHED => 'upgrade finished',
-    EVENT_CONSTRUCTION_FINISHED => 'construction finished',
-    EVENT_ENERGY_DIMINISHED => 'energy diminished',
-    EVENT_MOVEMENT => 'movement',
-    EVENT_DESTROY => 'destroy',
-    EVENT_EXPLORATION_COMPLETE => "exploration complete",
-    EVENT_COOLDOWN_EXPIRED => "cooldown expired",
-    EVENT_RAID => "raid",
-    EVENT_CHECK_INACTIVE_PLAYER => "inactivity check",
-    EVENT_SPAWN => "spawn",
-    EVENT_VIP_TICK => "vip tick",
-    EVENT_VIP_STOP => "vip stop",
-    EVENT_CREATE_METAL_SYSTEM_OFFER => "create metal system offer",
-    EVENT_CREATE_ENERGY_SYSTEM_OFFER => "create energy system offer",
-    EVENT_CREATE_ZETIUM_SYSTEM_OFFER => "create zetium system offer",
+  TYPES = {
+    EVENT_UPGRADE_FINISHED => :upgrade_finished,
+    EVENT_CONSTRUCTION_FINISHED => :construction_finished,
+    EVENT_ENERGY_DIMINISHED => :energy_diminished,
+    EVENT_MOVEMENT => :movement,
+    EVENT_DESTROY => :destroy,
+    EVENT_EXPLORATION_COMPLETE => :exploration_complete,
+    EVENT_COOLDOWN_EXPIRED => :cooldown_expired,
+    EVENT_RAID => :raid,
+    EVENT_CHECK_INACTIVE_PLAYER => :check_inactive_player,
+    EVENT_SPAWN => :spawn,
+    EVENT_VIP_TICK => :vip_tick,
+    EVENT_VIP_STOP => :vip_stop,
+    EVENT_CREATE_METAL_SYSTEM_OFFER => :create_metal_system_offer,
+    EVENT_CREATE_ENERGY_SYSTEM_OFFER => :create_energy_system_offer,
+    EVENT_CREATE_ZETIUM_SYSTEM_OFFER => :create_zetium_system_offer,
   }
 
   CLASS_TO_COLUMN = {
@@ -70,10 +66,111 @@ class CallbackManager
     CombatLog => :combat_log_id,
   }
 
+  TAG = "callback_manager"
+
+  def to_s
+    TAG
+  end
+
+  def initialize
+    # Crash if dispatcher crashes, because we might have sent some messages
+    # there that will never be processed if we don't restart.
+    current_actor.link Actor[:dispatcher]
+
+    @running = false
+    @pause = false
+    run!
+  end
+
+  def run
+    raise "Cannot run callback manager while it is running!" if @running
+    @running = true
+
+    # Tick first time with failed callbacks. This should not be async.
+    tick(true)
+
+    loop do
+      if @pause
+        @pause = false
+        wait :resume
+      end
+
+      sleep 1 # Wait 1 second before next tick.
+      tick
+    end
+  end
+
+  # Pauses callback manager. Callbacks will not be
+  def pause
+    info "Pausing."
+    @pause = true
+  end
+
+  def resume
+    info "Resuming."
+    signal :resume
+  end
+
+  # Run every callback that is not processed and should have happened by now.
+  def tick(include_all=false)
+    exclusive do
+      with_db_connection do
+        now = Time.now.to_s(:db)
+        conditions = include_all \
+          ? "ends_at <= '#{now}'" \
+          : "ends_at <= '#{now}' AND processing=0"
+
+        get_callback = lambda do |last_id|
+          LOGGER.except(:debug) do
+            # Ensure we don't end up in an endless loop trying to execute same
+            # callback over and over again if it fails.
+            skip_failed = last_id.nil? ? "" : " AND id > #{last_id.to_i}"
+            sql = "WHERE #{conditions}#{skip_failed} ORDER BY ends_at"
+
+            row = self.class.get(sql, connection)
+            if row.nil?
+              nil
+            else
+              klass, obj_id = self.class.parse_row(row)
+              Callback.new(
+                row['id'], klass, obj_id, row['event'],
+                row['ruleset'], row['ends_at']
+              )
+            end
+          end
+        end
+
+        # Request unprocessed entries that have hit.
+        callback = get_callback.call(nil)
+
+        until callback.nil?
+          info "Fetched: #{callback}"
+
+          # Mark this row as sent to processing.
+          connection.execute(
+            "UPDATE `callbacks` SET processing=1 WHERE id=#{callback.id}"
+          )
+          Actor[:dispatcher].callback!(callback)
+
+          callback = get_callback.call(callback.id)
+        end
+      end
+    end
+  end
+
+  private
+  def with_db_connection(&block)
+    ActiveRecord::Base.connection_pool.with_connection(&block)
+  end
+
+  def connection
+    ActiveRecord::Base.connection
+  end
+
   class << self
-    def get_column(object)
+    def parse_object(object)
       CLASS_TO_COLUMN.each do |klass, column|
-        return column if object.is_a?(klass)
+        return [klass, column] if object.is_a?(klass)
       end
 
       raise ArgumentError, "Unknown column type for #{object.inspect}!"
@@ -82,10 +179,10 @@ class CallbackManager
     def parse_row(row)
       CLASS_TO_COLUMN.each do |klass, column|
         id = row[column.to_s]
-        return [klass, column, id] unless id.nil?
+        return [klass, id] unless id.nil?
       end
 
-      raise ArgumentError, "Cannot determine class/column/id for #{row.inspect}!"
+      raise ArgumentError, "Cannot determine class/id for #{row.inspect}!"
     end
 
     # Register _event_ that will happen at _time_ on _object_. It will
@@ -94,13 +191,14 @@ class CallbackManager
     def register(object, event, time)
       typesig binding, ActiveRecord::Base, Fixnum, Time
 
-      LOGGER.info("CM: registering event '#{STRING_NAMES[event]
-        }' at #{time.to_s(:db)} for #{object}")
+      LOGGER.info("Registering event '#{TYPES[event]
+        }' at #{time.to_s(:db)} for #{object}", TAG)
 
       raise ArgumentError.new("object #{object} does not have id!") \
         if object.id.nil?
 
-      column = get_column(object)
+      klass, column = parse_object(object)
+      check_event!(klass, event)
       ActiveRecord::Base.connection.execute(
         "INSERT INTO callbacks SET #{column}='#{object.id.to_i
           }', ruleset='#{CONFIG.set_scope}', event=#{event
@@ -112,10 +210,11 @@ class CallbackManager
     def update(object, event, time)
       typesig binding, ActiveRecord::Base, Fixnum, Time
 
-      LOGGER.info("CM: updating event '#{STRING_NAMES[event]
-        }' at #{time.to_s(:db)} for #{object}")
+      LOGGER.info("Updating event '#{TYPES[event]
+        }' at #{time.to_s(:db)} for #{object}", TAG)
 
-      column = get_column(object)
+      klass, column = parse_object(object)
+      check_event!(klass, event)
       ActiveRecord::Base.connection.execute(
         "UPDATE callbacks SET ends_at='#{time.to_s(:db)}' WHERE #{
         column}=#{object.id} AND event=#{event}"
@@ -141,7 +240,8 @@ class CallbackManager
         "ends_at='#{time.to_s(:db)}'"
       end
 
-      column = get_column(object)
+      klass, column = parse_object(object)
+      check_event!(klass, event)
       ! ActiveRecord::Base.connection.select_value(
         "SELECT 1 FROM callbacks WHERE #{column}=#{object.id} AND event=#{event
         } AND #{time_condition} LIMIT 1"
@@ -151,102 +251,25 @@ class CallbackManager
     def unregister(object, event)
       typesig binding, ActiveRecord::Base, Fixnum
 
-      LOGGER.info("CM: unregistering event '#{STRING_NAMES[event]
-        }' for #{object}")
+      LOGGER.info("unregistering event '#{TYPES[event]}' for #{object}", TAG)
 
-      column = get_column(object)
+      klass, column = parse_object(object)
+      check_event!(klass, event)
       ActiveRecord::Base.connection.execute(
         "DELETE FROM callbacks WHERE #{column}=#{object.id} AND event=#{event}"
       )
     end
 
-    def get(sql)
-      ActiveRecord::Base.connection.select_one(
-        "SELECT * FROM callbacks #{sql} LIMIT 1"
-      )
-    end
-
-    # Run every callback that should happen by now.
-    #
-    def tick(include_failed=false)
-      sleep 1 while $IRB_RUNNING
-
-      conn = ActiveRecord::Base.connection
-
-      now = Time.now.to_s(:db)
-      conditions = include_failed \
-        ? "ends_at <= '#{now}' AND failed <= 1" \
-        : "ends_at <= '#{now}' AND failed = 0"
-      sql = "WHERE #{conditions} ORDER BY ends_at"
-
-      # Reset failed callbacks to 0 fails so we could try to process them
-      # again.
-      conn.execute(
-        "UPDATE callbacks SET failed=0 WHERE ends_at <= '#{now
-          }' AND failed > 1"
-      ) if include_failed
-
-      get_row = lambda do
-        LOGGER.suppress(:debug) { get(sql) }
-      end
-
-      # Request unprocessed entries that have hit
-      row = get_row.call
-
-      until row.nil?
-        begin
-          process_callback(row)
-        rescue Exception => error
-          if App.in_production?
-            LOGGER.error(
-              "Error in callback manager!\nRow: %s\n%s" % [
-                row.inspect, error.to_log_str
-              ]
-            )
-            LOGGER.info "Marking row as failed."
-            conn.execute("UPDATE callbacks SET failed=failed+1 #{sql} LIMIT 1")
-          else
-            fail
-          end
-        end
-
-        row = get_row.call
-      end
+    def get(sql, connection=nil)
+      connection ||= ActiveRecord::Base.connection
+      connection.select_one("SELECT * FROM callbacks #{sql} LIMIT 1")
     end
 
     private
-
-    def process_callback(row)
-      klass, column, obj_id = parse_row(row)
-
-      title = "Callback @ #{row['ends_at']} for #{klass.to_s} (evt: '#{
-        STRING_NAMES[row['event'].to_i]}', obj id: #{obj_id}, ruleset: #{
-        row['ruleset']})"
-      LOGGER.block(title, :level => :info) do
-        ActiveRecord::Base.transaction(:joinable => false) do
-          # Delete entry before processing. This is needed because
-          # some callbacks may want to add same type callback to same
-          # object.
-          #
-          # We're still protected of callback silently disappearing
-          # because this won't be executed if the transaction fails.
-          #
-          # Use this instead of just using same SQL used for querying, because
-          # this is more specific and using same SQL fails when starting
-          # server.
-
-          ActiveRecord::Base.connection.execute(
-            # Ugly formatting to fit SQL query to one line.
-            %Q{DELETE FROM callbacks WHERE ends_at='#{
-              row['ends_at'].gsub("'", "")}' AND #{column}=#{obj_id
-              } AND event=#{row['event']} LIMIT 1}
-          )
-
-          CONFIG.with_set_scope(row['ruleset']) do
-            klass.on_callback(obj_id, row['event'].to_i)
-          end
-        end
-      end
+    def check_event!(klass, event)
+      method = :"#{TYPES[event]}_callback"
+      raise ArgumentError, "#{klass} does not respond to #{method}!" \
+        unless klass.respond_to?(method)
     end
   end
 end

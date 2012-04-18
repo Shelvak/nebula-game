@@ -29,6 +29,8 @@
 # }
 #
 class Route < ActiveRecord::Base
+  include Parts::WithLocking
+
   # FK :dependant => :delete_all
   belongs_to :player
 

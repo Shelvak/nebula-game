@@ -1,4 +1,7 @@
 class Technology < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+  include Parts::WithLocking
+
   include Parts::WithProperties
   include Parts::Upgradable
   include Parts::NeedsTechnology
@@ -46,7 +49,9 @@ class Technology < ActiveRecord::Base
       if player.war_points < war_points
     raise GameLogicError.new("Cannot upgrade technology in planet which " +
       "does not have any research centers!"
-    ) unless Building::ResearchCenter.where(:planet_id => planet_id).count > 0
+    ) unless without_locking {
+      Building::ResearchCenter.where(:planet_id => planet_id).exists?
+    }
 
     super
   end
@@ -324,5 +329,12 @@ class Technology < ActiveRecord::Base
 
   def self.new_by_type(type, *args)
     "Technology::#{type.camelcase}".constantize.new(*args)
+  end
+
+  ### Callbacks ###
+
+  UPGRADE_FINISHED_SCOPE = DScope.world
+  def self.upgrade_finished_callback(technology)
+    technology.on_upgrade_finished!
   end
 end

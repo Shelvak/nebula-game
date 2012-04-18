@@ -1,5 +1,8 @@
 # Class for combat simulation
 class Combat
+  require File.dirname(__FILE__) + '/combat/simulation'
+  require File.dirname(__FILE__) + '/combat/integration'
+
   extend Combat::Simulation
   extend Combat::Integration
 
@@ -31,7 +34,7 @@ class Combat
   STATS_CREDS_ATTR = "creds_earned"
 
   # Run combat in a +SsObject+ between +Player+ and NPC building.
-  # Don't create cooldown.
+  # Don't create cooldown and do not push notification to player.
   #
   def self.run_npc!(planet, player_units, target)
     npc_units = Unit.in_location(target.location_attrs).all
@@ -41,7 +44,7 @@ class Combat
       {},
       npc_units + player_units,
       [],
-      :cooldown => false
+      :cooldown => false, :push_notification => false
     )
   end
 end

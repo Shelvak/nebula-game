@@ -1,5 +1,8 @@
 # Use one of the SolarSystem::* classes. This serves as base class.
 class SolarSystem < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+  include Parts::WithLocking
+
   belongs_to :galaxy
 
   include Parts::Object
@@ -162,7 +165,7 @@ class SolarSystem < ActiveRecord::Base
   # Spawns NPC units in random, unoccupied (meaning no NPC ships) sector if
   # free spots are available.
   #
-  # Then checks that spot for combat.
+  # Creates cooldown after spawning.
   def spawn!
     npc_taken_points = self.npc_unit_locations
 
@@ -175,7 +178,7 @@ class SolarSystem < ActiveRecord::Base
         definition, location, nil
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
-      Combat::LocationChecker.check_location(location)
+      Cooldown.create_unless_exists(location, Cfg.after_spawn_cooldown)
       
       location
     else
@@ -195,7 +198,7 @@ class SolarSystem < ActiveRecord::Base
 
     raise RuntimeError.new(
       "Cannot detach solar system #{self} while player is connected!"
-    ) if Dispatcher.instance.connected?(player_id)
+    ) if Celluloid::Actor[:dispatcher].player_connected?(player_id)
 
     # Deactivate radars.
     Building::Radar.for_player(player_id).active.each(&:deactivate!)
@@ -290,16 +293,12 @@ class SolarSystem < ActiveRecord::Base
     true
   end
 
-  def self.on_callback(id, event)
-    case event
-    when CallbackManager::EVENT_SPAWN
-      solar_system = find(id)
-      solar_system.spawn!
-      date = Cfg.solar_system_spawn_random_delay_date(solar_system)
-      CallbackManager.register(solar_system, event, date)
-      date
-    else
-      raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
+  SPAWN_SCOPE = DScope.world
+  def self.spawn_callback(solar_system)
+    solar_system.spawn!
+    date = Cfg.solar_system_spawn_random_delay_date(solar_system)
+    CallbackManager.register(solar_system, CallbackManager::EVENT_SPAWN, date)
+
+    date
   end
 end

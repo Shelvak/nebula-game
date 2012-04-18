@@ -18,6 +18,9 @@ if $SPEC_INITIALIZED.nil?
   )
   Dir[glob].each { |file| require file }
 
+  # Pretend we're in #with_connection
+  Thread.current[ActiveRecord::WC_CHECKING_OUT] = true
+
   # Truncate test tables
   def cleanup_database
     c = ActiveRecord::Base.connection
@@ -69,14 +72,37 @@ if $SPEC_INITIALIZED.nil?
     old_values = {}
     values.each do |key, value|
       old_values[key] = CONFIG[key]
-      CONFIG[key] = value
+      CONFIG.store(key, GameConfig::DEFAULT_SET, value)
     end
 
-    yield
-
-    old_values.each do |key, value|
-      CONFIG[key] = value
+    begin
+      yield
+    ensure
+      old_values.each do |key, value|
+        CONFIG.store(key, GameConfig::DEFAULT_SET, value)
+      end
     end
+  end
+
+  def mock_actor(name, klass)
+    mock = RSpec::Mocks::Mock.new(klass)
+    old_method = Celluloid::Actor.method(:[])
+
+    # Fake our registry lookup.
+    Celluloid::Actor.instance_eval do
+      define_singleton_method(:[]) { |key| name == key ? mock : super(key) }
+    end
+
+    begin
+      yield mock
+    ensure
+      # Restore old method.
+      Celluloid::Actor.instance_eval do
+        define_singleton_method(:[], &old_method)
+      end
+    end
+
+    nil
   end
 
   def stacktrace!
@@ -148,7 +174,7 @@ if $SPEC_INITIALIZED.nil?
     end
 
     def restore_logging
-      LOGGER.level = GameLogger::LEVEL_DEBUG
+      Logging::Writer.instance.level = Logging::Writer::LEVEL_DEBUG
     end
 
     config.before(:each) do
@@ -158,6 +184,16 @@ if $SPEC_INITIALIZED.nil?
 
     config.after(:each) do
       break_transaction
+      unless example.exception.nil?
+        Threading::Director::Task::DEADLOCK_ERRORS.each do |err|
+          if example.exception.message.include?(err)
+            innodb_info = ActiveRecord::Base.connection.
+              select_one("SHOW ENGINE INNODB STATUS")["Status"]
+            STDERR.puts "InnoDB info:"
+            STDERR.puts innodb_info
+          end
+        end
+      end
     end
   end
 

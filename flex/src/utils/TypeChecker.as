@@ -45,6 +45,10 @@ package utils
                    || type === String;
       }
 
+      public static function isGenericObject(obj: *): Boolean {
+         return Objects.getClass(obj) === Object;
+      }
+
       /**
        * Returns <code>true</code> if the given instance is of a <code>Vector</code> type
        * containing objects of any other type.

@@ -10,6 +10,9 @@
 # }
 #
 class RouteHop < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+  include Parts::WithLocking
+
   belongs_to :route
   composed_of :location, LocationPoint.composed_of_options(
     :location,
@@ -173,13 +176,9 @@ class RouteHop < ActiveRecord::Base
     end
   end
 
-  def self.on_callback(id, event)
-    if event == CallbackManager::EVENT_MOVEMENT
-      hop = find(id)
-      hop.move!
-      Combat::LocationCheckerAj.check_location(hop.location)
-    else
-      raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
+  MOVEMENT_SCOPE = DScope.world
+  def self.movement_callback(route_hop)
+    route_hop.move!
+    Combat::LocationCheckerAj.check_location(route_hop.location)
   end
 end

@@ -1,4 +1,6 @@
 class CredStats < ActiveRecord::Base
+  include Parts::WithLocking
+
   # Accelerate an upgradable
   ACTION_ACCELERATE = 0
   # Self-destruct a building

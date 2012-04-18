@@ -1,4 +1,7 @@
 class Cooldown < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+  include Parts::WithLocking
+
   include Parts::InLocation
   include Parts::ByFowEntries
   include Parts::Object
@@ -43,14 +46,9 @@ class Cooldown < ActiveRecord::Base
     model
   end
 
-  def self.on_callback(id, event)
-    case event
-    when CallbackManager::EVENT_DESTROY
-      model = find(id)
-      model.destroy!
-      Combat::LocationChecker.check_location(model.location)
-    else
-      raise CallbackManager::UnknownEvent.new(self, id, event)
-    end
+  DESTROY_SCOPE = DScope.world
+  def self.destroy_callback(cooldown)
+    cooldown.destroy!
+    Combat::LocationChecker.check_location(cooldown.location)
   end
 end

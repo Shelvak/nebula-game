@@ -222,6 +222,12 @@ package utils.datastructures
                   "Could not find an item to remove (using testFunction)"
                );
             }
+            else
+            {
+               Log.getLogger("utils.datastructures.Collections").warn(
+                  "Object not found, could not remove"
+               );
+            }
             return null;
          }
          return list.removeItemAt(itemIndex);
@@ -247,6 +253,12 @@ package utils.datastructures
          if (itemIndex < 0) {
             if (!silent) {
                throw new Error("Could not find an item equal to " + example);
+            }
+            else
+            {
+               Log.getLogger("utils.datastructures.Collections").warn(
+                  "Object not found, could not remove"
+               );
             }
             return null;
          }

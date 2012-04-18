@@ -38,6 +38,16 @@ package controllers.objects.actions.customcontrollers
       public override function objectCreated(objectSubclass: String,
                                              object: Object,
                                              reason: String): * {
+         var oldUnit: Unit = ML.units.find(object.id);
+         if (oldUnit != null)
+         {
+            if (!Objects.containsSameData(oldUnit, object))
+            {
+               Objects.throwStateOutOfSyncError(oldUnit, object);
+            }
+            return oldUnit;
+         }
+
          var unit: Unit = UnitFactory.fromObject(object);
          if (unit.playerId == 0) {
             unit.player = NPC_PLAYER;

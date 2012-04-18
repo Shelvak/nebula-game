@@ -6,6 +6,7 @@ package controllers.galaxies.actions
    import controllers.planets.actions.ShowActionParams;
    import controllers.solarsystems.SolarSystemsCommand;
    import controllers.solarsystems.actions.ShowActionParams;
+   import controllers.startup.StartupInfo;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
 
@@ -20,7 +21,6 @@ package controllers.galaxies.actions
    import models.map.MapType;
    import models.movement.MHop;
    import models.player.PlayerOptions;
-   import models.quest.MMainQuestLine;
    import models.quest.MMainQuestLine;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
@@ -68,11 +68,11 @@ package controllers.galaxies.actions
       public function ShowAction() {
          super();
       }
-      
-      public override function applyServerAction(cmd:CommunicationCommand) :
-            void {
-         var params:Object = cmd.parameters;
-         var startup:Boolean = ML.latestGalaxy == null;
+
+      public override function applyServerAction(cmd: CommunicationCommand): void {
+         StartupInfo.getInstance().initializationComplete = true;
+         const startup: Boolean = ML.latestGalaxy == null;
+         const params: Object = cmd.parameters;
          ML.player.galaxyId = params["galaxyId"];
          createGalaxy(
             ML.player.galaxyId,
@@ -92,7 +92,7 @@ package controllers.galaxies.actions
             ).toArray(),
             params["nonFriendlyJumpsAt"]
          );
-         var galaxy:Galaxy = ML.latestGalaxy;
+         const galaxy:Galaxy = ML.latestGalaxy;
 
          if (!startup) {
             if (params["reason"] == "alliance") {
@@ -144,10 +144,9 @@ package controllers.galaxies.actions
                );
             }
 
-            var instance: MMainQuestLine = MMainQuestLine.getInstance();
+            const instance: MMainQuestLine = MMainQuestLine.getInstance();
             if (instance.hasUncompletedMainQuest()
-                  && PlayerOptions.showPopupsAfterLogin)
-            {
+                   && PlayerOptions.showPopupsAfterLogin) {
                instance.openCurrentUncompletedQuest();
             }
          }

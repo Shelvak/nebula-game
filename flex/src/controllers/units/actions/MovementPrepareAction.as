@@ -10,7 +10,7 @@ package controllers.units.actions
     * 
     * <p>
     * If player is friendly, full route data and all route hops in the current location of units
-    * beeing moved will be received. If not, route will only have id and current location and next
+    * being moved will be received. If not, route will only have id and current location and next
     * hop will also be provided.
     * </p>
     * 

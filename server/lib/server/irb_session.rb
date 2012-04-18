@@ -6,6 +6,8 @@ end
 
 module IRB # :nodoc:
   def self.start_session(binding)
+    $IRB_RUNNING = true
+
     unless @__initialized
       args = ARGV.dup
       ARGV.replace([])
@@ -20,10 +22,14 @@ module IRB # :nodoc:
     @CONF[:IRB_RC].call(irb.context) if @CONF[:IRB_RC]
     @CONF[:MAIN_CONTEXT] = irb.context
 
-    $IRB_RUNNING = true
-    catch(:IRB_EXIT) { irb.eval_input }
+    catch(:IRB_EXIT) do
+      ActiveRecord::Base.connection_pool.with_connection do
+        irb.eval_input
+      end
+    end
   ensure
     $IRB_RUNNING = false
+    Celluloid::Actor[:callback_manager].resume!
   end
 end
 

@@ -1,6 +1,7 @@
 package spacemule.modules.pmg.objects
 
 import spacemule.helpers.Converters._
+import spacemule.modules.pmg.persistence.objects.LocationRow
 
 object Location extends Enumeration {
   type Kind = Value
@@ -11,14 +12,17 @@ object Location extends Enumeration {
   val Unit = Value(3, "unit")
   val Building = Value(4, "building")
 
-  def apply(id: Int, kind: Location.Kind, x: Option[Int], y: Option[Int]) =
-    new Location(id, kind, x, y)
+  def apply(
+    row: LocationRow, kind: Location.Kind, x: Option[Int], y: Option[Int]
+  ) = new Location(row, kind, x, y)
 }
 
-class Location(val id: Int, val kind: Location.Kind, val x: Option[Int],
-               val y: Option[Int]) {
+class Location(
+  val row: LocationRow, val kind: Location.Kind,
+  val x: Option[Int], val y: Option[Int]
+) {
   override def equals(other: Any) = other match {
-    case other: Location => id == other.id && kind == other.kind &&
+    case other: Location => row == other.row && kind == other.kind &&
       x == other.x && y == other.y
     case _ => false
   }

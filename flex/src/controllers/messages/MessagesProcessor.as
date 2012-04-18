@@ -1,6 +1,7 @@
 package controllers.messages
 {
    import controllers.CommunicationCommand;
+   import controllers.startup.StartupInfo;
 
    import utils.SingletonFactory;
    import utils.execution.GameLogicExecutionManager;
@@ -12,8 +13,8 @@ package controllers.messages
 
 
    /**
-    * Responsible for processing messages, received form server as well as sending messages to the server
-    * via <code>IServerProxy</code>.
+    * Responsible for processing messages, received form server as well as
+    * sending messages to the server via <code>IServerProxy</code>.
     */
    public class MessagesProcessor
    {
@@ -34,10 +35,18 @@ package controllers.messages
       }
 
 
-      private var buffer: Vector.<ServerRMO>;
+      private var _bufferOutOfOrder: Vector.<ServerRMO>;
+      private var _bufferInOrder: RMOSequence;
+      private var _nextSequenceNumber: int;
 
       public function MessagesProcessor() {
          reset();
+      }
+
+      public function reset(): void {
+         _bufferOutOfOrder = new Vector.<ServerRMO>();
+         _bufferInOrder = new RMOSequence();
+         _nextSequenceNumber = 0;
       }
 
       /**
@@ -48,32 +57,62 @@ package controllers.messages
        * provided, all available messages will be processed.
        */
       public function process(count: uint = 0): void {
-         var messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
+         const messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
          if (messages != null) {
-            buffer = buffer.concat(messages);
+            for each (var rmo: ServerRMO in messages) {
+               if (rmo.inSequence) {
+                  _bufferInOrder.insert(rmo);
+               }
+               else {
+                  _bufferOutOfOrder.push(rmo);
+               }
+            }
          }
-         processBuffer(count);
+         processBuffers(count);
       }
 
-      private function processBuffer(count: uint): void {
-         const logicExecutionManager: GameLogicExecutionManager
-                  = GameLogicExecutionManager.getInstance();
+      private function get canProcessInOrder(): Boolean {
+         return _bufferInOrder.hasItems
+                   && _bufferInOrder.firstNumber == _nextSequenceNumber;
+      }
+      
+      private function get canProcessOutOfOrder(): Boolean {
+         return _bufferOutOfOrder.length > 0
+                   && StartupInfo.getInstance().initializationComplete;
+      }
+
+      private function processBuffers(count: uint): void {
+         const executionManager: GameLogicExecutionManager
+                           = GameLogicExecutionManager.getInstance();
          var processed: uint = 0;
-         while (logicExecutionManager.executionEnabled
-                   && (count == 0 || processed < count)
-                   && buffer.length > 0) {
-            const rmo: ServerRMO = buffer.shift();
-            const keyword: String = rmo.action != null ? rmo.action : "";
-            if (rmo.isReply) {
-               respMsgTracker.removeRMO(rmo);
+         while (executionManager.executionEnabled
+                   && (canProcessInOrder || canProcessOutOfOrder)
+                   && (count == 0 || processed < count)) {
+            if (canProcessInOrder) {
+               _nextSequenceNumber++;
+               processMessage(_bufferInOrder.removeFirst());
             }
             else {
-               msgLog.logMessage(keyword, "Processing message {0}", [rmo.id]);
-               new CommunicationCommand(
-                  rmo.action, rmo.parameters, true, false, rmo
-               ).dispatch();
+               processMessage(_bufferOutOfOrder.shift());
             }
             processed++;
+         }
+      }
+
+      private function processMessage(rmo: ServerRMO): void {
+         if (rmo.isReply) {
+            respMsgTracker.removeRMO(rmo);
+         }
+         else {
+            msgLog.logMessage(
+               rmo.action,
+               "Processing message {0}. Seq: {1}.",
+               [rmo.id, rmo.sequenceNumber],
+               rmo.inSequence
+            );
+            new CommunicationCommand(
+               rmo.action, rmo.parameters, true, false, rmo
+            ).dispatch();
          }
       }
 
@@ -84,9 +123,37 @@ package controllers.messages
          respMsgTracker.addRMO(rmo);
          serverProxy.sendMessage(rmo);
       }
+   }
+}
 
-      public function reset(): void {
-         buffer = new Vector.<ServerRMO>();
+
+import utils.remote.rmo.ServerRMO;
+
+
+class RMOSequence
+{
+   private const _list: Vector.<ServerRMO> = new Vector.<ServerRMO>();
+
+   public function insert(rmo: ServerRMO): void {
+      const sequenceNumber: int = rmo.sequenceNumber;
+      const length: int = _list.length;
+      for (var insertAt: int = 0; insertAt < length; insertAt++) {
+         if (sequenceNumber < _list[insertAt].sequenceNumber) {
+            break;
+         }
       }
+      _list.splice(insertAt, 0, rmo);
+   }
+
+   public function removeFirst(): ServerRMO {
+      return _list.shift();
+   }
+
+   public function get hasItems(): Boolean {
+      return _list.length > 0;
+   }
+
+   public function get firstNumber(): int {
+      return _list[0].sequenceNumber;
    }
 }

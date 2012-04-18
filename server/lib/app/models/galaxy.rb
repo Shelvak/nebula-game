@@ -1,4 +1,7 @@
 class Galaxy < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+  include Parts::WithLocking
+
   include ::Zone
 
   # FK :dependent => :delete_all
@@ -66,27 +69,34 @@ class Galaxy < ActiveRecord::Base
   end
 
   def self.create_player(galaxy_id, web_user_id, name)
-    find(galaxy_id).create_player(web_user_id, name)
+    without_locking { find(galaxy_id) }.create_player(web_user_id, name)
   end
 
-  def self.on_callback(id, event)
-    case event
-    when CallbackManager::EVENT_SPAWN
-      galaxy = find(id)
-      galaxy.spawn_convoy!
+  def self.create_player_scope(galaxy_id, web_user_id, name)
+    Dispatcher::Scope.galaxy(galaxy_id)
+  end
 
-      CallbackManager.register(galaxy, CallbackManager::EVENT_SPAWN,
-        CONFIG.evalproperty('galaxy.convoy.time').from_now)
-    when CallbackManager::EVENT_CREATE_METAL_SYSTEM_OFFER,
-        CallbackManager::EVENT_CREATE_ENERGY_SYSTEM_OFFER,
-        CallbackManager::EVENT_CREATE_ZETIUM_SYSTEM_OFFER
-      MarketOffer.create_system_offer(
-        id, MarketOffer::CALLBACK_MAPPINGS_FLIPPED[event]
-      ).save!
-    else
-      raise ArgumentError.new("Don't know how to handle #{
-        CallbackManager::STRING_NAMES[event]} (#{event})")
-    end
+  SPAWN_SCOPE = DScope.world
+  def self.spawn_callback(galaxy)
+    galaxy.spawn_convoy!
+    CallbackManager.register(
+      galaxy, CallbackManager::EVENT_SPAWN, Cfg.next_convoy_time
+    )
+  end
+
+  CREATE_METAL_SYSTEM_OFFER_SCOPE = DScope.world
+  def self.create_metal_system_offer_callback(galaxy)
+    MarketOffer.create_system_offer(galaxy.id, MarketOffer::KIND_METAL).save!
+  end
+
+  CREATE_ENERGY_SYSTEM_OFFER_SCOPE = DScope.world
+  def self.create_energy_system_offer_callback(galaxy)
+    MarketOffer.create_system_offer(galaxy.id, MarketOffer::KIND_ENERGY).save!
+  end
+
+  CREATE_ZETIUM_SYSTEM_OFFER_SCOPE = DScope.world
+  def self.create_zetium_system_offer_callback(galaxy)
+    MarketOffer.create_system_offer(galaxy.id, MarketOffer::KIND_ZETIUM).save!
   end
 
   # Saves statistical galaxy data for when somebody wins the galaxy.
@@ -234,14 +244,16 @@ class Galaxy < ActiveRecord::Base
   # wormholes in the galaxy.
   def spawn_convoy!(source=nil, target=nil)
     if source.nil? && target.nil?
-      total = solar_systems.wormhole.count
+      total = without_locking { solar_systems.wormhole.count }
       return if total < 2
     end
 
     CONFIG.with_set_scope(ruleset) do
       get_wormhole = lambda do
-        row = solar_systems.wormhole.select("x, y").limit("#{rand(total)}, 1").
-          c_select_one
+        row = without_locking do
+          solar_systems.wormhole.select("x, y").limit("#{rand(total)}, 1").
+            c_select_one
+        end
 
         GalaxyPoint.new(id, row["x"], row["y"])
       end
@@ -252,12 +264,14 @@ class Galaxy < ActiveRecord::Base
         target = get_wormhole.call
       end
 
-
       # Create units.
       units = UnitBuilder.from_random_ranges(
         Cfg.galaxy_convoy_units_definition, source, nil
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
+      # TODO: spec me
+      Cooldown.create_unless_exists(source, Cfg.after_spawn_cooldown)
+
       unit_ids = units.map(&:id)
       LOGGER.debug "Launching convoy #{source} -> #{target} with unit ids #{
         unit_ids.inspect}"

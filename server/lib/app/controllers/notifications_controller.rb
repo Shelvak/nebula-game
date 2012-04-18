@@ -8,19 +8,23 @@ class NotificationsController < GenericController
   # Response:
   # - notifications (Hash[]): Notification#as_json array
   #
-  def action_index
-    only_push!
-    
-    base = Notification.where(:player_id => player.id)
-    main = base.where("`starred`=? OR `read`=? OR event=?",
-      true, false, Notification::EVENT_ALLIANCE_INVITATION).all
-    extras = base.where(:starred => false, :read => true).
-      limit(Cfg.notification_limit).all
-    notifications = (main | extras).sort do |n1, n2|
-      (n1.created_at <=> n2.created_at) * -1
+  ACTION_INDEX = 'notifications|index'
+
+  INDEX_OPTIONS = logged_in + only_push
+  INDEX_SCOPE = scope.world
+  def self.index_action(m)
+    without_locking do
+      base = Notification.where(:player_id => m.player.id)
+      main = base.where("`starred`=? OR `read`=? OR event=?",
+        true, false, Notification::EVENT_ALLIANCE_INVITATION).all
+      extras = base.where(:starred => false, :read => true).
+        limit(Cfg.notification_limit).all
+      notifications = (main | extras).sort do |n1, n2|
+        (n1.created_at <=> n2.created_at) * -1
+      end
+
+      respond m, :notifications => notifications.map(&:as_json)
     end
-    
-    respond :notifications => notifications.map(&:as_json)
   end
 
   # Marks notification as read.
@@ -30,25 +34,33 @@ class NotificationsController < GenericController
   #   - ids (Fixnum[]): notification ids to be read.
   # Response: None
   #
-  def action_read
-    param_options(:required => %w{ids})
-    Notification.update_all({:read => true},
-      {:player_id => player.id, :id => params['ids']})
+  ACTION_READ = 'notifications|read'
+
+  READ_OPTIONS = logged_in + required(:ids => Array)
+  READ_SCOPE = scope.world
+  def self.read_action(m)
+    Notification.where(:player_id => m.player.id, :id => m.params['ids']).
+      update_all(:read => true)
   end
 
   # Marks notification as starred.
   #
-  # Invocation: by client after clicking star button
-  # Params:
-  #   - id: notification id
-  #   - mark (bool): should this notification be starred
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): notification id
+  # - mark (Boolean): should this notification be starred
+  #
   # Response: None
   #
-  def action_star
-    param_options(:required => %w{id mark})
-    notification = Notification.find(params['id'],
-      :conditions => {:player_id => player.id})
-    notification.starred = params['mark']
+  ACTION_STAR = 'notifications|star'
+
+  STAR_OPTIONS = logged_in + required(:id => Fixnum, :mark => Boolean)
+  STAR_SCOPE = scope.world
+  def self.star_action(m)
+    notification = Notification.where(:player_id => m.player.id).
+      find(m.params['id'])
+    notification.starred = m.params['mark']
     notification.save!
   end
 end

@@ -12,14 +12,6 @@ trait Row {
   val companion: RowObject
   val valuesSeq: Seq[Any]
   
-  private[this] var _id = 0
-  def id_=(id: Int) { _id = id }
-  def id =
-    if (_id == 0) throw new IllegalStateException(
-      "%s does not yet have an ID!".format(this)
-    )
-    else _id
-
   def values: String = {
     if (companion.columnsSeq.size != valuesSeq.size)
       throw new IllegalArgumentException(
@@ -28,11 +20,7 @@ trait Row {
           companion.columnsSeq.size, valuesSeq.size, toString
         )
       )
-    
-    val vals = companion.pkColumn match {
-      case Some(pk) => Seq(id) ++ valuesSeq
-      case None => valuesSeq
-    }  
-    vals.map { _.toString }.mkString("\t")
+
+    valuesSeq.map { _.toString }.mkString("\t")
   }
 }

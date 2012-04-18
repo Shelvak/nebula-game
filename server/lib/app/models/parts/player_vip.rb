@@ -8,24 +8,6 @@ module Parts
   module PlayerVip
     def self.included(receiver)
       receiver.send(:include, InstanceMethods)
-      receiver.extend(ClassMethods)
-    end
-
-    module ClassMethods
-      def on_callback(id, event)
-        case event
-        when CallbackManager::EVENT_VIP_TICK
-          find(id).vip_tick!
-        when CallbackManager::EVENT_VIP_STOP
-          find(id).vip_stop!
-        else
-          if defined?(super)
-            super(id, event)
-          else
-            raise CallbackManager::UnknownEvent.new(self, id, event)
-          end
-        end
-      end
     end
 
     module InstanceMethods
@@ -78,8 +60,9 @@ module Parts
         self.vip_until = duration.from_now
 
         vip_tick!
-        CallbackManager.register(self, CallbackManager::EVENT_VIP_STOP,
-          vip_until)
+        CallbackManager.register(
+          self, CallbackManager::EVENT_VIP_STOP, vip_until
+        )
         stats.save!
         Objective::BecomeVip.progress(self)
       end
@@ -89,12 +72,19 @@ module Parts
         raise GameLogicError.new("Not a VIP!") unless vip?
 
         self.vip_creds = vip_creds_per_tick
-        self.vip_creds_until ||= Time.now
-        self.vip_creds_until += Cfg.player_vip_tick_duration
+
+        duration = Cfg.player_vip_tick_duration
+        # Only register next VIP creds until if it is not the last VIP day.
+        if vip_creds_until.nil? || vip_creds_until + duration < vip_until
+          self.vip_creds_until ||= Time.now
+          self.vip_creds_until += duration
+
+          CallbackManager.register(
+            self, CallbackManager::EVENT_VIP_TICK, vip_creds_until
+          )
+        end
 
         save!
-        CallbackManager.register(self, CallbackManager::EVENT_VIP_TICK,
-          vip_creds_until)
       end
 
       # Stop VIP membership.

@@ -14,12 +14,13 @@ describe ObjectsController do
       @params = {'objects' => [@object]}
     end
 
-    it_behaves_like "with param options", %w{objects}
-    it_behaves_like "only push"
+    it_behaves_like "with param options", :required => %w{objects},
+      :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should include prepared objects" do
       prepared = :prepared
-      @controller.should_receive(:prepare).with(@params['objects']).
+      @controller.should_receive(:prepare).with(player, @params['objects']).
         and_return(prepared)
 
       push @action, @params
@@ -34,12 +35,13 @@ describe ObjectsController do
       @params = {'objects' => [@object], 'reason' => @reason}
     end
 
-    it_behaves_like "with param options", %w{objects reason}
-    it_behaves_like "only push"
+    it_behaves_like "with param options", :required => %w{objects reason},
+      :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should include prepared objects" do
       prepared = :prepared
-      @controller.should_receive(:prepare).with(@params['objects']).
+      @controller.should_receive(:prepare).with(player, @params['objects']).
         and_return(prepared)
 
       push @action, @params
@@ -58,8 +60,9 @@ describe ObjectsController do
       @params = {'objects' => [@object], 'reason' => 'reason'}
     end
 
-    it_behaves_like "with param options", %w{objects reason}
-    it_behaves_like "only push"
+    it_behaves_like "with param options", :required => %w{objects reason},
+      :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should include prepared object ids" do
       prepared = :prepared
@@ -76,7 +79,7 @@ describe ObjectsController do
     end
   end
 
-  describe "#prepare" do
+  describe ".prepare" do
     before(:each) do
       @objects = [
         Factory.create(:unit, :player => player),
@@ -84,7 +87,7 @@ describe ObjectsController do
         Factory.create(:building)
       ]
       @grouped_objects = @objects.group_to_hash { |object| object.class.to_s }
-      @result = @controller.send(:prepare, @objects)
+      @result = @controller.send(:prepare, player, @objects)
     end
 
     it "should group objects by class" do
@@ -97,7 +100,7 @@ describe ObjectsController do
       resolver = StatusResolver.new(player)
       @grouped_objects.each do |class_name, objs|
         @result[class_name].should == @controller.
-          send(:cast_perspective, objs, resolver)
+          send(:cast_perspective, player, objs, resolver)
       end
     end
   end
@@ -134,7 +137,7 @@ describe ObjectsController do
     describe Unit do
       it "should call #as_json with perspective" do
         unit = Factory.create(:unit)
-        @controller.send(:cast_perspective, [unit], @resolver).should ==
+        @controller.send(:cast_perspective, player, [unit], @resolver).should ==
           [unit.as_json(:perspective => @resolver)]
       end
     end
@@ -150,8 +153,8 @@ describe ObjectsController do
           options[:perspective].should == @resolver
           @return_value
         end
-        @controller.send(:cast_perspective, [@planet], @resolver).should ==
-          [@return_value]
+        @controller.send(:cast_perspective, player, [@planet], @resolver).
+          should == [@return_value]
       end
 
       it "should call #as_json with :owner => false if player is not owner" do
@@ -159,8 +162,8 @@ describe ObjectsController do
           options[:owner].should be_false
           @return_value
         end
-        @controller.send(:cast_perspective, [@planet], @resolver).should ==
-          [@return_value]
+        @controller.send(:cast_perspective, player, [@planet], @resolver).
+          should == [@return_value]
       end
 
       it "should call #as_json with :owner => true if player is owner" do
@@ -169,8 +172,8 @@ describe ObjectsController do
           options[:owner].should be_true
           @return_value
         end
-        @controller.send(:cast_perspective, [@planet], @resolver).should ==
-          [@return_value]
+        @controller.send(:cast_perspective, player, [@planet], @resolver).
+          should == [@return_value]
       end
 
       it "should call #as_json with :view => true if player can't view it" do
@@ -178,8 +181,8 @@ describe ObjectsController do
           options[:view].should be_false
           @return_value
         end
-        @controller.send(:cast_perspective, [@planet], @resolver).should ==
-          [@return_value]
+        @controller.send(:cast_perspective, player, [@planet], @resolver).
+          should == [@return_value]
       end
 
       it "should call #as_json with :view => true if player can view it" do
@@ -188,8 +191,8 @@ describe ObjectsController do
           options[:view].should be_true
           @return_value
         end
-        @controller.send(:cast_perspective, [@planet], @resolver).should ==
-          [@return_value]
+        @controller.send(:cast_perspective, player, [@planet], @resolver).
+          should == [@return_value]
       end
     end
 
@@ -197,8 +200,8 @@ describe ObjectsController do
       it "should call #as_json" do
         obj = Object.new
         def obj.as_json; :json; end
-        @controller.send(:cast_perspective, [obj], @resolver).should ==
-          [obj.as_json]
+        @controller.send(:cast_perspective, player, [obj], @resolver).
+          should == [obj.as_json]
       end
     end
   end

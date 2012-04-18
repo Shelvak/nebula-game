@@ -244,9 +244,13 @@ describe SolarSystem do
         solar_system.spawn!
       end
 
-      it "should check location after spawning" do
-        Combat::LocationChecker.should_receive(:check_location).
-          with(an_instance_of(SolarSystemPoint))
+      it "should create cooldown after spawning" do
+        Cooldown.should_receive(:create_unless_exists).and_return do |ssp, time|
+          ssp.should be_instance_of(SolarSystemPoint)
+          time.should be_within(SPEC_TIME_PRECISION).
+            of(Cfg.after_spawn_cooldown)
+          true
+        end
         solar_system.spawn!
       end
 
@@ -286,7 +290,8 @@ describe SolarSystem do
     end
 
     it "should fail if player is currently connected" do
-      Dispatcher.instance.stub!(:connected?).with(player.id).and_return(true)
+      Celluloid::Actor[:dispatcher].stub!(:player_connected?).with(player.id).
+        and_return(true)
       lambda do
         solar_system.detach!
       end.should raise_error(RuntimeError)
@@ -516,23 +521,22 @@ describe SolarSystem do
     end
   end
 
-  describe ".on_callback" do
-    describe "spawn" do
-      before(:each) do
-        @solar_system = Factory.create(:battleground)
-        SolarSystem.stub!(:find).with(@solar_system.id).
-          and_return(@solar_system)
+  describe "callbacks" do
+    describe ".spawn_callback" do
+      let(:solar_system) { Factory.create(:battleground) }
+
+      it "should have scope" do
+        SolarSystem::SPAWN_SCOPE
       end
 
       it "should call #spawn! on solar system" do
-        @solar_system.should_receive(:spawn!)
-        SolarSystem.on_callback(@solar_system.id, CallbackManager::EVENT_SPAWN)
+        solar_system.should_receive(:spawn!)
+        SolarSystem.spawn_callback(solar_system)
       end
 
       it "should register new callback" do
-        date = SolarSystem.
-          on_callback(@solar_system.id, CallbackManager::EVENT_SPAWN)
-        @solar_system.should have_callback(CallbackManager::EVENT_SPAWN, date)
+        date = SolarSystem.spawn_callback(solar_system)
+        solar_system.should have_callback(CallbackManager::EVENT_SPAWN, date)
       end
     end
   end

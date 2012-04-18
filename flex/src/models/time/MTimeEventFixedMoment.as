@@ -21,7 +21,7 @@ package models.time
    public class MTimeEventFixedMoment extends MTimeEvent
    {
       /**
-       * Type processor function for <code>Objects</code>.
+       * Auto creation function for <code>Objects</code>.
        */
       public static function autoCreate(currValue: MTimeEventFixedMoment,
                                         value: String): MTimeEventFixedMoment {
@@ -29,6 +29,14 @@ package models.time
          event = currValue != null ? currValue : new MTimeEventFixedMoment();
          event.occursAt = DateUtil.parseServerDTF(value);
          return event;
+      }
+
+      /**
+       * Same data check function for <code>Objects</code>.
+       */
+      public static function sameDataCheck(currValue: MTimeEventFixedMoment,
+                                           value: String): Boolean {
+         return currValue.occursAt.time == DateUtil.parseServerDTF(value).time;
       }
       
       

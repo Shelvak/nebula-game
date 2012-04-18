@@ -1,4 +1,7 @@
 class Unit < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+  include Parts::WithLocking
+
   include Parts::WithProperties
   include Parts::UpgradableWithHp
   include Parts::NeedsTechnology
@@ -286,18 +289,16 @@ class Unit < ActiveRecord::Base
     end
   end
 
+  DESTROY_SCOPE = DScope.world
+  def self.destroy_callback(unit)
+    unit.destroy!
+    EventBroker.fire(unit, EventBroker::DESTROYED)
+  end
+
+  UPGRADE_FINISHED_SCOPE = DScope.world
+  def self.upgrade_finished_callback(unit); unit.on_upgrade_finished!; end
+
   class << self
-    def on_callback(id, event)
-      case event 
-      when CallbackManager::EVENT_DESTROY
-        unit = find(id)
-        unit.destroy!
-        EventBroker.fire(unit, EventBroker::DESTROYED)
-      else
-        super(id, event)
-      end
-    end
-    
     def update_combat_attributes(player_id, updates)
       unit_ids = updates.keys
       units = where(:id => unit_ids, :player_id => player_id).all
@@ -351,15 +352,18 @@ class Unit < ActiveRecord::Base
     # Return distinct player ids which have completed units for given
     # +Location+.
     def player_ids_in_location(location, exclude_non_combat=false)
-      LOGGER.block("Checking for player ids in #{location}",
-          :level => :debug) do
-        # Do not compact here, because NPC units are also distinct player id
-        # values.
-        query = where(location.location_attrs).where("level > 0")
-        query = query.combat if exclude_non_combat
+      LOGGER.block(
+        "Checking for player ids in #{location}", :level => :debug
+      ) do
+        without_locking do
+          # Do not compact here, because NPC units are also distinct player id
+          # values.
+          query = where(location.location_attrs).where("level > 0")
+          query = query.combat if exclude_non_combat
 
-        query.select("DISTINCT(player_id)").c_select_values.
-          map { |id| id.nil? ? nil : id.to_i }
+          query.select("DISTINCT(player_id)").c_select_values.
+            map { |id| id.nil? ? nil : id.to_i }
+        end
       end
     end
 
@@ -378,41 +382,43 @@ class Unit < ActiveRecord::Base
     # }
     #
     def positions(scope)
-      scope.
-        select(
-          "`player_id`, #{LOCATION_COLUMNS}, `type`, COUNT(*) as `count`").
-        group("#{LOCATION_COLUMNS}, `type`, `player_id`").
-        c_select_all.
-        inject({}) do |units, row|
-          player_id = row['player_id'].to_i
+      without_locking do
+        scope.
+          select(
+            "`player_id`, #{LOCATION_COLUMNS}, `type`, COUNT(*) as `count`").
+          group("#{LOCATION_COLUMNS}, `type`, `player_id`").
+          c_select_all
+      end.inject({}) do |units, row|
+        player_id = row['player_id'].to_i
 
-          id, type = Location.id_and_type_from_row(row)
+        id, type = Location.id_and_type_from_row(row)
 
-          key = "#{id},#{type},#{row['location_x']},#{row['location_y']}"
-          
-          units[player_id] ||= {}
-          units[player_id][key] ||= {
-            "location" => LocationPoint.new(
-              id, type, row['location_x'], row['location_y']
-            ).client_location.as_json,
-            "cached_units" => {}
-          }
-          units[player_id][key]["cached_units"][row['type']] = row['count'].to_i
-          units
-        end
+        key = "#{id},#{type},#{row['location_x']},#{row['location_y']}"
+
+        units[player_id] ||= {}
+        units[player_id][key] ||= {
+          "location" => LocationPoint.new(
+            id, type, row['location_x'], row['location_y']
+          ).client_location.as_json,
+          "cached_units" => {}
+        }
+        units[player_id][key]["cached_units"][row['type']] = row['count'].to_i
+        units
+      end
     end
 
     def fast_npc_fetch(scope)
       npc_units = {}
       type_cache = {}
 
-      scope.
-        select(%w{
-          location_x location_y
-          type stance flank level
-          id hp_percentage
-        }).
-        c_select_all.each do |row|
+      without_locking do
+        scope.
+          select(%w{
+            location_x location_y
+            type stance flank level
+            id hp_percentage
+          }).
+          c_select_all.each do |row|
           type = row['type']
           location = "#{row['location_x']},#{row['location_y']}"
           second_tier =
@@ -426,6 +432,7 @@ class Unit < ActiveRecord::Base
             :hp => (klass.hit_points * row['hp_percentage']).round,
           }
         end
+      end
 
       npc_units
     end

@@ -1,12 +1,12 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 class GameServerTest
-  include GameServer
+  include ServerActor
 
   def get_peername; nil; end
 end
 
-describe GameServer do
+describe ServerActor do
   before(:each) do
     @game_server = GameServerTest.new
     @dispatcher = mock(Dispatcher)

@@ -3,10 +3,13 @@ require 'pathname'
 
 NAMES = [
   ["current", "Currently logged in"],
-  ["24h", "Logged in 24h"],
-  ["48h", "Logged in 48h"],
-  ["1w", "Logged in 1wk"],
-  ["2w", "Logged in 2wks"],
+  ["1d", "Logged in 1d"],
+  ["2d", "Logged in 2d"],
+  ["3d", "Logged in 3d"],
+  ["4d", "Logged in 4d"],
+  ["5d", "Logged in 5d"],
+  ["6d", "Logged in 6d"],
+  ["7d", "Logged in 7d"],
   ["total", "Total no. of players"]
 ]
 
@@ -29,7 +32,7 @@ else
   
   begin
     client = ControlClient.new
-    data = client.message('stats|players')
+    data = client.message('player_stats')
   rescue ControlClient::ConnectionError
     # Stub data if server is down.
     data = {}

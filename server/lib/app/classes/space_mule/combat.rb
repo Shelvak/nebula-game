@@ -2,7 +2,7 @@ module SpaceMule::Combat
   # Scala constants
   Combat = SpaceMule::SmModules.combat
   CO = Combat.objects
-  Location = SpaceMule::SmModules.pmg.objects.Location
+  Location = SpaceMule::SmModules.combat.objects.Location
 
   # See SpaceMule#combat for options.
   def self.invoke(location, players, nap_rules, units, loaded_units,
@@ -31,7 +31,9 @@ module SpaceMule::Combat
       alliance_ids = players.map do |player|
         player.nil? ? nil : player.alliance_id
       end.compact.uniq
-      sm_alliance_names = Alliance.names_for(alliance_ids).to_scala
+      sm_alliance_names = without_locking do
+        Alliance.names_for(alliance_ids).to_scala
+      end
 
       # Convert and partition troops.
 
@@ -92,12 +94,14 @@ module SpaceMule::Combat
 
   # Only calculate victory points in main battleground planets and solar system
   def self.battleground?(location)
-    if location.is_a?(SsObject::Planet)
-      location.solar_system.main_battleground?
-    elsif location.type == ::Location::SOLAR_SYSTEM
-      location.solar_system.main_battleground?
-    else
-      false
+    without_locking do
+      if location.is_a?(SsObject::Planet)
+        location.solar_system.main_battleground?
+      elsif location.type == ::Location::SOLAR_SYSTEM
+        location.solar_system.main_battleground?
+      else
+        false
+      end
     end
   end
 
@@ -132,18 +136,20 @@ module SpaceMule::Combat
 
   # Returns Scala Technologies object.
   def self.technologies_for(player)
-    technologies = TechTracker.query_active(
-      player.id, TechTracker::DAMAGE, TechTracker::ARMOR, TechTracker::CRITICAL,
-      TechTracker::ABSORPTION
-    ).all
-    damage = TechModApplier.apply(technologies, TechTracker::DAMAGE)
-    armor = TechModApplier.apply(technologies, TechTracker::ARMOR)
-    critical = TechModApplier.apply(technologies, TechTracker::CRITICAL)
-    absorption = TechModApplier.apply(technologies, TechTracker::ABSORPTION)
+    without_locking do
+      technologies = TechTracker.query_active(
+        player.id, TechTracker::DAMAGE, TechTracker::ARMOR,
+        TechTracker::CRITICAL, TechTracker::ABSORPTION
+      ).all
+      damage = TechModApplier.apply(technologies, TechTracker::DAMAGE)
+      armor = TechModApplier.apply(technologies, TechTracker::ARMOR)
+      critical = TechModApplier.apply(technologies, TechTracker::CRITICAL)
+      absorption = TechModApplier.apply(technologies, TechTracker::ABSORPTION)
 
-    CO.Player::Technologies.new(
-      damage.to_scala, armor.to_scala, critical.to_scala, absorption.to_scala
-    )
+      CO.Player::Technologies.new(
+        damage.to_scala, armor.to_scala, critical.to_scala, absorption.to_scala
+      )
+    end
   end
 
   # Converts Ruby +Unit+ to Scala +Troop+.

@@ -1,4 +1,3 @@
-LOGGER.outputs +=  []
 # Disable logging for faster performance.
-LOGGER.level = GameLogger::LEVEL_FATAL
-#LOGGER.level = GameLogger::LEVEL_DEBUG
+log_writer_config.level = :fatal
+#log_writer_config.level = :debug

@@ -59,30 +59,26 @@ describe Cooldown do
     end
   end
 
-  describe ".on_callback" do
-    it "should delete the model" do
-      model = Factory.create(:cooldown)
-      Cooldown.on_callback(model.id, CallbackManager::EVENT_DESTROY)
-      lambda do
-        model.reload
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
+  describe "callbacks" do
+    describe ".destroy_callback" do
+      let(:model) { Factory.create(:cooldown) }
 
-    it "should check location" do
-      model = Factory.create(:cooldown)
-      Combat::LocationChecker.should_receive(:check_location).with(
-        model.location)
-      Cooldown.on_callback(
-        model.id,
-        CallbackManager::EVENT_DESTROY
-      )
-    end
+      it "should have scope" do
+        Cooldown::DESTROY_SCOPE
+      end
 
-    it "should raise ArgumentError on unknown event" do
-      lambda do
-        Cooldown.on_callback(1,
-          CallbackManager::EVENT_CONSTRUCTION_FINISHED)
-      end.should raise_error(ArgumentError)
+      it "should delete the model" do
+        Cooldown.destroy_callback(model)
+        lambda do
+          model.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "should check location" do
+        Combat::LocationChecker.should_receive(:check_location).
+          with(model.location)
+        Cooldown.destroy_callback(model)
+      end
     end
   end
 end
