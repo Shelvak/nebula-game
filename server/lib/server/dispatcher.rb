@@ -186,7 +186,10 @@ class Dispatcher
       "params" => {"reason" => reason}
     })
     unregister client
-    Actor[:server].disconnect!(client)
+    #Actor[:server].disconnect!(client)
+    EventMachine.next_tick do
+      client.em_connection.close_connection_after_writing
+    end
   end
 
   # Responds to received/pushed message.
