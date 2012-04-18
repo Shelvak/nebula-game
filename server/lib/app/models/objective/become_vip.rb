@@ -3,7 +3,9 @@ class Objective::BecomeVip < Objective
   KEY = "Vip"
   
   def initial_completed(player_id)
-    Player.find(player_id).vip_level >= level ? 1 : 0
+    without_locking do
+      Player.find(player_id).vip_level >= level ? 1 : 0
+    end
   end
 
   def filter(players)

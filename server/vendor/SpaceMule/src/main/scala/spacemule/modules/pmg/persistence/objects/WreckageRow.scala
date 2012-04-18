@@ -18,10 +18,11 @@ case class WreckageRow(
 ) extends Row {
   val companion = WreckageRow
 
-  val valuesSeq = Seq(
-    if (location.kind == Location.Galaxy) location.id else DB.loadInFileNull,
+  lazy val valuesSeq = Seq(
+    if (location.kind == Location.Galaxy)
+      location.row.id else DB.loadInFileNull,
     if (location.kind == Location.SolarSystem)
-      location.id else DB.loadInFileNull,
+      location.row.id else DB.loadInFileNull,
     location.x match {
       case Some(x: Int) => x.toString
       case None => DB.loadInFileNull

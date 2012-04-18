@@ -5,7 +5,7 @@ module Combat::Integration
 
   # Returns {player_id => notification_id} hash.
   def create_notifications(response, client_location, leveled_up_units,
-      combat_log, wreckages)
+      combat_log, wreckages, push_notification)
     Hash[response['alliances'].map do |alliance_id, alliance|
       alliance['players'].map do |player|
         if player.nil?
@@ -23,7 +23,8 @@ module Combat::Integration
             response['yane'][player_id],
             leveled_up_units[player_id],
             response['statistics'][player_id],
-            wreckages
+            wreckages,
+            push_notification
           )
 
           [player_id, notification.id]

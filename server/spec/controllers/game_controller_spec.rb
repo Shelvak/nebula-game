@@ -14,6 +14,8 @@ describe GameController do
         @params = {}
       end
 
+      it_should_behave_like "having controller action scope"
+
       it "should have config filtered by regexp (default ruleset)" do
         invoke @action
         response[:config].should equal_to_hash(
@@ -36,6 +38,8 @@ describe GameController do
         @params = {}
       end
 
+      it_should_behave_like "having controller action scope"
+
       it "should have config filtered by regexp" do
         invoke @action
         response[:config].should equal_to_hash(
@@ -48,8 +52,8 @@ describe GameController do
       it "should replace speed with constant" do
         with_config_values 'units.foo' => '10 / speed * level' do
           invoke @action, @params
-          response[:config]['units.foo'].should == "10 / #{
-            CONFIG['speed']} * level"
+          response[:config]['units.foo'].
+            should == "10 / #{CONFIG['speed']} * level"
         end
       end
 
@@ -58,7 +62,7 @@ describe GameController do
           invoke @action, @params
           default_value = response[:config]['units.foo']
 
-          session[:ruleset] = 'hyper'
+          self.ruleset = 'hyper'
           invoke @action, @params
           response[:config]['units.foo'].should_not == default_value
         end

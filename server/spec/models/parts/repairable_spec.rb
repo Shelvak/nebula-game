@@ -180,15 +180,18 @@ describe Building::RepairableTest do
     end
   end
 
-  describe ".on_callback" do
-    it "should find model and call #on_repairs_finished! on it" do
-      building = Factory.create(:b_repairable_test)
-      Building::RepairableTest.stub(:find).with(building.id).
-        and_return(building)
-      building.should_receive(:on_repairs_finished!)
+  describe "callbacks" do
+    let(:building) { Factory.create(:b_repairable_test) }
 
-      Building::RepairableTest.on_callback(building.id,
-        CallbackManager::EVENT_COOLDOWN_EXPIRED)
+    describe ".cooldown_expired_callback" do
+      it "should have scope" do
+        Building::COOLDOWN_EXPIRED_SCOPE
+      end
+
+      it "should find model and call #on_repairs_finished! on it" do
+        building.should_receive(:on_repairs_finished!)
+        Building.cooldown_expired_callback(building)
+      end
     end
   end
 end

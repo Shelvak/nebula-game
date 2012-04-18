@@ -34,6 +34,10 @@ package controllers.objects.actions.customcontrollers
                   building.upgradePart.startUpgrade();
                }
                else {
+                  if (Objects.containsSameData(building, object))
+                  {
+                     return building;
+                  }
                   throw new Error(
                      "Can't create building: " + object.type + ", other building: "
                         + Building(objectOnPoint) + "exists on the same point "

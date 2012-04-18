@@ -455,6 +455,8 @@ function crashRemote(summary, description, body) {
   $("#client-error").show();
 
   // Append window URL to know which game version player is running.
+  description = "Assets URL: " + assetsUrl + "\n" +
+    "Server URL: " + server + "\n\n" + description;
   body = "Window URL: " + window.location.href + "\n\n" + body;
   $.ajax({
     url: 'http://' + webHost + '/client/add_issue',

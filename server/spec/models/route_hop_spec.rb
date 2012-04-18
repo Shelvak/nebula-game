@@ -169,204 +169,203 @@ describe RouteHop do
     end
   end
 
-  describe ".on_callback" do
-    before(:each) do
-      @galaxy = Factory.create :galaxy
-      @start_location = GalaxyPoint.new(@galaxy.id, 19, 40)
-      @hop_target = GalaxyPoint.new(@galaxy.id, 20, 40)
-
-      @player = Factory.create :player, :galaxy => @galaxy
-      @route = Factory.create(:route, :player => @player,
-        :source => @start_location.client_location,
-        :current => @start_location.client_location
-      )
-      @route.reload
-      @hop = Factory.create :route_hop, :route => @route,
-        :location => @hop_target
-      unit_overrides = {
-        :route_id => @route.id,
-        :location => @start_location,
-        :player_id => @player.id,
-        :hidden => true
-      }
-      @units = [
-        Factory.create(:unit, unit_overrides),
-        Factory.create(:unit, unit_overrides),
-        Factory.create(:unit, unit_overrides)
-      ]
-    end
-
-    it "should raise ArgumentError if event is not EVENT_MOVEMENT" do
-      lambda do
-        RouteHop.on_callback(@hop.id,
-          CallbackManager::EVENT_CONSTRUCTION_FINISHED)
-      end.should raise_error(ArgumentError)
-    end
-
-    it "should call SsObject::Planet.changing_viewable" do
-      SsObject::Planet.should_receive(:changing_viewable).with(
-        [@start_location, @hop_target]).and_return(true)
-      RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-    end
-
-    it "should move the units in the route" do
-      RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-      @units.map do |unit|
-        unit.reload
-        unit.location
-      end.should == [@hop_target] * @units.size
-    end
-
-    it "should unhide units in route" do
-      RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-      @units.map do |unit|
-        unit.reload
-        unit.hidden?
-      end.uniq.should == [false]
-    end
-
-    it "should delete this hop" do
-      RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-      lambda do
-        RouteHop.find(@hop.id)
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should check location for units" do
-      Combat::LocationCheckerAj.should_receive(:check_location).with(
-        @hop.location)
-      RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-    end
-
-    describe "when zones change" do
+  describe "callbacks" do
+    describe ".movement_callback" do
       before(:each) do
-        @solar_system = Factory.create(:solar_system, :galaxy => @galaxy)
-        @hop.location = SolarSystemPoint.new(@solar_system.id, 0, 0)
-        @hop.save!
-        @second_hop = Factory.create(:route_hop,
-          :location => SolarSystemPoint.new(@solar_system.id, 1, 0),
-          :route => @route,
-          :arrives_at => @hop.arrives_at + 5.minutes,
-          :index => @hop.index + 1
+        @galaxy = Factory.create :galaxy
+        @start_location = GalaxyPoint.new(@galaxy.id, 19, 40)
+        @hop_target = GalaxyPoint.new(@galaxy.id, 20, 40)
+  
+        @player = Factory.create :player, :galaxy => @galaxy
+        @route = Factory.create(:route, :player => @player,
+          :source => @start_location.client_location,
+          :current => @start_location.client_location
         )
-      end
-
-      it "should call .handle_fow_change" do
-        RouteHop.should_receive(:handle_fow_change).with(
-          an_instance_of(Event::Movement))
-        RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-      end
-
-      it "should update Route#jumps_at to next zone #arrives_at" do
-        planet = Factory.create(:planet, :solar_system => @solar_system)
-        change_hop = Factory.create(:route_hop,
-          :location => planet.location_point,
-          :route => @route,
-          :arrives_at => @second_hop.arrives_at + 10.minutes,
-          :index => @second_hop.index + 1)
-        RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
         @route.reload
-        @route.jumps_at.should be_within(SPEC_TIME_PRECISION).
-                                 of(change_hop.arrives_at)
-      end
-
-      it "should update clear jumps_at if there are no more zone changes" do
-        lambda do
-          RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-          @route.reload
-        end.should change(@route, :jumps_at).to(nil)
-      end
-    end
-
-    describe "when zone do not change" do
-      it "should not call .handle_fow_change" do
-        RouteHop.should_not_receive(:handle_fow_change)
-        RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-      end
-
-      it "should not update Route#jumps_at" do
-        # Create a hop so route would not be destroyed
-        Factory.create(:route_hop,
-          :location => @hop_target,
-          :route => @route,
-          :arrives_at => @hop.arrives_at + 5.minutes,
-          :index => @hop.index + 1
-        )
-
-        lambda do
-          RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-          @route.reload
-        end.should_not change(@route, :jumps_at)
-      end
-    end
-
-    describe "when not last hop" do
-      before(:each) do
-        @next_hop_target = GalaxyPoint.new(@galaxy.id, 21, 40)
-        @next_hop = Factory.create :route_hop, 
-          :route => @hop.route, :index => @hop.index + 1,
-          :location => @next_hop_target
-      end
-
-      it "should update current route location" do
-        route = @hop.route
-        lambda do
-          RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-          route.reload
-        end.should change(route, :current).to(
-          @hop_target.client_location
-        )
-      end
-
-      it "should set hop with index + 1 to be next hop" do
-        lambda do
-          RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-          @next_hop.reload
-        end.should change(@next_hop, :next).from(false).to(true)
-      end
-
-      it "should register next hop to callback manager" do
-        RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-        CallbackManager.has?(@next_hop, CallbackManager::EVENT_MOVEMENT,
-          @next_hop.arrives_at).should be_true
-      end
-    end
-
-    describe "when last hop" do
-      it "should update current route location" do
-        route = @hop.route
-        RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-        SPEC_EVENT_HANDLER.events.find { |objects, event_name, reason|
-          objects == [route] && event_name == EventBroker::DESTROYED
-        }[0][0].current.should == @hop_target.client_location
-      end
-
-      it "should destroy the route" do
-        RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-        lambda do
-          Route.find(@hop.route_id)
-        end.should raise_error(ActiveRecord::RecordNotFound)
+        @hop = Factory.create :route_hop, :route => @route,
+          :location => @hop_target
+        unit_overrides = {
+          :route_id => @route.id,
+          :location => @start_location,
+          :player_id => @player.id,
+          :hidden => true
+        }
+        @units = [
+          Factory.create(:unit, unit_overrides),
+          Factory.create(:unit, unit_overrides),
+          Factory.create(:unit, unit_overrides)
+        ]
       end
       
-      it "should dispatch destroyed with appropriate reason" do
-        should_fire_event(@hop.route, EventBroker::DESTROYED, 
-          EventBroker::REASON_COMPLETED) do
-          RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-        end
+      it "should have scope" do
+        RouteHop::MOVEMENT_SCOPE
       end
 
-      it "should fire event before destroying the route so units " +
-      "still belong to it" do
-        handler = Object.new
-        def handler.fire(object, event_name, reason)
-          @units = object.route.units.all if object.is_a?(Event::Movement)
+      it "should call SsObject::Planet.changing_viewable" do
+        SsObject::Planet.should_receive(:changing_viewable).with(
+          [@start_location, @hop_target]).and_return(true)
+        RouteHop.movement_callback(@hop)
+      end
+  
+      it "should move the units in the route" do
+        RouteHop.movement_callback(@hop)
+        @units.map do |unit|
+          unit.reload
+          unit.location
+        end.should == [@hop_target] * @units.size
+      end
+  
+      it "should unhide units in route" do
+        RouteHop.movement_callback(@hop)
+        @units.map do |unit|
+          unit.reload
+          unit.hidden?
+        end.uniq.should == [false]
+      end
+  
+      it "should delete this hop" do
+        RouteHop.movement_callback(@hop)
+        lambda do
+          RouteHop.find(@hop.id)
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+  
+      it "should check location for units" do
+        Combat::LocationCheckerAj.should_receive(:check_location).with(
+          @hop.location)
+        RouteHop.movement_callback(@hop)
+      end
+  
+      describe "when zones change" do
+        before(:each) do
+          @solar_system = Factory.create(:solar_system, :galaxy => @galaxy)
+          @hop.location = SolarSystemPoint.new(@solar_system.id, 0, 0)
+          @hop.save!
+          @second_hop = Factory.create(:route_hop,
+            :location => SolarSystemPoint.new(@solar_system.id, 1, 0),
+            :route => @route,
+            :arrives_at => @hop.arrives_at + 5.minutes,
+            :index => @hop.index + 1
+          )
         end
-        def handler.units; @units; end
-        EventBroker.register(handler)
-
-        RouteHop.on_callback(@hop.id, CallbackManager::EVENT_MOVEMENT)
-
-        handler.units.should_not be_blank
+  
+        it "should call .handle_fow_change" do
+          RouteHop.should_receive(:handle_fow_change).with(
+            an_instance_of(Event::Movement))
+          RouteHop.movement_callback(@hop)
+        end
+  
+        it "should update Route#jumps_at to next zone #arrives_at" do
+          planet = Factory.create(:planet, :solar_system => @solar_system)
+          change_hop = Factory.create(:route_hop,
+            :location => planet.location_point,
+            :route => @route,
+            :arrives_at => @second_hop.arrives_at + 10.minutes,
+            :index => @second_hop.index + 1)
+          RouteHop.movement_callback(@hop)
+          @route.reload
+          @route.jumps_at.should be_within(SPEC_TIME_PRECISION).
+                                   of(change_hop.arrives_at)
+        end
+  
+        it "should update clear jumps_at if there are no more zone changes" do
+          lambda do
+            RouteHop.movement_callback(@hop)
+            @route.reload
+          end.should change(@route, :jumps_at).to(nil)
+        end
+      end
+  
+      describe "when zone do not change" do
+        it "should not call .handle_fow_change" do
+          RouteHop.should_not_receive(:handle_fow_change)
+          RouteHop.movement_callback(@hop)
+        end
+  
+        it "should not update Route#jumps_at" do
+          # Create a hop so route would not be destroyed
+          Factory.create(:route_hop,
+            :location => @hop_target,
+            :route => @route,
+            :arrives_at => @hop.arrives_at + 5.minutes,
+            :index => @hop.index + 1
+          )
+  
+          lambda do
+            RouteHop.movement_callback(@hop)
+            @route.reload
+          end.should_not change(@route, :jumps_at)
+        end
+      end
+  
+      describe "when not last hop" do
+        before(:each) do
+          @next_hop_target = GalaxyPoint.new(@galaxy.id, 21, 40)
+          @next_hop = Factory.create :route_hop, 
+            :route => @hop.route, :index => @hop.index + 1,
+            :location => @next_hop_target
+        end
+  
+        it "should update current route location" do
+          route = @hop.route
+          lambda do
+            RouteHop.movement_callback(@hop)
+            route.reload
+          end.should change(route, :current).to(
+            @hop_target.client_location
+          )
+        end
+  
+        it "should set hop with index + 1 to be next hop" do
+          lambda do
+            RouteHop.movement_callback(@hop)
+            @next_hop.reload
+          end.should change(@next_hop, :next).from(false).to(true)
+        end
+  
+        it "should register next hop to callback manager" do
+          RouteHop.movement_callback(@hop)
+          CallbackManager.has?(@next_hop, CallbackManager::EVENT_MOVEMENT,
+            @next_hop.arrives_at).should be_true
+        end
+      end
+  
+      describe "when last hop" do
+        it "should update current route location" do
+          route = @hop.route
+          RouteHop.movement_callback(@hop)
+          SPEC_EVENT_HANDLER.events.find { |objects, event_name, reason|
+            objects == [route] && event_name == EventBroker::DESTROYED
+          }[0][0].current.should == @hop_target.client_location
+        end
+  
+        it "should destroy the route" do
+          RouteHop.movement_callback(@hop)
+          lambda do
+            Route.find(@hop.route_id)
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
+        
+        it "should dispatch destroyed with appropriate reason" do
+          should_fire_event(@hop.route, EventBroker::DESTROYED, 
+            EventBroker::REASON_COMPLETED) do
+            RouteHop.movement_callback(@hop)
+          end
+        end
+  
+        it "should fire event before destroying the route so units " +
+        "still belong to it" do
+          handler = Object.new
+          def handler.fire(object, event_name, reason)
+            @units = object.route.units.all if object.is_a?(Event::Movement)
+          end
+          def handler.units; @units; end
+          EventBroker.register(handler)
+  
+          RouteHop.movement_callback(@hop)
+  
+          handler.units.should_not be_blank
+        end
       end
     end
   end

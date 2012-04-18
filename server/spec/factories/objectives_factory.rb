@@ -18,17 +18,17 @@ Factory.define :o_destroy, :parent => :objective,
 
 Factory.define :o_annex_planet, :parent => :objective,
 :class => Objective::AnnexPlanet do |m|
-  m.key Quest::DSL::PLANET_KEY
+  m.key Quest::Dsl::PLANET_KEY
 end
 
 Factory.define :o_have_planets, :parent => :objective,
 :class => Objective::HavePlanets do |m|
-  m.key Quest::DSL::PLANET_KEY
+  m.key Quest::Dsl::PLANET_KEY
 end
 
 Factory.define :o_have_points, :parent => :objective,
 :class => Objective::HavePoints do |m|
-  m.key Quest::DSL::PLAYER_KEY
+  m.key Quest::Dsl::PLAYER_KEY
   m.count 1
   m.limit 100
 end

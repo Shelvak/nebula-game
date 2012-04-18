@@ -51,7 +51,7 @@ begin
   type = match[1]
   from_kind = KIND_NAMES_FLIPPED[match[2]]
   to_kind = KIND_NAMES_FLIPPED[match[3]]
-  data = client.message("stats|market_#{type}",
+  data = client.message("market_#{type}_stats",
     {'from_kind' => from_kind, 'to_kind' => to_kind})
 
   if ARGV[0] == "config"

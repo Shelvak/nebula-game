@@ -1,5 +1,5 @@
 # Class for DSL used in Quest#define.
-class Quest::DSL
+class Quest::Dsl
   def id; @quest_id; end
 
   def initialize(parent_id, quest_id, main_quest_slides, achievement)
@@ -12,7 +12,7 @@ class Quest::DSL
   end
 
   def to_s
-    "<Quest::DSL id=#{@quest_id} parent=#{@parent_id} main_quest_slides=#{
+    "<#{self.class} id=#{@quest_id} parent=#{@parent_id} main_quest_slides=#{
       @main_quest_slides.inspect} achievement=#{@achievement}>"
   end
 

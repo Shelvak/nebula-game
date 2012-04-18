@@ -16,3 +16,6 @@
 [submodule "server/vendor/plugins/ar_binary_flag_attributes"]
 	path = server/vendor/plugins/ar_binary_flag_attributes
 	url = git@github.com:arturaz/ar_binary_flag_attributes.git
+[submodule "server/vendor/plugins/game_server_connector"]
+	path = server/vendor/plugins/game_server_connector
+	url = git@thor.nebula44.com:nebula-game-server-connector.git

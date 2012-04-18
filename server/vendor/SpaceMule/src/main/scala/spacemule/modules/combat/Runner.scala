@@ -2,7 +2,6 @@ package spacemule.modules.combat
 
 import spacemule.helpers.StdErrLog
 import spacemule.modules.combat.objects._
-import spacemule.modules.pmg.objects.Location
 import spacemule.helpers.Converters._
 import spacemule.helpers.Benchmarkable
 import spacemule.helpers.BenchmarkableMock

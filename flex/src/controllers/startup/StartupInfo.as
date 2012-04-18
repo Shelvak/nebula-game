@@ -13,9 +13,10 @@ package controllers.startup
       public static function getInstance() : StartupInfo {
          return SingletonFactory.getSingletonInstance(StartupInfo);
       }
-      
-      
-      public var loadSuccessful:Boolean = false;
+
+
+      public var loadSuccessful: Boolean = false;
+      public var initializationComplete: Boolean = false;
       
       
       public function get port() : int {

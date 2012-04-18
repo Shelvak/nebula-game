@@ -111,36 +111,37 @@ describe Galaxy do
     end
   end
 
-  describe ".on_callback" do
-    describe "spawn convoy" do
-      before(:each) do
-        @galaxy = Factory.create(:galaxy)
-        Galaxy.stub!(:find).with(@galaxy.id).and_return(@galaxy)
-      end
-      
+  describe "callbacks" do
+    let(:galaxy) { Factory.create(:galaxy) }
+
+    describe ".spawn_callback" do
       it "should call #spawn_convoy!" do
-        @galaxy.should_receive(:spawn_convoy!)
-        Galaxy.on_callback(@galaxy.id, CallbackManager::EVENT_SPAWN)
+        galaxy.should_receive(:spawn_convoy!)
+        Galaxy.spawn_callback(galaxy)
       end
       
       it "should register callback" do
-        Galaxy.on_callback(@galaxy.id, CallbackManager::EVENT_SPAWN)
-        @galaxy.should have_callback(CallbackManager::EVENT_SPAWN,
+        Galaxy.spawn_callback(galaxy)
+        galaxy.should have_callback(CallbackManager::EVENT_SPAWN,
           CONFIG.evalproperty('galaxy.convoy.time').from_now)
       end
     end
   
     describe "system offers" do
-      before(:each) do
-        @galaxy = Factory.create(:galaxy)
-      end
-      
       MarketOffer::CALLBACK_MAPPINGS.each do |kind, event|
+        type = CallbackManager::TYPES[event]
+        scope = :"#{type.upcase}_SCOPE"
+        method = :"#{type}_callback"
+
+        it "should have scope" do
+          Galaxy.const_get(scope)
+        end
+
         it "should create system offer and save it (kind #{kind})" do
           should_execute_and_save(
-            MarketOffer, :create_system_offer, [@galaxy.id, kind]
+            MarketOffer, :create_system_offer, [galaxy.id, kind]
           ) do
-            Galaxy.on_callback(@galaxy.id, event)
+            Galaxy.send(method, galaxy)
           end
         end
       end

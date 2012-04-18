@@ -395,10 +395,10 @@ class SsObject::Planet < SsObject
       if player_id && last_resources_update.nil?
   end
   
-  after_find :recalculate_if_unsynced!
-  def recalculate_if_unsynced!
+  after_find :recalculate_if_unsynced
+  def recalculate_if_unsynced
     if last_resources_update and last_resources_update.to_i < Time.now.to_i
-      recalculate!
+      recalculate
     end
   end
 
@@ -424,9 +424,13 @@ class SsObject::Planet < SsObject
   end
 
   def resource_modifier_technologies
-    player_id ? TechTracker.instance.query_active(player_id,
-      "metal_generate", "metal_store", "energy_generate", "energy_store",
-      "zetium_generate", "zetium_store").all : []
+    player_id ? without_locking {
+      TechTracker.instance.query_active(
+        player_id,
+        "metal_generate", "metal_store", "energy_generate", "energy_store",
+        "zetium_generate", "zetium_store"
+      ).all
+    } : []
   end
 
   # Get resource modifier for given _resource_.
@@ -470,12 +474,6 @@ class SsObject::Planet < SsObject
 
       send("#{resource}=", value + rate * time_diff)
     end
-  end
-
-  # #recalculate and #save!
-  def recalculate!
-    recalculate
-    save!
   end
 
   class << self

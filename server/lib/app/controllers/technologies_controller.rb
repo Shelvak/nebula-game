@@ -1,8 +1,13 @@
 class TechnologiesController < GenericController
-  # Returns a list of player technologies
-  def action_index
-    only_push!
-    respond :technologies => player.technologies.map(&:as_json)
+  # Returns a list of player technologies.
+  ACTION_INDEX = 'technologies|index'
+
+  INDEX_OPTIONS = logged_in + only_push
+  INDEX_SCOPE = scope.world
+  def self.index_action(m)
+    without_locking do
+      respond m, :technologies => m.player.technologies.map(&:as_json)
+    end
   end
 
   # Starts researching new technology (from level 0)
@@ -17,15 +22,19 @@ class TechnologiesController < GenericController
   #
   # Response: None.
   #
-  def action_new
-    param_options :required => {:type => String, :planet_id => Fixnum,
-      :scientists => Fixnum, :speed_up => Boolean}
+  ACTION_NEW = 'technologies|new'
 
+  NEW_OPTIONS = logged_in + required(
+    :type => String, :planet_id => Fixnum, :scientists => Fixnum,
+    :speed_up => Boolean
+  )
+  NEW_SCOPE = scope.world
+  def self.new_action(m)
     technology = Technology.new_by_type(
-      params['type'],
-      :player => player, :planet_id => params['planet_id'], :level => 0,
-      :scientists => params['scientists'],
-      :speed_up => params['speed_up']
+      m.params['type'],
+      :player => m.player, :planet_id => m.params['planet_id'], :level => 0,
+      :scientists => m.params['scientists'],
+      :speed_up => m.params['speed_up']
     )
     technology.upgrade!
   end
@@ -40,14 +49,18 @@ class TechnologiesController < GenericController
   #
   # Response: None.
   #
-  def action_upgrade
-    param_options :required => {:id => Fixnum, :planet_id => Fixnum,
-      :scientists => Fixnum, :speed_up => Boolean}
+  ACTION_UPGRADE = 'technologies|upgrade'
 
-    technology = player.technologies.find(params['id'])
-    technology.scientists = params['scientists']
-    technology.speed_up = params['speed_up']
-    technology.planet_id = params['planet_id']
+  UPGRADE_OPTIONS = logged_in + required(
+    :id => Fixnum, :planet_id => Fixnum, :scientists => Fixnum,
+    :speed_up => Boolean
+  )
+  UPGRADE_SCOPE = scope.world
+  def self.upgrade_action(m)
+    technology = m.player.technologies.find(m.params['id'])
+    technology.scientists = m.params['scientists']
+    technology.speed_up = m.params['speed_up']
+    technology.planet_id = m.params['planet_id']
     technology.upgrade!
   end
 
@@ -59,11 +72,13 @@ class TechnologiesController < GenericController
   #
   # Response: None.
   #
-  def action_update
-    param_options :required => {:id => Fixnum, :scientists => Fixnum}
+  ACTION_UPDATE = 'technologies|update'
 
-    technology = player.technologies.find(params['id'])
-    technology.scientists = params['scientists']
+  UPDATE_OPTIONS = logged_in + required(:id => Fixnum, :scientists => Fixnum)
+  UPDATE_SCOPE = scope.world
+  def self.update_action(m)
+    technology = m.player.technologies.find(m.params['id'])
+    technology.scientists = m.params['scientists']
     technology.save!
   end
 
@@ -72,10 +87,12 @@ class TechnologiesController < GenericController
   # Params:
   # - id (Fixnum): id of technology to upgrade
   #
-  def action_pause
-    param_options :required => {:id => Fixnum}
+  ACTION_PAUSE = 'technologies|pause'
 
-    technology = player.technologies.find(params['id'])
+  PAUSE_OPTIONS = logged_in + required(:id => Fixnum)
+  PAUSE_SCOPE = scope.world
+  def self.pause_action(m)
+    technology = m.player.technologies.find(m.params['id'])
     technology.pause!
   end
 
@@ -85,11 +102,13 @@ class TechnologiesController < GenericController
   # - id (Fixnum): id of technology to upgrade
   # - scientists (Fixnum): how many scientists should we assign
   #
-  def action_resume
-    param_options :required => {:id => Fixnum, :scientists => Fixnum}
+  ACTION_RESUME = 'technologies|resume'
 
-    technology = player.technologies.find(params['id'])
-    technology.scientists = params['scientists']
+  RESUME_OPTIONS = logged_in + required(:id => Fixnum, :scientists => Fixnum)
+  RESUME_SCOPE = scope.world
+  def self.resume_action(m)
+    technology = m.player.technologies.find(m.params['id'])
+    technology.scientists = m.params['scientists']
     technology.resume!
   end
 
@@ -99,14 +118,18 @@ class TechnologiesController < GenericController
   # - id (Fixnum): ID of the technology that will be accelerated.
   # - index (Fixnum): Index of CONFIG["creds.upgradable.speed_up"] entry.
   #
-  def action_accelerate
-    param_options :required => {:id => Fixnum, :index => Fixnum}
+  ACTION_ACCELERATE = 'technologies|accelerate'
 
-    technology = player.technologies.find(params['id'])
-    Creds.accelerate!(technology, params['index'])
-  rescue ArgumentError => e
-    # In case client provides invalid index.
-    raise GameLogicError.new(e.message)
+  ACCELERATE_OPTIONS = logged_in + required(:id => Fixnum, :index => Fixnum)
+  ACCELERATE_SCOPE = scope.world
+  def self.accelerate_action(m)
+    technology = m.player.technologies.find(m.params['id'])
+    begin
+      Creds.accelerate!(technology, m.params['index'])
+    rescue ArgumentError => e
+      # In case client provides invalid index.
+      raise GameLogicError, e.message, e.backtrace
+    end
   end
 
   # Unlearns technology. Requires creds.
@@ -116,10 +139,12 @@ class TechnologiesController < GenericController
   #
   # Response: None
   #
-  def action_unlearn
-    param_options :required => {:id => Fixnum}
+  ACTION_UNLEARN = 'technologies|unlearn'
 
-    technology = player.technologies.find(params['id'])
+  UNLEARN_OPTIONS = logged_in + required(:id => Fixnum)
+  UNLEARN_SCOPE = scope.world
+  def self.unlearn_action(m)
+    technology = m.player.technologies.find(m.params['id'])
     technology.unlearn!
   end
 end

@@ -1,2 +1,2 @@
-LOGGER.outputs += [ConsoleOutput.new(STDOUT)] unless rake?
-LOGGER.level = GameLogger::LEVEL_DEBUG
+log_writer_config.outputs << ConsoleOutput.new(STDOUT) unless rake?
+log_writer_config.level = :debug

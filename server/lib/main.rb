@@ -5,56 +5,64 @@ require File.expand_path(
 
 LOGGER.info "Starting server..."
 
+# Initialize IRB support for drop-in development console.
+require File.expand_path(
+  File.join(ROOT_DIR, 'lib', 'server', 'irb_session.rb')
+) if App.in_development?
+
+# Preload all classes - require/autoload in threaded environment is fucked up.
+# Class can be used even before it is fully loaded.
+
+LOGGER.block("Preloading all code") do
+  APP_MODULES.each { |filename| require(filename) }
+end
+
+# Initialize space mule.
+LOGGER.info "Initializing SpaceMule."
+SpaceMule.instance
+
+# Ensure server and callback manager are restarted if they crash.
+LOGGER.info "Starting server actor..."
+Celluloid::Actor[:server] = ServerActor.new(CONFIG['server']['port'])
+
+LOGGER.info "Starting callback manager actor..."
+Celluloid::Actor[:callback_manager] = CallbackManager.new
+
+# Set up signals.
+stop_server = proc do
+  LOGGER.info "Caught interrupt, shutting down..."
+  App.server_state = App::SERVER_STATE_SHUTDOWNING
+end
 if App.in_development?
-  # Initialize IRB support for drop-in development console.
-  require File.expand_path(File.join(ROOT_DIR, 'lib', 'server',
-      'irb_session.rb'))
-  root_binding = binding
-end
+  trap("INT") do
+    if $IRB_RUNNING
+      stop_server.call
+      exit
+    else
+     puts "\n\nDropping into IRB shell. Server operation suspended."
+     puts "Press CTRL+C again to exit the server.\n\n"
 
-LOGGER.info "Running EventMachine..."
-EventMachine.run do
-  stop_server = proc do
-    LOGGER.info "Caught interrupt, shutting down..."
-    App.server_state = App::SERVER_STATE_SHUTDOWNING
-    EventMachine.stop_event_loop
-  end
-  if App.in_development?
-    trap("INT") do
-      if $IRB_RUNNING
-        stop_server.call
-        throw :IRB_EXIT
-      else
-       puts "\n\nDropping into IRB shell. Server operation suspended."
-       puts "Press CTRL+C again to exit the server.\n\n"
-
-       IRB.start_session(root_binding)
-       puts "\nIRB done. Server operation resumed.\n\n"
-      end
+     puts "Pausing callback manager..."
+     Celluloid::Actor[:callback_manager].pause
+     puts "Starting IRB session..."
+     IRB.start_session(ROOT_BINDING)
+     puts "\nIRB done. Server operation resumed.\n\n"
     end
-  else
-    trap("INT", &stop_server)
   end
-  trap("TERM", &stop_server)
-
-  # Initialize space mule.
-  SpaceMule.instance
-
-  LOGGER.info "Starting game server..."
-  EventMachine.start_server "0.0.0.0", CONFIG['game']['port'], GameServer
-
-  LOGGER.info "Starting control server..."
-  EventMachine.start_server "0.0.0.0", CONFIG['control']['port'],
-    ControlServer
-
-  LOGGER.info "Starting callback manager..."
-  EventMachine::PeriodicTimer.new(1) { CallbackManager.tick }
-
-  LOGGER.info "Running callback manager..."
-  CallbackManager.tick(true)
-
-  App.server_state = App::SERVER_STATE_RUNNING
-  LOGGER.info "Server initialized."
+else
+  trap("INT", &stop_server)
 end
+trap("TERM", &stop_server)
+
+# Sleep forever while other threads do the dirty work.
+App.server_state = App::SERVER_STATE_RUNNING
+LOGGER.info "Server initialized."
+sleep 1 until (
+  # Normal server shutdown.
+  App.server_state == App::SERVER_STATE_SHUTDOWNING ||
+  # Server crashed.
+  ! Celluloid::Actor[:server].alive?
+)
 
 LOGGER.info "Server stopped."
+sleep 1 # Allow last messages to be written to the logfile.

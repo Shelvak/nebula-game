@@ -2,22 +2,20 @@ shared_examples_for "upgradable" do
   describe ".on_upgrade_finished" do
     before(:each) do
       @klass = @model.class.to_s.split("::")[0].constantize
-      @klass.stub!(:find).with(@model.id).and_return(@model)
     end
 
-    it ".on_callback should call #on_upgrade_finished" do
+    it ".upgrade_finished_callback should call #on_upgrade_finished" do
       @model.should_receive(:on_upgrade_finished)
       @model.stub!(:save!)
-      @klass.on_callback(@model.id,
-        CallbackManager::EVENT_UPGRADE_FINISHED)
+      @klass.upgrade_finished_callback(@model)
     end
 
     it "should dispatch changed (upgrade finished)" do
       opts_upgrading.apply(@model)
-      should_fire_event(@model, EventBroker::CHANGED,
-          EventBroker::REASON_UPGRADE_FINISHED) do
-        @klass.on_callback(@model.id,
-          CallbackManager::EVENT_UPGRADE_FINISHED)
+      should_fire_event(
+        @model, EventBroker::CHANGED, EventBroker::REASON_UPGRADE_FINISHED
+      ) do
+        @klass.upgrade_finished_callback(@model)
       end
     end
   end

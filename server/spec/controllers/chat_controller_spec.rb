@@ -17,7 +17,8 @@ describe ChatController do
       @hub.register(player)
     end
 
-    it_behaves_like "only push"
+    it_should_behave_like "with param options", :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should respond with channels" do
       push @action, @params
@@ -45,8 +46,9 @@ describe ChatController do
       @method = :push
     end
 
-    it_behaves_like "with param options", %w{channel player}
-    it_behaves_like "only push"
+    it_behaves_like "with param options", :required => %w{channel player},
+      :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should have channel name" do
       push @action, @params
@@ -72,8 +74,9 @@ describe ChatController do
       @method = :push
     end
 
-    it_behaves_like "with param options", %w{channel player}
-    it_behaves_like "only push"
+    it_behaves_like "with param options", :required => %w{channel player},
+      :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should have channel name" do
       push @action, @params
@@ -87,8 +90,8 @@ describe ChatController do
   end
 
   # This action is not pushed via regular Dispatcher#push but instead
-  # transmitted directly via Dispatcher#transmit from +Chat::Hub+ for
-  # performance reasons. Because of that we only test client invocation
+  # transmitted directly via Dispatcher#transmit_to_players! from +Chat::Hub+
+  # for performance reasons. Because of that we only test client invocation
   # here.
   describe "chat|c" do
     before(:each) do
@@ -97,6 +100,7 @@ describe ChatController do
     end
 
     it_behaves_like "with param options", %w{chan msg}
+    it_should_behave_like "having controller action scope"
 
     it "should invoke #channel_msg on hub" do
       hub = mock(Chat::Hub)
@@ -116,6 +120,7 @@ describe ChatController do
     end
 
     it_behaves_like "with param options", %w{pid msg}
+    it_should_behave_like "having controller action scope"
 
     it "should invoke #private_msg on hub" do
       hub = mock(Chat::Hub)
@@ -134,8 +139,9 @@ describe ChatController do
       @method = :push
     end
 
-    it_should_behave_like "only push"
-    it_should_behave_like "with param options", %w{until}
+    it_should_behave_like "with param options", :required => %w{until},
+      :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should respond with 'until'" do
       push @action, @params

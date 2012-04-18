@@ -1,5 +1,8 @@
 # Use SsObject::*SsObject* instead of this! This acts as a base class.
 class SsObject < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+  include Parts::WithLocking
+
   include Location
   include Parts::Object
   include Parts::DelayedEventDispatcher
@@ -89,6 +92,29 @@ class SsObject < ActiveRecord::Base
     self.class.to_s.demodulize.underscore.to_sym
   end
 
+  SPAWN_SCOPE = DScope.world
+  def self.spawn_callback(asteroid); asteroid.spawn_resources!; end
+
+  ENERGY_DIMINISHED_SCOPE = DScope.world
+  def self.energy_diminished_callback(planet)
+    changes = planet.ensure_positive_energy_rate!
+    Notification.create_for_buildings_deactivated(
+      planet, changes
+    ) unless changes.blank? || planet.player_id.nil?
+    EventBroker.fire(planet, EventBroker::CHANGED)
+  end
+
+  RAID_SCOPE = DScope.world
+  def self.raid_callback(planet)
+    spawner = RaidSpawner.new(planet)
+    spawner.raid!
+  end
+
+  EXPLORATION_COMPLETE_SCOPE = DScope.world
+  def self.exploration_complete_callback(planet)
+    planet.finish_exploration!
+  end
+
   class << self
     # Find planet by _id_ for _player_id_.
     #
@@ -101,28 +127,6 @@ class SsObject < ActiveRecord::Base
       raise ActiveRecord::RecordNotFound if planet.nil?
 
       planet
-    end
-
-    def on_callback(id, event)
-      case event
-      when CallbackManager::EVENT_SPAWN
-        find(id).spawn_resources!
-      when CallbackManager::EVENT_ENERGY_DIMINISHED
-        model = find(id)
-        changes = model.ensure_positive_energy_rate!
-        Notification.create_for_buildings_deactivated(
-          model, changes
-        ) unless changes.blank? || model.player_id.nil?
-        EventBroker.fire(model, EventBroker::CHANGED)
-      when CallbackManager::EVENT_RAID
-        model = find(id)
-        spawner = RaidSpawner.new(model)
-        spawner.raid!
-      when CallbackManager::EVENT_EXPLORATION_COMPLETE
-        find(id).finish_exploration!
-      else
-        raise CallbackManager::UnknownEvent.new(self, id, event)
-      end
     end
   end
 end

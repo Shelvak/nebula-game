@@ -3,8 +3,7 @@ module FlashPolicyHandler
     data.strip == "<policy-file-request/>"
   end
 
-  def respond_with_policy
-    # Write server policy
+  def policy_data
     str =<<EOF
 <?xml version='1.0'?>
 <!DOCTYPE cross-domain-policy SYSTEM
@@ -12,11 +11,9 @@ module FlashPolicyHandler
 
 <cross-domain-policy>
   <site-control permitted-cross-domain-policies='master-only'/>
-  <allow-access-from domain='*' to-ports='#{CONFIG['game']['port']}' />
+  <allow-access-from domain='*' to-ports='#{CONFIG['server']['port']}' />
 </cross-domain-policy>\0
 EOF
     str.strip!
-    send_data str
-    debug "Sending #{str.inspect} to client."
   end
 end

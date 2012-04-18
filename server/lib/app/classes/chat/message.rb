@@ -24,11 +24,12 @@ class Chat::Message < ActiveRecord::Base
   # ]
   #
   def self.retrieve(player_id)
-    ActiveRecord::Base.connection.select_all(
-      "SELECT source_id, message, created_at FROM `#{
-        table_name}` WHERE target_id=#{player_id.to_i
-        } ORDER BY created_at"
-    ).map do |hash|
+    without_locking do
+      select("source_id, message, created_at").
+        where(:target_id => player_id).
+        order("created_at").
+        c_select_all
+    end.map do |hash|
       # JRuby compatibility
       hash["created_at"] = Time.parse(hash["created_at"]) \
         unless hash["created_at"].is_a?(Time)
@@ -41,9 +42,7 @@ class Chat::Message < ActiveRecord::Base
   # See #retrieve
   def self.retrieve!(player_id)
     messages = retrieve(player_id)
-    ActiveRecord::Base.connection.execute(
-      "DELETE FROM `#{table_name}` WHERE target_id=#{player_id.to_i}"
-    )
+    where(:target_id => player_id).delete_all
     messages
   end
 end

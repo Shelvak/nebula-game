@@ -3,10 +3,19 @@ require File.expand_path(
 )
 
 describe Chat::Channel do
+  let(:dispatcher_mock_name) { :dispatcher_mock }
+
+  around(:each) do |example|
+    mock_actor(dispatcher_mock_name, Dispatcher) do |mock|
+      @dispatcher = mock
+      example.call
+    end
+  end
+
   before(:each) do
-    @dispatcher = mock(Dispatcher)
-    @dispatcher.stub!(:push)
-    @chan = Chat::Channel.new("c", @dispatcher)
+    @dispatcher.stub(:push_to_player!)
+    @dispatcher.stub(:transmit_to_players!)
+    @chan = Chat::Channel.new("c", dispatcher_mock_name)
   end
 
   describe "#players" do
@@ -32,36 +41,30 @@ describe Chat::Channel do
 
     it "should notify everybody (including self) about join" do
       players.each do |p|
-        @dispatcher.should_receive(:push).with(
-          {
-            'action' => ChatController::ACTION_JOIN,
-            'params' => {'channel' => @chan.name, 'player' => player}
-          },
-          p.id
+        @dispatcher.should_receive(:push_to_player!).with(
+          p.id,
+          ChatController::ACTION_JOIN,
+          {'channel' => @chan.name, 'player' => player}
         )
       end
       @chan.join(player)
     end
 
     it "should not notify self if asked not to" do
-      @dispatcher.should_not_receive(:push).with(
-        {
-          'action' => ChatController::ACTION_JOIN,
-          'params' => {'channel' => @chan.name, 'player' => player}
-        },
-        player.id
+      @dispatcher.should_not_receive(:push_to_player!).with(
+        player.id,
+        ChatController::ACTION_JOIN,
+        {'channel' => @chan.name, 'player' => player}
       )
       @chan.join(player, false)
     end
 
     it "should notify self about everybody who is in that channel" do
       old_players.each do |p|
-        @dispatcher.should_receive(:push).with(
-          {
-            'action' => ChatController::ACTION_JOIN,
-            'params' => {'channel' => @chan.name, 'player' => p}
-          },
-          player.id
+        @dispatcher.should_receive(:push_to_player!).with(
+          player.id,
+          ChatController::ACTION_JOIN,
+          {'channel' => @chan.name, 'player' => p}
         )
       end
       @chan.join(player)
@@ -69,12 +72,10 @@ describe Chat::Channel do
 
     it "should not notify self about everybody if asked not to" do
       old_players.each do |p|
-        @dispatcher.should_not_receive(:push).with(
-          {
-            'action' => ChatController::ACTION_JOIN,
-            'params' => {'channel' => @chan.name, 'player' => p}
-          },
-          player.id
+        @dispatcher.should_not_receive(:push_to_player!).with(
+          player.id,
+          ChatController::ACTION_JOIN,
+          {'channel' => @chan.name, 'player' => p}
         )
       end
       @chan.join(player, false)
@@ -104,12 +105,10 @@ describe Chat::Channel do
       player = Factory.create(:player)
       @chan.join(player)
       [old_player, player].each do |p|
-        @dispatcher.should_receive(:push).with(
-          {
-            'action' => ChatController::ACTION_LEAVE,
-            'params' => {'channel' => @chan.name, 'player' => player}
-          },
-          p.id
+        @dispatcher.should_receive(:push_to_player!).with(
+          p.id,
+          ChatController::ACTION_LEAVE,
+          {'channel' => @chan.name, 'player' => player}
         )
       end
       @chan.leave(player)
@@ -122,12 +121,10 @@ describe Chat::Channel do
       @chan.join(old_player)
       player = Factory.create(:player)
       @chan.join(player)
-      @dispatcher.should_not_receive(:push).with(
-        {
-          'action' => ChatController::ACTION_LEAVE,
-          'params' => {'channel' => @chan.name, 'player' => player}
-        },
-        player.id
+      @dispatcher.should_not_receive(:push_to_player!).with(
+        player.id,
+        ChatController::ACTION_LEAVE,
+        {'channel' => @chan.name, 'player' => player}
       )
       @chan.leave(player, false)
     end
@@ -148,12 +145,9 @@ describe Chat::Channel do
       @chan.join(player2)
 
       msg = "FOO"
-      @dispatcher.should_receive(:transmit).with(
-        {
-          'action' => ChatController::CHANNEL_MESSAGE,
-          'params' => {'chan' => @chan.name, 'pid' => player.id,
-            'msg' => msg}
-        },
+      @dispatcher.should_receive(:transmit_to_players!).with(
+        ChatController::CHANNEL_MESSAGE,
+        {'chan' => @chan.name, 'pid' => player.id, 'msg' => msg},
         player2.id
       )
       @chan.message(player, msg)

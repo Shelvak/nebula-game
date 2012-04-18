@@ -1,6 +1,5 @@
 # Controller that is responsible for pushing object updates to client.
 class ObjectsController < GenericController
-  ACTION_CREATED = 'objects|created'
   # Pushes information about newly created objects to client.
   #
   # Invocation: by server
@@ -15,13 +14,14 @@ class ObjectsController < GenericController
   #     "class_name" => [object, ...]
   #   }
   #
-  def action_created
-    param_options :required => %w{objects}
-    only_push!
-    respond :objects => prepare(params['objects'])
+  ACTION_CREATED = 'objects|created'
+
+  CREATED_OPTIONS = logged_in + only_push + required(:objects => Array)
+  CREATED_SCOPE = scope.world
+  def self.created_action(m)
+    respond m, :objects => prepare(m.player, m.params['objects'])
   end
 
-  ACTION_UPDATED = 'objects|updated'
   # Pushes information about updated objects to client.
   #
   # Invocation: by server
@@ -36,16 +36,19 @@ class ObjectsController < GenericController
   #     "Unit::Trooper" => [Unit#as_json, ...],
   #     "class_name" => [object, ...]
   #   }
-  # - reason (String): reason why this object was updated
+  # - reason (nil|Symbol|String): reason why this object was updated
   #
-  def action_updated
-    param_options :required => %w{objects reason}
-    only_push!
-    respond :objects => prepare(params['objects']),
-      :reason => params['reason'].to_s
+  ACTION_UPDATED = 'objects|updated'
+
+  UPDATED_OPTIONS = logged_in + only_push +
+    required(:objects => Array, :reason => [NilClass, Symbol, String])
+  UPDATED_SCOPE = scope.world
+  def self.updated_action(m)
+    respond m,
+      :objects => prepare(m.player, m.params['objects']),
+      :reason => m.params['reason'].to_s
   end
 
-  ACTION_DESTROYED = 'objects|destroyed'
   # Pushes information about destroyed objects to client.
   #
   # Invocation: by server
@@ -60,52 +63,61 @@ class ObjectsController < GenericController
   #     "Unit::Trooper" => [1, ...],
   #     "class_name" => [id, ...]
   #   }
-  # - reason (String): reason why this object were destroyed
+  # - reason (nil|Symbol|String): reason why this object were destroyed
   #
-  def action_destroyed
-    param_options :required => %w{objects reason}
-    only_push!
-    respond :object_ids => prepare_destroyed(params['objects']),
-      :reason => params['reason']
+  ACTION_DESTROYED = 'objects|destroyed'
+
+  DESTROYED_OPTIONS = logged_in + only_push +
+    required(:objects => Array, :reason => [NilClass, Symbol, String])
+  DESTROYED_SCOPE = scope.world
+  def self.destroyed_action(m)
+    respond m,
+      :object_ids => prepare_destroyed(m.params['objects']),
+      :reason => m.params['reason'].to_s
   end
 
   protected
-  def prepare(objects)
-    resolver = StatusResolver.new(player)
+  class << self
+    private
+    def prepare(player, objects)
+      without_locking do
+        resolver = StatusResolver.new(player)
 
-    group_by_class(objects).inject({}) do |hash, (class_name, class_objects)|
-      hash[class_name] = cast_perspective(class_objects, resolver)
-      hash
+        group_by_class(objects).inject({}) do |hash, (class_name, class_objects)|
+          hash[class_name] = cast_perspective(player, class_objects, resolver)
+          hash
+        end
+      end
     end
-  end
-  
-  def prepare_destroyed(objects)
-    group_by_class(objects).inject({}) do |hash, (class_name, class_objects)|
-      hash[class_name] = class_objects.map(&:id)
-      hash
+
+    def prepare_destroyed(objects)
+      group_by_class(objects).inject({}) do |hash, (class_name, class_objects)|
+        hash[class_name] = class_objects.map(&:id)
+        hash
+      end
     end
-  end
 
-  def group_by_class(objects)
-    objects.group_to_hash { |object| object.class.to_s }
-  end
+    def group_by_class(objects)
+      objects.group_to_hash { |object| object.class.to_s }
+    end
 
-  # Cast given objects to players perspective. E.g. If object is a planet
-  # and that player owns it, it should get more data than the one that does
-  # not own it.
-  def cast_perspective(objects, resolver)
-    objects.map do |object|
-      case object
-      when Unit
-        object.as_json(:perspective => resolver)
-      when SsObject::Planet
-        object.as_json(
-          :owner => object.player_id == player.id,
-          :view => object.observer_player_ids.include?(player.id),
-          :perspective => resolver
-        )
-      else
-        object.as_json
+    # Cast given objects to players perspective. E.g. If object is a planet
+    # and that player owns it, it should get more data than the one that does
+    # not own it.
+    def cast_perspective(player, objects, resolver)
+      objects.map do |object|
+        case object
+        when Unit
+          object.as_json(:perspective => resolver)
+        when SsObject::Planet
+          object.as_json(
+            :owner => object.player_id == player.id,
+            :view => object.observer_player_ids.include?(player.id),
+            :perspective => resolver
+          )
+        else
+          object.as_json
+        end
       end
     end
   end

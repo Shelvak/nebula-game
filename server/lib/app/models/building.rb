@@ -1,4 +1,7 @@
 class Building < ActiveRecord::Base
+  DScope = Dispatcher::Scope
+  include Parts::WithLocking
+
   class BuildingInactiveError < GameLogicError; end
 
   STATE_INACTIVE = 0
@@ -113,23 +116,24 @@ class Building < ActiveRecord::Base
   # }
   #
   def unit_groups
-    # TODO: add without_locking for s2_par
-    Unit.
-      select("type, flank, COUNT(*) as count").
-      where(:location_building_id => id).
-      group("type, flank").
-      c_select_all.each_with_object({}) do |row, hash|
-        flank = row['flank'].to_i
-        type = row['type']
-        hash[flank] ||= {}
-        hash[flank][type] ||= 0
-        hash[flank][type] += row['count']
-      end
+    without_locking do
+      Unit.
+        select("type, flank, COUNT(*) as count").
+        where(:location_building_id => id).
+        group("type, flank").
+        c_select_all
+    end.each_with_object({}) do |row, hash|
+      flank = row['flank'].to_i
+      type = row['type']
+      hash[flank] ||= {}
+      hash[flank][type] ||= 0
+      hash[flank][type] += row['count']
+    end
   end
 
   def as_json(options=nil)
     hash = attributes.except(*%w{pause_remainder hp_percentage without_points
-      constructable_building_id constructable_unit_id})
+      constructable_building_id constructable_unit_id flags})
     hash['hp'] = hp
     hash['overdriven'] = overdriven
     yield hash if block_given?
@@ -456,16 +460,21 @@ class Building < ActiveRecord::Base
       ])
   end
 
+  UPGRADE_FINISHED_SCOPE = DScope.world
+  def self.upgrade_finished_callback(building)
+    building.on_upgrade_finished!
+  end
+
+  COOLDOWN_EXPIRED_SCOPE = DScope.world
+  def self.cooldown_expired_callback(building); building.cooldown_expired!; end
+
+  CONSTRUCTION_FINISHED_SCOPE = DScope.world
+  def self.construction_finished_callback(constructor)
+    constructor.on_construction_finished!
+  end
+
   class << self
-    def on_callback(id, event)
-      if event == CallbackManager::EVENT_COOLDOWN_EXPIRED
-        find(id).cooldown_expired!
-      elsif defined?(super)
-        super(id, event)
-      else
-        raise CallbackManager::UnknownEvent.new(self, id, event)
-      end
-    end
+    def constructor?; ! property('constructor.items').nil?; end
 
     def width
       value = property('width')

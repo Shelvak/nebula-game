@@ -6,7 +6,6 @@ import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
 import spacemule.modules.pmg.classes.ObjectChance
 import spacemule.modules.pmg.objects._
-import spacemule.modules.pmg.objects.solar_systems._
 import spacemule.modules.pmg.objects.planet._
 import spacemule.modules.combat
 import spacemule.modules.pathfinder.{objects => pfo}
@@ -29,29 +28,12 @@ object Config {
 
     _data
   }
-  def data_=(value: ScalaConfig) { _data = value }
+  // Called by JRuby
+  def setData(value: ScalaConfig) { _data = value }
 
-  /**
-   * Current set from which to take configuration.
-   */
-  private var currentSet = DefaultSet
+  private[this] def getOpt[T](key: String): Option[T] = data.getOpt(key)
 
-  /**
-   * Executes given block with required set.
-   */
-  def withSetScope[T](set: String)(block: () => T): T = {
-    val oldSet = currentSet
-    currentSet = set
-    val result = block()
-    currentSet = oldSet
-    result
-  }
-
-  private[this] def getOpt[T](key: String): Option[T] =
-    data.getOpt(key, currentSet)
-
-  private[objects] def get[T](key: String): T =
-    data.get(key, currentSet)
+  private[objects] def get[T](key: String): T = data.get(key)
 
   //////////////////////////////////////////////////////////////////////////////
   // Helper methods

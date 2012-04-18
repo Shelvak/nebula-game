@@ -94,6 +94,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{type count constructor_id prepaid}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if not prepaid and player is not vip" do
       @params['prepaid'] = false
@@ -142,6 +143,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{updates}
+    it_should_behave_like "having controller action scope"
 
     it "should call Unit.update_combat_attributes" do
       Unit.should_receive(:update_combat_attributes).with(
@@ -160,6 +162,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{planet_id unit_ids value}
+    it_should_behave_like "having controller action scope"
 
     it "should call Unit.mass_set_hidden" do
       Unit.should_receive(:mass_set_hidden).with(
@@ -170,124 +173,108 @@ describe UnitsController do
   end
 
   describe "units|attack" do
-    describe "invoked" do
-      before(:each) do
-        @action = "units|attack"
+    before(:each) do
+      @action = "units|attack"
 
-        @planet = Factory.create :planet, :player => player
-        @target = Factory.create :b_npc_solar_plant, :planet => @planet
-        @target_units = [
-          Factory.create(:u_gnat, :player => nil,
-            :location => @target, :level => 1, :hp => 80),
-          Factory.create(:u_gnat, :player => nil,
-            :location => @target, :level => 1, :hp => 80)
-        ]
+      @planet = Factory.create :planet, :player => player
+      @target = Factory.create :b_npc_solar_plant, :planet => @planet
+      @target_units = [
+        Factory.create(:u_gnat, :player => nil,
+          :location => @target, :level => 1, :hp => 80),
+        Factory.create(:u_gnat, :player => nil,
+          :location => @target, :level => 1, :hp => 80)
+      ]
 
-        @units = [
-          Factory.create(:u_trooper, :player => player,
-            :location => @planet, :level => 1, :hp => 20),
-          Factory.create(:u_trooper, :player => player,
-            :location => @planet, :level => 1, :hp => 20),
-        ]
-        @params = {
-          'planet_id' => @planet.id,
-          'target_id' => @target.id,
-          'unit_ids' => @units.map(&:id)
-        }
-      end
+      @units = [
+        Factory.create(:u_trooper, :player => player,
+          :location => @planet, :level => 1, :hp => 20),
+        Factory.create(:u_trooper, :player => player,
+          :location => @planet, :level => 1, :hp => 20),
+      ]
+      @params = {
+        'planet_id' => @planet.id,
+        'target_id' => @target.id,
+        'unit_ids' => @units.map(&:id)
+      }
+    end
 
-      it_should_behave_like "with param options",
-                            %w{planet_id target_id unit_ids}
+    it_should_behave_like "with param options",
+                          %w{planet_id target_id unit_ids}
+    it_should_behave_like "having controller action scope"
 
-      it "should raise RecordNotFound if it's not that player planet" do
-        @planet.player = Factory.create(:player)
-        @planet.save!
+    it "should raise RecordNotFound if it's not that player planet" do
+      @planet.player = Factory.create(:player)
+      @planet.save!
 
-        lambda do
-          invoke @action, @params
-        end.should raise_error(ActiveRecord::RecordNotFound)
-      end
-
-      it "should raise RecordNotFound if the target is not npc" do
-        with_config_values 'buildings.npc_solar_plant.npc' => false do
-          lambda do
-            invoke @action, @params
-          end.should raise_error(ActiveRecord::RecordNotFound)
-        end
-      end
-
-      it "should raise ControllerArgumentError if units are empty" do
-        lambda do
-          invoke @action, @params.merge('unit_ids' => [])
-        end.should raise_error(ControllerArgumentError)
-      end
-
-      it "should raise RecordNotFound if some units are not in that planet" do
-        @units[0].location = Factory.create(:planet)
-        @units[0].save!
-
-        lambda do
-          invoke @action, @params
-        end.should raise_error(ActiveRecord::RecordNotFound)
-      end
-
-      it "should raise RecordNotFound if some units does not belong " +
-      "to that player" do
-        @units[0].player = Factory.create(:player)
-        @units[0].save!
-
-        lambda do
-          invoke @action, @params
-        end.should raise_error(ActiveRecord::RecordNotFound)
-      end
-
-      it "should not create cooldown" do
+      lambda do
         invoke @action, @params
-        Cooldown.where(:location_ss_object_id => @planet.id).first.should be_nil
-      end
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
 
-      it "should push units|attack" do
-        should_push("units|attack",
-          'notification_id' => an_instance_of(Fixnum))
-        invoke @action, @params
-      end
-
-      describe "when all units are killed" do
-        before(:each) do
-          @target_units.each(&:destroy)
-          Factory.create(:u_gnat, :player => nil,
-            :location => @target, :level => 1, :hp => 1)
-        end
-
-        it "should destroy building" do
+    it "should raise RecordNotFound if the target is not npc" do
+      with_config_values 'buildings.npc_solar_plant.npc' => false do
+        lambda do
           invoke @action, @params
-          lambda do
-            @target.reload
-          end.should raise_error(ActiveRecord::RecordNotFound)
-        end
-
-        it "should progress objective" do
-          Objective::DestroyNpcBuilding.should_receive(:progress).with(
-            @target, player
-          )
-          invoke @action, @params
-        end
+        end.should raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
-    describe "pushed" do
-      before(:each) do
-        @action = "units|attack"
-        @notification_id = 100
-        @params = {'notification_id' => @notification_id}
-        @method = :push
-      end
-      
-      it_behaves_like "with param options", %w{notification_id}
+    it "should raise error if units are empty" do
+      lambda do
+        invoke @action, @params.merge('unit_ids' => [])
+      end.should raise_error(GameLogicError)
+    end
 
-      it "should respond with notification id" do
-        should_respond_with :notification_id => @notification_id
-        push @action, @params
+    it "should raise error if some units are not in that planet" do
+      @units[0].location = Factory.create(:planet)
+      @units[0].save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should raise error if some units does not belong to that player" do
+      @units[0].player = Factory.create(:player)
+      @units[0].save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should not create cooldown" do
+      invoke @action, @params
+      Cooldown.where(:location_ss_object_id => @planet.id).should_not exist
+    end
+
+    it "should respond with the notification" do
+      invoke @action, @params
+      response_should_include(
+        :notification => Notification.where(:player_id => player.id).last.
+          as_json
+      )
+    end
+
+    describe "when all units are killed" do
+      before(:each) do
+        @target_units.each(&:destroy)
+        Factory.create(:u_gnat, :player => nil,
+          :location => @target, :level => 1, :hp => 1)
+      end
+
+      it "should destroy building" do
+        invoke @action, @params
+        lambda do
+          @target.reload
+        end.should raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it "should progress objective" do
+        Objective::DestroyNpcBuilding.should_receive(:progress).with(
+          @target, player
+        )
+        invoke @action, @params
       end
     end
   end
@@ -324,6 +311,7 @@ describe UnitsController do
 
     it_behaves_like "with param options", %w{unit_ids source target}
     it_behaves_like "checking visibility"
+    it_should_behave_like "having controller action scope"
 
     it "should invoke UnitMover" do
       UnitMover.should_receive(:move_meta).with(
@@ -383,8 +371,10 @@ describe UnitsController do
       }
     end
 
-    it_behaves_like "with param options", %w{unit_ids source target speed_modifier}
+    it_behaves_like "with param options",
+      %w{unit_ids source target speed_modifier}
     it_behaves_like "checking visibility"
+    it_should_behave_like "having controller action scope"
 
     it "should invoke UnitMover" do
       UnitMover.should_receive(:move).with(player.id, @unit_ids, @source,
@@ -429,8 +419,10 @@ describe UnitsController do
       @method = :push
     end
 
-    it_behaves_like "with param options", %w{route unit_ids route_hops}
-    it_behaves_like "only push"
+    it_behaves_like "with param options",
+      :required => %w{route unit_ids route_hops},
+      :only_push => true
+    it_should_behave_like "having controller action scope"
   end
 
   describe "units|movement" do
@@ -447,8 +439,10 @@ describe UnitsController do
       @method = :push
     end
 
-    it_behaves_like "with param options", %w{units route_hops jumps_at}
-    it_behaves_like "only push"
+    it_behaves_like "with param options",
+      :required => %w{units route_hops jumps_at},
+      :only_push => true
+    it_should_behave_like "having controller action scope"
 
     it "should respond with units with perspective" do
       push @action, @params
@@ -488,6 +482,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{planet_id unit_id x y}
+    it_should_behave_like "having controller action scope"
 
     it "should not fail if unit is in another unit in same planet" do
       @unit.location = Factory.create(:unit, :location => @planet)
@@ -575,6 +570,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{unit_ids transporter_id}
+    it_should_behave_like "having controller action scope"
     
     it_should_behave_like "checking all planet owner variations",
         {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
@@ -635,6 +631,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{unit_ids transporter_id}
+    it_should_behave_like "having controller action scope"
 
     it_should_behave_like "checking all planet owner variations",
         {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
@@ -735,6 +732,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{transporter_id metal energy zetium}
+    it_should_behave_like "having controller action scope"
 
     describe "loading" do
       it_should_behave_like "checking all planet owner variations",
@@ -874,18 +872,20 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{unit_id}
+    it_should_behave_like "having controller action scope"
 
-    it "should work if transporter belongs to ally" do
+    it "should not work if transporter belongs to ally" do
       player.alliance = Factory.create(:alliance)
       player.save!
 
-      @transporter.player = Factory.create(:player,
-        :alliance => player.alliance)
+      @transporter.player = Factory.create(
+        :player, :alliance => player.alliance
+      )
       @transporter.save!
 
       lambda do
         invoke @action, @params
-      end.should_not raise_error(ActiveRecord::RecordNotFound)
+      end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "should raise not found if transporter doesn't belong to player" do
@@ -974,6 +974,7 @@ describe UnitsController do
     end
 
     it_behaves_like "with param options", %w{planet_id unit_ids}
+    it_should_behave_like "having controller action scope"
 
     it "should fail if planet does not belong to player" do
       @planet.player = Factory.create(:player)

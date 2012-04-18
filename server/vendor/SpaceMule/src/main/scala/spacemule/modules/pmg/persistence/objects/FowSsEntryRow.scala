@@ -5,16 +5,17 @@
 
 package spacemule.modules.pmg.persistence.objects
 
-import spacemule.persistence.{Row, RowObject, DB}
+import spacemule.persistence._
 
-object FowSsEntryRow extends RowObject {
-  sealed abstract class Owner(id: Int)
+
+object FowSsEntryRow extends ReferableRowObject {
+  sealed abstract class Owner
   object Owner {
-    case class Player(id: Int) extends Owner(id)
-    case class Alliance(id: Int) extends Owner(id)
+    case class Player(row: PlayerRow) extends Owner
+    case class Alliance(id: Int) extends Owner
   }
 
-  val pkColumn = Some("id")
+  val pkColumn = "id"
   val columnsSeq = Seq(
     "solar_system_id", "player_id", "alliance_id",
     "counter", "player_planets", "player_ships", "enemy_planets"
@@ -27,7 +28,7 @@ case class FowSsEntryRow(
   counter: Int=1,
   empty: Boolean=true,
   enemy: Boolean=false
-) extends Row {
+) extends ReferableRow {
   val companion = FowSsEntryRow
 
   val playerPlanets = if (empty) false else ! enemy
@@ -35,7 +36,7 @@ case class FowSsEntryRow(
 
   // Used in Ruby.
   def playerId = owner match {
-    case FowSsEntryRow.Owner.Player(pid) => pid
+    case FowSsEntryRow.Owner.Player(row) => row.id
     case FowSsEntryRow.Owner.Alliance(_) => null
   }
   // Used in Ruby.
@@ -44,10 +45,10 @@ case class FowSsEntryRow(
     case FowSsEntryRow.Owner.Alliance(aid) => aid
   }
 
-  val valuesSeq = Seq(
+  lazy val valuesSeq = Seq(
     ssRow.id,
     owner match {
-      case FowSsEntryRow.Owner.Player(pid) => pid.toString
+      case FowSsEntryRow.Owner.Player(row) => row.id.toString
       case FowSsEntryRow.Owner.Alliance(_) => DB.loadInFileNull
     },
     owner match {

@@ -1,5 +1,5 @@
 class ConsoleOutput < IO
-  CUTOFF_AT = 1000
+  CUTOFF_AT = 5000
 
   def initialize(output)
     @output = output
@@ -8,7 +8,8 @@ class ConsoleOutput < IO
   def write(string)
     length = string.length
     if length > CUTOFF_AT
-      string = string[0..CUTOFF_AT] + "... (#{length - CUTOFF_AT} more characters)" + "\n"
+      string = string[0..CUTOFF_AT] +
+        "... (#{length - CUTOFF_AT} more characters)" + "\n"
     end
 
     @output.write string

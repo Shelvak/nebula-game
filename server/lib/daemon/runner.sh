@@ -10,7 +10,7 @@ export JAVA_OPTS=""  # Clear Java opts
 
 # Loop predicate is an JVM7 bug.
 # http://www.lucidimagination.com/search/document/1a0d3986e48a9348/warning_index_corruption_and_crashes_in_apache_lucene_core_apache_solr_with_java_7
-opts="-J-Dname=$server_name -J-Djruby.jit.max=25000 \
+opts="--1.9 -J-Dname=$server_name -J-Djruby.jit.max=25000 \
 --server -J-XX:+TieredCompilation -J-XX:-UseLoopPredicate"
 rundir=$(readlink -f "$(dirname $0)/..")
 logdir=$(readlink -f "$rundir/../log")

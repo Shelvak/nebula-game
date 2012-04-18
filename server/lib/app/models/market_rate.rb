@@ -1,5 +1,6 @@
 # Stores current market rate for resource pair in given galaxy.
 class MarketRate < ActiveRecord::Base
+  include Parts::WithLocking
   belongs_to :galaxy
 
   def to_s

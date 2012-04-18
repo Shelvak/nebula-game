@@ -127,6 +127,13 @@ module GameConfig::Creation
         load(@setup_config_file)
       end
     else
+      merge = lambda do |scope, set, contents|
+        contents.each do |key, value|
+          scoped_key = scope.nil? ? key : "#{scope}.#{key}"
+          store(scoped_key, set, value)
+        end
+      end
+
       LOGGER.block(
         "Config cache does not exist or is invalid! Loading config from disk."
       ) do
@@ -134,18 +141,16 @@ module GameConfig::Creation
           add_set(set_name, fallback)
         end
 
+        initializers = []
+
         LOGGER.block("Loading YAML files.") do
           @setup_current_hashes.each do |(set, scope, filename), hash|
             if filename.ends_with?(".yml")
               contents = self.class.read_file(filename)
               raise "Eh? #{filename} was empty!" if contents.nil?
-              if scope.nil?
-                merge!(contents, set)
-              else
-                with_scope(scope) { merge!(contents, set) }
-              end
+              merge[scope, set, contents]
             elsif filename.ends_with?(".rb")
-              # Delay initialization of these until #setup_initializers!
+              initializers << filename
             else
               raise "Unknown config file type: #{filename}"
             end
@@ -157,13 +162,10 @@ module GameConfig::Creation
         # This must be done AFTER plugins/etc is loaded, because that code actually
         # references actual classes/runs actual methods that won't work if:
         # a) base config is not loaded.
-        # b) code is not fully setuped.
-        #
-        # This creates this unholy mess of stupid initialization. I'd smack myself
-        # if I had an ability to travel 2 years back in time. Eh...
+        # b) code is not fully set up.
         LOGGER.block "Running config initializers." do
-          @setup_current_hashes.each do |(set, scope, filename), hash|
-            require filename if filename.ends_with?(".rb")
+          initializers.each do |filename|
+            require filename
           end
         end
 

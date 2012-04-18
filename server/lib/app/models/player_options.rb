@@ -1,4 +1,6 @@
 class PlayerOptions < ActiveRecord::Base
+  include Parts::WithLocking
+
   self.primary_key = :player_id
   belongs_to :player
 

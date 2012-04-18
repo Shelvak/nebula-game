@@ -292,6 +292,11 @@ package models.map
                   + "could not be found"
             );
          }
+         else
+         {
+            Log.getLogger("models.map.MMap").warn("Can't remove object " +
+               object + ": the equal object could not be found");
+         }
       }
       
       /**

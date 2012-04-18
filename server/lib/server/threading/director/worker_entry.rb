@@ -1,0 +1,1 @@
+class Threading::Director::WorkerEntry < Struct.new(:name, :worker); end

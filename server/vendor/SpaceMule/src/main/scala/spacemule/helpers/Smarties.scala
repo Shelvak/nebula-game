@@ -12,6 +12,7 @@ import java.lang.IllegalStateException
 
 object Converters {
   implicit def intToSmartInt(int: Int) = new SmartInt(int)
+  implicit def longToSmartLong(long: Long) = new SmartLong(long)
   implicit def stringToSmartString(string: String) = new SmartString(string)
   implicit def mapToSmartMap[K, V](map: Map[K, V]) = new SmartMap[K, V](map)
   implicit def mapToSmartMutableMap[K, V](map: mutable.Map[K, V]) =
@@ -69,6 +70,10 @@ class SmartInt(int: Int) {
   def toBigDecimal = new BigDecimal(int)
   
   def toString(radix: Int) = Integer.toString(int, radix)
+}
+
+class SmartLong(long: Long) {
+  def toString(radix: Int) = java.lang.Long.toString(long, radix)
 }
 
 class SmartString(string: String) {

@@ -1,21 +1,41 @@
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
   unless defined?(ROOT_DIR)
 
-#unless RUBY_VERSION >= '1.9.2' && JRUBY_VERSION >= '1.6.7'
-#  w = 80
-#  puts "#" * w
-#  puts "We require JRuby 1.6 (dev version) in 1.9 mode!".center(w)
-#  puts
-#  puts "To install JRuby 1.6 (dev version):".center(w)
-#  puts "`rvm install jruby-head-n16 --branch jruby-1_6`".center(w)
-#  puts
-#  puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
-#  puts "`export JRUBY_OPTS='--1.9'`".center(w)
-#  puts
-#  puts "Aborting!".center(w)
-#  puts "#" * w
-#  exit
-#end
+# Global constants related to server tweaking
+WORKERS_CHAT = 1
+WORKERS_WORLD = 1
+# Connections:
+# - callback manager
+# - workers
+DB_POOL_SIZE = WORKERS_CHAT + WORKERS_WORLD + 1
+
+def rake?; File.basename($0) == 'rake'; end
+
+# flex:locales:check task is broken on 1.6.6, so we have to use something else.
+if RUBY_VERSION < '1.9.2' || ! (JRUBY_VERSION == '1.6.6' || rake?)
+  w = 80
+  puts "#" * w
+  puts "We require JRuby 1.6.6 in 1.9 mode!".center(w)
+  puts
+  puts "To install JRuby 1.6.6:".center(w)
+  puts "`rvm install jruby-1.6.6`".center(w)
+  puts
+  puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
+  puts "`export JRUBY_OPTS='--1.9'`".center(w)
+  puts
+  puts "Aborting!".center(w)
+  puts "#" * w
+  exit
+end
+
+require 'bundler'
+
+require "timeout"
+require "tempfile"
+require "socket"
+require "erb"
+require "pp"
+require "thread"
 
 # Load Scala support.
 lambda do
@@ -28,7 +48,6 @@ lambda do
 
   # Scala <-> Ruby interoperability.
   class Object
-    # TODO: upon upgrade to 1.6.6 replace $plus and $plus$eq to + and +=
     def to_scala
       case self
       when Hash
@@ -39,11 +58,11 @@ lambda do
         scala_hash
       when Set
         scala_set = Java::scala.collection.immutable.HashSet.new
-        each { |item| scala_set = scala_set.send(:"$plus", item.to_scala) }
+        each { |item| scala_set = scala_set + item.to_scala }
         scala_set
       when Array
         scala_array = Java::scala.collection.mutable.ArrayBuffer.new
-        each { |value| scala_array.send(:"$plus$eq", value.to_scala) }
+        each { |value| scala_array += value.to_scala }
         scala_array.to_indexed_seq
       when Symbol
         to_s
@@ -88,14 +107,8 @@ lambda do
     None = Java::spacemule.helpers.JRuby.None
 
     def add_exception_info(exception, message)
-      if exception.is_a?(NativeException)
-        # Workaround for http://jira.codehaus.org/browse/JRUBY-6103
-        STDERR.puts message
-        raise exception
-      else
-        raise exception.class, message + "\n\n" + exception.message,
-          exception.backtrace
-      end
+      raise exception.class, message + "\n\n" + exception.message,
+        exception.backtrace
     end
   end
 end.call
@@ -106,6 +119,8 @@ class App
   SERVER_STATE_SHUTDOWNING = :shutdowning
 
   class << self
+    @@mutex = Mutex.new
+
     def env
       @@environment ||= ENV['environment'] || 'development'
     end
@@ -119,23 +134,32 @@ class App
     def in_test?; env == 'test'; end
 
     def server_state
-      @@server_state ||= SERVER_STATE_INITIALIZING
+      synchronized { @@server_state ||= SERVER_STATE_INITIALIZING }
     end
 
     def server_state=(value)
-      @@server_state = value
+      synchronized { @@server_state = value }
     end
 
     def server_initializing?; server_state == SERVER_STATE_INITIALIZING; end
     def server_running?; server_state == SERVER_STATE_RUNNING; end
     def server_shutdowning?; server_state == SERVER_STATE_SHUTDOWNING; end
+
+    private
+    def synchronized
+      @@mutex.synchronize { yield }
+    end
   end
 end
 
 class Exception
+  def name
+    self.class.to_s
+  end
+
   def to_log_str
     "Exception: %s (%s)\n\nBacktrace:\n%s" % [
-      message, self.class.to_s, self.backtrace.try(:join, "\n") || "No backtrace"
+      message, name, self.backtrace.try(:join, "\n") || "No backtrace"
     ]
   end
 end
@@ -156,17 +180,6 @@ def dump_environment(binding, message)
   message
 end
 
-def rake?; File.basename($0) == 'rake'; end
-
-require 'rubygems'
-require 'bundler'
-
-require "timeout"
-require "tempfile"
-require "socket"
-require "erb"
-require "pp"
-
 setup_groups = [:default, :setup, :"#{App.env}_setup"]
 setup_groups.push :run_setup unless App.in_test?
 require_groups = [:default, :require, :"#{App.env}_require"]
@@ -177,50 +190,10 @@ Bundler.setup(*(setup_groups | require_groups))
 Bundler.require(*require_groups)
 
 require 'active_support/dependencies'
+require "#{ROOT_DIR}/lib/server/ar_monkey_squad"
 
-# We don't need our #destroy, #save and #save! automatically wrapped under
-# transaction because we wrap whole request in one and can't use nested
-# transactions due to BulkSql.
-module ActiveRecord::Transactions
-  def destroy; super; end
-  def save(*); super; end
-  def save!(*); super; end
-end
-
-if RUBY_VERSION.to_f < 1.9
-  $KCODE = 'u'
-  Range.send(:alias_method, :cover?, :include?)
-  class Integer
-    alias :precisionless_round :round
-    private :precisionless_round
-
-    # Rounds the integer with the specified precision.
-    #
-    # x = 1233
-    # x.round # => 1233
-    # x.round(1) # => 1233
-    # x.round(-1) # => 1230
-    # x.round(-5) # => 0
-    def round(precision = nil)
-      if precision
-        magnitude = 10 ** precision
-        ((self * magnitude).round / magnitude).to_i
-      else
-        precisionless_round
-      end
-    end
-  end
-
-  class Complex
-    def initialize
-      raise "I'm not a real class! I just pretend to exist to give " +
-              "an illusion of 1.9 compat!"
-    end
-  end
-else
-  # Unshift current directory for factory girl (ruby 1.9)
-  $LOAD_PATH.unshift File.expand_path(ROOT_DIR) if App.in_test?
-end
+# Unshift current directory for factory girl (ruby 1.9)
+$LOAD_PATH.unshift File.expand_path(ROOT_DIR) if App.in_test?
 
 # Require plugins so all their functionality is present during
 # initialization
@@ -233,16 +206,6 @@ end
 
 ENV['db_environment'] ||= App.env
 ENV['configuration'] ||= App.env
-
-# Set up Rails autoloader
-(
-  ["#{ROOT_DIR}/lib/server"] + Dir["#{ROOT_DIR}/lib/app/**"]
-).each do |file_name|
-  if File.directory?(file_name)
-    ActiveSupport::Dependencies.autoload_paths <<
-      File.expand_path(file_name)
-  end
-end
 
 email_from = "server-#{Socket.gethostname}@nebula44.com"
 email_to = 'arturas@nebula44.com'
@@ -258,12 +221,17 @@ MAILER = lambda do |short, long|
   end
 end
 
-LOGGER = GameLogger.new(
-  File.expand_path(
-    File.join(ROOT_DIR, 'log', "#{App.env}.log")
-  )
+require "#{ROOT_DIR}/lib/server/logging.rb"
+log_writer_config = Logging::Writer::Config.new(:info)
+log_writer_config.outputs << File.new(
+  File.expand_path(File.join(ROOT_DIR, 'log', "#{App.env}.log")),
+  'a'
 )
-LOGGER.level = GameLogger::LEVEL_INFO
+# Need to eval to pass local variables to loaded file.
+eval(
+  File.read(File.join(ROOT_DIR, 'config', 'environments', App.env + ".rb")),
+  binding
+)
 
 # Error reporting by mail.
 if App.in_production?
@@ -272,22 +240,53 @@ if App.in_production?
     # -t is skipped because it fucks up delivery on some MTAs
     delivery_method :sendmail, :arguments => "-i"
   end
-  LOGGER.on_fatal = MAILER["FATAL", "Server has encountered an FATAL error!"]
-  LOGGER.on_error = MAILER["ERROR", "Server has encountered an error!"]
-  LOGGER.on_warn = MAILER["WARN", "Server has issued a warning!"]
+  log_writer_config.callbacks[:fatal] = MAILER[
+    "FATAL", "Server has encountered a FATAL error!"
+  ]
+  log_writer_config.callbacks[:error] = MAILER[
+    "ERROR", "Server has encountered an error!"
+  ]
+  log_writer_config.callbacks[:warn] = MAILER[
+    "WARN", "Server has issued a warning!"
+  ]
+else
+  # Quit on failure in development mode.
+  handler = proc do |arg|
+    STDERR.puts "ERROR HANDLER STRUCK:"
+    STDERR.puts arg
+    if App.server_state == App::SERVER_STATE_RUNNING
+      App.server_state = App::SERVER_STATE_SHUTDOWNING
+    end
+  end
+
+  log_writer_config.callbacks[:fatal] =
+    log_writer_config.callbacks[:error] =
+      handler
+
+  Celluloid.exception_handler(&handler)
 end
 
-LOGGER.info "Loading configuration for '#{App.env}' environment..."
-require File.join(ROOT_DIR, 'config', 'environments', App.env + ".rb")
+Logging::Writer.instance.config = log_writer_config
+LOGGER = Logging::ThreadRouter.instance
+ActiveRecord::Base.logger = LOGGER
+ActiveSupport::LogSubscriber.colorize_logging = false
+Celluloid.logger = LOGGER
 
 # Set up config object
+require "#{ROOT_DIR}/lib/app/classes/game_config.rb"
 config_dir = File.expand_path(File.join(ROOT_DIR, 'config'))
-CONFIG = GameConfig.new
-CONFIG.setup!(config_dir, File.join(ROOT_DIR, 'run'))
+global_config = GameConfig.new
+global_config.setup!(config_dir, File.join(ROOT_DIR, 'run'))
+CONFIG = GameConfig::ThreadRouter.new(global_config)
+require "#{ROOT_DIR}/lib/app/classes/cfg.rb"
 
 # Establish database connection
 DB_CONFIG = GameConfig.read_file(config_dir, 'database.yml')
-DB_CONFIG.each { |env, config| config["adapter"] = "jdbcmysql" }
+DB_CONFIG.each do |env, config|
+  config["adapter"] = "jdbcmysql"
+  config["pool"] = DB_POOL_SIZE
+  config["encoding"] = "utf8"
+end
 USED_DB_CONFIG = DB_CONFIG[ENV['db_environment']]
 DB_MIGRATIONS_DIR = File.expand_path(
   File.dirname(__FILE__) + '/../db/migrate'
@@ -304,57 +303,74 @@ end
 # on working DB connection.
 unless rake?
   ActiveRecord::Base.establish_connection(USED_DB_CONFIG)
-  ActiveRecord::Base.connection.execute "SET NAMES UTF8"
 
   unless App.in_test?
-    migrator = ActiveRecord::Migrator.new(:up, DB_MIGRATIONS_DIR)
-    pending = migrator.pending_migrations
-    unless pending.blank?
-      puts "You still have pending migrations!"
-      puts
-      pending.each do |migration|
-        puts " * #{migration.name}"
+    ActiveRecord::Base.connection_pool.with_connection do
+      migrator = ActiveRecord::Migrator.new(:up, DB_MIGRATIONS_DIR)
+      pending = migrator.pending_migrations
+      unless pending.blank?
+        puts "You still have pending migrations!"
+        puts
+        pending.each do |migration|
+          puts " * #{migration.name}"
+        end
+        puts
+        puts "Please run `rake db:migrate` before you proceed."
+        puts
+        exit 1
       end
-      puts
-      puts "Please run `rake db:migrate` before you proceed."
-      puts
-      exit 1
     end
   end
 end
 
-# Set up autoloader for troublesome classes.
+# Set up autoloader.
 #
 # This fixes scenarios when there is Alliance and Combat::Alliance and
 # referencing Combat::Alliance actually loads ::Alliance.
 #
-[
-  "#{ROOT_DIR}/lib/server",
-  "#{ROOT_DIR}/lib/app/classes",
-  "#{ROOT_DIR}/lib/app/models",
-  "#{ROOT_DIR}/lib/app/controllers",
-].each do |dir|
-  Dir["#{dir}/**/*.rb"].each do |filename|
-    class_name = filename.sub(File.join(dir, ''), '').sub(
-      '.rb', '').camelcase
+APP_MODULES = [] # This is used for preloading.
+LOGGER.block("Setting up autoload") do
+  # First register base classes for autoload. Then go deeper.
+  [
+    "#{ROOT_DIR}/lib/server",
+    "#{ROOT_DIR}/lib/app/classes",
+    "#{ROOT_DIR}/lib/app/models",
+    "#{ROOT_DIR}/lib/app/controllers",
+  ].flat_map do |dir|
+    Dir["#{dir}/**/*.rb"].map do |filename|
+      class_name = filename.
+        sub(File.join(dir, ''), '').
+        sub(/\.rb$/, '').
+        camelcase
 
-    parts = class_name.split("::")
-    base_module = parts[0..-2]
+      parts = class_name.split("::")
 
-    # Don't register on Kernel, Rails autoloader handles those fine.
-    unless base_module.blank?
-      # Determine base module to register autoload on.
-      base_module = base_module.join("::").constantize
-      mod = parts[-1].to_sym
-
-      base_module.autoload mod, filename
+      [class_name, parts, filename]
     end
+  end.sort do |(a_cn, a_p, a_fn), (b_cn, b_p, b_fn)|
+    # Sort by nesting (increasing) to make sure parents are registered before
+    # children.
+    [a_p.size, a_cn] <=> [b_p.size, b_cn]
+  end.each do |class_name, parts, filename|
+    base_module = parts[0..-2]
+    mod = parts[-1].to_sym
+
+    if base_module.blank?
+      #puts "Autoloading #{mod} -> #{filename}"
+      autoload mod, filename
+    else
+      # Determine base module to register autoload on.
+      base_module = base_module.join("::")
+      #puts "Autoloading on #{base_module} #{mod} -> #{filename}"
+      base_module.constantize.autoload mod, filename
+    end
+
+    APP_MODULES << filename
   end
 end
 
 ActiveRecord::Base.include_root_in_json = false
 ActiveRecord::Base.store_full_sti_class = false
-ActiveRecord::Base.logger = LOGGER
 
 class ActiveRecord::Relation
   # Add c_select_* methods.
@@ -369,9 +385,32 @@ class ActiveRecord::Relation
   end
 end
 
+# Disables SQL locking for this thread in given block. Only use this on
+# read-only operations!
+def without_locking
+  old_value = Parts::WithLocking.locking?
+  begin
+    Parts::WithLocking.locking = false
+    ret_value = yield
+  ensure
+    Parts::WithLocking.locking = old_value
+  end
+  ret_value
+end
+
 ActiveSupport::JSON.backend = :json_gem
 ActiveSupport.use_standard_json_time_format = true
-ActiveSupport::LogSubscriber.colorize_logging = false
 
-# Initialize event handlers
-QUEST_EVENT_HANDLER = QuestEventHandler.new
+unless rake?
+  LOGGER.info "Creating dispatcher."
+  Celluloid::Actor[:dispatcher] = Dispatcher.new
+
+  # Initialize event handlers
+  LOGGER.info "Creating quest event handler."
+  QUEST_EVENT_HANDLER = QuestEventHandler.new
+  LOGGER.info "Creating dispatcher event handler."
+  DISPATCHER_EVENT_HANDLER = DispatcherEventHandler.new
+
+  # Used for hotfix evaluation and IRB sessions.
+  ROOT_BINDING = binding
+end

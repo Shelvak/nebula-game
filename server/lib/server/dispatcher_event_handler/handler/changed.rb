@@ -23,7 +23,7 @@ class DispatcherEventHandler::Handler::Changed < DispatcherEventHandler::Handler
     [Parts::Object, OBJECTS_RESOLVER],
     [Player, lambda do |dispatcher, players, reason|
       players.each do |player|
-        if dispatcher.connected?(player.id)
+        if dispatcher.player_connected?(player.id)
           dispatcher.update_player(player)
           dispatcher.push_to_player(player.id, PlayersController::ACTION_SHOW)
         end

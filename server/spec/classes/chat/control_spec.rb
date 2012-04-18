@@ -13,14 +13,31 @@ describe Chat::Control do
   end
 
   describe "instance" do
-    let(:dispatcher) { mock_dispatcher }
-    let(:antiflood) { Chat::AntiFlood.new(dispatcher) }
-    let(:control) { Chat::Control.new(dispatcher, antiflood) }
+    around(:each) do |example|
+      mock_actor(dispatcher_mock_name, Dispatcher) do |mock|
+        @dispatcher = mock
+        example.call
+      end
+    end
+
+    let(:dispatcher_mock_name) { :dispatcher_mock }
+    let(:dispatcher) do
+      dispatcher = @dispatcher
+      dispatcher.stub(:transmit_to_players!)
+      dispatcher.stub(:push_to_player!)
+      dispatcher
+    end
+    let(:antiflood) { dispatcher; Chat::AntiFlood.new(dispatcher_mock_name) }
+    let(:control) { Chat::Control.new(dispatcher_mock_name, antiflood) }
     let(:player) { Factory.create(:player, :chat_mod => true) }
 
     def should_transmit
-      dispatcher.should_receive(:transmit).
-        with(an_instance_of(Hash), player.id)
+      dispatcher.should_receive(:transmit_to_players!).
+        with(ChatController::PRIVATE_MESSAGE, an_instance_of(Hash), player.id)
+    end
+
+    def should_not_transmit
+      dispatcher.should_not_receive(:transmit_to_players!)
     end
 
     describe "#message" do
@@ -37,7 +54,7 @@ describe Chat::Control do
         end
 
         it "should not transmit anything to dispatcher" do
-          dispatcher.should_not_receive(:transmit)
+          should_not_transmit
           control.message(player, msg)
         end
       end
@@ -66,7 +83,7 @@ describe Chat::Control do
 
           it "should be ignored if invoked by chat mod" do
             player.admin = false
-            dispatcher.should_not_receive(:transmit)
+            should_not_transmit
             control.message(player, msg).should be_false
           end
 
@@ -111,7 +128,7 @@ describe Chat::Control do
 
           it "should be ignored if invoked by chat mod" do
             player.admin = false
-            dispatcher.should_not_receive(:transmit)
+            should_not_transmit
             control.message(player, msg).should be_false
           end
 
@@ -158,6 +175,19 @@ describe Chat::Control do
         it "should support it" do
           should_transmit
           control.message(player, "/help")
+        end
+      end
+
+      describe "/log" do
+        let(:target) { Factory.create(:player, :galaxy => player.galaxy) }
+        let(:msg) { %Q{/silence "#{target.name}" "for 1 minute"} }
+
+        it "should return logged commands" do
+          control.message(player, msg)
+          control.message(player, msg)
+          # 2 commands and 1 explanation.
+          should_transmit.exactly(3).times
+          control.message(player, "/log")
         end
       end
 

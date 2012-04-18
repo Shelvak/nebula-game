@@ -16,6 +16,25 @@ package controllers.objects.actions.customcontrollers
       public override function objectCreated(objectSubclass: String,
                                              object: Object,
                                              reason: String): * {
+         var wreckOld: MWreckage = null;
+         function isEqualTo(item: MWreckage): Boolean
+         {
+            return item.id == object.id;
+         }
+         if (ML.latestGalaxy != null) {
+            wreckOld = Collections.findFirst(ML.latestGalaxy.wreckages, isEqualTo);
+         }
+         if (ML.latestSSMap != null && wreckOld == null) {
+            wreckOld = Collections.findFirst(ML.latestSSMap.wreckages, isEqualTo);
+         }
+         if (wreckOld != null) {
+            if (!Objects.containsSameData(wreckOld, object))
+            {
+               Objects.throwStateOutOfSyncError(wreckOld, object);
+            }
+            return wreckOld;
+         }
+
          var wreck: MWreckage = Objects.create(MWreckage, object);
          if (wreck.currentLocation.isObserved) {
             if (wreck.currentLocation.type == LocationType.SOLAR_SYSTEM) {

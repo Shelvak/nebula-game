@@ -14,6 +14,7 @@ describe QuestsController do
     end
 
     it_behaves_like "only push"
+    it_should_behave_like "having controller action scope"
 
     it "should return quests" do
       Quest.should_receive(:hash_all_for_player_id).with(player.id
@@ -30,6 +31,7 @@ describe QuestsController do
     end
 
     it_behaves_like "with param options", %w{id planet_id}
+    it_should_behave_like "having controller action scope"
 
     it "should claim rewards" do
       QuestProgress.should_receive(:claim_rewards!).with(

@@ -1,5 +1,7 @@
 package utils
 {
+   import com.adobe.errors.IllegalStateError;
+
    import errors.AppError;
 
    import flash.errors.IllegalOperationError;
@@ -133,8 +135,9 @@ package utils
        * @param writeOnly If <code>true</code>, write-only properties will be returned.
        * 
        * @return array of properties that are defined either as variables or setter/getter pairs.
-       */      
-      public static function getPublicProperties(type:Class, writeOnly:Boolean = true) : Array {
+       */
+      public static function getPublicProperties(type: Class,
+                                                 writeOnly: Boolean = true): Array {
          var result:Array = [];
          var info:XML = describeType(type).factory[0];
          for each (var prop:XML in info.accessor) {
@@ -688,6 +691,17 @@ package utils
       /**
        * @throws flash.errors.IllegalOperationError
        */
+      public static function throwStateOutOfSyncError(oldObject: Object, newObject: Object): void
+      {
+         throw new IllegalStateError("Object can not be created, old mismatching " +
+            "object detected!\n" +
+            "old object: " + ObjectUtil.toString(oldObject) + "\n" +
+            "new object: " + ObjectUtil.toString(newObject));
+      }
+
+      /**
+       * @throws flash.errors.IllegalOperationError
+       */
       public static function throwReadOnlyPropertyError(customMessage: String = null): void {
          throwIllegalOperationError("Property is read-only", customMessage);
       }
@@ -736,16 +750,11 @@ package utils
       /**
        * Sets processor function to handle properties of specific type.
        * 
-       * @param type a Class that requires special handling.
-       * <ul><b>
-       * <li>Not null.</li>
-       * </b></ul>
+       * @param type a Class that requires special handling | <b>Not null</b>
        * 
-       * @param processor function that will be called when an object of the given type needs to be constructed.
-       * <ul><b>
-       * <li>Not null.</li>
-       * </b></ul>
-       * Signature of the function should be: <code>function(currValue:&#42, value:Object) : Object</code>.
+       * @param creator function that will be called when an object of the
+       * given type needs to be constructed | <b>Not null</b>
+       * Signature of this function should be: <code>function(currValue:&#42, value:Object) : Object</code>.
        * Parameters of the function:
        * <ul>
        *    <li><code>currValue</code> - currentValue of the property in the host object.</li>
@@ -753,14 +762,32 @@ package utils
        * </ul>
        * The function should create and return a new instance of <code>type</code> only if <code>currValue</code>
        * is <code>null</code>. If not, it should fill the <code>currValue</code> object with appropriate data
-       * and return it. 
+       * and return it.
+       *
+       * @param sameDataChecker a function that will be called when
+       * it is necessary to check if an object of given type contains the same
+       * data as some generic object.
+       * Signature of this function should be: <code>function(currValue:&#42, value:Object) : Boolean</code>.
+       * Parameters of the function:
+       * <ul>
+       *    <li><code>currValue</code> - currentValue of the property in the host object.</li>
+       *    <li><code>value</code> - an object that is a generic representation of an instance to be checked.</li>
+       * </ul>
+       * Both parameters are guaranteed to be not null.
+       * The function must return <code>true</code> if the data contained inside
+       * <code>currValue</code> is the same as in <code>value</code> or
+       * <code>false</code> otherwise.
        */
-      public static function setTypeProcessor(type:Class, processor:Function) : void {
-         paramNotNull("type", processor);
-         paramNotNull("processor", processor);
-         client_internal::TYPE_PROCESSORS[type] = processor;
+      public static function setTypeProcessors(type: Class,
+                                               creator: Function,
+                                               sameDataChecker: Function): void {
+         paramNotNull("type", type);
+         paramNotNull("creator", creator);
+         paramNotNull("sameDataChecker", sameDataChecker);
+         client_internal::TYPE_PROCESSORS[type] =
+            new TypeProcessors(creator, sameDataChecker);
       }
-      private static function getTypeProcessor(type:Class) : Function {
+      private static function getTypeProcessors(type:Class) : TypeProcessors {
          return client_internal::TYPE_PROCESSORS[type];
       }
       
@@ -877,7 +904,99 @@ package utils
          if (_typeInfoHash == null) {
             _typeInfoHash = new TypeInfoHash();
          }
-         return _typeInfoHash
+         return _typeInfoHash;
+      }
+
+      /**
+       * Checks if properties of given complex object hold the same values
+       * as the given generic data object.
+       *
+       * This method supports:
+       * <ul>
+       *    <li>property aliases</li>
+       *    <li>properties with type processors</li>
+       *    <li>properties of nested complex and generic objects</li>
+       * </ul>
+       * This method does not support:
+       * <ul>
+       *    <li>collections and properties of collection types</li>
+       *    <li>aggregated properties</li>
+       *    <li>properties with mapping</li>
+       * </ul>
+       *
+       * @param complex a non-primitive object to check | <b>not null, not a collection</b>
+       * @param data generic object that holds the data to check against
+       *
+       * @return <code>true</code> if all properties of the complex object
+       * contain the same values as their counterparts in generic
+       * <code>data</code> object or <code>false</code> otherwise
+       */
+      public static function containsSameData(complex: Object,
+                                              data: Object): Boolean {
+         paramNotNull("object", complex);
+         if (TypeChecker.isOfPrimitiveType(complex)
+                || TypeChecker.isCollection(complex)
+                || TypeChecker.isGenericObject(complex)) {
+            throw new ArgumentError(
+               "[param complex] can't be a primitive, collection "
+                  + "or generic object but was " + getClassName(complex)
+            );
+         }
+         return data == null ? false : containsSameDataImpl(complex, data);
+      }
+
+      private static function containsSameDataImpl(complex: Object,
+                                                   data: Object): Boolean {
+         paramNotNull("complex", complex);
+         paramNotNull("data", data);
+         const type: Class = getClass(complex);
+         if (!TYPE_INFO_HASH.hasInfo(type)) {
+            buildTypeInfoFor(type);
+         }
+
+         for each (var propInfo: PropInfo in TYPE_INFO_HASH.getInfo(type)) {
+            if (propInfo.includeInConstruction
+                   && !propInfo.typeIsAnyCollection
+                   && !propInfo.isAggregator
+                   && !propInfo.hasMapping
+                   && data[propInfo.alias] !== undefined) {
+               const valueInComplex: * = complex[propInfo.name];
+               const valueInData: * = data[propInfo.alias];
+               if (propInfo.typeIsPrimitive) {
+                  if (valueInComplex != valueInData) {
+                     return false;
+                  }
+               }
+               else if (propInfo.typeIsGenericObject) {
+                  if (ObjectUtil.compare(valueInComplex, valueInData) != 0) {
+                     return false;
+                  }
+               }
+               else {
+                  if (valueInComplex == null && valueInData != null
+                         || valueInComplex != null && valueInData == null) {
+                     return false;
+                  }
+                  if (valueInComplex == null && valueInData == null) {
+                     break;
+                  }
+                  const typeProcessors: TypeProcessors =
+                           getTypeProcessors(propInfo.type);
+                  if (typeProcessors != null) {
+                     if (!typeProcessors.sameDataChecker
+                             .call(null, valueInComplex, valueInData)) {
+                        return false;
+                     }
+                  }
+                  else {
+                     if (!containsSameDataImpl(valueInComplex, valueInData)) {
+                        return false;
+                     }
+                  }
+               }
+            }
+         }
+         return true;
       }
 
       private static function createImpl(type: Class,
@@ -893,9 +1012,9 @@ package utils
          
          // type processors come first so that special types could be created directly using 
          // create() method
-         var typeProcessor:Function = getTypeProcessor(type);
-         if (typeProcessor != null) {
-            object = typeProcessor.call(null, object, data);
+         var typeProcessors: TypeProcessors = getTypeProcessors(type);
+         if (typeProcessors != null) {
+            object = typeProcessors.creator.call(null, object, data);
             callAfterCreate(object, data);
             return object;
          }
@@ -1029,7 +1148,7 @@ package utils
                continue;
             }
 
-            if (getTypeProcessor(propType) != null ||
+            if (getTypeProcessors(propType) != null ||
                    TypeChecker.isPrimitiveClass(propType) ||
                    propType == Object) {
                try {
@@ -1369,6 +1488,18 @@ import flash.utils.Dictionary;
 
 import utils.TypeChecker;
 
+class TypeProcessors
+{
+   public function TypeProcessors(creator: Function,
+                                  sameDataChecker: Function) {
+      this.creator = creator;
+      this.sameDataChecker = sameDataChecker;
+   }
+
+   public var creator: Function;
+   public var sameDataChecker: Function;
+}
+
 
 class MappingError extends Error
 {
@@ -1410,6 +1541,9 @@ class PropInfo
    public var type: Class = null;
    public function get typeIsPrimitive(): Boolean {
       return TypeChecker.isPrimitiveClass(type);
+   }
+   public function get typeIsGenericObject(): Boolean {
+      return type === Object;
    }
    public var typeIsList: Boolean = false;
    public var typeIsArray: Boolean = false;

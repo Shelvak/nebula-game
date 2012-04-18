@@ -11,15 +11,16 @@ describe BuildingsController do
     it_behaves_like "with param options", %w{id}
     
     it "should raise error if building is not found" do
-      @building.destroy
+      (@building || building).destroy
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "should fail if player does not own planet" do
-      @planet.player = nil
-      @planet.save!
+      planet = (@planet || self.planet)
+      planet.player = nil
+      planet.save!
 
       lambda do
         invoke @action, @params
@@ -54,6 +55,7 @@ describe BuildingsController do
       @params = {'id' => building.id}
     end
 
+    it_should_behave_like "having controller action scope"
     it_behaves_like "finding building"
 
     it "should return building#unit_groups" do
@@ -76,20 +78,14 @@ describe BuildingsController do
       @params = {'id' => building.id}
     end
 
-    it_behaves_like "finding building"
+    it_should_behave_like "having controller action scope"
+    it_should_behave_like "finding building"
 
     it "should fail if building cannot be found" do
       building.destroy
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should fail if player cannot view npc units" do
-      planet.update_row! :player_id => Factory.create(:player).id
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
     end
 
     it "should return units otherwise" do
@@ -116,6 +112,7 @@ describe BuildingsController do
 
     it_behaves_like "with param options", %w{constructor_id x y type prepaid}
     it_should_behave_like "only for constructors", 'constructor_id'
+    it_should_behave_like "having controller action scope"
 
     it "should fail if not prepaid and not player is not vip" do
       @params['prepaid'] = false
@@ -172,6 +169,7 @@ describe BuildingsController do
     end
 
     it_behaves_like "finding building"
+    it_should_behave_like "having controller action scope"
 
     it "should return building" do
       invoke @action, @params
@@ -198,6 +196,7 @@ describe BuildingsController do
     end
 
     it_behaves_like "finding building"
+    it_should_behave_like "having controller action scope"
     
     it "should activate building" do
       lambda do
@@ -221,6 +220,7 @@ describe BuildingsController do
     end
     
     it_behaves_like "finding building"
+    it_should_behave_like "having controller action scope"
 
     it "should deactivate building" do
       lambda do
@@ -245,6 +245,7 @@ describe BuildingsController do
     end
 
     it_behaves_like "finding building"
+    it_should_behave_like "having controller action scope"
 
     it "should activate overdrive on building" do
       lambda do
@@ -276,6 +277,7 @@ describe BuildingsController do
     end
 
     it_behaves_like "finding building"
+    it_should_behave_like "having controller action scope"
 
     it "should deactivate overdrive on building" do
       lambda do
@@ -304,6 +306,7 @@ describe BuildingsController do
 
     it_behaves_like "with param options", %w{id with_creds}
     it_behaves_like "finding building"
+    it_should_behave_like "having controller action scope"
 
     it "should self destruct the building" do
       invoke @action, @params
@@ -323,6 +326,7 @@ describe BuildingsController do
 
     it_behaves_like "with param options", %w{id x y}
     it_behaves_like "finding building"
+    it_should_behave_like "having controller action scope"
 
     it "should move building" do
       Building.stub!(:find).with(@building.id, anything).and_return(@building)
@@ -359,6 +363,7 @@ describe BuildingsController do
     it_behaves_like "finding building"
     it_should_behave_like "only for constructors", 'id'
     it_behaves_like "accelerate"
+    it_should_behave_like "having controller action scope"
 
     it "should accelerate building" do
       @controller.should_receive(:find_building).and_return(@building)
@@ -419,6 +424,7 @@ describe BuildingsController do
 
     it_behaves_like "finding building"
     it_behaves_like "accelerate"
+    it_should_behave_like "having controller action scope"
 
     it "should accelerate building" do
       @controller.should_receive(:find_building).and_return(@building)
@@ -441,6 +447,7 @@ describe BuildingsController do
     
     it_behaves_like "finding building"
     it_should_behave_like "only for constructors", 'id'
+    it_should_behave_like "having controller action scope"
     
     it "should call #cancel_constructable! on constructor" do
       @controller.should_receive(:find_building).and_return(@building)
@@ -460,6 +467,7 @@ describe BuildingsController do
     end
     
     it_behaves_like "finding building"
+    it_should_behave_like "having controller action scope"
     
     it "should call #cancel! on building" do
       @controller.should_receive(:find_building).and_return(@building)
@@ -480,6 +488,7 @@ describe BuildingsController do
 
     it_behaves_like "finding building"
     it_should_behave_like "only for constructors", 'id'
+    it_should_behave_like "having controller action scope"
 
     it "should set flag on building" do
       lambda do
@@ -501,6 +510,7 @@ describe BuildingsController do
 
     it_behaves_like "finding building"
     it_should_behave_like "only for constructors", 'id'
+    it_should_behave_like "having controller action scope"
 
     it "should set flag on building" do
       lambda do
@@ -538,7 +548,7 @@ describe BuildingsController do
 
     it_should_behave_like "with param options",
       %w{id target_planet_id metal energy zetium}
-
+    it_should_behave_like "having controller action scope"
     it_should_behave_like "finding building"
 
     def stub_find

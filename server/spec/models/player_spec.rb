@@ -33,11 +33,13 @@ describe Player do
     end
 
     it "should set last_seen to true if currently online" do
-      dispatcher = mock(Dispatcher)
-      Dispatcher.stub!(:instance).and_return(dispatcher)
-      dispatcher.stub!(:connected?).with(@players[0].id).and_return(true)
-      dispatcher.stub!(:connected?).with(@players[1].id).and_return(false)
-      dispatcher.stub!(:connected?).with(@players[2].id).and_return(false)
+      dispatcher = Celluloid::Actor[:dispatcher]
+      dispatcher.stub!(:player_connected?).with(@players[0].id).
+        and_return(true)
+      dispatcher.stub!(:player_connected?).with(@players[1].id).
+        and_return(false)
+      dispatcher.stub!(:player_connected?).with(@players[2].id).
+        and_return(false)
       result = Player.ratings(@alliance.galaxy_id)
       result.map { |row| row["last_seen"] }.
         should == [true, @players[1].last_seen, @players[2].last_seen]
@@ -320,21 +322,23 @@ describe Player do
   describe "#inactivity_time" do
     it "should return 0 if player is connected" do
       player = Factory.create(:player)
-      Dispatcher.instance.should_receive(:connected?).with(player.id).
-        and_return(true)
+      Celluloid::Actor[:dispatcher].should_receive(:player_connected?).
+        with(player.id).and_return(true)
       player.inactivity_time.should == 0
     end
 
     it "should return time from created_at if player has never logged in" do
       player = Factory.
-        build(:player, :last_seen => nil, :created_at => 15.days.ago)
-      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).of(15.days)
+        build(:player, :last_seen => nil, :created_at => 30.minutes.ago)
+      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).
+        of(30.minutes)
     end
 
     it "should return time from last login otherwise" do
       player = Factory.
-        build(:player, :last_seen => 3.days.ago, :created_at => 15.days.ago)
-      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).of(3.days)
+        build(:player, :last_seen => 30.minutes.ago, :created_at => 15.days.ago)
+      player.inactivity_time.should be_within(SPEC_TIME_PRECISION).
+        of(30.minutes)
     end
   end
   
@@ -587,60 +591,105 @@ describe Player do
     end
 
     describe "#vip_tick!" do
-      before(:each) do
-        vip_level = 1
-        @creds_needed, @per_day = CONFIG['creds.vip'][vip_level - 1]
-        @vip_creds = 345
-
-        @player = Factory.create(:player, :creds => 1200,
-          :vip_level => vip_level, :vip_creds => @vip_creds)
+      let(:vip_level) { 1 }
+      let(:creds_needed) { CONFIG['creds.vip'][vip_level - 1][0] }
+      let(:per_day) { CONFIG['creds.vip'][vip_level - 1][1] }
+      let(:vip_creds) { 345 }
+      let(:player) do
+        Factory.create(
+          :player, :creds => 1200, :vip_level => vip_level,
+          :vip_creds => vip_creds
+        )
       end
 
       it "should fail if not a vip" do
-        @player.stub!(:vip?).and_return(false)
+        player.stub!(:vip?).and_return(false)
         lambda do
-          @player.vip_tick!
+          player.vip_tick!
         end.should raise_error(GameLogicError)
       end
 
-      it "should set vip_creds" do
-        @player.vip_tick!
-        @player.vip_creds.should == @per_day
+      shared_examples_for "vip tick" do
+        it "should set vip_creds" do
+          player.vip_tick!
+          player.vip_creds.should == per_day
+        end
+
+        it "should add new batch of creds" do
+          lambda do
+            player.vip_tick!
+          end.should change(player, :creds).
+            to(player.creds - vip_creds + per_day)
+        end
+
+        it "should reset vip creds counter" do
+          lambda do
+            player.vip_tick!
+          end.should change(player, :vip_creds).to(per_day)
+        end
       end
 
-      it "should write #vip_creds_until if #vip_creds_until is nil" do
-        @player.vip_creds_until = nil
-        @player.vip_tick!
-        @player.vip_creds_until.should \
-          be_within(SPEC_TIME_PRECISION).of(1.day.from_now)
+      shared_examples_for "vip tick (except last day)" do
+        it "should add tick callback" do
+          player.vip_tick!
+          player.should have_callback(
+            CallbackManager::EVENT_VIP_TICK, player.vip_creds_until
+          )
+        end
       end
 
-      it "should write #vip_creds_until based on previous #vip_creds_until" do
-        time = 5.minutes.ago
-        @player.vip_creds_until = time
-        @player.vip_tick!
-        @player.vip_creds_until.should \
-          be_within(SPEC_TIME_PRECISION).of(time + 1.day)
+      describe "vip start" do
+        before(:each) do
+          player.vip_creds_until = nil
+          player.vip_until = nil
+        end
+
+        it_should_behave_like "vip tick"
+        it_should_behave_like "vip tick (except last day)"
+
+        it "should write #vip_creds_until if #vip_creds_until is nil" do
+          player.vip_tick!
+          player.vip_creds_until.should be_within(SPEC_TIME_PRECISION).
+            of(Cfg.player_vip_tick_duration.from_now)
+        end
       end
 
-      it "should add tick callback" do
-        @player.vip_tick!
-        @player.should have_callback(
-          CallbackManager::EVENT_VIP_TICK,
-          CONFIG['creds.vip.tick.duration'].from_now)
+      describe "ongoing vip" do
+        let(:time) { 5.minutes.ago }
+        before(:each) do
+          player.vip_creds_until = time
+          player.vip_until = 1.month.from_now
+        end
+
+        it_should_behave_like "vip tick"
+        it_should_behave_like "vip tick (except last day)"
+
+        it "should write #vip_creds_until based on previous #vip_creds_until" do
+          player.vip_tick!
+          player.vip_creds_until.should be_within(SPEC_TIME_PRECISION).
+            of(time + Cfg.player_vip_tick_duration)
+        end
       end
 
-      it "should add new batch of creds" do
-        lambda do
-          @player.vip_tick!
-        end.should change(@player, :creds).
-          to(@player.creds - @vip_creds + @per_day)
-      end
+      describe "last vip day" do
+        let(:time) { Time.now }
+        before(:each) do
+          player.vip_creds_until = time
+          player.vip_until = time + Cfg.player_vip_tick_duration
+        end
 
-      it "should reset vip creds counter" do
-        lambda do
-          @player.vip_tick!
-        end.should change(@player, :vip_creds).to(@per_day)
+        it_should_behave_like "vip tick"
+
+        it "should not update vip_creds_until" do
+          lambda do
+            player.vip_tick!
+          end.should_not change(player, :vip_creds_until)
+        end
+
+        it "should not register vip tick callback" do
+          player.vip_tick!
+          player.should_not have_callback(CallbackManager::EVENT_VIP_TICK)
+        end
       end
     end
 
@@ -763,34 +812,53 @@ describe Player do
       end
     end
     
-    describe ".on_callback" do
-      before(:each) do
-        @player = Factory.create(:player)
-        Player.stub!(:find).with(@player.id).and_return(@player)
+    describe "callbacks" do
+      let(:player) { Factory.create(:player) }
+
+      describe ".vip_tick_callback" do
+        it "should have scope" do
+          Player::VIP_TICK_SCOPE
+        end
+
+        it "should invoke #vip_tick! upon tick" do
+          player.should_receive(:vip_tick!)
+          Player.vip_tick_callback(player)
+        end
       end
 
-      it "should invoke #vip_tick! upon tick" do
-        @player.should_receive(:vip_tick!)
-        Player.on_callback(@player.id, CallbackManager::EVENT_VIP_TICK)
+      describe ".vip_stop_callback" do
+        it "should have scope" do
+          Player::VIP_STOP_SCOPE
+        end
+
+        it "should invoke #vip_stop! upon stop" do
+          player.should_receive(:vip_stop!)
+          Player.vip_stop_callback(player)
+        end
       end
 
-      it "should invoke #vip_stop! upon stop" do
-        @player.should_receive(:vip_stop!)
-        Player.on_callback(@player.id, CallbackManager::EVENT_VIP_STOP)
+      describe ".check_inactive_player_callback" do
+        it "should have scope" do
+          Player::CHECK_INACTIVE_PLAYER_SCOPE
+        end
+
+        it "should find model and invoke #check_activity! on it" do
+          player.should_receive(:check_activity!)
+          Player.check_inactive_player_callback(player)
+        end
       end
     end
   end
 
   describe "updating" do
     before(:each) do
-      @dispatcher = mock(Dispatcher)
-      Dispatcher.stub!(:instance).and_return(@dispatcher)
-      @dispatcher.stub!(:connected?).and_return(false)
+      @dispatcher = Celluloid::Actor[:dispatcher]
+      @dispatcher.stub!(:player_connected?).and_return(false)
       @player = Factory.create(:player)
     end
 
     it "should update dispatcher if player is connected" do
-      @dispatcher.should_receive(:connected?).with(@player.id).
+      @dispatcher.should_receive(:player_connected?).with(@player.id).
         and_return(true)
       @dispatcher.should_receive(:update_player).with(@player)
       @player.creds += 1
@@ -798,7 +866,7 @@ describe Player do
     end
 
     it "should not update dispatcher if player is disconnected" do
-      @dispatcher.should_receive(:connected?).with(@player.id).
+      @dispatcher.should_receive(:player_connected?).with(@player.id).
         and_return(false)
       @dispatcher.should_not_receive(:update_player)
       @player.creds += 1
@@ -1354,7 +1422,7 @@ describe Player do
     it "should not call control manager if invoked from it" do
       player = Factory.create :player
       ControlManager.instance.should_not_receive(:player_destroyed)
-      player.invoked_from_control_manager = true
+      player.invoked_from_web = true
       player.destroy
     end
 
@@ -1367,7 +1435,7 @@ describe Player do
     
     it "should disconnect player from dispatcher if he's connected" do
       player = Factory.create(:player)
-      Dispatcher.instance.should_receive(:disconnect).
+      Celluloid::Actor[:dispatcher].should_receive(:disconnect!).
         with(player.id, Dispatcher::DISCONNECT_PLAYER_ERASED)
       player.destroy
     end
@@ -1681,7 +1749,7 @@ describe Player do
     end
 
     it "should return true if he is currently connected" do
-      Dispatcher.instance.stub(:connected?).with(player.id).
+      Celluloid::Actor[:dispatcher].stub(:player_connected?).with(player.id).
         and_return(true)
       player.should be_active
     end
@@ -1911,19 +1979,6 @@ describe Player do
         aggressor = player(10, 10, 10, 10, 10)
         defender = player(30, 30, 30, 30, 30)
         Player.battle_vps_multiplier(aggressor.id, defender.id).should == 3
-      end
-    end
-  end
-
-  describe "on callback" do
-    describe "inactivity check" do
-      let(:player) { Factory.create(:player) }
-
-      it "should find model and invoke #check_activity! on it" do
-        Player.should_receive(:find).with(player.id).and_return(player)
-        player.should_receive(:check_activity!)
-        Player.
-          on_callback(player.id, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER)
       end
     end
   end

@@ -15,8 +15,9 @@ class RaidSpawner
     raiders = units
     unless raiders.blank?
       Unit.save_all_units(raiders, nil, EventBroker::CREATED)
-      Combat::LocationChecker.check_location(@planet.location_point)
-      @planet.reload # Reload planet because raiders might have taken it.
+      Cooldown.create_unless_exists(
+        @planet.location_point, Cfg.after_spawn_cooldown
+      )
     end
     register!
   end
@@ -44,7 +45,7 @@ class RaidSpawner
   # Returns raid argument that should be stored to database.
   def generate_arg
     return 0 if @planet.player_id.nil? || apocalypse? ||
-      ! @planet.solar_system.player_id.nil?
+      ! without_locking { @planet.solar_system }.player_id.nil?
 
     arg = battleground? \
       ? @planet.player.bg_planets_count : @planet.player.planets_count
@@ -135,15 +136,19 @@ class RaidSpawner
 
   # Has the apocalypse started?
   def apocalypse?
-    @_apocalypse ||= @planet.solar_system.galaxy.apocalypse_started?
+    @_apocalypse ||= without_locking do
+      @planet.solar_system.galaxy.apocalypse_started?
+    end
   end
 
   # Current apocalypse day.
   def apocalypse_raid_arg
-    @planet.solar_system.galaxy.apocalypse_day(@planet.next_raid_at)
+    without_locking do
+      @planet.solar_system.galaxy.apocalypse_day(@planet.next_raid_at)
+    end
   end
 
   def battleground?
-    @_battleground ||= @planet.solar_system.battleground?
+    @_battleground ||= without_locking { @planet.solar_system.battleground? }
   end
 end
