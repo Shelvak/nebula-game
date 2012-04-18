@@ -13,16 +13,24 @@ GIT
       jruby-pageant (>= 1.0.2)
 
 GIT
+  remote: git://github.com/celluloid/celluloid-io.git
+  revision: 22c3ca9cc040facf0b3ee8bbd4b2d25fff8e58d4
+  specs:
+    celluloid-io (0.10.0)
+      celluloid (~> 0.10.0)
+      nio4r (>= 0.3.1)
+
+GIT
   remote: git://github.com/celluloid/celluloid.git
-  revision: 62f219250e082b4f8969730811f42002f12d2b7e
+  revision: 53b31cb209dd8cc4d3abc89ed98eef9fb0eba01f
   specs:
     celluloid (0.10.0)
 
 GIT
   remote: git://github.com/pry/pry.git
-  revision: adaddaa30742175c8a26bcb33c93d090a0076503
+  revision: 6b3dfeee43eec01ff36905bda512a41cf9498dc0
   specs:
-    pry (0.9.8.4)
+    pry (0.9.9)
       coderay (~> 1.0.5)
       method_source (~> 0.7.1)
       slop (>= 2.4.4, < 3)
@@ -49,11 +57,8 @@ GEM
     arel (3.0.2)
     bouncy-castle-java (1.5.0146.1)
     builder (3.0.0)
-    celluloid-io (0.10.0)
-      celluloid (~> 0.10.0)
-      nio4r (>= 0.3.1)
     chronic (0.6.7)
-    coderay (1.0.5)
+    coderay (1.0.6)
     diff-lcs (1.1.3)
     factory_girl (2.1.2)
       activesupport
@@ -73,7 +78,7 @@ GEM
     method_source (0.7.1)
     mime-types (1.18)
     minitar (0.5.3)
-    multi_json (1.2.0)
+    multi_json (1.3.2)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
     net-sftp (2.0.5)
@@ -88,14 +93,14 @@ GEM
       rspec-expectations (~> 2.9.0)
       rspec-mocks (~> 2.9.0)
     rspec-core (2.9.0)
-    rspec-expectations (2.9.0)
+    rspec-expectations (2.9.1)
       diff-lcs (~> 1.1.3)
     rspec-mocks (2.9.0)
     slop (2.4.4)
     treetop (1.4.10)
       polyglot
       polyglot (>= 0.3.1)
-    tzinfo (0.3.32)
+    tzinfo (0.3.33)
     xml-simple (1.1.1)
 
 PLATFORMS
@@ -106,7 +111,7 @@ DEPENDENCIES
   activerecord-jdbcmysql-adapter (~> 1.1)
   activesupport (~> 3.2.0)
   celluloid!
-  celluloid-io (~> 0.10.0)
+  celluloid-io!
   chronic (>= 0.6.2)
   factory_girl (~> 2.1.2)
   flag_shih_tzu!
