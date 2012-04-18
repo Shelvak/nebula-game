@@ -25,6 +25,7 @@ class TasksController < GenericController
 
   APPLY_HOTFIX_OPTIONS = control_token + required(:hotfix => String)
   APPLY_HOTFIX_SCOPE = scope.world
+  # TODO: spec
   def self.apply_hotfix_action(m)
     unless m.client.host == '127.0.0.1'
       LOGGER.fatal(%Q{Somebody tried to apply hotfix not from localhost!
@@ -147,7 +148,8 @@ Message was:
   #
   ACTION_ADD_CREDS = 'tasks|add_creds'
 
-  ADD_CREDS_OPTIONS = control_token + required(:player_id => Fixnum)
+  ADD_CREDS_OPTIONS = control_token +
+    required(:player_id => Fixnum, :creds => Fixnum)
   ADD_CREDS_SCOPE = scope.world
   def self.add_creds_action(m)
     player = Player.find(m.params['player_id'])
@@ -161,16 +163,20 @@ Message was:
   #
   # Response:
   # - current (Fixnum): no. of currently logged in players.
-  # - 24h (Fixnum): no. of players logged in 24 hours.
-  # - 48h (Fixnum): no. of players logged in 48 hours.
-  # - 1w (Fixnum): no. of players logged in 1 week.
-  # - 2w (Fixnum): no. of players logged in 2 weeks.
+  # - 1d (Fixnum): no. of players logged in 1 day.
+  # - 2d (Fixnum): no. of players logged in 2 days.
+  # - 3d (Fixnum): no. of players logged in 3 days.
+  # - 4d (Fixnum): no. of players logged in 4 days.
+  # - 5d (Fixnum): no. of players logged in 5 days.
+  # - 6d (Fixnum): no. of players logged in 6 days.
+  # - 7d (Fixnum): no. of players logged in 7 days.
   # - total (Fixnum): total no. of players
   #
   ACTION_PLAYER_STATS = 'tasks|player_stats'
 
   PLAYER_STATS_OPTIONS = control_token
   PLAYER_STATS_SCOPE = scope.world
+  # TODO: spec better
   def self.player_stats_action(m)
     without_locking do
       # Returns how much players were logged in in last _time_ seconds.
@@ -180,10 +186,13 @@ Message was:
 
       stats = {
         :current => Celluloid::Actor[:dispatcher].logged_in_count,
-        :"24h" => get_player_count_in[24.hours],
-        :"48h" => get_player_count_in[48.hours],
-        :"1w" => get_player_count_in[1.week],
-        :"2w" => get_player_count_in[2.weeks],
+        :"1d" => get_player_count_in[1.day],
+        :"2d" => get_player_count_in[2.days],
+        :"3d" => get_player_count_in[3.days],
+        :"4d" => get_player_count_in[4.days],
+        :"5d" => get_player_count_in[5.days],
+        :"6d" => get_player_count_in[6.days],
+        :"7d" => get_player_count_in[7.days],
         :total => Player.count,
       }
 
@@ -204,6 +213,7 @@ Message was:
   MARKET_RATES_STATS_OPTIONS = control_token +
     required(:from_kind => Fixnum, :to_kind => Fixnum)
   MARKET_RATES_STATS_SCOPE = scope.world
+  # TODO: spec
   def self.market_rates_stats_action(m)
     without_locking do
       stats = Galaxy.select("id").c_select_values.inject({}) do
@@ -231,6 +241,7 @@ Message was:
   MARKET_COUNTS_STATS_OPTIONS = control_token +
     required(:from_kind => Fixnum, :to_kind => Fixnum)
   MARKET_COUNTS_STATS_SCOPE = scope.world
+  # TODO: spec
   def self.market_counts_stats_action(m)
     without_locking do
       stats = Galaxy.select("id").c_select_values.inject({}) do
@@ -262,7 +273,8 @@ Message was:
 
   ANNOUNCE_OPTIONS = control_token +
     required(:ends_at => String, :message => String)
-  ANNOUNCE__SCOPE = scope.world
+  ANNOUNCE_SCOPE = scope.world
+  # TODO: spec
   def self.announce_action(m)
     time = Time.parse(m.params['ends_at'])
     raise ParamOpts::BadParams.new(

@@ -59,6 +59,31 @@ describe TasksController do
     end
   end
 
+  describe "tasks|destroy_galaxy" do
+    let(:galaxy) { Factory.create(:galaxy) }
+
+    before(:each) do
+      @action = "tasks|destroy_galaxy"
+      @params.merge!('id' => galaxy.id)
+    end
+
+    it_should_behave_like "with param options",
+      :required => %w{id},
+      :needs_login => false, :needs_control_token => true
+
+    it "should destroy the galaxy" do
+      invoke @action, @params
+      lambda do
+        galaxy.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should not fail if galaxy is already destroyed" do
+      galaxy.destroy!
+      invoke @action, @params
+    end
+  end
+
   describe "tasks|create_player" do
     let(:galaxy) { Factory.create(:galaxy) }
 
@@ -86,6 +111,81 @@ describe TasksController do
       invoke @action, @params
       Player.find(response[:player_id]).should_not be_nil
     end
+
+    it "should work" do
+      invoke @action, @params
+    end
+  end
+
+  describe "tasks|destroy_player" do
+    let(:player) { Factory.create(:player) }
+
+    before(:each) do
+      @action = "tasks|destroy_player"
+      @params.merge!('player_id' => player.id)
+    end
+
+    it_should_behave_like "with param options",
+      :required => %w{player_id},
+      :needs_login => false, :needs_control_token => true
+
+    it "should call destroy with Player#invoked_from_web set" do
+      Player.should_receive(:find).with(player.id).and_return(player)
+      player.should_receive(:destroy!).and_return do
+        player.invoked_from_web.should be_true
+        true
+      end
+      invoke @action, @params
+    end
+
+    it "should destroy user" do
+      invoke @action, @params
+      lambda do
+        player.reload
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should not fail if user is already destroyed" do
+      player.destroy!
+      invoke @action, @params
+    end
+  end
+
+  describe "tasks|add_creds" do
+    let(:player) { Factory.create(:player) }
+    let(:creds) { 1500 }
+
+    before(:each) do
+      @action = "tasks|add_creds"
+      @params.merge!('player_id' => player.id, 'creds' => creds)
+    end
+
+    it_should_behave_like "with param options",
+      :required => %w{player_id creds},
+      :needs_login => false, :needs_control_token => true
+
+    it "should increase player pure creds" do
+      lambda do
+        invoke @action, @params
+        player.reload
+      end.should change(player, :pure_creds).by(creds)
+    end
+
+    it "should fail if player is not found" do
+      player.destroy!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  describe "tasks|player_stats" do
+    before(:each) do
+      @action = "tasks|player_stats"
+    end
+
+    it_should_behave_like "with param options",
+      :needs_login => false, :needs_control_token => true
 
     it "should work" do
       invoke @action, @params
