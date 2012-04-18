@@ -63,7 +63,7 @@ package components.base.paging
             );
          }
          _currentPage = model != null ? model.currentPage : null;
-         updateGrpSpinnerContainer();
+         updateContainers();
          updateVisibility();
          if (_currentPage != null) {
             _currentPage.addEventListener(
@@ -80,7 +80,7 @@ package components.base.paging
       }
 
       private function currentPage_loadingChangeHandler(event: PageModelEvent): void {
-         updateGrpSpinnerContainer();
+         updateContainers();
       }
 
       private function model_currentPageChangeHandler(event: MPageSwitcherEvent): void {
@@ -122,15 +122,20 @@ package components.base.paging
       /* ### SKIN ### */
       /* ############ */
 
+      [SkinPart(required="true")]
+      public var grpPageContainer: Group;
+
       [SkinPart(required="false")]
       public var grpSpinnerContainer: SpinnerContainer;
 
-      private function updateGrpSpinnerContainer(): void {
+      private function updateContainers(): void {
+         const loading: Boolean = _currentPage != null && _currentPage.loading;
          if (grpSpinnerContainer != null) {
-            const loading: Boolean =
-                     _currentPage != null && _currentPage.loading;
             grpSpinnerContainer.busy = loading;
             grpSpinnerContainer.visible = loading;
+         }
+         if (grpPageContainer) {
+            grpPageContainer.visible = !loading;
          }
       }
 
@@ -163,9 +168,6 @@ package components.base.paging
             model.close();
          }
       }
-
-      [SkinPart(required="true")]
-      public var grpPageContainer: Group;
 
       override protected function partAdded(partName: String,
                                             instance: Object): void {
