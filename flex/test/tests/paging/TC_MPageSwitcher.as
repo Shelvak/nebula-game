@@ -1,19 +1,19 @@
-package tests.utils
+package tests.paging
 {
+   import components.base.paging.IPageModel;
+   import components.base.paging.MPage;
+   import components.base.paging.MPageSwitcher;
+   import components.base.paging.MPageSwitcherEvent;
+
    import ext.hamcrest.events.causes;
    import ext.hamcrest.object.definesProperties;
    import ext.hamcrest.object.equals;
    import ext.hamcrest.object.metadata.withBindableTag;
 
    import org.hamcrest.Matcher;
-
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
-
-   import components.base.paging.IPageModel;
-   import components.base.paging.MPageSwitcher;
-   import components.base.paging.MPageSwitcherEvent;
 
 
    public class TC_MPageSwitcher
@@ -247,35 +247,16 @@ package tests.utils
       }
 
       private function pageModel():IPageModel {
-         return new IPageModelImpl();
+         return new MPage();
       }
    }
 }
 
-import flash.events.EventDispatcher;
-
-import mx.core.IVisualElement;
-
 import components.base.paging.IPageComponentFactory;
 import components.base.paging.IPageModel;
 
+import mx.core.IVisualElement;
 
-class IPageModelImpl extends EventDispatcher implements IPageModel
-{
-   private var _visible:Boolean;
-   public function set visible(value: Boolean): void {
-      _visible = value;
-   }
-   public function get visible(): Boolean {
-      return _visible;
-   }
-
-   public function set loading(value: Boolean): void {
-   }
-   public function get loading(): Boolean {
-      return false;
-   }
-}
 
 class IPageComponentFactoryMock implements IPageComponentFactory
 {

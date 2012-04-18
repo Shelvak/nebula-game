@@ -114,7 +114,7 @@ package components.quests.slides
          visible = _model != null ? _model.visible : false;
       }
 
-      private var f_modelChanged:Boolean = true;
+      private var f_modelChanged: Boolean = true;
       protected override function commitProperties(): void {
          super.commitProperties();
          if (f_modelChanged) {

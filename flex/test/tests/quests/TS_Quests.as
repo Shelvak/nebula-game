@@ -5,6 +5,5 @@ package tests.quests
    public class TS_Quests
    {
       public var tc_MMainQuestLine: TC_MMainQuestLine;
-      public var tc_MSlide: TC_MSlide;
    }
 }
