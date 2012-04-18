@@ -400,7 +400,7 @@ if ARGV.include?("basic") # {{{
   as(USER) { "mkdir -p ~/run" }
   File.ensure("#{HOME}/.profile", %Q{export environment='production'
 export JAVA_OPTS='-server -XX:+TieredCompilation'
-export JRUBY_OPTS='--server -J-XX:+TieredCompilation'},
+export JRUBY_OPTS='--server --1.9 -J-XX:+TieredCompilation'},
     nil, UCH)
   (`crontab -u #{USER} -l`.strip == "").and {
     puts "Installing default crontab for #{USER}"
