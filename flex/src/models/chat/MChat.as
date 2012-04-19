@@ -589,7 +589,9 @@ package models.chat
          if (channel == null) {
             channel = createPublicChannel(channelName);
          }
-         channel.memberJoin(existingMember);
+         if (!channel.members.containsMember(existingMember.id)) {
+            channel.memberJoin(existingMember);
+         }
 
          existingMember.isOnline = true;
       }

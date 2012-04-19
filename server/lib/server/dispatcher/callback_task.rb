@@ -9,10 +9,6 @@ module Dispatcher::CallbackTask
           Threading::Director::Task.retrying_transaction(worker_name) do
             object = callback.object!
 
-            # Destroy this callback in transaction. If anything fails while
-            # working with the callback it will be restored back to life.
-            callback.destroy!
-
             # Object can be nil if somehow other thread deleted it. Then
             # we don't need to process the callback too.
             unless object.nil?
@@ -20,6 +16,10 @@ module Dispatcher::CallbackTask
             else
               LOGGER.info "Object gone, ignoring.", worker_name
             end
+
+            # Destroy this callback after processing if it still exists (was
+            # not replaced by some other event).
+            callback.destroy!
           end
         end
 

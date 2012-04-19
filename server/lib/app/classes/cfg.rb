@@ -382,5 +382,15 @@ class Cfg
     def solar_system_spawn_strategy(solar_system)
       CONFIG[solar_system_spawn_key(solar_system) + ".strategy"]
     end
+
+    ### ss_objects.yml ###
+
+    def asteroid_wreckage_next_spawn
+      CONFIG.eval_rangerand("ss_object.asteroid.wreckage.time.spawn")
+    end
+
+    def asteroid_wreckage_next_spawn_date
+      asteroid_wreckage_next_spawn.from_now
+    end
   end
 end
