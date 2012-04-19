@@ -186,7 +186,10 @@ class Dispatcher
       "params" => {"reason" => reason}
     })
     unregister client
-    Actor[:server].disconnect!(client)
+    #Actor[:server].disconnect!(client)
+    EventMachine.next_tick do
+      client.em_connection.close_connection_after_writing
+    end
   end
 
   # Responds to received/pushed message.
@@ -466,7 +469,10 @@ class Dispatcher
   # Set message id and push it into outgoing messages stack for given IO.
   def transmit_to_client(client, message_hash)
     message_hash[MESSAGE_ID_KEY] = next_message_id
-    Actor[:server].write!(client, message_hash)
+    EventMachine.next_tick do
+      client.em_connection.write(message_hash)
+    end
+    #Actor[:server].write!(client, message_hash)
   end
 end
 
