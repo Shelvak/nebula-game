@@ -14,6 +14,8 @@ class Galaxy < ActiveRecord::Base
   has_many :solar_systems
   # FK :dependent => :delete_all
   has_many :market_rates
+  # FK :dependent => :delete_all
+  has_many :market_offers
 
   # Is this is a development galaxy? Callbacks to web will not be ensued in
   # development galaxies.
