@@ -409,6 +409,7 @@
              coords[0] * cellSize + (cellSize / 2) - (selectedTech.groupElements.length * cellSize / 2),
              (10 * cellSize) - (selectedTech.groupElements.length * cellSize)));
          tGroup.top = (coords[1] + 1) * cellSize - cellPadding;
+         treeContainer.addElement(tGroup);
          for each (var techName: String in selectedTech.groupElements) {
            var tech: Technology = ML.technologies.getTechnologyByType(techName);
            var temp: TechnologyComponent = new TechnologyComponent();
@@ -417,7 +418,6 @@
            tGroup.addTechComp(temp);
            treeCompsList.push(temp);
          }
-         treeContainer.addElement(tGroup);
          groupCompsList[selectedTech.type] = tGroup;
          refreshPurchasableState();
        }
