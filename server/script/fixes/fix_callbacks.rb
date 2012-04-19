@@ -10,6 +10,22 @@ future_as_well = ARGV[0] == "true"
 puts "Working on future callbacks as well!" if future_as_well
 now = Time.now.to_s(:db)
 
+scope = CombatLog.select("id")
+Counter.new(
+  scope, "CombatLog destroy",
+  lambda { |s, &block| s.c_select_values.each(&block) },
+  lambda { |id| id }
+).each do |id|
+  # Fake our combat logs
+  log = CombatLog.new
+  log.id = id
+
+  CallbackManager.register_or_update(
+    log, CallbackManager::EVENT_DESTROY,
+    Cfg.combat_log_expiration_time.from_now
+  )
+end
+
 scope = Galaxy
 Counter.new(scope, "Galaxy").each do |galaxy|
   unless CallbackManager.has?(galaxy, CallbackManager::EVENT_SPAWN)
@@ -124,14 +140,6 @@ Counter.new(scope, "Player inactive").each do |player|
   CallbackManager.register_or_update(
     player, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
     Cfg.player_inactivity_time(player.points).from_now
-  )
-end
-
-scope = CombatLog
-Counter.new(scope, "CombatLog destroy").each do |log|
-  CallbackManager.register_or_update(
-    log, CallbackManager::EVENT_DESTROY,
-    Cfg.combat_log_expiration_time.from_now
   )
 end
 

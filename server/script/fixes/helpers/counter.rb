@@ -1,8 +1,9 @@
 class Counter
-  def initialize(scope, header, name_func=nil)
+  def initialize(scope, header, finder=nil, namer=nil)
     @scope = scope
     @header = header
-    @name_func = name_func || lambda { |obj| obj.id }
+    @finder = finder || lambda { |s, &block| s.find_each(&block) }
+    @namer = namer || lambda { |obj| obj.id }
   end
 
   def each
@@ -13,8 +14,8 @@ class Counter
     end
 
     index = 1
-    @scope.find_each do |obj|
-      $stdout.write("\r#{@header} #{@name_func[obj]} (#{index}/#{total})")
+    @finder.call(@scope) do |obj|
+      $stdout.write("\r#{@header} #{@namer[obj]} (#{index}/#{total})")
       yield obj
       $stdout.write(".")
       index += 1
