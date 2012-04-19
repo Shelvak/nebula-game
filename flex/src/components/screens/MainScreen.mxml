@@ -93,7 +93,8 @@ bars and so on.
    </s:SkinnableContainer>
 
    <paging:CPageSwitcher
-      verticalCenter="0" horizontalCenter="0"
+      verticalCenter="0" horizontalCenter="0" closeButtonAlwaysVisible="true"
+      skinClass="components.tips.CTipScreenSkin"
       model="{MTipScreen.getInstance()}"/>
    <paging:CPageSwitcher
       verticalCenter="0" horizontalCenter="0"

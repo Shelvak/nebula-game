@@ -2,6 +2,8 @@ package tests.quests
 {
    import components.base.paging.MPageSwitcher;
 
+   import config.Config;
+
    import ext.hamcrest.events.causes;
    import ext.hamcrest.events.event;
    import ext.hamcrest.object.equals;
@@ -11,6 +13,8 @@ package tests.quests
    import models.quest.QuestsCollection;
    import models.quest.events.MMainQuestLineEvent;
    import models.quest.slides.MSlide;
+
+   import namespaces.client_internal;
 
    import org.flexunit.assertThat;
    import org.hamcrest.core.allOf;
@@ -27,6 +31,11 @@ package tests.quests
 
    public class TC_MMainQuestLine
    {
+      [Before]
+      public function setUp(): void {
+         Config.client_internal::setNumberOfTips(1);
+      }
+
       [After]
       public function tearDown(): void {
          SingletonFactory.clearAllSingletonInstances();

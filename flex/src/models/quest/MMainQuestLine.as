@@ -7,6 +7,7 @@ package models.quest
 
    import models.quest.events.MMainQuestLineEvent;
    import models.quest.events.QuestCollectionEvent;
+   import models.tips.MTipScreen;
 
    import utils.Events;
    import utils.Objects;
@@ -58,6 +59,7 @@ package models.quest
       }
 
       public function open(quest:Quest): void {
+         MTipScreen.getInstance().close();
          Objects.paramNotNull("quest", quest);
          setCurrentPresentation(quest);
          _currentPresentation.firstPage();

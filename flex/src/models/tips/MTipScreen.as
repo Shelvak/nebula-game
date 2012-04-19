@@ -5,6 +5,8 @@ package models.tips
 
    import config.Config;
 
+   import models.quest.MMainQuestLine;
+
    import utils.SingletonFactory;
 
 
@@ -21,6 +23,12 @@ package models.tips
             tips.push(new MTip(id, false));
          }
          super(tips, new CTipFactory());
+      }
+
+
+      override public function open(): void {
+         MMainQuestLine.getInstance().close();
+         super.open();
       }
    }
 }

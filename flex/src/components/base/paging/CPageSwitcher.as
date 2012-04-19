@@ -1,8 +1,17 @@
 package components.base.paging
 {
+   import com.developmentarc.core.utils.EventBroker;
+
    import components.base.SpinnerContainer;
 
+   import flash.events.Event;
+
+   import flash.events.KeyboardEvent;
+
    import flash.events.MouseEvent;
+   import flash.ui.Keyboard;
+
+   import globalevents.GlobalEvent;
 
    import spark.components.Button;
    import spark.components.Group;
@@ -15,6 +24,21 @@ package components.base.paging
       public function CPageSwitcher(): void {
          super();
          setStyle("skinClass", CPageSwitcherSkin);
+         addEventListener(Event.ADDED_TO_STAGE, this_addedToStageHandler)
+         addEventListener(Event.REMOVED_FROM_STAGE, this_removedFromStageHandler);
+      }
+
+      private function this_addedToStageHandler(event: Event): void {
+         EventBroker.subscribe(KeyboardEvent.KEY_UP, stage_keyUpHandler);
+      }
+
+      private function this_removedFromStageHandler(event: Event): void {
+         EventBroker.unsubscribe(KeyboardEvent.KEY_UP, stage_keyUpHandler);
+      }
+
+      private var _closeButtonAlwaysVisible: Boolean = false;
+      public function set closeButtonAlwaysVisible(value: Boolean): void {
+         _closeButtonAlwaysVisible = value;
       }
 
       /* ############# */
@@ -75,6 +99,14 @@ package components.base.paging
          invalidateProperties();
       }
 
+      private function stage_keyUpHandler(event: KeyboardEvent): void {
+         if (event.keyCode == Keyboard.ESCAPE) {
+            if (model != null) {
+               model.close();
+            }
+         }
+      }
+
       private function updateVisibility(): void {
          visible = model != null && model.isOpen;
       }
@@ -107,7 +139,7 @@ package components.base.paging
          }
          if (model != null && (f_modelChanged || f_currentPageChanged)) {
             if (btnClose != null) {
-               btnClose.visible = !model.hasNextPage;
+               btnClose.visible = _closeButtonAlwaysVisible || !model.hasNextPage;
             }
             btnNextPage.visible = model.hasNextPage;
             btnPreviousPage.visible = model.hasPreviousPage;
