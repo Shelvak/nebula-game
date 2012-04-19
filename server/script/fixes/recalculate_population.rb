@@ -15,7 +15,7 @@ players.each_with_index do |player, index|
   player.population_cap = SsObject::Planet.where(:player_id => player.id).
     all.map do |planet|
       planet.buildings.reject(&:inactive?).map(&:population)
-    end.flatten.sum + Cfg.player_initial_population
+    end.flatten.sum
   player.save!
 end
 
