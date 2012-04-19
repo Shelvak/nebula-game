@@ -5,9 +5,9 @@ package components.quests.slides
 
    public class CSlideEvent extends Event
    {
-      public static const MODEL_CHANGE:String = "modelChange";
+      public static const MODEL_CHANGE: String = "modelChange";
 
-      public function CSlideEvent(type:String) {
+      public function CSlideEvent(type: String) {
          super(type);
       }
    }

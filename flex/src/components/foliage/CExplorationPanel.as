@@ -124,22 +124,22 @@ package components.foliage
       public var btnExplore:Button;
       private function updateBtnExplore() : void {
          if (btnExplore != null)
-            btnExplore.enabled = _model.stateIsValid &&
-                                 _model.explorationCanBeStarted &&
-                                !_model.foliage.pending;
+            btnExplore.enabled = _model.stateIsValid
+                                    && _model.explorationCanBeStarted
+                                    && !_model.foliage.pending;
       }
-      
+
       [SkinPart(required="true")]
-      public var lblTimeLeft: Label;
+      public var lblTimeLeftLabel: Label;
+
+      [SkinPart(required="true")]
+      public var lblTimeLeftValue: Label;
 
       private function updateLblTimeLeft(): void {
-         if (lblTimeLeft) {
-            lblTimeLeft.text =
+         if (lblTimeLeftValue) {
+            lblTimeLeftValue.text =
                _model.explorationIsUnderway
-                  ? getString(
-                        "label.finishesIn",
-                        [DateUtil.secondsToHumanString(_model.timeLeft)]
-                  )
+                  ? DateUtil.secondsToHumanString(_model.timeLeft)
                   : "";
          }
       }
@@ -231,8 +231,12 @@ package components.foliage
                lblTimeNeeded.type = ResourceType.TIME;
                updateLblTimeNeeded();
                break;
-            
-            case lblTimeLeft:
+
+            case lblTimeLeftLabel:
+               lblTimeLeftLabel.text = getString("label.finishesIn");
+               break;
+
+            case lblTimeLeftValue:
                updateLblTimeLeft();
                break;
             
