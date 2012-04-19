@@ -23,6 +23,7 @@ package components.base.paging
    {
       public function CPageSwitcher(): void {
          super();
+         visible = false;
          setStyle("skinClass", CPageSwitcherSkin);
          addEventListener(Event.ADDED_TO_STAGE, this_addedToStageHandler)
          addEventListener(Event.REMOVED_FROM_STAGE, this_removedFromStageHandler);
