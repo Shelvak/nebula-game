@@ -1,15 +1,18 @@
 #!/usr/bin/env ruby
 require 'pathname'
 
+# The following describes the name of the field:
+# The characters must be [a-zA-Z0-9_], while the first character must be
+# [a-zA-Z_].
 NAMES = [
   ["current", "Currently logged in"],
-  ["1d", "Logged in 1d"],
-  ["2d", "Logged in 2d"],
-  ["3d", "Logged in 3d"],
-  ["4d", "Logged in 4d"],
-  ["5d", "Logged in 5d"],
-  ["6d", "Logged in 6d"],
-  ["7d", "Logged in 7d"],
+  ["in_1d", "Logged in 1d"],
+  ["in_2d", "Logged in 2d"],
+  ["in_3d", "Logged in 3d"],
+  ["in_4d", "Logged in 4d"],
+  ["in_5d", "Logged in 5d"],
+  ["in_6d", "Logged in 6d"],
+  ["in_7d", "Logged in 7d"],
   ["total", "Total no. of players"]
 ]
 
