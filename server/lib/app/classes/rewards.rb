@@ -89,7 +89,7 @@ class Rewards
   def [](key); @data[key]; end
 
   SIMPLE_REWARDS.each do |reward|
-    define_method(reward) do |value|
+    define_method(reward) do
       @data[reward]
     end
     define_method("#{reward}=") do |value|
