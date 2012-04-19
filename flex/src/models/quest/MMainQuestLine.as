@@ -67,7 +67,9 @@ package models.quest
       }
 
       public function close(): void {
-         _currentPresentation.close();
+         if (_currentPresentation != null) {
+            _currentPresentation.close();
+         }
       }
 
       private var _currentQuest:Quest;
