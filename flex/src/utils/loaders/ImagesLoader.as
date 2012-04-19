@@ -176,8 +176,9 @@ package utils.loaders
             Event.COMPLETE, checksumsLoader_completeHandler, false
          );
          _checksumsLoader = null;
-         var newImagesUrls: Array = _urlProvider.getUrlsToLoad();
-         for (var i: int = 0; i < _imageUrls.length; i++) {
+         const newImagesUrls: Array = _urlProvider.getUrlsToLoad();
+         const numUrls: int = _imageUrls.length;
+         for (var i: int = 0; i < numUrls; i++) {
             if (_imageUrls[i] != newImagesUrls[i]) {
                const popUp: ErrorPopUp = new ErrorPopUp();
                popUp.title = getString("title.outdatedClient");
