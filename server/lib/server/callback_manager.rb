@@ -1,6 +1,9 @@
 class CallbackManager
   include Celluloid
   include NamedLogMessages
+
+  # Raised if callback already exists and is in future.
+  class CallbackAlreadyExists < RuntimeError; end
   
   # Constructable has finished upgrading.
   EVENT_UPGRADE_FINISHED = 0
@@ -188,22 +191,13 @@ class CallbackManager
     # Register _event_ that will happen at _time_ on _object_. It will
     # be scoped in _ruleset_. Beware that ruleset is not considered when
     # updating or checking for object existence.
-    def register(object, event, time)
-      typesig binding, ActiveRecord::Base, Fixnum, Time
+    def register(object, event, time, force_replace=true)
+      typesig binding, ActiveRecord::Base, Fixnum, Time, Boolean
 
       LOGGER.info("Registering event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
-      raise ArgumentError.new("object #{object} does not have id!") \
-        if object.id.nil?
-
-      klass, column = parse_object(object)
-      check_event!(klass, event)
-      ActiveRecord::Base.connection.execute(
-        "INSERT INTO callbacks SET #{column}='#{object.id.to_i
-          }', ruleset='#{CONFIG.set_scope}', event=#{event
-          }, ends_at='#{time.to_s(:db)}'"
-      )
+      register_impl(object, event, time, force_replace)
     end
 
     # Update existing record.
@@ -213,20 +207,13 @@ class CallbackManager
       LOGGER.info("Updating event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
-      klass, column = parse_object(object)
-      check_event!(klass, event)
-      ActiveRecord::Base.connection.execute(
-        "UPDATE callbacks SET ends_at='#{time.to_s(:db)}' WHERE #{
-        column}=#{object.id} AND event=#{event}"
-      )
+      register_impl(object, event, time, true)
     end
 
     def register_or_update(object, event, time)
       typesig binding, ActiveRecord::Base, Fixnum, Time
 
-      register(object, event, time)
-    rescue ActiveRecord::RecordNotUnique
-      update(object, event, time)
+      register(object, event, time, true)
     end
 
     def has?(object, event, time=nil)
@@ -256,7 +243,8 @@ class CallbackManager
       klass, column = parse_object(object)
       check_event!(klass, event)
       ActiveRecord::Base.connection.execute(
-        "DELETE FROM callbacks WHERE #{column}=#{object.id} AND event=#{event}"
+        "DELETE FROM `callbacks` WHERE #{column}=#{object.id} AND event=#{
+        event}"
       )
     end
 
@@ -270,6 +258,31 @@ class CallbackManager
       method = :"#{TYPES[event]}_callback"
       raise ArgumentError, "#{klass} does not respond to #{method}!" \
         unless klass.respond_to?(method)
+    end
+
+    def register_impl(object, event, time, force_replace)
+      raise ArgumentError.new("object #{object} does not have id!") \
+        if object.id.nil?
+
+      klass, column = parse_object(object)
+      check_event!(klass, event)
+
+      unless force_replace
+        future_row = ActiveRecord::Base.connection.select_one(
+          "SELECT id, ends_at FROM `callbacks` WHERE #{column}='#{object.id.to_i
+          }' AND event=#{event} AND ends_at > NOW() LIMIT 1"
+        )
+
+        raise ArgumentError, "Trying to register event #{TYPES[event]} on #{
+          object} @ #{time} but it is already registered with id #{
+          future_row['id']} at #{future_row['ends_at']}!" unless future_row.nil?
+      end
+
+      ActiveRecord::Base.connection.execute(
+        "REPLACE INTO `callbacks` SET #{column}='#{object.id.to_i
+        }', ruleset='#{CONFIG.set_scope}', event=#{event
+        }, ends_at='#{time.to_s(:db)}'"
+      )
     end
   end
 end

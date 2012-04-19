@@ -4,23 +4,17 @@
 
 STDOUT.sync = true
 require File.dirname(__FILE__) + '/../../lib/initializer.rb'
+require File.dirname(__FILE__) + '/helpers/counter.rb'
 
 scope = Player
 scope = scope.where(:name => ARGV) unless ARGV.blank?
-
-total = scope.count
-
-index = 1
-puts
 
 def debug(msg)
   puts msg if ENV['DEBUG'] == "1"
 end
 
 type = Building::ResearchCenter.to_s.demodulize
-scope.find_each do |player|
-  $stdout.write("\rP #{player.id} (#{index}/#{total})")
-
+Counter.new(scope, "Player").each do |player|
   taken_scientists = 0
   total_scientists = 0
   total_str = lambda do
@@ -66,9 +60,6 @@ scope.find_each do |player|
     if player.scientists > player.scientists_total || player.scientists < 0 ||
     player.scientists_total < 0
   player.save!
-
-  $stdout.write(".")
-  index += 1
 end
 
 puts
