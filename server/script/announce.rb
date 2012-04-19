@@ -30,17 +30,15 @@ message = ARGV[1]
 
 begin
   client = ControlClient.new
-  response = client.
+  client.
     message('announce', :ends_at => ends_at, :message => message) 
-  if response['success']
-    puts "Announcement successful."
-    puts
-    puts "You message expires at #{ends_at} (#{ARGV[0]})"
-  else
-    $stderr.write("Announcement failed!\nError: #{response['error']}\n")
-    exit 3
-  end
+  puts "Announcement successful."
+  puts
+  puts "You message expires at #{ends_at} (#{ARGV[0]})"
 rescue ControlClient::ConnectionError
   $stderr.write("Cannot connect to control server, is it down?\n")
   exit 2
+rescue GameServerConnector::RemoteError => e
+  $stderr.write("Announcement failed!\nError: #{e.message}\n")
+  exit 3
 end
