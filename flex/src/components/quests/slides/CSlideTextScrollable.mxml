@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:mx="library://ns.adobe.com/flex/mx"
-         xmlns:base="components.base.*" clipAndEnableScrolling="true">
+         xmlns:base="components.base.*"
+         clipAndEnableScrolling="true">
   <s:Rect left="0" top="0" bottom="0" right="0" radiusX="20" radiusY="20">
     <s:fill>
       <s:SolidColor color="#000000" alpha="0.15"/>

@@ -1,10 +1,6 @@
 package components.quests.slides
 {
-   import components.base.Scroller;
-
    import models.quest.slides.MSlideSimple;
-
-   import spark.components.Group;
 
    import utils.TextFlowUtil;
    import utils.assets.AssetNames;
@@ -20,10 +16,7 @@ package components.quests.slides
          return AssetNames.getQuestSlideBackgroundImageURL(model.key);
       }
 
-      private var txtText:CSlideTextScrollable;
-      private var grpTextContainer:Group;
-      private var grpTextScroller:Scroller;
-      private var insideGrpTextContainer:Group;
+      private var txtText: CSlideTextScrollable;
 
       protected override function createChildren(): void {
          if (childrenAlreadyCreated) {

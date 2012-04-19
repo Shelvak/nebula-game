@@ -13,7 +13,7 @@ bars and so on.
                     xmlns:raid="components.raid.*"
                     xmlns:ui="components.ui.*"
                     xmlns:cchat="components.chat.*"
-                    xmlns:quests="components.quests.*"
+                    xmlns:paging="components.base.paging.*"
                     width="100%"
                     height="100%"
                     mouseEnabled="false"
@@ -27,7 +27,9 @@ bars and so on.
       import models.Owner;
       import models.map.MapType;
       import models.planet.MPlanet;
+      import models.quest.MMainQuestLine;
       import models.solarsystem.MSSObject;
+      import models.tips.MTipScreen;
 
       import utils.DateUtil;
       import utils.assets.AssetNames;
@@ -90,6 +92,12 @@ bars and so on.
       <cchat:CChatOpenChanButtons right="0" bottom="0"/>
    </s:SkinnableContainer>
 
-   <quests:CMainQuestPresentationScreen verticalCenter="0" horizontalCenter="0"/>
-   
+   <paging:CPageSwitcher
+      verticalCenter="0" horizontalCenter="0" closeButtonAlwaysVisible="true"
+      skinClass="components.tips.CTipScreenSkin"
+      model="{MTipScreen.getInstance()}"/>
+   <paging:CPageSwitcher
+      verticalCenter="0" horizontalCenter="0"
+      model="{MMainQuestLine.getInstance().currentPresentation}"/>
+
 </base:BaseContainer>
