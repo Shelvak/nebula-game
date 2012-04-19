@@ -1446,7 +1446,7 @@
   <Exploration>
     <title.explore value="Tyrinėjimas" />
     <label.explore value="Tyrinėti" />
-    <label.finishesIn value="Bus baigta už {0}" />
+    <label.finishesIn value="Bus baigta už:" />
     <description.noResearchCenter>
       <p>Tu galėtum tyrinėtį šį objektą, jeigu šioje planetoje turėtum tyrimų 
       centrą.</p>
@@ -1466,7 +1466,7 @@
     <label.buyCreds value="Pirkti kredus"/>
     <description.instantFinishCost>
       <p><![CDATA[
-      Baigti tyrinėjimus akimirksniu tau kainuos 
+      Baigti tyrinėjimus akimirksniu<br/>tau kainuos
       <span fontWeight="bold">{0 one[? kredą] tens[? kredų] 
         many[? kredus]}</span>.
       ]]></p>

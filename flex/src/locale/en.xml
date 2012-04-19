@@ -1306,7 +1306,7 @@
   <Exploration>
     <title.explore value="Exploration" />
     <label.explore value="Explore" />
-    <label.finishesIn value="Finished in {0}" />
+    <label.finishesIn value="Finished in:" />
     <description.noResearchCenter>
       <p>
         You could explore this object if you had a research center in this 
@@ -1331,7 +1331,8 @@
     <label.instantFinish value="Finish exploring"/>
     <label.buyCreds value="Buy creds"/>
     <description.instantFinishCost>
-    <![CDATA[It will cost you <span fontWeight="bold">{0}</span> creds to instantly finish exploring.]]>
+    <![CDATA[It will cost you <span fontWeight="bold">{0}</span> creds<br/>
+    to instantly finish exploring.]]>
     </description.instantFinishCost>
   </Exploration>
   
