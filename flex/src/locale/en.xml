@@ -3393,8 +3393,9 @@
     <ClaimReward>
       <![CDATA[
       <p>You get reward for each quest you complete. You can take it by
-      navigating to the quests screen: open N44 menu at the bottom right corner
-      of the screen and click "[reference:MainMenu/label.quests]" button.</p>
+      navigating to the quests screen: open Nebula 44 menu at the bottom left
+      corner of the screen and click "[reference:MainMenu/label.quests]"
+      button.</p>
       <p>Then you have to find a completed quest - they are marked as yellow -
       and click on a '[reference:Quests/label.claimReward]' button</p>
       ]]>
