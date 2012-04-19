@@ -34,7 +34,7 @@ package components.registerrequired {
       private static const TIMER_DELAY: int = 180000; // 3 minutes
 
       private function getImage(name:String) : BitmapData {
-         return ImagePreloader.getInstance().getImage(AssetNames.BUTTONS_IMAGE_FOLDER + "registration/button_" + name);
+         return ImagePreloader.getInstance().getImage(AssetNames.UI_IMAGES_FOLDER + "registration/button_" + name);
       }
 
       private function get player() : Player {
@@ -44,10 +44,10 @@ package components.registerrequired {
 
       public function RegisterButton() {
          super();
-         upImage   = getImage("up");
-         fadeImage = getImage("blink");
-         overImage = getImage("over");
-         addEventListener(MouseEvent.CLICK, this_clickHandler, false, 0, true);
+         this.upImage   = getImage("up");
+         this.fadeImage = getImage("blink");
+         this.overImage = getImage("over");
+         this.addEventListener(MouseEvent.CLICK, this_clickHandler, false, 0, true);
          player.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, player_propertyChangeHandler, false, 0, true);
          updateVisibility();
       }
@@ -59,13 +59,24 @@ package components.registerrequired {
 
       private function updateVisibility() : void {
          this.enabled = this.visible = player.trial;
-         if (timer == null && player.trial && !popupVisible)
+         if (player.trial)
          {
-            setTimer();
+            if (timer == null && !popupVisible)
+            {
+               setTimer();
+            }
          }
-         else if (!player.trial && timer != null)
+         else
          {
-            removeTimer();
+            if (timer != null)
+            {
+               removeTimer();
+            }
+            else if (popup != null)
+            {
+               popup.close();
+               popup = null;
+            }
          }
       }
 
@@ -88,11 +99,13 @@ package components.registerrequired {
          timer = null;
       }
 
+      private var popup:ActionConfirmationPopUp;
+
       private function showPopup(e: TimerEvent): void
       {
          popupVisible = true;
          removeTimer();
-         var popup:ActionConfirmationPopUp = new ActionConfirmationPopUp();
+         popup = new ActionConfirmationPopUp();
          var cont:Label = new Label();
          cont.text = Localizer.string('Popups', 'message.registration');
          popup.title = Localizer.string('Popups', 'title.registration');
@@ -101,15 +114,18 @@ package components.registerrequired {
          popup.cancelButtonLabel  = Localizer.string('Players', 'label.registerLater');
          popup.cancelButtonClickHandler = function(button:Button) : void {
             setTimer();
+            popup = null;
          };
          popup.confirmButtonClickHandler = function(button:Button) : void {
             this_clickHandler();
+            popup = null;
          };
          popup.show()
       }
 
       private function this_clickHandler(event:MouseEvent = null) : void {
          UrlNavigate.getInstance().showRegistrationUrl();
+         setTimer();
       }
    }
 }
