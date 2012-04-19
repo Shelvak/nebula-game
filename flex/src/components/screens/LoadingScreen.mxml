@@ -97,7 +97,6 @@
          if (_bundlesLoader.loadSuccessful) {
             dispatchBundlesLoadedEvent();
             lblPleaseWait.text = getString("label.pleaseWait");
-//            lblTipLabel.text = getString("label.tip");
             BindingUtils.bindSetter(setLblDownloadProgressText,
                                     downloadProgress, "value", false, true);
 
@@ -106,19 +105,19 @@
             Config.client_internal::setNumberOfTips(tipsTotal);
             const randomTip: int =
                      Math.round(MathUtil.randomBetween(0, tipsTotal - 1));
-            tipComponent.model = new MTip(randomTip, false);
-//            lblTipText.text = tip.text;
-//            imgTip.source = tip.imageUrl;
+            tipComponent.model = new MTip(randomTip, true, false);
+            tipComponent.model.visible = true;
 
             loadImages();
          }
          else {
-            Alert.show("Unable to load locale data: " + _bundlesLoader.error,
-                       "Error!");
+            Alert.show(
+               "Unable to load locale data: " + _bundlesLoader.error, "Error!"
+            );
          }
-         _bundlesLoader.removeEventListener(Event.COMPLETE,
-                                            bundlesLoader_completeHandler,
-                                            false);
+         _bundlesLoader.removeEventListener(
+            Event.COMPLETE, bundlesLoader_completeHandler, false
+         );
          _bundlesLoader = null;
       }
 
@@ -206,27 +205,6 @@
          </s:Group>
       </s:Group>
       <tips:CTip id="tipComponent"/>
-      <!--<s:Group width="675" height="214">-->
-         <!--<s:Rect left="0" right="0" top="0" bottom="0" radiusX="16">-->
-            <!--<s:fill><s:SolidColor alpha="0.3"/></s:fill>-->
-         <!--</s:Rect>-->
-         <!--<s:Group left="12" right="12" top="12" bottom="12">-->
-            <!--<s:layout>-->
-               <!--<s:HorizontalLayout gap="13" verticalAlign="middle"/>-->
-            <!--</s:layout>-->
-            <!--<mx:Image maintainAspectRatio="true" id="imgTip"/>-->
-            <!--<s:Group width="100%" fontSize="13">-->
-               <!--<s:layout>-->
-                  <!--<s:VerticalLayout horizontalAlign="left" gap="3"/>-->
-               <!--</s:layout>-->
-               <!--<s:Label id="lblTipLabel" fontWeight="bold"/>-->
-               <!--<s:Group width="100%">-->
-                  <!--<s:Label id="lblTipText" text="" lineBreak="toFit"-->
-                           <!--left="0" right="0"/>-->
-               <!--</s:Group>-->
-            <!--</s:Group>-->
-         <!--</s:Group>-->
-      <!--</s:Group>-->
    </s:Group>
    
 </base:BaseContainer>

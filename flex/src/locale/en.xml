@@ -1669,6 +1669,7 @@
     <label.alliance value="Alliance" />
     <label.forum value="Forum" />
     <label.wiki value="Wiki"/>
+    <label.tips value="Tips"/>
     <label.inviteFriend value="Invites"/>
     <tooltip.version value="Game version" />
     <panelWidth value="85" />

@@ -1802,6 +1802,7 @@
     <label.alliance value="Sąjunga" />
     <label.forum value="Forumas" />
     <label.wiki value="Wiki"/>
+    <label.tips value="Patarimai"/>
     <label.inviteFriend value="Pakvietimai"/>
     <tooltip.version value="Žaidimo versija" />
     <panelWidth value="95" />
