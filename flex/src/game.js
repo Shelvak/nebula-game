@@ -99,14 +99,14 @@ var locales = { // {{{
        return "Your computer couldn't handle the load!";
     },
     reload: function(locale) {
-       if (locale == "lt") return "Perkrauti dabar";
+       if (locale == "lt") return "Perkrauti puslapį";
        return "Reload now";
     },
     message: function(locale) {
        if (locale == "lt") return [
           "Labai gaila, tačiau tavo kompiuteris buvo per lėtas ir nespėjo " +
              "atlikti užduoties laiku.",
-          "Kad išvengti tolimesnių nesklandumų, žaidimas turi būti perkrautas."
+          "Norint išvengti tolimesnių nesklandumų, žaidimas turi būti perkrautas."
        ];
        return [
           "Unfortunately your computer was too slow and couldn't process " +
