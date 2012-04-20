@@ -42,6 +42,19 @@
          display: block;
       }
 
+      #client-not-responding {
+         padding-top: 150px;
+         text-align: center;
+         vertical-align: middle;
+         display: none;
+         width: 100%;
+      }
+
+      #time-util-reload {
+         font-size: 14px;
+         font-weight: bold;
+      }
+
       pre {
          font-size: 12px;
          margin-top: 20px;
@@ -136,6 +149,13 @@ include(gameJs);
             <input type="submit" value=""/>
          </div>
        </form>
+    </div>
+
+    <div id="client-not-responding">
+       <h2></h2>
+       <p id="client-not-responding-message"></p>
+       <p id="time-until-reload"></p>
+       <a href="javascript:window.refresh()"></a>
     </div>
 
     </body>
