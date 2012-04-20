@@ -482,6 +482,10 @@ deb-src http://repo.percona.com/apt lucid main")
       sub("$cfg['Servers'][$i]['controlpass']", "// $cfg['Servers'][$i]['controluser']")
   end
   fix_php_ini!
+
+  File.write("/etc/mysql/backup.cnf", %Q{!include /etc/mysql/my.cnf
+!include /etc/mysql/debian.cnf}, "0600")
+
   run "/etc/init.d/mysql restart"
 
   %w{queries threads bytes slowqueries}.each do |plugin|

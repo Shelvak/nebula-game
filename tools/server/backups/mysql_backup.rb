@@ -28,7 +28,9 @@ def run(cmd)
   status
 end
 
-backup_opts = "--defaults-file=/etc/mysql/debian.cnf"
+FileUtils.mkdir_p MYSQL_DIR
+
+backup_opts = "--defaults-file=/etc/mysql/backup.cnf"
 backups = Dir["#{MYSQL_DIR}/*"].map do |path|
   date, time = File.basename(path).split("-")
   date.gsub!("_", "-")
