@@ -1,4 +1,4 @@
-#!/usr/bin/env jruby
+#!/usr/bin/env ruby
 
 # Applies hotfix to running server
 
@@ -48,13 +48,11 @@ puts
 
 begin
   client = ControlClient.new
-  response = client.message('apply_hotfix', :hotfix => hotfix)
-  if response['success']
-    puts "Seems that things went smoothly."
-  else
-    STDERR.write("Hotfix failed!\nError:\n#{response['error']}\n")
-    exit 3
-  end
+  client.message('apply_hotfix', :hotfix => hotfix)
+  puts "Seems that things went smoothly."
+rescue GameServerConnector::RemoteError => e
+  STDERR.write("Hotfix failed!\nError:\n#{e.message}\n")
+  exit 3
 rescue ControlClient::ConnectionError
   STDERR.write("Cannot connect to control server, is it down?\n")
   exit 4
