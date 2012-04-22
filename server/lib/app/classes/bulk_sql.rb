@@ -129,7 +129,7 @@ class BulkSql
           end
         end
       rescue Exception => e
-        raise ArgumentError,
+        raise e.class,
           "#{e.message}\nData was:\n#{columns_str}\n#{content}", e.backtrace
       ensure
         tempfile.close! unless ENV[

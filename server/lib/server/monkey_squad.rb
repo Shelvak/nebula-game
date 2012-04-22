@@ -73,3 +73,9 @@ module ActiveRecord
     end
   end
 end
+
+def raise_to_abort(*args)
+  yield *args
+rescue Exception => e
+  abort e
+end
