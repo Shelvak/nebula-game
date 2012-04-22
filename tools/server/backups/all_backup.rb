@@ -38,7 +38,7 @@ run "#{pwd}/fs_backup.rb"
 target="#{HOST}:#{RDIR}"
 
 puts "Ensuring filesystem dir exists in remote."
-`#{SSH} #{HOST} "mkdir -p #{RDIR}/mysql"`
+run(%Q{#{SSH} #{HOST} "mkdir -p #{RDIR}/mysql"})
 puts "Transferring mysql to remote..."
 run %Q{rsync -a --delete -e "#{SSH}" #{BACKUPS}/mysql/ #{target}/mysql/}
 
@@ -53,7 +53,7 @@ end.sort_by { |b| b[:time] }
 last = backups[-1][:path].sub(/\/$/, '')
 
 puts "Ensuring filesystem dir exists in remote."
-`#{SSH} #{HOST} "mkdir -p #{RDIR}/filesystem"`
+run(%Q{#{SSH} #{HOST} "mkdir -p #{RDIR}/filesystem"})
 puts "Listing remote filesystem backups..."
 last_remote = `#{SSH} #{HOST} "ls -1 #{RDIR}/filesystem"`
 if last_remote.strip == ""

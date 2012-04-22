@@ -37,12 +37,15 @@ backups = Dir["#{MYSQL_DIR}/*"].map do |path|
   time.gsub!("_", ":")
   time = Time.parse("#{date} #{time}")
 
-  is_incremental = File.read(
-    File.join(path, CHECKPOINTS)
-  ).include?("backup_type = incremental")
+  file = File.join(path, CHECKPOINTS)
+  if File.exists?(file)
+    is_incremental = File.read(file).include?("backup_type = incremental")
 
-  {:path => path, :time => time, :incremental => is_incremental}
-end.sort_by { |b| b[:time] }
+    {:path => path, :time => time, :incremental => is_incremental}
+  else
+    nil
+  end
+end.compact.sort_by { |b| b[:time] }
 
 puts "Cleaning up old backups."
 backups.dup.each do |b|
