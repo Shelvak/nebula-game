@@ -3,7 +3,7 @@ ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
 
 # Global constants related to server tweaking
 WORKERS_CHAT = 1
-WORKERS_WORLD = 1
+WORKERS_WORLD = (Celluloid.cores || 2) * 2
 # Connections:
 # - callback manager
 # - workers
