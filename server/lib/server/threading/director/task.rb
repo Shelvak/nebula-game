@@ -37,7 +37,7 @@ class Threading::Director::Task
     "<#{self.class.to_s} #{@description}>"
   end
 
-  def self.retrying_transaction(worker_name)
+  def self.retrying_transaction(worker_name, log_object)
     current_retry = 0
     begin
       DispatcherEventHandler::Buffer.instance.wrap do
@@ -63,16 +63,16 @@ class Threading::Director::Task
         sleep_for = SLEEP_RANGE.random_element / 1000.0
         LOGGER.send(
           log_method,
-          %Q{Deadlock occurred, retry #{current_retry}, retrying again in #{
-          sleep_for}s: #{e.message}#{status_line}},
+          %Q{Deadlock occurred for #{log_object}, retry #{current_retry
+          }, retrying again in #{sleep_for}s: #{e.message}#{status_line}},
           worker_name
         )
         sleep sleep_for
         retry
       else
         raise e.class,
-          "Deadlock unresolvable after #{MAX_RETRIES} retries: #{e.message}#{
-            status_line}"
+          "Deadlock unresolvable after #{MAX_RETRIES} retries for #{log_object
+            }: #{e.message}#{status_line}"
       end
     end
   end

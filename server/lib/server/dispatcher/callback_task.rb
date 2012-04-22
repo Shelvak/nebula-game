@@ -6,7 +6,9 @@ module Dispatcher::CallbackTask
         # Wrap our request in correct ruleset.
         CONFIG.with_set_scope(callback.ruleset) do
           # Ensure that if anything bad happens it would be rollbacked.
-          Threading::Director::Task.retrying_transaction(worker_name) do
+          Threading::Director::Task.retrying_transaction(
+            worker_name, callback.to_s
+          ) do
             object = callback.object!
 
             # Object can be nil if somehow other thread deleted it. Then
