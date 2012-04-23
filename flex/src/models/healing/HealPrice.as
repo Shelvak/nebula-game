@@ -12,6 +12,8 @@ package models.healing
    import models.unit.MCUnit;
    import models.unit.Unit;
 
+   import mx.collections.ListCollectionView;
+
    [Bindable]
    public class HealPrice
    {
@@ -62,7 +64,7 @@ package models.healing
          var priceMod : Number = tech.repairPriceMod;
          var cooldownMod: Number = tech.repairCooldownMod;
 
-         var buildings: Array = planet.getDamagedBuildings();
+         var buildings: ListCollectionView = planet.damagedBuildings;
          for each (var building: Building in buildings)
          {
             price.addPrice(calculateRepairPriceImpl(building, priceMod, cooldownMod));
