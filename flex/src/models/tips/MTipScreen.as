@@ -23,6 +23,7 @@ package models.tips
             tips.push(new MTip(id, false));
          }
          super(tips, new CTipFactory());
+         wrapAround = true;
       }
 
 
