@@ -362,7 +362,7 @@ package controllers.startup
          bindPair(BuildingsCommand.NEW, new controllers.buildings.actions.NewAction());
          bindPair(BuildingsCommand.UPGRADE, new controllers.buildings.actions.UpgradeAction());
          bindPair(BuildingsCommand.REPAIR, new RepairAction());
-         bindPair(BuildingsCommand.MASS_REPAIR, new RepairAction());
+         bindPair(BuildingsCommand.MASS_REPAIR, new MassRepairAction());
          bindPair(BuildingsCommand.SELF_DESTRUCT, new SelfDestructAction());
          bindPair(BuildingsCommand.ACTIVATE, new ActivateAction());
          bindPair(BuildingsCommand.DEACTIVATE, new DeactivateAction());

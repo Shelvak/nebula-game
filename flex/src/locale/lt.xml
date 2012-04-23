@@ -631,6 +631,7 @@
     <panelTitle.scientists value="Mokslininkai" />
     <panelTitle.cancelProgress value="Atšaukti statybas" />
     <panelTitle.repairBuilding value="Pastato taisymas" />
+    <panelTitle.massRepairBuildings value="Visų pastatų taisymas" />
     <warning.repairBuilding>
       <p>Gynybinis bokštelis nedalyvaus kovose tol, kol taisymo darbai nebus
         baigti.</p>

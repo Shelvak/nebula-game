@@ -819,8 +819,14 @@ package models.building
 
       public function massRepairBuilding(): void
       {
+         var buildingIds: Array = [];
+         for each (var building: Building in ML.latestPlanet.damagedBuildings)
+         {
+            buildingIds.push(building.id);
+         }
          new BuildingsCommand(BuildingsCommand.MASS_REPAIR,
-            {'planetId': ML.latestPlanet.id}).dispatch();
+            {'planetId': ML.latestPlanet.id,
+            'buildingIds': buildingIds}).dispatch();
       }
 
       private function refreshDestructProperties(): void

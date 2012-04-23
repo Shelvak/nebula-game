@@ -695,7 +695,8 @@ package models.planet
       {
          return Collections.filter(buildings, function(obj: Building): Boolean
          {
-            return obj.hp < obj.hpMax;
+            return obj.hp < obj.hpMax && obj.state != Building.REPAIRING
+               && obj.upgradePart != null && obj.upgradePart.upgradeEndsAt == null;
          })
       }
 

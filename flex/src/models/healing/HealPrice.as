@@ -67,7 +67,9 @@ package models.healing
          var buildings: ListCollectionView = planet.damagedBuildings;
          for each (var building: Building in buildings)
          {
-            price.addPrice(calculateRepairPriceImpl(building, priceMod, cooldownMod));
+            var newPrice: HealPrice = calculateRepairPriceImpl(building, priceMod, cooldownMod);
+            price.addPrice(newPrice);
+            price.cooldown = Math.max(price.cooldown, newPrice.cooldown);
          }
 
          return price;

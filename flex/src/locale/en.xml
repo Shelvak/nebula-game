@@ -491,6 +491,7 @@
     <panelTitle.scientists value="Scientists" />
     <panelTitle.cancelProgress value="Cancel upgrade" />
     <panelTitle.repairBuilding value="Repair building" />
+    <panelTitle.massRepairBuildings value="Repair all buildings" />
     <warning.repairBuilding>
       <p>Turret won't participate in combat until repairs are finished.</p>
     </warning.repairBuilding>
