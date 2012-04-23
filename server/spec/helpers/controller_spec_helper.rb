@@ -35,7 +35,8 @@ module ControllerSpecHelper
     @controller_name = klass.to_s.underscore.sub(/_controller$/, '')
     @message_id = "10101" # Fake message id.
     @seq = 0 # Fake sequence number.
-    @client = ServerActor::Client.new("127.0.0.1", 12345)
+    em_connection = mock(ServerMachine)
+    @client = ServerActor::Client.new("127.0.0.1", 12345, em_connection)
 
     login(
       options[:login] == true ? nil : options[:login]
