@@ -24,6 +24,7 @@ package controllers.galaxies.actions
    import models.quest.MMainQuestLine;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
+   import models.solarsystem.MSolarSystem;
    import models.time.MTimeEventFixedMoment;
 
    import mx.collections.ArrayCollection;
@@ -31,6 +32,7 @@ package controllers.galaxies.actions
    import mx.collections.ListCollectionView;
 
    import utils.Objects;
+   import utils.datastructures.Collections;
 
 
    /**
@@ -116,13 +118,14 @@ package controllers.galaxies.actions
          else {
             // If player has set openFirstPlanet parameter and has any planet
             // we open first planet
-            var deepOpen:Boolean =
+            const deepOpen:Boolean =
                (ML.player.planets.length > 0
                   && PlayerOptions.openFirstPlanetAfterLogin);
             if (deepOpen) {
                NAV_CTRL.toGalaxy(galaxy,
                   function() : void {
                      new GlobalEvent(GlobalEvent.APP_READY);
+                     moveToHomeSS(galaxy);
                      NAV_CTRL.toPlanet(MSSObject(ML.player.planets.getItemAt(0)));
                   }
                );
@@ -131,15 +134,7 @@ package controllers.galaxies.actions
                NAV_CTRL.toGalaxy(galaxy,
                   function() : void {
                      new GlobalEvent(GlobalEvent.APP_READY);
-
-                     var solarSystems: ListCollectionView =
-                        galaxy.solarSystemsWithPlayer;
-                     if (solarSystems.length != 0) {
-                        var ss: MSolarSystem = MSolarSystem(
-                           solarSystems.getItemAt(0)
-                        );
-                        galaxy.moveToLocation(ss.currentLocation, true);
-                     }
+                     moveToHomeSS(galaxy);
                   }
                );
             }
@@ -192,6 +187,18 @@ package controllers.galaxies.actions
                       && galaxy.getSSById(cachedSS.id) == null) {
             ML.latestPlanet = null;
             ML.latestSSMap = null;
+         }
+      }
+
+      private function moveToHomeSS(galaxy: Galaxy) {
+         const ss: MSolarSystem = Collections.findFirst(
+            galaxy.solarSystemsWithPlayer,
+            function (ss: MSolarSystem): Boolean {
+               return ss.player != null && ss.player.equals(ML.player);
+            }
+         );
+         if (ss != null) {
+            galaxy.moveToLocation(ss.currentLocation, true);
          }
       }
       
