@@ -1,8 +1,9 @@
 class Technology::BuildingRepair < Technology
   include Parts::Healing
 
-  # Get active building repair technology for player.
-  def self.get(player_id)
+  # Get active building repair technology for player. Raise +GameLogicError+ if
+  # no such technology can be found.
+  def self.get!(player_id)
     typesig binding, Fixnum
 
     technology = where("level > 0 AND player_id=?", player_id).first

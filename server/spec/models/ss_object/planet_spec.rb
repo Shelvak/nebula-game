@@ -1578,6 +1578,78 @@ describe SsObject::Planet do
     end
   end
 
+  describe "#mass_repair!" do
+    let(:player) { Factory.create(:player) }
+    let(:technology) do
+      Factory.create(:t_building_repair, level: 1, player: player)
+    end
+    let(:planet) { set_resources(Factory.create(:planet, player: player)) }
+    let(:buildings) { [
+      Factory.create!(:b_vulcan, planet: planet, x: 0, hp_percentage: 0.1),
+      Factory.create!(:b_vulcan, planet: planet, x: 3, hp_percentage: 0.15),
+      Factory.create!(:b_vulcan, planet: planet, x: 6, hp_percentage: 0.21),
+    ] }
+
+    it "should fail if there are buildings which are not repairable" do
+      lambda do
+        planet.mass_repair!(buildings + [
+          Factory.create(:b_barracks, planet: planet, x: 10, hp_percentage: 0.5)
+        ])
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if there are buildings not on this planet" do
+      lambda do
+        planet.mass_repair!(buildings + [
+          Factory.create!(
+            :b_vulcan,
+            planet: Factory.create(:planet), x: 10, hp_percentage: 0.5
+          )
+        ])
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should get building repair technology" do
+      Technology::BuildingRepair.should_receive(:get!).with(player.id).
+        and_return(technology)
+      planet.mass_repair!(buildings)
+    end
+
+    it "should call #mass_repair on each of the buildings" do
+      buildings.each do |b|
+        b.should_receive(:mass_repair).with(planet, technology).and_return(50)
+      end
+      planet.mass_repair!(buildings)
+    end
+
+    it "should register cooldown expired callback on each of the buildings" do
+      planet.mass_repair!(buildings)
+      buildings.each do |b|
+        b.should have_callback(CallbackManager::EVENT_COOLDOWN_EXPIRED)
+      end
+    end
+
+    it "should save all buildings" do
+
+    end
+
+    it "should save the planet" do
+
+    end
+
+    it "should fire changed with the buildings" do
+
+    end
+
+    it "should fire changed with the planet" do
+
+    end
+
+    it "should progress Objective::RepairHp" do
+
+    end
+  end
+
   describe "#recalculate" do
     before(:all) do
       @resource = 100.0
