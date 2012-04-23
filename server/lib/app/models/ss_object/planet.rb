@@ -243,19 +243,19 @@ class SsObject::Planet < SsObject
   def mass_repair!(buildings)
     typesig binding, Array
 
-    unrepairable = buildings.filter { |b| b.is_a?(Parts::Repairable) }
+    unrepairable = buildings.reject { |b| b.is_a?(Parts::Repairable) }
     raise GameLogicError,
       "All buildings must be repairable, but unrepairable buildings #{
         unrepairable.map { |b| "<#{b.type} #{b.id}>" } } were given!" \
         unless unrepairable.blank?
 
-    not_here = buildings.filter { |b| b.planet_id == id }
+    not_here = buildings.reject { |b| b.planet_id == id }
     raise GameLogicError,
       "All buildings must be in #{self}, but buildings #{
         not_here.map { |b| "<#{b.type} #{b.id} planet id: #{b.planet_id}>" }
       } were not in it!" unless not_here.blank?
 
-    technology = Technology::BuildingRepair.get(player_id)
+    technology = Technology::BuildingRepair.get!(player_id)
 
     damaged_hp = buildings.inject(0) do |hp, building|
       building.mass_repair(self, technology)

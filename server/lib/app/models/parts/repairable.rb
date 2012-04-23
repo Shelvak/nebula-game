@@ -23,7 +23,7 @@ module Parts::Repairable
     def repair!
       player = planet.player
       raise GameLogicError.new("NPCs cannot repair #{self}!") if player.nil?
-      technology = Technology::BuildingRepair.get(player.id)
+      technology = Technology::BuildingRepair.get!(player.id)
       planet = self.planet
 
       mass_repair(planet, technology)
@@ -49,6 +49,10 @@ module Parts::Repairable
 
       raise GameLogicError.new("#{self} must be active for repairs!") \
         unless active?
+
+      damaged_hp = self.damaged_hp
+      raise GameLogicError, "#{self} must be damaged for healing!" \
+        if damaged_hp == 0
 
       metal, energy, zetium = technology.resources_for_healing(self)
       raise GameLogicError.new(

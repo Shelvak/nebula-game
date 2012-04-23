@@ -77,6 +77,14 @@ describe Building::RepairableTest do
       end.should raise_error(GameLogicError)
     end
 
+    it "should fail if building is not damaged" do
+      building.hp_percentage = 1
+
+      lambda do
+        building.repair!
+      end.should raise_error(GameLogicError)
+    end
+
     it "should fail if planet does not have enough resources" do
       planet.metal, planet.energy, planet.zetium = technology.
         resources_for_healing(building).map { |amount| amount - 1 }
