@@ -121,6 +121,23 @@ package models.building
       public var canRepairBuilding: Boolean;
       //=======
 
+      //Mass repair costs
+      [Bindable]
+      public var metalMassRepairCost: Number;
+
+      [Bindable]
+      public var energyMassRepairCost: Number;
+
+      [Bindable]
+      public var zetiumMassRepairCost: Number;
+
+      [Bindable]
+      public var timeMassRepairCost: String;
+
+      [Bindable]
+      public var canMassRepairBuilding: Boolean;
+      //=======
+
       /**
        * how many seconds are left to fulfill resources needs for building
        **/
@@ -128,20 +145,28 @@ package models.building
       public var resLeft: int = 0;
       [Bindable]
       public var repairResLeft: int = 0;
+      [Bindable]
+      public var massRepairResLeft: int = 0;
 
       [Bindable]
       public var resLeftString: String = '';
       [Bindable]
       public var repairResLeftString: String = '';
+      [Bindable]
+      public var massRepairResLeftString: String = '';
 
       [Bindable]
       public var enoughStorage: Boolean = true;
       [Bindable]
       public var enoughRepairStorage: Boolean = true;
       [Bindable]
+      public var enoughMassRepairStorage: Boolean = true;
+      [Bindable]
       public var missingStorageString: String = '';
       [Bindable]
       public var missingRepairStorageString: String = '';
+      [Bindable]
+      public var missingMassRepairStorageString: String = '';
 
       [Bindable]
       public var canBeUpgraded: Boolean = false;
@@ -219,6 +244,13 @@ package models.building
          energyRepairCost = resources.energy;
          zetiumRepairCost = resources.zetium;
          timeRepairCost = DateUtil.secondsToHumanString(resources.cooldown, 3);
+
+         resources = HealPrice.calculateMassRepairPrice(
+                 ML.latestPlanet);
+         metalMassRepairCost = resources.metal;
+         energyMassRepairCost = resources.energy;
+         zetiumMassRepairCost = resources.zetium;
+         timeMassRepairCost = DateUtil.secondsToHumanString(resources.cooldown, 3);
       }
       
       [Bindable]
@@ -561,8 +593,11 @@ package models.building
                var ssObject: MSSObject = ML.latestPlanet.ssObject;
                 missingRepairStorageString = Resource.getMissingStoragesString(
                        ssObject, metalRepairCost, energyRepairCost, zetiumRepairCost);
+               missingMassRepairStorageString = Resource.getMissingStoragesString(
+                      ssObject, metalMassRepairCost, energyMassRepairCost, zetiumMassRepairCost);
 
                enoughRepairStorage = (missingRepairStorageString == ''?true:false);
+               enoughMassRepairStorage = (missingMassRepairStorageString == ''?true:false);
 
                if (!enoughRepairStorage)
                {
@@ -574,6 +609,17 @@ package models.building
                   energyRepairCost <= ssObject.energy.currentStock &&
                   zetiumRepairCost <= ssObject.zetium.currentStock;
                }
+               if (!enoughMassRepairStorage)
+               {
+                  canMassRepairBuilding = false;
+               }
+               else
+               {
+                  canMassRepairBuilding = metalMassRepairCost  <= ssObject.metal.currentStock &&
+                  energyMassRepairCost <= ssObject.energy.currentStock &&
+                  zetiumMassRepairCost <= ssObject.zetium.currentStock;
+               }
+
                if (canRepairBuilding)
                {
                   repairResLeft = 0;
@@ -584,6 +630,18 @@ package models.building
                      (ssObject.metal, ssObject.energy, ssObject.zetium,
                         metalRepairCost, energyRepairCost, zetiumRepairCost);
                   repairResLeftString = getStringFromSeconds(repairResLeft);
+               }
+
+               if (canMassRepairBuilding)
+               {
+                  massRepairResLeft = 0;
+               }
+               else
+               {
+                  massRepairResLeft = Resource.getTimeToReachResources
+                     (ssObject.metal, ssObject.energy, ssObject.zetium,
+                        metalMassRepairCost, energyMassRepairCost, zetiumMassRepairCost);
+                  massRepairResLeftString = getStringFromSeconds(massRepairResLeft);
                }
             }
          }
@@ -757,6 +815,18 @@ package models.building
       {
          new BuildingsCommand(BuildingsCommand.REPAIR,
             _selectedBuilding).dispatch();
+      }
+
+      public function massRepairBuilding(): void
+      {
+         var buildingIds: Array = [];
+         for each (var building: Building in ML.latestPlanet.damagedBuildings)
+         {
+            buildingIds.push(building.id);
+         }
+         new BuildingsCommand(BuildingsCommand.MASS_REPAIR,
+            {'planetId': ML.latestPlanet.id,
+            'buildingIds': buildingIds}).dispatch();
       }
 
       private function refreshDestructProperties(): void

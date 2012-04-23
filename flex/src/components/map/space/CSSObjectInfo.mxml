@@ -9,70 +9,76 @@
    <fx:Binding source="MSSObject(staticObject)" destination="ssObject"/>
    <fx:Script>
       <![CDATA[
-     import controllers.players.PlayersCommand;
+      import controllers.players.PlayersCommand;
 
-     import models.Owner;
-     import models.location.LocationMinimal;
-     import models.movement.MSquadKillReward;
-     import models.movement.events.MSquadronEvent;
-     import models.solarsystem.MSSObject;
+      import models.Owner;
+      import models.location.LocationMinimal;
+      import models.map.IMStaticSpaceObject;
+      import models.movement.MSquadKillReward;
+      import models.movement.events.MSquadronEvent;
+      import models.solarsystem.MSSObject;
 
-     import utils.locale.Localizer;
-
-
-     [Bindable]
-     private var ssObject: MSSObject;
+      import utils.locale.Localizer;
 
 
-     private function getString(key: String, parameters: Array = null): String {
-       return Localizer.string("SSObjects", key, parameters);
-     }
+      [Bindable]
+      override public function set staticObject(value: IMStaticSpaceObject): void {
+         super.staticObject = value;
+         honorCoefLabel = null;
+      }
 
-     private function getLabel(labelName: String, parameters: Array = null): String {
-       return getString("label." + labelName, parameters);
-     }
+      [Bindable]
+      private var ssObject: MSSObject;
 
-     private function getTooltip(tooltipName: String, parameters: Array = null): String {
-       return getString("tooltip." + tooltipName, parameters);
-     }
 
-     private function getMessage(messageName: String, parameters: Array = null): String {
-       return getString("message." + messageName, parameters);
-     }
+      private function getString(key: String, parameters: Array = null): String {
+         return Localizer.string("SSObjects", key, parameters);
+      }
 
-     private function getSectorLabel(ssObject: MSSObject): String {
-       return ssObject == null
-         ? "" : LocationMinimal.getSectorLabel(ssObject.currentLocation);
-     }
+      private function getLabel(labelName: String, parameters: Array = null): String {
+         return getString("label." + labelName, parameters);
+      }
 
-     private function getPlanetAreaLabel(ssObject: MSSObject): String {
-       return ssObject == null
-         ? ""
-         : Localizer.string(
-         "SSObjects", "label.planetArea",
-         [ssObject.width, ssObject.height]
-       );
-     }
+      private function getTooltip(tooltipName: String, parameters: Array = null): String {
+         return getString("tooltip." + tooltipName, parameters);
+      }
 
-     [Bindable]
-     private var honorCoefLabel: String = null;
+      private function getMessage(messageName: String, parameters: Array = null): String {
+         return getString("message." + messageName, parameters);
+      }
 
-     private function showHonorCoef(e: MSquadronEvent): void
-     {
-       MKR.removeEventListener(MSquadronEvent.MULTIPLIER_CHANGE, showHonorCoef);
-       honorCoefLabel = (MKR.multiplier * 100).toFixed(2) + '%';
-     }
+      private function getSectorLabel(ssObject: MSSObject): String {
+         return ssObject == null
+                 ? "" : LocationMinimal.getSectorLabel(ssObject.currentLocation);
+      }
 
-     private var MKR: MSquadKillReward = MSquadKillReward.getInstance();
+      private function getPlanetAreaLabel(ssObject: MSSObject): String {
+         return ssObject == null
+                 ? ""
+                 : Localizer.string(
+                 "SSObjects", "label.planetArea",
+                 [ssObject.width, ssObject.height]
+         );
+      }
 
-     private function btnShowHonorCoef_clickHandler(event: MouseEvent): void {
-       MKR.addEventListener(MSquadronEvent.MULTIPLIER_CHANGE, showHonorCoef);
-       new PlayersCommand(PlayersCommand.BATTLE_VPS_MULTIPLIER,
-         {
-           'targetId': ssObject.player.id
-         }).dispatch();
-     }
-     ]]>
+      [Bindable]
+      private var honorCoefLabel: String = null;
+
+      private function showHonorCoef(e: MSquadronEvent): void {
+         MKR.removeEventListener(MSquadronEvent.MULTIPLIER_CHANGE, showHonorCoef);
+         honorCoefLabel = (MKR.multiplier * 100).toFixed(2) + '%';
+      }
+
+      private var MKR: MSquadKillReward = MSquadKillReward.getInstance();
+
+      private function btnShowHonorCoef_clickHandler(event: MouseEvent): void {
+         MKR.addEventListener(MSquadronEvent.MULTIPLIER_CHANGE, showHonorCoef);
+         new PlayersCommand(PlayersCommand.BATTLE_VPS_MULTIPLIER,
+                 {
+                    'targetId':ssObject.player.id
+                 }).dispatch();
+      }
+      ]]>
    </fx:Script>
    
    <!--- Full size planet image -->
