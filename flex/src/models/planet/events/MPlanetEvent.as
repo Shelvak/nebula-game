@@ -13,6 +13,7 @@ package models.planet.events
       
       public static const BUILDING_MOVE:String = "buildingMove";
       public static const BUILDING_UPGRADED:String = "planetBuildingUpgraded";
+      public static const BUILDING_UPDATED:String = "planetBuildingUpdated";
 
       /**
        * @see MPlanet

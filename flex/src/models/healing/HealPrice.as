@@ -5,6 +5,7 @@ package models.healing
    import models.building.BuildingType;
    import models.parts.Upgradable;
    import models.parts.UpgradableType;
+   import models.planet.MPlanet;
    import models.resource.ResourceType;
    import models.solarsystem.MSSObject;
    import models.technology.Technology;
@@ -22,26 +23,50 @@ package models.healing
       public var zetium: Number = 0;
       public var cooldown: int = 0;
 
+      private static function calculateRepairPriceImpl(building: Building,
+                                                       priceMod: Number,
+                                                       cooldownMod: Number): HealPrice
+      {
+         function calcRes(resource: String): Number {
+                    return Math.round(Upgradable.calculateCost(
+                       UpgradableType.BUILDINGS, building.type, resource, {'level': 1}
+                    ) * priceMod * building.damagePercentage);
+                 }
+                 var price: HealPrice = new HealPrice();
+                 price.metal = calcRes(ResourceType.METAL);
+                 price.energy = calcRes(ResourceType.ENERGY);
+                 price.zetium = calcRes(ResourceType.ZETIUM);
+
+                 price.cooldown = Math.max(
+                    1, Math.round((building.hpMax - building.hp) * cooldownMod)
+                 );
+
+                 return price;
+      }
+
       public static function calculateRepairPrice(building: Building): HealPrice
+      {
+         var tech: Technology = ModelLocator.getInstance().technologies.
+            getTechnologyByType(Technology.BUILDING_REPAIR);
+         var priceMod : Number = tech.repairPriceMod;
+         var cooldownMod: Number = tech.repairCooldownMod;
+         
+         return calculateRepairPriceImpl(building, priceMod, cooldownMod);
+      }
+
+      public static function calculateMassRepairPrice(planet: MPlanet): HealPrice
       {
          var price: HealPrice = new HealPrice();
          var tech: Technology = ModelLocator.getInstance().technologies.
             getTechnologyByType(Technology.BUILDING_REPAIR);
          var priceMod : Number = tech.repairPriceMod;
          var cooldownMod: Number = tech.repairCooldownMod;
-         
-         function calcRes(resource: String): Number {
-            return Math.round(Upgradable.calculateCost(
-               UpgradableType.BUILDINGS, building.type, resource, {'level': 1}
-            ) * priceMod * building.damagePercentage);
-         } 
-         price.metal = calcRes(ResourceType.METAL);
-         price.energy = calcRes(ResourceType.ENERGY);
-         price.zetium = calcRes(ResourceType.ZETIUM);
 
-         price.cooldown = Math.max(
-            1, Math.round((building.hpMax - building.hp) * cooldownMod)
-         );
+         var buildings: Array = planet.getDamagedBuildings();
+         for each (var building: Building in buildings)
+         {
+            price.addPrice(calculateRepairPriceImpl(building, priceMod, cooldownMod));
+         }
 
          return price;
       }
@@ -73,10 +98,9 @@ package models.healing
       }
       
       /**
-       * Adds given price, if there is enough resources in given SSObject,
+       * Adds given price, if there is enough resources in latest planet,
        * returns true if added and false otherwise
        * @param price - price to add
-       * @param planet - ssobject which resources to check
        * @return if these resources were added
        * 
        */      

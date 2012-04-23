@@ -690,7 +690,20 @@ package models.planet
       {
          return _buildings;
       }
-      
+
+      public function get damagedBuildings() : ListCollectionView
+      {
+         return Collections.filter(buildings, function(obj: Building): Boolean
+         {
+            return obj.hp < obj.hpMax;
+         })
+      }
+
+      [Bindable (event="planetBuildingUpdated")]
+      public function get damagedBuildingsLength(): int
+      {
+         return damagedBuildings.length;
+      }
       
       private var _folliages:ListCollectionView;
       private function filterFunction_folliages(object:MPlanetObject) : Boolean
@@ -1518,6 +1531,12 @@ package models.planet
       public function dispatchBuildingUpgradedEvent(): void {
          if (hasEventListener(MPlanetEvent.BUILDING_UPGRADED)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.BUILDING_UPGRADED));
+         }
+      }
+
+      public function dispatchBuildingUpdatedEvent(): void {
+         if (hasEventListener(MPlanetEvent.BUILDING_UPDATED)) {
+            dispatchEvent(new MPlanetEvent(MPlanetEvent.BUILDING_UPDATED));
          }
       }
 
