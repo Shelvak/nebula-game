@@ -267,7 +267,7 @@ class SsObject::Planet < SsObject
     end
 
     BulkSql::Building.save(buildings)
-    planet.save!
+    save!
 
     EventBroker.fire(buildings, EventBroker::CHANGED)
     EventBroker.fire(

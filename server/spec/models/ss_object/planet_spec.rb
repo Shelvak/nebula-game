@@ -1581,7 +1581,7 @@ describe SsObject::Planet do
   describe "#mass_repair!" do
     let(:player) { Factory.create(:player) }
     let(:technology) do
-      Factory.create(:t_building_repair, level: 1, player: player)
+      Factory.create!(:t_building_repair, level: 1, player: player)
     end
     let(:planet) { set_resources(Factory.create(:planet, player: player)) }
     let(:buildings) { [
@@ -1624,29 +1624,41 @@ describe SsObject::Planet do
 
     it "should register cooldown expired callback on each of the buildings" do
       planet.mass_repair!(buildings)
-      buildings.each do |b|
-        b.should have_callback(CallbackManager::EVENT_COOLDOWN_EXPIRED)
+      buildings.each do |building|
+        building.should have_callback(
+          CallbackManager::EVENT_COOLDOWN_EXPIRED, building.cooldown_ends_at
+        )
       end
     end
 
     it "should save all buildings" do
-
+      planet.mass_repair!(buildings)
+      buildings.each { |building| building.should be_saved }
     end
 
     it "should save the planet" do
-
+      planet.mass_repair!(buildings)
+      planet.should be_saved
     end
 
     it "should fire changed with the buildings" do
-
+      should_fire_event(buildings, EventBroker::CHANGED) do
+        planet.mass_repair!(buildings)
+      end
     end
 
     it "should fire changed with the planet" do
-
+      should_fire_event(
+        planet, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
+      ) do
+        planet.mass_repair!(buildings)
+      end
     end
 
     it "should progress Objective::RepairHp" do
-
+      damaged_hp = buildings.sum(&:damaged_hp)
+      Objective::RepairHp.should_receive(:progress).with(player, damaged_hp)
+      planet.mass_repair!(buildings)
     end
   end
 
