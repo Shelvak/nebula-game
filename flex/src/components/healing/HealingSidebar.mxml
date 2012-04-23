@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
                     xmlns:s="library://ns.adobe.com/flex/spark"
-                    xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:base="components.base.*"
                     xmlns:screens="components.screens.*"
                     width="100%" height="100%"
@@ -111,6 +110,8 @@
       }
 
       private function getTime(from: Date): Number {
+         if (from == null)
+            return 0;
          return from.time;
       }
       ]]>

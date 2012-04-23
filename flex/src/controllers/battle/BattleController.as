@@ -857,6 +857,7 @@ package controllers.battle
             var pointTarget:Point = target.getAbsoluteTargetPoint();
             pointTarget.y += dispersion.y;
             pointTarget.x += dispersion.x;
+            var hitPoint: Point = pointTarget.clone();
             // angle between a horizontal axis and the vector which starts at pointGun and ends at pointTarget
             // in degrees
             var direction:Vector3D =  new Vector3D(pointTarget.x, pointTarget.y)
@@ -897,7 +898,8 @@ package controllers.battle
                {
                   if (_battleMap != null)
                   {
-                     getOnProjectileHitHandler(pComponent, target, targetModel, triggerTargetAnimation, isLastProjectile, damage);
+                     getOnProjectileHitHandler(pComponent, target, targetModel, triggerTargetAnimation, isLastProjectile, damage,
+                     hitPoint);
                   }
                   pComponent.moveTween = null;
                },
@@ -915,7 +917,8 @@ package controllers.battle
                                                  targetModel: IMBattleParticipant,
                                                  triggerTargetAnimation:Boolean,
                                                  isLastProjectile:Boolean,
-                                                 damageTaken: int) : void
+                                                 damageTaken: int,
+                                                 hitPoint: Point) : void
       {
          projectile.addEventListener(
             AnimatedBitmapEvent.ALL_ANIMATIONS_COMPLETE,
@@ -929,11 +932,9 @@ package controllers.battle
             var dmgBubble: DamageBubble = new DamageBubble();
             dmgBubble.depth = _battleMap.unitsMatrix.rowCount + 10;
             dmgBubble.damage = damageTaken;
-            dmgBubble.x = target.getAbsoluteTargetPoint().x +
-                    ((target.flippedHorizontally ? -1 : 1) *
-                            (target.boxWidth/2)) - 20;
-            dmgBubble.y = target.getAbsoluteTargetPoint().y - 20;
             _battleMap.addDamageBubble(dmgBubble);
+            dmgBubble.x = hitPoint.x - (dmgBubble.width/2);
+            dmgBubble.y = hitPoint.y - 20;
             dmgBubbles.addItem(dmgBubble);
             dmgBubble.moveTween = new TweenLite(dmgBubble, DAMAGE_BUBBLE_DURATION * timeMultiplier, {
                "onComplete" :  

@@ -33,6 +33,8 @@ package components.base.paging
          currentPage.visible = true;
       }
 
+      public var wrapAround: Boolean = false;
+
       private var _componentFactory: IPageComponentFactory;
       public function get componentFactory(): IPageComponentFactory {
          return _componentFactory;
@@ -57,25 +59,46 @@ package components.base.paging
          }
       }
 
-      public function firstPage(): void {
-         setCurrentPageIdx(0);
-      }
 
-      public function nextPage(): void {
-         if (hasNextPage) {
-            setCurrentPageIdx(_currentPageIdx + 1);
-         }
+      private function get onFirstPage(): Boolean {
+         return _currentPageIdx == 0;
       }
 
       public function previousPage(): void {
          if (hasPreviousPage) {
-            setCurrentPageIdx(_currentPageIdx - 1);
+            onFirstPage
+               ? lastPage()
+               : setCurrentPageIdx(_currentPageIdx - 1);
          }
+      }
+
+      public function firstPage(): void {
+         setCurrentPageIdx(0);
+      }
+
+      private function get lastPageIdx(): int {
+         return numPages - 1;
+      }
+
+      private function get onLastPage(): Boolean {
+         return _currentPageIdx == lastPageIdx;
+      }
+
+      public function nextPage(): void {
+         if (hasNextPage) {
+            onLastPage
+               ? firstPage()
+               : setCurrentPageIdx(_currentPageIdx + 1);
+         }
+      }
+
+      public function lastPage(): void {
+         setCurrentPageIdx(lastPageIdx);
       }
 
       [Bindable(event="currentPageChange")]
       public function get hasPreviousPage(): Boolean {
-         return _currentPageIdx > 0;
+         return wrapAround || !onFirstPage;
       }
 
       [Bindable(event="currentPageChange")]
@@ -90,7 +113,7 @@ package components.base.paging
 
       [Bindable(event="currentPageChange")]
       public function get hasNextPage(): Boolean {
-         return _currentPageIdx < numPages - 1;
+         return wrapAround || !onLastPage;
       }
 
       private var _numPages: int;

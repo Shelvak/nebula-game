@@ -122,6 +122,18 @@ package tests.paging
             "switched to first page",
             switcher.currentPage, equals (pages[0])
          );
+
+         assertThat(
+            "event is dispatched when last page is switched",
+            switcher.lastPage,
+            causes (switcher) .toDispatchEvent(
+               MPageSwitcherEvent.CURRENT_PAGE_CHANGE
+            )
+         );
+         assertThat(
+            "switched to last page",
+            switcher.currentPage, equals (pages[2])
+         );
       }
 
       [Test]
@@ -225,6 +237,36 @@ package tests.paging
          );
          assertThat(
             "should be closed", switcher.isOpen, isFalse()
+         );
+      }
+
+      [Test]
+      public function wrapAround(): void {
+         assertThat(
+            "should not be on by default", switcher.wrapAround, isFalse()
+         );
+         switcher.wrapAround = true;
+
+         switcher.firstPage();
+         assertThat(
+            "should have previous page when on first page and wrapAround is on",
+            switcher.hasPreviousPage, isTrue()
+         );
+         switcher.previousPage();
+         assertThat(
+            "should switch to last page when on first page and wrapAround is on",
+            switcher.currentPageNum, equals (3)
+         );
+
+         switcher.lastPage();
+         assertThat(
+            "should have next page when on last page and wrapAround is on",
+            switcher.hasNextPage, isTrue()
+         );
+         switcher.nextPage();
+         assertThat(
+            "should switch to first page when on last page and wrapAround is on",
+            switcher.currentPageNum, equals (1)
          );
       }
 
