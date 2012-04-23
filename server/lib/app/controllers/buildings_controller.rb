@@ -401,6 +401,7 @@ class BuildingsController < GenericController
   # - id (Fixnum): ID of the repaired building.
   #
   # Response: None
+  #
   ACTION_REPAIR = 'buildings|repair'
 
   REPAIR_OPTIONS = logged_in + find_building_options
@@ -408,6 +409,28 @@ class BuildingsController < GenericController
   def self.repair_action(m)
     building = find_building(m)
     building.repair!
+  end
+
+  # Starts mass repairs on the planet
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - planet_id (Fixnum): ID of the planet.
+  # - building_ids (Fixnum[]): IDs of repairable buildings.
+  #
+  # Response: None
+  #
+  ACTION_MASS_REPAIR = 'buildings|mass_repair'
+
+  MASS_REPAIR_OPTIONS = logged_in +
+    required(:planet_id => Fixnum, :building_ids => Array)
+  MASS_REPAIR_SCOPE = scope.world
+  def self.mass_repair_action(m)
+    planet = SsObject::Planet.where(:player_id => m.player.id).
+      find(m.params['planet_id'])
+    buildings = planet.buildings.find(m.params['building_ids'])
+    planet.mass_repair!(buildings)
   end
 
   # Transports resources via +Building::ResourceTransporter+ from source planet

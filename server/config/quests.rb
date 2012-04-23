@@ -147,14 +147,14 @@ QUESTS = QuestDefinition.define(:debug => false) do
                  s_ore_tile]) do
     have_upgraded_to Building::MetalExtractor
 
-    reward_cost Building::MetalExtractor, :count => 1.1
-    reward_cost Building::CollectorT1, :count => 1.1
+    reward_cost Building::MetalExtractor, :count => 1.1, :level => 2
+    reward_cost Building::CollectorT1, :count => 1.1, :level => 2
   end.define(30, [s_quest, s_building_upgrade]) do
     have_upgraded_to Building::CollectorT1, :level => 2
     have_upgraded_to Building::MetalExtractor, :level => 2
 
-    reward_cost Building::MetalExtractor, :count => 1.1
-    reward_cost Building::CollectorT1, :count => 4.2
+    reward_cost Building::MetalExtractor, :count => 1.1, :level => 2
+    reward_cost Building::CollectorT1, :count => 4.2, :level => 2
   end.define(40, [s_quest, s_energy_tiles]) do
     have_upgraded_to Building::MetalExtractor, :count => 2, :level => 2
     have_upgraded_to Building::CollectorT1, :count => 4, :level => 2
