@@ -147,7 +147,9 @@ if $SPEC_INITIALIZED.nil?
           block_value
         end
       ensure
-        define_method(method_name, &old_method)
+        metaclass.instance_eval do
+          define_method(method_name, &old_method)
+        end
       end
     end
   end
