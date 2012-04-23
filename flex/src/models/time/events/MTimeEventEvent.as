@@ -6,7 +6,7 @@ package models.time.events
    public class MTimeEventEvent extends Event
    {
       /**
-       * Dispatched when <code>models.time.IMTimeEvent.hasOccured</code> property changes.
+       * Dispatched when <code>models.time.IMTimeEvent.hasOccurred</code> property changes.
        *
        * @eventType hasOccurredChange
        *
