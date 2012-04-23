@@ -242,15 +242,15 @@ package models.building
       
       
       /**
-       * Calculates and returns strenth of the radar of the given building or <code>0</code> if that building
+       * Calculates and returns strength of the radar of the given building or <code>0</code> if that building
        * is not a radar.
        * 
        * @param buildingType type of a building
        * @param params custom parameters for a formula
        * 
-       * @return strent of the radar of the given building
+       * @return strength of the radar of the given building
        */
-      public static function calculateRadarStrenth(buildingType:String, params:Object) : int
+      public static function calculateRadarStrength(buildingType:String, params:Object) : int
       {
          var formula:String = Config.getBuildingProperty(buildingType, RADAR_STRENGTH);
          if (!formula)
@@ -767,14 +767,14 @@ package models.building
       [Bindable (event="levelChange")]
       public function get radarStrength() : int
       {
-         return calculateRadarStrenth(type, {"level": level});
+         return calculateRadarStrength(type, {"level": level});
       }
       
       
       [Bindable (event="levelChange")]
       public function get nextRadarStrength() : int
       {
-         return calculateRadarStrenth(type, {"level": level+1});
+         return calculateRadarStrength(type, {"level": level+1});
       }
       
       
