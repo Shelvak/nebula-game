@@ -427,6 +427,8 @@ class BuildingsController < GenericController
     required(:planet_id => Fixnum, :building_ids => Array)
   MASS_REPAIR_SCOPE = scope.world
   def self.mass_repair_action(m)
+    raise GameLogicError, "Only VIPs can do mass repair!" unless m.player.vip?
+
     planet = SsObject::Planet.where(:player_id => m.player.id).
       find(m.params['planet_id'])
     buildings = planet.buildings.find(m.params['building_ids'])
