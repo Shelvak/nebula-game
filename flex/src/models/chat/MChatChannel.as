@@ -212,7 +212,7 @@ package models.chat
 
       private function onPlayerElementClick(playerId: int,
                                             playerName: String): void {
-         userInput = playerName + ": ";
+         userInput = playerName + ", " + userInput;
       }
       
       /**
@@ -311,7 +311,7 @@ package models.chat
                                  addMessage: Boolean = true): void {
          _members.addMember(member);
          if (_generateJoinLeaveMsgs && addMessage) {
-            addMemberExistanceChangeMessage(
+            addMemberExistenceChangeMessage(
                member, ChannelJoinMessageConverter.getInstance()
             );
          }
@@ -328,14 +328,14 @@ package models.chat
       public function memberLeave(member: MChatMember): void {
          _members.removeMember(member);
          if (_generateJoinLeaveMsgs) {
-            addMemberExistanceChangeMessage(
+            addMemberExistenceChangeMessage(
                member, ChannelLeaveMessageConverter.getInstance()
             );
          }
          dispatchChannelEvent(MChatChannelEvent.NUM_MEMBERS_CHANGE);
       }
 
-      private function addMemberExistanceChangeMessage(member: MChatMember,
+      private function addMemberExistenceChangeMessage(member: MChatMember,
                                                        messageConverter: IChatMessageConverter): void {
          const msg: MChatMessage = MChatMessage(MCHAT.messagePool.borrowObject());
          msg.playerId = member.id;

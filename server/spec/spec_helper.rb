@@ -66,6 +66,8 @@ if $SPEC_INITIALIZED.nil?
     planet.zetium_storage = zetium_storage || zetium
     planet.zetium = zetium
     planet.save!
+
+    planet
   end
 
   def with_config_values(values={})
@@ -145,7 +147,9 @@ if $SPEC_INITIALIZED.nil?
           block_value
         end
       ensure
-        define_method(method_name, &old_method)
+        metaclass.instance_eval do
+          define_method(method_name, &old_method)
+        end
       end
     end
   end

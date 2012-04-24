@@ -448,6 +448,7 @@
     <constructing value="Constructing" />
     <upgrading value="Upgrading" />
 
+    <title.cooldown value="Building cooldown"/>
     <title.rates value="Rates" />
     <title.inactiveBuilding value="Inactive building" />
     <storage value="Storage" />
@@ -491,6 +492,7 @@
     <panelTitle.scientists value="Scientists" />
     <panelTitle.cancelProgress value="Cancel upgrade" />
     <panelTitle.repairBuilding value="Repair building" />
+    <panelTitle.massRepairBuildings value="Repair all buildings" />
     <warning.repairBuilding>
       <p>Turret won't participate in combat until repairs are finished.</p>
     </warning.repairBuilding>
@@ -498,7 +500,13 @@
       <p>You need to research [obj:1:Technology_BuildingRepair::dc]
       technology to repair turrets.</p>
     </warning.repairBuildingTechNeeded>
+    <warning.massRepairRequiresVip>
+      <p>If you were a VIP player you could repair all the turrets on this
+        planet here.</p>
+    </warning.massRepairRequiresVip>
     <label.repairBuilding value="Repair"/>
+    <label.massRepairBuilding value="Repair all"/>
+    <toolTip.repairTime value="Repair time"/>
     <label.cancelUpgrade>
       <p>These resources will be returned if you cancel upgrade of this
       building:</p>
@@ -670,6 +678,16 @@
         completion. 
       </p>
     </text.deactivated>
+
+    <text.cooldown>
+      <p>
+        This building is currently cooling down and it can't perform it's
+        functions yet.
+      </p>
+      <p>
+        Building cooldown ends in:
+      </p>
+    </text.cooldown>
     
     <!-- NPC buildings -->
 
@@ -1275,6 +1293,9 @@
       ● Instantly finishing construction of all pre-paid units in queue with
       discounts (compared to finishing them one by one)!
     </label.additionalPrivileges.buildAllEntries>
+    <label.additionalPrivileges.repairAllTurrets>
+      ● Repair all turrets on the planet with one click.
+    </label.additionalPrivileges.repairAllTurrets>
     <label.buildAllEntries value="You can finish this construction queue instantly:"/>
     <!-- 0: creds for construct all,
          1: creds to pay if accelerate one by one -->
@@ -1306,7 +1327,7 @@
   <Exploration>
     <title.explore value="Exploration" />
     <label.explore value="Explore" />
-    <label.finishesIn value="Finished in {0}" />
+    <label.finishesIn value="Finished in:" />
     <description.noResearchCenter>
       <p>
         You could explore this object if you had a research center in this 
@@ -1331,7 +1352,8 @@
     <label.instantFinish value="Finish exploring"/>
     <label.buyCreds value="Buy creds"/>
     <description.instantFinishCost>
-    <![CDATA[It will cost you <span fontWeight="bold">{0}</span> creds to instantly finish exploring.]]>
+    <![CDATA[It will cost you <span fontWeight="bold">{0}</span> creds<br/>
+    to instantly finish exploring.]]>
     </description.instantFinishCost>
   </Exploration>
   
@@ -1669,6 +1691,7 @@
     <label.alliance value="Alliance" />
     <label.forum value="Forum" />
     <label.wiki value="Wiki"/>
+    <label.tips value="Tips"/>
     <label.inviteFriend value="Invites"/>
     <tooltip.version value="Game version" />
     <panelWidth value="85" />
@@ -3402,8 +3425,9 @@
     <ClaimReward>
       <![CDATA[
       <p>You get reward for each quest you complete. You can take it by
-      navigating to the quests screen: open N44 menu at the bottom right corner
-      of the screen and click "[reference:MainMenu/label.quests]" button.</p>
+      navigating to the quests screen: open Nebula 44 menu at the bottom left
+      corner of the screen and click "[reference:MainMenu/label.quests]"
+      button.</p>
       <p>Then you have to find a completed quest - they are marked as yellow -
       and click on a '[reference:Quests/label.claimReward]' button</p>
       ]]>

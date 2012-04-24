@@ -1578,6 +1578,103 @@ describe SsObject::Planet do
     end
   end
 
+  describe "#mass_repair!" do
+    let(:player) { Factory.create(:player) }
+    let(:technology) do
+      Factory.create!(:t_building_repair, level: 1, player: player)
+    end
+    let(:planet) { set_resources(Factory.create(:planet, player: player)) }
+    let(:buildings) do
+      opts = opts_active + opts_built + {planet: planet}
+      [
+        Factory.create!(:b_vulcan, opts + {x: 0, hp_percentage: 0.11}),
+        Factory.create!(:b_vulcan, opts + {x: 3, hp_percentage: 0.15}),
+        Factory.create!(:b_vulcan, opts + {x: 6, hp_percentage: 0.21}),
+      ]
+    end
+
+    before(:each) do
+      technology
+    end
+
+    it "should fail if there are buildings which are not repairable" do
+      lambda do
+        planet.mass_repair!(buildings + [
+          Factory.create(:b_barracks, planet: planet, x: 10, hp_percentage: 0.5)
+        ])
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if there are buildings not on this planet" do
+      lambda do
+        planet.mass_repair!(buildings + [
+          Factory.create!(
+            :b_vulcan,
+            planet: Factory.create(:planet), x: 10, hp_percentage: 0.5
+          )
+        ])
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should get building repair technology" do
+      Technology::BuildingRepair.should_receive(:get!).with(player.id).
+        and_return(technology)
+      planet.mass_repair!(buildings)
+    end
+
+    it "should call #mass_repair on each of the buildings" do
+      buildings.each do |b|
+        b.should_receive(:mass_repair).with(planet, technology).and_return do
+          |*args|
+
+          # Callback registration uses this later.
+          b.cooldown_ends_at = 5.minutes.from_now
+          50
+        end
+      end
+      planet.mass_repair!(buildings)
+    end
+
+    it "should register cooldown expired callback on each of the buildings" do
+      planet.mass_repair!(buildings)
+      buildings.each do |building|
+        building.should have_callback(
+          CallbackManager::EVENT_COOLDOWN_EXPIRED, building.cooldown_ends_at
+        )
+      end
+    end
+
+    it "should save all buildings" do
+      planet.mass_repair!(buildings)
+      buildings.each { |building| building.should be_saved }
+    end
+
+    it "should save the planet" do
+      planet.mass_repair!(buildings)
+      planet.should be_saved
+    end
+
+    it "should fire changed with the buildings" do
+      should_fire_event(buildings, EventBroker::CHANGED) do
+        planet.mass_repair!(buildings)
+      end
+    end
+
+    it "should fire changed with the planet" do
+      should_fire_event(
+        planet, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
+      ) do
+        planet.mass_repair!(buildings)
+      end
+    end
+
+    it "should progress Objective::RepairHp" do
+      damaged_hp = buildings.sum(&:damaged_hp)
+      Objective::RepairHp.should_receive(:progress).with(player, damaged_hp)
+      planet.mass_repair!(buildings)
+    end
+  end
+
   describe "#recalculate" do
     before(:all) do
       @resource = 100.0

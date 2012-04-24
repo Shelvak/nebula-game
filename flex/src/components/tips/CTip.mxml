@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         width="675" height="214"
+         visible="{model.visible}">
+   <fx:Script>
+      <![CDATA[
+      import models.tips.MTip;
+
+      import utils.locale.Localizer;
+
+
+      [Bindable]
+      public var model: MTip;
+      ]]>
+   </fx:Script>
+   <s:Rect left="0" right="0" top="0" bottom="0" radiusX="16">
+      <s:fill>
+         <s:SolidColor alpha="0.3"/>
+      </s:fill>
+   </s:Rect>
+   <s:Group left="12" right="12" top="12" bottom="12">
+      <s:layout>
+         <s:HorizontalLayout gap="13" verticalAlign="middle"/>
+      </s:layout>
+      <s:BitmapImage source="{model.image}"/>
+      <s:Group width="100%" fontSize="13">
+         <s:layout>
+            <s:VerticalLayout horizontalAlign="left" gap="3"/>
+         </s:layout>
+         <s:Label text="{Localizer.string('LoadingScreen', 'label.tip')}"
+                  fontWeight="bold"/>
+         <s:Group width="100%">
+            <s:Label text="{model.text}" lineBreak="toFit" left="0" right="0"/>
+         </s:Group>
+      </s:Group>
+   </s:Group>
+</s:Group>

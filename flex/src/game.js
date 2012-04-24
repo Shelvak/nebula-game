@@ -92,6 +92,28 @@ var locales = { // {{{
       if (locale == "lt") return "Siųsti";
       return "Send";
     }
+  },
+  clientNotResponding: {
+    title: function(locale) {
+       if (locale == "lt") return "Tavo kompiuteris nesusitvarkė su apkrova!";
+       return "Your computer couldn't handle the load!";
+    },
+    reload: function(locale) {
+       if (locale == "lt") return "Perkrauti puslapį";
+       return "Reload now";
+    },
+    message: function(locale) {
+       if (locale == "lt") return [
+          "Labai gaila, tačiau tavo kompiuteris buvo per lėtas ir nespėjo " +
+             "atlikti užduoties laiku.",
+          "Norint išvengti tolimesnių nesklandumų, žaidimas turi būti perkrautas."
+       ];
+       return [
+          "Unfortunately your computer was too slow and couldn't process " +
+            "those numbers in time",
+          "To prevent further issues Nebula 44 has to be reloaded."
+       ];
+    }
   }
 } // }}}
 
@@ -342,7 +364,7 @@ function authorizationSuccessful() {
 // Called when authorization fails.
 function authorizationFailed() {
   // Remove leave confirmation.
-  window.onbeforeunload = null;
+  setLeaveHandler(false);
   window.alert(locales.failedAuth(locale));
   window.location = "http://" + webHost;
 }
@@ -350,7 +372,7 @@ function authorizationFailed() {
 // Called when client version is too old.
 function versionTooOld(requiredVersion, currentVersion) {
   // Remove leave confirmation.
-  window.onbeforeunload = null;
+  setLeaveHandler(false);
   window.alert(locales.versionTooOld(locale, requiredVersion, currentVersion));
   window.location.reload();
 }
@@ -408,6 +430,34 @@ function clientError(summary, description, body) {
   else {
     crashRemote(summary, description, body)
   }
+}
+
+// Called from flash when it crashes without stacktrace and with error
+// 1502 or 1503.
+function clientNotResponding() {
+  // Remove flash client to stop it.
+  $('#' + appName).remove();
+  setLeaveHandler(false);
+
+  var strings = locales.clientNotResponding;
+  $("#client-not-responding h2").html(strings.title(locale));
+  $("#client-not-responding-message").html(strings.message(locale).join("<br/>"));
+   $("#client-not-responding a").html(strings.reload(locale));
+  $("#client-not-responding").show();
+
+  var secondsToWait = 10;
+  var timerId = setInterval(
+    function() {
+      if (secondsToWait == 0) {
+        clearInterval(timerId);
+        refresh();
+      }
+      else {
+        $("#time-until-reload").html(secondsToWait);
+        secondsToWait--;
+      }
+    }, 1000
+  );
 }
 
 function crashLocal(summary, description, body) {

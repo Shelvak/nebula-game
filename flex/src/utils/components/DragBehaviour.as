@@ -17,11 +17,11 @@ package utils.components
    /**
     * Use this to attach drag behaviour to any display object. Here "drag behaviour" is:
     * <ol>
-    *    <li>user presses a mouse botton while over the component</li>
-    *    <li>while holding the mouse botton pressed user moves the mouse - the component follows it</li>
+    *    <li>user presses a mouse button while over the component</li>
+    *    <li>while holding the mouse button pressed user moves the mouse - the component follows it</li>
     *    <li>use releases the mouse button and the component remains in its current position</li>
     * </ol>
-    * This will only work with components not contrained by Flex layout features (constraints, layouts).
+    * This will only work with components not constrained by Flex layout features (constraints, layouts).
     * 
     * <p>
     * You initialize this class by providing a display object (client) for the constructor. Then you
@@ -121,7 +121,7 @@ package utils.components
       /**
        * A bounding object to be used. If specified, user won't be able to drag <code>client<code> out of
        * the stage area bounded by the given display object. For more information on this behaviour see
-       * <code>boundsConstraints()</code> method documenation.
+       * <code>boundsConstraints()</code> method documentation.
        * 
        * <p>By default <code>boundsObject</code> is not used.</p>
        * 
@@ -138,7 +138,7 @@ package utils.components
       }
       
       
-      private var _fixOnBoundsObjectRisize:Boolean = true;
+      private var _fixOnBoundsObjectResize:Boolean = true;
       /**
        * Whether position of the <code>client</code> should be fixed when <code>boundsObject</code> (if used)
        * resizes: when this happens the <code>client</code> may end up in a position not allowed by
@@ -156,7 +156,7 @@ package utils.components
          {
             throw new IllegalOperationError("fixOnBoundsObjectRezize requires boundsObject to be specified");
          }
-         _fixOnBoundsObjectRisize = fixOnResize;
+         _fixOnBoundsObjectResize = fixOnResize;
          return this;
       }
       
@@ -207,7 +207,7 @@ package utils.components
             _activator = _client;
          }
          _activator.addEventListener(MouseEvent.MOUSE_DOWN, activator_mouseDownHandler, false, 0, true);
-         if (useBoundsObject && _fixOnBoundsObjectRisize)
+         if (useBoundsObject && _fixOnBoundsObjectResize)
          {
             // mx.events.ResizeEvent.RESIZE is the same as Event.RESIZE so no need for two different handlers
             _boundsObject.addEventListener(Event.RESIZE, boundsObject_resizeHandler, false, 0, true);
@@ -230,7 +230,7 @@ package utils.components
             _activator.removeEventListener(MouseEvent.MOUSE_DOWN, activator_mouseDownHandler, false);
             _activator = null;
          }
-         if (useBoundsObject && _fixOnBoundsObjectRisize)
+         if (useBoundsObject && _fixOnBoundsObjectResize)
          {
             _boundsObject.removeEventListener(Event.RESIZE, boundsObject_resizeHandler, false);
             _boundsObject = null;

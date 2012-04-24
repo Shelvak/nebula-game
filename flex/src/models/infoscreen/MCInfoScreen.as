@@ -350,9 +350,9 @@ package models.infoscreen
                   }
                   else if (element == Building.RADAR_STRENGTH)
                   {
-                     currentValue = Building.calculateRadarStrenth(model.type,
+                     currentValue = Building.calculateRadarStrength(model.type,
                         {'level': model.usefulLevel});
-                     newValue = Building.calculateRadarStrenth(model.type,
+                     newValue = Building.calculateRadarStrength(model.type,
                         {'level': selectedLevel});
                      useRounding = true;
                   }

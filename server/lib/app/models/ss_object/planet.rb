@@ -239,7 +239,45 @@ class SsObject::Planet < SsObject
     end
   end
 
-  private
+  # Mass-repair given buildings, reducing resources from this planet.
+  def mass_repair!(buildings)
+    typesig binding, Array
+
+    unrepairable = buildings.reject { |b| b.is_a?(Parts::Repairable) }
+    raise GameLogicError,
+      "All buildings must be repairable, but unrepairable buildings #{
+        unrepairable.map { |b| "<#{b.type} #{b.id}>" } } were given!" \
+        unless unrepairable.blank?
+
+    not_here = buildings.reject { |b| b.planet_id == id }
+    raise GameLogicError,
+      "All buildings must be in #{self}, but buildings #{
+        not_here.map { |b| "<#{b.type} #{b.id} planet id: #{b.planet_id}>" }
+      } were not in it!" unless not_here.blank?
+
+    technology = Technology::BuildingRepair.get!(player_id)
+
+    damaged_hp = buildings.inject(0) do |hp, building|
+      building.mass_repair(self, technology)
+      CallbackManager.register(
+        building, CallbackManager::EVENT_COOLDOWN_EXPIRED,
+        building.cooldown_ends_at
+      )
+      hp + building.damaged_hp
+    end
+
+    BulkSql::Building.save(buildings)
+    save!
+
+    EventBroker.fire(buildings, EventBroker::CHANGED)
+    EventBroker.fire(
+      self, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
+    )
+    Objective::RepairHp.progress(player, damaged_hp)
+  end
+
+private
+
   # Set #owner_changed.
   before_update :if => Proc.new { |r| r.player_id_changed? } do
     self.owner_changed = Time.now

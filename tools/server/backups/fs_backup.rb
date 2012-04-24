@@ -49,22 +49,28 @@ end
 FileUtils.mkdir_p(now_dir) unless File.exists?(now_dir)
 home = "/home/spacegame"
 %W{
-  /etc #{home}/web/shared/forum #{home}/web/shared/wiki 
-  #{home}/web/shared/web/system #{home}/config
+  /etc 
+  #{home}/config
+  #{home}/web/shared/forum/attachments
+  #{home}/web/shared/web/galaxies
+  #{home}/web/shared/web/system
+  #{home}/web/shared/wiki/uploads
 }.each do |dir|
-  dir = dir.sub(/\/$/, '')
-  target_dir = now_dir + dir
-  opts = backups.size == 0 \
-    ? "" : "--link-dest=#{backups[-1][:path]}#{dir}"
+  if File.exists?(dir)
+    dir = dir.sub(/\/$/, '')
+    target_dir = now_dir + dir
+    opts = backups.size == 0 \
+      ? "" : "--link-dest=#{backups[-1][:path]}#{dir}"
 
-  FileUtils.mkdir_p(target_dir) unless File.exists?(target_dir)
-  run("rsync -a --delete #{opts} #{dir}/ #{target_dir}")
-  File.open("#{now_dir}/permissions", "a") do |f|
-    `find #{dir}`.split("\n").each do |fpath|
-      begin
-        stat = File.stat(fpath)
-        f.write("%s %d:%d %o\n" % [fpath, stat.uid, stat.gid, stat.mode])
-      rescue Errno::ENOENT
+    FileUtils.mkdir_p(target_dir) unless File.exists?(target_dir)
+    run("rsync -a --delete #{opts} #{dir}/ #{target_dir}")
+    File.open("#{now_dir}/permissions", "a") do |f|
+      `find #{dir}`.split("\n").each do |fpath|
+        begin
+          stat = File.stat(fpath)
+          f.write("%s %d:%d %o\n" % [fpath, stat.uid, stat.gid, stat.mode])
+        rescue Errno::ENOENT
+        end
       end
     end
   end

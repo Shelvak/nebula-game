@@ -11,13 +11,13 @@ package controllers.units
    /**
     * This class is a part of duplicating units bug fix.
     *
-    * Here is the how they might duplicate:
+    * Here is the they might duplicate:
     * <ul>
     *    <li>Just before jump (~500ms) client removes squadron and units
     *        completely.</li>
     *    <li>The server then sends objects|updated with those units because of
     *        the combat or resources transfer (in case of mules).</li>
-    *    <li>In both cases, client creates those units and adds the to global
+    *    <li>In both cases, client creates those units and adds them to global
     *        units lists.</li>
     *    <li>Now server sends units|movement with the same units. Client thinks
     *        that those units are not present since it recently removed them

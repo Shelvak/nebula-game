@@ -8,7 +8,7 @@ describe BuildingsController do
   end
 
   shared_examples_for "finding building" do
-    it_behaves_like "with param options", %w{id}
+    it_behaves_like "with param options", :required => %w{id}
     
     it "should raise error if building is not found" do
       (@building || building).destroy
@@ -489,6 +489,7 @@ describe BuildingsController do
     it_behaves_like "finding building"
     it_should_behave_like "only for constructors", 'id'
     it_should_behave_like "having controller action scope"
+    it_should_behave_like "with param options", :required => %w{id enabled}
 
     it "should set flag on building" do
       lambda do
@@ -511,12 +512,116 @@ describe BuildingsController do
     it_behaves_like "finding building"
     it_should_behave_like "only for constructors", 'id'
     it_should_behave_like "having controller action scope"
+    it_should_behave_like "with param options", :required => %w{id enabled}
 
     it "should set flag on building" do
       lambda do
         invoke @action, @params
         @building.reload
       end.should change(@building, :build_hidden).to(@params['enabled'])
+    end
+  end
+
+  describe "buildings|repair" do
+    let(:planet) { set_resources(Factory.create(:planet, :player => player)) }
+    let(:building) do
+      Factory.create!(
+        :b_vulcan, opts_active + opts_built +
+          {:planet => planet, :hp_percentage => 0.5}
+      )
+    end
+
+    before(:each) do
+      Factory.create!(:t_building_repair, :level => 1, :player => player)
+      @action = "buildings|repair"
+      @params = {'id' => building.id}
+    end
+
+    it_behaves_like "finding building"
+    it_should_behave_like "having controller action scope"
+
+    it "should call #repair! on building" do
+      lambda do
+        invoke @action, @params
+        building.reload
+      end.should change(building, :state).to(Building::STATE_REPAIRING)
+    end
+  end
+
+  describe "buildings|mass_repair" do
+    let(:technology) do
+      Factory.create!(:t_building_repair, level: 1, player: player)
+    end
+    let(:planet) { set_resources(Factory.create(:planet, player: player)) }
+    let(:buildings) do
+      opts = {:hp_percentage => 0.75, :planet => planet}
+      [
+        Factory.create!(:b_vulcan, opts_active + opts_built + opts + {:x => 0}),
+        Factory.create!(:b_vulcan, opts_active + opts_built + opts + {:x => 3}),
+        Factory.create!(:b_vulcan, opts_active + opts_built + opts + {:x => 6}),
+      ]
+    end
+
+    before(:each) do
+      player.vip_level = 1
+      player.save!
+      technology
+      @action = "buildings|mass_repair"
+      @params = {
+        'planet_id' => planet.id,
+        'building_ids' => buildings.map(&:id)
+      }
+    end
+
+    it_should_behave_like "having controller action scope"
+    it_should_behave_like "with param options",
+      :required => %w{planet_id building_ids}
+
+    it "should fail if player is not vip" do
+      player.vip_level = 0
+      player.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if planet does not belong to player" do
+      planet.player = Factory.create(:player)
+      planet.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if planet cannot be found" do
+      lambda do
+        invoke @action, @params.merge('planet_id' => SsObject.maximum(:id) + 1)
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should fail if all buildings cannot be found" do
+      buildings[0].destroy!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should call #mass_repair on planet" do
+      SsObject::Planet.any_instance.should_receive(:mass_repair!).
+        with(buildings)
+      invoke @action, @params
+    end
+
+    it "should change all buildings into repairing state" do
+      status = lambda { buildings.map(&:state).uniq }
+
+      lambda do
+        invoke @action, @params
+        buildings.each(&:reload)
+      end.should change(status, :call).
+        from([Building::STATE_ACTIVE]).to([Building::STATE_REPAIRING])
     end
   end
 

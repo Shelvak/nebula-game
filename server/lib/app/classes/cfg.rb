@@ -109,7 +109,6 @@ class Cfg
 
     def galaxy_zone_diameter; CONFIG['galaxy.zone.diameter']; end
 
-    def player_initial_population; CONFIG['galaxy.player.population']; end
     def player_max_population; CONFIG['galaxy.player.population.max']; end
 
     # Returns number of seconds player is required to be last seen ago to be

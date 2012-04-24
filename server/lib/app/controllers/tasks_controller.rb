@@ -163,13 +163,13 @@ Message was:
   #
   # Response:
   # - current (Fixnum): no. of currently logged in players.
-  # - 1d (Fixnum): no. of players logged in 1 day.
-  # - 2d (Fixnum): no. of players logged in 2 days.
-  # - 3d (Fixnum): no. of players logged in 3 days.
-  # - 4d (Fixnum): no. of players logged in 4 days.
-  # - 5d (Fixnum): no. of players logged in 5 days.
-  # - 6d (Fixnum): no. of players logged in 6 days.
-  # - 7d (Fixnum): no. of players logged in 7 days.
+  # - in_1d (Fixnum): no. of players logged in 1 day.
+  # - in_2d (Fixnum): no. of players logged in 2 days.
+  # - in_3d (Fixnum): no. of players logged in 3 days.
+  # - in_4d (Fixnum): no. of players logged in 4 days.
+  # - in_5d (Fixnum): no. of players logged in 5 days.
+  # - in_6d (Fixnum): no. of players logged in 6 days.
+  # - in_7d (Fixnum): no. of players logged in 7 days.
   # - total (Fixnum): total no. of players
   #
   ACTION_PLAYER_STATS = 'tasks|player_stats'
@@ -184,15 +184,18 @@ Message was:
         Player.where("last_seen >= ?", Time.now - time).count
       end
 
+      # The following describes the name of the field:
+      # The characters must be [a-zA-Z0-9_], while the first character must be
+      # [a-zA-Z_].
       stats = {
         :current => Celluloid::Actor[:dispatcher].logged_in_count,
-        :"1d" => get_player_count_in[1.day],
-        :"2d" => get_player_count_in[2.days],
-        :"3d" => get_player_count_in[3.days],
-        :"4d" => get_player_count_in[4.days],
-        :"5d" => get_player_count_in[5.days],
-        :"6d" => get_player_count_in[6.days],
-        :"7d" => get_player_count_in[7.days],
+        :in_1d => get_player_count_in[1.day],
+        :in_2d => get_player_count_in[2.days],
+        :in_3d => get_player_count_in[3.days],
+        :in_4d => get_player_count_in[4.days],
+        :in_5d => get_player_count_in[5.days],
+        :in_6d => get_player_count_in[6.days],
+        :in_7d => get_player_count_in[7.days],
         :total => Player.count,
       }
 

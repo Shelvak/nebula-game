@@ -190,7 +190,7 @@ Bundler.setup(*(setup_groups | require_groups))
 Bundler.require(*require_groups)
 
 require 'active_support/dependencies'
-require "#{ROOT_DIR}/lib/server/ar_monkey_squad"
+require "#{ROOT_DIR}/lib/server/monkey_squad"
 
 # Unshift current directory for factory girl (ruby 1.9)
 $LOAD_PATH.unshift File.expand_path(ROOT_DIR) if App.in_test?

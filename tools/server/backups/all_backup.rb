@@ -1,9 +1,21 @@
 #!/usr/bin/env ruby
+PROCESS_NAME = "all_backup_ruby"
+
 require 'time'
 
 ENV["LC_ALL"] = "C"
 BACKUPS = '/var/backups'
 FS_DIR = "#{BACKUPS}/filesystem"
+SSH="ssh"
+HOST="backup@thor.nebula44.com"
+RDIR=`hostname -f`.chomp
+
+def running?
+  `ps auxf | grep "#{PROCESS_NAME}" | grep -v grep` != ""
+end
+
+exit 0 if running?
+$0 = PROCESS_NAME
 
 def run(cmd)
   puts "Running '#{cmd}'..."
@@ -23,13 +35,12 @@ run "#{pwd}/mysql_backup.rb"
 puts "Backuping filesystem..."
 run "#{pwd}/fs_backup.rb"
 
-ssh="ssh -i /root/.ssh/backups_rsa -p 20022"
-host="backup@wh.down.lt"
-rdir="demosis.nebula44.lt"
-target="#{host}:#{rdir}"
+target="#{HOST}:#{RDIR}"
 
+puts "Ensuring filesystem dir exists in remote."
+run(%Q{#{SSH} #{HOST} "mkdir -p #{RDIR}/mysql"})
 puts "Transferring mysql to remote..."
-run %Q{rsync -a --delete -e "#{ssh}" #{BACKUPS}/mysql/ #{target}/mysql/}
+run %Q{rsync -a --delete -e "#{SSH}" #{BACKUPS}/mysql/ #{target}/mysql/}
 
 backups = Dir["#{FS_DIR}/*"].map do |path|
   date, time = File.basename(path).split("-")
@@ -41,15 +52,17 @@ backups = Dir["#{FS_DIR}/*"].map do |path|
 end.sort_by { |b| b[:time] }
 last = backups[-1][:path].sub(/\/$/, '')
 
+puts "Ensuring filesystem dir exists in remote."
+run(%Q{#{SSH} #{HOST} "mkdir -p #{RDIR}/filesystem"})
 puts "Listing remote filesystem backups..."
-last_remote = `#{ssh} #{host} "ls -1 #{rdir}/filesystem"`
+last_remote = `#{SSH} #{HOST} "ls -1 #{RDIR}/filesystem"`
 if last_remote.strip == ""
   last_remote = ""
 else
   last_remote = %Q{"--link-dest=#{last_remote.split[-1]}"}
 end
 puts "Transfering filesystem to remote..."
-run %Q{rsync -a -e "#{ssh}" #{last_remote} #{last} #{target}/filesystem/}
+run %Q{rsync -a -e "#{SSH}" #{last_remote} #{last} #{target}/filesystem/}
 
 puts "Removing temp files..."
 %w{stderr stdout}.each do |f|

@@ -47,6 +47,13 @@ package utils
             }
             else {
                stWoVars = err.getStackTrace();
+               // 1502 - A script has executed for longer than 15 seconds.
+               // 1503 - A script did not exit in timely fashion and was terminated.
+               if (stWoVars == null
+                      && (err.errorID == 1502 || err.errorID == 1503)) {
+                  ExternalInterface.call("clientNotResponding");
+                  return;
+               }
             }
 
             var summaryErr: String =
@@ -78,7 +85,7 @@ package utils
          popup.show();
       }
 
-      private static function getString(property:String): String {
+      private static function getString(property: String): String {
          return Localizer.string("Errors", property);
       }
 

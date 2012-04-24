@@ -51,8 +51,8 @@ package models.player
        */
       public var name:String = "";
 
-      public override function equals(o:Object): Boolean {
-         const player:PlayerMinimal = o as PlayerMinimal;
+      public override function equals(o: Object): Boolean {
+         const player: PlayerMinimal = o as PlayerMinimal;
          if (player == null) {
             return false;
          }

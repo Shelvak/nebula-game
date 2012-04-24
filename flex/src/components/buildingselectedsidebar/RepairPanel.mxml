@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+            xmlns:s="library://ns.adobe.com/flex/spark"
+            xmlns:base="components.base.*">
+      <base:Warning text="{getString(
+         'warning.repairBuildingTechNeeded')}"
+         showSign="false"
+         left="0" right="0" paddingTop="3" paddingBottom="3"
+         visible="{!ML.technologies.hasBuildingRepairTechnology}"/>
+      <base:Warning text="{getString(
+         'warning.massRepairRequiresVip')}"
+         showSign="false"
+         left="0" right="0" paddingTop="3" paddingBottom="3"
+         visible="{ML.technologies.hasBuildingRepairTechnology
+         &amp;&amp; requiresVip
+         &amp;&amp; ML.player.vipLevel == 0}"/>
+      <base:AdvancedContainer left="0" right="0"
+              includeInLayout="{ML.technologies.hasBuildingRepairTechnology
+              &amp;&amp; (!requiresVip
+              || ML.player.vipLevel > 0)}"
+              visible="{ML.technologies.hasBuildingRepairTechnology
+                            &amp;&amp; (!requiresVip
+                            || ML.player.vipLevel > 0)}">
+         <s:Group>
+            <s:Group width="40%">
+               <base:ImageAndLabel
+                       type="{ResourceType.METAL}"
+                       textToDisplay="{metalCost.toFixed(2)}"
+                       toolTip="{Localizer.string(
+                       'Resources', ResourceType.METAL)}"
+                       labelStyleName="{metalCost >
+                       ML.latestPlanet.ssObject.metal.currentStock
+                       ? 'unsatisfied' : null}"/>
+               <base:ImageAndLabel
+                       type="{ResourceType.ZETIUM}"
+                       textToDisplay="{zetiumCost.toFixed(2)}"
+                       toolTip="{Localizer.string(
+                       'Resources', ResourceType.ZETIUM)}"
+                       labelStyleName="{zetiumCost >
+                       ML.latestPlanet.ssObject.zetium.currentStock
+                       ? 'unsatisfied' : null}"/>
+               <s:layout>
+                  <s:VerticalLayout gap="3" paddingLeft="6"/>
+               </s:layout>
+            </s:Group>
+            <s:Group width="40%">
+               <base:ImageAndLabel
+                       type="{ResourceType.ENERGY}"
+                       textToDisplay="{energyCost.toFixed(2)}"
+                       toolTip="{Localizer.string(
+                       'Resources', ResourceType.ENERGY)}"
+                       labelStyleName="{energyCost >
+                       ML.latestPlanet.ssObject.energy.currentStock
+                       ? 'unsatisfied' : null}"/>
+               <base:ImageAndLabel
+                       type="{ResourceType.TIME}"
+                       textToDisplay="{timeCost}"
+                       toolTip="{getString('toolTip.repairTime')}"/>
+               <s:layout>
+                  <s:VerticalLayout gap="3" paddingLeft="6"/>
+               </s:layout>
+            </s:Group>
+            <s:layout>
+               <s:HorizontalLayout gap="3" paddingLeft="6"/>
+            </s:layout>
+         </s:Group>
+         <base:Warning text="{getString('warning.repairBuilding')}"
+                 visible="{bSidebar.selectedBuilding.state !=
+                 Building.REPAIRING}"
+                 showSign="false"/>
+         <base:AdvancedContainer visible="{!canRepairBuilding}">
+            <s:Label text="{Localizer.string('Resources','notEnoughResources')}"
+                  styleName="unsatisfied"/>
+            <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}"
+                  visible="{resLeft > 0}" fontWeight="bold"/>
+            <base:TimeLabel text="{resLeftString}"
+                         visible="{resLeft > 0}"/>
+
+            <s:Label text="{Localizer.string('Resources','additionalStorage',
+                  [missingStorageString])}"
+                  visible="{!enoughStorage}"
+                  styleName="unsatisfied"/>
+            <base:layout>
+               <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>
+            </base:layout>
+         </base:AdvancedContainer>
+         <s:Group>
+            <s:Button skinClass="components.skins.GreenButtonSkin"
+                      enabled="{canRepairBuilding}"
+                      click="action()"
+                      label="{buttonLabel}"
+                      horizontalCenter="0"/>
+         </s:Group>
+         <base:layout>
+            <s:VerticalLayout horizontalAlign="justify"/>
+         </base:layout>
+      </base:AdvancedContainer>
+   <fx:Script><![CDATA[
+      import models.building.Building;
+      import models.building.MCBuildingSelectedSidebar;
+      import models.resource.ResourceType;
+
+      import utils.locale.Localizer;
+
+      [Bindable]
+      public var metalCost: Number;
+      [Bindable]
+      public var energyCost: Number;
+      [Bindable]
+      public var zetiumCost: Number;
+      [Bindable]
+      public var timeCost: String;
+      [Bindable]
+      public var canRepairBuilding: Boolean;
+      [Bindable]
+      public var resLeft: Number;
+      [Bindable]
+      public var resLeftString: String;
+      [Bindable]
+      public var missingStorageString: String;
+      [Bindable]
+      public var enoughStorage: Boolean;
+      public var action: Function;
+      [Bindable]
+      public var buttonLabel: String;
+      [Bindable]
+      public var requiresVip: Boolean = false;
+
+
+      [Bindable]
+      private var bSidebar: MCBuildingSelectedSidebar =
+              MCBuildingSelectedSidebar.getInstance();
+
+      private function getString(key: String, params: Array = null): String {
+         return Localizer.string('BuildingSelectedSidebar', key, params);
+      }
+      ]]></fx:Script>
+</base:Panel>

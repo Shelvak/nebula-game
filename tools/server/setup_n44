@@ -367,7 +367,7 @@ if ARGV.include?("basic") # {{{
   install "dialog"
   remove "samba.*" if File.exists?("/etc/init.d/smbd")
   install "man less cron mc rubygems libjson-ruby irb gnupg wget host " +
-    "exim4 logrotate netcat ntpdate python-software-properties"
+    "exim4 logrotate netcat ntpdate python-software-properties mutt"
   run "dpkg-reconfigure exim4-config"
   File.ensure("/etc/exim4/exim4.conf.template", "disable_ipv6 = true\n")
   run "dpkg-reconfigure tzdata"
@@ -482,6 +482,15 @@ deb-src http://repo.percona.com/apt lucid main")
       sub("$cfg['Servers'][$i]['controlpass']", "// $cfg['Servers'][$i]['controluser']")
   end
   fix_php_ini!
+
+  File.write("/etc/mysql/backup.cnf", %Q{# At least specify datadir
+[mysqld]
+datadir=/var/lib/mysql
+
+# This might be missing on some distros.
+!include /etc/mysql/my.cnf
+!include /etc/mysql/debian.cnf}, "0600")
+
   run "/etc/init.d/mysql restart"
 
   %w{queries threads bytes slowqueries}.each do |plugin|

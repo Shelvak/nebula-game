@@ -154,7 +154,7 @@ package models.technology
       public function get buildingRepairTechnology() : Technology {
          if (_buildingRepairTechnology == null) {
             _buildingRepairTechnology = getTechnologyByType(Technology.BUILDING_REPAIR);
-            _buildingRepairTechnology.addEventListener
+            _buildingRepairTechnology.upgradePart.addEventListener
                (UpgradeEvent.LEVEL_CHANGE,
                        buildingRepairTechnologyLvlChangeHandler, false, 0, true);
          }

@@ -1,4 +1,16 @@
-# Monkey-patches for active-record.
+# Monkey-patches for YAML.
+module YAML
+  class << self
+    alias_method :dump_wo_encoding, :dump
+
+    # Force dumped data into UTF-8 encoding.
+    def dump(*args)
+      dump_wo_encoding(*args).force_encoding(Encoding::UTF_8)
+    end
+  end
+end
+
+# Monkey-patches for ActiveRecord.
 module ActiveRecord
   WC_CHECKING_OUT =
     "ActiveRecord::ConnectionAdapters::ConnectionPool.with_connection"

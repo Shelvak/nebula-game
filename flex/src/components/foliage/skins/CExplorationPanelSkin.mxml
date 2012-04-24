@@ -36,7 +36,8 @@
       </s:Group>
       <s:Group includeIn="explorationUderway" width="100%">
          <s:BitmapImage id="bmpClock"/>
-         <s:Label id="lblTimeLeft"/>
+         <s:Label id="lblTimeLeftLabel"/>
+         <s:Label id="lblTimeLeftValue"/>
          <s:layout>
             <s:VerticalLayout horizontalAlign="center"/>
          </s:layout>
@@ -49,7 +50,7 @@
          <s:VerticalLayout horizontalAlign="justify"
                            paddingLeft="6" paddingRight="6" paddingTop="6" paddingBottom="0"/>
       </base:layout>
-      <s:Group><s:RichText id="txtInstantFinishCost" left="0" right="0" lineBreak="toFit"/></s:Group>
+      <s:Group><s:RichText id="txtInstantFinishCost" left="0" right="0" lineBreak="explicit"/></s:Group>
       <s:Group>
          <s:Button right="0" id="btnBuyCreds" skinClass="components.skins.CreditButtonSkin"/>
          <s:Button right="0" id="btnInstantFinish" skinClass="components.skins.CreditButtonSkin"/>

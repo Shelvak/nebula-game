@@ -9,8 +9,6 @@
       import models.quest.slides.MSlideQuestWithImage;
       import models.quest.slides.SlidesConfiguration;
 
-      import mx.events.FlexEvent;
-
       import utils.assets.AssetNames;
 
       [Bindable(event="modelChange")]
