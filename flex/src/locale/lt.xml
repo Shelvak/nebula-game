@@ -1434,6 +1434,9 @@
        ● Akimirksniu užbaigti visų karių ar laivų, esančių statymo eilėje,
       gamybą (su nuolaida, palyginus su užbaigimu po vieną)!
     </label.additionalPrivileges.buildAllEntries>
+    <label.additionalPrivileges.repairAllTurrets>
+      ● Taisyti visus planetoje esančius bokštelius vieno mygtuko paspaudimu.
+    </label.additionalPrivileges.repairAllTurrets>
     <label.buildAllEntries value="Gali užbaigti šios eilės statymą akimirksniu"/>
     <!-- 0: creds for construct all,
          1: creds to pay if accelerate one by one -->

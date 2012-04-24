@@ -1293,6 +1293,9 @@
       ● Instantly finishing construction of all pre-paid units in queue with
       discounts (compared to finishing them one by one)!
     </label.additionalPrivileges.buildAllEntries>
+    <label.additionalPrivileges.repairAllTurrets>
+      ● Repair all turrets on the planet with one click.
+    </label.additionalPrivileges.repairAllTurrets>
     <label.buildAllEntries value="You can finish this construction queue instantly:"/>
     <!-- 0: creds for construct all,
          1: creds to pay if accelerate one by one -->
