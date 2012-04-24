@@ -7,9 +7,20 @@
          showSign="false"
          left="0" right="0" paddingTop="3" paddingBottom="3"
          visible="{!ML.technologies.hasBuildingRepairTechnology}"/>
+      <base:Warning text="{getString(
+         'warning.massRepairRequiresVip')}"
+         showSign="false"
+         left="0" right="0" paddingTop="3" paddingBottom="3"
+         visible="{ML.technologies.hasBuildingRepairTechnology
+         &amp;&amp; requiresVip
+         &amp;&amp; ML.player.vipLevel == 0}"/>
       <base:AdvancedContainer left="0" right="0"
-              includeInLayout="{ML.technologies.hasBuildingRepairTechnology}"
-              visible="{ML.technologies.hasBuildingRepairTechnology}">
+              includeInLayout="{ML.technologies.hasBuildingRepairTechnology
+              &amp;&amp; (!requiresVip
+              || ML.player.vipLevel > 0)}"
+              visible="{ML.technologies.hasBuildingRepairTechnology
+                            &amp;&amp; (!requiresVip
+                            || ML.player.vipLevel > 0)}">
          <s:Group>
             <s:Group width="40%">
                <base:ImageAndLabel
@@ -112,6 +123,8 @@
       public var action: Function;
       [Bindable]
       public var buttonLabel: String;
+      [Bindable]
+      public var requiresVip: Boolean = false;
 
 
       [Bindable]

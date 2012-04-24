@@ -641,6 +641,10 @@
       <p>Tau reikia išrasti [obj:1:Technology_BuildingRepair:whos:dc]
         technologiją, kad galėtum taisyti gynybinius bokštelius.</p>
     </warning.repairBuildingTechNeeded>
+    <warning.massRepairRequiresVip>
+      <p>Jei būtum VIP žaidėjas čia galėtum taisyti visus planetoje esančius
+        bokštelius.</p>
+    </warning.massRepairRequiresVip>
     <label.repairBuilding value="Taisyti"/>
     <label.massRepairBuilding value="Taisyti visus"/>
     <toolTip.repairTime value="Taisymo laikas"/>

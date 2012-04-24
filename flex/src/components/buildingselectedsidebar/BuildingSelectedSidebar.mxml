@@ -465,6 +465,7 @@
                           Building.REPAIRING &amp;&amp;
                           bSidebar.selectedBuilding.upgradePart.upgradeEndsAt == null
                           &amp;&amp; ML.latestPlanet.damagedBuildingsLength > 1}"
+                          requiresVip="true"
                           metalCost="{bSidebar.metalMassRepairCost}"
                           energyCost="{bSidebar.energyMassRepairCost}"
                           zetiumCost="{bSidebar.zetiumMassRepairCost}"
@@ -485,7 +486,8 @@
                   </base:Panel>
 
                   <base:Panel title="{getString('title.cooldown')}"
-                              visible="{bSidebar.cooldownTimeLeft != null}">
+                              visible="{bSidebar.cooldownTimeLeft != null
+                              &amp;&amp; bSidebar.selectedBuilding.type != BuildingType.NPC_HALL}">
                      <s:Label fontSize="12"
                               text="{Localizer.string('Buildings', 'text.cooldown')}"/>
                      <base:TimeLabel text="{bSidebar.cooldownTimeLeft}"/>

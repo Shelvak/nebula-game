@@ -500,6 +500,10 @@
       <p>You need to research [obj:1:Technology_BuildingRepair::dc]
       technology to repair turrets.</p>
     </warning.repairBuildingTechNeeded>
+    <warning.massRepairRequiresVip>
+      <p>If you were a VIP player you could repair all the turrets on this
+        planet here.</p>
+    </warning.massRepairRequiresVip>
     <label.repairBuilding value="Repair"/>
     <label.massRepairBuilding value="Repair all"/>
     <toolTip.repairTime value="Repair time"/>
