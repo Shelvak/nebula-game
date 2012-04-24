@@ -44,8 +44,7 @@
                <base:ImageAndLabel
                        type="{ResourceType.TIME}"
                        textToDisplay="{timeCost}"
-                       toolTip="{Localizer.string(
-                       'Resources', ResourceType.TIME)}"/>
+                       toolTip="{getString('toolTip.repairTime')}"/>
                <s:layout>
                   <s:VerticalLayout gap="3" paddingLeft="6"/>
                </s:layout>
@@ -78,7 +77,7 @@
             <s:Button skinClass="components.skins.GreenButtonSkin"
                       enabled="{canRepairBuilding}"
                       click="action()"
-                      label="{getString('label.repairBuilding')}"
+                      label="{buttonLabel}"
                       horizontalCenter="0"/>
          </s:Group>
          <base:layout>
@@ -111,6 +110,8 @@
       [Bindable]
       public var enoughStorage: Boolean;
       public var action: Function;
+      [Bindable]
+      public var buttonLabel: String;
 
 
       [Bindable]

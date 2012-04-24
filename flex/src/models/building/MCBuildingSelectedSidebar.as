@@ -405,6 +405,7 @@ package models.building
             }
 
             refreshPriceOrientatedProperties();
+            refreshCooldown();
             refreshConstructor();
             if (_selectedBuilding != null && constructor != null)
             {
@@ -568,6 +569,7 @@ package models.building
          refreshDestructProperties();
          refreshCancelProperties();
          refreshRepairProperties();
+         refreshCooldown();
       }
 
       [Bindable]
@@ -580,6 +582,26 @@ package models.building
             _selectedBuilding.upgradePart.upgradeEndsAt != null) {
             builtPart = _selectedBuilding.upgradePart.upgradeProgress;
          }
+      }
+
+      [Bindable]
+      public var cooldownTimeLeft: String = null;
+
+      private function refreshCooldown(): void
+      {
+         if (_selectedBuilding == null || _selectedBuilding.cooldownEndsAt == null)
+         {
+            cooldownTimeLeft = null;
+            return;
+         }
+         var timeNow: Number = new Date().time;
+         if (timeNow > _selectedBuilding.cooldownEndsAt.time)
+         {
+            cooldownTimeLeft = null;
+            return;
+         }
+         cooldownTimeLeft = DateUtil.secondsToHumanString(
+            (_selectedBuilding.cooldownEndsAt.time - timeNow)/1000);
       }
 
       private function refreshRepairProperties(): void

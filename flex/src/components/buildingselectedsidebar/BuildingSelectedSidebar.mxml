@@ -455,7 +455,8 @@
                           resLeftString="{bSidebar.repairResLeftString}"
                           missingStorageString="{bSidebar.missingRepairStorageString}"
                           enoughStorage="{bSidebar.enoughRepairStorage}"
-                          action="bSidebar.repairBuilding"/>
+                          action="bSidebar.repairBuilding"
+                          buttonLabel="{getString('label.repairBuilding')}"/>
 
                   <buildingselectedsidebar:RepairPanel
                           title="{getString('panelTitle.massRepairBuildings')}"
@@ -473,13 +474,24 @@
                           resLeftString="{bSidebar.massRepairResLeftString}"
                           missingStorageString="{bSidebar.missingMassRepairStorageString}"
                           enoughStorage="{bSidebar.enoughMassRepairStorage}"
-                          action="bSidebar.massRepairBuilding"/>
+                          action="bSidebar.massRepairBuilding"
+                          buttonLabel="{getString('label.massRepairBuilding')}"/>
 
                    
                   <base:Panel title="{getString('title.inactiveBuilding')}"
                               visible="{bSidebar.selectedBuilding.state == Building.INACTIVE}">
                      <s:Label left="6" right="6" fontSize="12"
                               text="{Localizer.string('Buildings', 'text.deactivated')}"/>
+                  </base:Panel>
+
+                  <base:Panel title="{getString('title.cooldown')}"
+                              visible="{bSidebar.cooldownTimeLeft != null}">
+                     <s:Label fontSize="12"
+                              text="{Localizer.string('Buildings', 'text.cooldown')}"/>
+                     <base:TimeLabel text="{bSidebar.cooldownTimeLeft}"/>
+                     <base:layout>
+                        <s:VerticalLayout paddingLeft="6" paddingRight="6" horizontalAlign="justify"/>
+                     </base:layout>
                   </base:Panel>
                   
                   <base:Panel title="{getString('title.rates')}" 

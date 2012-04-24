@@ -588,7 +588,8 @@
     <status value="Būsena" />
     <constructing value="Konstruoja" />
     <upgrading value="Tobulinama" />
-        
+
+    <title.cooldown value="Pastato atvėsimas"/>
     <title.rates value="Išgavimo greičiai" />
     <title.inactiveBuilding value="Neaktyvus pastatas" />
     <storage value="Talpyklos" />
@@ -641,6 +642,8 @@
         technologiją, kad galėtum taisyti gynybinius bokštelius.</p>
     </warning.repairBuildingTechNeeded>
     <label.repairBuilding value="Taisyti"/>
+    <label.massRepairBuilding value="Taisyti visus"/>
+    <toolTip.repairTime value="Taisymo laikas"/>
     <label.cancelUpgrade value="Atšaukęs pastato tobulinimą gausi:" />
     <label.cancelConstructor value="Atšaukęs pastato statybą gausi:" />
     <label.cancel value="Atšaukti" />
@@ -813,6 +816,16 @@
         pasibaigus tobulinimui.
       </p>
     </text.deactivated>
+
+    <text.cooldown>
+      <p>
+        Šis pastatas šiuo metu vėsta, kol pastatas vėsta jis negali atlikti savo
+        funkcijų.
+      </p>
+      <p>
+        Pastatas pilnai atvės už:
+      </p>
+    </text.cooldown>
 
     <!-- NPC pastatai -->
 

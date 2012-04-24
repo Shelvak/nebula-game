@@ -448,6 +448,7 @@
     <constructing value="Constructing" />
     <upgrading value="Upgrading" />
 
+    <title.cooldown value="Building cooldown"/>
     <title.rates value="Rates" />
     <title.inactiveBuilding value="Inactive building" />
     <storage value="Storage" />
@@ -500,6 +501,8 @@
       technology to repair turrets.</p>
     </warning.repairBuildingTechNeeded>
     <label.repairBuilding value="Repair"/>
+    <label.massRepairBuilding value="Repair all"/>
+    <toolTip.repairTime value="Repair time"/>
     <label.cancelUpgrade>
       <p>These resources will be returned if you cancel upgrade of this
       building:</p>
@@ -671,6 +674,16 @@
         completion. 
       </p>
     </text.deactivated>
+
+    <text.cooldown>
+      <p>
+        This building is currently cooling down and it can't perform it's
+        functions yet.
+      </p>
+      <p>
+        Building cooldown ends in:
+      </p>
+    </text.cooldown>
     
     <!-- NPC buildings -->
 
