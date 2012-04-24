@@ -22,6 +22,10 @@ package controllers.players.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void {
          var playerId: int = cmd.parameters.id;
          var playerName: String = cmd.parameters.name;
+         // Change name if it is our update.
+         if (playerId == ML.player.id) {
+            ML.player.name = playerName;
+         }
          MChat.getInstance().members.getMember(playerId).name = playerName;
          for each (var obj: Object in ML.latestGalaxy.naturalObjects)
          {

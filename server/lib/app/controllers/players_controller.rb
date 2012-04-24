@@ -181,6 +181,23 @@ class PlayersController < GenericController
     respond m, :changes => m.params['changes']
   end
 
+  # Notifies client about player rename.
+  #
+  # Invocation: by server
+  #
+  # Parameters & response:
+  # - id (Fixnum): player id
+  # - name (String): new player name
+  #
+  ACTION_RENAME = 'players|rename'
+
+  RENAME_OPTIONS = logged_in + only_push +
+    required(:id => Fixnum, :name => String)
+  RENAME_SCOPE = scope.world
+  def self.rename_action(m)
+    respond m, :id => m.params['id'], :name => m.params['name']
+  end
+
   # Convert creds from VIP creds to normal creds.
   #
   # Rate is determined by your VIP level. See Player#vip_conversion_rate

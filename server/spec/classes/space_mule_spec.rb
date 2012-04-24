@@ -310,12 +310,29 @@ describe SpaceMule do
         @existing_player.web_user_id => @existing_player.name
       }
       @launch_time = Time.now
-      @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      @player = Player.where(:galaxy_id => @galaxy.id,
-                             :web_user_id => @web_user_id).first
+      @result = @mule.
+        create_players(@galaxy.id, @galaxy.ruleset, @players, true)
+      @player = Player.where(
+        :galaxy_id => @galaxy.id, :web_user_id => @web_user_id
+      ).first
     end
 
     describe "player" do
+      it "should be flagged as trial" do
+        @player.should be_trial
+      end
+
+      it "should allow creating non-trial players" do
+        web_user_id = @web_user_id + 1
+        players = {web_user_id => "FooBarBaz"}
+        @mule.
+          create_players(@galaxy.id, @galaxy.ruleset, players, false)
+        player = Player.where(
+          :galaxy_id => @galaxy.id, :web_user_id => web_user_id
+        ).first
+        player.should_not be_trial
+      end
+
       it "should start quests" do
         QuestProgress.
           where(:player_id => @player.id, :quest_id => @quest.id,

@@ -92,7 +92,8 @@ describe TasksController do
       @params.merge!(
         'galaxy_id' => galaxy.id,
         'web_user_id' => (Player.maximum(:web_user_id) || 0) + 1,
-        'name' => "P#{Time.now.to_f}"
+        'name' => "P#{Time.now.to_f}",
+        'trial' => false
       )
     end
 
@@ -102,7 +103,7 @@ describe TasksController do
 
     it "should call Galaxy.create_player" do
       Galaxy.should_receive(:create_player).with(
-        galaxy.id, @params['web_user_id'], @params['name']
+        galaxy.id, @params['web_user_id'], @params['name'], @params['trial']
       ).and_return({})
       invoke @action, @params
     end
@@ -176,6 +177,72 @@ describe TasksController do
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  describe "tasks|player_registered" do
+    let(:player) { Factory.create(:player, :trial => true) }
+
+    before(:each) do
+      @action = "tasks|player_registered"
+      @params.merge!('player_id' => player.id, 'name' => player.name + "FOO")
+    end
+
+    it_should_behave_like "with param options",
+      :required => %w{player_id name},
+      :needs_login => false, :needs_control_token => true
+
+    it "should fail if player is not trial" do
+      player.trial = false
+      player.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should set Player#trial to false" do
+      lambda do
+        invoke @action, @params
+        player.reload
+      end.should change(player, :trial?).from(true).to(false)
+    end
+
+    it "should set Player#name" do
+      lambda do
+        invoke @action, @params
+        player.reload
+      end.should change(player, :name).from(player.name).to(@params['name'])
+    end
+
+    it "should fire Event::PlayerRename" do
+      event = Event::PlayerRename.new(player.id, @params['name'])
+      should_fire_event(event, EventBroker::CREATED) do
+        invoke @action, @params
+      end
+    end
+  end
+
+  describe "tasks|is_player_connected" do
+    before(:each) do
+      @action = "tasks|is_player_connected"
+      @params.merge!('player_id' => 50)
+    end
+
+    it_should_behave_like "with param options",
+      :required => %w{player_id},
+      :needs_login => false, :needs_control_token => true
+
+    it "should return true if player is connected" do
+      Celluloid::Actor[:dispatcher].should_receive(:player_connected?).
+        with(@params['player_id']).and_return(true)
+      invoke @action, @params
+      response.should == {connected: true}
+    end
+
+    it "should return false if player is not connected" do
+      invoke @action, @params
+      response.should == {connected: false}
     end
   end
 

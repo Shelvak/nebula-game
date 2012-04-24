@@ -258,9 +258,9 @@ class Dispatcher
   end
   
   # Pushes message to all logged in players.
-  def push_to_logged_in(action, params={})
+  def push_to_logged_in(action, params={}, filters=nil)
     @client_to_player.each do |client, _|
-      push(client, action, params)
+      push(client, action, params, filters)
     end
   end
 

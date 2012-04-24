@@ -19,7 +19,7 @@ describe DispatcherEventHandler::Handler::Changed do
       constructor = Factory.create(:b_constructor_test, :planet => planet)
       obj = Event::ConstructionQueue.new(constructor.id)
 
-      dispatcher.should_receive(:push_to_player).with(
+      dispatcher.should_receive(:push_to_player!).with(
         planet.player_id,
         ConstructionQueuesController::ACTION_INDEX,
         {'constructor_id' => constructor.id},
@@ -32,9 +32,9 @@ describe DispatcherEventHandler::Handler::Changed do
     describe "changed player" do
       it "should handle it" do
         obj = Factory.create :player
-        dispatcher.stub!(:connected?).with(obj.id).and_return(true)
-        dispatcher.should_receive(:update_player).with(obj)
-        dispatcher.should_receive(:push_to_player).with(
+        dispatcher.stub!(:player_connected?).with(obj.id).and_return(true)
+        dispatcher.should_receive(:update_player!).with(obj)
+        dispatcher.should_receive(:push_to_player!).with(
           obj.id, PlayersController::ACTION_SHOW
         )
         DispatcherEventHandler::Handler::Changed.handle(dispatcher, obj, reason)
@@ -42,8 +42,8 @@ describe DispatcherEventHandler::Handler::Changed do
 
       it "should not update player in dispatcher if it's not connected" do
         obj = Factory.create :player
-        dispatcher.stub!(:connected?).with(obj.id).and_return(false)
-        dispatcher.should_not_receive(:update_player)
+        dispatcher.stub!(:player_connected?).with(obj.id).and_return(false)
+        dispatcher.should_not_receive(:update_player!)
         DispatcherEventHandler::Handler::Changed.handle(dispatcher, obj, reason)
       end
     end
@@ -65,9 +65,9 @@ describe DispatcherEventHandler::Handler::Changed do
         it "should handle #{old_desc} -> #{new_desc} change" do
           planet, old, new = create(has_old, has_new)
 
-          dispatcher.should_receive(:push_to_player).
+          dispatcher.should_receive(:push_to_player!).
             with(old.id, PlanetsController::ACTION_PLAYER_INDEX) if has_old
-          dispatcher.should_receive(:push_to_player).
+          dispatcher.should_receive(:push_to_player!).
             with(new.id, PlanetsController::ACTION_PLAYER_INDEX) if has_new
 
           DispatcherEventHandler::Handler::Changed.
@@ -77,7 +77,7 @@ describe DispatcherEventHandler::Handler::Changed do
         it "should handle object part of #{old_desc} -> #{new_desc} change" do
           planet, old, new = create(has_old, has_new)
 
-          dispatcher.stub!(:push_to_player)
+          dispatcher.stub!(:push_to_player!)
           test_object_change(
             dispatcher, EventBroker::REASON_OWNER_CHANGED, [planet]
           )
@@ -90,9 +90,9 @@ describe DispatcherEventHandler::Handler::Changed do
           it "should not handle #{old_desc} -> #{new_desc} change" do
             planet, old, new = create(has_old, has_new)
 
-            dispatcher.should_not_receive(:push_to_player).
+            dispatcher.should_not_receive(:push_to_player!).
               with(old.id, PlanetsController::ACTION_PLAYER_INDEX) if has_old
-            dispatcher.should_not_receive(:push_to_player).
+            dispatcher.should_not_receive(:push_to_player!).
               with(new.id, PlanetsController::ACTION_PLAYER_INDEX) if has_new
 
             DispatcherEventHandler::Handler::Changed.
@@ -102,17 +102,13 @@ describe DispatcherEventHandler::Handler::Changed do
       end
     end
 
-    it "should dispatch to player if changed units are in buildings" do
+    it "should not dispatch to player if changed units are in buildings" do
       planet = Factory.create(:planet_with_player)
       unit = Factory.create(:unit,
         :location => Factory.create(:b_npc_solar_plant, :planet => planet)
       )
       objs = [unit]
-      dispatcher.should_receive(:push_to_player).with(
-        planet.player_id, ObjectsController::ACTION_UPDATED,
-        {'objects' => objs, 'reason' => reason},
-        Dispatcher::PushFilter.ss_object(planet.id)
-      )
+      dispatcher.should_not_receive(:push_to_player!)
       DispatcherEventHandler::Handler::Changed.
         handle(dispatcher, objs, reason)
     end
@@ -121,11 +117,11 @@ describe DispatcherEventHandler::Handler::Changed do
       event = Event::StatusChange.new({1 => [2, 3], 10 => [20, 1]})
 
       event.statuses.each do |player_id, changes|
-        dispatcher.should_receive(:push_to_player).with(
+        dispatcher.should_receive(:push_to_player!).with(
           player_id, PlayersController::ACTION_STATUS_CHANGE,
           {'changes' => changes}, nil
         )
-        dispatcher.should_receive(:push_to_player).
+        dispatcher.should_receive(:push_to_player!).
           with(player_id, RoutesController::ACTION_INDEX)
       end
 

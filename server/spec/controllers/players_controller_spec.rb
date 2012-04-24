@@ -297,6 +297,22 @@ describe PlayersController do
         push @action, @params
       end
     end
+
+    describe "players|rename" do
+      before(:each) do
+        @action = "players|rename"
+        @params = {'id' => 10, 'name' => "FooBar"}
+      end
+
+      it_behaves_like "with param options", :required => %w{id name},
+        :only_push => true
+      it_should_behave_like "having controller action scope"
+
+      it "should respond" do
+        should_respond_with :id => @params['id'], :name => @params['name']
+        push @action, @params
+      end
+    end
   
     describe "players|convert_creds" do
       before(:each) do

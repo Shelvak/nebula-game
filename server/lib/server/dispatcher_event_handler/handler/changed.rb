@@ -11,7 +11,7 @@ class DispatcherEventHandler::Handler::Changed < DispatcherEventHandler::Handler
         planets.each do |planet|
           old_id, new_id = planet.player_id_change
           [old_id, new_id].each do |player_id|
-            dispatcher.push_to_player(
+            dispatcher.push_to_player!(
               player_id, PlanetsController::ACTION_PLAYER_INDEX
             ) unless player_id.nil?
           end
@@ -24,15 +24,15 @@ class DispatcherEventHandler::Handler::Changed < DispatcherEventHandler::Handler
     [Player, lambda do |dispatcher, players, reason|
       players.each do |player|
         if dispatcher.player_connected?(player.id)
-          dispatcher.update_player(player)
-          dispatcher.push_to_player(player.id, PlayersController::ACTION_SHOW)
+          dispatcher.update_player!(player)
+          dispatcher.push_to_player!(player.id, PlayersController::ACTION_SHOW)
         end
       end
     end],
     [Event::ConstructionQueue, lambda do |dispatcher, events, reason|
       events.each do |event|
         planet = event.constructor.planet
-        dispatcher.push_to_player(
+        dispatcher.push_to_player!(
           planet.player_id,
           ConstructionQueuesController::ACTION_INDEX,
           {'constructor_id' => event.constructor_id},
@@ -43,11 +43,11 @@ class DispatcherEventHandler::Handler::Changed < DispatcherEventHandler::Handler
     [Event::StatusChange, lambda do |dispatcher, events, reason|
       events.each do |event|
         event.statuses.each do |player_id, changes|
-          dispatcher.push_to_player(
+          dispatcher.push_to_player!(
             player_id, PlayersController::ACTION_STATUS_CHANGE,
             {'changes' => changes}, nil
           )
-          dispatcher.push_to_player(player_id, RoutesController::ACTION_INDEX)
+          dispatcher.push_to_player!(player_id, RoutesController::ACTION_INDEX)
         end
       end
     end],

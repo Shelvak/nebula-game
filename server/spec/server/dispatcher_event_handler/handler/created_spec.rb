@@ -14,12 +14,23 @@ describe DispatcherEventHandler::Handler::Created do
       DispatcherEventHandler::Handler::Created.handle(dispatcher, objs, reason)
     end
 
+    it "should handle Event::PlayerRename" do
+      event = Event::PlayerRename.new(10, "foobar")
+
+      dispatcher.should_receive(:push_to_logged_in!).with(
+        PlayersController::ACTION_RENAME,
+        {'id' => event.player_id, 'name' => event.new_name}
+      )
+
+      DispatcherEventHandler::Handler::Created.handle(dispatcher, event, reason)
+    end
+
     it "should handle Event::PlanetObserversChange" do
       event = Event::PlanetObserversChange.new(10, [1,2,3,4])
       filter = Dispatcher::PushFilter.ss_object(event.planet_id)
 
       event.non_observer_ids.each do |player_id|
-        dispatcher.should_receive(:push_to_player).with(
+        dispatcher.should_receive(:push_to_player!).with(
           player_id, PlanetsController::ACTION_UNSET_CURRENT,
           {}, filter
         )
@@ -38,7 +49,7 @@ describe DispatcherEventHandler::Handler::Created do
       ]
 
       players.each do |player|
-        dispatcher.should_receive(:push_to_player).with(
+        dispatcher.should_receive(:push_to_player!).with(
           player.id, GalaxiesController::ACTION_APOCALYPSE,
           {'start' => galaxy.apocalypse_start}, nil
         )
