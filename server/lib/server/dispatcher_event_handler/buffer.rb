@@ -24,13 +24,15 @@ class DispatcherEventHandler::Buffer < BasicObject
     ::LOGGER.debug "Entering wrapped block.", TAG
     buffer.clear
 
-    yield
+    ret_val = yield
 
     ::LOGGER.debug "Commiting buffer of #{buffer.size} entries.", TAG
 
     buffer.each do |args|
       dispatcher.push_to_player!(*args)
     end
+
+    ret_val
   end
 
   private

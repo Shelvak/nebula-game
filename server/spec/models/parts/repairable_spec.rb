@@ -25,6 +25,48 @@ describe Building::RepairableTest do
     end
   end
 
+  shared_examples_for "repairable" do |block|
+    it "should fail unless building is active" do
+      building.state = Building::STATE_INACTIVE
+
+      lambda do
+        instance_eval(&block)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if building is not damaged" do
+      building.hp_percentage = 1
+
+      lambda do
+        instance_eval(&block)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if planet does not have enough resources" do
+      planet.metal, planet.energy, planet.zetium = technology.
+        resources_for_healing(building).map { |amount| amount - 1 }
+      planet.save!
+
+      lambda do
+        instance_eval(&block)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should set cooldown on building" do
+      ends_at = technology.healing_time(building.damaged_hp).seconds.from_now
+      instance_eval(&block)
+      building.cooldown_ends_at.should be_within(SPEC_TIME_PRECISION).
+                                         of(ends_at)
+    end
+
+    it "should change state to repairing" do
+      lambda do
+        instance_eval(&block)
+      end.should change(building, :state).from(Building::STATE_ACTIVE).
+        to(Building::STATE_REPAIRING)
+    end
+  end
+
   describe "#repair!" do
     let(:player) { Factory.create(:player) }
     let(:planet) do
@@ -43,6 +85,9 @@ describe Building::RepairableTest do
     # Create technology.
     before(:each) { technology }
 
+    # proc instead of lambda, because we get args :(
+    it_should_behave_like "repairable", proc { building.repair! }
+
     it "should fail if planet has no owner" do
       planet.player = nil
       planet.save!
@@ -51,48 +96,11 @@ describe Building::RepairableTest do
         building.repair!
       end.should raise_error(GameLogicError)
     end
-    
-    it "should fail if player does not have building repair technology" do
-      technology.destroy
 
-      lambda do
-        building.repair!
-      end.should raise_error(GameLogicError)
-    end
-
-    it "should fail if player has level 0 technology" do
-      technology.level = 0
-      technology.save!
-
-      lambda do
-        building.repair!
-      end.should raise_error(GameLogicError)
-    end
-
-    it "should fail unless building is active" do
-      building.state = Building::STATE_INACTIVE
-
-      lambda do
-        building.repair!
-      end.should raise_error(GameLogicError)
-    end
-
-    it "should fail if building is not damaged" do
-      building.hp_percentage = 1
-
-      lambda do
-        building.repair!
-      end.should raise_error(GameLogicError)
-    end
-
-    it "should fail if planet does not have enough resources" do
-      planet.metal, planet.energy, planet.zetium = technology.
-        resources_for_healing(building).map { |amount| amount - 1 }
-      planet.save!
-
-      lambda do
-        building.repair!
-      end.should raise_error(GameLogicError)
+    it "should call Technology::BuildingRepair.get!" do
+      Technology::BuildingRepair.should_receive(:get!).with(player.id).
+        and_return(technology)
+      building.repair!
     end
 
     it "should reduce resources from planet" do
@@ -106,22 +114,6 @@ describe Building::RepairableTest do
       building.repair!
       planet.reload
       [planet.metal, planet.energy, planet.zetium].should == expected
-    end
-
-    it "should set cooldown on building" do
-      ends_at = technology.healing_time(building.damaged_hp).seconds.from_now
-      building.repair!
-      building.reload
-      building.cooldown_ends_at.should be_within(SPEC_TIME_PRECISION).
-                                         of(ends_at)
-    end
-
-    it "should change state to repairing" do
-      lambda do
-        building.repair!
-        building.reload
-      end.should change(building, :state).from(Building::STATE_ACTIVE).
-        to(Building::STATE_REPAIRING)
     end
 
     it "should fire updated on building" do
@@ -147,6 +139,43 @@ describe Building::RepairableTest do
       building.repair!
       building.should have_callback(CallbackManager::EVENT_COOLDOWN_EXPIRED,
                         building.cooldown_ends_at)
+    end
+
+    it "should save building" do
+      building.repair!
+      building.should be_saved
+    end
+  end
+
+  describe "#mass_repair" do
+    let(:player) { Factory.create(:player) }
+    let(:planet) do
+      p = Factory.create(:planet, :player => player)
+      set_resources(p, 10000, 10000, 10000)
+      p
+    end
+    let(:building) do
+      Factory.create(:b_repairable_test, opts_active + {
+        :planet => planet, :hp_percentage => 0.32})
+    end
+    let(:technology) do
+      Factory.create!(:t_building_repair, :player => player, :level => 1)
+    end
+
+    # proc instead of lambda, because we get args :(
+    it_should_behave_like "repairable",
+      proc { building.mass_repair(planet, technology) }
+
+    it "should reduce resources from planet" do
+      metal, energy, zetium = technology.resources_for_healing(building)
+      expected = [
+        planet.metal - metal,
+        planet.energy - energy,
+        planet.zetium - zetium
+      ]
+
+      building.mass_repair(planet, technology)
+      [planet.metal, planet.energy, planet.zetium].should == expected
     end
   end
 

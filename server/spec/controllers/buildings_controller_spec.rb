@@ -549,7 +549,10 @@ describe BuildingsController do
   end
 
   describe "buildings|mass_repair" do
-    let(:planet) { set_resources(Factory.create(:planet, :player => player)) }
+    let(:technology) do
+      Factory.create!(:t_building_repair, level: 1, player: player)
+    end
+    let(:planet) { set_resources(Factory.create(:planet, player: player)) }
     let(:buildings) do
       opts = {:hp_percentage => 0.75, :planet => planet}
       [
@@ -560,6 +563,7 @@ describe BuildingsController do
     end
 
     before(:each) do
+      technology
       @action = "buildings|mass_repair"
       @params = {
         'planet_id' => planet.id,

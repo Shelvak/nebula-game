@@ -1584,11 +1584,18 @@ describe SsObject::Planet do
       Factory.create!(:t_building_repair, level: 1, player: player)
     end
     let(:planet) { set_resources(Factory.create(:planet, player: player)) }
-    let(:buildings) { [
-      Factory.create!(:b_vulcan, planet: planet, x: 0, hp_percentage: 0.1),
-      Factory.create!(:b_vulcan, planet: planet, x: 3, hp_percentage: 0.15),
-      Factory.create!(:b_vulcan, planet: planet, x: 6, hp_percentage: 0.21),
-    ] }
+    let(:buildings) do
+      opts = opts_active + opts_built + {planet: planet}
+      [
+        Factory.create!(:b_vulcan, opts + {x: 0, hp_percentage: 0.11}),
+        Factory.create!(:b_vulcan, opts + {x: 3, hp_percentage: 0.15}),
+        Factory.create!(:b_vulcan, opts + {x: 6, hp_percentage: 0.21}),
+      ]
+    end
+
+    before(:each) do
+      technology
+    end
 
     it "should fail if there are buildings which are not repairable" do
       lambda do
@@ -1617,7 +1624,13 @@ describe SsObject::Planet do
 
     it "should call #mass_repair on each of the buildings" do
       buildings.each do |b|
-        b.should_receive(:mass_repair).with(planet, technology).and_return(50)
+        b.should_receive(:mass_repair).with(planet, technology).and_return do
+          |*args|
+
+          # Callback registration uses this later.
+          b.cooldown_ends_at = 5.minutes.from_now
+          50
+        end
       end
       planet.mass_repair!(buildings)
     end
