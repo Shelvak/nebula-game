@@ -113,6 +113,8 @@ class Chat::Hub
   # it was not.
   def channel_msg(channel_name, player, message)
     synchronize do
+      raise GameLogicError, "Trial players cannot send messages to chat!" \
+        if player.trial?
       # Return if this was a control message.
       @control.message(player, message) and return false
       @antiflood.message!(player.id)
@@ -127,6 +129,10 @@ class Chat::Hub
   # Send a _message_ to +Player+ with ID _target_id_.
   def private_msg(player_id, target_id, message, created_at=nil)
     synchronize do
+      player = dispatcher.resolve_player(player_id)
+      raise GameLogicError, "Trial players cannot send messages to chat!" \
+        if ! player.nil? && player.trial?
+
       if created_at.nil?
         if target_id == Chat::Control::SYSTEM_ID
           @control.message(Player.find(player_id), message)
