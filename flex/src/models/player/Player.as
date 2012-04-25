@@ -170,6 +170,7 @@ package models.player
          return _creds - vipCreds - freeCreds
       }
 
+      prop_name static const trial: String = "trial";
       [Required]
       public var trial: Boolean;
       

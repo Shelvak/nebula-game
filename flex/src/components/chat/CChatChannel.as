@@ -15,9 +15,12 @@ package components.chat
    import models.chat.MChatChannelPrivate;
    import models.chat.events.MChatChannelContentEvent;
    import models.chat.events.MChatChannelEvent;
+   import models.player.Player;
    import models.time.events.MTimeEventEvent;
 
    import mx.events.PropertyChangeEvent;
+
+   import namespaces.prop_name;
 
    import spark.components.Button;
    import spark.components.Group;
@@ -142,6 +145,10 @@ package components.chat
                   MTimeEventEvent.OCCURS_IN_CHANGE,
                   silenced_occursInChangeHandler, false
                );
+               _modelOld.player.removeEventListener(
+                  PropertyChangeEvent.PROPERTY_CHANGE,
+                  player_propertyChangeHandler, false
+               );
                txtContent.textFlow = null;
                if (!_modelOld.isPublic) {
                   MChatChannelPrivate(_modelOld).removeEventListener(
@@ -179,6 +186,10 @@ package components.chat
                _model.silenced.addEventListener(
                   MTimeEventEvent.OCCURS_IN_CHANGE,
                   silenced_occursInChangeHandler, false, 0, true
+               );
+               _model.player.addEventListener(
+                  PropertyChangeEvent.PROPERTY_CHANGE,
+                  player_propertyChangeHandler, false, 0, true
                );
                txtContent.textFlow = _model.content.text;
                lstMembers.model = _model.members;
@@ -483,6 +494,12 @@ package components.chat
          }
       }
 
+      private function player_propertyChangeHandler(event: PropertyChangeEvent): void {
+         if (event.property == Player.prop_name::trial) {
+            updateUserInput();
+         }
+      }
+
       private function silenced_hasOccurredChangeHandler(event: MTimeEventEvent): void {
          updateUserInput();
       }
@@ -496,11 +513,11 @@ package components.chat
             return;
          }
          if (btnSend != null) {
-            btnSend.enabled = model.silenced.hasOccurred;
+            btnSend.enabled = model.canSendMessages;
          }
          if (inpMessage != null) {
-            inpMessage.enabled = model.silenced.hasOccurred;
-            if (!_model.silenced.hasOccurred
+            inpMessage.enabled = model.canSendMessages;
+            if (!model.canSendMessages
                    && focusManager.findFocusManagerComponent(inpMessage) != null) {
                focusManager.setFocus(txtContent);
             }
@@ -510,15 +527,20 @@ package components.chat
 
       private function updateInpMessageText(): void {
          if (inpMessage != null && model != null) {
-            if (model.silenced.hasOccurred) {
+            if (model.canSendMessages) {
                inpMessage.text = model.userInput;
             }
             else {
-               inpMessage.text = getString(
-                  "message.silence",
-                  [model.silenced.occursAtString(),
-                   model.silenced.occursInString()]
-               );
+               if (!model.silenced.hasOccurred) {
+                  inpMessage.text = getString(
+                     "message.silence",
+                     [model.silenced.occursAtString(),
+                      model.silenced.occursInString()]
+                  );
+               }
+               else {
+                  inpMessage.text = getString("message.trial");
+               }
             }
          }
       }
