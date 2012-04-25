@@ -212,7 +212,7 @@ package models.chat
 
       private function onPlayerElementClick(playerId: int,
                                             playerName: String): void {
-         userInput = playerName + ", " + userInput;
+         userInput = userInput + playerName + ", ";
       }
       
       /**
