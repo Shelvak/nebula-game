@@ -132,15 +132,7 @@ package models.player
          var res:int = ObjectUtil.stringCompare(p0.name, p1.name, true);
          return res == 0 ? NumberUtil.compare(p0.id, p1.id) : res;
       }
-      
-      /**
-       * Number of planets owned by the player (including the ones in battlegrounds).
-       */ 
-      public function get planetsCountAll() : int {
-         return planets != null ? planets.length : 0;
-      }
-      
-      
+
       private var _creds: int = 0;
       [Bindable(event="credsChange")]
       [Optional]
