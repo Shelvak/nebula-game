@@ -5576,6 +5576,9 @@
         Tu buvai nutildytas iki {0} dėl pokalbių teršimo.
         Vėl galėsi šnekėti už {1}.
      </message.silence>
+     <message.trial>
+        Kad galėtum bendrauti pokalbių kambaryje, tau reikia užsiregistruoti.
+     </message.trial>
      <tooltip.btnDoIgnore>
        <p>Žaidėjas nėra ignoruojamas</p>
      </tooltip.btnDoIgnore>

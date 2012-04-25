@@ -190,7 +190,7 @@ package controllers.galaxies.actions
          }
       }
 
-      private function moveToHomeSS(galaxy: Galaxy) {
+      private function moveToHomeSS(galaxy: Galaxy): void {
          const ss: MSolarSystem = Collections.findFirst(
             galaxy.solarSystemsWithPlayer,
             function (ss: MSolarSystem): Boolean {

@@ -12,6 +12,7 @@ package models.chat
    import models.chat.msgconverters.IChatMessageConverter;
    import models.chat.msgconverters.MemberMessageConverter;
    import models.chat.msgconverters.PlayerMessageConverter;
+   import models.player.Player;
    import models.time.MTimeEventFixedMoment;
 
    import mx.core.ClassFactory;
@@ -65,8 +66,16 @@ package models.chat
          _members = new MChatMembersList(this);
       }
 
+      public function get player(): Player {
+         return ML.player;
+      }
+
       public function get silenced(): MTimeEventFixedMoment {
          return MCHAT.silenced;
+      }
+
+      public function get canSendMessages(): Boolean {
+         return !player.trial && silenced.hasOccurred;
       }
       
       private var _name:String = null;
@@ -212,7 +221,7 @@ package models.chat
 
       private function onPlayerElementClick(playerId: int,
                                             playerName: String): void {
-         userInput = playerName + ", " + userInput;
+         userInput = userInput + playerName + ", ";
       }
       
       /**
