@@ -23,6 +23,34 @@ describe Cfg do
     end
   end
 
+  describe ".solar_system_spawn_key" do
+    it "should return 'home' for home ss" do
+      Cfg.solar_system_spawn_key(Factory.build(:home_ss)).
+        should == "solar_system.spawn.home"
+    end
+
+    it "should return 'regular' for normal ss" do
+      Cfg.solar_system_spawn_key(Factory.build(:solar_system)).
+        should == "solar_system.spawn.regular"
+    end
+
+    it "should return 'battleground' for battleground ss" do
+      Cfg.solar_system_spawn_key(Factory.build(:battleground)).
+        should == "solar_system.spawn.battleground"
+    end
+
+    it "should return 'mini_battleground' for pulsar ss" do
+      Cfg.solar_system_spawn_key(Factory.build(:mini_battleground)).
+        should == "solar_system.spawn.mini_battleground"
+    end
+
+    it "should raise ArgumentError for others" do
+      lambda do
+        Cfg.solar_system_spawn_key(Factory.build(:wormhole))
+      end.should raise_error(ArgumentError)
+    end
+  end
+
   describe ".market_bot_random_resource" do
     it "should return item from range multiplied by time multiplier" do
       kind = MarketOffer::KIND_METAL

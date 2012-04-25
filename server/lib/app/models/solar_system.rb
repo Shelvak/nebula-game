@@ -64,13 +64,12 @@ class SolarSystem < ActiveRecord::Base
 
   # Return +SolarSystemPoint+s where NPC units are standing.
   def npc_unit_locations
-    lambda do
-      fields = "location_x, location_y"
+    fields = "location_x, location_y"
+    without_locking do
       Unit.in_zone(self).select(fields).group(fields).where(:player_id => nil).
         c_select_all
-    end.call.inject(Set.new) do |set, row|
+    end.each_with_object(Set.new) do |row, set|
       set.add SolarSystemPoint.new(id, row['location_x'], row['location_y'])
-      set
     end
   end
 
@@ -173,11 +172,14 @@ class SolarSystem < ActiveRecord::Base
       definition = Cfg.solar_system_spawn_units_definition(self)
       strategy = SsSpawnStrategy.new(self, npc_taken_points)
       location = strategy.pick
-      
+
+      spot = npc_taken_points.size + 1 # Because division by 0 is just not cool.
       units = UnitBuilder.from_random_ranges(
-        definition, location, nil
+        definition, location, nil, spawn_counter, spot
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
+      self.spawn_counter += 1
+      save!
       Cooldown.create_unless_exists(location, Cfg.after_spawn_cooldown)
       
       location
