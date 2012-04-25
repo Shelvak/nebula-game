@@ -567,7 +567,7 @@ package components.chat
          if (message.length > 0) {
             model.sendMessage(message);
          }
-         inpMessage.text = "";
+         model.userInput = "";
          enableAutoScroll();
       }
       
