@@ -5477,7 +5477,10 @@
      <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} joined ]"/>
      <message.channelLeave value="[ {0} left ]"/>
-     <message.friendOffline value="This player is currently offline."/>
+     <message.friendOffline>
+       This player is currently offline. He will receive your messages upon
+       logging in.
+     </message.friendOffline>
      <message.memberIgnored value="... ignored ..."/>
      <message.silence>
         You have been silenced for flooding until {0}.
