@@ -1,4 +1,4 @@
-package tests.autocomplete
+package tests.utils
 {
    import ext.hamcrest.collection.array;
    import ext.hamcrest.object.equals;
@@ -7,7 +7,10 @@ package tests.autocomplete
 
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.emptyArray;
+   import org.hamcrest.core.not;
+   import org.hamcrest.core.throws;
    import org.hamcrest.object.isTrue;
+   import org.hamcrest.object.sameInstance;
    import org.hamcrest.text.emptyString;
 
    import utils.autocomplete.AutoCompleteController;
@@ -25,7 +28,46 @@ package tests.autocomplete
          keyboard = new KeyboardMock();
          dictionary = new ArrayCollection();
          client = new AutoCompleteClientMock();
-         autoComplete = new AutoCompleteController(dictionary, client, keyboard);
+         autoComplete = new AutoCompleteController(keyboard);
+         autoComplete.client = client;
+         autoComplete.dictionary = dictionary;
+      }
+
+      [Test]
+      public function nullClient(): void {
+         autoComplete = new AutoCompleteController(keyboard);
+         autoComplete.dictionary = dictionary;
+
+         assertThat(
+            "null client does not cause exceptions",
+            function():void{ keyboard.Tab() }, not (throws (Error))
+         );
+
+         autoComplete.client = null;
+         assertThat(
+            "null client does not cause exceptions",
+            function (): void { keyboard.Tab() }, not (throws (Error))
+         );
+      }
+
+      [Test]
+      public function dictionaryProperty(): void {
+         autoComplete = new AutoCompleteController(keyboard);
+         assertThat(
+            "default value", autoComplete.dictionary, emptyArray()
+         );
+
+         autoComplete.dictionary = dictionary;
+         assertThat(
+            "dictionary changed",
+            autoComplete.dictionary, sameInstance (dictionary)
+         );
+
+         autoComplete.dictionary = null;
+         assertThat(
+            "null converted to empty list",
+            autoComplete.dictionary, emptyArray()
+         );
       }
 
       [Test]
@@ -34,7 +76,7 @@ package tests.autocomplete
          assertAutoCompleteListEmpty();
 
          client.reset();
-         client.input = "test ";
+         client.userInput = "test ";
          keyboard.Tab();
          assertAutoCompleteListEmpty();
       }
@@ -43,28 +85,28 @@ package tests.autocomplete
       public function noAvailableChoices(): void {
          addWord("aaa");
          addWord("aab");
-         client.input = "c";
+         client.userInput = "c";
          keyboard.Tab();
          assertAutoCompleteListEmpty();
-         assertThat( "input not changed", client.input, equals ("c") );
+         assertThat( "input not changed", client.userInput, equals ("c") );
       }
 
       [Test]
       public function autoComplete_exactMatchOnly(): void {
          addWord("aaaa");
          addWord("aabb");
-         client.input = "aaaa";
+         client.userInput = "aaaa";
          keyboard.Tab();
          assertAutoCompleteListEmpty();
-         assertThat( "input unchanged", client.input, equals ("aaaa") );
+         assertThat( "input unchanged", client.userInput, equals ("aaaa") );
 
          client.reset();
-         client.input = "aab test aab";
+         client.userInput = "aab test aab";
          keyboard.Tab();
          assertAutoCompleteListEmpty();
          assertThat(
             "should have completed the phrase",
-            client.input, equals ("aab test aabb")
+            client.userInput, equals ("aab test aabb")
          );
       }
 
@@ -72,12 +114,14 @@ package tests.autocomplete
       public function autoComplete_partialMatchOnly(): void {
          addWord("aab");
          addWord("aaa");
-         client.input = "a";
+         addWord("baa");
+         addWord("bab");
+         client.userInput = "a";
          keyboard.Tab();
 
          assertThat(
             "user input should contain whole partial match",
-            client.input, equals ("aa")
+            client.userInput, equals ("aa")
          );
          assertThat(
             "[param commonPart]",
@@ -94,22 +138,22 @@ package tests.autocomplete
          addWord("aa");
          addWord("aac");
          addWord("aab");
-         client.input = "a";
+         client.userInput = "a";
          keyboard.Tab();
 
          assertThat(
             "user input should contain exact match",
-            client.input, equals ("aa")
+            client.userInput, equals ("aa")
          );
          assertAutoCompleteListEmpty();
 
          client.reset();
-         client.input = "aa";
+         client.userInput = "aa";
          keyboard.Tab();
 
          assertThat(
             "user input should not have changed",
-            client.input, equals ("aa")
+            client.userInput, equals ("aa")
          );
          assertThat(
             "[param commonPart]",
@@ -163,10 +207,10 @@ class AutoCompleteClientMock implements IAutoCompleteClient
    }
 
    private var _input: String = "";
-   public function set input(value: String): void {
+   public function set userInput(value: String): void {
       _input = value;
    }
-   public function get input(): String {
+   public function get userInput(): String {
       return _input;
    }
 
