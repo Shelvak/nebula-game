@@ -4,8 +4,10 @@ package models.chat
    
    import models.BaseModel;
    import models.chat.events.MChatMemberEvent;
-   
-   
+
+   import utils.autocomplete.IAutoCompleteValue;
+
+
    /**
     * @see models.chat.events.MChatMemberEvent#IS_ONLINE_CHANGE
     */
@@ -26,7 +28,7 @@ package models.chat
     * @param isOnline whether this member is online or offline
     * @param isIgnored whether this member is ignored
     */
-   public class MChatMember extends BaseModel
+   public class MChatMember extends BaseModel implements IAutoCompleteValue
    {
       public function MChatMember(id: int = 0,
                                   name: String = null,
@@ -45,6 +47,11 @@ package models.chat
        * @default null
        */
       public var name: String;
+
+      public function get autoCompleteValue(): String {
+         return name;
+      }
+
 
       /**
        * <code>true</code> if this instance of <code>MChatMember</code>

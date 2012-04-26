@@ -1,14 +1,10 @@
 package utils.autocomplete
 {
    import flash.events.EventDispatcher;
-   import flash.events.IEventDispatcher;
-   import flash.events.KeyboardEvent;
-   import flash.ui.Keyboard;
 
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
 
-   import utils.Objects;
    import utils.datastructures.iterators.IIterator;
    import utils.datastructures.iterators.IIteratorFactory;
 
@@ -19,16 +15,6 @@ package utils.autocomplete
 
       private const NULL_CLIENT: IAutoCompleteClient = new NullClient();
       private const NULL_DICTIONARY: IList = new ArrayCollection();
-      private var _keyboard: IEventDispatcher;
-
-      public function AutoCompleteController(keyboardEventsDispatcher: IEventDispatcher) {
-         _keyboard = Objects.paramNotNull(
-            "keyboardEventsDispatcher", keyboardEventsDispatcher
-         );
-         _keyboard.addEventListener(
-            KeyboardEvent.KEY_UP, keyboard_keyUpHandler, false, 0, true
-         );
-      }
 
       private var _client: IAutoCompleteClient = NULL_CLIENT;
       public function set client(value: IAutoCompleteClient): void {
@@ -43,13 +29,7 @@ package utils.autocomplete
          return _dictionary;
       }
 
-      private function keyboard_keyUpHandler(event: KeyboardEvent): void {
-         if (event.keyCode == Keyboard.TAB) {
-            runAutoComplete();
-         }
-      }
-
-      private function runAutoComplete(): void {
+      public function run(): void {
          const lastWord: String = getLastWord();
          const choices: Array = getAutoCompleteList(lastWord);
          if (choices.length == 0) {
