@@ -4,6 +4,9 @@ package models.chat
 
    import flash.errors.IllegalOperationError;
 
+   import flashx.textLayout.elements.ParagraphElement;
+   import flashx.textLayout.elements.SpanElement;
+
    import models.BaseModel;
    import models.ModelLocator;
    import models.chat.events.MChatChannelEvent;
@@ -18,6 +21,7 @@ package models.chat
    import mx.core.IFactory;
 
    import utils.Objects;
+   import utils.autocomplete.IAutoCompleteClient;
 
 
    [Event(
@@ -43,7 +47,7 @@ package models.chat
     * <code>MChatMembersList</code> as well as all its content as an instance of
     * <code>MChatChannelContent</code>.
     */   
-   public class MChatChannel extends BaseModel
+   public class MChatChannel extends BaseModel implements IAutoCompleteClient
    {
       protected function get MCHAT() : MChat {
          return MChat.getInstance();
@@ -82,11 +86,15 @@ package models.chat
        * Is this a public or private channel?
        */
       public function get isPublic() : Boolean {
-         throw new IllegalOperationError("Property is abstract!");
+         Objects.throwAbstractPropertyError();
+         return false;  // unreachable
       }
 
       private var _userInput: String = "";
       public function set userInput(value: String): void {
+         if (value == null) {
+            value = "";
+         }
          if (_userInput != value) {
             _userInput = value;
             dispatchChannelEvent(MChatChannelEvent.USER_INPUT_CHANGE);
@@ -94,6 +102,15 @@ package models.chat
       }
       public function get userInput(): String {
          return _userInput;
+      }
+
+      public function setAutoCompleteList(commonPart: String,
+                                          list: Array): void {
+         const paragraph: ParagraphElement = new ParagraphElement();
+         const text: SpanElement = new SpanElement();
+         text.text = list.join(", ");
+         paragraph.addChild(text);
+         content.addMessage(paragraph);
       }
       
       /* ########## */

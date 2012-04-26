@@ -17,6 +17,7 @@ package tests.chat.models.channel
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
+   import org.hamcrest.text.emptyString;
 
 
    public class TC_MChatChannel extends TC_BaseMChatChannel
@@ -280,6 +281,26 @@ package tests.chat.models.channel
             "changing generateJoinLeaveMsgs", function():void{ channel.generateJoinLeaveMsgs = false },
             causes (channel) .toDispatchEvent (MChatChannelEvent.GENERATE_JOIN_LEAVE_MSGS_CHANGE)
          );
+      }
+
+      [Test]
+      public function userInput(): void {
+         assertThat(
+            "default value", channel.userInput, emptyString()
+         );
+
+         channel.userInput = null;
+         assertThat(
+            "converts null to empty string", channel.userInput, emptyString()
+         );
+
+         assertThat(
+            "setting userInput property",
+            function():void{ channel.userInput = "test" },
+            causes (channel) .toDispatchEvent
+               (MChatChannelEvent.USER_INPUT_CHANGE)
+         );
+
       }
    }
 }
