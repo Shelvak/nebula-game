@@ -106,11 +106,13 @@ package models.chat
 
       public function setAutoCompleteList(commonPart: String,
                                           list: Array): void {
-         const paragraph: ParagraphElement = new ParagraphElement();
-         const text: SpanElement = new SpanElement();
-         text.text = list.join(", ");
-         paragraph.addChild(text);
-         content.addMessage(paragraph);
+         if (list.length != 0) {
+            const paragraph: ParagraphElement = new ParagraphElement();
+            const text: SpanElement = new SpanElement();
+            text.text = list.join(", ");
+            paragraph.addChild(text);
+            content.addMessage(paragraph);
+         }
       }
       
       /* ########## */

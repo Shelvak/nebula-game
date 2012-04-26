@@ -18,41 +18,39 @@ package tests.utils
 
    public class TC_AutoCompleteController
    {
-      private var keyboard: KeyboardMock;
       private var dictionary: ArrayCollection;
       private var client: AutoCompleteClientMock;
       private var autoComplete: AutoCompleteController;
 
       [Before]
       public function setUp(): void {
-         keyboard = new KeyboardMock();
          dictionary = new ArrayCollection();
          client = new AutoCompleteClientMock();
-         autoComplete = new AutoCompleteController(keyboard);
+         autoComplete = new AutoCompleteController();
          autoComplete.client = client;
          autoComplete.dictionary = dictionary;
       }
 
       [Test]
       public function nullClient(): void {
-         autoComplete = new AutoCompleteController(keyboard);
+         autoComplete = new AutoCompleteController();
          autoComplete.dictionary = dictionary;
 
          assertThat(
             "null client does not cause exceptions",
-            function():void{ keyboard.Tab() }, not (throws (Error))
+            function():void{ autoComplete.run() }, not (throws (Error))
          );
 
          autoComplete.client = null;
          assertThat(
             "null client does not cause exceptions",
-            function (): void { keyboard.Tab() }, not (throws (Error))
+            function (): void { autoComplete.run() }, not (throws (Error))
          );
       }
 
       [Test]
       public function dictionaryProperty(): void {
-         autoComplete = new AutoCompleteController(keyboard);
+         autoComplete = new AutoCompleteController();
          assertThat(
             "default value", autoComplete.dictionary, emptyArray()
          );
@@ -72,12 +70,12 @@ package tests.utils
 
       [Test]
       public function inputIsEmpty(): void {
-         keyboard.Tab();
+         autoComplete.run();
          assertAutoCompleteListEmpty();
 
          client.reset();
          client.userInput = "test ";
-         keyboard.Tab();
+         autoComplete.run();
          assertAutoCompleteListEmpty();
       }
 
@@ -86,7 +84,7 @@ package tests.utils
          addWord("aaa");
          addWord("aab");
          client.userInput = "c";
-         keyboard.Tab();
+         autoComplete.run();
          assertAutoCompleteListEmpty();
          assertThat( "input not changed", client.userInput, equals ("c") );
       }
@@ -96,13 +94,13 @@ package tests.utils
          addWord("aaaa");
          addWord("aabb");
          client.userInput = "aaaa";
-         keyboard.Tab();
+         autoComplete.run();
          assertAutoCompleteListEmpty();
          assertThat( "input unchanged", client.userInput, equals ("aaaa") );
 
          client.reset();
          client.userInput = "aab test aab";
-         keyboard.Tab();
+         autoComplete.run();
          assertAutoCompleteListEmpty();
          assertThat(
             "should have completed the phrase",
@@ -117,7 +115,7 @@ package tests.utils
          addWord("baa");
          addWord("bab");
          client.userInput = "a";
-         keyboard.Tab();
+         autoComplete.run();
 
          assertThat(
             "user input should contain whole partial match",
@@ -139,7 +137,7 @@ package tests.utils
          addWord("aac");
          addWord("aab");
          client.userInput = "a";
-         keyboard.Tab();
+         autoComplete.run();
 
          assertThat(
             "user input should contain exact match",
@@ -149,7 +147,7 @@ package tests.utils
 
          client.reset();
          client.userInput = "aa";
-         keyboard.Tab();
+         autoComplete.run();
 
          assertThat(
             "user input should not have changed",
@@ -186,10 +184,6 @@ package tests.utils
    }
 }
 
-
-import flash.events.EventDispatcher;
-import flash.events.KeyboardEvent;
-import flash.ui.Keyboard;
 
 import utils.autocomplete.IAutoCompleteClient;
 import utils.autocomplete.IAutoCompleteValue;
@@ -231,14 +225,5 @@ class AutoCompleteValue implements IAutoCompleteValue
    private var _value: String;
    public function get autoCompleteValue(): String {
       return _value;
-   }
-}
-
-class KeyboardMock extends EventDispatcher
-{
-   public function Tab(): void {
-      dispatchEvent(new KeyboardEvent(
-         KeyboardEvent.KEY_UP, true, false, 0, Keyboard.TAB
-      ));
    }
 }
