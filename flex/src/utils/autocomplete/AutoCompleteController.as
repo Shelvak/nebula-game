@@ -30,7 +30,7 @@ package utils.autocomplete
       }
 
       public function run(): void {
-         const lastWord: String = getLastWord();
+         const lastWord: String = getLastWord().toLowerCase();
          const choices: Array = getAutoCompleteList(lastWord);
          if (choices.length == 0) {
             resetClientAutoCompleteList();
@@ -43,7 +43,8 @@ package utils.autocomplete
             }
             else {
                // exact match *after* auto complete
-               if (choices[0] == commonPart && lastWord != commonPart) {
+               if (String(choices[0]).toLowerCase() == commonPart
+                      && lastWord != commonPart) {
                   resetClientAutoCompleteList();
                }
                // exact match *before* auto complete or partial match
@@ -69,10 +70,11 @@ package utils.autocomplete
                commonPart = firstWord;
                break;
             }
-            const newCommonPart: String = firstWord.substr(0, charsCommon);
+            const newCommonPart: String =
+                     firstWord.substr(0, charsCommon).toLowerCase();
             const isCommon: Boolean = words.every(
                function (word: String, index: int, array: Array): Boolean {
-                  return word.indexOf(newCommonPart) == 0;
+                  return word.toLowerCase().indexOf(newCommonPart) == 0;
                }
             );
             if (!isCommon) {
@@ -92,11 +94,11 @@ package utils.autocomplete
          while (iterator.hasNext) {
             const value: String =
                      IAutoCompleteValue(iterator.next()).autoCompleteValue;
-            if (value.indexOf(commonPart) == 0) {
+            if (value.toLowerCase().indexOf(commonPart) == 0) {
                choices.push(value);
             }
          }
-         choices.sort();
+         choices.sort(Array.CASEINSENSITIVE);
          return choices;
       }
 

@@ -326,19 +326,19 @@ package tests.chat.models.channel
             text.numChildren, equals (0)
          );
 
-         channel.setAutoCompleteList("test", ["test", "testA", "testB"]);
+         channel.setAutoCompleteList("test", ["tESt", "TesTA", "testB"]);
          assertThat(
             "for not empty auto complete list should have created a paragraph",
             text.numChildren, equals(1)
          );
          assertThat(
             "should have joined list entries with ', '",
-            text.getText(), equals ("test, testA, testB")
+            text.getText(), equals ("tESt, TesTA, testB")
          );
          const p: ParagraphElement = ParagraphElement(text.getChildAt(0));
-         assertSpanTextAndStyle(p, 0, "test", true);
+         assertSpanTextAndStyle(p, 0, "tESt", true);
          assertSpanTextAndStyle(p, 1, ", ", false);
-         assertSpanTextAndStyle(p, 2, "test", true);
+         assertSpanTextAndStyle(p, 2, "TesT", true);
          assertSpanTextAndStyle(p, 3, "A, ", false);
          assertSpanTextAndStyle(p, 4, "test", true);
          assertSpanTextAndStyle(p, 5, "B", false);

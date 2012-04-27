@@ -90,7 +90,7 @@ package tests.utils
       }
 
       [Test]
-      public function autoComplete_exactMatchOnly(): void {
+      public function exactMatchOnly(): void {
          addWord("aaaa");
          addWord("aabb");
          client.userInput = "aaaa";
@@ -109,12 +109,12 @@ package tests.utils
       }
 
       [Test]
-      public function autoComplete_partialMatchOnly(): void {
+      public function partialMatchOnly(): void {
          addWord("aab");
-         addWord("aaa");
-         addWord("baa");
+         addWord("Aaa");
+         addWord("bAa");
          addWord("bab");
-         client.userInput = "a";
+         client.userInput = "A";
          autoComplete.run();
 
          assertThat(
@@ -127,14 +127,14 @@ package tests.utils
          );
          assertThat(
             "[param list] should hold both words",
-            client.setAutoCompleteList_list, array ("aaa", "aab")
+            client.setAutoCompleteList_list, array ("Aaa", "aab")
          );
       }
 
       [Test]
       public function partialAndExactMatch(): void {
          addWord("aa");
-         addWord("aac");
+         addWord("aAc");
          addWord("aab");
          client.userInput = "a";
          autoComplete.run();
@@ -159,7 +159,7 @@ package tests.utils
          );
          assertThat(
             "[param list]",
-            client.setAutoCompleteList_list, array ("aa", "aab", "aac")
+            client.setAutoCompleteList_list, array ("aa", "aab", "aAc")
          );
       }
 

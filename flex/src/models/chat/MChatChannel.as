@@ -116,12 +116,13 @@ package models.chat
          if (length != 0) {
             const paragraph: ParagraphElement = new ParagraphElement();
             for (var idx: int = 0; idx < length; idx++) {
+               const word: String = list[idx];
                const spanCommon: SpanElement = new SpanElement();
-               spanCommon.text = commonPart;
+               spanCommon.text = word.substr(0, commonPart.length);
                spanCommon.fontWeight = FontWeight.BOLD;
                paragraph.addChild(spanCommon);
                const spanRest: SpanElement = new SpanElement();
-               spanRest.text = list[idx].slice(commonPart.length)
+               spanRest.text = word.slice(commonPart.length)
                                   + (idx < length - 1 ? ", " : "");
                paragraph.addChild(spanRest);
             }
