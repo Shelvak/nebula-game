@@ -10,9 +10,12 @@ orbit.count: 3
 
 # How much time does it take to go between points in orbit. 1 is normal hop
 # time, 2 is double time, 0.5 is half time.
-links.orbit.weight: 1 + 0.000001 * position
+#
+# These link weights are just for algorithms to allow stable travel path
+# determinism. They should not affect actual flight speeds.
+links.orbit.weight: 1 + 0.00000001 * position
 # How much time does it take to go between orbits.
-links.parent.weight: 1 + 0.000002 * position
+links.parent.weight: 1 + 0.000001 * position
 # How much time does it take to land to the planet. Does not support formulas!
 links.planet.weight: 0.5
 
