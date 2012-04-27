@@ -3,6 +3,10 @@ package models.chat
    import components.chat.IRChatMember;
 
    import flash.errors.IllegalOperationError;
+   import flash.text.engine.FontWeight;
+
+   import flashx.textLayout.elements.ParagraphElement;
+   import flashx.textLayout.elements.SpanElement;
 
    import models.BaseModel;
    import models.ModelLocator;
@@ -18,6 +22,7 @@ package models.chat
    import mx.core.IFactory;
 
    import utils.Objects;
+   import utils.autocomplete.IAutoCompleteClient;
 
 
    [Event(
@@ -43,7 +48,7 @@ package models.chat
     * <code>MChatMembersList</code> as well as all its content as an instance of
     * <code>MChatChannelContent</code>.
     */   
-   public class MChatChannel extends BaseModel
+   public class MChatChannel extends BaseModel implements IAutoCompleteClient
    {
       protected function get MCHAT() : MChat {
          return MChat.getInstance();
@@ -82,11 +87,20 @@ package models.chat
        * Is this a public or private channel?
        */
       public function get isPublic() : Boolean {
-         throw new IllegalOperationError("Property is abstract!");
+         Objects.throwAbstractPropertyError();
+         return false;  // unreachable
       }
+
+
+      /* ########################### */
+      /* ### IAutoCompleteClient ### */
+      /* ########################### */
 
       private var _userInput: String = "";
       public function set userInput(value: String): void {
+         if (value == null) {
+            value = "";
+         }
          if (_userInput != value) {
             _userInput = value;
             dispatchChannelEvent(MChatChannelEvent.USER_INPUT_CHANGE);
@@ -94,6 +108,26 @@ package models.chat
       }
       public function get userInput(): String {
          return _userInput;
+      }
+
+      public function setAutoCompleteList(commonPart: String,
+                                          list: Array): void {
+         const length: int = list.length;
+         if (length != 0) {
+            const paragraph: ParagraphElement = new ParagraphElement();
+            for (var idx: int = 0; idx < length; idx++) {
+               const word: String = list[idx];
+               const spanCommon: SpanElement = new SpanElement();
+               spanCommon.text = word.substr(0, commonPart.length);
+               spanCommon.fontWeight = FontWeight.BOLD;
+               paragraph.addChild(spanCommon);
+               const spanRest: SpanElement = new SpanElement();
+               spanRest.text = word.slice(commonPart.length)
+                                  + (idx < length - 1 ? ", " : "");
+               paragraph.addChild(spanRest);
+            }
+            content.addMessage(paragraph);
+         }
       }
       
       /* ########## */

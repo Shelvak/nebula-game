@@ -4,7 +4,7 @@ package utils.autocomplete
    {
       function setAutoCompleteList(commonPart:String, list: Array): void;
 
-      function set input(value: String): void;
-      function get input(): String;
+      function set userInput(value: String): void;
+      function get userInput(): String;
    }
 }
