@@ -10,11 +10,11 @@ orbit.count: 3
 
 # How much time does it take to go between points in orbit. 1 is normal hop
 # time, 2 is double time, 0.5 is half time.
-links.orbit.weight: (0.3 * position) + 0.4
+links.orbit.weight: 1 + 0.000001 * position
 # How much time does it take to go between orbits.
-links.parent.weight: (0.3 * position) + 0.7
+links.parent.weight: 1 + 0.000002 * position
 # How much time does it take to land to the planet. Does not support formulas!
-links.planet.weight: 1.1
+links.planet.weight: 0.5
 
 # How much time should jump from/to regular solar system take?
 regular.jump.multiplier: 1.5
@@ -74,7 +74,7 @@ spawn.battleground.max_spots: 1
 spawn.battleground.units:
   - [1, 1, BossShip, 0]
   - [0, 3, ConvoyShip, 1]
-  - [10 * counter, 15 * counter, Dirac, 0]
+  - [5 * counter, 15 * counter, Dirac, 0]
   - [15 * counter, 20 * counter, Dirac, 1]
   - [5 * counter, 10 * counter, Thor, 0]
   - [10 * counter, 15 * counter, Thor, 1]
