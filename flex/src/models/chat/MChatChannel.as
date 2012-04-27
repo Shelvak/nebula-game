@@ -3,6 +3,7 @@ package models.chat
    import components.chat.IRChatMember;
 
    import flash.errors.IllegalOperationError;
+   import flash.text.engine.FontWeight;
 
    import flashx.textLayout.elements.ParagraphElement;
    import flashx.textLayout.elements.SpanElement;
@@ -90,6 +91,11 @@ package models.chat
          return false;  // unreachable
       }
 
+
+      /* ########################### */
+      /* ### IAutoCompleteClient ### */
+      /* ########################### */
+
       private var _userInput: String = "";
       public function set userInput(value: String): void {
          if (value == null) {
@@ -106,11 +112,19 @@ package models.chat
 
       public function setAutoCompleteList(commonPart: String,
                                           list: Array): void {
-         if (list.length != 0) {
+         const length: int = list.length;
+         if (length != 0) {
             const paragraph: ParagraphElement = new ParagraphElement();
-            const text: SpanElement = new SpanElement();
-            text.text = list.join(", ");
-            paragraph.addChild(text);
+            for (var idx: int = 0; idx < length; idx++) {
+               const spanCommon: SpanElement = new SpanElement();
+               spanCommon.text = commonPart;
+               spanCommon.fontWeight = FontWeight.BOLD;
+               paragraph.addChild(spanCommon);
+               const spanRest: SpanElement = new SpanElement();
+               spanRest.text = list[idx].slice(commonPart.length)
+                                  + (idx < length - 1 ? ", " : "");
+               paragraph.addChild(spanRest);
+            }
             content.addMessage(paragraph);
          }
       }

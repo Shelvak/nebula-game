@@ -3,6 +3,18 @@ package tests.chat.models.channel
    import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
 
+   import flash.text.engine.FontWeight;
+
+   import flashx.textLayout.elements.ParagraphElement;
+
+   import flashx.textLayout.elements.ParagraphElement;
+   import flashx.textLayout.elements.SpanElement;
+   import flashx.textLayout.elements.SpanElement;
+   import flashx.textLayout.elements.SpanElement;
+   import flashx.textLayout.elements.SpanElement;
+
+   import flashx.textLayout.elements.TextFlow;
+
    import models.chat.MChatChannel;
    import models.chat.MChatChannelPrivate;
    import models.chat.MChatChannelPublic;
@@ -137,17 +149,11 @@ package tests.chat.models.channel
       [Test]
       public function should_dispatch_HAS_UNREAD_MESSAGES_CHANGE_event_when_hasUnreadMessages_property_is_changed(): void {
          channel.visible = false;
-         var eventDispatched:Boolean = false;
-         channel.addEventListener(
-            MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE,
-            function(event:MChatChannelEvent) : void
-            {
-               eventDispatched = true;
-            }
+         assertThat(
+            function():void{ channel.receiveMessage(message) },
+            causes (channel) .toDispatchEvent
+               (MChatChannelEvent.HAS_UNREAD_MESSAGES_CHANGE)
          );
-         channel.receiveMessage(message);
-         
-         assertThat( eventDispatched, isTrue() );
       }
 
       [Test]
@@ -227,13 +233,15 @@ package tests.chat.models.channel
          assertThat(
             "NUM_MEMBERS_CHANGE is dispatched when member joins",
             function():void{ channel.memberJoin(member) },
-            causes (channel) .toDispatchEvent (MChatChannelEvent.NUM_MEMBERS_CHANGE)
+            causes (channel) .toDispatchEvent
+               (MChatChannelEvent.NUM_MEMBERS_CHANGE)
          );
          
          assertThat(
             "NUM_MEMBERS_CHANGE is dispatched when member leaves",
             function():void{ channel.memberLeave(member) },
-            causes (channel) .toDispatchEvent (MChatChannelEvent.NUM_MEMBERS_CHANGE)
+            causes (channel) .toDispatchEvent
+               (MChatChannelEvent.NUM_MEMBERS_CHANGE)
          );
       }
       
@@ -278,10 +286,16 @@ package tests.chat.models.channel
          );
          
          assertThat(
-            "changing generateJoinLeaveMsgs", function():void{ channel.generateJoinLeaveMsgs = false },
-            causes (channel) .toDispatchEvent (MChatChannelEvent.GENERATE_JOIN_LEAVE_MSGS_CHANGE)
+            "changing generateJoinLeaveMsgs",
+            function():void{ channel.generateJoinLeaveMsgs = false },
+            causes (channel) .toDispatchEvent
+               (MChatChannelEvent.GENERATE_JOIN_LEAVE_MSGS_CHANGE)
          );
       }
+
+      /* ########################### */
+      /* ### IAutoCompleteClient ### */
+      /* ########################### */
 
       [Test]
       public function userInput(): void {
@@ -300,7 +314,49 @@ package tests.chat.models.channel
             causes (channel) .toDispatchEvent
                (MChatChannelEvent.USER_INPUT_CHANGE)
          );
+      }
 
+      [Test]
+      public function setAutoCompleteList(): void {
+         const text: TextFlow = channel.content.text;
+
+         channel.setAutoCompleteList("", new Array());
+         assertThat(
+            "empty auto complete list should not add empty paragraph",
+            text.numChildren, equals (0)
+         );
+
+         channel.setAutoCompleteList("test", ["test", "testA", "testB"]);
+         assertThat(
+            "for not empty auto complete list should have created a paragraph",
+            text.numChildren, equals(1)
+         );
+         assertThat(
+            "should have joined list entries with ', '",
+            text.getText(), equals ("test, testA, testB")
+         );
+         const p: ParagraphElement = ParagraphElement(text.getChildAt(0));
+         assertSpanTextAndStyle(p, 0, "test", true);
+         assertSpanTextAndStyle(p, 1, ", ", false);
+         assertSpanTextAndStyle(p, 2, "test", true);
+         assertSpanTextAndStyle(p, 3, "A, ", false);
+         assertSpanTextAndStyle(p, 4, "test", true);
+         assertSpanTextAndStyle(p, 5, "B", false);
+      }
+
+      private function assertSpanTextAndStyle(p: ParagraphElement,
+                                              index: int,
+                                              text: String,
+                                              bold: Boolean): void {
+         const span: SpanElement = SpanElement(p.getChildAt(index));
+         assertThat(
+            "text of span element at " + index,
+            span.text, equals (text)
+         );
+         assertThat(
+            "font weight of span element at " + index,
+            span.fontWeight, equals (bold ? FontWeight.BOLD : null)
+         );
       }
    }
 }
