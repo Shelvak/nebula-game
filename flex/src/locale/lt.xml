@@ -5559,7 +5559,10 @@
      <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} prisijungė ]"/>
      <message.channelLeave value="[ {0} išėjo ]"/>
-     <message.friendOffline value="Šis žaidėjas šiuo metu neprisijungęs"/>
+     <message.friendOffline>
+       Žaidėjas šiuo metu atsijungęs. Jeigu jam parašysi, tavo žinutes jis
+       gaus prisijungęs prie žaidimo.
+     </message.friendOffline>
      <message.memberIgnored value="... ignoruojama ..."/>
      <message.silence>
         Tu buvai nutildytas iki {0} dėl pokalbių teršimo.

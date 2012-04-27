@@ -331,7 +331,8 @@ describe Galaxy do
   end
 
   describe "#spawn_convoy!" do
-    let(:galaxy) { Factory.create(:galaxy) }
+    let(:days) { 13.5 }
+    let(:galaxy) { Factory.create(:galaxy, :created_at => days.days.ago) }
 
     shared_examples_for "convoy spawn" do
       it "should create route" do
@@ -355,13 +356,26 @@ describe Galaxy do
         route
       end
 
+      it "should call units builder" do
+        UnitBuilder.should_execute(
+          :from_random_ranges,
+          [Cfg.galaxy_convoy_units_definition, an_instance_of(GalaxyPoint),
+           nil, days.round, 1]
+        ) { route }
+      end
+
       it "should create units in source location" do
         check_spawned_units_by_random_definition(
           Cfg.galaxy_convoy_units_definition,
-          galaxy.id,
           route.source,
-          nil
+          nil, days.round, 1
         )
+      end
+
+      it "should create cooldown in source location" do
+        cooldown = Cooldown.in_location(route.source).first
+        cooldown.ends_at.should be_within(SPEC_TIME_PRECISION).
+          of(Cfg.after_spawn_cooldown)
       end
 
       it "should have route that goes to other wormhole" do

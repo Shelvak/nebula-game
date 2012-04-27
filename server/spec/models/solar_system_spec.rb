@@ -191,7 +191,7 @@ describe SolarSystem do
   end
   
   describe "#spawn!" do
-    let(:solar_system) { Factory.create(:battleground) }
+    let(:solar_system) { Factory.create(:battleground, spawn_counter: 8) }
 
     describe "when it already has more spots taken than max" do
       around(:each) do |example|
@@ -204,6 +204,13 @@ describe SolarSystem do
         lambda do
           solar_system.spawn!
         end.should_not change(Unit, :count)
+      end
+
+      it "should not increment spawn counter" do
+        lambda do
+          solar_system.spawn!
+          solar_system.reload
+        end.should_not change(solar_system, :spawn_counter)
       end
 
       it "should return nil" do
@@ -226,9 +233,7 @@ describe SolarSystem do
         location = solar_system.spawn!
         check_spawned_units_by_random_definition(
           Cfg.solar_system_spawn_units_definition(solar_system),
-          solar_system.galaxy_id,
-          location,
-          nil
+          location, nil, solar_system.spawn_counter - 1, 1
         )
       end
 
@@ -237,7 +242,22 @@ describe SolarSystem do
         UnitBuilder.should_receive(:from_random_ranges).with(
           Cfg.solar_system_spawn_units_definition(solar_system),
           an_instance_of(SolarSystemPoint),
-          nil
+          nil, solar_system.spawn_counter, 1
+        ).and_return(units)
+        Unit.should_receive(:save_all_units).
+          with(units, nil, EventBroker::CREATED)
+        solar_system.spawn!
+      end
+
+      it "should calculate correct spot value" do
+        units = :units
+        all_points = @all_points.to_a
+        Factory.create(:u_dirac, location: all_points[0], player: nil)
+        Factory.create(:u_dirac, location: all_points[3], player: nil)
+        UnitBuilder.should_receive(:from_random_ranges).with(
+          Cfg.solar_system_spawn_units_definition(solar_system),
+          an_instance_of(SolarSystemPoint),
+          nil, solar_system.spawn_counter, 3
         ).and_return(units)
         Unit.should_receive(:save_all_units).
           with(units, nil, EventBroker::CREATED)
@@ -252,6 +272,13 @@ describe SolarSystem do
           true
         end
         solar_system.spawn!
+      end
+
+      it "should increment spawn counter" do
+        lambda do
+          solar_system.spawn!
+          solar_system.reload
+        end.should change(solar_system, :spawn_counter).by(1)
       end
 
       it "should spawn in point returned by spawn strategy" do

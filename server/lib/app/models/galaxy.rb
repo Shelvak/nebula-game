@@ -267,11 +267,11 @@ class Galaxy < ActiveRecord::Base
       end
 
       # Create units.
+      days = ((Time.now - created_at) / 1.day).round
       units = UnitBuilder.from_random_ranges(
-        Cfg.galaxy_convoy_units_definition, source, nil
+        Cfg.galaxy_convoy_units_definition, source, nil, days, 1
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
-      # TODO: spec me
       Cooldown.create_unless_exists(source, Cfg.after_spawn_cooldown)
 
       unit_ids = units.map(&:id)
