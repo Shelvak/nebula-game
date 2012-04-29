@@ -12,6 +12,8 @@ class Dispatcher
   # Disconnect action name.
   ACTION_DISCONNECT = 'players|disconnect'
 
+  # Client has sent malformed message hash.
+  DISCONNECT_NOT_A_MESSAGE = "not_a_message"
   # Other player has logged in as you.
   DISCONNECT_OTHER_LOGIN = "other_login"
   # Player was erased from server.
@@ -22,7 +24,10 @@ class Dispatcher
   S_KEY_SEQ = :seq
   S_KEY_CURRENT_SS_ID = :current_ss_id
   S_KEY_CURRENT_PLANET_ID = :current_planet_id
-  
+
+  # Message hash did not conform to message format.
+  class NotAMessage < StandardError; end
+  # Server cannot handle this message.
   class UnhandledMessage < StandardError; end
   class ClientDisconnected < StandardError; end
 
@@ -125,6 +130,10 @@ class Dispatcher
         :component => log_tag
       ) { process_message(message) }
     end
+  rescue NotAMessage => e
+    info "Cannot process #{message_hash} - #{e.class}: #{e.message}",
+      to_s(client)
+    disconnect(client, DISCONNECT_NOT_A_MESSAGE)
   rescue UnhandledMessage => e
     info "Cannot process #{message} - #{e.class}: #{e.message}", to_s(client)
     confirm_receive(message, e)
@@ -268,8 +277,10 @@ class Dispatcher
   #
   # @see #push
   def push_to_player(player_id, action, params={}, filters=nil)
-    typesig binding, Fixnum, String, Hash,
-      [NilClass, Array, Dispatcher::PushFilter]
+    aborting do
+      typesig binding, Fixnum, String, Hash,
+        [NilClass, Array, Dispatcher::PushFilter]
+    end
 
     client = @player_id_to_client[player_id]
     if client.nil?
