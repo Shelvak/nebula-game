@@ -15,9 +15,9 @@ shared_examples_for "create for" do
 end
 
 shared_examples_for "with location" do
-  it "should set params[:location]" do
+  it "should set params['location']" do
     Notification.send(@method, *@args
-      ).params[:location].should == @location.client_location.as_json
+      ).params['location'].should == @location.client_location.as_json
   end
 end
 
@@ -138,34 +138,34 @@ describe Notification do
     it_behaves_like "create for"
     it_behaves_like "with location"
 
-    it "should set params[:constructor_type]" do
+    it "should set params['constructor_type']" do
       Notification.send(@method, *@args
-        ).params[:constructor_type].should == @constructor.type
+        ).params['constructor_type'].should == @constructor.type
     end
 
-    it "should set params[:constructables]" do
+    it "should set params['constructables']" do
       Notification.send(@method, *@args
-        ).params[:constructables].should == {
+        ).params['constructables'].should == {
           "Building::TestBuilding" => 2,
           "Building::CollectorT1" => 1
         }
     end
 
-    it "should set params[:coordinates]" do
+    it "should set params['coordinates']" do
       Notification.send(
         @method, *@args
-      ).params[:coordinates].should == @constructables.map do |c|
+      ).params['coordinates'].should == @constructables.map do |c|
         [c.x, c.y]
       end
     end
 
-    it "should set params[:coordinates] to empty array if constructables " +
+    it "should set params['coordinates'] to empty array if constructables " +
     "are units" do
       @constructables.clear
       @constructables.push Factory.create(:unit, :location => @location)
       Notification.send(
         @method, *@args
-      ).params[:coordinates].should == []
+      ).params['coordinates'].should == []
     end
   end
 
@@ -188,9 +188,9 @@ describe Notification do
     it_behaves_like "create for"
     it_behaves_like "with location"
 
-    it "should set params[:buildings]" do
+    it "should set params['buildings']" do
       Notification.send(@method, *@args
-        ).params[:buildings].should equal_to_hash(
+        ).params['buildings'].should equal_to_hash(
           "Mothership" => 2,
           "Barracks" => 1
         )
@@ -208,13 +208,13 @@ describe Notification do
       @player.save!
 
       @player_id = @player.id
-      @alliances = :alliances
+      @alliances = "alliances"
       @outcome = Combat::OUTCOME_WIN
       @combat_log = Factory.create :combat_log
-      @yane_units = :yane_units
-      @leveled_up = :leveled_up
-      @statistics = :statistics
-      @resources = :resources
+      @yane_units = "yane_units"
+      @leveled_up = "leveled_up"
+      @statistics = "statistics"
+      @resources = "resources"
 
       @args = [@player.id, @player.alliance_id, @alliances,
         @combat_log.sha1_id, @location.client_location.as_json, @outcome,
@@ -305,7 +305,7 @@ describe Notification do
     it "should set achievement" do
       Notification.send(
         @method, *@args
-      ).params[:achievement].should == Quest.get_achievement(
+      ).params['achievement'].should == Quest.get_achievement(
         @achievement.id, @player_id)
     end
   end
@@ -331,13 +331,13 @@ describe Notification do
     it "should set finished quest id" do
       Notification.send(
         @method, *@args
-      ).params[:finished].should == @quest_progress.quest_id
+      ).params['finished'].should == @quest_progress.quest_id
     end
 
     it "should set started quest ids" do
       Notification.send(
         @method, *@args
-      ).params[:started].should == @started_quests.map(&:id)
+      ).params['started'].should == @started_quests.map(&:id)
     end
   end
 
@@ -357,13 +357,13 @@ describe Notification do
     it "should have :location" do
       Notification.send(
         @method, *@args
-      ).params[:location].should == @planet.client_location.as_json
+      ).params['location'].should == @planet.client_location.as_json
     end
 
     it "should have :rewards" do
       Notification.send(
         @method, *@args
-      ).params[:rewards].should == @rewards.as_json
+      ).params['rewards'].should == @rewards.as_json
     end
   end
 
@@ -383,19 +383,19 @@ describe Notification do
     it "should have :planet" do
       Notification.send(
         @method, *@args
-      ).params[:planet].should == @planet.client_location.as_json
+      ).params['planet'].should == @planet.client_location.as_json
     end
     
     it "should have :owner" do
       Notification.send(
         @method, *@args
-      ).params[:owner].should == @planet.player.as_json(:mode => :minimal)
+      ).params['owner'].should == @planet.player.as_json(:mode => :minimal)
     end
     
     it "should have :outcome" do
       Notification.send(
         @method, *@args
-      ).params[:outcome].should == @outcome
+      ).params['outcome'].should == @outcome
     end
   end
 
@@ -415,7 +415,7 @@ describe Notification do
     it "should have :alliance" do
       Notification.send(
         @method, *@args
-      ).params[:alliance].should == @alliance.as_json(:mode => :minimal)
+      ).params['alliance'].should == @alliance.as_json(:mode => :minimal)
     end
 
     it "should not create duplicate invitations" do
@@ -440,7 +440,7 @@ describe Notification do
     it "should have :alliance" do
       Notification.send(
         @method, *@args
-      ).params[:alliance].should == @alliance.as_json(:mode => :minimal)
+      ).params['alliance'].should == @alliance.as_json(:mode => :minimal)
     end
   end
   
@@ -459,7 +459,7 @@ describe Notification do
     it "should have :alliance" do
       Notification.create_for_alliance_joined(@alliance, @player).each do 
         |notification|
-        notification.params[:alliance].should == 
+        notification.params['alliance'].should == 
           @alliance.as_json(:mode => :minimal)
       end
     end
@@ -467,7 +467,7 @@ describe Notification do
     it "should have :player" do
       Notification.create_for_alliance_joined(@alliance, @player).each do 
         |notification|
-        notification.params[:player].should == 
+        notification.params['player'].should == 
           @player.as_json(:mode => :minimal)
       end
     end
@@ -522,43 +522,43 @@ describe Notification do
     it "should have :buyer" do
       Notification.send(
         @method, *@args
-      ).params[:buyer].should == @buyer.as_json(:mode => :minimal)
+      ).params['buyer'].should == @buyer.as_json(:mode => :minimal)
     end
 
     it "should have :planet" do
       Notification.send(
         @method, *@args
-      ).params[:planet].should == @market_offer.planet.client_location.as_json
+      ).params['planet'].should == @market_offer.planet.client_location.as_json
     end
 
     it "should have :from_kind" do
       Notification.send(
         @method, *@args
-      ).params[:from_kind].should == @market_offer.from_kind
+      ).params['from_kind'].should == @market_offer.from_kind
     end
 
     it "should have :amount" do
       Notification.send(
         @method, *@args
-      ).params[:amount].should == @amount
+      ).params['amount'].should == @amount
     end
 
     it "should have :to_kind" do
       Notification.send(
         @method, *@args
-      ).params[:to_kind].should == @market_offer.to_kind
+      ).params['to_kind'].should == @market_offer.to_kind
     end
 
     it "should have :cost" do
       Notification.send(
         @method, *@args
-      ).params[:cost].should == @cost
+      ).params['cost'].should == @cost
     end
 
     it "should have :amount_left" do
       Notification.send(
         @method, *@args
-      ).params[:amount_left].should == @market_offer.from_amount
+      ).params['amount_left'].should == @market_offer.from_amount
     end
   end
 
@@ -580,19 +580,19 @@ describe Notification do
     it "should have :personal_creds" do
       Notification.send(
         @method, *@args
-      ).params[:personal_creds].should == @personal_creds
+      ).params['personal_creds'].should == @personal_creds
     end
 
     it "should have :total_alliance_creds" do
       Notification.send(
         @method, *@args
-      ).params[:total_alliance_creds].should == @total_alliance_creds
+      ).params['total_alliance_creds'].should == @total_alliance_creds
     end
 
     it "should have :alliance_creds_per_player" do
       Notification.send(
         @method, *@args
-      ).params[:alliance_creds_per_player].should == @alliance_creds_per_player
+      ).params['alliance_creds_per_player'].should == @alliance_creds_per_player
     end
   end
 
@@ -613,19 +613,19 @@ describe Notification do
     it "should have :alliance" do
       Notification.send(
         @method, *@args
-      ).params[:alliance].should == @alliance
+      ).params['alliance'].should == @alliance
     end
 
     it "should have :old_owner" do
       Notification.send(
         @method, *@args
-      ).params[:old_owner].should == @old_owner
+      ).params['old_owner'].should == @old_owner
     end
 
     it "should have :new_owner" do
       Notification.send(
         @method, *@args
-      ).params[:new_owner].should == @new_owner
+      ).params['new_owner'].should == @new_owner
     end
   end
 
@@ -658,7 +658,7 @@ describe Notification do
     it "should have :changed" do
       Notification.send(
         @method, *@args
-      ).params[:changed].should == [
+      ).params['changed'].should == [
         [@changed_techs[0][:type], 100, 50],
         [@changed_techs[1][:type], 200, 10]
       ]
@@ -667,7 +667,7 @@ describe Notification do
     it "should have :paused" do
       Notification.send(
         @method, *@args
-      ).params[:paused].should == @paused_techs.map { |t| t[:type] }
+      ).params['paused'].should == @paused_techs.map { |t| t[:type] }
     end
   end
 
