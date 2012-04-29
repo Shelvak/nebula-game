@@ -1,24 +1,16 @@
 ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
   unless defined?(ROOT_DIR)
 
-# Global constants related to server tweaking
-WORKERS_CHAT = 1
-WORKERS_WORLD = 1
-# Connections:
-# - callback manager
-# - workers
-DB_POOL_SIZE = WORKERS_CHAT + WORKERS_WORLD + 1
-
 def rake?; File.basename($0) == 'rake'; end
 
 # flex:locales:check task is broken on 1.6.6, so we have to use something else.
-if RUBY_VERSION < '1.9.2' || ! (JRUBY_VERSION == '1.6.6' || rake?)
+if RUBY_VERSION < '1.9.2' || ! (JRUBY_VERSION >= '1.6.7' || rake?)
   w = 80
   puts "#" * w
-  puts "We require JRuby 1.6.6 in 1.9 mode!".center(w)
+  puts "We require JRuby 1.6.7 HEAD in 1.9 mode!".center(w)
   puts
-  puts "To install JRuby 1.6.6:".center(w)
-  puts "`rvm install jruby-1.6.6`".center(w)
+  puts "To install JRuby 1.6.7 HEAD:".center(w)
+  puts "`rvm install jruby-head-n16 --branch jruby-1_6`".center(w)
   puts
   puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
   puts "`export JRUBY_OPTS='--1.9'`".center(w)
@@ -203,6 +195,14 @@ Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*')].each do |plugin_dir|
     unless File.exists?(plugin)
   require plugin
 end
+
+# Global constants related to server tweaking
+WORKERS_CHAT = 1
+WORKERS_WORLD = 1
+# Connections:
+# - callback manager
+# - workers
+DB_POOL_SIZE = WORKERS_CHAT + WORKERS_WORLD + 1
 
 ENV['db_environment'] ||= App.env
 ENV['configuration'] ||= App.env

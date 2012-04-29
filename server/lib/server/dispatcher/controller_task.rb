@@ -13,7 +13,9 @@ module Dispatcher::ControllerTask
 
           CONFIG.with_set_scope(ruleset) do
             # Ensure that if anything bad happens it would be rollbacked.
-            Threading::Director::Task.retrying_transaction(worker_name) do
+            Threading::Director::Task.retrying_transaction(
+              worker_name, message.to_s
+            ) do
               controller_class.send(action_method, message)
             end
           end

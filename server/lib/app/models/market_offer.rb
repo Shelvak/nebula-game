@@ -100,7 +100,7 @@ class MarketOffer < ActiveRecord::Base
     )
   end
 
-  scope :system, where(:planet_id => nil)
+  scope :by_system, where(:planet_id => nil)
 
   # Is this offer created by system?
   def system?; planet_id.nil?; end
