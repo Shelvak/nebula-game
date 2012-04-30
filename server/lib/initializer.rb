@@ -17,7 +17,7 @@ if RUBY_VERSION < '1.9.2' || ! (JRUBY_VERSION >= '1.6.7' || rake?)
   puts
   puts "Aborting!".center(w)
   puts "#" * w
-  exit
+  exit 1
 end
 
 require 'bundler'
