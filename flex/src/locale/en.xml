@@ -2021,7 +2021,7 @@
     <label.close value="Close" />
     <label.noPlanets value="You have no planets"/>
     <label.registerNow value="Register" />
-    <label.registerLater value="Remind me later" />
+    <label.registerLater value="Not yet" />
   </Players>
 
   <Popups>
@@ -2036,14 +2036,12 @@
     <label.yes value="Yes" />
     <label.no value="No" />
 
-    <title.registration value="Registration required" />
-    <message.registration>
-      <p>We remind you that you are not yet registered.</p>
-      <p>You will have to play from begining if you log out while not registered.
-        If you want to play this game and expand your empire you need to create
-        your account</p>
-      <p>This will just take a minute ar two.</p>
-    </message.registration>
+     <register.title value="REGISTER NOW!"/>
+     <register.message.demo>
+        <![CDATA[This is a <span color="#EFC700">DEMO</span> account.]]>
+     </register.message.demo>
+     <register.message.progress
+        value="All progress will be lost if you log out."/>
 
     <title.outdatedClient value="Client version outdated" />
     <message.outdatedClient>

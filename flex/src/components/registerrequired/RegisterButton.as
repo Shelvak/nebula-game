@@ -7,7 +7,6 @@
  */
 package components.registerrequired {
    import components.base.AttentionButton;
-   import components.popups.ActionConfirmationPopUp;
 
    import flash.display.BitmapData;
    import flash.events.MouseEvent;
@@ -20,13 +19,10 @@ package components.registerrequired {
    import mx.events.PropertyChangeEvent;
 
    import spark.components.Button;
-   import spark.components.Label;
 
    import utils.UrlNavigate;
-
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
-   import utils.locale.Localizer;
 
 
    public class RegisterButton extends AttentionButton
@@ -99,19 +95,13 @@ package components.registerrequired {
          timer = null;
       }
 
-      private var popup:ActionConfirmationPopUp;
+      private var popup:RegisterPopup;
 
       private function showPopup(e: TimerEvent): void
       {
          popupVisible = true;
          removeTimer();
-         popup = new ActionConfirmationPopUp();
-         var cont:Label = new Label();
-         cont.text = Localizer.string('Popups', 'message.registration');
-         popup.title = Localizer.string('Popups', 'title.registration');
-         popup.addElement(cont);
-         popup.confirmButtonLabel = Localizer.string('Players', 'label.registerNow');
-         popup.cancelButtonLabel  = Localizer.string('Players', 'label.registerLater');
+         popup = new RegisterPopup();
          popup.cancelButtonClickHandler = function(button:Button) : void {
             setTimer();
             popup = null;
@@ -120,7 +110,7 @@ package components.registerrequired {
             this_clickHandler();
             popup = null;
          };
-         popup.show()
+         popup.show();
       }
 
       private function this_clickHandler(event:MouseEvent = null) : void {

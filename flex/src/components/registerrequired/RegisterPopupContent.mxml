@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         left="0" right="0" top="0" bottom="0">
+   <fx:Script>
+      <![CDATA[
+      import utils.TextFlowUtil;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+
+      private function getString(property: String): String {
+         return Localizer.string("Popups", "register." + property);
+      }
+
+      private function getImage(): BitmapData {
+         return ImagePreloader.getInstance().getImage(
+            AssetNames.UI_IMAGES_FOLDER + "registration/register_icon"
+         );
+      }
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout
+         gap="20" horizontalAlign="justify"
+         paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="20"/>
+   </s:layout>
+   <s:Group>
+      <s:layout>
+         <s:HorizontalLayout gap="10" verticalAlign="middle"/>
+      </s:layout>
+      <s:BitmapImage source="{getImage()}"/>
+      <s:Group width="100%">
+         <s:layout>
+            <s:VerticalLayout gap="10" horizontalAlign="justify"/>
+         </s:layout>
+         <s:Label
+            text="{getString('title')}"
+            fontWeight="bold"
+            fontSize="28" textAlign="center"/>
+         <s:RichText
+            textFlow="{TextFlowUtil.importFromString(getString('message.demo'))}"
+            fontSize="20" lineBreak="toFit" textAlign="center"/>
+      </s:Group>
+   </s:Group>
+   <s:Label
+      text="{getString('message.progress')}"
+      fontSize="18" textAlign="center" lineBreak="toFit" color="0xEFC700"/>
+</s:Group>

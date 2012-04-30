@@ -2172,14 +2172,12 @@
     <label.yes value="Taip" />
     <label.no value="Ne" />
 
-    <title.registration value="Reikalinga registracija" />
-    <message.registration>
-      <p>Primename, kad tu dar neužsiregistravęs.</p>
-      <p>Jei atsijungsi nuo žaidimo kol neesi užsiregistravęs kitą kartą teks
-        žaisti nuo pradžių. Jei nori žaisti toliau ir plėsti savo imperiją -
-        užsiregistruok.</p>
-      <p>Tai trunka tik minutę ar dvi.</p>
-    </message.registration>
+    <register.title value="UŽSIREGISTRUOK!"/>
+    <register.message.demo>
+       <![CDATA[Tai <span color="#EFC700">BANDOMOJI</span> paskyra.]]>
+    </register.message.demo>
+    <register.message.progress
+       value="Jei atsijungsi, prarasi viską, ką iki šiol pasiekei."/>
 
     <title.outdatedClient value="Žaidimo versija pasenusi" />
     <message.outdatedClient>
