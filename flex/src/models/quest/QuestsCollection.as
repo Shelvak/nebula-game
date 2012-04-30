@@ -350,12 +350,15 @@ package models.quest
             }
          }
       }
-      
+
+      [Bindable]
+      public var unclaimedQuestId: int = 0;
       
       private function updateCounters() : void
       {
          _completedTotal = 0;
          _currentTotal = 0;
+         unclaimedQuestId = 0;
          for each (var quest:Quest in source)
          {
             if (quest.status == Quest.STATUS_REWARD_TAKEN)
@@ -365,6 +368,10 @@ package models.quest
             else
             {
                _currentTotal++;
+               if (quest.status == Quest.STATUS_COMPLETED)
+               {
+                  unclaimedQuestId = quest.id;
+               }
             }
          }
          dispatchCountersUpdatedEvent();
