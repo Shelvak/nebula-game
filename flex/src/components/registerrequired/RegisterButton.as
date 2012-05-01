@@ -100,7 +100,7 @@ package components.registerrequired {
       private function showPopup(e: TimerEvent): void
       {
          popupVisible = true;
-         removeTimer();
+         if (timer != null) removeTimer();
          popup = new RegisterPopup();
          popup.cancelButtonClickHandler = function(button:Button) : void {
             setTimer();
