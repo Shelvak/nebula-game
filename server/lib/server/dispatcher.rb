@@ -345,9 +345,10 @@ class Dispatcher
       @client_to_player[what]
     when Fixnum
       client = @player_id_to_client[what]
+      return if client.nil?
       resolve_player(client)
     else
-      abort ArgumentError, "Unknown parameter type #{what.inspect}!"
+      abort ArgumentError.new("Unknown parameter type #{what.inspect}!")
     end
   end
 
