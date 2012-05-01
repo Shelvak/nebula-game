@@ -2021,7 +2021,7 @@
     <label.close value="Close" />
     <label.noPlanets value="You have no planets"/>
     <label.registerNow value="Register" />
-    <label.registerLater value="Not yet" />
+    <label.registerLater value="Later" />
   </Players>
 
   <Popups>
