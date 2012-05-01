@@ -194,12 +194,12 @@ package components.popups
       {
          super.commitProperties();
          
-         if (f_cancelButtonEnabledChanged)  _btnCancel.enabled = _cancelButtonEnabled;
-         if (f_cancelButtonLabelChanged)    _btnCancel.label = _cancelButtonLabel;
-         if (f_cancelButtonVisibleChanged)  _btnCancel.visible = _cancelButtonVisible;
-         if (f_confirmButtonEnabledChanged) _btnConfirm.enabled = _confirmButtonEnabled;
-         if (f_confirmButtonLabelChanged)   _btnConfirm.label = _confirmButtonLabel;
-         if (f_cancelButtonVisibleChanged)  _btnConfirm.visible = _confirmButtonVisible;
+         if (f_cancelButtonEnabledChanged)  btnCancel.enabled = _cancelButtonEnabled;
+         if (f_cancelButtonLabelChanged)    btnCancel.label = _cancelButtonLabel;
+         if (f_cancelButtonVisibleChanged)  btnCancel.visible = _cancelButtonVisible;
+         if (f_confirmButtonEnabledChanged) btnConfirm.enabled = _confirmButtonEnabled;
+         if (f_confirmButtonLabelChanged)   btnConfirm.label = _confirmButtonLabel;
+         if (f_cancelButtonVisibleChanged)  btnConfirm.visible = _confirmButtonVisible;
          
          f_cancelButtonEnabledChanged =
          f_cancelButtonLabelChanged =
@@ -213,21 +213,21 @@ package components.popups
       /* ################ */
       /* ### CHILDREN ### */
       /* ################ */
-      
-      
-      private var _btnConfirm:Button,
-                  _btnCancel:Button;
+
+
+      protected var btnConfirm: Button;
+      protected var btnCancel: Button;
       
       
       protected override function createChildren() : void
       {
          super.createChildren();
          
-         _btnConfirm = new Button();
-         addActionButton(_btnConfirm, confirmButtonClickHandler, closeOnConfirm);
+         btnConfirm = new Button();
+         addActionButton(btnConfirm, confirmButtonClickHandler, closeOnConfirm);
          
-         _btnCancel = new Button();
-         addActionButton(_btnCancel, cancelButtonClickHandler, closeOnCancel);
+         btnCancel = new Button();
+         addActionButton(btnCancel, cancelButtonClickHandler, closeOnCancel);
       }
       
       

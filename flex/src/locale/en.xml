@@ -1692,7 +1692,7 @@
     <label.forum value="Forum" />
     <label.wiki value="Wiki"/>
     <label.tips value="Tips"/>
-    <label.inviteFriend value="Invites"/>
+    <label.inviteFriend value="Invite a friend"/>
     <tooltip.version value="Game version" />
     <panelWidth value="85" />
   </MainMenu>
@@ -2020,6 +2020,8 @@
     <title.achievements value="ACHIEVEMENTS" />
     <label.close value="Close" />
     <label.noPlanets value="You have no planets"/>
+    <label.registerNow value="Register" />
+    <label.registerLater value="Not yet" />
   </Players>
 
   <Popups>
@@ -2033,6 +2035,13 @@
     <label.ok value="Ok" />
     <label.yes value="Yes" />
     <label.no value="No" />
+
+     <register.title value="REGISTER NOW!"/>
+     <register.message.demo>
+        <![CDATA[This is a <span color="#EFC700">DEMO</span> account.]]>
+     </register.message.demo>
+     <register.message.progress
+        value="All progress will be lost if you log out."/>
 
     <title.outdatedClient value="Client version outdated" />
     <message.outdatedClient>
@@ -5486,6 +5495,9 @@
         You have been silenced for flooding until {0}.
         You will be able to chat in {1}.
      </message.silence>
+     <message.trial>
+        If you want to use the chat, you have to register first.
+     </message.trial>
     <tooltip.btnDoIgnore>
       <p>Player is not ignored</p>
     </tooltip.btnDoIgnore>

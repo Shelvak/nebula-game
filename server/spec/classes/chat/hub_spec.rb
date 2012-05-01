@@ -134,6 +134,7 @@ describe Chat::Hub do
 
       @source = Factory.create(:player)
       @dispatcher.stub!(:player_connected?).with(@source.id).and_return(false)
+      @dispatcher.stub!(:resolve_player)
 
       Chat::Message.store!(@source.id, @player.id, "FOO")
       Chat::Message.store!(@source.id, @player.id, "bar")
@@ -197,6 +198,13 @@ describe Chat::Hub do
         ]
       end
 
+      it "should fail if player is trial" do
+        @player.trial = true
+        lambda do
+          @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, "test")
+        end.should raise_error(GameLogicError)
+      end
+
       it "should check with control" do
         @control.should_receive(:message).with(@player, "test")
         @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, "test")
@@ -239,6 +247,37 @@ describe Chat::Hub do
       @target = Factory.create(:player)
       @message = "OMG"
       @dispatcher.stub(:player_connected?)
+      @dispatcher.stub(:resolve_player)
+    end
+
+    describe "trial player" do
+      before(:each) do
+        @source.trial = true
+      end
+
+      it "should fail if player is connected" do
+        @dispatcher.should_receive(:resolve_player).with(@source.id).
+          and_return(@source)
+        lambda do
+          @hub.private_msg(@source.id, @target.id, @message)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should not fail if player is not connected" do
+        @dispatcher.should_receive(:resolve_player).with(@source.id).
+          and_return(nil)
+        lambda do
+          @hub.private_msg(@source.id, @target.id, @message)
+        end.should_not raise_error(GameLogicError)
+      end
+    end
+
+    it "should not fail if player is not trial" do
+      @dispatcher.should_receive(:resolve_player).with(@source.id).
+        and_return(@source)
+      lambda do
+        @hub.private_msg(@source.id, @target.id, @message)
+      end.should_not raise_error(GameLogicError)
     end
 
     describe "target player is connected" do

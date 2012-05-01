@@ -1,8 +1,9 @@
 class SpaceMule::PlayerCreator
   # @param galaxy_id [Fixnum]
   # @param ruleset [String]
+  # @param trial [Boolean]
   # @return [Hash] {Player#web_user_id => Player#id}
-  def self.invoke(galaxy_id, ruleset, players)
+  def self.invoke(galaxy_id, ruleset, players, trial)
     CONFIG.with_set_scope(ruleset) do
       # {Player#web_user_id => Player#id} of already created players.
       already_created_players = without_locking do
@@ -30,6 +31,10 @@ class SpaceMule::PlayerCreator
         save_result.playerRows.foreach do |player_row|
           player_ids[player_row.player.webUserId] = player_row.id
         end
+
+        # Update Player#trial state.
+        Player.where(:id => player_ids.values).
+          update_all(Player.set_flag_sql(:trial, trial))
 
         LOGGER.block("Dispatching newly created solar systems") do
           dispatch_new_solar_systems(save_result.fsesForExisting)

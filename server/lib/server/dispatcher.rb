@@ -267,9 +267,9 @@ class Dispatcher
   end
   
   # Pushes message to all logged in players.
-  def push_to_logged_in(action, params={})
+  def push_to_logged_in(action, params={}, filters=nil)
     @client_to_player.each do |client, _|
-      push(client, action, params)
+      push(client, action, params, filters)
     end
   end
 
@@ -336,9 +336,19 @@ class Dispatcher
     @player_id_to_client.has_key?(player_id)
   end
 
-  # Resolves _id_ to +Player+ model if it is connected.
-  def resolve_player(client)
-    @client_to_player[client]
+  # Resolves _what_ to +Player+ model if it is connected.
+  #
+  # _what_ can be +ServerActor::Client+ or +Fixnum+ (player id)
+  def resolve_player(what)
+    case what
+    when ServerActor::Client
+      @client_to_player[what]
+    when Fixnum
+      client = @player_id_to_client[what]
+      resolve_player(client)
+    else
+      abort ArgumentError, "Unknown parameter type #{what.inspect}!"
+    end
   end
 
   private

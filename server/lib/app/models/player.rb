@@ -71,6 +71,8 @@ class Player < ActiveRecord::Base
     5 => :detached,
     # This player is a chat moderator.
     6 => :chat_mod,
+    # This is a trial user who hasn't been registered permanently.
+    7 => :trial,
     # No index there anyway.
     :flag_query_mode => :bit_operator,
     :check_for_column => false
@@ -205,7 +207,8 @@ class Player < ActiveRecord::Base
         planets_count bg_planets_count
       })
       json['creds'] = creds
-      json['portal_without_allies'] = portal_without_allies
+      json['portal_without_allies'] = portal_without_allies?
+      json['trial'] = trial?
       unless alliance.nil?
         is_owner = id == alliance.owner_id
         json['alliance_owner'] = is_owner
