@@ -61,7 +61,7 @@ package utils
       }
 
       public function showRegistrationUrl(): void {
-         navigateToURL(new URLRequest(urlRoot + 'trial/register'));
+         navigateToURL(new URLRequest(urlRoot + 'register-trial'));
       }
 
       public function showUrl(path: String): void {
