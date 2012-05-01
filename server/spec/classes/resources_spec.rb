@@ -48,6 +48,7 @@ describe Resources do
     end
 
     it "should reraise the error" do
+      LOGGER.stub(:error)
       lambda do
         Resources.resource_volume(1.0/0, "metal")
       end.should raise_error

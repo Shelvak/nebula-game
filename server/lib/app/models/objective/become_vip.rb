@@ -16,9 +16,9 @@ class Objective::BecomeVip < Objective
   def self.resolve_key(klass); KEY; end
 
   # Progress for this player.
-  def self.progress(player); super([player]); end
+  def self.progress(player, *args); super([player], *args); end
 
-  def self.count_benefits(players)
+  def self.count_benefits(players, options)
     players.grouped_counts { |player| player.id }
   end
 end

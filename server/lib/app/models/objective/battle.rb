@@ -6,7 +6,7 @@ class Objective::Battle < Objective
   #
   # {player_id (String) => outcome (Combat::OUTCOME_*, Fixnum)}
   #
-  def self.progress(outcomes); super([outcomes]); end
+  def self.progress(outcomes, *args); super([outcomes], *args); end
 
   # Leave only outcomes that we want and prepare data for #count_benefits
   # here.
@@ -21,7 +21,7 @@ class Objective::Battle < Objective
   end
 
   # Just return data that #filter has prepared for us.
-  def self.count_benefits(outcomes_array)
+  def self.count_benefits(outcomes_array, options)
     outcomes_array[0]
   end
 end

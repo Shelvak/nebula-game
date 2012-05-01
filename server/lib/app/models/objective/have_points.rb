@@ -17,12 +17,12 @@ class Objective::HavePoints < Objective
   end
 
   # Wrap _player_ into Array and pass it to #super.
-  def self.progress(player)
-    super([player])
+  def self.progress(player, *args)
+    super([player], *args)
   end
 
   # Each matching player will benefit from this one time.
-  def self.count_benefits(players)
+  def self.count_benefits(players, options)
     players.map { |player| [player.id, 1] }
   end
 end

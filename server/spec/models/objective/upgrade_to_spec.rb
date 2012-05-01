@@ -48,7 +48,7 @@ describe Objective::UpgradeTo do
       op = Factory.create(:objective_progress, :objective => objective)
       seeker = Factory.create!(:u_seeker, :player => op.player, :level => 2)
       lambda do
-        objective.class.progress([seeker], false)
+        objective.class.progress([seeker], strict: false)
         op.reload
       end.should change(op, :completed).by(1)
     end
