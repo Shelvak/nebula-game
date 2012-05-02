@@ -487,7 +487,8 @@
 
                   <base:Panel title="{getString('title.cooldown')}"
                               visible="{bSidebar.cooldownTimeLeft != null
-                              &amp;&amp; bSidebar.selectedBuilding.type != BuildingType.NPC_HALL}">
+                              &amp;&amp; bSidebar.selectedBuilding.type != BuildingType.NPC_HALL
+                              &amp;&amp; !bSidebar.selectedBuilding.hasGuns}">
                      <s:Label fontSize="12"
                               text="{Localizer.string('Buildings', 'text.cooldown')}"/>
                      <base:TimeLabel text="{bSidebar.cooldownTimeLeft}"/>
