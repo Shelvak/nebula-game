@@ -27,9 +27,13 @@ module ServerMachine
     else
       @buffer.data(data)
       @buffer.each_message do |message|
-        if message == ""
+        case message
+        when ""
           send_data("ERROR: empty message\n")
           close_connection_after_writing
+          return
+        when "?"
+          send_data("!\n")
           return
         end
 

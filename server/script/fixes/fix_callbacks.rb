@@ -41,7 +41,7 @@ Counter.new(scope, "Galaxy").each do |galaxy|
     MarketOffer::KIND_ZETIUM =>
       CallbackManager::EVENT_CREATE_ZETIUM_SYSTEM_OFFER
   }.each do |kind, event|
-    if ! galaxy.market_offers.
+    if ! galaxy.market_offers.by_system.
         where(:from_kind => kind, :to_kind => MarketOffer::KIND_CREDS).exists?
       CallbackManager.register(galaxy, event, Time.now)
     end

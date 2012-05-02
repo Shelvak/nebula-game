@@ -563,6 +563,8 @@ describe BuildingsController do
     end
 
     before(:each) do
+      player.vip_level = 1
+      player.save!
       technology
       @action = "buildings|mass_repair"
       @params = {
@@ -574,6 +576,15 @@ describe BuildingsController do
     it_should_behave_like "having controller action scope"
     it_should_behave_like "with param options",
       :required => %w{planet_id building_ids}
+
+    it "should fail if player is not vip" do
+      player.vip_level = 0
+      player.save!
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
 
     it "should fail if planet does not belong to player" do
       planet.player = Factory.create(:player)

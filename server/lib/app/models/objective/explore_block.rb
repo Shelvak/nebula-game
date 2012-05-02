@@ -19,8 +19,10 @@ class Objective::ExploreBlock < Objective
   end
 
   # Wrap planet into array and pass it to #super
-  def self.progress(planet)
-    super([planet])
+  def self.progress(planet, *args)
+    typesig_bindless [['planet', planet]], SsObject::Planet
+
+    super([planet], *args)
   end
 
   # Hardcoded objective key.
@@ -30,7 +32,7 @@ class Objective::ExploreBlock < Objective
   def self.resolve_key(klass); KEY; end
 
   # Return 1 for planet owner.
-  def self.count_benefits(models)
+  def self.count_benefits(models, options)
     models.grouped_counts { |model| model.player_id }.to_a
   end
 end

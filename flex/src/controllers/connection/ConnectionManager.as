@@ -127,9 +127,11 @@ package controllers.connection
       {
          _gotDisconnectWarning = true;
          
-         if (reason == "unhandledMessage")
-         {
-            throw new Error("Unhandled message error!");
+         if (reason == "unhandledMessage") {
+            throw new Error("Unhandled message error");
+         }
+         else if (reason == "notAMessage") {
+            throw new Error("A malformed message has been sent to the server");
          }
          
          var popup:ErrorPopUp = new ErrorPopUp();

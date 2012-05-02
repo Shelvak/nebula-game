@@ -4,6 +4,8 @@ package components.chat
 
    import components.base.Panel;
 
+   import flash.events.FocusEvent;
+
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.ui.Keyboard;
@@ -15,9 +17,12 @@ package components.chat
    import models.chat.MChatChannelPrivate;
    import models.chat.events.MChatChannelContentEvent;
    import models.chat.events.MChatChannelEvent;
+   import models.player.Player;
    import models.time.events.MTimeEventEvent;
 
    import mx.events.PropertyChangeEvent;
+
+   import namespaces.prop_name;
 
    import spark.components.Button;
    import spark.components.Group;
@@ -29,6 +34,7 @@ package components.chat
    import spark.events.TextOperationEvent;
 
    import utils.DateUtil;
+   import utils.autocomplete.AutoCompleteController;
    import utils.locale.Localizer;
 
 
@@ -142,6 +148,10 @@ package components.chat
                   MTimeEventEvent.OCCURS_IN_CHANGE,
                   silenced_occursInChangeHandler, false
                );
+               _modelOld.player.removeEventListener(
+                  PropertyChangeEvent.PROPERTY_CHANGE,
+                  player_propertyChangeHandler, false
+               );
                txtContent.textFlow = null;
                if (!_modelOld.isPublic) {
                   MChatChannelPrivate(_modelOld).removeEventListener(
@@ -179,6 +189,10 @@ package components.chat
                _model.silenced.addEventListener(
                   MTimeEventEvent.OCCURS_IN_CHANGE,
                   silenced_occursInChangeHandler, false, 0, true
+               );
+               _model.player.addEventListener(
+                  PropertyChangeEvent.PROPERTY_CHANGE,
+                  player_propertyChangeHandler, false, 0, true
                );
                txtContent.textFlow = _model.content.text;
                lstMembers.model = _model.members;
@@ -264,7 +278,8 @@ package components.chat
       /**
        * Input field for entering messages.
        */
-      public var inpMessage:TextInput;
+      public var inpMessage: TextInput;
+      private var _autoComplete: AutoCompleteController;
       
       [SkinPart(required="true")]
       /**
@@ -298,8 +313,8 @@ package components.chat
          {
             case inpMembersFilter:
                inpMembersFilter.addEventListener(
-                  KeyboardEvent.KEY_UP,
-                  inpMembersFilter_keyUpHandler, false, 0, true
+                  KeyboardEvent.KEY_DOWN,
+                  inpMembersFilter_keyDownHandler, false, 0, true
                );
                inpMembersFilter.addEventListener(
                   TextOperationEvent.CHANGE,
@@ -322,12 +337,21 @@ package components.chat
             case inpMessage:
                inpMessage.maxChars = ChatConstants.MAX_CHARS_IN_MESSAGE;
                inpMessage.addEventListener(
-                  KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false, 0, true
+                  KeyboardEvent.KEY_DOWN,
+                  inpMessage_keyDownHandler, false, 0, true
                );
+
+               // Part of default TAB key behavior prevention (see http://coder.sonicpoets.com/?p=8)
+               inpMessage.addEventListener(
+                  FocusEvent.KEY_FOCUS_CHANGE,
+                  inpMessage_keyFocusChangeHandler, false, 0, true
+               );
+
                inpMessage.addEventListener(
                   TextOperationEvent.CHANGE,
                   inpMessage_changeHandler, false, 0, true
                );
+               _autoComplete = new AutoCompleteController();
                updateUserInput();
                break;
             
@@ -359,7 +383,7 @@ package components.chat
          {
             case inpMembersFilter:
                inpMembersFilter.removeEventListener(
-                  KeyboardEvent.KEY_UP, inpMembersFilter_keyUpHandler, false
+                  KeyboardEvent.KEY_DOWN, inpMembersFilter_keyDownHandler, false
                );
                inpMembersFilter.removeEventListener(
                   TextOperationEvent.CHANGE, inpMembersFilter_changeHandler, false
@@ -368,8 +392,14 @@ package components.chat
 
             case inpMessage:
                inpMessage.removeEventListener(
-                  KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false
+                  KeyboardEvent.KEY_DOWN, inpMessage_keyDownHandler, false
                );
+
+               // Part of default TAB key behavior prevention (see http://coder.sonicpoets.com/?p=8)
+               inpMessage.removeEventListener(
+                  FocusEvent.KEY_FOCUS_CHANGE, inpMessage_keyFocusChangeHandler, false
+               );
+
                inpMessage.removeEventListener(
                   TextOperationEvent.CHANGE, inpMessage_changeHandler, false
                );
@@ -483,6 +513,12 @@ package components.chat
          }
       }
 
+      private function player_propertyChangeHandler(event: PropertyChangeEvent): void {
+         if (event.property == Player.prop_name::trial) {
+            updateUserInput();
+         }
+      }
+
       private function silenced_hasOccurredChangeHandler(event: MTimeEventEvent): void {
          updateUserInput();
       }
@@ -496,11 +532,15 @@ package components.chat
             return;
          }
          if (btnSend != null) {
-            btnSend.enabled = model.silenced.hasOccurred;
+            btnSend.enabled = model.canSendMessages;
+         }
+         if (_autoComplete != null) {
+            _autoComplete.client = model;
+            _autoComplete.dictionary = model.members;
          }
          if (inpMessage != null) {
-            inpMessage.enabled = model.silenced.hasOccurred;
-            if (!_model.silenced.hasOccurred
+            inpMessage.enabled = model.canSendMessages;
+            if (!model.canSendMessages
                    && focusManager.findFocusManagerComponent(inpMessage) != null) {
                focusManager.setFocus(txtContent);
             }
@@ -510,15 +550,20 @@ package components.chat
 
       private function updateInpMessageText(): void {
          if (inpMessage != null && model != null) {
-            if (model.silenced.hasOccurred) {
+            if (model.canSendMessages) {
                inpMessage.text = model.userInput;
             }
             else {
-               inpMessage.text = getString(
-                  "message.silence",
-                  [model.silenced.occursAtString(),
-                   model.silenced.occursInString()]
-               );
+               if (!model.silenced.hasOccurred) {
+                  inpMessage.text = getString(
+                     "message.silence",
+                     [model.silenced.occursAtString(),
+                      model.silenced.occursInString()]
+                  );
+               }
+               else {
+                  inpMessage.text = getString("message.trial");
+               }
             }
          }
       }
@@ -538,15 +583,28 @@ package components.chat
          }
       }
 
-      private function inpMembersFilter_keyUpHandler(event:KeyboardEvent): void {
+      private function inpMembersFilter_keyDownHandler(event:KeyboardEvent): void {
          if (event.keyCode == Keyboard.ESCAPE) {
             model.members.nameFilter = null;
          }
       }
 
-      private function inpMessage_keyUpHandler(event: KeyboardEvent): void {
+      // Part of default TAB key behavior prevention (see http://coder.sonicpoets.com/?p=8)
+      private function inpMessage_keyFocusChangeHandler(event: FocusEvent): void {
+         event.preventDefault();
+      }
+
+      private function inpMessage_keyDownHandler(event: KeyboardEvent): void {
          if (event.keyCode == Keyboard.ENTER) {
             sendMessage();
+         }
+         else if (event.keyCode == Keyboard.TAB) {
+            // Part of default TAB key behavior prevention (see http://coder.sonicpoets.com/?p=8)
+            inpMessage.setFocus();
+
+            if (_autoComplete != null) {
+               _autoComplete.run();
+            }
          }
       }
 
@@ -567,7 +625,7 @@ package components.chat
          if (message.length > 0) {
             model.sendMessage(message);
          }
-         inpMessage.text = "";
+         model.userInput = "";
          enableAutoScroll();
       }
       

@@ -36,10 +36,10 @@ class SsSpawnStrategy
       fields = "position, angle"
       SsObject::Jumpgate.in_solar_system(@solar_system).
         select(fields).group(fields).c_select_all
-    end.call.inject(Set.new) do |set, row|
-      set.add SolarSystemPoint.new(@solar_system.id,
-                                   row['position'], row['angle'])
-      set
+    end.call.each_with_object(Set.new) do |row, set|
+      set.add SolarSystemPoint.new(
+        @solar_system.id, row['position'], row['angle']
+      )
     end
 
     (all_points - @excluded_points - jumpgate_points).to_a.random_element

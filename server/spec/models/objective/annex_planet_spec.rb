@@ -20,7 +20,7 @@ describe Objective::AnnexPlanet do
           planet.player = player
 
           lambda do
-            objective.class.progress([planet])
+            objective.class.progress(planet)
             objective_progress.reload
           end.should change(objective_progress, :completed).by(1)
         end

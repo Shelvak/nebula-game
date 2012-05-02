@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.17, for Linux (i686)
+-- MySQL dump 10.13  Distrib 5.5.22, for Linux (i686)
 --
--- Host: localhost    Database: spacegame
+-- Host: localhost    Database: spacegame_game
 -- ------------------------------------------------------
--- Server version	5.5.17-55
+-- Server version	5.5.22-55
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -69,17 +69,23 @@ CREATE TABLE `buildings` (
   `y_end` tinyint(2) unsigned NOT NULL DEFAULT '0',
   `state` tinyint(2) NOT NULL DEFAULT '0',
   `pause_remainder` int(10) unsigned DEFAULT NULL,
-  `constructable_type` varchar(100) DEFAULT NULL,
-  `constructable_id` int(11) DEFAULT NULL,
   `construction_mod` tinyint(2) unsigned NOT NULL DEFAULT '0',
   `cooldown_ends_at` datetime DEFAULT NULL,
   `hp_percentage` float unsigned NOT NULL DEFAULT '1',
   `flags` tinyint(2) unsigned NOT NULL DEFAULT '0',
+  `constructable_building_id` int(11) DEFAULT NULL,
+  `constructable_unit_id` int(11) DEFAULT NULL,
+  `batch_id` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `tiles_taken` (`planet_id`,`x`,`y`,`x_end`,`y_end`),
   KEY `index_buildings_on_construction_ends` (`upgrade_ends_at`),
   KEY `buildings_by_type` (`planet_id`,`type`),
-  CONSTRAINT `buildings_ibfk_1` FOREIGN KEY (`planet_id`) REFERENCES `ss_objects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `constructable_building_id` (`constructable_building_id`),
+  KEY `constructable_unit_id` (`constructable_unit_id`),
+  KEY `batch_id` (`batch_id`),
+  CONSTRAINT `buildings_ibfk_1` FOREIGN KEY (`planet_id`) REFERENCES `ss_objects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `buildings_ibfk_2` FOREIGN KEY (`constructable_building_id`) REFERENCES `buildings` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `buildings_ibfk_3` FOREIGN KEY (`constructable_unit_id`) REFERENCES `units` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -248,13 +254,19 @@ DROP TABLE IF EXISTS `cooldowns`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cooldowns` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `location_id` int(10) unsigned NOT NULL,
-  `location_type` tinyint(2) unsigned NOT NULL,
   `location_x` int(11) DEFAULT NULL,
   `location_y` int(11) DEFAULT NULL,
   `ends_at` datetime NOT NULL,
+  `location_galaxy_id` int(11) DEFAULT NULL,
+  `location_solar_system_id` int(11) DEFAULT NULL,
+  `location_ss_object_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `location` (`location_id`,`location_type`,`location_x`,`location_y`)
+  UNIQUE KEY `location_galaxy` (`location_galaxy_id`,`location_x`,`location_y`),
+  UNIQUE KEY `location_solar_system` (`location_solar_system_id`,`location_x`,`location_y`),
+  UNIQUE KEY `location_ss_object` (`location_ss_object_id`,`location_x`,`location_y`),
+  CONSTRAINT `cooldowns_ibfk_1` FOREIGN KEY (`location_galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `cooldowns_ibfk_2` FOREIGN KEY (`location_solar_system_id`) REFERENCES `solar_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `cooldowns_ibfk_3` FOREIGN KEY (`location_ss_object_id`) REFERENCES `ss_objects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -290,6 +302,7 @@ CREATE TABLE `cred_stats` (
   `vip_level` tinyint(2) unsigned NOT NULL DEFAULT '0',
   `vip_creds` int(10) unsigned NOT NULL DEFAULT '0',
   `free_creds` int(10) unsigned NOT NULL,
+  `objects` mediumtext,
   PRIMARY KEY (`id`),
   KEY `by_action` (`action`),
   KEY `by_player` (`player_id`),
@@ -390,15 +403,17 @@ CREATE TABLE `fow_ss_entries` (
   `alliance_ship_player_ids` text,
   `nap_planets` tinyint(1) DEFAULT NULL,
   `nap_ships` tinyint(1) DEFAULT NULL,
+  `batch_id` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `create_for_player` (`solar_system_id`,`player_id`),
   UNIQUE KEY `create_for_alliance` (`solar_system_id`,`alliance_id`),
   KEY `select_by_player` (`player_id`),
   KEY `select_by_alliance` (`alliance_id`),
   KEY `for_cleanup` (`counter`),
-  CONSTRAINT `fow_ss_entries_ibfk_6` FOREIGN KEY (`alliance_id`) REFERENCES `alliances` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `batch_id` (`batch_id`),
   CONSTRAINT `fow_ss_entries_ibfk_4` FOREIGN KEY (`solar_system_id`) REFERENCES `solar_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fow_ss_entries_ibfk_5` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fow_ss_entries_ibfk_5` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fow_ss_entries_ibfk_6` FOREIGN KEY (`alliance_id`) REFERENCES `alliances` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -694,15 +709,17 @@ CREATE TABLE `players` (
   `death_date` datetime DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `alliance_cooldown_id` int(11) DEFAULT NULL,
+  `batch_id` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `authentication` (`galaxy_id`,`web_user_id`),
   KEY `index_players_on_alliance_id` (`alliance_id`),
   KEY `last_login` (`last_seen`),
   KEY `alive_players` (`galaxy_id`,`planets_count`),
   KEY `alliance_cooldown_id` (`alliance_cooldown_id`),
-  CONSTRAINT `players_ibfk_5` FOREIGN KEY (`alliance_id`) REFERENCES `alliances` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  KEY `batch_id` (`batch_id`),
   CONSTRAINT `players_ibfk_3` FOREIGN KEY (`alliance_cooldown_id`) REFERENCES `alliances` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `players_ibfk_4` FOREIGN KEY (`galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `players_ibfk_4` FOREIGN KEY (`galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `players_ibfk_5` FOREIGN KEY (`alliance_id`) REFERENCES `alliances` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -784,18 +801,27 @@ DROP TABLE IF EXISTS `route_hops`;
 CREATE TABLE `route_hops` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `route_id` int(11) NOT NULL,
-  `location_type` tinyint(2) unsigned NOT NULL,
-  `location_id` int(10) unsigned NOT NULL,
   `location_x` int(11) DEFAULT NULL,
   `location_y` int(11) DEFAULT NULL,
   `arrives_at` datetime NOT NULL,
   `index` smallint(6) NOT NULL,
   `next` tinyint(1) NOT NULL DEFAULT '0',
+  `location_galaxy_id` int(11) DEFAULT NULL,
+  `location_solar_system_id` int(11) DEFAULT NULL,
+  `location_ss_object_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `next_hop` (`route_id`,`index`),
-  KEY `route` (`route_id`,`location_type`,`location_id`),
   KEY `next` (`route_id`,`next`),
-  CONSTRAINT `route_hops_ibfk_1` FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `location_galaxy` (`location_galaxy_id`,`location_x`,`location_y`),
+  KEY `location_solar_system` (`location_solar_system_id`,`location_x`,`location_y`),
+  KEY `location_ss_object` (`location_ss_object_id`,`location_x`,`location_y`),
+  KEY `route_galaxy` (`route_id`,`location_galaxy_id`),
+  KEY `route_solar_system` (`route_id`,`location_solar_system_id`),
+  KEY `route_ss_object` (`route_id`,`location_ss_object_id`),
+  CONSTRAINT `route_hops_ibfk_1` FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `route_hops_ibfk_2` FOREIGN KEY (`location_galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `route_hops_ibfk_3` FOREIGN KEY (`location_solar_system_id`) REFERENCES `solar_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `route_hops_ibfk_4` FOREIGN KEY (`location_ss_object_id`) REFERENCES `ss_objects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -817,26 +843,46 @@ DROP TABLE IF EXISTS `routes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `routes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `target_type` tinyint(2) unsigned NOT NULL,
-  `target_id` int(10) unsigned NOT NULL,
   `arrives_at` datetime NOT NULL,
   `cached_units` text NOT NULL,
   `player_id` int(10) DEFAULT NULL,
   `target_x` int(11) NOT NULL,
   `target_y` int(11) NOT NULL,
-  `current_id` int(11) unsigned NOT NULL,
-  `current_type` tinyint(2) unsigned NOT NULL,
   `current_x` int(11) NOT NULL,
   `current_y` int(11) NOT NULL,
-  `source_id` int(11) unsigned NOT NULL,
-  `source_type` tinyint(2) unsigned NOT NULL,
   `source_x` int(11) NOT NULL,
   `source_y` int(11) NOT NULL,
   `jumps_at` datetime DEFAULT NULL,
+  `source_galaxy_id` int(11) DEFAULT NULL,
+  `source_solar_system_id` int(11) DEFAULT NULL,
+  `source_ss_object_id` int(11) DEFAULT NULL,
+  `current_galaxy_id` int(11) DEFAULT NULL,
+  `current_solar_system_id` int(11) DEFAULT NULL,
+  `current_ss_object_id` int(11) DEFAULT NULL,
+  `target_galaxy_id` int(11) DEFAULT NULL,
+  `target_solar_system_id` int(11) DEFAULT NULL,
+  `target_ss_object_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `incoming_routes` (`target_type`,`target_id`),
   KEY `foreign_key` (`player_id`),
-  CONSTRAINT `routes_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `source_galaxy` (`source_galaxy_id`,`source_x`,`source_y`),
+  KEY `source_solar_system` (`source_solar_system_id`,`source_x`,`source_y`),
+  KEY `source_ss_object` (`source_ss_object_id`,`source_x`,`source_y`),
+  KEY `current_galaxy` (`current_galaxy_id`,`current_x`,`current_y`),
+  KEY `current_solar_system` (`current_solar_system_id`,`current_x`,`current_y`),
+  KEY `current_ss_object` (`current_ss_object_id`,`current_x`,`current_y`),
+  KEY `target_galaxy` (`target_galaxy_id`,`target_x`,`target_y`),
+  KEY `target_solar_system` (`target_solar_system_id`,`target_x`,`target_y`),
+  KEY `target_ss_object` (`target_ss_object_id`,`target_x`,`target_y`),
+  CONSTRAINT `routes_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `routes_ibfk_10` FOREIGN KEY (`target_ss_object_id`) REFERENCES `ss_objects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `routes_ibfk_2` FOREIGN KEY (`source_galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `routes_ibfk_3` FOREIGN KEY (`source_solar_system_id`) REFERENCES `solar_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `routes_ibfk_4` FOREIGN KEY (`source_ss_object_id`) REFERENCES `ss_objects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `routes_ibfk_5` FOREIGN KEY (`current_galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `routes_ibfk_6` FOREIGN KEY (`current_solar_system_id`) REFERENCES `solar_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `routes_ibfk_7` FOREIGN KEY (`current_ss_object_id`) REFERENCES `ss_objects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `routes_ibfk_8` FOREIGN KEY (`target_galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `routes_ibfk_9` FOREIGN KEY (`target_solar_system_id`) REFERENCES `solar_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -868,7 +914,7 @@ CREATE TABLE `schema_migrations` (
 
 LOCK TABLES `schema_migrations` WRITE;
 /*!40000 ALTER TABLE `schema_migrations` DISABLE KEYS */;
-INSERT INTO `schema_migrations` VALUES ('20090601175224'),('20090601184051'),('20090601184055'),('20090601184059'),('20090701164131'),('20090713165021'),('20090808144214'),('20090809160211'),('20090810173759'),('20090826140238'),('20090826141836'),('20090829202538'),('20090829210029'),('20090829224505'),('20090830143959'),('20090830145319'),('20090901153809'),('20090904190655'),('20090905175341'),('20090905192056'),('20090906135044'),('20090909222719'),('20090911180950'),('20090912165229'),('20090919155819'),('20091024222359'),('20091103164416'),('20091103180558'),('20091103181146'),('20091109191211'),('20091225193714'),('20100114152902'),('20100121142414'),('20100127115341'),('20100127120219'),('20100127120515'),('20100127121337'),('20100129150736'),('20100203202757'),('20100203204803'),('20100204172507'),('20100204173714'),('20100208163239'),('20100210114531'),('20100212134334'),('20100218181507'),('20100219114448'),('20100220144106'),('20100222144003'),('20100223153023'),('20100224153728'),('20100224163525'),('20100225124928'),('20100225153721'),('20100225155505'),('20100225155739'),('20100226122144'),('20100226122651'),('20100301153626'),('20100302131225'),('20100303131706'),('20100308163148'),('20100308164422'),('20100310172315'),('20100310181338'),('20100311123523'),('20100315112858'),('20100319141401'),('20100322184529'),('20100324134243'),('20100324141652'),('20100331125702'),('20100415130556'),('20100415130600'),('20100415130605'),('20100415134627'),('20100419141518'),('20100419142018'),('20100419164230'),('20100426141509'),('20100428130912'),('20100429171200'),('20100430174140'),('20100610151652'),('20100610180750'),('20100614142225'),('20100614160819'),('20100614162423'),('20100616132525'),('20100616135507'),('20100622124252'),('20100706105523'),('20100710121447'),('20100710191351'),('20100716155807'),('20100719131622'),('20100721155359'),('20100722124307'),('20100812164444'),('20100812164449'),('20100812164518'),('20100812164524'),('20100817165213'),('20100819175736'),('20100820185846'),('20100906095758'),('20100915145823'),('20100929111549'),('20101001155323'),('20101005180058'),('20101022155620'),('20101117131430'),('20101208135417'),('20101209122838'),('20101222150446'),('20101223125157'),('20101223172333'),('20110106110617'),('20110117182616'),('20110119121807'),('20110125161025'),('20110128094012'),('20110201122224'),('20110211124612'),('20110214130700'),('20110214165108'),('20110215161039'),('20110221105637'),('20110224162141'),('20110224174209'),('20110307104202'),('20110307121218'),('20110309114701'),('20110309194328'),('20110310113500'),('20110311172250'),('20110314132426'),('20110317165341'),('20110329163829'),('20110330141930'),('20110410103752'),('20110413154835'),('20110420152125'),('20110420153521'),('20110422180144'),('20110426131533'),('20110426145014'),('20110429150825'),('20110430142655'),('20110501202247'),('20110502175634'),('20110503165127'),('20110506202156'),('20110509144521'),('20110520172423'),('20110529152142'),('20110530121627'),('20110601155244'),('20110606114650'),('20110606154238'),('20110615120534'),('20110620180705'),('20110621165656'),('20110627164509'),('20110711160159'),('20110728101729'),('20110731170836'),('20110801114044'),('20110802172428'),('20110807130218'),('20110807131155'),('20110807161232'),('20110812114804'),('20110905102038'),('20110911155609'),('20110916153737'),('20110920150711'),('20110922154003'),('20110924163350'),('20110924173927'),('20110927142508'),('20111003185306'),('20111013125109'),('20111024104056'),('20111027145938'),('20111115150234'),('20111119101809'),('20111125123219'),('20111202191900'),('20111208124349'),('20111214120514'),('20111227121256'),('20111228161017'),('20111229121331'),('20120104105526'),('20120105100946'),('20120105175009'),('20120107144305'),('20120113160416'),('20120116161146'),('20120117110804'),('20120119111535'),('20120201154523'),('20120209120424'),('20120214222310'),('20120215123242'),('20120216143141'),('20120221162141'),('20120222105249'),('20120222124109');
+INSERT INTO `schema_migrations` VALUES ('20090601175224'),('20090601184051'),('20090601184055'),('20090601184059'),('20090701164131'),('20090713165021'),('20090808144214'),('20090809160211'),('20090810173759'),('20090826140238'),('20090826141836'),('20090829202538'),('20090829210029'),('20090829224505'),('20090830143959'),('20090830145319'),('20090901153809'),('20090904190655'),('20090905175341'),('20090905192056'),('20090906135044'),('20090909222719'),('20090911180950'),('20090912165229'),('20090919155819'),('20091024222359'),('20091103164416'),('20091103180558'),('20091103181146'),('20091109191211'),('20091225193714'),('20100114152902'),('20100121142414'),('20100127115341'),('20100127120219'),('20100127120515'),('20100127121337'),('20100129150736'),('20100203202757'),('20100203204803'),('20100204172507'),('20100204173714'),('20100208163239'),('20100210114531'),('20100212134334'),('20100218181507'),('20100219114448'),('20100220144106'),('20100222144003'),('20100223153023'),('20100224153728'),('20100224163525'),('20100225124928'),('20100225153721'),('20100225155505'),('20100225155739'),('20100226122144'),('20100226122651'),('20100301153626'),('20100302131225'),('20100303131706'),('20100308163148'),('20100308164422'),('20100310172315'),('20100310181338'),('20100311123523'),('20100315112858'),('20100319141401'),('20100322184529'),('20100324134243'),('20100324141652'),('20100331125702'),('20100415130556'),('20100415130600'),('20100415130605'),('20100415134627'),('20100419141518'),('20100419142018'),('20100419164230'),('20100426141509'),('20100428130912'),('20100429171200'),('20100430174140'),('20100610151652'),('20100610180750'),('20100614142225'),('20100614160819'),('20100614162423'),('20100616132525'),('20100616135507'),('20100622124252'),('20100706105523'),('20100710121447'),('20100710191351'),('20100716155807'),('20100719131622'),('20100721155359'),('20100722124307'),('20100812164444'),('20100812164449'),('20100812164518'),('20100812164524'),('20100817165213'),('20100819175736'),('20100820185846'),('20100906095758'),('20100915145823'),('20100929111549'),('20101001155323'),('20101005180058'),('20101022155620'),('20101117131430'),('20101208135417'),('20101209122838'),('20101222150446'),('20101223125157'),('20101223172333'),('20110106110617'),('20110117182616'),('20110119121807'),('20110125161025'),('20110128094012'),('20110201122224'),('20110211124612'),('20110214130700'),('20110214165108'),('20110215161039'),('20110221105637'),('20110224162141'),('20110224174209'),('20110307104202'),('20110307121218'),('20110309114701'),('20110309194328'),('20110310113500'),('20110311172250'),('20110314132426'),('20110317165341'),('20110329163829'),('20110330141930'),('20110410103752'),('20110413154835'),('20110420152125'),('20110420153521'),('20110422180144'),('20110426131533'),('20110426145014'),('20110429150825'),('20110430142655'),('20110501202247'),('20110502175634'),('20110503165127'),('20110506202156'),('20110509144521'),('20110520172423'),('20110529152142'),('20110530121627'),('20110601155244'),('20110606114650'),('20110606154238'),('20110615120534'),('20110620180705'),('20110621165656'),('20110627164509'),('20110711160159'),('20110728101729'),('20110731170836'),('20110801114044'),('20110802172428'),('20110807130218'),('20110807131155'),('20110807161232'),('20110812114804'),('20110905102038'),('20110911155609'),('20110916153737'),('20110920150711'),('20110922154003'),('20110924163350'),('20110924173927'),('20110927142508'),('20111003185306'),('20111013125109'),('20111024104056'),('20111027145938'),('20111115150234'),('20111119101809'),('20111125123219'),('20111202191900'),('20111208124349'),('20111214120514'),('20111227121256'),('20111228161017'),('20111229121331'),('20120104105526'),('20120105100946'),('20120105175009'),('20120107144305'),('20120113160416'),('20120116161146'),('20120117110804'),('20120119111535'),('20120201154523'),('20120209120424'),('20120214222310'),('20120215123242'),('20120216143141'),('20120221162141'),('20120222105249'),('20120222124109'),('20120318125810'),('20120322111549'),('20120327174215'),('20120412112541'),('20120425160035');
 /*!40000 ALTER TABLE `schema_migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -886,12 +932,15 @@ CREATE TABLE `solar_systems` (
   `y` mediumint(9) DEFAULT NULL,
   `kind` tinyint(2) NOT NULL DEFAULT '0',
   `player_id` int(11) DEFAULT NULL,
+  `batch_id` varchar(50) NOT NULL DEFAULT '',
+  `spawn_counter` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniqueness` (`galaxy_id`,`player_id`,`kind`),
   UNIQUE KEY `lookup` (`galaxy_id`,`x`,`y`),
   KEY `player_id` (`player_id`),
-  CONSTRAINT `solar_systems_ibfk_3` FOREIGN KEY (`galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `solar_systems_ibfk_2` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `batch_id` (`batch_id`),
+  CONSTRAINT `solar_systems_ibfk_2` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `solar_systems_ibfk_3` FOREIGN KEY (`galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -950,13 +999,15 @@ CREATE TABLE `ss_objects` (
   `zetium_usage_rate` float unsigned NOT NULL DEFAULT '0',
   `owner_changed` datetime DEFAULT NULL,
   `raid_arg` tinyint(2) unsigned NOT NULL DEFAULT '0',
+  `batch_id` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniqueness` (`solar_system_id`,`position`,`angle`),
   KEY `index_planets_on_galaxy_id_and_solar_system_id` (`solar_system_id`),
   KEY `index_planets_on_player_id_and_galaxy_id` (`player_id`),
   KEY `group_by_for_fowssentry_status_updates` (`player_id`,`solar_system_id`),
-  CONSTRAINT `ss_objects_ibfk_4` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `ss_objects_ibfk_3` FOREIGN KEY (`solar_system_id`) REFERENCES `solar_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `batch_id` (`batch_id`),
+  CONSTRAINT `ss_objects_ibfk_3` FOREIGN KEY (`solar_system_id`) REFERENCES `solar_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `ss_objects_ibfk_4` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1042,8 +1093,6 @@ DROP TABLE IF EXISTS `units`;
 CREATE TABLE `units` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `level` tinyint(2) unsigned NOT NULL,
-  `location_id` int(10) unsigned NOT NULL,
-  `location_type` tinyint(2) unsigned NOT NULL DEFAULT '0',
   `player_id` int(11) DEFAULT NULL,
   `upgrade_ends_at` datetime DEFAULT NULL,
   `pause_remainder` int(10) unsigned DEFAULT NULL,
@@ -1053,7 +1102,6 @@ CREATE TABLE `units` (
   `location_x` mediumint(7) DEFAULT NULL,
   `location_y` mediumint(7) DEFAULT NULL,
   `route_id` int(11) DEFAULT NULL,
-  `galaxy_id` int(11) NOT NULL,
   `stance` tinyint(2) unsigned NOT NULL DEFAULT '0',
   `construction_mod` tinyint(2) unsigned NOT NULL DEFAULT '0',
   `stored` int(10) unsigned NOT NULL DEFAULT '0',
@@ -1062,15 +1110,33 @@ CREATE TABLE `units` (
   `zetium` int(10) unsigned NOT NULL DEFAULT '0',
   `hp_percentage` float unsigned NOT NULL DEFAULT '1',
   `flags` tinyint(2) unsigned NOT NULL DEFAULT '0',
+  `location_galaxy_id` int(11) DEFAULT NULL,
+  `location_solar_system_id` int(11) DEFAULT NULL,
+  `location_ss_object_id` int(11) DEFAULT NULL,
+  `location_building_id` int(11) DEFAULT NULL,
+  `location_unit_id` int(11) DEFAULT NULL,
+  `batch_id` varchar(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  KEY `location` (`player_id`,`location_id`,`location_type`),
-  KEY `location_and_player` (`location_type`,`location_id`,`location_x`,`location_y`,`player_id`),
   KEY `index_units_on_route_id` (`route_id`),
   KEY `type` (`player_id`,`type`),
-  KEY `foreign_key` (`galaxy_id`),
-  CONSTRAINT `units_ibfk_6` FOREIGN KEY (`galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `location_galaxy` (`player_id`,`location_galaxy_id`),
+  KEY `location_solar_system` (`player_id`,`location_solar_system_id`),
+  KEY `location_ss_object` (`player_id`,`location_ss_object_id`),
+  KEY `location_building` (`player_id`,`location_building_id`),
+  KEY `location_unit` (`player_id`,`location_unit_id`),
+  KEY `location_galaxy_and_player` (`location_galaxy_id`,`location_x`,`location_y`,`player_id`),
+  KEY `location_solar_system_and_player` (`location_solar_system_id`,`location_x`,`location_y`,`player_id`),
+  KEY `location_ss_object_and_player` (`location_ss_object_id`,`location_x`,`location_y`,`player_id`),
+  KEY `location_building_and_player` (`location_building_id`,`location_x`,`location_y`,`player_id`),
+  KEY `location_unit_and_player` (`location_unit_id`,`location_x`,`location_y`,`player_id`),
+  KEY `batch_id` (`batch_id`),
+  CONSTRAINT `units_ibfk_10` FOREIGN KEY (`location_building_id`) REFERENCES `buildings` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `units_ibfk_11` FOREIGN KEY (`location_unit_id`) REFERENCES `units` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `units_ibfk_4` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `units_ibfk_5` FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `units_ibfk_5` FOREIGN KEY (`route_id`) REFERENCES `routes` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `units_ibfk_7` FOREIGN KEY (`location_galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `units_ibfk_8` FOREIGN KEY (`location_solar_system_id`) REFERENCES `solar_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `units_ibfk_9` FOREIGN KEY (`location_ss_object_id`) REFERENCES `ss_objects` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1092,18 +1158,18 @@ DROP TABLE IF EXISTS `wreckages`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wreckages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `galaxy_id` int(11) NOT NULL,
-  `location_id` int(11) NOT NULL,
-  `location_type` tinyint(3) unsigned NOT NULL,
   `location_x` smallint(6) NOT NULL,
   `location_y` smallint(6) NOT NULL,
   `metal` int(10) unsigned NOT NULL DEFAULT '0',
   `energy` int(10) unsigned NOT NULL DEFAULT '0',
   `zetium` int(10) unsigned NOT NULL DEFAULT '0',
+  `location_galaxy_id` int(11) DEFAULT NULL,
+  `location_solar_system_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `location` (`location_id`,`location_type`,`location_x`,`location_y`),
-  KEY `galaxy_id` (`galaxy_id`),
-  CONSTRAINT `wreckages_ibfk_1` FOREIGN KEY (`galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  UNIQUE KEY `location_galaxy` (`location_galaxy_id`,`location_x`,`location_y`),
+  UNIQUE KEY `location_solar_system` (`location_solar_system_id`,`location_x`,`location_y`),
+  CONSTRAINT `wreckages_ibfk_2` FOREIGN KEY (`location_galaxy_id`) REFERENCES `galaxies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `wreckages_ibfk_3` FOREIGN KEY (`location_solar_system_id`) REFERENCES `solar_systems` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1125,4 +1191,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-03-05 14:30:40
+-- Dump completed on 2012-04-27 16:22:14

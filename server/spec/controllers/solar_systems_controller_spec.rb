@@ -76,7 +76,7 @@ describe SolarSystemsController do
 
     it "should return solar system" do
       invoke @action, @params
-      response_should_include(:solar_system => @solar_system)
+      response_should_include(:solar_system => @solar_system.as_json)
     end
 
     it "should return battleground if we requested to view a wormhole" do
@@ -86,7 +86,7 @@ describe SolarSystemsController do
       battleground = Factory.create(:solar_system, :galaxy => player.galaxy,
         :x => nil, :y => nil)
       invoke @action, @params.merge('id' => wormhole.id)
-      response_should_include(:solar_system => battleground)
+      response_should_include(:solar_system => battleground.as_json)
     end
 
     it "should store current solar system id" do

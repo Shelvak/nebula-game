@@ -188,6 +188,9 @@ GRANT ALL ON `#{db}`.* TO #{dbuser};
   script.write(%Q{
 GRANT FILE ON *.* TO #{dbuser};
 }) if options[:file]
+  script.write(%Q{
+GRANT PROCESS ON *.* TO #{dbuser};
+}) if options[:process]
   script.write("FLUSH PRIVILEGES;")
   script.close
   puts File.read(script.path)
@@ -578,7 +581,7 @@ innodb_lock_wait_timeout = 10})
 
   run("/etc/init.d/munin-node restart")
 
-  dbuser, pass = create_mysql("game", :file => true)
+  dbuser, pass = create_mysql("game", :file => true, :process => true)
   File.write("#{HOME}/config/db.game.yml", %Q{---
 production:
   host: "localhost"

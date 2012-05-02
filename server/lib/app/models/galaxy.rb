@@ -70,8 +70,10 @@ class Galaxy < ActiveRecord::Base
     SpaceMule.instance.create_galaxy(ruleset, callback_url)
   end
 
-  def self.create_player(galaxy_id, web_user_id, name)
-    without_locking { find(galaxy_id) }.create_player(web_user_id, name)
+  # Create player in galaxy _galaxy_id_ with Player#web_user_id, Player#name
+  # and Player#trial.
+  def self.create_player(galaxy_id, web_user_id, name, trial)
+    without_locking { find(galaxy_id) }.create_player(web_user_id, name, trial)
   end
 
   def self.create_player_scope(galaxy_id, web_user_id, name)
@@ -267,11 +269,11 @@ class Galaxy < ActiveRecord::Base
       end
 
       # Create units.
+      days = ((Time.now - created_at) / 1.day).round
       units = UnitBuilder.from_random_ranges(
-        Cfg.galaxy_convoy_units_definition, source, nil
+        Cfg.galaxy_convoy_units_definition, source, nil, days, 1
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
-      # TODO: spec me
       Cooldown.create_unless_exists(source, Cfg.after_spawn_cooldown)
 
       unit_ids = units.map(&:id)
@@ -296,11 +298,10 @@ class Galaxy < ActiveRecord::Base
     end
   end
 
-  def create_player(web_user_id, name)
-    # To expand * speed things
-    CONFIG.with_set_scope(ruleset) do
-      SpaceMule.instance.create_players(id, ruleset, {web_user_id => name})
-    end
+  def create_player(web_user_id, name, trial)
+    SpaceMule.instance.create_players(
+      id, ruleset, {web_user_id => name}, trial
+    )
   end
 
   # Return solar system with coordinates x, y.

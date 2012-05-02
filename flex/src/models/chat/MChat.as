@@ -6,6 +6,7 @@ package models.chat
 
    import models.BaseModel;
    import models.ModelLocator;
+   import models.chat.MChatMember;
    import models.chat.events.IgnoredMembersEvent;
    import models.chat.events.MChatEvent;
    import models.time.MTimeEventFixedMoment;
@@ -548,6 +549,15 @@ package models.chat
        */
       public function get members() : MChatMembersList {
          return _members;
+      }
+
+      /**
+       * Changes the name of a chat member if one can be found.
+       */
+      public function renameMember(id: int, newName: String): void {
+         if (members.containsMember(id)) {
+            members.getMember(id).name = newName;
+         }
       }
       
       

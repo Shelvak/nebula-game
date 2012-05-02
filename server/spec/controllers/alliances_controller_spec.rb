@@ -221,6 +221,10 @@ describe AlliancesController do
         with(@alliance, player)
       invoke @action, @params
     end
+
+    it "should work" do
+      invoke @action, @params
+    end
   end
 
   describe "alliances|leave" do

@@ -310,12 +310,29 @@ describe SpaceMule do
         @existing_player.web_user_id => @existing_player.name
       }
       @launch_time = Time.now
-      @result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      @player = Player.where(:galaxy_id => @galaxy.id,
-                             :web_user_id => @web_user_id).first
+      @result = @mule.
+        create_players(@galaxy.id, @galaxy.ruleset, @players, true)
+      @player = Player.where(
+        :galaxy_id => @galaxy.id, :web_user_id => @web_user_id
+      ).first
     end
 
     describe "player" do
+      it "should be flagged as trial" do
+        @player.should be_trial
+      end
+
+      it "should allow creating non-trial players" do
+        web_user_id = @web_user_id + 1
+        players = {web_user_id => "FooBarBaz"}
+        @mule.
+          create_players(@galaxy.id, @galaxy.ruleset, players, false)
+        player = Player.where(
+          :galaxy_id => @galaxy.id, :web_user_id => web_user_id
+        ).first
+        player.should_not be_trial
+      end
+
       it "should start quests" do
         QuestProgress.
           where(:player_id => @player.id, :quest_id => @quest.id,
@@ -622,7 +639,7 @@ describe SpaceMule do
         from(0,0).through(0,90).to(0,180)
       end,
       path("solar system other side of circle 2").solar_system(ss1) do
-        from(1,0).through(0,0, 0,90, 0,180).to(1,180)
+        from(1,0).through(1,315, 1,270, 1,225).to(1,180)
       end,
       path("solar system perpendicular ccw").solar_system(ss1) do
         from(1,0).through(1,45).to(1,90)

@@ -2,7 +2,7 @@ class Objective::CompleteQuests < Objective
   KEY = ""
   def self.resolve_key(klass); KEY; end
 
-  def self.progress(quest_progress); super([quest_progress]); end
+  def self.progress(quest_progress, *args); super([quest_progress], *args); end
 
   def initial_completed(player_id)
     QuestProgress.joins(:quest).where(

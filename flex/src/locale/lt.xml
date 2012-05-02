@@ -1824,7 +1824,7 @@
     <label.forum value="Forumas" />
     <label.wiki value="Wiki"/>
     <label.tips value="Patarimai"/>
-    <label.inviteFriend value="Pakvietimai"/>
+    <label.inviteFriend value="Pakviesk draugą"/>
     <tooltip.version value="Žaidimo versija" />
     <panelWidth value="95" />
   </MainMenu>
@@ -2155,6 +2155,8 @@
     <title.achievements value="PASIEKIMAI" />
     <label.close value="Uždaryti" />
     <label.noPlanets value="Tu neturi planetų"/>
+    <label.registerNow value="Užsiregistruoti" />
+    <label.registerLater value="Priminti vėliau" />
   </Players>
 
   <Popups>
@@ -2169,6 +2171,13 @@
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+
+    <register.title value="UŽSIREGISTRUOK!"/>
+    <register.message.demo>
+       <![CDATA[Tai <span color="#EFC700">BANDOMOJI</span> paskyra.]]>
+    </register.message.demo>
+    <register.message.progress
+       value="Jei atsijungsi, prarasi viską, ką iki šiol pasiekei."/>
 
     <title.outdatedClient value="Žaidimo versija pasenusi" />
     <message.outdatedClient>
@@ -5559,12 +5568,18 @@
      <format.time value="JJ:NN:SS"/>
      <message.channelJoin  value="[ {0} prisijungė ]"/>
      <message.channelLeave value="[ {0} išėjo ]"/>
-     <message.friendOffline value="Šis žaidėjas šiuo metu neprisijungęs"/>
+     <message.friendOffline>
+       Žaidėjas šiuo metu atsijungęs. Jeigu jam parašysi, tavo žinutes jis
+       gaus prisijungęs prie žaidimo.
+     </message.friendOffline>
      <message.memberIgnored value="... ignoruojama ..."/>
      <message.silence>
         Tu buvai nutildytas iki {0} dėl pokalbių teršimo.
         Vėl galėsi šnekėti už {1}.
      </message.silence>
+     <message.trial>
+        Kad galėtum bendrauti pokalbių kambaryje, tau reikia užsiregistruoti.
+     </message.trial>
      <tooltip.btnDoIgnore>
        <p>Žaidėjas nėra ignoruojamas</p>
      </tooltip.btnDoIgnore>

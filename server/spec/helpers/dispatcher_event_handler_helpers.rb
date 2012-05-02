@@ -58,7 +58,7 @@ module DispatcherEventHandlerObjectHelpers
       end
 
       data.player_ids.each do |player_id|
-        dispatcher.should_receive(:push_to_player).
+        dispatcher.should_receive(:push_to_player!).
           with(player_id, action, params, data.filter)
       end
     end

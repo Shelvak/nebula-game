@@ -22,10 +22,11 @@ class SpaceMule
   end
 
   # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
-  # {web_user_id => player_name} pairs.
-  def create_players(galaxy_id, ruleset, players)
+  # {web_user_id => player_name} pairs. If )trial_ is given, those players are
+  # flagged as trial.
+  def create_players(galaxy_id, ruleset, players, trial)
     with_db_connection do
-      PlayerCreator.invoke(galaxy_id, ruleset, players)
+      PlayerCreator.invoke(galaxy_id, ruleset, players, trial)
     end
   end
 

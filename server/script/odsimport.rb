@@ -448,6 +448,8 @@ sections.each do |section, values|
           value = "(#{value}) / speed"
         elsif key =~ /(generate|use)$/ && ! key.include?(".mod.")
           value = "(#{value}) * speed"
+        elsif key =~ /(scientists\.min|store)$/ && value.is_a?(Float)
+          value = value.round.to_s
         end
       end
 

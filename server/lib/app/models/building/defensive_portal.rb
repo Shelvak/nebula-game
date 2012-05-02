@@ -129,12 +129,14 @@ class Building::DefensivePortal < Building
     def total_unit_counts(player_ids, planet_ids)
       return [] if player_ids.blank? || planet_ids.blank?
 
-      Unit.
-        select("type, COUNT(*) as count").
-        where(condition(player_ids, planet_ids)).
-        group("type").
-        c_select_all.
-        map { |row| [row['type'], row['count']] }
+      without_locking do
+        Unit.
+          select("type, COUNT(*) as count").
+          where(condition(player_ids, planet_ids)).
+          group("type").
+          c_select_all.
+          map { |row| [row['type'], row['count']] }
+      end
     end
 
     # Return condition for selecting defender units.
@@ -150,36 +152,38 @@ class Building::DefensivePortal < Building
 
     # Returns friendly player ids and planet ids from given _planet_.
     def get_ids_from_planet(planet)
-      player = planet.player
-      raise NoUnitsError if player.nil?
+      without_locking do
+        player = planet.player
+        raise NoUnitsError if player.nil?
 
-      ally_ids = player.portal_without_allies? || player.alliance_id.nil? \
-        ? [] \
-        : Player.
-            select("id").
-            not_portal_without_allies.
-            where(:alliance_id => player.alliance_id).
-            where("id != ?", player.id).
-            c_select_values
-      
-      relation = SsObject::Planet.select("id").where("id != ?", planet.id)
-      player_planet_ids = relation.where(:player_id => player.id).
-        c_select_values
+        ally_ids = player.portal_without_allies? || player.alliance_id.nil? \
+          ? [] \
+          : Player.
+              select("id").
+              not_portal_without_allies.
+              where(:alliance_id => player.alliance_id).
+              where("id != ?", player.id).
+              c_select_values
 
-      ally_planet_ids = ally_ids.blank? \
-        ? [] : relation.where(:player_id => ally_ids).c_select_values
+        relation = SsObject::Planet.select("id").where("id != ?", planet.id)
+        player_planet_ids = relation.where(:player_id => player.id).
+          c_select_values
 
-      reject_block = lambda do |planet_id|
-        Building::DefensivePortal.active.where(:planet_id => planet_id).
-          count == 0
+        ally_planet_ids = ally_ids.blank? \
+          ? [] : relation.where(:player_id => ally_ids).c_select_values
+
+        reject_block = lambda do |planet_id|
+          Building::DefensivePortal.active.where(:planet_id => planet_id).
+            count == 0
+        end
+
+        player_planet_ids.reject!(&reject_block)
+        ally_planet_ids.reject!(&reject_block)
+
+        raise NoUnitsError if player_planet_ids.blank? && ally_planet_ids.blank?
+
+        [player.id, ally_ids, player_planet_ids, ally_planet_ids]
       end
-
-      player_planet_ids.reject!(&reject_block)
-      ally_planet_ids.reject!(&reject_block)
-
-      raise NoUnitsError if player_planet_ids.blank? && ally_planet_ids.blank?
-
-      [player.id, ally_ids, player_planet_ids, ally_planet_ids]
     end
 
     # Pick unit ids from list of [id, volume] pairs.

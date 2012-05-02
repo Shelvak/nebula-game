@@ -614,7 +614,7 @@ class Unit < ActiveRecord::Base
         FowSsEntry.increase(
           location.solar_system_id, player, fse_counter
         ) if fse_counter > 0 && location.is_a?(SsObject::Planet)
-        Objective::HaveUpgradedTo.progress(units, false)
+        Objective::HaveUpgradedTo.progress(units, strict: false)
       end
 
       save_all_units(units, nil, EventBroker::CREATED)

@@ -40,6 +40,8 @@ class EventBroker
   REASON_COMPLETED = :completed
   # Unit was deployed to a building.
   REASON_DEPLOYMENT = :deployment
+  # Unit was deployed to a building.
+  REASON_PLAYER_RENAMED = :player_renamed
 
   @@handlers = Set.new
 

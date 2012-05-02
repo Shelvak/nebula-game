@@ -41,10 +41,14 @@ class Objective < ActiveRecord::Base
 
   class << self
     # Update objective progresses related to given models.
-    #
-    # If _strict_ is set to true, it will use == for level comparision, while
-    # if it is set to false, it'll use >=.
-    def progress(models)
+    def progress(models, options={})
+      typesig binding, Array, Hash
+      options.assert_valid_keys(:player_id, :strict, :regression, :data)
+      options.reverse_merge!(player_id: nil, strict: true, regression: false)
+      options.ensure_options!(required: {
+        player_id: [NilClass, Fixnum], strict: Boolean, regression: Boolean
+      })
+
       # For caching friendly player ids.
       cache = {}
 
@@ -66,11 +70,11 @@ class Objective < ActiveRecord::Base
           where(:key => resolve_key(klass), :type => to_s.demodulize).all
         }
         objectives.each do |objective|
-          objective_models = filter(objective, class_models)
+          objective_models = filter(objective, class_models, options)
 
-          beneficaries = count_benefits(objective_models)
-          beneficaries.each do |player_id, count|
-            progresses = objective_progresses(player_id, objective, cache)
+          beneficaries = count_benefits(objective_models, options)
+          beneficaries.each do |beneficary_id, count|
+            progresses = objective_progresses(beneficary_id, objective, cache)
             progresses.each do |progress|
               all_progresses[progress] = count
             end
@@ -97,20 +101,16 @@ class Objective < ActiveRecord::Base
     end
 
     # Allow overriding call to Objective#filter.
-    def filter(objective, class_models)
+    def filter(objective, class_models, options)
       objective.filter(class_models)
     end
 
     # Regress objective by given _models_ instead of progressing it.
-    def regress(models)
-      @regression = true
-      ret = progress(models)
-      @regression = false
+    def regress(models, options={})
+      typesig binding, Array, Hash
 
-      ret
+      progress(models, options.merge(regression: true))
     end
-
-    def regression?; @regression; end
 
     # Group models by class. Include parent class if class name has :: in
     # it.
@@ -136,13 +136,15 @@ class Objective < ActiveRecord::Base
       klass.to_s
     end
 
-    def count_benefits(models)
-      benefits = models.grouped_counts { |model| model.player_id }
+    def count_benefits(models, options)
+      typesig binding, Array, Hash
+
+      benefits = models.grouped_counts do |model|
+        options[:player_id] || model.player_id
+      end
 
       # Subtract from counters if regression.
-      benefits.keys.each do |player_id|
-        benefits[player_id] *= -1
-      end if regression?
+      benefits.map_values! { |_, counter| -counter } if options[:regression]
 
       benefits
     end

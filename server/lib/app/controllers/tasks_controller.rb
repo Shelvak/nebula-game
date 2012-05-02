@@ -100,6 +100,7 @@ Message was:
   # - galaxy_id (Fixnum)
   # - web_user_id (Fixnum)
   # - name (String): player name
+  # - trial (Boolean): is this a trial player?
   #
   # Response:
   # - player_id (Fixnum): Player#id
@@ -107,14 +108,15 @@ Message was:
   ACTION_CREATE_PLAYER = 'tasks|create_player'
 
   CREATE_PLAYER_OPTIONS = control_token + required(
-    :galaxy_id => Fixnum, :web_user_id => Fixnum, :name => String
+    :galaxy_id => Fixnum, :web_user_id => Fixnum, :name => String,
+    :trial => Boolean
   )
   CREATE_PLAYER_SCOPE = scope.world
   def self.create_player_action(m)
-    galaxy_id = m.params['galaxy_id']
     web_user_id = m.params['web_user_id']
-    name = m.params['name']
-		response = Galaxy.create_player(galaxy_id, web_user_id, name)
+		response = Galaxy.create_player(
+      m.params['galaxy_id'], web_user_id, m.params['name'], m.params['trial']
+    )
 
 		respond m, :player_id => response[web_user_id]
   end
@@ -155,6 +157,48 @@ Message was:
     player = Player.find(m.params['player_id'])
     player.pure_creds += m.params['creds']
     player.save!
+  end
+
+  # Called by website to notify that trial user has registered.
+  #
+  # Parameters:
+  # - player_id (Fixnum): Player#id
+  # - name (String): New player name.
+  #
+  # Response: None
+  #
+  ACTION_PLAYER_REGISTERED = 'tasks|player_registered'
+
+  PLAYER_REGISTERED_OPTIONS = control_token +
+    required(:player_id => Fixnum, :name => String)
+  PLAYER_REGISTERED_SCOPE = scope.world
+  def self.player_registered_action(m)
+    player = Player.where(Player.trial_condition).find(m.params['player_id'])
+    player.trial = false
+    player.name = m.params['name']
+    player.save!
+    EventBroker.fire(
+      Event::PlayerRename.new(player.id, player.name), EventBroker::CREATED
+    )
+  end
+
+  # Allows checking if player is connected.
+  #
+  # Parameters:
+  # - player_id (Fixnum): Player#id
+  #
+  # Response:
+  # - connected (Boolean): is this player currently connected?
+  #
+  ACTION_IS_PLAYER_CONNECTED = 'tasks|is_player_connected'
+
+  IS_PLAYER_CONNECTED_OPTIONS = control_token + required(:player_id => Fixnum)
+  IS_PLAYER_CONNECTED_SCOPE = scope.world
+  def self.is_player_connected_action(m)
+    connected = Celluloid::Actor[:dispatcher].
+      player_connected?(m.params['player_id'])
+
+    respond m, connected: connected
   end
 
   # Report usage statistics.
