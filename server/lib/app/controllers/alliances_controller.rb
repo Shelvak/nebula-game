@@ -89,7 +89,7 @@ class AlliancesController < GenericController
   def self.join_action(m)
     notification = Notification.where(:player_id => m.player.id).find(
       m.params['notification_id'])
-    alliance = Alliance.find(notification.params[:alliance]['id'])
+    alliance = Alliance.find(notification.params['alliance']['id'])
 
     raise GameLogicError.new(
       "Cannot join alliance if cooldown hasn't expired yet!"

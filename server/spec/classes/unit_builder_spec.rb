@@ -5,13 +5,21 @@ require File.expand_path(
 describe UnitBuilder do
   describe ".from_random_ranges" do
     before(:all) do
-      @definition = Cfg.galaxy_convoy_units_definition
+      @definition = [
+        ["4 + 2 * counter / spot", "8 + 4 * counter / spot", "Dirac", 0],
+        ["4 + 2 * counter / spot", "12 + 6 * counter / spot", "Dirac", 1],
+        ["2 + counter / spot", "6 + 3 * counter / spot", "Thor", 0],
+        ["4 + 2 * counter / spot", "8 + 4 * counter / spot", "Thor", 1],
+        ["2 + counter / spot", "6 + 3 * counter / spot", "Demosis", 0],
+        ["2 + counter / spot", "6 + 3 * counter / spot", "Demosis", 1]
+      ]
       galaxy = Factory.create(:galaxy)
-      @galaxy_id = galaxy.id
-      @location = GalaxyPoint.new(@galaxy_id, 10, 20)
+      @location = GalaxyPoint.new(galaxy.id, 10, 20)
       @player = Factory.create(:player, :galaxy => galaxy)
+      @counter = 38
+      @spot = 1
       @units = UnitBuilder.from_random_ranges(
-        @definition, @location, @player.id
+        @definition, @location, @player.id, @counter, @spot
       )
       Unit.save_all_units(@units)
     end
@@ -26,7 +34,7 @@ describe UnitBuilder do
 
     it "should conform to definition" do
       check_spawned_units_by_random_definition(
-        @definition, @galaxy_id, @location, @player.id
+        @definition, @location, @player.id, @counter, @spot
       )
     end
   end

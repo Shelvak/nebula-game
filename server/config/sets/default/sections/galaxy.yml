@@ -69,12 +69,15 @@ convoy.time: <%= 4.hours %> / speed
 convoy.speed_modifier: 6
 # - [count_from, count_to, type, flank]
 #
+# count_from and count_to has variable _counter_ which is number of days passed
+# since galaxy start.
+#
 # count numbers are inclusive.
 convoy.units:
-  - [0, 10, Dirac, 0]
-  - [1, 10, Dirac, 1]
-  - [0, 5, Thor, 0]
-  - [0, 10, Thor, 1]
-  - [0, 4, Demosis, 0]
-  - [0, 2, Demosis, 1]
-  - [1, 2, ConvoyShip, 0]
+  - [0 + counter / 4, 10 + counter / 2, Dirac, 0]
+  - [1 + counter / 2, 10 + counter * 3 / 4, Dirac, 1]
+  - [0 + counter / 6, 5 + counter / 2, Thor, 0]
+  - [0 + counter / 4, 10 + counter * 3 / 4, Thor, 1]
+  - [0 + counter / 8, 4 + counter / 4, Demosis, 0]
+  - [0 + counter / 10, 2 + counter / 5, Demosis, 1]
+  - [1, 2, ConvoyShip, 1]

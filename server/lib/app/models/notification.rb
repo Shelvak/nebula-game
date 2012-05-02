@@ -68,8 +68,7 @@ class Notification < ActiveRecord::Base
   # Player has been attached to the galaxy.
   EVENT_PLAYER_ATTACHED = 15
 
-  # custom_serialize converts all :symbols to 'symbols'
-  serialize :params
+  serialize :params, JSON
   default_scope order("`read` ASC, `created_at` DESC")
 
   protected
@@ -374,7 +373,8 @@ class Notification < ActiveRecord::Base
     where(:player_id => player.id, :event => EVENT_ALLIANCE_INVITATION).each do
       |notification|
 
-      return notification if notification.params[:alliance]['id'] == alliance.id
+      return notification \
+        if notification.params['alliance']['id'] == alliance.id
     end
 
     model = new(

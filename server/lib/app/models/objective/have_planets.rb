@@ -17,7 +17,13 @@ class Objective::HavePlanets < Objective
     end
   end
 
-  def self.count_benefits(models)
+  def self.progress(planet, *args)
+    typesig_bindless [['planet', planet]], SsObject::Planet
+
+    super([planet], *args)
+  end
+
+  def self.count_benefits(models, options)
     benefits = {}
 
     models.each do |planet|

@@ -4,6 +4,8 @@ package components.chat
 
    import components.base.Panel;
 
+   import flash.events.FocusEvent;
+
    import flash.events.KeyboardEvent;
    import flash.events.MouseEvent;
    import flash.ui.Keyboard;
@@ -32,6 +34,7 @@ package components.chat
    import spark.events.TextOperationEvent;
 
    import utils.DateUtil;
+   import utils.autocomplete.AutoCompleteController;
    import utils.locale.Localizer;
 
 
@@ -275,7 +278,8 @@ package components.chat
       /**
        * Input field for entering messages.
        */
-      public var inpMessage:TextInput;
+      public var inpMessage: TextInput;
+      private var _autoComplete: AutoCompleteController;
       
       [SkinPart(required="true")]
       /**
@@ -309,8 +313,8 @@ package components.chat
          {
             case inpMembersFilter:
                inpMembersFilter.addEventListener(
-                  KeyboardEvent.KEY_UP,
-                  inpMembersFilter_keyUpHandler, false, 0, true
+                  KeyboardEvent.KEY_DOWN,
+                  inpMembersFilter_keyDownHandler, false, 0, true
                );
                inpMembersFilter.addEventListener(
                   TextOperationEvent.CHANGE,
@@ -333,12 +337,21 @@ package components.chat
             case inpMessage:
                inpMessage.maxChars = ChatConstants.MAX_CHARS_IN_MESSAGE;
                inpMessage.addEventListener(
-                  KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false, 0, true
+                  KeyboardEvent.KEY_DOWN,
+                  inpMessage_keyDownHandler, false, 0, true
                );
+
+               // Part of default TAB key behavior prevention (see http://coder.sonicpoets.com/?p=8)
+               inpMessage.addEventListener(
+                  FocusEvent.KEY_FOCUS_CHANGE,
+                  inpMessage_keyFocusChangeHandler, false, 0, true
+               );
+
                inpMessage.addEventListener(
                   TextOperationEvent.CHANGE,
                   inpMessage_changeHandler, false, 0, true
                );
+               _autoComplete = new AutoCompleteController();
                updateUserInput();
                break;
             
@@ -370,7 +383,7 @@ package components.chat
          {
             case inpMembersFilter:
                inpMembersFilter.removeEventListener(
-                  KeyboardEvent.KEY_UP, inpMembersFilter_keyUpHandler, false
+                  KeyboardEvent.KEY_DOWN, inpMembersFilter_keyDownHandler, false
                );
                inpMembersFilter.removeEventListener(
                   TextOperationEvent.CHANGE, inpMembersFilter_changeHandler, false
@@ -379,8 +392,14 @@ package components.chat
 
             case inpMessage:
                inpMessage.removeEventListener(
-                  KeyboardEvent.KEY_UP, inpMessage_keyUpHandler, false
+                  KeyboardEvent.KEY_DOWN, inpMessage_keyDownHandler, false
                );
+
+               // Part of default TAB key behavior prevention (see http://coder.sonicpoets.com/?p=8)
+               inpMessage.removeEventListener(
+                  FocusEvent.KEY_FOCUS_CHANGE, inpMessage_keyFocusChangeHandler, false
+               );
+
                inpMessage.removeEventListener(
                   TextOperationEvent.CHANGE, inpMessage_changeHandler, false
                );
@@ -515,6 +534,10 @@ package components.chat
          if (btnSend != null) {
             btnSend.enabled = model.canSendMessages;
          }
+         if (_autoComplete != null) {
+            _autoComplete.client = model;
+            _autoComplete.dictionary = model.members;
+         }
          if (inpMessage != null) {
             inpMessage.enabled = model.canSendMessages;
             if (!model.canSendMessages
@@ -560,15 +583,28 @@ package components.chat
          }
       }
 
-      private function inpMembersFilter_keyUpHandler(event:KeyboardEvent): void {
+      private function inpMembersFilter_keyDownHandler(event:KeyboardEvent): void {
          if (event.keyCode == Keyboard.ESCAPE) {
             model.members.nameFilter = null;
          }
       }
 
-      private function inpMessage_keyUpHandler(event: KeyboardEvent): void {
+      // Part of default TAB key behavior prevention (see http://coder.sonicpoets.com/?p=8)
+      private function inpMessage_keyFocusChangeHandler(event: FocusEvent): void {
+         event.preventDefault();
+      }
+
+      private function inpMessage_keyDownHandler(event: KeyboardEvent): void {
          if (event.keyCode == Keyboard.ENTER) {
             sendMessage();
+         }
+         else if (event.keyCode == Keyboard.TAB) {
+            // Part of default TAB key behavior prevention (see http://coder.sonicpoets.com/?p=8)
+            inpMessage.setFocus();
+
+            if (_autoComplete != null) {
+               _autoComplete.run();
+            }
          }
       }
 

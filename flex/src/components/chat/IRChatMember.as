@@ -42,14 +42,22 @@ package components.chat
             if (_model != null) {
                _model.removeEventListener(
                   MChatMemberEvent.IS_IGNORED_CHANGE,
-                  model_isIgnoredChange, false
+                  model_isIgnoredChangeHandler, false
+               );
+               _model.removeEventListener(
+                  MChatMemberEvent.NAME_CHANGE,
+                  model_nameChangeHandler, false
                );
             }
             _model = value;
             if (_model != null) {
                _model.addEventListener(
                   MChatMemberEvent.IS_IGNORED_CHANGE,
-                  model_isIgnoredChange, false, 0, true
+                  model_isIgnoredChangeHandler, false, 0, true
+               );
+               _model.addEventListener(
+                  MChatMemberEvent.NAME_CHANGE,
+                  model_nameChangeHandler, false, 0, true
                );
             }
             f_modelChanged = true;
@@ -67,10 +75,15 @@ package components.chat
             grpIgnoreButtons.includeInLayout = !_model.isPlayer;
          }
          updateIgnoreButtons();
+         updateLblName();
       }
 
-      private function model_isIgnoredChange(event: MChatMemberEvent): void {
+      private function model_isIgnoredChangeHandler(event: MChatMemberEvent): void {
          updateIgnoreButtons()
+      }
+
+      private function model_nameChangeHandler(event: MChatMemberEvent): void {
+         updateLblName();
       }
 
 
@@ -112,6 +125,12 @@ package components.chat
          }
          if (btnDoUnignore != null) {
             btnDoUnignore.visible = _model.isIgnored;
+         }
+      }
+
+      private function updateLblName(): void {
+         if (_model != null && lblName != null) {
+            lblName.text = _model.name;
          }
       }
 

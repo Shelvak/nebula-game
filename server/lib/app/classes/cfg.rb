@@ -343,13 +343,12 @@ class Cfg
     def solar_system_spawn_key(solar_system)
       "solar_system.spawn." + case solar_system.kind
       when SolarSystem::KIND_NORMAL
-        "regular"
+        solar_system.player_id.nil? ? "regular" : "home"
       when SolarSystem::KIND_BATTLEGROUND
         solar_system.main_battleground? ? "battleground" : "mini_battleground"
       else
-        raise ArgumentError.new(
+        raise ArgumentError,
           "Solar system #{solar_system} with unknown kind: #{solar_system.kind}"
-        )
       end
     end
 

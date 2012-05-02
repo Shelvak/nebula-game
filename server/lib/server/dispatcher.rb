@@ -12,6 +12,8 @@ class Dispatcher
   # Disconnect action name.
   ACTION_DISCONNECT = 'players|disconnect'
 
+  # Client has sent malformed message hash.
+  DISCONNECT_NOT_A_MESSAGE = "not_a_message"
   # Other player has logged in as you.
   DISCONNECT_OTHER_LOGIN = "other_login"
   # Player was erased from server.
@@ -22,7 +24,10 @@ class Dispatcher
   S_KEY_SEQ = :seq
   S_KEY_CURRENT_SS_ID = :current_ss_id
   S_KEY_CURRENT_PLANET_ID = :current_planet_id
-  
+
+  # Message hash did not conform to message format.
+  class NotAMessage < StandardError; end
+  # Server cannot handle this message.
   class UnhandledMessage < StandardError; end
   class ClientDisconnected < StandardError; end
 
@@ -88,7 +93,7 @@ class Dispatcher
   # Change current player associated with current player id. Also register
   # this player to chat.
   def set_player(client, player)
-    typesig binding, ServerActor::Client, Player
+    raise_to_abort { typesig binding, ServerActor::Client, Player }
     tag = to_s(client)
 
     debug "Registering #{client} as #{player}.", tag
@@ -125,6 +130,10 @@ class Dispatcher
         :component => log_tag
       ) { process_message(message) }
     end
+  rescue NotAMessage => e
+    info "Cannot process #{message_hash} - #{e.class}: #{e.message}",
+      to_s(client)
+    disconnect(client, DISCONNECT_NOT_A_MESSAGE)
   rescue UnhandledMessage => e
     info "Cannot process #{message} - #{e.class}: #{e.message}", to_s(client)
     confirm_receive(message, e)
@@ -132,7 +141,7 @@ class Dispatcher
 
   def callback(callback)
     exclusive do
-      typesig binding, Callback
+      raise_to_abort { typesig binding, Callback }
       info "Received: #{callback}"
 
       klass = callback.klass
@@ -155,7 +164,7 @@ class Dispatcher
   # Confirm client of _message_ receiving. Set error to inform client
   # that his last action has failed.
   def confirm_receive(message, error=nil)
-    typesig binding, Message, [NilClass, Exception]
+    raise_to_abort { typesig binding, Message, [NilClass, Exception] }
 
     confirmation = {
       MESSAGE_REPLY_TO_KEY => message.id,
@@ -194,7 +203,7 @@ class Dispatcher
 
   # Responds to received/pushed message.
   def respond(message, params)
-    typesig binding, Message, Hash
+    raise_to_abort { typesig binding, Message, Hash }
 
     message_hash = {
       # Pushed messages have message sequence number, regular messages don't.
@@ -209,7 +218,7 @@ class Dispatcher
 
   # Transmits message to given players ids.
   def transmit_to_players(action, params={}, *player_ids)
-    typesig binding, String, Hash, Array
+    raise_to_abort { typesig binding, String, Hash, Array }
 
     clients = player_ids.map do |player_id|
       @player_id_to_client[player_id]
@@ -220,7 +229,7 @@ class Dispatcher
 
   # Transmit message to clients.
   def transmit_to_clients(action, params={}, *clients)
-    typesig binding, String, Hash, Array
+    raise_to_abort { typesig binding, String, Hash, Array }
 
     message_hash = {"action" => action, "params" => params}
 
@@ -268,8 +277,10 @@ class Dispatcher
   #
   # @see #push
   def push_to_player(player_id, action, params={}, filters=nil)
-    typesig binding, Fixnum, String, Hash,
-      [NilClass, Array, Dispatcher::PushFilter]
+    raise_to_abort do
+      typesig binding, Fixnum, String, Hash,
+        [NilClass, Array, Dispatcher::PushFilter]
+    end
 
     client = @player_id_to_client[player_id]
     if client.nil?
@@ -288,8 +299,10 @@ class Dispatcher
   # through.
   #
   def push(client, action, params, filters=nil)
-    typesig binding, ServerActor::Client, String, Hash,
-      [NilClass, Array, Dispatcher::PushFilter]
+    raise_to_abort do
+      typesig binding, ServerActor::Client, String, Hash,
+        [NilClass, Array, Dispatcher::PushFilter]
+    end
 
     log = "action #{action.inspect} with params #{params.inspect} and filters #{
       filters.inspect}."
@@ -332,9 +345,10 @@ class Dispatcher
       @client_to_player[what]
     when Fixnum
       client = @player_id_to_client[what]
+      return if client.nil?
       resolve_player(client)
     else
-      abort ArgumentError, "Unknown parameter type #{what.inspect}!"
+      abort ArgumentError.new("Unknown parameter type #{what.inspect}!")
     end
   end
 

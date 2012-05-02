@@ -47,3 +47,4 @@ Factory.define :sso_asteroid, :parent => :ss_object,
   m.zetium_generation_rate { 
     CONFIG.random_from('ss_object.asteroid.zetium_rate') }
 end
+

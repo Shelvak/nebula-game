@@ -7,6 +7,7 @@ package tests.chat.models
    import controllers.ui.NavigationController;
    
    import ext.hamcrest.events.causes;
+   import ext.hamcrest.object.equals;
 
    import models.chat.MChat;
 
@@ -62,6 +63,14 @@ package tests.chat.models
          member = null;
          mockRespository = null;
          SingletonFactory.clearAllSingletonInstances();
+      }
+
+      [Test]
+      public function IAutoCompleteValue(): void {
+         assertThat(
+            "autoCompleteValue returns member name",
+            member.autoCompleteValue, equals (member.name)
+         );
       }
 
       [Test]

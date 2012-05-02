@@ -62,7 +62,7 @@ describe GameConfig do
       config[@key] = @val1
       config.store(@key, @set2, @val2)
 
-      config.with_set_scope(@set2) do |config|
+      config.with_set_scope(@set2) do
         config[@key].should == @val2
       end
     end
