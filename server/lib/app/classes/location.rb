@@ -88,12 +88,11 @@ module Location
   def self.visible?(player, location)
     check_in_ss = lambda do |ss_id|
       if ss_id == Galaxy.battleground_id(player.galaxy_id)
-        FowSsEntry.for(player).joins(:solar_system).where(
-          SolarSystem.table_name => {:kind => SolarSystem::KIND_WORMHOLE}
-        ).count > 0
+        SolarSystem.sees_wormhole?(player)
       else
         begin
-          SolarSystem.find_if_visible_for(ss_id, player)
+          SolarSystem.visible?(ss_id, player.id)
+          SolarSystem.find_if_viewable_for(ss_id, player)
           true
         rescue ActiveRecord::RecordNotFound
           false
@@ -105,8 +104,7 @@ module Location
     when LocationPoint
       case location.type
       when GALAXY
-        FowGalaxyEntry.by_coords(location.x, location.y).for(
-          player).count > 0
+        FowGalaxyEntry.by_coords(location.x, location.y).for(player).count > 0
       when SOLAR_SYSTEM
         check_in_ss.call(location.id)
       end

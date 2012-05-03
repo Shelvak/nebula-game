@@ -82,7 +82,7 @@ class FowGalaxyEntry < ActiveRecord::Base
     # by _increment_.
     #
     # This also creates entry for +Alliance+ if _player_ is in one.
-    def increase(rectangle, player, increment=1)
+    def increase(rectangle, player_id, increment=1)
       status = increase_for_kind(
         rectangle, player.galaxy_id, 'player_id', player.id, increment
       )

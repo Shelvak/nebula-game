@@ -10,7 +10,7 @@ class GalaxiesController < GenericController
   # - solar_systems (Hash[]): Array of of such hashes:
   #   {
   #     :solar_system => +SolarSystem+,
-  #     :metadata => FowSsEntry#merge_metadata
+  #     :metadata => +SolarSystemMetadata+
   #   }
   # - battleground_id (Fixnum): ID of battleground solar system
   # - apocalypse_start (Time | nil): time of apocalypse start, if started.

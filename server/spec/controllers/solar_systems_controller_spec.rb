@@ -114,7 +114,7 @@ describe SolarSystemsController do
     end
 
     it "should not allow viewing ss where player has no vision" do
-      SolarSystem.should_receive(:find_if_visible_for).with(@solar_system.id,
+      SolarSystem.should_receive(:find_if_viewable_for).with(@solar_system.id,
         player).and_raise(ActiveRecord::RecordNotFound)
       
       lambda do

@@ -77,21 +77,21 @@ describe SolarSystem do
       it "should return SolarSystem if it's visible (player)" do
         ss = Factory.create :solar_system, :galaxy => @player.galaxy
         Factory.create :fse_player, :player => @player, :solar_system => ss
-        SolarSystem.find_if_visible_for(ss.id, @player).should == ss
+        SolarSystem.find_if_viewable_for(ss.id, @player).should == ss
       end
 
       it "should return SolarSystem if it's visible (alliance)" do
         ss = Factory.create :solar_system, :galaxy => @player.galaxy
         Factory.create :fse_alliance, :alliance => @alliance,
           :solar_system => ss
-        SolarSystem.find_if_visible_for(ss.id, @player).should == ss
+        SolarSystem.find_if_viewable_for(ss.id, @player).should == ss
       end
 
       it "should raise ActiveRecord::RecordNotFound if SolarSystem " +
       "exists but is not visible" do
         ss = Factory.create :solar_system, :galaxy => @player.galaxy
         lambda do
-          SolarSystem.find_if_visible_for(ss.id, @player)
+          SolarSystem.find_if_viewable_for(ss.id, @player)
         end.should raise_error(ActiveRecord::RecordNotFound)
       end
 
@@ -106,13 +106,13 @@ describe SolarSystem do
           @ss.save!
 
           lambda do
-            SolarSystem.find_if_visible_for(@ss.id, @player)
+            SolarSystem.find_if_viewable_for(@ss.id, @player)
           end.should raise_error(ActiveRecord::RecordNotFound)
         end
 
         it "should allow viewing ss if player is shield owner" do
           lambda do
-            SolarSystem.find_if_visible_for(ss.id, @player)
+            SolarSystem.find_if_viewable_for(ss.id, @player)
           end.should_not raise_error(ActiveRecord::RecordNotFound)
         end
       end

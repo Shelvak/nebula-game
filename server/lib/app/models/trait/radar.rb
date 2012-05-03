@@ -9,15 +9,11 @@ module Trait
     end
 
     def self.increase_vision(zone, player)
-      # Order matters here, FowGalaxyEntry emits event!
-      FowSsEntry.increase_for_zone(zone, player, 1, false)
-      FowGalaxyEntry.increase(rectangle_from_zone(zone), player)
+      FowGalaxyEntry.increase(rectangle_from_zone(zone), player.id)
     end
 
     def self.decrease_vision(zone, player)
-      # Order matters here, FowGalaxyEntry emits event!
-      FowSsEntry.decrease_for_zone(zone, player, 1, false)
-      FowGalaxyEntry.decrease(rectangle_from_zone(zone), player)
+      FowGalaxyEntry.decrease(rectangle_from_zone(zone), player.id)
     end
 
     module ClassMethods

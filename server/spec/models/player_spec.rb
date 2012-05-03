@@ -1176,6 +1176,16 @@ describe Player do
     end
   end
 
+  describe "#alliance_ids" do
+    let(:player) { Factory.build(:player) }
+
+    it "should return #friendly_ids without you" do
+      player.id = 2
+      player.should_receive(:friendly_ids).and_return([1,2,3,4])
+      player.alliance_ids.should == [1,3,4]
+    end
+  end
+
   describe "#nap_ids" do
     before(:all) do
       @alliance = Factory.create :alliance

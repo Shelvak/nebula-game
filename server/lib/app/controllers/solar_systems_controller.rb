@@ -28,7 +28,7 @@ class SolarSystemsController < GenericController
   def self.show_action(m)
     without_locking do
       # Client needs solar system to determine it's variation
-      solar_system = SolarSystem.find_if_visible_for(m.params['id'], m.player)
+      solar_system = SolarSystem.find_if_viewable_for(m.params['id'], m.player)
       solar_system = SolarSystem.galaxy_battleground(m.player.galaxy_id) \
         if solar_system.wormhole?
 

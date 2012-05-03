@@ -276,40 +276,49 @@ class FowSsEntry < ActiveRecord::Base
     # by _increment_.
     #
     # This also creates entry for +Alliance+ if _player_ is in one.
-    def increase(solar_system_id, player, increment=1, should_dispatch=true)
+    def increase(solar_system_id, player, increment=nil, should_dispatch=true)
       return if solar_system_id == Galaxy.battleground_id(player.galaxy_id)
-      raise ArgumentError,
-        "invalid increment 0 for ss #{solar_system_id}, player #{player}!" \
-        if increment == 0
 
-      # Recalculate, because if visibility increased/decreased there probably
-      # were some changes that we need to send to other players who are also
-      # spectating this solar system.
-      #
-      # This happens before increasing to prevent updates for player for whom
-      # ss created will be dispatched.
-      recalculate(solar_system_id, should_dispatch) if increment > 0
+      calc_status = lambda do |old, new|
+        if ! old && new then :created
+        elsif old && ! new then :destroyed
+        else :unchanged
+        end
+      end
 
-      # Actually increase visibility.
-      status = increase_for_kind(
-        solar_system_id, 'player_id', player.id, increment
-      )
-      alliance_status = increase_for_kind(
-        solar_system_id, 'alliance_id', player.alliance_id, increment
-      ) unless player.alliance_id.nil?
-
-      # Or after if, to prevent updates for those, to whom destroyed would be
-      # sent.
-      recalculate(solar_system_id, should_dispatch) if increment < 0
+      player_status = calc_status[
+        player_currently_visible?(solar_system_id, player.id),
+        has_visibility?(solar_system_id, player.id)
+      ]
+      alliance_status = calc_status[
+        alliance_currently_visible?(solar_system_id, player.alliance_id),
+        has_visibility?(solar_system_id, player.friendly_ids)
+      ] unless player.alliance_id.nil?
 
       status_is = lambda do |wanted|
-        status == wanted && (
+        player_status == wanted && (
           player.alliance_id.nil? || alliance_status == wanted
         )
       end
 
-      return false unless should_dispatch
+      scope = where(solar_system_id: solar_system_id)
+      scope = player.alliance_id.nil? \
+        ? scope.where("player_id=?", player.id) \
+        : scope.where(
+          "player_id=? OR alliance_id=?", player.id, player.alliance_id
+      )
+
+      # Create/delete actual records.
       if status_is[:destroyed]
+        scope.delete_all
+      elsif status_is[:created]
+        new(solar_system_id: solar_system_id, player_id: player.id).save!
+        new(solar_system_id: solar_system_id, alliance_id: player.alliance_id).
+          save! unless player.alliance_id.nil?
+      end
+
+      return false unless should_dispatch
+      status = if status_is[:destroyed]
         # Only dispatch destroyed if both alliance and player records has been
         # destroyed.
         event = Event::FowChange::SsDestroyed.new(
@@ -348,6 +357,13 @@ class FowSsEntry < ActiveRecord::Base
         # Only an update, recalculate should have dispatched event for us.
         false
       end
+
+      # Recalculate, because if visibility increased/decreased there probably
+      # were some changes that we need to send to other players who are also
+      # spectating this solar system.
+      recalculate(solar_system_id, should_dispatch)
+
+      status
     end
 
     # Deletes entry for _player_ at _solar_system_id_. Also removes entry
@@ -372,7 +388,7 @@ class FowSsEntry < ActiveRecord::Base
 
     # Update player entries in alliance pool upon #assimilate_player or
     # #throw_out_player.
-    def update_player(alliance_id, player_id, modifier)      
+    def update_player(alliance_id, player_id, modifier)
       where(:player_id => player_id).each do |entry|
         increase_for_kind(entry.solar_system_id, 'alliance_id', alliance_id,
           entry.counter * modifier)
@@ -393,6 +409,18 @@ class FowSsEntry < ActiveRecord::Base
     # Remove all player entries from alliance pool.
     def throw_out_player(alliance, player)
       update_player(alliance.id, player.id, -1)
+    end
+
+  private
+
+    def player_currently_visible?(solar_system_id, player_id)
+      where(:solar_system_id => solar_system_id, :player_id => player_id).
+        exists?
+    end
+
+    def alliance_currently_visible?(solar_system_id, alliance_id)
+      where(:solar_system_id => solar_system_id, :player_id => alliance_id).
+        exists?
     end
   end
 end

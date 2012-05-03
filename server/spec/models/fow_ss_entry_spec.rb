@@ -158,6 +158,7 @@ describe FowSsEntry do
 
   describe "fow entry" do
     let(:solar_system) { Factory.create(:solar_system) }
+    let(:solar_system_point) { SolarSystemPoint.new(solar_system.id, 0, 0) }
     let(:klass) { FowSsEntry }
     let(:player) { Factory.create(:player) }
     let(:player_w_alliance) { Factory.create(:player, :alliance => alliance) }
@@ -165,10 +166,16 @@ describe FowSsEntry do
     let(:event_reason) { EventBroker::REASON_SS_ENTRY }
 
     let(:increase) do
-      lambda { |*args| klass.increase(solar_system.id, *args) }
+      lambda do |*args|
+        Factory.create(:u_crow, player: args[0], location: solar_system_point)
+        klass.increase(solar_system.id, *args)
+      end
     end
     let(:decrease) do
-      lambda { |*args| klass.decrease(solar_system.id, *args) }
+      lambda do |*args|
+        Unit::Crow.in_location(solar_system_point).limit(1).delete_all
+        klass.decrease(solar_system.id, *args)
+      end
     end
     let(:lookup)  do
       lambda do |*args|

@@ -42,6 +42,12 @@ class SolarSystemMetadata
     @metadata = metadata
   end
 
+  def self.existing(solar_system_id, metadata)
+    new({
+      id: solar_system_id, x: nil, y: nil, kind: nil, player: nil
+    }.merge(metadata))
+  end
+
   def self.destroyed(solar_system_id)
     new(
       :id => solar_system_id, :x => nil, :y => nil, :kind => nil,

@@ -25,3 +25,5 @@ end
 Factory.define :wormhole, :parent => :solar_system do |m|
   m.kind SolarSystem::KIND_WORMHOLE
 end
+Factory.define :s_metadatas, :parent => :solar_system,
+:class => SolarSystem::Metadatas do |m|; end

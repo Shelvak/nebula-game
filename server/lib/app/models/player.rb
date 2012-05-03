@@ -379,6 +379,12 @@ class Player < ActiveRecord::Base
     alliance_id.nil? ? [id] : Alliance.player_ids_for(alliance_id)
   end
 
+  # Returns array of player ids which are in his alliance. Returns empty array
+  # if
+  def alliance_ids
+    friendly_ids - [id]
+  end
+
   # Returns array of player ids which are napped to this player.
   # Only established naps count.
   def nap_ids
