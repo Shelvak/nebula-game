@@ -114,7 +114,6 @@ package models
          reset();
       }
       
-      
       /**
        * Resets all properties to their default values. Needed when user ends
        * the game and logs out.
