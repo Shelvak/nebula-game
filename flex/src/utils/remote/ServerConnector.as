@@ -202,12 +202,13 @@ package utils.remote
 
       private function startPingTimer(): void
       {
-         if (pingTimer == null)
-         {
-            pingTimer = new Timer(SEND_PING_EVERY);
-            pingTimer.addEventListener(TimerEvent.TIMER, ping);
-            pingTimer.start();
-         }
+//         TODO: this keep alive thing failed, need to figure out something better
+//         if (pingTimer == null)
+//         {
+//            pingTimer = new Timer(SEND_PING_EVERY);
+//            pingTimer.addEventListener(TimerEvent.TIMER, ping);
+//            pingTimer.start();
+//         }
       }
 
       private function killPingTimer(): void
