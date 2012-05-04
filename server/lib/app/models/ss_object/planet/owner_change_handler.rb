@@ -52,7 +52,10 @@ private
       end
     end
 
-    population_count += units.map(&:population).sum
+    units.each do |unit|
+      population_count += unit.population
+      population_count += unit.units.map(&:population).sum if unit.transporter?
+    end
 
     if @old_player
       @old_player.population -= population_count
@@ -94,10 +97,19 @@ private
 
   # Transfer any alive units that were not included in combat to new owner.
   def handle_units!
-    units.each do |unit|
+    changed = units.each_with_object([]) do |unit, array|
       unit.player = @new_player
+      array << unit
+
+      if unit.transporter?
+        unit.units.each do |loaded|
+          loaded.player = @new_player
+          array << loaded
+        end
+      end
     end
-    Unit.save_all_units(units)
+
+    Unit.save_all_units(changed)
   end
 
   # Return exploring scientists if on a mission.
