@@ -40,20 +40,11 @@ class Galaxy < ActiveRecord::Base
   def self.units(player, fow_entries=nil)
     fow_entries ||= FowGalaxyEntry.for(player)
 
-    conditions = "(%s) OR (%s)" % [
-      sanitize_sql_for_conditions(
-        {
-          :player_id => player.friendly_ids,
-          :location_galaxy_id => player.galaxy_id
-        },
-        Unit.table_name
-      ),
-      FowGalaxyEntry.conditions(fow_entries)
-    ]
-
-    Unit.find_by_sql(
-      "SELECT * FROM `#{Unit.table_name}` WHERE #{conditions}"
-    )
+    Unit.where(
+      "(`player_id` IN (?) AND `location_galaxy_id`=?) OR (%s)" %
+        FowGalaxyEntry.conditions(fow_entries),
+      player.friendly_ids, player.galaxy_id
+    ).all
   end
 
   # Returns closest wormhole which is near x, y point. Returns nil

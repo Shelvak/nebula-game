@@ -13,12 +13,12 @@
 #   # Metadata flags - only on create/update, otherwise nil.
 #   :player_planets => +Boolean+,
 #   :player_ships => +Boolean+,
-#   :enemy_planets => +Boolean+,
-#   :enemy_ships => +Boolean+,
-#   :alliance_planets => +Boolean+,
-#   :alliance_ships => +Boolean+,
-#   :nap_planets => +Boolean+,
-#   :nap_ships => +Boolean+,
+#   :enemy_planets => +Array+,
+#   :enemy_ships => +Array+,
+#   :alliance_planets => +Array+,
+#   :alliance_ships => +Array+,
+#   :nap_planets => +Array+,
+#   :nap_ships => +Array+,
 # }
 #
 # _id_ is solar system id.
@@ -33,9 +33,9 @@ class SolarSystemMetadata
         :id => Fixnum, :x => [Fixnum, NilClass], :y => [Fixnum, NilClass],
         :kind => [Fixnum, NilClass], :player => [Hash, NilClass],
         :player_planets => Boolean, :player_ships => Boolean,
-        :enemy_planets => Boolean, :enemy_ships => Boolean,
-        :alliance_planets => Boolean, :alliance_ships => Boolean,
-        :nap_planets => Boolean, :nap_ships => Boolean
+        :enemy_planets => Array, :enemy_ships => Array,
+        :alliance_planets => Array, :alliance_ships => Array,
+        :nap_planets => Array, :nap_ships => Array
       }
     )
 
@@ -53,9 +53,9 @@ class SolarSystemMetadata
       :id => solar_system_id, :x => nil, :y => nil, :kind => nil,
       :player => nil,
       :player_planets => false, :player_ships => false,
-      :enemy_planets => false, :enemy_ships => false,
-      :alliance_planets => false, :alliance_ships => false,
-      :nap_planets => false, :nap_ships => false
+      :enemy_planets => [], :enemy_ships => [],
+      :alliance_planets => [], :alliance_ships => [],
+      :nap_planets => [], :nap_ships => []
     )
   end
 

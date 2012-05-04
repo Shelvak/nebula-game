@@ -73,179 +73,6 @@ class SolarSystem < ActiveRecord::Base
     end
   end
 
-  # Does _player_ see any wormhole?
-  #
-  # TODO: spec
-  def self.sees_wormhole?(player)
-    friendly_ids = player.friendly_ids
-    conditions = without_locking do
-      FowGalaxyEntry.where(player_id: friendly_ids).all
-    end.map { |fge| fge.rectangle.to_sql(player.galaxy_id) }.join(" OR ")
-
-    SolarSystem.where(conditions).where(kind: KIND_WORMHOLE).exists?
-  end
-
-  # Returns +Array+ of _player_ visible +SolarSystem+s with their metadata
-  # attached.
-  #
-  # Each array element is:
-  # {:solar_system => +SolarSystem+, :metadata => +SolarSystemMetadata+}
-  #
-  def self.visible_for(player)
-    friendly_ids = player.friendly_ids
-    alliance_ids = friendly_ids - [player.id]
-    conditions = []
-
-    # Solar systems covered by radars.
-    conditions += without_locking do
-      FowGalaxyEntry.where(player_id: friendly_ids).all
-    end.map { |fge| fge.rectangle.to_sql(player.galaxy_id) }
-
-    # Solar systems where players have units.
-    conditions += without_locking do
-      Unit.
-        select("DISTINCT(`location_solar_system_id`)").
-        where(player_id: friendly_ids).
-        where("`location_solar_system_id` IS NOT NULL").
-        c_select_values
-    end.map { |id| "`id`=#{id}" }
-
-    # Solar systems where players have planets or units inside +SsObject+s.
-    sso_ids = without_locking do
-      Unit.
-        select("DISTINCT(`location_ss_object_id`)").
-        where(player_id: friendly_ids).
-        where("`location_ss_object_id` IS NOT NULL").
-        c_select_values
-    end
-    conditions += without_locking do
-      SsObject::Planet.
-        select("DISTINCT(`solar_system_id`)").
-        where("`player_id` IN (?) OR `id` IN (?)", friendly_ids, sso_ids).
-        c_select_values
-    end.map { |id| "`id`=#{id}" }
-
-    conditions = conditions.join(" OR ")
-    solar_systems = SolarSystem.where(conditions).all
-
-    ss_ids = solar_systems.map(&:id)
-    metadatas = SolarSystem::Metadatas.new(ss_ids)
-
-    solar_systems.map do |solar_system|
-      {
-        solar_system: solar_system,
-        metadata: SolarSystemMetadata.existing(
-          solar_system.id,
-          player_planets: metadatas.player_planets?(solar_system.id, player.id),
-          player_ships: metadatas.player_ships?(solar_system.id, player.id),
-          enemy_planets: metadatas.enemy_planets?(solar_system.id, friendly_ids),
-          enemy_ships: metadatas.enemy_ships?(solar_system.id, friendly_ids),
-          alliance_planets:
-            metadatas.alliance_planets?(solar_system.id, alliance_ids),
-          alliance_ships:
-            metadatas.alliance_ships?(solar_system.id, alliance_ids),
-          # TODO: nap support
-          nap_planets: false,
-          nap_ships: false
-        )
-      }
-    end
-  end
-
-  # Determines if any of the _player_ids_ have visibility on SolarSystem
-  # _solar_system_id_.
-  #
-  # TODO: spec
-  def self.visible?(solar_system_id, player_ids)
-    typesig binding, Fixnum, [Fixnum, Array]
-    player_ids = Array(player_ids)
-
-    raise ArgumentError,
-      "Not all player ids were Fixnums: #{player_ids.inspect}" \
-      unless player_ids.all? { |id| id.is_a?(Fixnum) }
-
-    player_ids = "(#{player_ids.join(",")})"
-
-    row = without_locking do
-      SolarSystem.select("`galaxy_id`, `x`, `y`").
-        where(:id => solar_system_id).c_select_one
-    end
-
-    galaxy_id, x, y = row['galaxy_id'], row['x'], row['y']
-
-    connection.select_value(%Q{
-SELECT
-IF(
-  (SELECT 1
-    FROM `#{FowGalaxyEntry.table_name}`
-    WHERE `galaxy_id`=#{galaxy_id}
-      AND #{x} BETWEEN `x` and `x_end`
-      AND #{y} BETWEEN `y` AND `y_end`
-      AND `player_id` IN #{player_ids}
-    LIMIT 1
-  ) = 1,
-  1,
-IF(
-  (SELECT 1
-    FROM `#{SsObject.table_name}`
-    WHERE `solar_system_id`=#{solar_system_id} AND `player_id` IN #{player_ids}
-    LIMIT 1
-  ) = 1,
-  1,
-IF(
-  (SELECT 1
-    FROM `#{Unit.table_name}`
-    WHERE `player_id` IN #{player_ids}
-      AND `location_solar_system_id`=#{solar_system_id}
-    LIMIT 1
-  ) = 1,
-  1,
-IF(
-  (SELECT 1
-    FROM `#{Unit.table_name}`
-    WHERE `player_id` IN #{player_ids}
-      AND `location_ss_object_id` IN (
-        SELECT `id` FROM `#{SsObject.table_name}`
-          WHERE `solar_system_id`=#{solar_system_id}
-            AND `type`='#{SsObject::Planet.to_s.demodulize}'
-      )
-    LIMIT 1
-  ) = 1,
-  1,
-  0
-))))
-      }).to_i == 1
-  end
-
-  # Find and return visible solar system by _id_ which is visible for
-  # _player_. Raises ActiveRecord::RecordNotFound if solar system is not
-  # viewable.
-  def self.find_if_viewable_for(id, player)
-    raise ActiveRecord::RecordNotFound unless visible?(id, player.friendly_ids)
-
-    ss = SolarSystem.find(id)
-    raise ActiveRecord::RecordNotFound \
-      if ! ss.player_id.nil? && ss.player_id != player.id
-
-    ss
-  end
-
-  # Retrieves metadata for single solar system and player.
-  def self.metadata_for(id, player)
-    FowSsEntry.merge_metadata(
-      entries.find { |entry| entry.player_id == player.id },
-      # Try to find alliance entry if player is in alliance.
-      player.alliance_id \
-        ? entries.find { |entry| entry.alliance_id == player.alliance_id } \
-        : nil
-    )
-  end
-
-  # Returns player ids for those who can see this solar system.
-  def self.observer_player_ids(id)
-    FowSsEntry.observer_player_ids(id)
-  end
-
   def as_json(options=nil)
     {
       "id" => id,
@@ -414,5 +241,236 @@ IF(
     CallbackManager.register(solar_system, CallbackManager::EVENT_SPAWN, date)
 
     date
+  end
+
+  class << self
+    # Does _player_ see any wormhole?
+    #
+    # TODO: spec
+    def sees_wormhole?(player)
+      friendly_ids = player.friendly_ids
+      conditions = without_locking do
+        FowGalaxyEntry.where(player_id: friendly_ids).all
+      end.map { |fge| fge.rectangle.to_sql(player.galaxy_id) }.join(" OR ")
+
+      SolarSystem.where(conditions).where(kind: KIND_WORMHOLE).exists?
+    end
+
+    # Returns +Array+ of _player_ visible +SolarSystem+s with their metadata
+    # attached.
+    #
+    # Each array element is:
+    # {:solar_system => +SolarSystem+, :metadata => +SolarSystemMetadata+}
+    #
+    def visible_for(player)
+      friendly_ids = player.friendly_ids
+      alliance_ids = friendly_ids - [player.id]
+      conditions = []
+
+      # Solar systems covered by radars.
+      conditions += without_locking do
+        FowGalaxyEntry.where(player_id: friendly_ids).all
+      end.map { |fge| fge.rectangle.to_sql(player.galaxy_id) }
+
+      # Solar systems where players have units.
+      conditions += without_locking do
+        Unit.
+          select("DISTINCT(`location_solar_system_id`)").
+          where(player_id: friendly_ids).
+          where("`location_solar_system_id` IS NOT NULL").
+          c_select_values
+      end.map { |id| "`id`=#{id}" }
+
+      # Solar systems where players have planets or units inside +SsObject+s.
+      sso_ids = without_locking do
+        Unit.
+          select("DISTINCT(`location_ss_object_id`)").
+          where(player_id: friendly_ids).
+          where("`location_ss_object_id` IS NOT NULL").
+          c_select_values
+      end
+      conditions += without_locking do
+        SsObject::Planet.
+          select("DISTINCT(`solar_system_id`)").
+          where("`player_id` IN (?) OR `id` IN (?)", friendly_ids, sso_ids).
+          c_select_values
+      end.map { |id| "`id`=#{id}" }
+
+      conditions = conditions.join(" OR ")
+      solar_systems = SolarSystem.where(conditions).all
+
+      ss_ids = solar_systems.map(&:id)
+      metadatas = SolarSystem::Metadatas.new(ss_ids)
+
+      solar_systems.map do |solar_system|
+        {
+          solar_system: solar_system,
+          metadata: SolarSystemMetadata.existing(
+            solar_system.id,
+            player_planets: metadatas.player_planets?(solar_system.id, player.id),
+            player_ships: metadatas.player_ships?(solar_system.id, player.id),
+            enemy_planets:
+              metadatas.enemies_with_planets(solar_system.id, friendly_ids),
+            enemy_ships:
+              metadatas.enemies_with_ships(solar_system.id, friendly_ids),
+            alliance_planets:
+              metadatas.allies_with_planets(solar_system.id, alliance_ids),
+            alliance_ships:
+              metadatas.allies_with_ships(solar_system.id, alliance_ids),
+            # TODO: nap support
+            nap_planets: false,
+            nap_ships: false
+          )
+        }
+      end
+    end
+
+    # Determines if any of the _player_ids_ have visibility on SolarSystem
+    # _solar_system_id_.
+    #
+    # TODO: spec
+    def visible?(solar_system_id, player_ids)
+      typesig binding, Fixnum, [Fixnum, Array]
+      player_ids = Array(player_ids)
+
+      raise ArgumentError,
+        "Not all player ids were Fixnums: #{player_ids.inspect}" \
+        unless player_ids.all? { |id| id.is_a?(Fixnum) }
+
+      player_ids = "(#{player_ids.join(",")})"
+
+      row = without_locking do
+        SolarSystem.select("`galaxy_id`, `x`, `y`").
+          where(:id => solar_system_id).c_select_one
+      end
+
+      galaxy_id, x, y = row['galaxy_id'], row['x'], row['y']
+
+      connection.select_value(%Q{
+SELECT
+IF(
+  (SELECT 1
+    FROM `#{FowGalaxyEntry.table_name}`
+    WHERE `galaxy_id`=#{galaxy_id}
+      AND #{x} BETWEEN `x` and `x_end`
+      AND #{y} BETWEEN `y` AND `y_end`
+      AND `player_id` IN #{player_ids}
+    LIMIT 1
+  ) = 1,
+  1,
+IF(
+  (SELECT 1
+    FROM `#{SsObject.table_name}`
+    WHERE `solar_system_id`=#{solar_system_id} AND `player_id` IN #{player_ids}
+    LIMIT 1
+  ) = 1,
+  1,
+IF(
+  (SELECT 1
+    FROM `#{Unit.table_name}`
+    WHERE `player_id` IN #{player_ids}
+      AND `location_solar_system_id`=#{solar_system_id}
+    LIMIT 1
+  ) = 1,
+  1,
+IF(
+  (SELECT 1
+    FROM `#{Unit.table_name}`
+    WHERE `player_id` IN #{player_ids}
+      AND `location_ss_object_id` IN (
+        SELECT `id` FROM `#{SsObject.table_name}`
+          WHERE `solar_system_id`=#{solar_system_id}
+            AND `type`='#{SsObject::Planet.to_s.demodulize}'
+      )
+    LIMIT 1
+  ) = 1,
+  1,
+  0
+))))
+      }).to_i == 1
+    end
+
+    # Find and return visible solar system by _id_ which is visible for
+    # _player_. Raises ActiveRecord::RecordNotFound if solar system is not
+    # viewable.
+    def find_if_viewable_for(id, player)
+      raise ActiveRecord::RecordNotFound unless visible?(id, player.friendly_ids)
+
+      ss = SolarSystem.find(id)
+      raise ActiveRecord::RecordNotFound \
+        if ! ss.player_id.nil? && ss.player_id != player.id
+
+      ss
+    end
+
+    # Retrieves metadata for single solar system and player.
+    def metadata_for(id, player)
+      FowSsEntry.merge_metadata(
+        entries.find { |entry| entry.player_id == player.id },
+        # Try to find alliance entry if player is in alliance.
+        player.alliance_id \
+          ? entries.find { |entry| entry.alliance_id == player.alliance_id } \
+          : nil
+      )
+    end
+
+    # Returns player ids for those who can see this solar system.
+    #
+    # TODO: spec
+    def observer_player_ids(id)
+      solar_system = find(id)
+      if solar_system.main_battleground?
+        # This is a bit hacky. For speed purposes lets say that every player
+        # that has FGE sees at least one wormhole.
+        fge_condition = ""
+      else
+        fge_condition = %Q{
+          AND #{solar_system.x} BETWEEN `x` AND `x_end`
+          AND #{solar_system.y} BETWEEN `y` AND `y_end`
+        }
+      end
+
+      player_ids = connection.select_values(%Q{
+  SELECT DISTINCT(`player_id`)
+  FROM `#{FowGalaxyEntry.table_name}`
+  WHERE `galaxy_id`=#{solar_system.galaxy_id}
+    #{fge_condition}
+UNION
+  SELECT DISTINCT(`player_id`)
+  FROM `#{SsObject.table_name}`
+  WHERE `player_id` IS NOT NULL
+    AND `solar_system_id`=#{solar_system.id}
+UNION
+  SELECT DISTINCT(`player_id`)
+  FROM `#{Unit.table_name}`
+  WHERE `player_id` IS NOT NULL AND (
+    `location_solar_system_id`=#{solar_system.id}
+    OR `location_ss_object_id` IN (
+      SELECT `id` FROM `#{SsObject.table_name}`
+      WHERE `solar_system_id`=#{solar_system.id}
+    )
+  )
+      }).map(&:to_i)
+
+      Player.join_alliance_ids(player_ids)
+    end
+
+    def tracking_changes(solar_system_id, update_metadata=false)
+      typesig binding, Fixnum
+
+      previous_player_ids = observer_player_ids(solar_system_id)
+      ret_val = yield
+      current_player_ids = observer_player_ids(solar_system_id)
+
+      # Some changes occurred.
+      if previous_player_ids != current_player_ids
+        created = current_player_ids - previous_player_ids
+        destroyed = previous_player_ids - current_player_ids
+
+
+      end
+
+      ret_val
+    end
   end
 end

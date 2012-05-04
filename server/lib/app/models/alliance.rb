@@ -67,10 +67,23 @@ class Alliance < ActiveRecord::Base
     true
   end
 
+  # Returns alliance IDS for given players. Does not include nil.
+  # TODO: spec
+  def self.alliance_ids_for(player_ids)
+    Player.
+      select("DISTINCT(`alliance_id`)").
+      where(id: player_ids).
+      where("`alliance_id` IS NOT NULL").
+      c_select_values.map(&:to_i)
+  end
+
   # Returns +Array+ of +Player+ ids who are in _alliance_ids_.
   # _alliance_ids_ can be Array or Fixnum.
   def self.player_ids_for(alliance_ids)
-    Player.select("id").where(:alliance_id => alliance_ids).c_select_values.
+    Player.
+      select("`id`").
+      where(alliance_id: alliance_ids).
+      c_select_values.
       map(&:to_i)
   end
 
@@ -192,10 +205,8 @@ class Alliance < ActiveRecord::Base
     player.alliance_vps = 0
     player.save!
 
-    # Add solar systems visible to player to alliance visibility pool.
-    # Order matters here, because galaxy entry dispatches event.
-    FowSsEntry.assimilate_player(self, player)
-    FowGalaxyEntry.assimilate_player(self, player)
+    # Update galaxy map for players.
+    FowGalaxyEntry.dispatch_changed(player, self)
 
     # Dispatch that this player joined the alliance, unless he is owner
     # of that alliance.
@@ -220,10 +231,8 @@ class Alliance < ActiveRecord::Base
     player.alliance = nil
     player.save!
 
-    # Remove players visibility pool from alliance pool.
-    # Order matters here, because galaxy entry dispatches event.
-    FowSsEntry.throw_out_player(self, player)
-    FowGalaxyEntry.throw_out_player(self, player)
+    # Update galaxy map for players.
+    FowGalaxyEntry.dispatch_changed(player, self)
 
     ControlManager.instance.player_left_alliance(player, self) \
       unless galaxy.dev?

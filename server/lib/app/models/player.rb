@@ -28,6 +28,8 @@ class Player < ActiveRecord::Base
   # FK :dependent => :delete_all
   has_many :notifications
   # FK :dependent => :delete_all
+  has_many :routes
+  # FK :dependent => :delete_all
   has_many :quest_progresses
   has_many :started_quests,
     :class_name => "Quest",
@@ -67,8 +69,6 @@ class Player < ActiveRecord::Base
     # For defensive portals - skip ally planets when transferring. Don't send
     # units to ally planets or receive units from them.
     4 => :portal_without_allies,
-    # This player has been detached from galaxy map.
-    5 => :detached,
     # This player is a chat moderator.
     6 => :chat_mod,
     # This is a trial user who hasn't been registered permanently.
@@ -563,7 +563,7 @@ class Player < ActiveRecord::Base
   # Can this players home solar system be moved?
   def relocatable?
     return false unless alliance_id.nil?
-    return false if Route.where(:player_id => id).exists?
+    return false if routes.exists?
 
     home_ss_id = SolarSystem.select("id").where(:player_id => id).c_select_value
     raise "Home solar system could not be found for #{self}!" if home_ss_id.nil?
@@ -695,4 +695,11 @@ class Player < ActiveRecord::Base
 
   VIP_STOP_SCOPE = DScope.world
   def self.vip_stop_callback(player); player.vip_stop!; end
+
+  # Given _player_ids_ join their ally ids to the array.
+  # TODO: spec
+  def self.join_alliance_ids(player_ids)
+    alliance_ids = Alliance.alliance_ids_for(player_ids)
+    player_ids | Alliance.player_ids_for(alliance_ids)
+  end
 end

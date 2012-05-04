@@ -3,6 +3,8 @@ class SolarSystem::Metadatas
   def initialize(solar_system_ids)
     solar_system_ids = Array(solar_system_ids)
 
+    player_ids = Set.new
+
     @sso_metas = without_locking do
       SsObject.
         select("`solar_system_id`, `player_id`").
@@ -12,6 +14,7 @@ class SolarSystem::Metadatas
     end.each_with_object({}) do |row, hash|
       hash[row['solar_system_id']] ||= Set.new
       hash[row['solar_system_id']].add row['player_id']
+      player_ids.add row['player_id']
     end
 
     @unit_metas = without_locking do
@@ -23,33 +26,49 @@ class SolarSystem::Metadatas
     end.each_with_object({}) do |row, hash|
       hash[row['location_solar_system_id']] ||= Set.new
       hash[row['location_solar_system_id']].add row['player_id']
+      player_ids.add row['player_id']
     end
+
+    @players = Player.minimal_from_ids(player_ids.to_a)
   end
 
   def player_planets?(solar_system_id, player_id)
-    @sso_metas[solar_system_id].try(:include?, player_id)
+    player?(@sso_metas, solar_system_id, player_id)
   end
 
   def player_ships?(solar_system_id, player_id)
-    @unit_metas[solar_system_id].try(:include?, player_id)
+    player?(@unit_metas, solar_system_id, player_id)
   end
 
-  def enemy_planets?(solar_system_id, friendly_ids)
-    ! Set.new(friendly_ids).superset?(@sso_metas[solar_system_id] || Set.new)
+  def enemies_with_planets(solar_system_id, friendly_ids)
+    enemies(@sso_metas, solar_system_id, friendly_ids)
   end
 
-  def enemy_ships?(solar_system_id, friendly_ids)
-    check_ss_id!(solar_system_id)
-    ! Set.new(friendly_ids).superset?(@unit_metas[solar_system_id] || Set.new)
+  def enemies_with_ships(solar_system_id, friendly_ids)
+    enemies(@unit_metas, solar_system_id, friendly_ids)
   end
 
-  def alliance_planets?(solar_system_id, alliance_ids)
-    check_ss_id!(solar_system_id)
-    alliance_ids.any? { |id| @sso_metas[solar_system_id].try(:include?, id) }
+  def allies_with_planets(solar_system_id, alliance_ids)
+    alliance(@sso_metas, solar_system_id, alliance_ids)
   end
 
-  def alliance_ships?(solar_system_id, alliance_ids)
-    check_ss_id!(solar_system_id)
-    alliance_ids.any? { |id| @unit_metas[solar_system_id].try(:include?, id) }
+  def allies_with_ships(solar_system_id, alliance_ids)
+    alliance(@unit_metas, solar_system_id, alliance_ids)
+  end
+
+private
+
+  def player?(storage, solar_system_id, player_id)
+    storage[solar_system_id].try(:include?, player_id)
+  end
+
+  def enemies(storage, solar_system_id, friendly_ids)
+    all_players = storage[solar_system_id] || Set.new
+    (all_players - friendly_ids).map { |enemy_id| @players[enemy_id] }
+  end
+
+  def alliance(storage, solar_system_id, alliance_ids)
+    all_players = storage[solar_system_id] || Set.new
+    (all_players & alliance_ids).map { |ally_id| @players[ally_id] }
   end
 end

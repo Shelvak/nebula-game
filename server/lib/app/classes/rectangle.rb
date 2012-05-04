@@ -36,8 +36,8 @@ class Rectangle
     @x * 7 + @y * 7 + @x_end * 7 + @y_end * 13
   end
 
-  def to_sql(galaxy_id)
-    "(`galaxy_id`=#{galaxy_id.to_i} AND  `x` BETWEEN #{@x} AND #{@x_end
+  def to_sql(galaxy_id, prefix="")
+    "(`galaxy_id`=#{galaxy_id.to_i} AND `x` BETWEEN #{@x} AND #{@x_end
       } AND `y` BETWEEN #{@y} AND #{@y_end})"
   end
 
