@@ -237,7 +237,7 @@ class Cfg
     end
 
     def combat_log_expiration_time
-      notification_expiration_time * 4
+      notification_expiration_time
     end
 
     ### raiding.yml ###
