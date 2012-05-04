@@ -206,38 +206,51 @@ describe SsObject::Planet::OwnerChangeHandler do
 
   describe "alive units" do
     before(:each) do
-      @unit = Factory.create(:unit, :player => @old, :location => @planet)
+      @transporter = Factory.create(:u_mule, player: @old, location: @planet)
+      @units = [
+        @transporter,
+        # Unit inside transporter.
+        Factory.create(:unit, player: @old, location: @transporter)
+      ]
     end
 
     it "should not change player if it didn't belong to old user" do
-      @unit.player = Factory.create(:player)
-      @unit.save!
+      @units.each do |unit|
+        unit.player = Factory.create(:player)
+        unit.save!
+      end
 
-      @handler.handle!
+      player = lambda do
+        @units.map { |u| u.reload.player }
+      end
+
       lambda do
-        @unit.reload
-      end.should_not change(@unit, :player)
+        @handler.handle!
+      end.should_not change(player, :call)
     end
 
     it "should change player id" do
-      @handler.handle!
+      player = lambda do
+        @units.map { |u| u.reload.player }.uniq
+      end
+
       lambda do
-        @unit.reload
-      end.should change(@unit, :player).from(@old).to(@new)
+        @handler.handle!
+      end.should change(player, :call).from([@old]).to([@new])
     end
 
     it "should take population from old player" do
       lambda do
         @handler.handle!
         @old.reload
-      end.should change(@old, :population).by(- @unit.population)
+      end.should change(@old, :population).by(- @units.map(&:population).sum)
     end
 
     it "should give population to new player" do
       lambda do
         @handler.handle!
         @new.reload
-      end.should change(@new, :population).by(@unit.population)
+      end.should change(@new, :population).by(@units.map(&:population).sum)
     end
 
     it "should call transfer fow ss entries for space units" do
@@ -246,13 +259,14 @@ describe SsObject::Planet::OwnerChangeHandler do
       Factory.create!(:u_scorpion, :player => @old, :location => @planet)
 
       FowSsEntry.should_receive(:change_planet_owner).with(
-        @planet, @old, @new, 3 # 2 crows + 1 for planet
+        @planet, @old, @new, 4 # 1 mule + 2 crows + 1 for planet
       )
       @handler.handle!
     end
 
     it "should dispatch changed event" do
-      should_fire_event([@unit], EventBroker::CHANGED) do
+      # No changed for units inside transporter.
+      should_fire_event([@transporter], EventBroker::CHANGED) do
         @handler.handle!
       end
     end
