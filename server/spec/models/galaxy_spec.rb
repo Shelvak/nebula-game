@@ -1,6 +1,19 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Galaxy do
+  describe "#wormhole_count" do
+    it "should calculate wormholes in this galaxy" do
+      galaxy = Factory.create(:galaxy)
+      wormholes = [
+        Factory.create(:wormhole, galaxy: galaxy, x: 0),
+        Factory.create(:wormhole, galaxy: galaxy, x: 1),
+        Factory.create(:solar_system, galaxy: galaxy, x: 3),
+        Factory.create(:wormhole, x: 1),
+      ]
+      galaxy.wormhole_count.should == 2
+    end
+  end
+
   describe ".battleground_id" do
     it "should return battleground id" do
       # other battleground in other galaxy.
@@ -115,6 +128,10 @@ describe Galaxy do
     let(:galaxy) { Factory.create(:galaxy) }
 
     describe ".spawn_callback" do
+      before(:each) do
+        galaxy.should_receive(:wormhole_count).and_return(5)
+      end
+
       it "should call #spawn_convoy!" do
         galaxy.should_receive(:spawn_convoy!)
         Galaxy.spawn_callback(galaxy)
@@ -122,8 +139,10 @@ describe Galaxy do
       
       it "should register callback" do
         Galaxy.spawn_callback(galaxy)
-        galaxy.should have_callback(CallbackManager::EVENT_SPAWN,
-          CONFIG.evalproperty('galaxy.convoy.time').from_now)
+        galaxy.should have_callback(
+          CallbackManager::EVENT_SPAWN,
+          Cfg.next_convoy_time(5)
+        )
       end
     end
   

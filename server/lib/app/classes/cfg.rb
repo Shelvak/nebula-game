@@ -143,8 +143,12 @@ class Cfg
       CONFIG.evalproperty('galaxy.apocalypse.survival_bonus', 'days' => death_day)
     end
 
-    def next_convoy_time
-      CONFIG.evalproperty('galaxy.convoy.time').from_now
+    def next_convoy_time(wormholes)
+      typesig binding, Fixnum
+
+      CONFIG.evalproperty(
+        'galaxy.convoy.time', 'wormholes' => wormholes
+      ).from_now
     end
 
     def convoy_speed_modifier

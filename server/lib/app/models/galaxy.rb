@@ -21,6 +21,11 @@ class Galaxy < ActiveRecord::Base
   # development galaxies.
   def dev?; Cfg.development_galaxy?(ruleset); end
 
+  # Returns number of wormholes in this galaxy.
+  def wormhole_count
+    solar_systems.where(kind: SolarSystem::KIND_WORMHOLE).count
+  end
+
   # Returns ID of battleground solar system.
   def self.battleground_id(galaxy_id)
     SolarSystem.select("id").
@@ -84,7 +89,8 @@ class Galaxy < ActiveRecord::Base
   def self.spawn_callback(galaxy)
     galaxy.spawn_convoy!
     CallbackManager.register(
-      galaxy, CallbackManager::EVENT_SPAWN, Cfg.next_convoy_time
+      galaxy, CallbackManager::EVENT_SPAWN,
+      Cfg.next_convoy_time(galaxy.wormhole_count)
     )
   end
 
