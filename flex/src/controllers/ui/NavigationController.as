@@ -229,8 +229,9 @@ package controllers.ui
 
       private function this_mapLoadHandler(event: MapLoadEvent): void {
          if (_mapLoadHandler != null) {
-            _mapLoadHandler.call(null, event);
+            const handler: Function = _mapLoadHandler;
             _mapLoadHandler = null;
+            handler.call(null, event);
          }
       }
       

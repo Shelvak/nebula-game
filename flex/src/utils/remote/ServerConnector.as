@@ -10,7 +10,9 @@ package utils.remote
    import flash.events.IOErrorEvent;
    import flash.events.ProgressEvent;
    import flash.events.SecurityErrorEvent;
+   import flash.events.TimerEvent;
    import flash.net.Socket;
+   import flash.utils.Timer;
 
    import mx.logging.ILogger;
    import mx.logging.Log;
@@ -107,6 +109,7 @@ package utils.remote
          _buffer = "";
          _connecting = false;
          dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_ESTABLISHED);
+         startPingTimer();
       }
 
       private function socket_closeHandler(event: Event): void {
@@ -115,6 +118,7 @@ package utils.remote
          if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
             dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST)
          }
+         killPingTimer();
       }
       
       /**
@@ -127,10 +131,13 @@ package utils.remote
          var index: int = _buffer.indexOf("\n");
          while (index != -1) {
             const msg: String = _buffer.substring(0, index);
-            msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
-            const rmo: ServerRMO = ServerRMO.parse(msg);
-            _timeSynchronizer.synchronize(rmo);
-            _unprocessedMessages.push(rmo);
+            if (!isPong(msg))
+            {
+               msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
+               const rmo: ServerRMO = ServerRMO.parse(msg);
+               _timeSynchronizer.synchronize(rmo);
+               _unprocessedMessages.push(rmo);
+            }
             _buffer = _buffer.substr(index + 1);
             index = _buffer.indexOf("\n");
          }
@@ -174,6 +181,7 @@ package utils.remote
 
       public function disconnect(): void {
          _connecting = false;
+         killPingTimer();
          // the method might be called event if the socket is not open
          try {
             _socket.close();
@@ -186,6 +194,50 @@ package utils.remote
       public function reset(): void {
          _timeSynchronizer.reset();
          getUnprocessedMessages();
+      }
+
+      private static const SEND_PING_EVERY: int = 5000;
+
+      private var pingTimer: Timer;
+
+      private function startPingTimer(): void
+      {
+//         TODO: this keep alive thing failed, need to figure out something better
+//         if (pingTimer == null)
+//         {
+//            pingTimer = new Timer(SEND_PING_EVERY);
+//            pingTimer.addEventListener(TimerEvent.TIMER, ping);
+//            pingTimer.start();
+//         }
+      }
+
+      private function killPingTimer(): void
+      {
+         if (pingTimer != null)
+         {
+            pingTimer.removeEventListener(TimerEvent.TIMER, ping);
+            pingTimer.stop();
+            pingTimer = null;
+         }
+      }
+
+      private function ping(e: TimerEvent): void
+      {
+         if (_socket.connected) {
+            _socket.writeUTFBytes('?\n');
+         }
+      }
+
+      private function isPong(msg: String): Boolean
+      {
+         if (msg == '!')
+         {
+            return true;
+         }
+         else
+         {
+            return false;
+         }
       }
 
       public function sendMessage(rmo: ClientRMO): void {

@@ -91,7 +91,7 @@ module Dev
 
       player = Player.find(player_id)
       SpaceMule.instance.create_players(player.galaxy_id,
-        player.galaxy.ruleset, players)
+        player.galaxy.ruleset, players, player.trial)
 
       players.keys
     end

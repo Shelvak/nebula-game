@@ -1,5 +1,7 @@
 package controllers.galaxies.actions
 {
+   import com.developmentarc.core.utils.EventBroker;
+
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.planets.PlanetsCommand;
@@ -22,6 +24,7 @@ package controllers.galaxies.actions
    import models.movement.MHop;
    import models.player.PlayerOptions;
    import models.quest.MMainQuestLine;
+   import models.solarsystem.MSSObject;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
    import models.solarsystem.MSolarSystem;
@@ -69,6 +72,17 @@ package controllers.galaxies.actions
       
       public function ShowAction() {
          super();
+         EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
+      }
+
+      private var _restoreView: Boolean = false;
+      private var _restorePlanet: int = 0;
+      private var _restoreSS: int = 0;
+
+      private function global_appResetHandler(event: GlobalEvent): void {
+         _restorePlanet = ML.latestPlanet != null ? ML.latestPlanet.id : 0;
+         _restoreSS = ML.latestSSMap != null ? ML.latestSSMap.id : 0;
+         _restoreView = _restorePlanet != 0 || _restoreSS != 0;
       }
 
       public override function applyServerAction(cmd: CommunicationCommand): void {
@@ -118,15 +132,38 @@ package controllers.galaxies.actions
          else {
             // If player has set openFirstPlanet parameter and has any planet
             // we open first planet
-            const deepOpen:Boolean =
-               (ML.player.planets.length > 0
-                  && PlayerOptions.openFirstPlanetAfterLogin);
+            const deepOpen: Boolean =
+                     _restorePlanet
+                        || (ML.player.planets.length > 0
+                               && PlayerOptions.openFirstPlanetAfterLogin);
             if (deepOpen) {
                NAV_CTRL.toGalaxy(galaxy,
                   function() : void {
                      new GlobalEvent(GlobalEvent.APP_READY);
-                     moveToHomeSS(galaxy);
-                     NAV_CTRL.toPlanet(MSSObject(ML.player.planets.getItemAt(0)));
+                     if (_restoreView) {
+                        if (_restoreSS != 0) {
+                           moveToSS(galaxy, _restoreSS);
+                           NAV_CTRL.toSolarSystem(
+                              _restoreSS,
+                              function (): void {
+                                 if (_restorePlanet != 0) {
+                                    const p: MSSObject =
+                                             ML.latestSSMap.getSSObjectById(
+                                                _restorePlanet
+                                             );
+                                    if (p != null) {
+                                       NAV_CTRL.toPlanet(p);
+                                    }
+                                 }
+                              }
+                           );
+                        }
+                        _restoreView = false;
+                     }
+                     else {
+                        moveToHomeSS(galaxy);
+                        NAV_CTRL.toPlanet(MSSObject(ML.player.planets.getItemAt(0)));
+                     }
                   }
                );
             }
@@ -197,6 +234,11 @@ package controllers.galaxies.actions
                return ss.player != null && ss.player.equals(ML.player);
             }
          );
+         moveToSS(galaxy, ss.id);
+      }
+
+      private function moveToSS(galaxy: Galaxy, id: int): void {
+         const ss: MSolarSystem = galaxy.getSSById(id);
          if (ss != null) {
             galaxy.moveToLocation(ss.currentLocation, true);
          }
