@@ -146,7 +146,8 @@ class BulkSql
       # Generate thread-local temporary table.
       tmp_table_name = "#{table_name}_bulk_#{
         Thread.current.object_id.to_s(36)}_#{
-        (Time.now.to_f * 1000).to_i.to_s(36)}"
+        (Time.now.to_f * 1000).to_i.to_s(36)}_#{
+        rand(10000).to_s(36)}"
 
       begin
         # Create temporary table from original table definition and changed
@@ -154,6 +155,8 @@ class BulkSql
         create_table = connection.
           select_one("SHOW CREATE TABLE `#{table_name}`")["Create Table"]
 
+        # No need to drop it explicitly after, because mysql drops temporary
+        # tables when connection is closed anyhow.
         create_tmp_table = "CREATE TEMPORARY TABLE `#{tmp_table_name}` (\n"
         columns.each do |column|
           match = create_table.match(/^(\s+`#{column}`.*)$/)
@@ -181,9 +184,6 @@ class BulkSql
           SET #{set_str}
         }
         connection.execute(update_sql)
-      ensure
-        # Drop temporary table.
-        connection.execute("DROP TEMPORARY TABLE `#{tmp_table_name}`")
       end
     end
 
