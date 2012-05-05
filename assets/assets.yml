@@ -1190,6 +1190,8 @@ assets:
         OreTile.jpg:                Tutorial_OreTile.jpg
         BgBattles.jpg: Lt_tutorial_BgBattles.jpg
         BossShip.jpg: Lt_tutorial_BossShip.jpg
+        ClaimReward.jpg:         ClaimReward.jpg
+        ClaimRewardRC.jpg:         ClaimRewardRC.jpg
         EcoTier2.jpg: Lt_tutorial_EcoTier2.jpg
         GalaxyBattles.jpg: Lt_tutorial_GalaxyBattles.jpg
         Pulsars.jpg: Lt_tutorial_Pulsars.jpg
@@ -1198,10 +1200,6 @@ assets:
         ZetiumTile.jpg: Lt_tutorial_ZetiumTile.jpg
         lt_BuildingSidebar.jpg:     Lt_tutorial_BuildingSidebar.jpg
         en_BuildingSidebar.jpg:     En_tutorial_BuildingSidebar.jpg
-        lt_ClaimReward.jpg:         Lt_tutorial_ClaimReward.jpg
-        en_ClaimReward.jpg:         En_tutorial_ClaimReward.jpg
-        lt_ClaimRewardRC.jpg:         Lt_tutorial_ClaimRewardRC.jpg
-        en_ClaimRewardRC.jpg:         En_tutorial_ClaimRewardRC.jpg
         lt_ArmorTiles.jpg: Lt_tutorial_ArmorTiles.jpg
         en_ArmorTiles.jpg: En_tutorial_ArmorTiles.jpg
         lt_AttackButton.jpg: Lt_tutorial_AttackButton.jpg
