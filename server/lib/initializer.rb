@@ -198,7 +198,7 @@ end
 
 # Global constants related to server tweaking
 WORKERS_CHAT = 1
-WORKERS_WORLD = 1
+WORKERS_WORLD = (Celluloid.cores || 1) + 1
 # Connections:
 # - callback manager
 # - workers

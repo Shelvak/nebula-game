@@ -19,8 +19,8 @@ class PlayersController < GenericController
   LOGIN_SCOPE = scope.world
   def self.login_action(m)
     if ClientVersion.ok?(m.params['version'])
-      player = Player.find(m.params['server_player_id'])
-      if player.galaxy.dev? || ControlManager.instance.
+      player = without_locking { Player.find(m.params['server_player_id']) }
+      if without_locking { player.galaxy.dev? } || ControlManager.instance.
           login_authorized?(player, m.params['web_player_id'])
         login m, player
 

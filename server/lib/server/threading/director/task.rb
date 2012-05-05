@@ -45,7 +45,8 @@ class Threading::Director::Task
           yield
         end
       end
-    rescue ActiveRecord::StatementInvalid, ActiveRecord::JDBCError => e
+    rescue ActiveRecord::StatementInvalid, ActiveRecord::JDBCError,
+        Java::java.sql.SQLException => e
       if current_retry >= INFO_FROM_RETRY
         innodb_info = ActiveRecord::Base.connection.
           select_one("SHOW ENGINE INNODB STATUS")["Status"]
