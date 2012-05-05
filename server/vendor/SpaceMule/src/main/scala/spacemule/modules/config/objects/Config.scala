@@ -163,7 +163,9 @@ object Config {
     positions("galaxy.free_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")
   lazy val miniBattlegrounds = positions("galaxy.mini_battlegrounds.positions")
-  def convoyTime = formulaEval("galaxy.convoy.time").toInt
+  def convoyTime = formulaEval(
+    "galaxy.convoy.time", Map("wormholes" -> 2.0)
+  ).toInt
   def marketBotResourceCooldownRange = 
     evalRange("market.bot.resources.cooldown")
   def marketBotRandomResourceCooldown = marketBotResourceCooldownRange.random

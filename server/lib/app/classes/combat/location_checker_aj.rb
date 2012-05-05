@@ -5,8 +5,9 @@ class Combat::LocationCheckerAj < Combat::LocationChecker
     protected
     # Create cooldown for a short time before actual battle will begin.
     def on_conflict(location_point, check_report)
-      Cooldown.create_unless_exists(location_point, 
-        CONFIG['combat.cooldown.after_jump.duration'].from_now)
+      Cooldown.create_unless_exists(
+        location_point, Cfg.after_jump_cooldown
+      )
       
       # No combat means no assets.
       nil
