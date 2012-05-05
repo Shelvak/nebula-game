@@ -1,6 +1,3 @@
-require 'jruby'
-ActiveRecord::Base.connection_pool.extend JRuby::Synchronized
-
 # Monkey-patches for YAML.
 module YAML
   class << self
