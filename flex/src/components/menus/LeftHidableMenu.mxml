@@ -133,12 +133,12 @@
          click="showDailyBonus()"/>
       <announcement:AnnouncementButton id="announcementButton"/>
       <s:Button
-         skinClass="components.skins.QuestScreenButtonSkin"
-         visible="{ML.quests.currentTotal > 0}"
-         click="questButton_click(event)"/>
-      <s:Button
         skinClass="components.skins.MainQuestButtonSkin"
         id="btnTutorial" label="Tutorial" visible="{MQL.showButton}"
         click="btnTutorial_clickHandler(event)"/>
+      <s:Button
+         skinClass="components.skins.QuestScreenButtonSkin"
+         visible="{ML.quests.currentTotal > 0}"
+         click="questButton_click(event)"/>
    </base:AdvancedContainer>
 </s:Group>
