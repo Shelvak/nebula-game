@@ -57,23 +57,26 @@ class Threading::Director::Task
         log_method = :info
       end
 
-      if DEADLOCK_ERRORS.find { |err| e.message.include?(err) } &&
-          current_retry < MAX_RETRIES
-        current_retry += 1
+      if DEADLOCK_ERRORS.any? { |err| e.message.include?(err) }
+        if current_retry < MAX_RETRIES
+          current_retry += 1
 
-        sleep_for = SLEEP_RANGE.random_element / 1000.0
-        LOGGER.send(
-          log_method,
-          %Q{Deadlock occurred for #{log_object}, retry #{current_retry
-          }, retrying again in #{sleep_for}s: #{e.message}#{status_line}},
-          worker_name
-        )
-        sleep sleep_for
-        retry
+          sleep_for = SLEEP_RANGE.random_element / 1000.0
+          LOGGER.send(
+            log_method,
+            %Q{Deadlock occurred for #{log_object}, retry #{current_retry
+            }, retrying again in #{sleep_for}s: #{e.message}#{status_line}},
+            worker_name
+          )
+          sleep sleep_for
+          retry
+        else
+          raise e.class,
+            "Deadlock unresolvable after #{MAX_RETRIES} retries for #{log_object
+              }: #{e.message}#{status_line}"
+        end
       else
-        raise e.class,
-          "Deadlock unresolvable after #{MAX_RETRIES} retries for #{log_object
-            }: #{e.message}#{status_line}"
+        raise e
       end
     end
   end

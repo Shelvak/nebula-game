@@ -196,13 +196,12 @@ Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*')].each do |plugin_dir|
   require plugin
 end
 
-# Global constants related to server tweaking
-WORKERS_CHAT = 1
-WORKERS_WORLD = (Celluloid.cores || 1) + 1
+# Dispatcher directors.
+DIRECTORS = {chat: 1, world: 1, slow: 1}
 # Connections:
 # - callback manager
 # - workers
-DB_POOL_SIZE = WORKERS_CHAT + WORKERS_WORLD + 1
+DB_POOL_SIZE = DIRECTORS.values.sum + 1
 
 ENV['db_environment'] ||= App.env
 ENV['configuration'] ||= App.env

@@ -33,10 +33,9 @@ class Dispatcher
 
   # Initialize the dispatcher.
   def initialize
-    @directors = {
-      :chat => Threading::Director.new_link("chat", WORKERS_CHAT),
-      :world => Threading::Director.new_link("world", WORKERS_WORLD),
-    }
+    @directors = DIRECTORS.each_with_object({}) do |(name, workers), hash|
+      hash[name] = Threading::Director.new_link(name.to_s, workers)
+    end
 
     @client_to_player = {}
     @player_id_to_client = {}

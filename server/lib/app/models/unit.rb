@@ -177,10 +177,9 @@ class Unit < ActiveRecord::Base
         self.xp -= xp_needed
         self.level += 1
       else
-        raise GameLogicError.new(
-          "#{xp_needed} xp was required to upgrade, but only #{xp
-            } provided!"
-        )
+        raise GameLogicError,
+          "#{xp_needed} xp was required to upgrade from level #{level} to #{
+          level + 1}, but only #{xp} provided for #{self}!"
       end
     end
   end
@@ -245,7 +244,7 @@ class Unit < ActiveRecord::Base
       end
 
       # If the unit was just built check its location for combat.
-      Combat::LocationChecker.check_location(location) if can_fight?
+      Combat::LocationCheckerAj.check_location(location) if can_fight?
     end
   end
 
@@ -620,7 +619,7 @@ class Unit < ActiveRecord::Base
       save_all_units(units, nil, EventBroker::CREATED)
       # Use units[0].location because location can be planet and
       # LocationChecker expects LocationPoint.
-      Combat::LocationChecker.check_location(units[0].location) \
+      Combat::LocationCheckerAj.check_location(units[0].location) \
         unless units.find(&:can_fight?).nil?
 
       units

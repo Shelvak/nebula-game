@@ -2,6 +2,7 @@
 class Dispatcher::Scope
   CHAT   = :chat
   WORLD  = :world
+  SLOW   = :slow
 
   attr_reader :name
 
@@ -14,14 +15,16 @@ class Dispatcher::Scope
   end
 
   class << self
-    # This work only involves chat.
     def chat
       new(CHAT)
     end
 
-    # This work only game world.
     def world
       new(WORLD)
+    end
+
+    def slow
+      new(SLOW)
     end
   end
 end
