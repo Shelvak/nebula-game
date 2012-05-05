@@ -381,9 +381,14 @@ module Parts::Constructor
       # We might not need to finish constructable if it was cancelled.
       if finish_constructable
         constructable = self.constructable
-        before_finishing_constructable(constructable)
-        # Call #on_upgrade_finished! because we have no callback registered.
-        constructable.send(:on_upgrade_finished!)
+        if constructable.nil?
+          # TODO: actually find out why this shit is happening.
+          LOGGER.info("Whoa, constructable is nil\n\nfor #{self.inspect}!")
+        else
+          before_finishing_constructable(constructable)
+          # Call #on_upgrade_finished! because we have no callback registered.
+          constructable.send(:on_upgrade_finished!)
+        end
       end
 
       begin

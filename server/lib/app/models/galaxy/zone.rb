@@ -220,7 +220,7 @@ ORDER BY points_diff, quarter, slot
 
     if rows.blank?
       if include_non_home_ss
-        raise RuntimeError.new("No solar systems found for galaxy #{galaxy_id}")
+        raise RuntimeError, "No solar systems found for galaxy #{galaxy_id}"
       else
         list_for(galaxy_id, target_points, true)
       end
