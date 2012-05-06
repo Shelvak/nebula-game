@@ -41,7 +41,7 @@ object SpaceMule extends Build {
         name                := "SpaceMule",
         organization        := "com.tinylabproductions",
         version             := "1.0",
-        scalaVersion        := "2.9.1",
+        scalaVersion        := "2.9.2",
         scalacOptions       := Seq("-deprecation"),
         autoCompilerPlugins := true,
         resolvers           := Seq(
@@ -66,10 +66,10 @@ object SpaceMule extends Build {
           // Scala libraries
 
           // Converting between Java and Scala collections
-          "org.scalaj" %% "scalaj-collection" % "1.2",
+          "org.scalaj" % "scalaj-collection_2.9.1" % "1.2",
           // String interpolation
           compilerPlugin(
-            "net.virtualvoid" %% "scala-enhanced-strings" % "0.5.2"
+            "net.virtualvoid" % "scala-enhanced-strings_2.9.1" % "0.5.2"
           )
         ),
         distTask

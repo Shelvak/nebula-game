@@ -7,8 +7,9 @@ import spacemule.helpers.BenchmarkableMock
 import spacemule.modules.pmg.objects.solar_systems.Battleground
 import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.config.objects.Config
-import java.util.{Calendar, Date}
-import spacemule.persistence.{ReferableRow, DB}
+import java.util.Date
+import spacemule.persistence.DB
+import spacemule.logging.Log
 
 object Runner extends BenchmarkableMock {
   /**
@@ -60,14 +61,14 @@ object Runner extends BenchmarkableMock {
   ): SaveResult = {
     val galaxy = new Galaxy(galaxyId, ruleset)
 
-    benchmark("load galaxy") { () => Manager.load(galaxy) }
+    Log.block("load galaxy") { () => Manager.load(galaxy) }
 
     players.foreach { case(webUserId, name) =>
       val player = Player(name, webUserId)
-      benchmark("create player") { () => galaxy.createZoneFor(player) }
+      Log.block("create player") { () => galaxy.createZoneFor(player) }
     }
 
-    val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
+    val result = Log.block("save galaxy") { () => Manager.save(galaxy) }
     printBenchmarkResults()
 
     result

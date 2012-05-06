@@ -23,17 +23,16 @@ class Logging::Writer
   LEVEL_ERROR = 1
   LEVEL_WARN = 2
   LEVEL_INFO = 3
-  LEVEL_TRAFFIC_DEBUG = 4
-  LEVEL_DEBUG = 5
+  LEVEL_DEBUG = 4
 
   TYPE_TO_LEVEL = {
     :fatal => LEVEL_FATAL,
     :error => LEVEL_ERROR,
     :warn => LEVEL_WARN,
     :info => LEVEL_INFO,
-    :traffic_debug => LEVEL_TRAFFIC_DEBUG,
     :debug => LEVEL_DEBUG
   }
+  LEVEL_TO_TYPE = TYPE_TO_LEVEL.flip
 
   attr_reader :level
   def level=(value)
