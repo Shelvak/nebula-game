@@ -66,8 +66,6 @@ object SpaceMule extends Build {
 
           // Scala libraries
 
-          // Converting between Java and Scala collections
-          "org.scalaj" % "scalaj-collection_2.9.1" % "1.2",
           // String interpolation
           compilerPlugin(
             "net.virtualvoid" % "scala-enhanced-strings_2.9.1" % "0.5.2"
