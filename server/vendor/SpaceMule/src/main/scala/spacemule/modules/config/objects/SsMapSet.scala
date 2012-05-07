@@ -1,6 +1,8 @@
 package spacemule.modules.config.objects
 
 import spacemule.helpers.Converters._
+import spacemule.helpers.JRuby._
+import org.jruby.runtime.builtin.IRubyObject
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,18 +13,18 @@ import spacemule.helpers.Converters._
  */
 
 object SsMapSet {
-  def extract(data: Any) = {
-    val (configs, weights) = data.asInstanceOf[
-      Seq[Map[String, Any]]
-    ].foldLeft(
+  def extract(data: SRArray) = {
+    val (configs, weights) = data.foldLeft(
       (IndexedSeq.empty[SsConfig.Data], Seq.empty[Int])
-    ) { case ((cfgs, wghts), map) =>
-      val weight = map.get("weight") match {
-        case Some(long: Long) => long.toInt
+    ) { case ((cfgs, wghts), rbMap) =>
+      val map = rbMap.asMap
+
+      val weight = map.by("weight") match {
+        case Some(obj: IRubyObject) => obj.asInt
         case None => sys.error("No 'weight' for %s".format(map))
       }
-      val config = map.get("map") match {
-        case Some(data: Map[String, SsConfig.CfgMap]) => SsConfig(data)
+      val config = map.by("map") match {
+        case Some(data: IRubyObject) => SsConfig(data.asMap)
         case None => sys.error("No 'map' for %s".format(map))
       }
       

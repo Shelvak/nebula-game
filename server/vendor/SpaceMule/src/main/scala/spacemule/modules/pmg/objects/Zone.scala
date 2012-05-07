@@ -8,6 +8,7 @@ import spacemule.modules.pmg.objects
 import util.Random
 import collection.mutable.HashMap
 import java.lang.IllegalStateException
+import spacemule.logging.Log
 
 /**
  * Created by IntelliJ IDEA.
@@ -117,7 +118,9 @@ class Zone(_x: Int, _y: Int, val diameter: Int) extends WithCoords {
     }
 
     solarSystems(coords) = Zone.SolarSystem.New(solarSystem)
-    solarSystem.createObjects()
+    Log.block(
+      "Creating objects in "+solarSystem+" @ " + coords, level=Log.Debug
+    ) { () => solarSystem.createObjects() }
 
     hasNewSystems = true
     if (playerSystem) playerCount += 1

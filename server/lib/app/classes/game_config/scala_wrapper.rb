@@ -8,12 +8,12 @@ class GameConfig::ScalaWrapper
     value = CONFIG[key]
     raise IllegalArgumentException,
       "Cannot find config key #{key.inspect}!" if value.nil?
-    value.to_scala
+    value
   end
 
   # def getOpt[T](key: String): Option[T]
   def getOpt(key)
     value = CONFIG[key]
-    value.nil? ? None : Some(value.to_scala)
+    value.nil? ? None : Some(value)
   end
 end

@@ -13,7 +13,7 @@ module SpaceMule::Combat
 
       # Convert players
       hashed_sm_players = convert_players(players)
-      sm_players = Set.new(hashed_sm_players.values).to_scala
+      sm_players = Set.new(hashed_sm_players.values)
 
       # Figure out planet owner
       sm_planet_owner = None
@@ -32,7 +32,7 @@ module SpaceMule::Combat
         player.nil? ? nil : player.alliance_id
       end.compact.uniq
       sm_alliance_names = without_locking do
-        Alliance.names_for(alliance_ids).to_scala
+        Alliance.names_for(alliance_ids)
       end
 
       # Convert and partition troops.
@@ -40,7 +40,7 @@ module SpaceMule::Combat
       # Hash troops: {unit.id => SpaceMule Troop}
       sm_troops = Set.new(
         units.map { |unit| convert_unit(hashed_sm_players, unit) }
-      ).to_scala
+      )
 
       # Units which are loaded into transporters.
       sm_loaded_units = loaded_units.inject({}) do |hash, pair|
@@ -50,12 +50,12 @@ module SpaceMule::Combat
           hash[transporter_id].add convert_unit(hashed_sm_players, loaded_unit)
         end
         hash
-      end.to_scala
+      end
 
       # Convert buildings
       sm_buildings = Set.new(
         buildings.map { |building| convert_building(sm_planet_owner, building) }
-      ).to_scala
+      )
 
       battleground = battleground?(location)
 
@@ -65,10 +65,10 @@ module SpaceMule::Combat
         sm_planet_owner,
         sm_players,
         sm_alliance_names,
-        nap_rules.to_scala,
+        nap_rules,
         sm_troops,
         sm_loaded_units,
-        unloaded_unit_ids.to_scala,
+        unloaded_unit_ids,
         sm_buildings
       )
     end
@@ -146,9 +146,7 @@ module SpaceMule::Combat
       critical = TechModApplier.apply(technologies, TechTracker::CRITICAL)
       absorption = TechModApplier.apply(technologies, TechTracker::ABSORPTION)
 
-      CO.Player::Technologies.new(
-        damage.to_scala, armor.to_scala, critical.to_scala, absorption.to_scala
-      )
+      CO.Player::Technologies.new(damage, armor, critical, absorption)
     end
   end
 

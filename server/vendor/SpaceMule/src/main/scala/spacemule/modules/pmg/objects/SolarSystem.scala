@@ -3,6 +3,7 @@ package spacemule.modules.pmg.objects
 import spacemule.modules.pmg.classes.geom.Coords
 import ss_objects.{Jumpgate, Asteroid, Planet}
 import spacemule.modules.config.objects.{SsConfig, ResourcesEntry, Config}
+import spacemule.logging.Log
 
 class SolarSystem(map: Option[SsConfig.Data]) {
   def this(map: SsConfig.Data) = this(Some(map))
@@ -27,6 +28,8 @@ class SolarSystem(map: Option[SsConfig.Data]) {
   def wreckages = _wreckages
 
   private[this] var objectsCreated = false
+
+  override def toString = "<SolarSystem>"
 
   def createObjects() {
     if (objectsCreated) {
@@ -57,21 +60,31 @@ class SolarSystem(map: Option[SsConfig.Data]) {
   private[this] def createPlanet(
     coords: Coords, entry: SsConfig.PlanetEntry
   ) {
-    createObject(
-      new Planet(Config.planetMap(entry.mapName), entry.ownedByPlayer),
-      coords, entry
-    )
+    Log.block(
+      "Creating planet @ "+coords+" from map "+entry.mapName,
+      level=Log.Debug
+    ) { () =>
+      createObject(
+        new Planet(Config.planetMap(entry.mapName), entry.ownedByPlayer),
+        coords, entry
+      )
+    }
   }
 
   private[this] def createAsteroid(
     coords: Coords, entry: SsConfig.AsteroidEntry
   ) {
-    createObject(
-      new Asteroid(
-        entry.resources.metal, entry.resources.energy, entry.resources.zetium
-      ),
-      coords, entry
-    )
+    Log.block(
+      "Creating asteroid @ "+coords+" from "+entry,
+      level=Log.Debug
+    ) { () =>
+      createObject(
+        new Asteroid(
+          entry.resources.metal, entry.resources.energy, entry.resources.zetium
+        ),
+        coords, entry
+      )
+    }
   }
 
   private[this] def createObject(
@@ -86,13 +99,18 @@ class SolarSystem(map: Option[SsConfig.Data]) {
     entry.units match {
       case None => ()
       case Some(units) =>
-        val addedUnits = units.flatMap(_.createTroops())
+        Log.block(
+          "Creating "+entry.units.size+" units @ "+coords,
+          level=Log.Debug
+        ) { () =>
+          val addedUnits = units.flatMap(_.createTroops())
 
-        if (_units.contains(coords)) {
-          _units += coords -> (_units(coords) ++ addedUnits)
+          if (_units.contains(coords)) {
+            _units += coords -> (_units(coords) ++ addedUnits)
+          }
+          else
+            _units += coords -> addedUnits
         }
-        else
-          _units += coords -> addedUnits
     }
 
     entry.wreckage match {
@@ -106,6 +124,5 @@ object SolarSystem extends Enumeration {
   val Normal = Value(0, "normal")
   val Wormhole = Value(1, "wormhole")
   val Battleground = Value(2, "battleground")
-  val SpaceStation = Value(4, "space station")
   type Kind = Value
 }

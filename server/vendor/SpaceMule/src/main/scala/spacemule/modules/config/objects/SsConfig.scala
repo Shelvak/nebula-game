@@ -1,12 +1,21 @@
 package spacemule.modules.config.objects
 
+import spacemule.helpers.JRuby._
 import spacemule.modules.pmg.classes.geom.Coords
 
 object SsConfig {
   sealed abstract class Entry(
     val wreckage: Option[ResourcesEntry],
     val units: Option[Seq[UnitsEntry]]
-  )
+  ) {
+    override def toString = "<SsConfig.Entry wreckage:" + (wreckage match {
+      case None => "none"
+      case Some(resourcesEntry) => resourcesEntry
+    }) + " units:" + (units match {
+      case None => "none"
+      case Some(seq) => seq.size
+    }) + ">"
+  }
 
   case class PlanetEntry(
     mapName: String, ownedByPlayer: Boolean,
@@ -18,7 +27,10 @@ object SsConfig {
     resources: ResourcesEntry,
     override val wreckage: Option[ResourcesEntry] = None,
     override val units: Option[Seq[UnitsEntry]] = None
-  ) extends Entry(wreckage, units)
+  ) extends Entry(wreckage, units) {
+    override def toString = "<AsteroidEntry resources:"+resources+" "+
+      super.toString+">"
+  }
 
   case class JumpgateEntry(
     override val wreckage: Option[ResourcesEntry] = None,
@@ -30,34 +42,33 @@ object SsConfig {
     override val units: Option[Seq[UnitsEntry]] = None
   ) extends Entry(wreckage, units)
 
-  type CfgMap = Map[String, Any]
-
   private[this] def extractResources(
-    data: CfgMap, key: String = "resources"
+    data: SRHash, key: String = "resources"
   ) = {
-    data.get(key).map { array =>
-      ResourcesEntry.extract(array)
+    data.by(key).map { array =>
+      ResourcesEntry.extract(array.asArray)
     }
   }
 
-  private[this] def extractWreckage(data: CfgMap) =
+  private[this] def extractWreckage(data: SRHash) =
     extractResources(data, "wreckage")
 
-  private[this] def extractUnits(data: CfgMap):
-    Option[Seq[UnitsEntry]] = data.get("units").map(UnitsEntry.extract(_))
+  private[this] def extractUnits(data: SRHash): Option[Seq[UnitsEntry]] =
+    data.by("units").map { data => UnitsEntry.extract(data.asArray) }
 
   type Data = Map[Coords, Entry]
 
-  def apply(data: Map[String, CfgMap]) = {
-    data.map { case (positionStr, entryData) =>
-      val splited = positionStr.split(",").map(_.toInt)
-      val (position, angle) = (splited(0), splited(1))
+  def apply(data: SRHash): Data = {
+    data.map { case (positionStr, rbEntryData) =>
+      val split = positionStr.toString.split(",").map(_.toInt)
+      val (position, angle) = (split(0), split(1))
       val coords = Coords(position, angle)
 
-      val entry = entryData("type") match {
+      val entryData = rbEntryData.asMap
+      val entry = entryData("type").toString match {
         case "planet" => SsConfig.PlanetEntry(
-          entryData("map").asInstanceOf[String],
-          entryData("owned_by_player").asInstanceOf[Boolean],
+          entryData("map").toString,
+          entryData("owned_by_player").asBoolean,
           extractWreckage(entryData),
           extractUnits(entryData)
         )
@@ -78,6 +89,6 @@ object SsConfig {
       }
 
       coords -> entry
-    }
+    }.toMap
   }
 }

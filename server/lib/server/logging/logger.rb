@@ -2,7 +2,7 @@ class Logging::Logger
   DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%L"
   DEFAULT_COMPONENT = 'main'
 
-  BLOCK_INDENT = 4
+  BLOCK_INDENT = 2
 
   def initialize
     @indent = 0
@@ -39,7 +39,7 @@ class Logging::Logger
 
     data = data_for(options[:component], options[:level], message)
     if @block_buffer.nil?
-      @block_buffer = "\n#{data}"
+      @block_buffer = data
       started_buffering = true
     else
       @block_buffer += data
@@ -55,21 +55,26 @@ class Logging::Logger
     begin
       start = Time.now
       returned = yield
-      timing = "%5.3f seconds" % (Time.now - start)
+      timing = "[%5.3f seconds]" % (Time.now - start)
     rescue Exception => exception; end
 
     @indent = old_indent
 
-    @block_buffer += " " * @indent
-    end_name = message[0..10]
-    end_name += "..." unless end_name == message
-
-    if exception
-      @block_buffer +=
-        "[END of #{end_name} with EXCEPTION] #{timing} #{exception.inspect}\n\n"
-      raise exception
+    if @block_buffer.ends_with?(data)
+      @block_buffer.chomp!
+      @block_buffer += " #{timing}\n"
     else
-      @block_buffer += "[END of #{end_name}] #{timing}\n\n"
+      @block_buffer += " " * @indent
+      end_name = message[0..10]
+      end_name += "..." unless end_name == message
+
+      if exception
+        @block_buffer +=
+          "[END of #{end_name} with EXCEPTION] #{timing} #{exception.inspect}\n"
+        raise exception
+      else
+        @block_buffer += "[END of #{end_name}] #{timing}\n"
+      end
     end
 
     returned

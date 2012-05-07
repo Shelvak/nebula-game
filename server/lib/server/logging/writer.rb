@@ -83,10 +83,10 @@ class Logging::Writer
   # Should we write this level type to log?
   #
   # This is used by logger.
-  def write?(type)
-    synchronize do
-      @level >= TYPE_TO_LEVEL[type]
-    end
+  def write?(type_or_level)
+    level = type_or_level.is_a?(Fixnum) \
+      ? type_or_level : TYPE_TO_LEVEL[type_or_level]
+    synchronize { @level >= level }
   end
 
   private

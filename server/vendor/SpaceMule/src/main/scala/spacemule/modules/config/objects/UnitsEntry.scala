@@ -6,7 +6,7 @@
 package spacemule.modules.config.objects
 
 import spacemule.helpers.Converters._
-import collection.mutable.ListBuffer
+import spacemule.helpers.JRuby._
 import spacemule.modules.pmg.objects.Troop
 
 object UnitsEntry {
@@ -18,16 +18,14 @@ object UnitsEntry {
       ...
     ]
    */
-  def extract(entries: Any): Seq[UnitsEntry] = {
-    entries.asInstanceOf[Seq[IndexedSeq[Any]]].map { entryArray =>
+  def extract(entries: SRArray): Seq[UnitsEntry] = {
+    entries.map { rbEntryArray =>
+      val entryArray = rbEntryArray.asArray
       new UnitsEntry(
-        entryArray(1).asInstanceOf[String].camelcase,
-        entryArray(0).asInstanceOf[Long].toInt,
-        entryArray(2).asInstanceOf[Long].toInt,
-        entryArray(3) match {
-          case l: Long => l.toDouble
-          case d: Double => d
-        }
+        entryArray(1).toString.camelcase,
+        entryArray(0).asInt,
+        entryArray(2).asInt,
+        entryArray(3).asDouble
       )
     }
   }

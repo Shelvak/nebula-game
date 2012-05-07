@@ -5,6 +5,7 @@ import solar_systems.{Homeworld, Pulsar, Wormhole}
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
+import spacemule.logging.Log
 
 /**
  * Created by IntelliJ IDEA.
@@ -114,18 +115,26 @@ class Galaxy(val id: Int, val ruleset: String) {
    * Adds zone to galaxy and creates non-player solar systems if it is empty.
    */
   def addZone(zone: Zone) {
-    zones(zone.coords) = zone
+    Log.block("Creating zone " + zone, level=Log.Debug) { () =>
+      zones(zone.coords) = zone
 
-    wormholes.foreach { coords =>
-      zone.addSolarSystem(new Wormhole(), coords, skipExisting = true)
-    }
-    freeSystems.foreach { coords =>
-      zone.addSolarSystem(
-        new SolarSystem(Config.freeSsConfig), coords, skipExisting = true
-      )
-    }
-    miniBattlegrounds.foreach { coords =>
-      zone.addSolarSystem(new Pulsar(), coords, skipExisting = true)
+      wormholes.foreach { coords =>
+        Log.block("Adding wormhole @ " + coords, level=Log.Debug) { () =>
+          zone.addSolarSystem(new Wormhole(), coords, skipExisting = true)
+        }
+      }
+      freeSystems.foreach { coords =>
+        Log.block("Adding free ss @ " + coords, level=Log.Debug) { () =>
+          zone.addSolarSystem(
+            new SolarSystem(Config.freeSsConfig), coords, skipExisting = true
+          )
+        }
+      }
+      miniBattlegrounds.foreach { coords =>
+        Log.block("Adding mini bg @ " + coords, level=Log.Debug) { () =>
+          zone.addSolarSystem(new Pulsar(), coords, skipExisting = true)
+        }
+      }
     }
   }
 }

@@ -21,6 +21,6 @@ trait Row {
         )
       )
 
-    valuesSeq.map { _.toString }.mkString("\t")
+    valuesSeq.mkString("\t")
   }
 }

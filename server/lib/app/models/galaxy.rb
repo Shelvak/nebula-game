@@ -305,8 +305,8 @@ class Galaxy < ActiveRecord::Base
   end
 
   def create_player(web_user_id, name, trial)
-    SpaceMule.instance.create_players(
-      id, ruleset, {web_user_id => name}, trial
+    SpaceMule.instance.create_player(
+      id, ruleset, web_user_id, name, trial
     )
   end
 

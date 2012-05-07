@@ -21,6 +21,8 @@ trait BufferLike[+R <: Row] {
     buffer.clear()
   }
 
+  def size = buffer.size
+
   @EnhanceStrings
   def save(batchId: String) {
     if (buffer.isEmpty) return

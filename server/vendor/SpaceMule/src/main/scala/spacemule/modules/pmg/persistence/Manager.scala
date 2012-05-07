@@ -9,6 +9,8 @@ import java.util.{Calendar, Date}
 import spacemule.modules.pmg.objects._
 import solar_systems.{Wormhole, Battleground, Homeworld}
 import collection.mutable.{HashMap, ListBuffer, HashSet}
+import spacemule.logging.Log
+import scala.Predef._
 
 object Manager {
   val GalaxiesTable = "galaxies"
@@ -67,7 +69,7 @@ object Manager {
   /**
    * Created player rows.
    */
-  private val playerRows = HashSet[PlayerRow]()
+  private var playerRow: Option[PlayerRow] = None
   /**
    * Fow ss entry rows that were created during this save.
    */
@@ -124,26 +126,32 @@ WHERE #ss.`galaxy_id`=#galaxy.id
   }
 
   private def loadQuests(): Seq[Int] = {
-    DB.getCol[Int](
-      "SELECT `id` FROM `%s` WHERE `parent_id` IS NULL".format(QuestsTable)
-    )
+    Log.block("Loading quests", level=Log.Debug) { () =>
+      DB.getCol[Int](
+        "SELECT `id` FROM `%s` WHERE `parent_id` IS NULL".format(QuestsTable)
+      )
+    }
   }
 
   private def loadObjectives(): Seq[Int] = {
-    if (startQuestIds.isEmpty) Seq[Int]()
-    else DB.getCol[Int](
-      "SELECT `id` FROM `%s` WHERE `quest_id` IN (%s)".format(
-        ObjectivesTable, startQuestIds.mkString(",")
+    Log.block("Loading objectives", level=Log.Debug) { () =>
+      if (startQuestIds.isEmpty) Seq[Int]()
+      else DB.getCol[Int](
+        "SELECT `id` FROM `%s` WHERE `quest_id` IN (%s)".format(
+          ObjectivesTable, startQuestIds.mkString(",")
+        )
       )
-    )
+    }
   }
 
-  type Clearable = {def clear(): Unit}
-  private val saveTempHolders = List[Clearable](fsesForExisting, playerRows)
+  def clear() {
+    fsesForExisting.clear()
+    playerRow = None
+  }
 
   def save[T](beforeSave: () => T): T = {
     buffers.clear()
-    saveTempHolders.foreach { set => set.clear() }
+    clear()
     currentDateTime = DB.date(new Date())
     
     // Reload quest/objective ids because they might have changed. E.g. when
@@ -156,14 +164,18 @@ WHERE #ss.`galaxy_id`=#galaxy.id
     // Run something before save if provided
     val retVal = beforeSave()
 
-    buffers.save()
+    Log.block("Saving buffers", level=Log.Debug) { () => buffers.save() }
     
     retVal
   }
 
   def save(galaxy: Galaxy): SaveResult = {
-    save { () => readGalaxy(galaxy) }
-    SaveResult(playerRows.toSet, fsesForExisting)
+    save { () =>
+      Log.block("Reading galaxy into buffers", level=Log.Debug) { () =>
+        readGalaxy(galaxy)
+      }
+    }
+    SaveResult(playerRow.get.id, fsesForExisting)
   }
 
   def initDates() {
@@ -303,7 +315,13 @@ WHERE #ss.`galaxy_id`=#galaxy.id
       case None =>
         val playerRow = new PlayerRow(galaxyId, player)
         players += playerRow
-        playerRows += playerRow
+        this.playerRow match {
+          case None => this.playerRow = Some(playerRow)
+          case Some(row) => sys.error(
+            "Multiple players should not happen, but playerRow was " + row
+          )
+        }
+
         playerRowsCache += player -> playerRow
         playerRow
     }

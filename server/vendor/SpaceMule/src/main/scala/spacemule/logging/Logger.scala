@@ -16,8 +16,7 @@ object Logger {
     val Error = Value(1, "error")
     val Warn = Value(2, "warn")
     val Info = Value(3, "info")
-    val TrafficDebug = Value(4, "traffic_debug")
-    val Debug = Value(5, "debug")
+    val Debug = Value(4, "debug")
   }
 }
 

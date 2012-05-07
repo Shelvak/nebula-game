@@ -4,6 +4,8 @@ import scala.{collection => sc}
 import collection.mutable.HashMap
 import de.congrace.exp4j.ExpressionBuilder
 import spacemule.helpers.Exceptions.wrappingException
+import spacemule.helpers.JRuby._
+import org.jruby.RubyHash
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,12 +61,25 @@ object FormulaCalc {
     ) { () =>
       calculateValue(resolveExpression(formula), Some(vars))
     }
+
+  def calc(formula: String, vars: RubyHash): Double =
+    wrappingException(
+      "Error while calculating formula '%s' with variables %s".format(
+        formula, vars
+      )
+    ) { () =>
+      calculateValue(resolveExpression(formula), Some(
+        vars.asScalaMap(_.toString, _.asDouble)
+      ))
+    }
   
   // Just placeholders if formula is not exactly a formula. (When called from
   // JRuby side)
   
   def calc(formula: Long) = formula
   def calc(formula: Long, vars: VarMap) = formula
+  def calc(formula: Long, vars: RubyHash) = formula
   def calc(formula: Double) = formula
   def calc(formula: Double, vars: VarMap) = formula
+  def calc(formula: Double, vars: RubyHash) = formula
 }

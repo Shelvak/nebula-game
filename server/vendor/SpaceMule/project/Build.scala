@@ -35,6 +35,7 @@ object SpaceMule extends Build {
   lazy val spaceMule = Project(
     "SpaceMule",
     file("."),
+    /*_*/
     settings =
       Defaults.defaultSettings ++
       Seq(
@@ -74,5 +75,6 @@ object SpaceMule extends Build {
         ),
         distTask
       )
+    /*_*/
   )
 }

@@ -1,5 +1,9 @@
 package spacemule.modules.config
 
+import org.jruby.runtime.{Block, ThreadContext}
+import java.util.List
+import org.jruby.runtime.builtin.{Variable, IRubyObject}
+
 /**
  * Created by IntelliJ IDEA.
  * User: arturas
@@ -9,7 +13,7 @@ package spacemule.modules.config
  */
 
 trait ScalaConfig {
-  def get[T](key: String): T
+  def get(key: String): IRubyObject
 
-  def getOpt[T](key: String): Option[T]
+  def getOpt(key: String): Option[IRubyObject]
 }

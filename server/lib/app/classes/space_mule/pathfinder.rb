@@ -45,10 +45,10 @@ module SpaceMule::Pathfinder
 
     # Add avoidable points if we have something to avoid.
     sm_avoidable_points = avoidable_points.blank? \
-      ? None : Some(avoidable_points.to_scala)
+      ? None : Some(avoidable_points)
 
-    sm_source_jumpgates = Set.new.to_scala
-    sm_target_jumpgates = Set.new.to_scala
+    sm_source_jumpgates = Set.new
+    sm_target_jumpgates = Set.new
     sm_source_ss_galaxy_coords = None
     sm_target_ss_galaxy_coords = None
 
@@ -151,6 +151,6 @@ module SpaceMule::Pathfinder
           Coords.new(jumpgate.position, jumpgate.angle)
         )
       end
-    Set.new(points).to_scala
+    Set.new(points)
   end
 end

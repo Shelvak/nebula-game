@@ -16,6 +16,12 @@ object Log extends Logger {
     else throw new IllegalStateException("Logger is not set yet.")
   def setLogger(logger: Logger) { _logger = logger }
 
+  val Fatal = Logger.Level.Fatal
+  val Error = Logger.Level.Error
+  val Warn = Logger.Level.Warn
+  val Info = Logger.Level.Info
+  val Debug = Logger.Level.Debug
+
   def defaultComponent = logger.defaultComponent
   def isWritten(level: Int) = logger.isWritten(level)
   def fatal(message: String, component: String=defaultComponent) {

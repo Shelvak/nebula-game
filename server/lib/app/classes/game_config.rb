@@ -76,7 +76,7 @@ class GameConfig
     formula = formula.to_f if formula.is_a?(ActiveSupport::Duration)
 
     FormulaCalc.calc(
-      formula, params.map_values { |key, value| value.to_f }.to_scala
+      formula, params.map_values { |key, value| value.to_f }
     )
   end
 end

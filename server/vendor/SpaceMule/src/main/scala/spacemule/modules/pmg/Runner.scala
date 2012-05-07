@@ -3,6 +3,7 @@ package spacemule.modules.pmg
 import objects.{Zone, Galaxy, Player}
 import persistence.objects.{SaveResult, CallbackRow, GalaxyRow}
 import spacemule.helpers.Converters._
+import spacemule.helpers.JRuby._
 import spacemule.helpers.BenchmarkableMock
 import spacemule.modules.pmg.objects.solar_systems.Battleground
 import spacemule.modules.pmg.persistence.Manager
@@ -10,6 +11,7 @@ import spacemule.modules.config.objects.Config
 import java.util.Date
 import spacemule.persistence.DB
 import spacemule.logging.Log
+import org.jruby.RubyHash
 
 object Runner extends BenchmarkableMock {
   /**
@@ -53,22 +55,23 @@ object Runner extends BenchmarkableMock {
     }
   }
 
-  def createPlayers(
-    ruleset: String,
-    galaxyId: Int,
-    // web user id -> player name
-    players: Map[Long, String]
+  def createPlayer(
+    ruleset: String, galaxyId: Int, webUserId: Int, playerName: String
   ): SaveResult = {
     val galaxy = new Galaxy(galaxyId, ruleset)
 
-    Log.block("load galaxy") { () => Manager.load(galaxy) }
-
-    players.foreach { case(webUserId, name) =>
-      val player = Player(name, webUserId)
-      Log.block("create player") { () => galaxy.createZoneFor(player) }
+    Log.block("load galaxy", level=Log.Debug) { () =>
+      Manager.load(galaxy)
     }
 
-    val result = Log.block("save galaxy") { () => Manager.save(galaxy) }
+    val player = Player(playerName, webUserId)
+    Log.block("create player", level=Log.Debug) { () =>
+      galaxy.createZoneFor(player)
+    }
+
+    val result = Log.block("save galaxy", level=Log.Debug) { () =>
+      Manager.save(galaxy)
+    }
     printBenchmarkResults()
 
     result

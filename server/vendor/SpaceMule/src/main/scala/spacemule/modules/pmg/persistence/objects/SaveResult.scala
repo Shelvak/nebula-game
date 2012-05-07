@@ -8,7 +8,7 @@ package spacemule.modules.pmg.persistence.objects
 import scala.collection.{Set, Map}
 
 case class SaveResult(
-  playerRows: Set[PlayerRow],
+  playerId: Int,
   // FOW solar system entries for existing players/alliances
   fsesForExisting: Map[SolarSystemRow, Iterable[FowSsEntryRow]]
 )
