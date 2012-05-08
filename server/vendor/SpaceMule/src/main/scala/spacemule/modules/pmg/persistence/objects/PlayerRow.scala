@@ -24,7 +24,7 @@ case class PlayerRow(galaxyId: Int, player: Player)
 extends Row with ReferableRow {
   val companion = PlayerRow
   
-  val valuesSeq = Seq(
+  protected[this] def valuesImpl = Seq(
     galaxyId,
     player.webUserId,
     escape(player.name),

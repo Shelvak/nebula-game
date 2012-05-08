@@ -20,7 +20,8 @@ case class TileRow(planetRow: SSObjectRow, kind: Int, x: Int, y: Int)
   extends Row 
 {
   val companion = TileRow
-  lazy val valuesSeq = List(
+
+  protected[this] def valuesImpl = Seq(
     planetRow.id,
     kind,
     x,

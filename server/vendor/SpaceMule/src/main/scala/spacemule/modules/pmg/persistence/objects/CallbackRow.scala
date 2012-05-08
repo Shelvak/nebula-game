@@ -67,7 +67,7 @@ case class CallbackRow(
 ) extends Row {
   val companion = CallbackRow
 
-  lazy val valuesSeq = Seq[Any](
+  protected[this] def valuesImpl = Seq[Any](
     event.id,
     DB.date(time),
     ruleset,

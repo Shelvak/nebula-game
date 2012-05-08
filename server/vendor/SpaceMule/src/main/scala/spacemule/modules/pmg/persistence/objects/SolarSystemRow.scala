@@ -19,7 +19,7 @@ case class SolarSystemRow(
   def y = coords.get.y
   def kind = solarSystem.kind.id
 
-  lazy val valuesSeq = Seq(
+  protected[this] def valuesImpl = Seq(
     galaxyId,
     coords match {
       case Some(coords) => coords.x.toString

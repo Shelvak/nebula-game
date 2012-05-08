@@ -124,5 +124,6 @@ object SolarSystem extends Enumeration {
   val Normal = Value(0, "normal")
   val Wormhole = Value(1, "wormhole")
   val Battleground = Value(2, "battleground")
+  val Pooled = Value(3, "pooled")
   type Kind = Value
 }

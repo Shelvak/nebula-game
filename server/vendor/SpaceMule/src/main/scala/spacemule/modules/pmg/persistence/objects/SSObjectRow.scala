@@ -71,8 +71,7 @@ abstract class SSObjectRow(
   val ownerChanged: Option[Calendar] = None
   val nextRaidAt: Option[Calendar] = None
 
-  // Initialize this lazily, because this abstract class is subclassed.
-  lazy val valuesSeq = List(
+  protected[this] def valuesImpl = List(
     ssObject.name, solarSystemRow.id, coord.angle, coord.position,
     width, height, terrain, playerId, name, size, DB.date(ownerChanged)
   ) ++ resources.toSeq :+ (nextRaidAt match {

@@ -1,6 +1,7 @@
 package spacemule.modules.pmg.objects
 
-import solar_systems.{Homeworld}
+import solar_systems.Homeworld
+import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.WithCoords
@@ -52,6 +53,38 @@ object Zone {
       diameter
     )
   }
+
+  def iterate[T](diameter: Int, startSlot: Int)(fun: (Zone) => Option[T]): T = {
+    var zoneX = 0
+    var zoneY = 0
+    var slot = startSlot
+    var returnValue: Option[T] = None
+
+    while (returnValue.isEmpty) {
+      // Shamelessly stolen from Mykolas, I don't really have much idea on what
+      // is going on here.
+      Zone.Quarters.shuffled.foreach { quarter =>
+        // find logical coordinates in the first quarter
+        val diag = ((math.sqrt(1 + 8 * slot) - 1) / 2).ceil
+        val x = (diag / 2 * (1 + diag) - slot).toInt
+        val y = (x - diag).toInt
+
+        // transform logical coordinates to the quarter we need
+        // taking into account the fact that we actually must calculate
+        // coordinates of top-left corner in the
+        // next step (-1 for x and -1 for y)
+        zoneX = if (quarter.x == -1) -x - 1 else x
+        zoneY = if (quarter.y == -1) -y - 1 else y
+
+        val zone = new Zone(zoneX, zoneY, diameter)
+        returnValue = fun(zone)
+      }
+
+      slot += 1
+    }
+
+    returnValue.get
+  }
 }
 
 class Zone(_x: Int, _y: Int, val diameter: Int) extends WithCoords {
@@ -80,7 +113,9 @@ class Zone(_x: Int, _y: Int, val diameter: Int) extends WithCoords {
   }
 
   override def toString(): String = {
-    "<Zone(%d) @ %d,%d>".format(solarSystems.size, x, y)
+    val abs = absolute(coords)
+    "<Zone(ss cnt: "+solarSystems.size+") @ rel:"+x+","+y+" abs:"+abs.x+","+
+      abs.y+")>"
   }
 
   def findFreeSpot(): Coords = {
@@ -155,7 +190,9 @@ class Zone(_x: Int, _y: Int, val diameter: Int) extends WithCoords {
    */
   def markAsMature() = hasMaturePlayers = true
 
-  def isFull = hasMaturePlayers || playerCount >= Config.playersPerZone
+  def isMature = hasMaturePlayers
+
+  def isFull = isMature || playerCount >= Config.playersPerZone
 
   /**
    * Does this zone have new players we need to create?

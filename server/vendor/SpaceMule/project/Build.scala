@@ -7,10 +7,13 @@ object SpaceMule extends Build {
   )
   lazy val distTask =
     dist <<= (
-      name, scalaVersion, version, update, crossTarget,
+      name, scalaVersion, version, update, crossTarget, scalaInstance,
       packageBin in Compile
     ).map {
-      case (projectName, scalaVersion, projectVersion, updateReport, out, _) =>
+      case (
+        projectName, scalaVersion, projectVersion, updateReport, out,
+        scalaInstance, _
+      ) =>
         val dist = (out / ".." / ".." / "dist").getAbsoluteFile
         // Clean up dist dir.
         IO.delete(dist)
@@ -21,6 +24,11 @@ object SpaceMule extends Build {
             projectName.toLowerCase, scalaVersion, projectVersion
           ),
           dist / "%s.jar".format(projectName)
+        )
+
+        // Copy scala-library.
+        IO.copyFile(
+          scalaInstance.libraryJar, dist / "lib" / "scala-library.jar"
         )
 
         // Copy libs.

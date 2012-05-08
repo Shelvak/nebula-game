@@ -4,7 +4,6 @@ import objects.{Zone, Galaxy, Player}
 import persistence.objects.{SaveResult, CallbackRow, GalaxyRow}
 import spacemule.helpers.Converters._
 import spacemule.helpers.JRuby._
-import spacemule.helpers.BenchmarkableMock
 import spacemule.modules.pmg.objects.solar_systems.Battleground
 import spacemule.modules.pmg.persistence.Manager
 import spacemule.modules.config.objects.Config
@@ -13,12 +12,14 @@ import spacemule.persistence.DB
 import spacemule.logging.Log
 import org.jruby.RubyHash
 
-object Runner extends BenchmarkableMock {
+object Runner {
   /**
    * Creates galaxy with ruleset and callbackUrl. Returns galaxy id.
    */
   @EnhanceStrings
-  def createGalaxy(ruleset: String, callbackUrl: String): Int = {
+  def createGalaxy(
+    ruleset: String, callbackUrl: String, freeZoneCount: Int
+  ): Int = {
     val createdAt = DB.date(new Date())
     val galaxyId = DB.insert("""
       INSERT INTO `#Manager.GalaxiesTable` SET
@@ -47,9 +48,13 @@ object Runner extends BenchmarkableMock {
       }
 
       val galaxy = new Galaxy(galaxyId, ruleset)
+
       val battleground = new Battleground()
       battleground.createObjects()
       Manager.readSolarSystem(galaxy, None, battleground)
+
+      galaxy.ensureFreeZones(freeZoneCount)
+      Manager.readGalaxy(galaxy)
 
       galaxyId
     }
@@ -72,7 +77,6 @@ object Runner extends BenchmarkableMock {
     val result = Log.block("save galaxy", level=Log.Debug) { () =>
       Manager.save(galaxy)
     }
-    printBenchmarkResults()
 
     result
   }
@@ -87,12 +91,43 @@ object Runner extends BenchmarkableMock {
   ) = {
     val galaxy = new Galaxy(galaxyId, ruleset)
 
-    benchmark("generate zone") { () =>
+    Log.block("generate zone", level=Log.Debug) { () =>
       galaxy.addZone(Zone(slot, quarter, Config.zoneDiameter))
     }
 
-    val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
-    printBenchmarkResults()
+    val result = Log.block("save galaxy", level=Log.Debug) { () =>
+      Manager.save(galaxy)
+    }
+
+    result
+  }
+
+  def ensurePool(
+    ruleset: String, galaxyId: Int,
+    freeZones: Int, maxZoneIterations: Int,
+    freeHomeSystems: Int, maxHomeIterations: Int
+  ) = {
+    require(
+      maxZoneIterations > 0,
+      "max zone iterations should be > 0, but was "+maxZoneIterations
+    )
+    require(
+      maxHomeIterations > 0,
+      "max home ss iterations should be > 0, but was "+maxHomeIterations
+    )
+
+    val galaxy = new Galaxy(galaxyId, ruleset)
+
+    Log.block("load galaxy", level=Log.Debug) { () =>
+      Manager.load(galaxy)
+    }
+
+    galaxy.ensureFreeZones(freeZones, Some(maxZoneIterations))
+    galaxy.ensureFreeHomeSystems(freeHomeSystems, Some(maxHomeIterations))
+
+    val result = Log.block("save galaxy", level=Log.Debug) { () =>
+      Manager.save(galaxy)
+    }
 
     result
   }

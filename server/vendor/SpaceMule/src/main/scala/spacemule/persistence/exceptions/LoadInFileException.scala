@@ -10,20 +10,14 @@ import java.sql.SQLException
  * To change this template use File | Settings | File Templates.
  */
 
+@EnhanceStrings
 class LoadInFileException(
-  filePath: String, tableName: String, columns: String, data: String,
-  cause: Throwable
+  filePath: String, tableName: String, columns: String, cause: Throwable
 ) extends SQLException(
-  """Error while LOAD DATA INFILE from %s to %s
-
-Data was:
-%s
-%s
+  """Error while LOAD DATA INFILE from #filePath to #tableName
+for columns #columns
 
 Original exception:
-%s
-""".format(
-    filePath, tableName, columns, data, cause.toString
-  ),
-  cause
+#cause.toString
+""", cause
 )

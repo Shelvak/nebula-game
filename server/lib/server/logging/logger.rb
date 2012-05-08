@@ -59,20 +59,19 @@ class Logging::Logger
     rescue Exception => exception; end
 
     @indent = old_indent
+    end_name = message[0..10]
+    end_name += "..." unless end_name == message
 
-    if @block_buffer.ends_with?(data)
-      @block_buffer.chomp!
-      @block_buffer += " #{timing}\n"
+    if exception
+      @block_buffer +=
+        "[END of #{end_name} with EXCEPTION] #{timing} #{exception.inspect}\n"
+      raise exception
     else
-      @block_buffer += " " * @indent
-      end_name = message[0..10]
-      end_name += "..." unless end_name == message
-
-      if exception
-        @block_buffer +=
-          "[END of #{end_name} with EXCEPTION] #{timing} #{exception.inspect}\n"
-        raise exception
+      if @block_buffer.ends_with?(data)
+        @block_buffer.chomp!
+        @block_buffer += " #{timing}\n"
       else
+        @block_buffer += " " * @indent
         @block_buffer += "[END of #{end_name}] #{timing}\n"
       end
     end

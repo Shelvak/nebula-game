@@ -24,7 +24,7 @@ case class UnitRow(location: Location, troop: Troop)
 extends Row {
   val companion = UnitRow
 
-  lazy val valuesSeq = Seq(
+  protected[this] def valuesImpl = Seq(
     troop.name,
     1,
     troop.flank,

@@ -20,5 +20,5 @@ class GalaxyRow extends ReferableRow {
   def this(id: Int) { this(); _id = id }
 
   val companion = GalaxyRow
-  val valuesSeq = Seq.empty
+  protected[this] def valuesImpl = Seq.empty
 }

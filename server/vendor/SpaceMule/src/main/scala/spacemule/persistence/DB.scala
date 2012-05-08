@@ -81,7 +81,7 @@ object DB {
    */
   @EnhanceStrings
   def loadInFile(
-    tableName: String, columns: String, values: Seq[String],
+    tableName: String, columns: String, values: Seq[Seq[Any]],
     batchId: Option[String]
   ) = {
     if (values.isEmpty)
@@ -107,47 +107,56 @@ object DB {
     val statementText =
       "LOAD DATA INFILE '#filename' INTO TABLE `#tableName` (#cols)"
 
-    // Create StringBuilder to String that will become stream
-    val builder = new StringBuilder()
-
     // Iterate over map and create tab-text string
-    batchId match {
-      case Some(id) =>
-        values.foreach { entry =>
-          builder.append(entry)
-          builder.append('\t')
-          builder.append(id)
-          builder.append('\n')
-        }
-      case None =>
-        values.foreach { entry =>
-          builder.append(entry)
-          builder.append('\n')
-        }
-    }
+    writeValues(file, values, batchId)
 
     // First create a statement off the connection
     val statement = connection.createStatement.asInstanceOf[
-      com.mysql.jdbc.Statement]
+      com.mysql.jdbc.Statement
+    ]
 
     try {
-      // Write contents to file.
-      val writer = new FileWriter(file)
-      writer.write(builder.toString)
-      writer.close()
-
       // Execute the load infile
       statement.execute(statementText);
     }
     catch {
       case ex: Exception => throw new LoadInFileException(
-        file.getAbsolutePath, tableName, cols, builder.toString, ex
+        file.getAbsolutePath, tableName, cols, ex
       )
     }
     finally {
       statement.close()
       if (! keepTmpFiles) file.delete()
     }
+  }
+
+  private[this] def writeValues(
+    file: File, values: Seq[Seq[Any]], optBatchId: Option[String]
+  ) {
+    val writer = new FileWriter(file)
+    val rowsIterator = values.iterator
+    val batchId = optBatchId match {
+      case Some(id) => id
+      case None => null
+    }
+
+    while (rowsIterator.hasNext) {
+      val iterator = rowsIterator.next().iterator
+      var first = true
+
+      while (iterator.hasNext) {
+        if (first) first = false else writer.append('\t')
+        writer.append(iterator.next().toString)
+      }
+
+      if (batchId != null) {
+        writer.append('\t')
+        writer.append(batchId)
+      }
+      writer.append('\n')
+    }
+
+    writer.close()
   }
 
   def query(sql: String): ResultSet = {

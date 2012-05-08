@@ -3,7 +3,7 @@ package spacemule.modules.combat.objects
 import scala.{collection => sc}
 import scala.collection.immutable._
 import spacemule.helpers.Converters._
-import spacemule.helpers.{StdErrLog => L}
+import spacemule.logging.Log
 
 class Alliance(val id: Long,
                val name: Option[String],
@@ -51,7 +51,7 @@ class Alliance(val id: Long,
    * Reset ground and space initiative lists.
    */
   def reset() = {
-    L.debug("Resetting alliance (id: %d) initiative lists".format(id))
+    Log.debug("Resetting alliance (id: %d) initiative lists".format(id))
     groundFlanks.reset()
     spaceFlanks.reset()
   }

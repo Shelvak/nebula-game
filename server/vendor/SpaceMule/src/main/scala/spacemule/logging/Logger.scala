@@ -22,8 +22,6 @@ object Logger {
 
 // Implemented from Ruby.
 trait Logger {
-  def defaultComponent: String
-
   def isWritten(level: Int): Boolean
 
   def fatal(message: String, component: String): Unit

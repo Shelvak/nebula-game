@@ -98,8 +98,18 @@ class RubyHashExtensions(obj: RubyHash) {
 }
 
 object JRuby {
+  private[this] var _runtime: Ruby = null
+  def runtime =
+    if (_runtime == null)
+      throw new IllegalStateException("JRuby runtime hasn't been set yet!")
+    else
+      _runtime
+  def setRuntime(runtime: Ruby) { _runtime = runtime }
+
   implicit def pimpRubyObj(obj: IRubyObject) = new IRubyObjToScala(obj)
   implicit def pimpRubyHash(obj: RubyHash) = new RubyHashExtensions(obj)
+  implicit def sym2rbSym(symbol: Symbol) =
+    RubySymbol.newSymbol(runtime, symbol.name)
 
   /**
    * This is needed, because from JRuby Java::scala.None is actually something

@@ -8,7 +8,7 @@ package spacemule.modules.combat.objects
 import spacemule.helpers.RandomArray
 import scala.collection.mutable.HashMap
 import spacemule.helpers.Converters._
-import spacemule.helpers.{StdErrLog => L}
+import spacemule.logging.Log
 
 /**
  * One flank with different unit types.
@@ -79,7 +79,7 @@ class Flank(index: Int) {
    * in this flank.
    */
   def random = {
-    L.debug("Selecting RANDOM target from %s".format(this))
+    Log.debug("Selecting RANDOM target from %s".format(this))
     val withCombatants = byArmor.filter { case (armor, array) =>
       array.size > 0
     }
@@ -93,7 +93,7 @@ class Flank(index: Int) {
    * Can return None if no combatants are in this flank.
    */
   def target(damage: Damage.Type): Option[Combatant] = {
-    L.debug("Selecting BEST target from %s".format(this))
+    Log.debug("Selecting BEST target from %s".format(this))
     Damage.bestArmorTypes(damage).foreach { armor =>
       val targets = byArmor(armor)
       if (! targets.isEmpty) return Some(targets.random)

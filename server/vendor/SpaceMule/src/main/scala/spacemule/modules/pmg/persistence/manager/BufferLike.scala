@@ -28,7 +28,7 @@ trait BufferLike[+R <: Row] {
     if (buffer.isEmpty) return
 
     DB.loadInFile(
-      tableName, rowObject.columns, buffer.map(_.values),
+      tableName, rowObject.columns, buffer.map(_.valuesSeq),
       batchIdToOpt(batchId)
     )
   }

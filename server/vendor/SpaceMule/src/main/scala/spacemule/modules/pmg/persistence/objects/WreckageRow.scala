@@ -18,7 +18,7 @@ case class WreckageRow(
 ) extends Row {
   val companion = WreckageRow
 
-  lazy val valuesSeq = Seq(
+  protected[this] def valuesImpl = Seq(
     if (location.kind == Location.Galaxy)
       location.row.id else DB.loadInFileNull,
     if (location.kind == Location.SolarSystem)

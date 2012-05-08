@@ -15,7 +15,7 @@ case class ObjectiveProgressRow(objectiveId: Int, player: PlayerRow)
 extends Row {
   val companion = ObjectiveProgressRow
 
-  lazy val valuesSeq = List(
+  protected[this] def valuesImpl = List(
     objectiveId, player.id
   )
 }

@@ -24,7 +24,7 @@ case class QuestProgressRow(
 ) extends Row {
   val companion = QuestProgressRow
 
-  lazy val valuesSeq = List(
+  protected[this] def valuesImpl = List(
     questId, player.id, QuestProgressRow.StatusStarted
   )
 }

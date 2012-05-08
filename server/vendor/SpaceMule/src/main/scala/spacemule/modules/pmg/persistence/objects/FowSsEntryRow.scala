@@ -45,7 +45,7 @@ case class FowSsEntryRow(
     case FowSsEntryRow.Owner.Alliance(aid) => aid
   }
 
-  lazy val valuesSeq = Seq(
+  protected[this] def valuesImpl = Seq(
     ssRow.id,
     owner match {
       case FowSsEntryRow.Owner.Player(row) => row.id.toString

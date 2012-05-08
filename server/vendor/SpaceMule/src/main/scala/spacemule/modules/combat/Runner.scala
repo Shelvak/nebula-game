@@ -1,13 +1,11 @@
 package spacemule.modules.combat
 
-import spacemule.helpers.StdErrLog
+import spacemule.logging.Log
 import spacemule.modules.combat.objects._
 import spacemule.helpers.Converters._
-import spacemule.helpers.Benchmarkable
-import spacemule.helpers.BenchmarkableMock
 import post_combat._
 
-object Runner extends BenchmarkableMock {
+object Runner {
   /**
    * Maps attribute changes (ID -> Map[attribute -> newValue]).
    */
@@ -42,25 +40,20 @@ object Runner extends BenchmarkableMock {
     unloadedTroopIds: Set[Long],
     buildings: Set[Building]
   ): Option[Response] = {
-//    StdErrLog.level = StdErrLog.Debug
-    val combat = benchmark("Combat simulation") { () =>
-      StdErrLog.debug("Combat simulation", () =>
-        Combat(
-          location,
-          isBattleground,
-          planetOwner,
-          players,
-          allianceNames,
-          napRules,
-          troops,
-          loadedTroops,
-          unloadedTroopIds,
-          buildings
-        )
+    val combat = Log.block("Combat simulation", level=Log.Debug) { () =>
+      Combat(
+        location,
+        isBattleground,
+        planetOwner,
+        players,
+        allianceNames,
+        napRules,
+        troops,
+        loadedTroops,
+        unloadedTroopIds,
+        buildings
       )
     }
-
-    printBenchmarkResults()
 
     if (combat.log.isEmpty && combat.outcomes.isTie) {
       // There was not combat if all sides have alive enemies and there were

@@ -5,9 +5,6 @@ class Logging::Scala
     @logger = logger
   end
 
-  #def defaultComponent: String
-  def defaultComponent; Logging::Logger::DEFAULT_COMPONENT; end
-
   #def isWritten(level: Int): Boolean
   def isWritten(level)
     Logging::Writer.instance.write?(level)

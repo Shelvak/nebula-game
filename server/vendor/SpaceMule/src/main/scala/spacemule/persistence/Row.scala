@@ -10,9 +10,12 @@ package spacemule.persistence
 
 trait Row {
   val companion: RowObject
-  val valuesSeq: Seq[Any]
-  
-  def values: String = {
+
+  protected[this] def valuesImpl(): Seq[Any]
+
+  final def valuesSeq: Seq[Any] = {
+    val valuesSeq = valuesImpl()
+
     if (companion.columnsSeq.size != valuesSeq.size)
       throw new IllegalArgumentException(
         ("columns sequence size (%d) must be equal to values " +
@@ -21,6 +24,6 @@ trait Row {
         )
       )
 
-    valuesSeq.mkString("\t")
+    valuesSeq
   }
 }

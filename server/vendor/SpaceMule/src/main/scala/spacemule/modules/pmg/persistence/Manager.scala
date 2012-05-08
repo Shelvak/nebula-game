@@ -101,6 +101,7 @@ object Manager {
     val ss = SolarSystemsTable
     val p = PlayersTable
 
+    // Select pooled and attached solar systems
     val rs = DB.query(
       """
 SELECT
@@ -109,19 +110,33 @@ SELECT
   #ss.`player_id`,
   IF(#p.`created_at`, TO_SECONDS('#now') - TO_SECONDS(#p.`created_at`), 0) AS age
 FROM `#ss`
-LEFT JOIN `#p`
-ON #ss.`player_id`=#p.`id`
-WHERE #ss.`galaxy_id`=#galaxy.id
+LEFT JOIN `#p` ON #ss.`player_id`=#p.`id`
+WHERE #ss.`galaxy_id`=#galaxy.id AND (
+  #ss.`kind`=#SolarSystem.Pooled.id OR
+  (#ss.`x` IS NOT NULL AND #ss.`y` IS NOT NULL)
+)
       """
     )
 
     while (rs.next) {
-      val x = rs.getInt(1)
-      val y = rs.getInt(2)
+      val dbX = rs.getObject(1) match {
+        case null => None
+        case i: Int => Some(i)
+      }
+      val dbY = rs.getObject(2) match {
+        case null => None
+        case i: Int => Some(i)
+      }
       val playerId = rs.getInt(3)
       val age = rs.getInt(4)
 
-      galaxy.addExistingSS(x, y, playerId, age)
+      val coords = (dbX, dbY) match {
+        case (Some(x), Some(y)) => Coords(x, y)
+        case (None, None) => None
+        case _ => sys.error("Unknown coord pair: ("+dbX+","+dbY+")")
+      }
+
+      galaxy.addExistingSS(coords, playerId, age)
     }
   }
 
@@ -223,24 +238,28 @@ WHERE #ss.`galaxy_id`=#galaxy.id
 //    items.foreach { i => println(i) }
 //  }
 
-  private def readGalaxy(galaxy: Galaxy) {
+  def readGalaxy(galaxy: Galaxy) {
     initDates()
-    galaxy.zones.foreach { case (coords, zone) => readZone(galaxy, zone) }
+    galaxy.zones.foreach { case (coords, zone) =>
+      readZone(galaxy, zone)
+    }
   }
 
   private def readZone(galaxy: Galaxy, zone: Zone) {
     // Don't read zones without any defined players.
     if (! zone.needsCreation) return
 
-    zone.solarSystems.foreach { 
-      case (coords, entry) =>
-        entry match {
-          case Zone.SolarSystem.New(solarSystem) => {
-            val absoluteCoords = zone.absolute(coords)
-            readSolarSystem(galaxy, Some(absoluteCoords), solarSystem)
+    Log.block("Reading " + zone, level=Log.Debug) { () =>
+      zone.solarSystems.foreach {
+        case (coords, entry) =>
+          entry match {
+            case Zone.SolarSystem.New(solarSystem) => {
+              val absoluteCoords = zone.absolute(coords)
+              readSolarSystem(galaxy, Some(absoluteCoords), solarSystem)
+            }
+            case Zone.SolarSystem.Existing => ()
           }
-          case Zone.SolarSystem.Existing => ()
-        }
+      }
     }
   }
 
@@ -335,6 +354,7 @@ WHERE #ss.`galaxy_id`=#galaxy.id
       case _ => None
     }
 
+    Log.debug("Creating row for "+solarSystem+" @ "+coords)
     val ssRow = new SolarSystemRow(galaxy.id, solarSystem, coords, playerRow)
     solarSystems += ssRow
 
