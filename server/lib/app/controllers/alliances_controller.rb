@@ -213,7 +213,7 @@ class AlliancesController < GenericController
   #
   ACTION_EDIT = 'alliances|edit'
 
-  EDIT_OPTIONS = logged_in + valid(:name => String)
+  EDIT_OPTIONS = logged_in + valid(%w{name})
   EDIT_SCOPE = scope.world
   def self.edit_action(m)
     alliance = get_owned_alliance(m)
