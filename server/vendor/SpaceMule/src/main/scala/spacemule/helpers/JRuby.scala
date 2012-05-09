@@ -6,7 +6,7 @@ import collection.JavaConversions._
 import collection.mutable.{Buffer, Map}
 import exceptions.RaiseException
 import javasupport.JavaUtil
-import org.jruby.RubyHash.RubyHashEntry
+import _root_.java.{util => ju}
 import runtime.Block
 import scala.Boolean
 import spacemule.helpers.JRuby.SRHash
@@ -77,39 +77,28 @@ class IRubyObjToScala(obj: IRubyObject) {
     ))
 }
 
-class RubyHashExtensions(obj: RubyHash) {
-  def asMap = new SRHash(obj)
-
-  def asScalaMap[K, V](
-    keyTransformer: (IRubyObject) => K,
-    valTransformer: (IRubyObject) => V
-  ): Map[K, V] = {
-    val map = Map.empty[K, V]
-    val iter = obj.entrySet().iterator()
-    while (iter.hasNext) {
-      val entry = iter.next().asInstanceOf[RubyHashEntry]
-      val key = entry.getKey.asInstanceOf[IRubyObject]
-      val value = entry.getValue.asInstanceOf[IRubyObject]
-      map(keyTransformer(key)) = valTransformer(value)
-    }
-
-    map
-  }
-}
-
 object JRuby {
-  private[this] var _runtime: Ruby = null
-  def runtime =
-    if (_runtime == null)
+  private[this] var _ruby: Ruby = null
+  def ruby =
+    if (_ruby == null)
       throw new IllegalStateException("JRuby runtime hasn't been set yet!")
     else
-      _runtime
-  def setRuntime(runtime: Ruby) { _runtime = runtime }
+      _ruby
+
+  /**
+   * This should be set from Ruby side.
+   *
+   * require 'jruby'
+   * Java::spacemule.helpers.JRuby.ruby = JRuby.runtime
+   * @param runtime
+   **/
+  def setRuby(runtime: Ruby) { _ruby = runtime }
+
+  def RClass(name: String) = ruby.getClass(name)
 
   implicit def pimpRubyObj(obj: IRubyObject) = new IRubyObjToScala(obj)
-  implicit def pimpRubyHash(obj: RubyHash) = new RubyHashExtensions(obj)
   implicit def sym2rbSym(symbol: Symbol) =
-    RubySymbol.newSymbol(runtime, symbol.name)
+    RubySymbol.newSymbol(ruby, symbol.name)
 
   /**
    * This is needed, because from JRuby Java::scala.None is actually something
@@ -227,11 +216,10 @@ object JRuby {
       def hasNext = rubyIter.hasNext
 
       def next() = {
-        val entry = rubyIter.next.asInstanceOf[RubyHashEntry]
-        (
-          entry.getKey.asInstanceOf[IRubyObject],
-          entry.getValue.asInstanceOf[IRubyObject]
-        )
+        val entry = rubyIter.next.asInstanceOf[
+          ju.Map.Entry[IRubyObject, IRubyObject]
+        ]
+        (entry.getKey, entry.getValue)
       }
     }
 

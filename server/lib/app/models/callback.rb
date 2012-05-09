@@ -1,4 +1,6 @@
 class Callback
+  TABLE_NAME = "callbacks"
+
   attr_reader :id, :klass, :object_id, :event, :ruleset, :ends_at_str
 
   def initialize(id, klass, object_id, event, ruleset, ends_at_str)

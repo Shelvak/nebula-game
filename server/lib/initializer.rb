@@ -239,6 +239,8 @@ end
 # on working DB connection.
 unless rake?
   ActiveRecord::Base.establish_connection(USED_DB_CONFIG)
+  require 'jruby/synchronized'
+  ActiveRecord::Base.connection_pool.extend JRuby::Synchronized
 
   unless App.in_test?
     ActiveRecord::Base.connection_pool.with_connection do

@@ -88,9 +88,7 @@ class Galaxy::Zone
       c_select_all.each { |row| possible.delete([row['x'], row['y']]) }
 
     if possible.blank?
-      raise RuntimeError.new(
-              "No possible spaces for #{self} in galaxy #{galaxy_id}!"
-            )
+      raise "No possible spaces for #{self} in galaxy #{galaxy_id}!"
     else
       possible.to_a.random_element
     end
@@ -176,13 +174,23 @@ class Galaxy::Zone
   # If it happens so that there is NONE home solar systems then returns zones
   # without players. If even then there are no zones, raises an error.
   #
-  def self.list_for(galaxy_id, target_points=0, include_non_home_ss=false)
+  def self.list_for(
+    galaxy_id, target_points=0, max_age=nil, non_home_ss=false
+  )
+    typesig binding, Fixnum, Fixnum, [NilClass, Fixnum], Boolean
+
     zone_diam = Cfg.galaxy_zone_diameter
-    points_select = include_non_home_ss \
+    now = "'#{Time.now.to_s(:db)}'"
+    age_select = max_age.nil? \
+      ? "0 AS age" \
+      : "IF(created_at, TO_SECONDS(#{now}) - TO_SECONDS(created_at), 0) AS age"
+    points_select = non_home_ss \
       ? "0 AS points" \
       : "#{Player::POINT_ATTRIBUTES.join(" + ")} AS points"
-    player_condition = include_non_home_ss ? "1=1" : "player_id IS NOT NULL"
-    join_type = include_non_home_ss ? "LEFT" : "INNER"
+
+    player_condition = non_home_ss ? "1=1" : "player_id IS NOT NULL"
+
+    join_type = non_home_ss ? "LEFT" : "INNER"
 
     subselect = %Q{
 SELECT
@@ -196,6 +204,7 @@ SELECT
   ((POW(1 + 2 * (@zone_y - @zone_x), 2) - 1) / 8.0) + 1 + (@zone_y + 1) * -1
     AS slot,
   player_id,
+  #{age_select},
   #{points_select}
 FROM `solar_systems` AS s
 #{join_type} JOIN players AS p ON p.id=s.player_id
@@ -206,23 +215,27 @@ WHERE
   s.galaxy_id=#{galaxy_id.to_i}
 }
 
+    age_condition = max_age.nil? ? "1=1" : "max_age <= #{max_age.to_i}"
     sql = %Q{
 SELECT
   quarter,
   CAST(slot AS UNSIGNED) AS slot,
   CAST(ABS(AVG(points) - #{target_points.to_i}) AS UNSIGNED) AS points_diff,
+  CAST(MAX(age) AS UNSIGNED) AS max_age,
   CAST(COUNT(player_id) AS UNSIGNED) AS player_count
 FROM (#{subselect}) AS tmp1
 GROUP BY quarter, slot
+HAVING #{age_condition}
 ORDER BY points_diff, quarter, slot
     }
     rows = ActiveRecord::Base.connection.select_all(sql)
 
     if rows.blank?
-      if include_non_home_ss
-        raise RuntimeError, "No solar systems found for galaxy #{galaxy_id}"
+      if non_home_ss
+        raise "No solar systems found for galaxy #{galaxy_id
+          } with target points #{target_points} and max age #{max_age.inspect}"
       else
-        list_for(galaxy_id, target_points, true)
+        list_for(galaxy_id, target_points, max_age, true)
       end
     else
       rows

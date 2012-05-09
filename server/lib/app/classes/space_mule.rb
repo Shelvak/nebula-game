@@ -1,3 +1,5 @@
+require 'jruby'
+
 # Heavy work mule written in Scala.
 class SpaceMule
   include Singleton
@@ -8,35 +10,38 @@ class SpaceMule
   DB = Java::spacemule.persistence.DB
 
   def initialize
+    Java::spacemule.helpers.JRuby.ruby = JRuby.runtime
     SmModules.config.objects.Config.data = GameConfig::ScalaWrapper.new
   end
 
-  # Create a new galaxy with battleground solar system. Returns id of that
-  # galaxy.
-  def create_galaxy(ruleset, callback_url)
+  # Fill created galaxy with battleground solar system and ensure it has free
+  # zones and home solar systems.
+  def fill_galaxy(galaxy, free_zones, free_home_ss)
+    typesig binding, Galaxy, Fixnum, Fixnum
+
     with_db_connection do
-      CONFIG.with_set_scope(ruleset) do
-        Pmg.Runner.create_galaxy(ruleset, callback_url)
+      CONFIG.with_set_scope(galaxy.ruleset) do
+        Pmg.Runner.fill_galaxy(
+          galaxy.id.to_java(:int), galaxy.ruleset, free_zones.to_java(:int),
+          free_home_ss.to_java(:int)
+        )
       end
     end
   end
 
-  # Create a new player in _galaxy_id_. If _trial_ is given, that player is
-  # flagged as trial.
-  def create_player(galaxy_id, ruleset, web_player_id, player_name, trial)
-    typesig binding, Fixnum, String, Fixnum, String, Boolean
+  def ensure_pool(galaxy, max_zone_iterations=1, max_home_ss_iterations=10)
+    typesig binding, Galaxy, Fixnum, Fixnum
 
     with_db_connection do
-      PlayerCreator.invoke(
-        galaxy_id, ruleset, web_player_id, player_name, trial
-      )
-    end
-  end
-
-  # Creates a new, empty zone with only non-player solar systems.
-  def create_zone(galaxy_id, ruleset, slot, quarter)
-    with_db_connection do
-      PlayerCreator.create_zone(galaxy_id, ruleset, slot, quarter)
+      CONFIG.with_set_scope(galaxy.ruleset) do
+        Pmg.Runner.ensurePool(
+          galaxy.id.to_java(:int), galaxy.ruleset,
+          galaxy.pool_free_zones.to_java(:int),
+          max_zone_iterations.to_java(:int),
+          galaxy.pool_free_home_ss.to_java(:int),
+          max_home_ss_iterations.to_java(:int)
+        )
+      end
     end
   end
 
@@ -74,7 +79,7 @@ class SpaceMule
     Pathfinder.invoke(source, target, avoid_npc)
   end
 
-  private
+private
   def with_db_connection
     DB.connection = ActiveRecord::Base.connection.jdbc_connection
     yield

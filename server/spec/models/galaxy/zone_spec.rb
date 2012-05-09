@@ -119,7 +119,10 @@ describe Galaxy::Zone do
 
     def ss_in(x, y, with_player)
       Factory.create(:solar_system, :galaxy => galaxy, :x => x, :y => y,
-        :player => with_player ? Factory.create(:player_for_ratings) : nil)
+        :player => with_player \
+          ? Factory.create(:player_for_ratings) \
+          : nil
+      )
     end
 
     def solar_systems(with_players=true)
@@ -167,6 +170,18 @@ describe Galaxy::Zone do
 
       rows = Galaxy::Zone.list_for(galaxy.id, target_points)
       rows.should == expected
+    end
+
+    it "should exclude zones with old players" do
+      solar_systems = solar_systems()
+      target_points = 1000
+      solar_systems[1][0].player.created_at = 2.weeks.ago
+      solar_systems[1][0].player.save!
+
+      expected = create_expected(solar_systems, target_points)
+
+      rows = Galaxy::Zone.list_for(galaxy.id, target_points)
+      rows.find { |row| row['quarter'] == 1 && row['slot'] == 1 }.should be_nil
     end
 
     it "should include non-home solar systems if no player systems are found" do

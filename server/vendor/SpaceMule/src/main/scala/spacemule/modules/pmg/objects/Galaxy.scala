@@ -1,11 +1,13 @@
 package spacemule.modules.pmg.objects
 
-import scala.collection.mutable.HashMap
-import solar_systems.{Homeworld, Pulsar, Wormhole}
+import solar_systems.{Battleground, Homeworld, Pulsar, Wormhole}
 import spacemule.helpers.Converters._
 import spacemule.modules.config.objects.Config
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.logging.Log
+import collection.mutable.{ListBuffer, HashMap}
+import spacemule.modules.pmg.persistence.Manager
+import runtime.NonLocalReturnControl
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,88 +22,61 @@ class Galaxy(val id: Int, val ruleset: String) {
   val freeSystems = Config.freeSolarSystems
   val wormholes = Config.wormholes
   val miniBattlegrounds = Config.miniBattlegrounds
-  val zones = new HashMap[Coords, Zone]()
-  private[this] var freeHomeSystemCount = 0
 
+  val zones = new HashMap[Coords, Zone]()
+
+  private[this] var _battleground: Option[Battleground] = None
+  def battleground = _battleground
+
+  private[this] var pooledHomeSystemCount = 0
+  val pooledHomeSystems = ListBuffer.empty[Homeworld]
+
+  // Add existing, attached solar system to zone list.
   def addExistingSS(
-    coords: Option[Coords],
+    x: Int, y: Int,
     playerId: Int, // 0 if NULL.
     age: Int
   ) {
-    coords match {
+
+    // For some reason -1 / 2 == 0 instead of -1 in Java.
+    // We must fix this.
+    val zoneX = (x.toFloat / zoneDiameter).floor.toInt
+    val zoneY = (y.toFloat / zoneDiameter).floor.toInt
+    val zoneCoords = Coords(zoneX, zoneY)
+
+    val zone = zones.get(zoneCoords) match {
+      case Some(z) => z
       case None =>
-        // This is a pooled home solar system.
-        freeHomeSystemCount += 1
-      case Some(c) =>
-        // This is a regular, attached solar system.
-        val x = c.x
-        val y = c.y
+        val zone = new Zone(zoneX, zoneY, zoneDiameter)
+        zones(zone.coords) = zone
+        zone
+    }
 
-        // For some reason -1 / 2 == 0 instead of -1 in Java.
-        // We must fix this.
-        val zoneX = (x.toFloat / zoneDiameter).floor.toInt
-        val zoneY = (y.toFloat / zoneDiameter).floor.toInt
-        val zoneCoords = Coords(zoneX, zoneY)
-
-        val zone = zones.get(zoneCoords) match {
-          case Some(z) => z
-          case None =>
-            val zone = new Zone(zoneX, zoneY, zoneDiameter)
-            zones(zone.coords) = zone
-            zone
-        }
-
-        if (age >= Config.zoneMaturityAge) {
-          zone.markAsMature()
-        }
+    if (age >= Config.zoneMaturityAge) {
+      zone.markAsMature()
+    }
+    else {
+      // Calculate coordinate in zone. Ensure that in-zone coordinate is
+      // calculated correctly if absolute coord is negative.
+      def calcCoord(c: Int) = {
+        if (c >= 0) c % zoneDiameter
         else {
-          // Calculate coordinate in zone. Ensure that in-zone coordinate is
-          // calculated correctly if absolute coord is negative.
-          def calcCoord(c: Int) = {
-            if (c >= 0) c % zoneDiameter
-            else {
-              val mod = c.abs % zoneDiameter
-              if (mod == 0) 0 else zoneDiameter - mod
-            }
-          }
-          val ssX = calcCoord(x)
-          val ssY = calcCoord(y)
-          zone.markAsTaken(Coords(ssX, ssY), playerId != 0)
+          val mod = c.abs % zoneDiameter
+          if (mod == 0) 0 else zoneDiameter - mod
         }
-    }
-  }
-
-  /**
-   * Find random zone trying to start from galaxy center.
-   */
-  private def randomZone(): Zone = {
-    Zone.iterate(zoneDiameter, Config.zoneStartSlot) { zone =>
-      // Check if we have zone in these coords
-      zones.get(zone.coords) match {
-        // If we do find existing zone
-        case Some(existing) =>
-          // Add if there are room for one more player there
-          if (existing.isFull) None
-          else Some(existing)
-        case None => Some(zone)
       }
+      val ssX = calcCoord(x)
+      val ssY = calcCoord(y)
+      zone.markAsTaken(Coords(ssX, ssY), playerId != 0)
     }
   }
 
-  /**
-   * Creates zone for player and returns homeworld id.
-   */
-  def createZoneFor(player: Player) {
-    val zone = randomZone()
-    addZone(zone)
-
-    zone.addSolarSystem(new Homeworld(player))
-  }
+  def addPooledHomeSystems(count: Int) { pooledHomeSystemCount += count }
 
   /**
    * Adds zone to galaxy and creates non-player solar systems if it is empty.
    */
-  def addZone(zone: Zone) {
+  private[this] def addZone(zone: Zone) {
     Log.block("Creating zone " + zone, level=Log.Debug) { () =>
       zones(zone.coords) = zone
 
@@ -130,6 +105,12 @@ class Galaxy(val id: Int, val ruleset: String) {
     }
   }
 
+  def createBattleground() {
+    val battleground = new Battleground()
+    battleground.createObjects()
+    _battleground = Some(battleground)
+  }
+
   // Number of free zones in this galaxy.
   def freeZones =
     zones.foldLeft(0) { case (free, (coords, zone)) =>
@@ -146,9 +127,16 @@ class Galaxy(val id: Int, val ruleset: String) {
    *
    * @param count
    * @param maxIterations
+   * @return number of zones created
    */
-  def ensureFreeZones(count: Int, maxIterations: Option[Int]=None) {
-    val toCreate = count - this.freeZones
+  def ensureFreeZones(count: Int, maxIterations: Option[Int]=None): Int = {
+    val free = this.freeZones
+    val toCreate = count - free
+    if (toCreate <= 0) {
+      Log.info(count + " zones are free, no new zones needed to create.")
+      return 0
+    }
+
     Log.block(
       "Ensuring that at least "+count+" zones are free, still need "+
       toCreate+" zones."
@@ -179,46 +167,53 @@ class Galaxy(val id: Int, val ruleset: String) {
             }
           }
       }
+
+      created
     }
   }
 
   // Number of free zones in this galaxy.
-  def freeHomeSystems = freeHomeSystemCount
+  def freeHomeSystems = pooledHomeSystemCount
 
-  def ensureFreeHomeSystems(count: Int, maxIterations: Option[Int]=None) {
+  def ensureFreeHomeSystems(
+    count: Int, maxIterations: Option[Int]=None
+  ): Int = {
     val toCreate = count - freeHomeSystems
+    if (toCreate <= 0) {
+      Log.info(
+        freeHomeSystems + " home ss are free, no new home ss needed to create."
+      )
+      return 0
+    }
+
     Log.block(
       "Ensuring that at least "+count+" home ss are free, still need "+
       toCreate+" home ss."
     ) { () =>
       var created = 0
+      var iterate = true
 
-      val ss = new Homeworld()
+      while (iterate && created < toCreate) {
+        val ss = new Homeworld()
+        ss.createObjects()
+        pooledHomeSystems += ss
+        created += 1
+        Log.debug("Created home ss no. "+created+"/"+toCreate)
 
-      Zone.iterate(zoneDiameter, Config.zoneStartSlot) { zone =>
-        // Exit if we created enough zones.
-        if (created == toCreate) Some(zone)
-        else // Still need new zones.
-          if (zones.contains(zone.coords)) None // This zone is already created.
-          else {
-            addZone(zone)
-            created += 1
-            Log.debug("Created zone no. "+created+"/"+toCreate)
-            // Keep iterating unless we have maxIterations specified and we've
-            // hit the limit.
-            maxIterations.map { max =>
-              if (created == max) {
-                Log.info(
-                  "Created "+created+" zones, still "+
-                  (toCreate-created)+" to go, but exiting because "+
-                  "maxIterations has been hit."
-                )
-                Some(zone)
-              }
-              else None
-            }
+        maxIterations match {
+          case None => ()
+          case Some(iterations) => if (created == iterations) {
+            Log.info(
+              "Created "+created+" home ss, still "+
+              (toCreate-created)+" to go, but exiting because "+
+              "maxIterations has been hit."
+            )
+            iterate = false
           }
+        }
       }
+
+      created
     }
   }
 }

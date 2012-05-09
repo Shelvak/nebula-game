@@ -70,6 +70,7 @@ class CallbackManager
   }
 
   TAG = "callback_manager"
+  TABLE_NAME = Callback::TABLE_NAME
 
   def to_s
     TAG
@@ -151,7 +152,7 @@ class CallbackManager
 
           # Mark this row as sent to processing.
           connection.execute(
-            "UPDATE `callbacks` SET processing=1 WHERE id=#{callback.id}"
+            "UPDATE `#{TABLE_NAME}` SET processing=1 WHERE id=#{callback.id}"
           )
           Actor[:dispatcher].callback!(callback)
 
@@ -230,8 +231,8 @@ class CallbackManager
       klass, column = parse_object(object)
       check_event!(klass, event)
       ! ActiveRecord::Base.connection.select_value(
-        "SELECT 1 FROM callbacks WHERE #{column}=#{object.id} AND event=#{event
-        } AND #{time_condition} LIMIT 1"
+        "SELECT 1 FROM `#{TABLE_NAME}` WHERE #{column}=#{object.id} AND event=#{
+        event} AND #{time_condition} LIMIT 1"
       ).nil?
     end
 
@@ -243,14 +244,14 @@ class CallbackManager
       klass, column = parse_object(object)
       check_event!(klass, event)
       ActiveRecord::Base.connection.execute(
-        "DELETE FROM `callbacks` WHERE #{column}=#{object.id} AND event=#{
+        "DELETE FROM `#{TABLE_NAME}` WHERE #{column}=#{object.id} AND event=#{
         event}"
       )
     end
 
     def get(sql, connection=nil)
       connection ||= ActiveRecord::Base.connection
-      connection.select_one("SELECT * FROM callbacks #{sql} LIMIT 1")
+      connection.select_one("SELECT * FROM `#{TABLE_NAME}` #{sql} LIMIT 1")
     end
 
     private
@@ -269,8 +270,8 @@ class CallbackManager
 
       unless force_replace
         future_row = ActiveRecord::Base.connection.select_one(
-          "SELECT id, ends_at FROM `callbacks` WHERE #{column}='#{object.id.to_i
-          }' AND event=#{event} AND ends_at > NOW() LIMIT 1"
+          "SELECT id, ends_at FROM `#{TABLE_NAME}` WHERE #{column}='#{
+          object.id.to_i}' AND event=#{event} AND ends_at > NOW() LIMIT 1"
         )
 
         raise ArgumentError, "Trying to register event #{TYPES[event]} on #{
@@ -279,7 +280,7 @@ class CallbackManager
       end
 
       ActiveRecord::Base.connection.execute(
-        "REPLACE INTO `callbacks` SET #{column}='#{object.id.to_i
+        "REPLACE INTO `#{TABLE_NAME}` SET #{column}='#{object.id.to_i
         }', ruleset='#{CONFIG.set_scope}', event=#{event
         }, ends_at='#{time.to_s(:db)}'"
       )

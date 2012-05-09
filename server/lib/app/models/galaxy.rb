@@ -71,18 +71,36 @@ class Galaxy < ActiveRecord::Base
     ).order("distance ASC").first
   end
 
-  def self.create_galaxy(ruleset, callback_url)
-    SpaceMule.instance.create_galaxy(ruleset, callback_url)
+  def self.create_galaxy(
+    ruleset, callback_url, free_zones, pool_free_zones, free_home_ss=nil,
+    pool_free_home_ss=nil
+  )
+    typesig binding, String, String, Fixnum, Fixnum,
+      [NilClass, Fixnum], [NilClass, Fixnum]
+
+    free_home_ss ||= free_zones * Cfg.galaxy_zone_max_player_count
+    pool_free_home_ss ||= pool_free_zones * Cfg.galaxy_zone_max_player_count
+
+    galaxy = new(
+      ruleset: ruleset, callback_url: callback_url,
+      pool_free_zones: pool_free_zones, pool_free_home_ss: pool_free_home_ss
+    )
+    galaxy.save!
+
+    SpaceMule.instance.fill_galaxy(galaxy, free_zones, free_home_ss)
+
+    spawn_callback(galaxy)
+    create_metal_system_offer_callback(galaxy)
+    create_energy_system_offer_callback(galaxy)
+    create_zetium_system_offer_callback(galaxy)
+
+    galaxy
   end
 
   # Create player in galaxy _galaxy_id_ with Player#web_user_id, Player#name
   # and Player#trial.
   def self.create_player(galaxy_id, web_user_id, name, trial)
     without_locking { find(galaxy_id) }.create_player(web_user_id, name, trial)
-  end
-
-  def self.create_player_scope(galaxy_id, web_user_id, name)
-    Dispatcher::Scope.galaxy(galaxy_id)
   end
 
   SPAWN_SCOPE = DScope.world
