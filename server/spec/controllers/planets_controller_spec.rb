@@ -498,4 +498,73 @@ describe PlanetsController do
       end.should change(@planet, :player).from(nil).to(player)
     end
   end
+
+  describe "planets|take" do
+    let(:npc_planet) { Factory.create(:planet, :player => nil) }
+    let(:owner_planet) { Factory.create(:planet, :player => player) }
+    let(:other_planet) do
+      Factory.create(:planet, :player => Factory.create(:player))
+    end
+
+    before(:each) do
+      @action = 'planets|bg_spawn'
+      @params = { 'id' => owner_planet.id }
+    end
+
+    it "should fail if player doesn't have ground units in the planet" do
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if ground units cannot fight" do
+      # level 0 unit
+      Factory.create(:unit, :player => player, :level => 0,
+              :location => owner_planet)
+      # hidden unit
+      Factory.create(:unit, :player => player, :level => 1,
+        :location => owner_planet, :hidden => true)
+
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    describe "has units" do
+      before(:each) do
+        # player unit in each type of planet
+        [npc_planet, owner_planet, other_planet].each do |planet|
+          Factory.create(:unit, :player => player, :level => 1,
+            :location => planet)
+        end
+
+        SsObject::Planet.any_instance.stub(:spawn!)
+      end
+
+      it "should fail if planet belongs to other player" do
+        lambda do
+          invoke @action, @params.merge('id' => other_planet.id)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should pass if planet belongs to current player" do
+        lambda do
+          invoke @action, @params.merge('id' => owner_planet.id)
+        end.should_not raise_error
+      end
+
+      it "should pass if planet belongs to NPC" do
+        lambda do
+          invoke @action, @params.merge('id' => npc_planet.id)
+        end.should_not raise_error
+      end
+
+      it "should call spawn" do
+        SsObject::Planet.stub(:find).and_return(owner_planet)
+        owner_planet.should_receive(:spawn!)
+
+        invoke @action, @params.merge('id' => owner_planet.id)
+      end
+    end
+  end
 end

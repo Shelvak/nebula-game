@@ -294,4 +294,27 @@ class PlanetsController < GenericController
     planet.player = m.player
     planet.save!
   end
+
+  ACTION_BG_SPAWN = 'planets|bg_spawn'
+
+  BG_SPAWN_OPTIONS = logged_in + required(:id => Fixnum)
+  BG_SPAWN_SCOPE = scope.world
+  def self.bg_spawn_action(m)
+    has_ground_units = Unit.where(
+      :location_ss_object_id => m.params['id'],
+      :player_id => m.player.id
+    ).combat.any?(&:ground?)
+
+    raise GameLogicError.new(
+      "Player must have available ground units to spawn a boss"
+    ) unless has_ground_units
+
+    planet = SsObject::Planet.find(m.params['id'])
+    if planet.player_id.present? && planet.player_id != m.player.id
+      raise GameLogicError.new(
+        "Player must own the planet or it has to belong to NPC")
+    end
+
+    planet.spawn!
+  end
 end
