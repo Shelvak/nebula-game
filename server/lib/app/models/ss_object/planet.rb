@@ -104,7 +104,9 @@ class SsObject::Planet < SsObject
       "name" => name,
       "terrain" => terrain,
       "width" => width,
-      "height" => height
+      "height" => height,
+      "counter" => counter,
+      "next_spawn" => next_spawn
     }
     if options
       options.assert_valid_keys :owner, :view, :perspective, :index
@@ -274,6 +276,34 @@ class SsObject::Planet < SsObject
       self, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
     )
     Objective::RepairHp.progress(player, damaged_hp)
+  end
+
+  def spawn!
+    raise GameLogicError.new(
+      "Planet must be a battleground"
+    ) unless self.solar_system.battleground?
+
+    cooldown = self.cooldown
+    raise GameLogicError.new(
+      "Cannot spawn while planet has a cooldown"
+    ) if cooldown.present? && cooldown > Time.now
+
+    raise GameLogicError.new(
+      "You cannot spawn until #next_spawn expires"
+    ) if self.next_spawn.present? && self.next_spawn > Time.now
+
+    units = UnitBuilder.from_random_ranges(
+      Cfg.planet_boss_spawn_definition(self.solar_system),
+      location_point, nil, spawn_counter, 1
+    )
+    Unit.save_all_units(units, nil, EventBroker::CREATED)
+
+    self.spawn_counter += 1
+    self.next_spawn = Cfg.planet_boss_spawn_random_delay_date(self.solar_system)
+    self.save!
+
+    EventBroker.fire(self, EventBroker::CHANGED)
+    Combat::LocationChecker.check_location(self.location)
   end
 
 private

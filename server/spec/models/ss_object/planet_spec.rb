@@ -1417,4 +1417,77 @@ describe SsObject::Planet do
       end
     end
   end
+
+  describe "#spawn!" do
+    let(:planet) do
+      Factory.create(:planet, :solar_system => Factory.create(:battleground),
+        :next_spawn => nil)
+    end
+    let(:non_battleground) { Factory.create(:planet) }
+
+    it "should fail if planet isn't a battleground" do
+      lambda do
+        non_battleground.spawn!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if planet has a cooldown" do
+      Factory.create(:cooldown, location: planet.location_point)
+      lambda do
+        planet.spawn!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if next_spawn date is in future" do
+      planet.next_spawn = Time.now + 10.days
+      planet.save!
+      lambda do
+        planet.spawn!
+      end.should raise_error(GameLogicError)
+    end
+    it "should pass if next spawn is null" do
+      lambda do
+        planet.spawn!
+      end.should_not raise_error
+    end
+    it "should pass if next spawn is in past" do
+      planet.next_spawn = Time.now - 10.days
+      planet.save!
+      lambda do
+        planet.spawn!
+      end.should_not raise_error
+    end
+
+    it "should create units" do
+      lambda do
+        planet.spawn!
+      end.should change(Unit.where(:location_ss_object_id => planet.id), :count)
+    end
+    it "should increase #spawn_counter" do
+      lambda do
+        planet.spawn!
+      end.should change(planet, :spawn_counter).by(1)
+    end
+
+    it "should set #next_spawn" do
+      planet.spawn!
+      planet.next_spawn.should be > Time.now
+    end
+
+    it "should fire changed on planet" do
+      EventBroker.should_receive(:fire).with(
+        instance_of(SsObject::Planet),
+        EventBroker::CHANGED
+      )
+
+      planet.spawn!
+    end
+
+    it "should check planet for combat" do
+      Combat::LocationChecker.should_receive(:check_location).
+        with(planet.location).once
+
+      planet.spawn!
+    end
+  end
 end
