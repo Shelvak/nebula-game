@@ -142,4 +142,79 @@ describe Cfg do
       end
     end
   end
+
+  describe "ss_object" do
+    let(:battleground) { Factory.create(:battleground) }
+    let(:mini_battleground) { Factory.create(:mini_battleground) }
+    let(:home_ss) { Factory.create(:home_ss) }
+
+    describe "#planet_boss_spawn_key" do
+      describe "battleground" do
+        it "should return battleground key" do
+          Cfg.planet_boss_spawn_key(battleground).
+            should eq('ss_object.spawn.battleground')
+        end
+      end
+
+      describe "mini battleground" do
+        it "should return mini battleground key" do
+          Cfg.planet_boss_spawn_key(mini_battleground).
+            should eq('ss_object.spawn.mini_battleground')
+        end
+      end
+
+      describe "other" do
+        it "should raise error" do
+          lambda do
+            Cfg.planet_boss_spawn_key(home_ss)
+          end.should raise_error
+        end
+      end
+    end
+
+    describe "#planet_boss_spawn_definition" do
+      describe "battleground" do
+        it "should return battleground unit definition" do
+          Cfg.planet_boss_spawn_definition(battleground).
+            should eq(CONFIG['ss_object.spawn.battleground.units'])
+        end
+      end
+
+      describe "mini battleground" do
+        it "should return mini battleground unit definition" do
+          Cfg.planet_boss_spawn_definition(mini_battleground).
+            should eq(CONFIG['ss_object.spawn.mini_battleground.units'])
+        end
+      end
+
+      describe "other" do
+        it "should raise error" do
+          lambda do
+            Cfg.planet_boss_spawn_definition(home_ss)
+          end.should raise_error
+        end
+      end
+    end
+
+    describe "#planet_boss_spawn_delay_range" do
+      it "should return range" do
+        Cfg.planet_boss_spawn_delay_range(battleground).should
+          be(instance_of(Range))
+      end
+    end
+
+    describe "#planet_boss_spawn_random_delay" do
+      it "should return delay in seconds" do
+        Cfg.planet_boss_spawn_random_delay(battleground).
+          should be_an_instance_of(Float)
+      end
+    end
+
+    describe "#planet_boss_spawn_random_delay_date" do
+      it "should return future date" do
+        Cfg.planet_boss_spawn_random_delay_date(battleground).
+          should be > Time.now
+      end
+    end
+  end
 end

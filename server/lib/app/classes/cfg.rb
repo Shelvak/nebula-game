@@ -389,14 +389,45 @@ class Cfg
       CONFIG[solar_system_spawn_key(solar_system) + ".strategy"]
     end
 
-    ### ss_objects.yml ###
-
+    ### ss_object.yml ###
     def asteroid_wreckage_next_spawn
       CONFIG.eval_rangerand("ss_object.asteroid.wreckage.time.spawn")
     end
 
     def asteroid_wreckage_next_spawn_date
       asteroid_wreckage_next_spawn.from_now
+    end
+
+    # Returns config key for spawn depending on _solar_system_kind_
+    def planet_boss_spawn_key(solar_system)
+      "ss_object.spawn." + case solar_system.kind
+      when SolarSystem::KIND_BATTLEGROUND
+        solar_system.main_battleground? ? "battleground" : "mini_battleground"
+      else
+        raise ArgumentError,
+          "Solar system #{solar_system} must be battlefield type but was: #{
+            solar_system.kind}"
+      end
+    end
+
+    def planet_boss_spawn_definition(solar_system)
+      CONFIG[planet_boss_spawn_key(solar_system) + ".units"]
+    end
+
+    def planet_boss_spawn_delay_range(solar_system)
+      from, to = CONFIG[planet_boss_spawn_key(solar_system) + ".delay"]
+      from = CONFIG.safe_eval(from)
+      to = CONFIG.safe_eval(to)
+      from..to
+    end
+
+    def planet_boss_spawn_random_delay(solar_system)
+      range = planet_boss_spawn_delay_range(solar_system)
+      rand(range.first, range.last + 1)
+    end
+
+    def planet_boss_spawn_random_delay_date(solar_system)
+      solar_system_spawn_random_delay(solar_system).seconds.from_now
     end
   end
 end
