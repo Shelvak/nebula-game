@@ -56,44 +56,6 @@ Message was:
     end
   end
 
-  # Create a new galaxy.
-  #
-  # Parameters:
-  # - ruleset (String): ruleset for given galaxy
-  # - callback_url (String): URL for callback
-  #
-  # Response:
-  # - galaxy_id (Fixnum): ID of created galaxy
-  #
-  ACTION_CREATE_GALAXY = 'tasks|create_galaxy'
-
-  CREATE_GALAXY_OPTIONS = control_token +
-    required(:ruleset => String, :callback_url => String)
-  CREATE_GALAXY_SCOPE = scope.world
-  def self.create_galaxy_action(m)
-    galaxy_id = Galaxy.create_galaxy(
-      m.params['ruleset'], m.params['callback_url']
-    )
-    respond m, :galaxy_id => galaxy_id
-  end
-
-  # Destroy an existing galaxy.
-  #
-  # Parameters:
-  # - id (Fixnum): id of galaxy to be destroyed.
-  #
-  # Response: None
-  #
-  ACTION_DESTROY_GALAXY = 'tasks|destroy_galaxy'
-
-  DESTROY_GALAXY_OPTIONS = control_token + required(:id => Fixnum)
-  DESTROY_GALAXY_SCOPE = scope.world
-  def self.destroy_galaxy_action(m)
-    Galaxy.find(m.params['id']).destroy!
-  rescue ActiveRecord::RecordNotFound
-    # If there is no galaxy, then there is no problem, right?
-  end
-
   # Create a new player in galaxy.
   #
   # Parameters:
@@ -113,12 +75,12 @@ Message was:
   )
   CREATE_PLAYER_SCOPE = scope.slow
   def self.create_player_action(m)
-    web_user_id = m.params['web_user_id']
-		response = Galaxy.create_player(
-      m.params['galaxy_id'], web_user_id, m.params['name'], m.params['trial']
+		player = Galaxy.create_player(
+      m.params['galaxy_id'], m.params['web_user_id'], m.params['name'],
+      m.params['trial']
     )
 
-		respond m, :player_id => response[web_user_id]
+		respond m, :player_id => player.id
   end
 
   # Destroy an existing player.

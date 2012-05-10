@@ -14,6 +14,8 @@ class SolarSystem < ActiveRecord::Base
   KIND_WORMHOLE = 1
   # Battleground solar system
   KIND_BATTLEGROUND = 2
+  # Pooled homeworld system
+  KIND_POOLED = 3
 
   # FK :dependent => :delete_all
   belongs_to :player
@@ -57,6 +59,8 @@ class SolarSystem < ActiveRecord::Base
   scope :battleground, where(:kind => KIND_BATTLEGROUND)
   def wormhole?; kind == KIND_WORMHOLE; end
   scope :wormhole, where(:kind => KIND_WORMHOLE)
+  def pooled?; kind == KIND_POOLED; end
+  scope :pooled, where(:kind => KIND_POOLED)
 
   def to_s
     "<SolarSystem(#{id} @ #{x},#{y}) gid: #{galaxy_id} kind: #{kind}>"

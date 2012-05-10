@@ -64,10 +64,8 @@ object FormulaCalc {
   
   // For calling from JRuby.
 
-  def calc(formula: RubyFixnum) = formula
-  def calc(formula: RubyFixnum, vars: VarMap) = formula
-  def calc(formula: RubyFloat) = formula
-  def calc(formula: RubyFloat, vars: VarMap) = formula
-  def calc(formula: RubyBignum) = formula
-  def calc(formula: RubyBignum, vars: VarMap) = formula
+  def calc(formula: Long) = formula
+  def calc(formula: Long, vars: VarMap) = formula
+  def calc(formula: Double) = formula
+  def calc(formula: Double, vars: VarMap) = formula
 }

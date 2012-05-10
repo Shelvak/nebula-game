@@ -24,6 +24,19 @@ module ActiveRecord
     def save!(*); super; end
   end
 
+  class Migration
+    def enum_for_classes(dir_name)
+      puts "#{ROOT_DIR}/lib/app/models/#{dir_name}/*.rb"
+      types = Dir[
+        "#{ROOT_DIR}/lib/app/models/#{dir_name}/*.rb"
+      ].sort.map do |name|
+        "'#{File.basename(name, ".rb").camelcase}'"
+      end.join(",")
+
+      "ENUM(#{types})"
+    end
+  end
+
   # Fiber safety patches.
 
   class ConnectionAdapters::ConnectionPool

@@ -35,11 +35,11 @@ class SpaceMule
     with_db_connection do
       CONFIG.with_set_scope(galaxy.ruleset) do
         Pmg.Runner.ensurePool(
-          galaxy.id.to_java(:int), galaxy.ruleset,
-          galaxy.pool_free_zones.to_java(:int),
-          max_zone_iterations.to_java(:int),
-          galaxy.pool_free_home_ss.to_java(:int),
-          max_home_ss_iterations.to_java(:int)
+          galaxy.id, galaxy.ruleset,
+          galaxy.pool_free_zones,
+          max_zone_iterations,
+          galaxy.pool_free_home_ss,
+          max_home_ss_iterations
         )
       end
     end

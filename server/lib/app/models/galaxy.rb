@@ -71,6 +71,7 @@ class Galaxy < ActiveRecord::Base
     ).order("distance ASC").first
   end
 
+  # TODO: spec
   def self.create_galaxy(
     ruleset, callback_url, free_zones, pool_free_zones, free_home_ss=nil,
     pool_free_home_ss=nil
@@ -95,6 +96,67 @@ class Galaxy < ActiveRecord::Base
     create_zetium_system_offer_callback(galaxy)
 
     galaxy
+  end
+
+  # TODO: spec
+  def create_player(web_user_id, name, trial)
+    player = Player.new(
+      galaxy_id: id, web_user_id: web_user_id, name: name, trial: trial,
+      planets_count: 1, population_cap: Building::Mothership.population(1)
+    )
+    player.save!
+
+    Quest.start_child_quests(nil, player.id)
+
+    LOGGER.block("cm") {
+    CallbackManager.register(
+      player, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+      Cfg.player_inactivity_time(player.points).from_now
+    )
+    }
+
+    home_ss_id = nil
+    LOGGER.block("Taking ss") {
+    connection.execute("SET @update_id := 0")
+    connection.execute(%Q{
+    UPDATE `#{SolarSystem.table_name}` SET
+      kind=#{SolarSystem::KIND_NORMAL}, player_id=#{player.id},
+      id=(SELECT @update_id := id)
+    WHERE kind=#{SolarSystem::KIND_POOLED} LIMIT 1
+    })
+    home_ss_id = connection.select_value(%Q{SELECT @update_id})
+    raise "We've ran out of pooled solar systems in galaxy #{id}!" \
+      if home_ss_id == 0
+    }
+
+    LOGGER.block("positioning") {
+    iteration = 0
+    begin
+      iteration += 1
+      zone = Galaxy::Zone.for_enrollment(id, Cfg.galaxy_zone_maturity_age)
+      x, y = zone.free_spot_coords(id)
+      SolarSystem.where(id: home_ss_id).update_all(x: x, y: y)
+    rescue ActiveRecord::RecordNotUnique
+      LOGGER.send(
+        iteration % 25 == 0 ? :warn : :info,
+        "Positioning #{player} home ss, #{x},#{y} already taken, iteration #{
+        iteration}, retrying."
+      )
+      # This shouldn't loop for ever, but if it will we'll at least get a ton
+      # of email.
+      retry
+    end
+    }
+
+    LOGGER.block("Updating planets") {
+    now = Time.now
+    scope = SsObject::Planet.where(solar_system_id: home_ss_id)
+    scope.update_all(last_resources_update: now)
+    scope.where("owner_changed IS NOT NULL").
+      update_all(owner_changed: now, player_id: player.id)
+    }
+
+    player
   end
 
   # Create player in galaxy _galaxy_id_ with Player#web_user_id, Player#name
@@ -320,12 +382,6 @@ class Galaxy < ActiveRecord::Base
 
       route
     end
-  end
-
-  def create_player(web_user_id, name, trial)
-    SpaceMule.instance.create_player(
-      id, ruleset, web_user_id, name, trial
-    )
   end
 
   # Return solar system with coordinates x, y.

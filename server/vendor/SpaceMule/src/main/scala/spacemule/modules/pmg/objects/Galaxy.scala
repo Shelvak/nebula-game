@@ -155,7 +155,7 @@ class Galaxy(val id: Int, val ruleset: String) {
             // Keep iterating unless we have maxIterations specified and we've
             // hit the limit.
             maxIterations.map { max =>
-              if (created == max) {
+              if (created != toCreate && created == max) {
                 Log.info(
                   "Created "+created+" zones, still "+
                   (toCreate-created)+" to go, but exiting because "+
@@ -202,14 +202,15 @@ class Galaxy(val id: Int, val ruleset: String) {
 
         maxIterations match {
           case None => ()
-          case Some(iterations) => if (created == iterations) {
-            Log.info(
-              "Created "+created+" home ss, still "+
-              (toCreate-created)+" to go, but exiting because "+
-              "maxIterations has been hit."
-            )
-            iterate = false
-          }
+          case Some(iterations) =>
+            if (created != toCreate && created == iterations) {
+              Log.info(
+                "Created "+created+" home ss, still "+
+                (toCreate-created)+" to go, but exiting because "+
+                "maxIterations has been hit."
+              )
+              iterate = false
+            }
         }
       }
 

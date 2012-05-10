@@ -4,6 +4,7 @@ import spacemule.modules.pmg.classes.geom.Coords
 import ss_objects.{Jumpgate, Asteroid, Planet}
 import spacemule.modules.config.objects.{SsConfig, ResourcesEntry, Config}
 import spacemule.logging.Log
+import spacemule.helpers.JRuby._
 
 class SolarSystem(map: Option[SsConfig.Data]) {
   def this(map: SsConfig.Data) = this(Some(map))
@@ -121,9 +122,12 @@ class SolarSystem(map: Option[SsConfig.Data]) {
 }
 
 object SolarSystem extends Enumeration {
-  val Normal = Value(0, "normal")
-  val Wormhole = Value(1, "wormhole")
-  val Battleground = Value(2, "battleground")
-  val Pooled = Value(3, "pooled")
+  private[this] def const(name: String) =
+    RClass("SolarSystem").getConstant("KIND_" + name.toUpperCase).asInt
+
+  val Normal = Value(const("normal"), "normal")
+  val Wormhole = Value(const("wormhole"), "wormhole")
+  val Battleground = Value(const("battleground"), "battleground")
+  val Pooled = Value(const("pooled"), "pooled")
   type Kind = Value
 }

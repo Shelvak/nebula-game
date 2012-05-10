@@ -8,10 +8,8 @@ import spacemule.persistence.DB
 import java.util.{Calendar, Date}
 import spacemule.modules.pmg.objects._
 import spacemule.helpers.JRuby._
-import solar_systems.{Wormhole, Battleground, Homeworld}
-import collection.mutable.{HashMap, ListBuffer, HashSet}
+import solar_systems.Wormhole
 import spacemule.logging.Log
-import scala.Predef._
 
 object Manager {
   val GalaxiesTable = RClass("Galaxy").callMethod("table_name").toString
@@ -176,18 +174,6 @@ WHERE #ss.`galaxy_id`=#galaxy.id AND #ss.`kind`=#SolarSystem.Pooled.id
       }
     }
   }
-
-// TODO: move to ruby
-//  private def startQuests(playerRow: PlayerRow) {
-//    startQuestIds.foreach { questId =>
-//      questProgresses += QuestProgressRow(questId, playerRow)
-//    }
-//    startObjectiveIds.foreach { objectiveId =>
-//      objectiveProgresses += ObjectiveProgressRow(
-//        objectiveId, playerRow
-//      )
-//    }
-//  }
   
   private[this] def readSolarSystem(
     galaxy: Galaxy, coords: Option[Coords], solarSystem: SolarSystem
@@ -218,18 +204,8 @@ WHERE #ss.`galaxy_id`=#galaxy.id AND #ss.`kind`=#SolarSystem.Pooled.id
       wreckages += wreckageRow
     }
 
-    def addSpawn() {
-
-    }
-
     // Add visibility for other players & spawns.
     solarSystem match {
-        // Add player inactivity check
-//        callbacks += CallbackRow(
-//          playerRow.get, galaxy.ruleset,
-//          CallbackRow.Events.CheckInactivePlayer,
-//          CallbackRow.playerInactivityCheck
-//        )
       case _: Wormhole => ()
       case _ =>
         callbacks += CallbackRow(
