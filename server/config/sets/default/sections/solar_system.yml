@@ -49,6 +49,13 @@ spawn.home.units:
 # Spawning strategy to use
 spawn.home.strategy: outer_circle
 
+# Pooled solar system is just a home solar system not assigned to player.
+# While it is not assigned - don't spawn anything there.
+spawn.pooled.delay: [<%= 12.hours %> / speed, <%= 12.hours %> / speed]
+spawn.pooled.max_spots: 0
+spawn.pooled.units: []
+spawn.pooled.strategy: outer_circle
+
 spawn.regular.delay: [<%= 12.hours %> / speed, <%= 24.hours %> / speed]
 spawn.regular.max_spots: 5
 spawn.regular.units:

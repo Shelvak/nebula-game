@@ -97,7 +97,7 @@ class UnitsController < GenericController
   ATTACK_OPTIONS = logged_in + required(
     :planet_id => Fixnum, :target_id => Fixnum, :unit_ids => Array
   )
-  ATTACK_SCOPE = scope.slow
+  ATTACK_SCOPE = scope.world
   def self.attack_action(m)
     raise GameLogicError.new("unit_ids cannot be empty!") \
       if m.params['unit_ids'].blank?

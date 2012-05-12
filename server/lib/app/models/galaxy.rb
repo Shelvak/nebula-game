@@ -71,7 +71,21 @@ class Galaxy < ActiveRecord::Base
     ).order("distance ASC").first
   end
 
-  # TODO: spec
+  # Creates a new galaxy. This might take a lot of time depending on
+  # _free_zones_ and _free_home_ss_ parameters.
+  #
+  # @param [String] ruleset Ruleset for this new galaxy.
+  # @param [String] callback_url URL for events that should be posted back to
+  # web.
+  # @param [Fixnum] free_zones Number of ensured free zones in the galaxy at the
+  # time of its creation.
+  # @param [Fixnum] pool_free_zones Number of ensured free zones in the galaxy
+  # when the pooler runs.
+  # @param [Fixnum] free_home_ss Number of ensured free home solar systems in
+  # the galaxy at the time of its creation.
+  # @param [Fixnum] pool_free_home_ss Number of ensured free home solar systems
+  # when the pooler runs.
+  # @return [Galaxy] Newly created galaxy.
   def self.create_galaxy(
     ruleset, callback_url, free_zones, pool_free_zones, free_home_ss=nil,
     pool_free_home_ss=nil
@@ -98,71 +112,51 @@ class Galaxy < ActiveRecord::Base
     galaxy
   end
 
+  # Create player in galaxy _galaxy_id_ with Player#web_user_id, Player#name
+  # and Player#trial.
   # TODO: spec
-  def create_player(web_user_id, name, trial)
+  def self.create_player(galaxy_id, web_user_id, name, trial)
     player = Player.new(
-      galaxy_id: id, web_user_id: web_user_id, name: name, trial: trial,
+      galaxy_id: galaxy_id, web_user_id: web_user_id, name: name, trial: trial,
       planets_count: 1, population_cap: Building::Mothership.population(1)
     )
     player.save!
 
     Quest.start_child_quests(nil, player.id)
 
-    LOGGER.block("cm") {
     CallbackManager.register(
       player, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
       Cfg.player_inactivity_time(player.points).from_now
     )
-    }
 
-    home_ss_id = nil
-    LOGGER.block("Taking ss") {
-    connection.execute("SET @update_id := 0")
     connection.execute(%Q{
     UPDATE `#{SolarSystem.table_name}` SET
-      kind=#{SolarSystem::KIND_NORMAL}, player_id=#{player.id},
-      id=(SELECT @update_id := id)
+      kind=#{SolarSystem::KIND_NORMAL}, player_id=#{player.id}
     WHERE kind=#{SolarSystem::KIND_POOLED} LIMIT 1
     })
-    home_ss_id = connection.select_value(%Q{SELECT @update_id})
+
+    home_ss = player.home_solar_system
     raise "We've ran out of pooled solar systems in galaxy #{id}!" \
-      if home_ss_id == 0
-    }
+      if home_ss.nil?
 
-    LOGGER.block("positioning") {
-    iteration = 0
-    begin
-      iteration += 1
-      zone = Galaxy::Zone.for_enrollment(id, Cfg.galaxy_zone_maturity_age)
-      x, y = zone.free_spot_coords(id)
-      SolarSystem.where(id: home_ss_id).update_all(x: x, y: y)
-    rescue ActiveRecord::RecordNotUnique
-      LOGGER.send(
-        iteration % 25 == 0 ? :warn : :info,
-        "Positioning #{player} home ss, #{x},#{y} already taken, iteration #{
-        iteration}, retrying."
-      )
-      # This shouldn't loop for ever, but if it will we'll at least get a ton
-      # of email.
-      retry
-    end
-    }
+    fse = FowSsEntry.new(
+      solar_system: home_ss, player: player, player_planets: true, counter: 1
+    )
+    fse.save!
 
-    LOGGER.block("Updating planets") {
+    zone = Galaxy::Zone.for_enrollment(
+      galaxy_id, Cfg.galaxy_zone_maturity_age
+    )
+    x, y = zone.free_spot_coords(galaxy_id)
+    home_ss.attach!(x, y)
+
     now = Time.now
-    scope = SsObject::Planet.where(solar_system_id: home_ss_id)
+    scope = SsObject::Planet.where(solar_system_id: home_ss.id)
     scope.update_all(last_resources_update: now)
     scope.where("owner_changed IS NOT NULL").
       update_all(owner_changed: now, player_id: player.id)
-    }
 
     player
-  end
-
-  # Create player in galaxy _galaxy_id_ with Player#web_user_id, Player#name
-  # and Player#trial.
-  def self.create_player(galaxy_id, web_user_id, name, trial)
-    without_locking { find(galaxy_id) }.create_player(web_user_id, name, trial)
   end
 
   SPAWN_SCOPE = DScope.world
@@ -318,7 +312,7 @@ class Galaxy < ActiveRecord::Base
         end
       end
     end
-    
+
     players.where(:alliance_id => nil).find_each do |player|
       unless player.victory_points == 0
         player.creds += player.victory_points

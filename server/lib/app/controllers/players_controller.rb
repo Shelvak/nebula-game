@@ -7,8 +7,12 @@ class PlayersController < GenericController
   #
   # Return message params:
   # - success (Boolean)
-  # - required_version (String): version required for connection if client
-  # is refused because of the old version.
+  # - required_version (String): optional: version required for connection
+  # if client is refused because of the old version.
+  # - not_attached (Boolean): optional: is true if player is detached and needs
+  # to be reattached. Client should wait until it receives players|attach with
+  # 'attached' => true, then retry this action.
+  #
   ACTION_LOGIN = 'players|login'
 
   LOGIN_OPTIONS = required(
@@ -16,52 +20,52 @@ class PlayersController < GenericController
     :web_player_id => Fixnum,
     :version => String
   )
-  LOGIN_SCOPE = scope.slow
+  LOGIN_SCOPE = scope.enroll
   def self.login_action(m)
     if ClientVersion.ok?(m.params['version'])
       player = without_locking { Player.find(m.params['server_player_id']) }
       if without_locking { player.galaxy.dev? } || ControlManager.instance.
           login_authorized?(player, m.params['web_player_id'])
-        login m, player
+        if player.detached?
+          push m, ACTION_ATTACH, 'player' => player
+          respond m, success: false, not_attached: true
+        else
+          login m, player
 
-        # This must come before player.attach!
-        push m, GameController::ACTION_CONFIG
+          [
+            GameController::ACTION_CONFIG,
+            ACTION_SHOW,
+            PlanetsController::ACTION_PLAYER_INDEX,
+            TechnologiesController::ACTION_INDEX,
+            QuestsController::ACTION_INDEX,
+            NotificationsController::ACTION_INDEX,
+            RoutesController::ACTION_INDEX,
+            PlayerOptionsController::ACTION_SHOW,
+            ChatController::ACTION_INDEX,
+            GalaxiesController::ACTION_SHOW
+          ].each { |action| push m, action }
 
-        player.attach! if player.detached?
+          # Dispatch current announcement if we have one.
+          ends_at, announcement = AnnouncementsController.get
+          unless ends_at.nil?
+            push m, AnnouncementsController::ACTION_NEW,
+              'ends_at' => ends_at, 'message' => announcement
+          end
 
-        [
-          ACTION_SHOW,
-          PlanetsController::ACTION_PLAYER_INDEX,
-          TechnologiesController::ACTION_INDEX,
-          QuestsController::ACTION_INDEX,
-          NotificationsController::ACTION_INDEX,
-          RoutesController::ACTION_INDEX,
-          PlayerOptionsController::ACTION_SHOW,
-          ChatController::ACTION_INDEX,
-          GalaxiesController::ACTION_SHOW
-        ].each { |action| push m, action }
+          push m, DailyBonusController::ACTION_SHOW \
+            if player.daily_bonus_available?
 
-        # Dispatch current announcement if we have one.
-        ends_at, announcement = AnnouncementsController.get
-        unless ends_at.nil?
-          push m, AnnouncementsController::ACTION_NEW,
-            {'ends_at' => ends_at, 'message' => announcement}
+          respond m, success: true
         end
-
-        push m, DailyBonusController::ACTION_SHOW \
-          if player.daily_bonus_available?
-
-        respond m, :success => true
       else
         raise ActiveRecord::RecordNotFound
       end
     else
-      respond m,
-        :success => false, :required_version => Cfg.required_client_version
+      respond m, success: false, required_version: Cfg.required_client_version
       disconnect m
     end
   rescue ActiveRecord::RecordNotFound
-    respond m, :success => false
+    respond m, success: false
     disconnect m
   end
 
@@ -70,6 +74,28 @@ class PlayersController < GenericController
   SHOW_OPTIONS = logged_in + only_push
   SHOW_SCOPE = scope.world
   def self.show_action(m); respond m, :player => m.player.as_json; end
+
+  # Attaches player to galaxy map.
+  #
+  # Invocation: by server
+  #
+  # Parameters:
+  # - player (Player): player that should be attached
+  #
+  # Response:
+  # - attached (Boolean): true
+  #
+  # TODO: spec
+  ACTION_ATTACH = 'players|attach'
+
+  ATTACH_OPTIONS = only_push + required(player: Player)
+  # Because attaching needs positioning in galaxy map and that cannot be
+  # concurrent.
+  ATTACH_SCOPE = scope.enroll
+  def self.attach_action(m)
+    m.params['player'].attach!
+    respond m, attached: true
+  end
 
   # Shows player profile.
   #

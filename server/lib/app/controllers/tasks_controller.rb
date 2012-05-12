@@ -73,7 +73,7 @@ Message was:
     :galaxy_id => Fixnum, :web_user_id => Fixnum, :name => String,
     :trial => Boolean
   )
-  CREATE_PLAYER_SCOPE = scope.slow
+  CREATE_PLAYER_SCOPE = scope.enroll
   def self.create_player_action(m)
 		player = Galaxy.create_player(
       m.params['galaxy_id'], m.params['web_user_id'], m.params['name'],

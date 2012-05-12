@@ -31,61 +31,9 @@ describe TasksController do
     end
   end
 
-  describe "tasks|create_galaxy" do
-    let(:ruleset) { 'default' }
-    let(:callback_url) { "http://nebula44.test/" }
-
-    before(:each) do
-      @action = "tasks|create_galaxy"
-      @params.merge!('ruleset' => ruleset, 'callback_url' => callback_url)
-    end
-
-    it_should_behave_like "with param options",
-      :required => %w{ruleset callback_url},
-      :needs_login => false, :needs_control_token => true
-
-    it "should call Galaxy.create_galaxy" do
-      Galaxy.should_receive(:create_galaxy).with(ruleset, callback_url)
-      invoke @action, @params
-    end
-
-    it "should return created galaxy id" do
-      invoke @action, @params
-      Galaxy.find(response[:galaxy_id]).should_not be_nil
-    end
-
-    it "should work" do
-      invoke @action, @params
-    end
-  end
-
-  describe "tasks|destroy_galaxy" do
-    let(:galaxy) { Factory.create(:galaxy) }
-
-    before(:each) do
-      @action = "tasks|destroy_galaxy"
-      @params.merge!('id' => galaxy.id)
-    end
-
-    it_should_behave_like "with param options",
-      :required => %w{id},
-      :needs_login => false, :needs_control_token => true
-
-    it "should destroy the galaxy" do
-      invoke @action, @params
-      lambda do
-        galaxy.reload
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should not fail if galaxy is already destroyed" do
-      galaxy.destroy!
-      invoke @action, @params
-    end
-  end
-
   describe "tasks|create_player" do
     let(:galaxy) { Factory.create(:galaxy) }
+    let(:player) { Factory.create(:player) }
 
     before(:each) do
       @action = "tasks|create_player"
@@ -95,6 +43,9 @@ describe TasksController do
         'name' => "P#{Time.now.to_f}",
         'trial' => false
       )
+      Galaxy.stub(:create_player).with(
+        galaxy.id, @params['web_user_id'], @params['name'], @params['trial']
+      ).and_return(player)
     end
 
     it_should_behave_like "with param options",
@@ -104,17 +55,13 @@ describe TasksController do
     it "should call Galaxy.create_player" do
       Galaxy.should_receive(:create_player).with(
         galaxy.id, @params['web_user_id'], @params['name'], @params['trial']
-      ).and_return({})
+      ).and_return(player)
       invoke @action, @params
     end
 
     it "should return player id" do
       invoke @action, @params
-      Player.find(response[:player_id]).should_not be_nil
-    end
-
-    it "should work" do
-      invoke @action, @params
+      Player.find(response[:player_id]).should == player
     end
   end
 

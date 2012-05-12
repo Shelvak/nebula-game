@@ -356,6 +356,8 @@ class Cfg
         solar_system.player_id.nil? ? "regular" : "home"
       when SolarSystem::KIND_BATTLEGROUND
         solar_system.main_battleground? ? "battleground" : "mini_battleground"
+      when SolarSystem::KIND_POOLED
+        "pooled"
       else
         raise ArgumentError,
           "Solar system #{solar_system} with unknown kind: #{solar_system.kind}"

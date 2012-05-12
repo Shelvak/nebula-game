@@ -25,6 +25,9 @@ SpaceMule.instance
 #LOGGER.info "Starting server actor..."
 #Celluloid::Actor[:server] = ServerActor.new(CONFIG['server']['port'])
 
+LOGGER.info "Starting pooler actor..."
+Celluloid::Actor[:pooler] = Pooler.new
+
 LOGGER.info "Starting callback manager actor..."
 Celluloid::Actor[:callback_manager] = CallbackManager.new
 

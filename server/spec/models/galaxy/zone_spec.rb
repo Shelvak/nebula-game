@@ -203,7 +203,7 @@ describe Galaxy::Zone do
       Cfg.stub(:galaxy_zone_max_player_count).and_return(3)
     end
 
-    it "should return zone with free spots and lowest slot number" do
+    it "should return zone with free spots" do
       # Q4, Slot 1, full
       ss[0, 0, player[1]]; ss[0, 1, player[1]]; ss[0, 2, player[1]]
       # Q1, Slot 2, free
@@ -211,6 +211,16 @@ describe Galaxy::Zone do
 
       Galaxy::Zone.for_enrollment(galaxy.id, nil).should ==
         Galaxy::Zone.new(2, 1)
+    end
+
+    it "should return zone with lowest spot number" do
+      # Q4, Slot 1, free
+      ss[0, 0, player[1]]; ss[0, 1, player[1]]
+      # Q1, Slot 2, free
+      ss[8, -1, player[1]]
+
+      Galaxy::Zone.for_enrollment(galaxy.id, nil).should ==
+        Galaxy::Zone.new(1, 4)
     end
 
     it "should raise error if no free zones exist" do

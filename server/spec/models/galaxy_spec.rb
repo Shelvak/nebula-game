@@ -452,4 +452,81 @@ describe Galaxy do
       it_should_behave_like "convoy spawn"
     end
   end
+
+  describe ".create_galaxy" do
+    let(:ruleset) { "default" }
+    let(:callback_url) { "nebula44.lh" }
+    let(:free_zones) { 1 }
+    let(:pool_free_zones) { 10 }
+    let(:free_home_ss) { 5 }
+    let(:pool_free_home_ss) { 50 }
+
+    before(:each) do
+      SpaceMule.instance.stub(:fill_galaxy).and_return do |galaxy|
+        # Create at least one wormhole in the galaxy, because
+        # Cfg#next_convoy_time depends on it.
+        Factory.create(:wormhole, galaxy: galaxy)
+
+        true
+      end
+    end
+
+    %w{ruleset callback_url pool_free_zones pool_free_home_ss}.each do |attr|
+      it "should set ##{attr}" do
+        Galaxy.create_galaxy(
+          ruleset, callback_url, free_zones, pool_free_zones, free_home_ss,
+          pool_free_home_ss
+        ).send(attr).should == send(attr)
+      end
+    end
+
+    it "should set #pool_free_home_ss by default if value is not provided" do
+      Galaxy.create_galaxy(
+        ruleset, callback_url, free_zones, pool_free_zones
+      ).pool_free_home_ss.
+        should == pool_free_zones * Cfg.galaxy_zone_max_player_count
+    end
+
+    it "should call #fill_galaxy on SpaceMule" do
+      SpaceMule.instance.should_receive(:fill_galaxy).with(
+        an_instance_of(Galaxy), free_zones, free_home_ss
+      )
+      Galaxy.create_galaxy(
+        ruleset, callback_url, free_zones, pool_free_zones, free_home_ss,
+        pool_free_home_ss
+      )
+    end
+
+    it "should call #fill_galaxy with default free_home_ss on SpaceMule" do
+      SpaceMule.instance.should_receive(:fill_galaxy).with(
+        an_instance_of(Galaxy), free_zones,
+        free_zones * Cfg.galaxy_zone_max_player_count
+      )
+      Galaxy.create_galaxy(ruleset, callback_url, free_zones, pool_free_zones)
+    end
+
+    %w{
+      spawn_callback create_metal_system_offer_callback
+      create_energy_system_offer_callback create_zetium_system_offer_callback
+    }.each do |method|
+      it "should call ##{method}" do
+        Galaxy.should_receive(method).with(an_instance_of(Galaxy))
+        Galaxy.create_galaxy(
+          ruleset, callback_url, free_zones, pool_free_zones, free_home_ss,
+          pool_free_home_ss
+        )
+      end
+    end
+
+    it "should save the galaxy" do
+      Galaxy.create_galaxy(
+        ruleset, callback_url, free_zones, pool_free_zones, free_home_ss,
+        pool_free_home_ss
+      ).should be_saved
+    end
+  end
+
+  describe ".create_player" do
+
+  end
 end

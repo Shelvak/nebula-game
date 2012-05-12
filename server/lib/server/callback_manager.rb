@@ -1,6 +1,7 @@
 class CallbackManager
   include Celluloid
   include NamedLogMessages
+  include PauseableActor
 
   # Raised if callback already exists and is in future.
   class CallbackAlreadyExists < RuntimeError; end
@@ -77,42 +78,38 @@ class CallbackManager
   end
 
   def initialize
+    super
+
     # Crash if dispatcher crashes, because we might have sent some messages
     # there that will never be processed if we don't restart.
     current_actor.link Actor[:dispatcher]
 
     @running = false
-    @pause = false
     run!
   end
 
   def run
-    raise "Cannot run callback manager while it is running!" if @running
+    abort "Cannot run callback manager while it is running!" if @running
     @running = true
 
     # Tick first time with failed callbacks. This should not be async.
     tick(true)
 
     loop do
-      if @pause
-        @pause = false
-        wait :resume
-      end
-
+      check_for_pause
       sleep 1 # Wait 1 second before next tick.
       tick
     end
   end
 
-  # Pauses callback manager. Callbacks will not be
   def pause
     info "Pausing."
-    @pause = true
+    super
   end
 
   def resume
     info "Resuming."
-    signal :resume
+    super
   end
 
   # Run every callback that is not processed and should have happened by now.

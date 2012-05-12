@@ -1,8 +1,9 @@
 # Informs in what scope some work should be done.
 class Dispatcher::Scope
-  CHAT   = :chat
   WORLD  = :world
-  SLOW   = :slow
+  CHAT   = :chat
+  ENROLL = :enroll
+  LOGIN  = :login
 
   attr_reader :name
 
@@ -15,16 +16,27 @@ class Dispatcher::Scope
   end
 
   class << self
-    def chat
-      new(CHAT)
-    end
-
+    # General director for world related actions.
     def world
       new(WORLD)
     end
 
-    def slow
-      new(SLOW)
+    # Chat-related actions. Chat has to be responsive even if the main server
+    # workers are busy.
+    def chat
+      new(CHAT)
+    end
+
+    # For tasks|create_player. Required because we have to sequentially take
+    # home systems from the pool.
+    def enroll
+      new(ENROLL)
+    end
+
+    # For players|login. Needs separate director because calls to website can
+    # take quite long.
+    def login
+      new(LOGIN)
     end
   end
 end

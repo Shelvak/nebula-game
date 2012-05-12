@@ -133,11 +133,12 @@ Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*')].each do |plugin_dir|
 end
 
 # Dispatcher directors.
-DIRECTORS = {chat: 1, world: 1, slow: 1}
+DIRECTORS = {chat: 1, world: 5, enroll: 1, login: 5}
 # Connections:
 # - callback manager
+# - pooler
 # - workers
-DB_POOL_SIZE = DIRECTORS.values.sum + 1
+DB_POOL_SIZE = DIRECTORS.values.sum + 2
 
 ENV['db_environment'] ||= App.env
 ENV['configuration'] ||= App.env
@@ -339,16 +340,14 @@ end
 ActiveSupport::JSON.backend = :json_gem
 ActiveSupport.use_standard_json_time_format = true
 
-unless rake?
-  LOGGER.info "Creating dispatcher."
-  Celluloid::Actor[:dispatcher] = Dispatcher.new
+LOGGER.info "Creating dispatcher."
+Celluloid::Actor[:dispatcher] = Dispatcher.new
 
-  # Initialize event handlers
-  LOGGER.info "Creating quest event handler."
-  QUEST_EVENT_HANDLER = QuestEventHandler.new
-  LOGGER.info "Creating dispatcher event handler."
-  DISPATCHER_EVENT_HANDLER = DispatcherEventHandler.new
+# Initialize event handlers
+LOGGER.info "Creating quest event handler."
+QUEST_EVENT_HANDLER = QuestEventHandler.new
+LOGGER.info "Creating dispatcher event handler."
+DISPATCHER_EVENT_HANDLER = DispatcherEventHandler.new
 
-  # Used for hotfix evaluation and IRB sessions.
-  ROOT_BINDING = binding
-end
+# Used for hotfix evaluation and IRB sessions.
+ROOT_BINDING = binding
