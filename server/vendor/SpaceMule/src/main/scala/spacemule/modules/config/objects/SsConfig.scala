@@ -2,6 +2,7 @@ package spacemule.modules.config.objects
 
 import spacemule.helpers.JRuby._
 import spacemule.modules.pmg.classes.geom.Coords
+import org.jruby.runtime.builtin.IRubyObject
 
 object SsConfig {
   sealed abstract class Entry(
@@ -43,22 +44,23 @@ object SsConfig {
   ) extends Entry(wreckage, units)
 
   private[this] def extractResources(
-    data: SRHash, key: String = "resources"
+    data: SRHash[IRubyObject, IRubyObject], key: String = "resources"
   ) = {
     data.by(key).map { array =>
       ResourcesEntry.extract(array.asArray)
     }
   }
 
-  private[this] def extractWreckage(data: SRHash) =
+  private[this] def extractWreckage(data: SRHash[IRubyObject, IRubyObject]) =
     extractResources(data, "wreckage")
 
-  private[this] def extractUnits(data: SRHash): Option[Seq[UnitsEntry]] =
+  private[this] def extractUnits(data: SRHash[IRubyObject, IRubyObject]):
+  Option[Seq[UnitsEntry]] =
     data.by("units").map { data => UnitsEntry.extract(data.asArray) }
 
   type Data = Map[Coords, Entry]
 
-  def apply(data: SRHash): Data = {
+  def apply(data: SRHash[IRubyObject, IRubyObject]): Data = {
     data.map { case (positionStr, rbEntryData) =>
       val split = positionStr.toString.split(",").map(_.toInt)
       val (position, angle) = (split(0), split(1))

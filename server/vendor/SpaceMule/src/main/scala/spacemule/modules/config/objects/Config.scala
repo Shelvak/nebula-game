@@ -311,7 +311,7 @@ object Config {
 
   // Common combatant attributes
 
-  type GunDefinition = SRHash
+  type GunDefinition = SRHash[IRubyObject, IRubyObject]
   private val gunDefinitionsCache = HashMap[String, Seq[GunDefinition]]()
   private def gunDefinitions(name: String) = {
     gunDefinitionsCache ||= (name, buffer(name).map { data => data.asMap })

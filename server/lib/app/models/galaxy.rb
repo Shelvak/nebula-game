@@ -21,6 +21,12 @@ class Galaxy < ActiveRecord::Base
   # development galaxies.
   def dev?; Cfg.development_galaxy?(ruleset); end
 
+  def to_s
+    "<Galaxy(#{id}) ruleset:#{ruleset} pool(zones:#{pool_free_zones
+      } home_ss:#{pool_free_home_ss}) callback:#{callback_url} created:#{
+      created_at} apocalypse:#{apocalypse_start} dev:#{dev?}>"
+  end
+
   # Returns number of wormholes in this galaxy.
   def wormhole_count
     solar_systems.where(kind: SolarSystem::KIND_WORMHOLE).count
@@ -122,7 +128,7 @@ class Galaxy < ActiveRecord::Base
     )
     player.save!
 
-    Quest.start_child_quests(nil, player.id)
+    Quest.start_player_quest_line(player.id)
 
     CallbackManager.register(
       player, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,

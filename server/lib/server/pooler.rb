@@ -12,6 +12,9 @@ class Pooler
   def initialize
     super
     @running = false
+
+    # Link to dispatcher.
+    current_actor.link Actor[:dispatcher]
     run!
   end
 
@@ -19,16 +22,13 @@ class Pooler
     abort "Cannot run pooler while it is running!" if @running
     @running = true
 
-    exclusive do
-      with_db_connection do
-        loop do
-          check_for_pause
-          tick
-          sleep 10
-        end
-      end
+    loop do
+      check_for_pause
+      tick
+      sleep 10
     end
   end
+
 
   def pause
     info "Pausing."
@@ -43,9 +43,18 @@ class Pooler
 private
 
   def tick
-    Galaxy.each do |galaxy|
-      debug "Ensuring #{galaxy} pool."
-      SpaceMule.instance.ensure_pool(galaxy)
+    # Disabled until better times until I figure out all those nasty mysql
+    # configuration options. Currently server just stalls when
+    return
+
+    exclusive do
+      with_db_connection do
+        Galaxy.all.each do |galaxy|
+          LOGGER.block("Ensuring #{galaxy} pool.", component: TAG) do
+            SpaceMule.instance.ensure_pool(galaxy)
+          end
+        end
+      end
     end
   end
 

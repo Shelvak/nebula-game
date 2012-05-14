@@ -2,14 +2,14 @@ package spacemule.helpers
 
 import org.jruby.runtime.builtin.IRubyObject
 import org.jruby._
+import scala.{collection => sc}
 import collection.JavaConversions._
-import collection.mutable.{Buffer, Map}
+import collection.mutable.{Buffer, Map, Set}
 import exceptions.RaiseException
 import javasupport.JavaUtil
 import _root_.java.{util => ju}
 import runtime.Block
 import scala.Boolean
-import spacemule.helpers.JRuby.SRHash
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,64 +19,6 @@ import spacemule.helpers.JRuby.SRHash
  * To change this template use File | Settings | File Templates.
  */
 
-class IRubyObjToScala(obj: IRubyObject) {
-  def asInt: Int = obj match {
-    case fn: RubyFixnum => fn.getLongValue.toInt
-    case d: RubyFloat => d.getLongValue.toInt
-    case bn: RubyBignum => sys.error("Cannot fit "+bn+" to Int!")
-    case _ => throw conversionError("Int")
-  }
-
-  def asBigInteger: BigInt = obj match {
-    case fn: RubyFixnum => new BigInt(fn.getBigIntegerValue)
-    case d: RubyFloat => new BigInt(d.getBigIntegerValue)
-    case bn: RubyBignum => new BigInt(bn.getBigIntegerValue)
-    case _ => throw conversionError("Bignum")
-  }
-
-  def asBoolean: Boolean = obj match {
-    case b: RubyBoolean => b.isTrue
-    case _ => throw conversionError("Boolean")
-  }
-
-  def asFloat: Float = obj match {
-    case f: RubyFixnum => f.getDoubleValue.toFloat
-    case f: RubyFloat => f.getValue.toFloat
-    case _ => throw conversionError("Float")
-  }
-
-  def asDouble: Double = obj match {
-    case f: RubyFixnum => f.getDoubleValue
-    case f: RubyFloat => f.getValue
-    case _ => throw conversionError("Double")
-  }
-
-  def asSymbol: Symbol = obj match {
-    case s: RubySymbol => Symbol(s.toString)
-    case _ => throw conversionError("Symbol")
-  }
-
-  def asArray: JRuby.SRArray = obj match {
-    case a: RubyArray => new JRuby.SRArray(a)
-    case _ => throw conversionError("Buffer")
-  }
-
-  def asMap: JRuby.SRHash = obj match {
-    case h: RubyHash => new JRuby.SRHash(h)
-    case _ => throw conversionError("Map")
-  }
-
-  def asSet: JRuby.SRSet =
-    if (obj.getMetaClass.getRealClass == obj.getRuntime.getClass("Set"))
-      new JRuby.SRSet(obj)
-    else throw conversionError("Set")
-
-  private[this] def conversionError(className: String): Exception =
-    new RuntimeException("Cannot convert %s of class %s to %s!".format(
-      obj.inspect().toString, obj.getMetaClass.getRealClass.toString, className
-    ))
-}
-
 object JRuby {
   private[this] var _ruby: Ruby = null
   def ruby =
@@ -84,6 +26,8 @@ object JRuby {
       throw new IllegalStateException("JRuby runtime hasn't been set yet!")
     else
       _ruby
+
+  def rbContext = ruby.getCurrentContext
 
   /**
    * This should be set from Ruby side.
@@ -96,7 +40,13 @@ object JRuby {
 
   def RClass(name: String) = ruby.getClass(name)
 
+  def RSet(set: sc.Set[_]) = ruby.getClass("ScalaSupport::Set").
+    newInstance(rbContext, any2Rb(set), Block.NULL_BLOCK)
+
   implicit def pimpRubyObj(obj: IRubyObject) = new IRubyObjToScala(obj)
+  implicit def int2Rb(int: Int) = JavaUtil.convertJavaToRuby(ruby, int)
+  implicit def long2Rb(long: Long) = JavaUtil.convertJavaToRuby(ruby, long)
+  implicit def any2Rb(any: Any) = JavaUtil.convertJavaToRuby(ruby, any)
   implicit def sym2rbSym(symbol: Symbol) =
     RubySymbol.newSymbol(ruby, symbol.name)
 
@@ -166,8 +116,12 @@ object JRuby {
 
   // Scala-Ruby Set. There is actually no Java backend object for that, so we
   // just abuse the Ruby code!
-  class SRSet(val raw: IRubyObject) extends Set[IRubyObject] {
-    class Iterator extends scala.Iterator[IRubyObject] {
+  class SRSet[T](
+    val raw: IRubyObject,
+    rubyToScala: IRubyObject => T,
+    scalaToRuby: T => IRubyObject
+  ) extends Set[T] {
+    class Iterator extends scala.Iterator[T] {
       private[this] lazy val enumerator = raw.callMethod(context, "each")
 
       def hasNext = try {
@@ -182,19 +136,26 @@ object JRuby {
           else throw e
       }
 
-      def next() = RubyEnumerator.next(context, enumerator)
+      def next() = rubyToScala(RubyEnumerator.next(context, enumerator))
     }
 
-    override def empty = new SRSet(
-      raw.getMetaClass.newInstance(context, Block.NULL_BLOCK)
+    override def empty = new SRSet[T](
+      raw.getMetaClass.newInstance(context, Block.NULL_BLOCK),
+      rubyToScala, scalaToRuby
     )
 
-    def contains(elem: IRubyObject) =
-      raw.callMethod(context, "include?", elem).asBoolean
+    def contains(elem: T) =
+      raw.callMethod(context, "include?", scalaToRuby(elem)).asBoolean
 
-    def +(elem: IRubyObject) = new SRSet(raw.callMethod(context, "+", elem))
+    def +=(elem: T) = {
+      raw.callMethod(context, "add", scalaToRuby(elem))
+      this
+    }
 
-    def -(elem: IRubyObject) = new SRSet(raw.callMethod(context, "-", elem))
+    def -=(elem: T) = {
+      raw.callMethod(context, "delete", scalaToRuby(elem))
+      this
+    }
 
     override def size = raw.callMethod(context, "size").asInt
 
@@ -207,10 +168,14 @@ object JRuby {
   }
 
   // Scala-Ruby Hash
-  class SRHash(val raw: RubyHash)
-    extends Map[IRubyObject, IRubyObject]
-  {
-    class Iterator extends scala.Iterator[(IRubyObject, IRubyObject)] {
+  class SRHash[K, V](
+    val raw: RubyHash,
+    keyRubyToScala: IRubyObject => K,
+    valRubyToScala: IRubyObject => V,
+    keyScalaToRuby: K => IRubyObject,
+    valScalaToRuby: V => IRubyObject
+  ) extends Map[K, V] {
+    class Iterator extends scala.Iterator[(K, V)] {
       private[this] lazy val rubyIter = raw.directEntrySet().iterator()
 
       def hasNext = rubyIter.hasNext
@@ -219,40 +184,123 @@ object JRuby {
         val entry = rubyIter.next.asInstanceOf[
           ju.Map.Entry[IRubyObject, IRubyObject]
         ]
-        (entry.getKey, entry.getValue)
+        (keyRubyToScala(entry.getKey), valRubyToScala(entry.getValue))
       }
     }
 
-    def +=(kv: (IRubyObject, IRubyObject)) = {
-      raw.put(kv._1, kv._2)
+    def +=(kv: (K, V)) = {
+      raw.put(keyScalaToRuby(kv._1), valScalaToRuby(kv._2))
       this
     }
 
-    def -=(key: IRubyObject) = {
-      raw.remove(key)
+    def -=(key: K) = {
+      raw.remove(keyScalaToRuby(key))
       this
     }
 
-    def apply(key: AnyRef) = raw.fastARef(rbKey(key)) match {
+    override def apply(key: K): V = raw.fastARef(any2Rb(key)) match {
       case null => throw new NoSuchElementException("unknown key: " + key)
-      case obj: AnyRef => obj.asInstanceOf[IRubyObject]
+      case obj: Any => valRubyToScala(obj.asInstanceOf[IRubyObject])
     }
 
     // Type erasure does not allow us to define this as get() :(
-    def by(key: AnyRef) = raw.fastARef(rbKey(key)) match {
+    def by(key: Any): Option[V] = raw.fastARef(any2Rb(key)) match {
       case null => None
-      case obj: IRubyObject => Some(obj)
+      case obj: IRubyObject => Some(valRubyToScala(obj))
     }
 
-    def get(key: IRubyObject) = by(key)
+    def get(key: K) = by(key)
 
     override def size = raw.size()
 
     def iterator = new Iterator
 
     override def repr = this
-
-    private[this] def rbKey(key: AnyRef) =
-      JavaUtil.convertJavaToUsableRubyObject(raw.getRuntime, key)
   }
+}
+
+class IRubyObjToScala(obj: IRubyObject) {
+  def asInt: Int = obj match {
+    case fn: RubyFixnum => fn.getLongValue.toInt
+    case d: RubyFloat => d.getLongValue.toInt
+    case bn: RubyBignum => sys.error("Cannot fit "+bn+" to Int!")
+    case _ => throw conversionError("Int")
+  }
+
+  def asLong: Long = obj match {
+    case fn: RubyFixnum => fn.getLongValue
+    case d: RubyFloat => d.getLongValue
+    case bn: RubyBignum => sys.error("Cannot fit "+bn+" to Long!")
+    case _ => throw conversionError("Long")
+  }
+
+  def asBigInteger: BigInt = obj match {
+    case fn: RubyFixnum => new BigInt(fn.getBigIntegerValue)
+    case d: RubyFloat => new BigInt(d.getBigIntegerValue)
+    case bn: RubyBignum => new BigInt(bn.getBigIntegerValue)
+    case _ => throw conversionError("Bignum")
+  }
+
+  def asBoolean: Boolean = obj match {
+    case b: RubyBoolean => b.isTrue
+    case _ => throw conversionError("Boolean")
+  }
+
+  def asFloat: Float = obj match {
+    case f: RubyFixnum => f.getDoubleValue.toFloat
+    case f: RubyFloat => f.getValue.toFloat
+    case _ => throw conversionError("Float")
+  }
+
+  def asDouble: Double = obj match {
+    case f: RubyFixnum => f.getDoubleValue
+    case f: RubyFloat => f.getValue
+    case _ => throw conversionError("Double")
+  }
+
+  def asSymbol: Symbol = obj match {
+    case s: RubySymbol => Symbol(s.toString)
+    case _ => throw conversionError("Symbol")
+  }
+
+  def asArray: JRuby.SRArray = obj match {
+    case a: RubyArray => new JRuby.SRArray(a)
+    case _ => throw conversionError("Buffer")
+  }
+
+  def asMap[K, V](
+    keyRubyToScala: IRubyObject => K, valRubyToScala: IRubyObject => V,
+    keyScalaToRuby: K => IRubyObject, valScalaToRuby: V => IRubyObject
+  ): JRuby.SRHash[K, V] = obj match {
+    case h: RubyHash => new JRuby.SRHash[K, V](
+      h, keyRubyToScala, valRubyToScala, keyScalaToRuby, valScalaToRuby
+    )
+    case _ => throw conversionError("Map")
+  }
+
+  def asMap: JRuby.SRHash[IRubyObject, IRubyObject] = obj match {
+    case h: RubyHash => new JRuby.SRHash[IRubyObject, IRubyObject](
+      h,
+      obj => obj, obj => obj,
+      obj => obj, obj => obj
+    )
+    case _ => throw conversionError("Map")
+  }
+
+  def asSet[T](
+    rubyToScala: IRubyObject => T,
+    scalaToRuby: T => IRubyObject
+  ): JRuby.SRSet[T] =
+    if (obj.getMetaClass.getRealClass == obj.getRuntime.getClass("Set"))
+      new JRuby.SRSet[T](obj, rubyToScala, scalaToRuby)
+    else throw conversionError("Set")
+
+  def asSet: JRuby.SRSet[IRubyObject] = asSet(item => item, item => item)
+
+  def unwrap[T]: T = obj.toJava(AnyRef.getClass).asInstanceOf[T]
+
+  private[this] def conversionError(className: String): Exception =
+    new RuntimeException("Cannot convert %s of class %s to %s!".format(
+      obj.inspect().toString, obj.getMetaClass.getRealClass.toString, className
+    ))
 }

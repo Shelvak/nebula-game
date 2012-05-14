@@ -13,8 +13,8 @@ object Combat {
   // alliance id -> alliance name
   type AllianceNames = sc.Map[Long, String]
   // alliance id -> Set[napped alliance ids]
-  type NapRules = sc.Map[Long, Set[Long]]
-  type LoadedTroops = sc.Map[Long, Set[Troop]]
+  type NapRules = sc.Map[Long, sc.Set[Long]]
+  type LoadedTroops = sc.Map[Long, sc.Set[Troop]]
 
   object Outcome extends Enumeration {
     /**
@@ -53,12 +53,13 @@ object Combat {
     location: Location,
     isBattleground: Boolean,
     planetOwner: Option[Player],
-    players: Set[Option[Player]],
+    players: sc.Set[Option[Player]],
     allianceNames: Combat.AllianceNames,
-    napRules: NapRules, troops: Set[Troop],
+    napRules: NapRules,
+    troops: sc.Set[Troop],
     loadedTroops: Combat.LoadedTroops,
-    unloadedTroopIds: Set[Long],
-    buildings: Set[Building]
+    unloadedTroopIds: sc.Set[Long],
+    buildings: sc.Set[Building]
   ) =
     new Combat(location, isBattleground, planetOwner, players, allianceNames,
       napRules, troops, loadedTroops, unloadedTroopIds, buildings)
@@ -71,19 +72,19 @@ class Combat(
   location: Location,
   isBattleground: Boolean,
   planetOwner: Option[Player],
-  players: Set[Option[Player]],
+  players: sc.Set[Option[Player]],
   allianceNames: Combat.AllianceNames,
   napRules: Combat.NapRules,
-  troops: Set[Troop],
+  troops: sc.Set[Troop],
   loadedTroops: Combat.LoadedTroops,
-  unloadedTroopIds: Set[Long],
-  buildings: Set[Building]
+  unloadedTroopIds: sc.Set[Long],
+  buildings: sc.Set[Building]
 ) {
   // Units unloaded to ground, and those who are still kept in their
   // transporters.
   val (unloadedTroops, stillLoadedTroops) = {
-    var unloaded = Map[Long, Set[Troop]]()
-    var retained = Map[Long, Set[Troop]]()
+    var unloaded = Map[Long, sc.Set[Troop]]()
+    var retained = Map[Long, sc.Set[Troop]]()
 
     loadedTroops.foreach { case (transporterId, transporterTroops) =>
       val (transporterUnloaded, transporterRetained) =
@@ -120,8 +121,9 @@ class Combat(
   /**
    * Map of alliance id => alliance and player id => alliance id.
    */
-  val alliances = Alliances(planetOwner, players, allianceNames, napRules,
-                            combatants)
+  val alliances = Alliances(
+    planetOwner, players, allianceNames, napRules, combatants
+  )
   // Generate JSON representation before running combat because after combat all
   // HP properties will be changed.
   alliances.toMap

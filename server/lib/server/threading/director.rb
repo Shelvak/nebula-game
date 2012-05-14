@@ -34,12 +34,13 @@ class Threading::Director
     typesig binding, Threading::Director::Task
 
     info "Got work: #{task}"
-    worker = reserve_worker
-    if worker.nil?
+    entry = reserve_worker
+    if entry.nil?
       info "No free workers, enqueueing: #{task}"
       @task_queue << task
     else
-      worker.work!(task)
+      info "Dispatching to #{entry.name}: #{task}"
+      entry.worker.work!(task)
     end
 
     report
@@ -75,7 +76,6 @@ class Threading::Director
 
   def reserve_worker
     return if @free_workers.blank?
-    entry = @free_workers.remove_first
-    entry.worker
+    @free_workers.remove_first
   end
 end

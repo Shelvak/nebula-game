@@ -69,7 +69,7 @@ object Planet {
        'units' => UnitsEntry configuration
      }
      */
-    def extract(data: SRHash): Map = {
+    def extract(data: SRHash[IRubyObject, IRubyObject]): Map = {
       try {
         val size = data("size").asArray
         val area = Area(size(0).asInt, size(1).asInt)

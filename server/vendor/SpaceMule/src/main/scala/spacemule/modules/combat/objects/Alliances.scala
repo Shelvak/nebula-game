@@ -1,6 +1,7 @@
 package spacemule.modules.combat.objects
 
 import scala.util.Random
+import scala.{collection => sc}
 import spacemule.helpers.Converters._
 import spacemule.logging.Log
 import spacemule.modules.combat.Combat
@@ -21,10 +22,10 @@ object Alliances {
    */
   def apply(
     planetOwner: Option[Player],
-    players: Set[Option[Player]],
+    players: sc.Set[Option[Player]],
     allianceNames: Combat.AllianceNames,
     napRules: Combat.NapRules,
-    combatants: Set[Combatant]
+    combatants: sc.Set[Combatant]
   ): Alliances = {
     val notAllied: Long = 0
 
@@ -58,13 +59,15 @@ object Alliances {
 
     // Create alliance id -> alliance map wth players and combatants.
     val alliances = expanded.map { case (allianceId, plrs) =>
-        // Filter combatants that belong to this alliance.
-        val allianceCombatants = combatants.filter { c =>
-          cache(c.player) == allianceId
-        }
-        val allianceName = allianceNames.get(allianceId)
-        (allianceId -> new Alliance(allianceId, allianceName,
-                                    plrs, allianceCombatants))
+      // Filter combatants that belong to this alliance.
+      val allianceCombatants = combatants.filter { c =>
+        cache(c.player) == allianceId
+      }
+      val allianceName = allianceNames.get(allianceId)
+
+      allianceId -> new Alliance(
+        allianceId, allianceName, plrs, allianceCombatants
+      )
     }
 
     val allianceIds = alliances.keySet

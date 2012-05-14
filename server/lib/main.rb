@@ -39,30 +39,6 @@ end
 trap("INT", &stop_server)
 trap("TERM", &stop_server)
 
-if App.in_development?
-  # Console drop-out thread.
-  Thread.new do
-    loop do
-      if $IRB_RUNNING
-        sleep 1
-      else
-        input = gets.chomp
-        case input
-        when "cc"
-          puts "\n\nDropping into IRB shell. Server operation suspended."
-          puts "Press CTRL+C again to exit the server.\n\n"
-
-          puts "Pausing callback manager..."
-          Celluloid::Actor[:callback_manager].pause
-          puts "Starting IRB session..."
-          IRB.start_session(ROOT_BINDING)
-          puts "\nIRB done. Server operation resumed.\n\n"
-        end
-      end
-    end
-  end
-end
-
 ## Sleep forever while other threads do the dirty work.
 #App.server_state = App::SERVER_STATE_RUNNING
 #LOGGER.info "Server initialized."

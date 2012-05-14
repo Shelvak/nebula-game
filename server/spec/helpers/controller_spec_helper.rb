@@ -87,20 +87,32 @@ module ControllerSpecHelper
     @controller.pushed?(action, params).should be_true
   end
 
-  def should_push(action, params={})
-    @controller.should_receive(:push).with(
-      an_instance_of(Dispatcher::Message), action, params
-    )
+  def should_push(action, params=nil)
+    if params.nil?
+      @controller.should_receive(:push).with(
+        an_instance_of(Dispatcher::Message), action
+      )
+    else
+      @controller.should_receive(:push).with(
+        an_instance_of(Dispatcher::Message), action, params
+      )
+    end
   end
 
   def should_have_not_pushed(action, params={})
     @controller.pushed?(action, params).should be_false
   end
 
-  def should_not_push(action, params={})
-    @controller.should_not_receive(:push)..with(
-      an_instance_of(Dispatcher::Message), action, params
-    )
+  def should_not_push(action, params=nil)
+    if params.nil?
+      @controller.should_not_receive(:push).with(
+        an_instance_of(Dispatcher::Message), action
+      )
+    else
+      @controller.should_not_receive(:push).with(
+        an_instance_of(Dispatcher::Message), action, params
+      )
+    end
   end
 
   def invoke(action, params={})

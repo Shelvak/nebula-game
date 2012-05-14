@@ -133,7 +133,12 @@ Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*')].each do |plugin_dir|
 end
 
 # Dispatcher directors.
-DIRECTORS = {chat: 1, world: 5, enroll: 1, login: 5}
+DIRECTORS = {
+  chat: 1,    # Not much to do, one worker is enough.
+  enroll: 1,  # Sequential, otherwise db locks kick in.
+  login: 20,  # Highly IO-bound, so can be very concurrent.
+  world: 6,   # Main workhorse, not too concurrent because of DB locks.
+}
 # Connections:
 # - callback manager
 # - pooler
