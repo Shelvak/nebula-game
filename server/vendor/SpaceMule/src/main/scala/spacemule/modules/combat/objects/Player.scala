@@ -1,5 +1,9 @@
 package spacemule.modules.combat.objects
 
+import scala.{collection => sc}
+import java.{util => ju}
+import scala.collection.JavaConversions._
+
 object Player {
   object Points {
     def empty = Points(0, 0, 0, 0, 0)
@@ -15,7 +19,8 @@ object Player {
      * 
      * Modifier example: 0.25 would mean 25% more damage.
      */
-    type ModsMap = Map[String, Double]
+    type ModsMap = sc.Map[String, Double]
+    type JavaModsMap = ju.Map[String, Double]
   }
 
   class Technologies(
@@ -24,6 +29,16 @@ object Player {
     criticalMods: Technologies.ModsMap,
     absorptionMods: Technologies.ModsMap
   ) {
+    def this(
+      damageMods: Technologies.JavaModsMap,
+      armorMods: Technologies.JavaModsMap,
+      criticalMods: Technologies.JavaModsMap,
+      absorptionMods: Technologies.JavaModsMap
+    ) = this(
+      mapAsScalaMap(damageMods), mapAsScalaMap(armorMods),
+      mapAsScalaMap(criticalMods), mapAsScalaMap(absorptionMods)
+    )
+
     /**
      * Returns damage mod from technologies for combatant.
      */

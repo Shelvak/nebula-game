@@ -34,16 +34,29 @@ object Config {
   // Called by JRuby
   def setData(value: ScalaConfig) { _data = value }
 
+  private[this] def get(key: String): IRubyObject =
+    data.get(key) match {
+      case null => throw new IllegalArgumentException(
+        "Cannot find config key "+key+"!"
+      )
+      case obj: IRubyObject => obj
+    }
+  private[this] def getOpt(key: String): Option[IRubyObject] =
+    data.get(key) match {
+      case null => None
+      case obj: IRubyObject => Some(obj)
+    }
+
   //////////////////////////////////////////////////////////////////////////////
   // Helper methods
   //////////////////////////////////////////////////////////////////////////////
-  
-  private def int(key: String): Int = data.get(key).asInt
-  private def string(key: String): String = data.get(key).toString
-  private def boolean(key: String): Boolean = data.get(key).asBoolean
-  private def float(key: String) = data.get(key).asFloat
-  private def double(key: String) = data.get(key).asDouble
-  private def buffer(key: String) = data.get(key).asArray
+
+  private def int(key: String): Int = get(key).asInt
+  private def string(key: String): String = get(key).toString
+  private def boolean(key: String): Boolean = get(key).asBoolean
+  private def float(key: String) = get(key).asFloat
+  private def double(key: String) = get(key).asDouble
+  private def buffer(key: String) = get(key).asArray
   private def area(key: String) = new Area(
     int("%s.width".format(key)), int("%s.height".format(key))
   )
@@ -55,7 +68,7 @@ object Config {
     FormulaCalc.calc(string(key), speedMap ++ vars)
 
   def formulaEval(key: String, default: Double): Double =
-    data.getOpt(key) match {
+    getOpt(key) match {
       case Some(value) => FormulaCalc.calc(value.toString, speedMap)
       case None => default
     }
@@ -63,7 +76,7 @@ object Config {
   def formulaEval(
     key: String, vars: Map[String, Double], default: Double
   ): Double =
-    data.getOpt(key) match {
+    getOpt(key) match {
       case Some(value) => FormulaCalc.calc(value.toString, speedMap ++ vars)
       case None => default
     }
@@ -205,7 +218,7 @@ object Config {
   private def getCombatVpsFormula(kind: String): CombatVpsFormula = {
     val key = "%s.battle.victory_points".format(kind)
     (groundDamage: Int, spaceDamage: Int, fairnessMultiplier: Double) => {
-      data.get(key) match {
+      get(key) match {
         case formula: RubyString => FormulaCalc.calc(formula.toString, Map(
           "damage_dealt_to_ground" -> groundDamage.toDouble,
           "damage_dealt_to_space" -> spaceDamage.toDouble,
@@ -219,7 +232,7 @@ object Config {
   private def getCombatCredsFormula(kind: String): CombatCredsFormula = {
     val key = "%s.battle.creds".format(kind)
     (victoryPoints: Double) => {
-      data.get(key) match {
+      get(key) match {
         case formula: RubyString => FormulaCalc.calc(formula.toString, Map(
           "victory_points" -> victoryPoints
         ))
@@ -240,7 +253,7 @@ object Config {
   // Returns VPs given out for receiving number of damage points.
   def vpsForReceivedDamage(combatant: Combatant, damage: Int): Double = {
     val key = "%s.vps_on_damage".format(resolveCombatantKey(combatant))
-    val multiplier = data.getOpt(key) match {
+    val multiplier = getOpt(key) match {
       case Some(v) => v.asDouble
       case None => 0.0
     }
@@ -249,7 +262,7 @@ object Config {
 
   def credsForKilling(combatant: Combatant): Int = {
     val key = "%s.creds_for_killing".format(resolveCombatantKey(combatant))
-    data.getOpt(key) match {
+    getOpt(key) match {
       case Some(v) => v.asInt
       case None => 0
     }
@@ -278,7 +291,7 @@ object Config {
 
   def ssObjectSize = range("ss_object.size")
 
-  def planetExpandedMap(name: String) = data.get("planet.expanded_map").
+  def planetExpandedMap(name: String) = get("planet.expanded_map").
     asMap(name).asMap
 
   private[this] val solarSystemMapSets = HashMap.empty[String, SsMapSet]
@@ -289,7 +302,7 @@ object Config {
     else {
       val configKey = "solar_system.map.%s".format(key)
       try {
-        val buffer = data.get(configKey).asArray
+        val buffer = get(configKey).asArray
         val set = SsMapSet.extract(buffer)
         solarSystemMapSets(key) = set
         set
@@ -412,7 +425,7 @@ object Config {
   def buildingZetiumStorage(building: Building) =
     buildingStorage(building, "zetium")
 
-  def isBuildingNpc(name: String) = data.getOpt(
+  def isBuildingNpc(name: String) = getOpt(
     "buildings.%s.npc".format(name.underscore)
   ) match {
     case Some(value) => value.asBoolean
@@ -463,7 +476,7 @@ object Config {
     if (! planetMapSetCache.contains(key)) {
       val mapSet = try {
         ss_objects.Planet.MapSet.extract(
-          data.get("planet.map.%s".format(key)).asArray
+          get("planet.map.%s".format(key)).asArray
         )
       }
       catch {

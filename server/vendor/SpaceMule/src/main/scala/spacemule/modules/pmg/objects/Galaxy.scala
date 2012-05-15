@@ -159,7 +159,7 @@ class Galaxy(val id: Int, val ruleset: String) {
                 Log.info(
                   "Created "+created+" zones, still "+
                   (toCreate-created)+" to go, but exiting because "+
-                  "maxIterations has been hit."
+                  "maxIterations"+max+" has been hit."
                 )
                 Some(zone)
               }
@@ -207,7 +207,7 @@ class Galaxy(val id: Int, val ruleset: String) {
               Log.info(
                 "Created "+created+" home ss, still "+
                 (toCreate-created)+" to go, but exiting because "+
-                "maxIterations has been hit."
+                "maxIterations="+iterations+" has been hit."
               )
               iterate = false
             }

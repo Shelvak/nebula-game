@@ -51,6 +51,17 @@ object JRuby {
     RubySymbol.newSymbol(ruby, symbol.name)
 
   /**
+   * Just a crazy hack, to avoid this:
+   * >> Java::scala.Some.new(3)
+   * ArgumentError: wrong number of arguments (0 for 1)
+   *
+   * @param value
+   * @tparam T
+   * @return
+   */
+  def createSome[T](value: T) = Some(value)
+
+  /**
    * This is needed, because from JRuby Java::scala.None is actually something
    * different than None obtained from Scala in such way.
    *

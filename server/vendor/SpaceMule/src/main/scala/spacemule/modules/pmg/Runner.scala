@@ -5,6 +5,7 @@ import spacemule.modules.pmg.persistence.Manager
 import spacemule.logging.Log
 
 case class EnsurePoolResult(createdZones: Int, createdHomeSs: Int)
+case class FreeStatsResult(freeZones: Int, freeHomeSs: Int)
 
 object Runner {
   /**
@@ -51,6 +52,7 @@ object Runner {
     freeZones: Int, maxZoneIterations: Int,
     freeHomeSystems: Int, maxHomeIterations: Int
   ): EnsurePoolResult = {
+    Some(3)
     require(
       freeZones >= 0,
       "free zones should be >= 0, but was "+freeZones
@@ -82,5 +84,13 @@ object Runner {
     Log.block("save galaxy") { () => Manager.save(galaxy) }
 
     EnsurePoolResult(createdZones, createdHomeSs)
+  }
+
+  def freeStats(galaxyId: Int): FreeStatsResult = {
+    val galaxy = new Galaxy(galaxyId, "default")
+
+    Log.block("load galaxy") { () => Manager.load(galaxy) }
+
+    FreeStatsResult(galaxy.freeZones, galaxy.freeHomeSystems)
   }
 }

@@ -5,8 +5,14 @@ module SpaceMule::Combat
   Location = SpaceMule::SmModules.combat.objects.Location
 
   # See SpaceMule#combat for options.
-  def self.invoke(location, players, nap_rules, units, loaded_units,
-                  unloaded_unit_ids, buildings)
+  def self.invoke(
+    location, players, nap_rules, units, loaded_units, unloaded_unit_ids,
+    buildings
+  )
+    typesig binding,
+      [LocationPoint, SsObject::Planet],
+      [Array, Set], Hash, [Array, Set], Hash, [Array, Set], [Array, Set]
+
     LOGGER.block("Issuing combat to SpaceMule") do
       # Convert location
       sm_location = convert_location(location)
@@ -37,39 +43,40 @@ module SpaceMule::Combat
 
       # Convert and partition troops.
 
-      # Hash troops: {unit.id => SpaceMule Troop}
-      sm_troops = Set.new(
-        units.map { |unit| convert_unit(hashed_sm_players, unit) }
-      )
+      sm_troops = units.each_with_object(Set.new) do |unit, set|
+        set.add convert_unit(hashed_sm_players, unit)
+      end
 
       # Units which are loaded into transporters.
-      sm_loaded_units = loaded_units.inject({}) do |hash, pair|
-        transporter_id, loaded = pair
+      sm_loaded_units = loaded_units.each_with_object({}) do
+        |(transporter_id, loaded), hash|
+
         hash[transporter_id] = Set.new
         loaded.each do |loaded_unit|
           hash[transporter_id].add convert_unit(hashed_sm_players, loaded_unit)
         end
+
         hash
       end
 
       # Convert buildings
-      sm_buildings = Set.new(
-        buildings.map { |building| convert_building(sm_planet_owner, building) }
-      )
+      sm_buildings = buildings.each_with_object(Set.new) do |building, set|
+        set.add convert_building(sm_planet_owner, building)
+      end
 
       battleground = battleground?(location)
 
       Combat.Runner.run(
-        sm_location,
-        battleground,
-        sm_planet_owner,
-        sm_players,
-        sm_alliance_names,
-        nap_rules,
-        sm_troops,
-        sm_loaded_units,
-        unloaded_unit_ids,
-        sm_buildings
+        sm_location.to_scala,
+        battleground.to_scala,
+        sm_planet_owner.to_scala,
+        sm_players.to_scala,
+        sm_alliance_names.to_scala,
+        nap_rules.to_scala,
+        sm_troops.to_scala,
+        sm_loaded_units.to_scala,
+        unloaded_unit_ids.to_scala,
+        sm_buildings.to_scala
       )
     end
   end
@@ -107,12 +114,11 @@ module SpaceMule::Combat
 
   # Returns Ruby +Hash+ of {player_id => Scala +Player+} pairs.
   def self.convert_players(players)
-    sm_players = {}
-    players.each do |player|
+    sm_players = players.each_with_object({}) do |player, hash|
       if player.nil?
-        sm_players[nil] = None
+        hash[nil] = None
       else
-        sm_players[player.id] = Some(CO.Player.new(
+        hash[player.id] = Some(CO.Player.new(
           player.id,
           player.name,
           player.alliance_id.nil? ? None : Some(player.alliance_id),
@@ -146,7 +152,9 @@ module SpaceMule::Combat
       critical = TechModApplier.apply(technologies, TechTracker::CRITICAL)
       absorption = TechModApplier.apply(technologies, TechTracker::ABSORPTION)
 
-      CO.Player::Technologies.new(damage, armor, critical, absorption)
+      CO.Player::Technologies.new(
+        damage.to_scala, armor.to_scala, critical.to_scala, absorption.to_scala
+      )
     end
   end
 

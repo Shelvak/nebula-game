@@ -1,74 +1,50 @@
 # Scala <-> Ruby interoperability.
-module ScalaSupport
-  class Hash
-    include Enumerable
-
-    def initialize(raw); @raw = raw; end
-    def size; @raw.size; end
-    def [](key); @raw.apply(key); end
-    def []=(key, value); @raw.update(key, value); end
-    def to_s; @raw.to_s; end
-    def each; @raw.foreach { |tuple| yield tuple._1, tuple._2 }; end
-  end
-
-  class Set
-    include Enumerable
-
-    def initialize(raw); @raw = raw; end
-    def size; @raw.size; end
-    def to_s; @raw.to_s; end
-    def each; @raw.foreach { |item| yield item }; end
-  end
-
-  class Array
-    include Enumerable
-
-    def initialize(raw); @raw = raw; end
-    def size; @raw.size; end
-    def [](key); @raw.apply(key); end
-    def []=(key, value); @raw.update(key, value); end
-    def to_s; @raw.to_s; end
-    def each; @raw.foreach { |item| yield item }; end
-  end
-
-  class Tuple
-    include Enumerable
-
-    attr_reader :size
-
-    def initialize(raw, size)
-      @raw = raw
-      @size = size
-    end
-
-    def [](index)
-      index = @size + index if index < 0
-      raise ArgumentError,
-        "Index #{index} is out of bounds! (Max: #{@size - 1})" \
-        if index > size - 1
-      @raw.send(:"_#{index}")
-    end
-
-    def to_s; @raw.to_s; end
-    def each; (0...@size).each { |index| self[index] }; end
-  end
-end
-
 class Object
+  def to_scala
+    case self
+    when Hash
+      scala_hash = Java::scala.collection.mutable.HashMap.new
+      each do |key, value|
+        scala_hash.update(key.to_scala, value.to_scala)
+      end
+      scala_hash
+    when Set
+      scala_set = Java::scala.collection.mutable.HashSet.new
+      each { |item| scala_set.send(:"+=", item.to_scala) }
+      scala_set
+    when Array
+      scala_array = Java::scala.collection.mutable.ArrayBuffer.new
+      each { |value| scala_array += value.to_scala }
+      scala_array
+    when Symbol
+      to_s
+    else
+      self
+    end
+  end
+
   def from_scala
     case self
     when Java::scala.collection.Map, Java::scala.collection.immutable.Map,
         Java::scala.collection.mutable.Map
-      ScalaSupport::Hash.new(self)
+      ruby_hash = {}
+      foreach { |tuple| ruby_hash[tuple._1.from_scala] = tuple._2.from_scala }
+      ruby_hash
     when Java::scala.collection.Set, Java::scala.collection.immutable.Set,
         Java::scala.collection.mutable.Set
-      ScalaSupport::Set.new(self)
+      ruby_set = Set.new
+      foreach { |item| ruby_set.add item.from_scala }
+      ruby_set
     when Java::scala.collection.Seq
-      ScalaSupport::Array.new(self)
+      ruby_array = []
+      foreach { |item| ruby_array.push item.from_scala }
+      ruby_array
     when Java::scala.Product
-      tuple = self.class.to_s.match(/Tuple(\d+)$/)
-      if tuple
-        ScalaSupport::Tuple.new(self, tuple[1].to_i)
+      if self.class.to_s.match /Tuple\d+$/
+        # Conversion from scala Tuples.
+        ruby_array = []
+        productIterator.foreach { |item| ruby_array.push item.from_scala }
+        ruby_array
       else
         self
       end

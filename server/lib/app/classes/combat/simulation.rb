@@ -80,11 +80,11 @@ module Combat::Simulation
 
     # Create combat log
     replay_info = CombatLog.replay_info(
-      client_location,
-      response['alliances'],
-      nap_rules,
-      response['outcomes'],
-      response['log']
+      client_location.as_json,
+      response['alliances'].as_json,
+      nap_rules.as_json,
+      response['outcomes'].as_json,
+      response['log'].as_json
     )
     combat_log = CombatLog.create_from_combat!(replay_info)
 

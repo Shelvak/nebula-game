@@ -56,8 +56,10 @@ class SpaceMule
   # _buildings_ is Array of +Building+s.
   def combat(location, players, nap_rules, units, loaded_units,
              unloaded_unit_ids, buildings)
-    response = Combat.invoke(location, players, nap_rules, units, loaded_units,
-                             unloaded_unit_ids, buildings)
+    response = Combat.invoke(
+      location, players, nap_rules, units, loaded_units, unloaded_unit_ids,
+      buildings
+    )
     response.empty? ? nil : response.get
   end
 

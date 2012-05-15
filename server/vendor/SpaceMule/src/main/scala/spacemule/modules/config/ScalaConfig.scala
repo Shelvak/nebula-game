@@ -14,6 +14,4 @@ import org.jruby.runtime.builtin.{Variable, IRubyObject}
 
 trait ScalaConfig {
   def get(key: String): IRubyObject
-
-  def getOpt(key: String): Option[IRubyObject]
 }

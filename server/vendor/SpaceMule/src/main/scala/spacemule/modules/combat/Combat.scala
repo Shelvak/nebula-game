@@ -55,7 +55,7 @@ object Combat {
     planetOwner: Option[Player],
     players: sc.Set[Option[Player]],
     allianceNames: Combat.AllianceNames,
-    napRules: NapRules,
+    napRules: Combat.NapRules,
     troops: sc.Set[Troop],
     loadedTroops: Combat.LoadedTroops,
     unloadedTroopIds: sc.Set[Long],

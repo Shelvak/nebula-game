@@ -5,10 +5,6 @@ import spacemule.modules.combat.objects._
 import spacemule.helpers.Converters._
 import spacemule.helpers.JRuby._
 import post_combat._
-import org.jruby.runtime.builtin.IRubyObject
-import org.jruby.RubyHash
-import org.jruby.javasupport.JavaUtil
-import org.jruby.runtime.Block
 import scala.{collection => sc}
 
 object Runner {
@@ -38,39 +34,14 @@ object Runner {
     location: Location,
     isBattleground: Boolean,
     planetOwner: Option[Player],
-    rbPlayers: IRubyObject, // Set[Option[Player]],
-    rbAllianceNames: RubyHash, // Combat.AllianceNames
-    rbNapRules: RubyHash, // Combat.NapRules,
-    rbTroops: IRubyObject, // Set[Troop],
-    rbLoadedTroops: RubyHash, // Map[Long, Set[Troop]],
-    rbUnloadedTroopIds: IRubyObject, // Set[Long],
-    rbBuildings: IRubyObject // Set[Building]
+    players: sc.Set[Option[Player]],
+    allianceNames: Combat.AllianceNames,
+    napRules: Combat.NapRules,
+    troops: sc.Set[Troop],
+    loadedTroops: Combat.LoadedTroops,
+    unloadedTroopIds: sc.Set[Long],
+    buildings: sc.Set[Building]
   ): Option[Response] = {
-    val players = rbPlayers.asSet[Option[Player]](
-      obj => obj.unwrap[Option[Player]], opt => opt
-    )
-    val allianceNames = rbAllianceNames.asMap[Long, String](
-      obj => obj.asLong, obj => obj.toString,
-      long => long, string => string
-    )
-    val napRules = rbNapRules.asMap[Long, sc.Set[Long]](
-      obj => obj.asLong,
-      obj => obj.asSet[Long](obj => obj.asLong, long => long),
-      long => long, set => RSet(set)
-    )
-    val troops = rbTroops.asSet[Troop](
-      obj => obj.unwrap[Troop], troop => troop
-    )
-    val loadedTroops = rbLoadedTroops.asMap[Long, sc.Set[Troop]](
-      obj => obj.asLong,
-      obj => obj.asSet[Troop](obj => obj.unwrap[Troop], troop => troop),
-      long => long, set => RSet(set)
-    )
-    val unloadedTroopIds = rbUnloadedTroopIds.
-      asSet[Long](obj => obj.asLong, long => long)
-    val buildings = rbBuildings.
-      asSet[Building](obj => obj.unwrap[Building], b => b)
-
     val combat = Log.block("Combat simulation", level=Log.Debug) { () =>
       Combat(
         location,
@@ -78,9 +49,9 @@ object Runner {
         planetOwner,
         players,
         allianceNames,
-        napRules,
+        napRules.map { case (k, v) => k -> v.toSet },
         troops,
-        loadedTroops,
+        loadedTroops.map { case(k, v) => k -> v.toSet },
         unloadedTroopIds,
         buildings
       )

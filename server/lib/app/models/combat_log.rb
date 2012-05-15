@@ -21,8 +21,10 @@ class CombatLog < ActiveRecord::Base
 
   # All the data needed to play back combat replay.
   def self.replay_info(client_location, alliances, nap_rules, outcomes, log)
+    typesig binding, Hash, Hash, Hash, Hash, Hash
+
     {
-      "location" => client_location.as_json,
+      "location" => client_location,
       "alliances" => alliances,
       "nap_rules" => nap_rules,
       "outcomes" => outcomes,

@@ -306,9 +306,9 @@ describe Combat do
 
     expected = {
       # Should give out less damage
-      "given" => be_within(0.01).of(mod),
+      "given" => be_within(0.02).of(mod),
       # And should take more damage
-      "taken" => be_within(0.01).of(1.0 / mod),
+      "taken" => be_within(0.02).of(1.0 / mod),
     }
     actual = {
       "given" => dmg_dealt_u1_overpop.to_f / dmg_dealt_u1_normal,
