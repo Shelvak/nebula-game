@@ -4,6 +4,7 @@ import spacemule.modules.pmg.classes.geom.Coords
 import ss_objects.{Jumpgate, Asteroid, Planet}
 import spacemule.modules.config.objects.{SsConfig, ResourcesEntry, Config}
 import spacemule.logging.Log
+import jruby.JRuby._
 import spacemule.helpers.JRuby._
 
 class SolarSystem(map: Option[SsConfig.Data]) {

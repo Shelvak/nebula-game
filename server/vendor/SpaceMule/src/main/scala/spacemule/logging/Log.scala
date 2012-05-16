@@ -48,9 +48,21 @@ object Log {
     message: => String,
     level: Logger.Level.Value=Logger.Level.Info,
     component: => String=defaultComponent
-  )(block: () => T) = {
+  )(block: () => T): T = {
     if (isWritten(level.id)) {
-      logger.logBlock(message, level.id, component, block)
+      // Nasty work-around for jruby+scala magic clash.
+      // If scala inner class is passed into jruby, funky exceptions like this:
+      // Exception: java.lang.IncompatibleClassChangeError:
+      // spacemule.modules.combat.Combat and spacemule.modules.combat.Combat
+      // $$anonfun$spacemule$modules$combat$Combat$$simulateTick$1$$anonfun
+      // $apply$mcV$sp$1$$anonfun$13 disagree on InnerClasses attribute
+      // (NativeException) occur. BLAH.
+      var retValue: Option[T] = None
+      logger.logBlock(
+        message, level.id, component,
+        () => { retValue = Some(block()) }
+      )
+      retValue.get
     }
     else {
       block()

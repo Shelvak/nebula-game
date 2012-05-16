@@ -1,7 +1,7 @@
 package spacemule.modules.pmg.objects.ss_objects
 
 import spacemule.helpers.Converters._
-import spacemule.helpers.JRuby._
+import core.Values._
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area._
 import spacemule.modules.pmg.objects.SSObject
@@ -10,8 +10,7 @@ import spacemule.modules.pmg.objects.planet.tiles._
 import spacemule.helpers.RandomArray
 import scala.{collection => sc}
 import spacemule.modules.config.objects.{ResourcesEntry, UnitsEntry, Config}
-import org.jruby.runtime.builtin.IRubyObject
-import scala.collection.mutable.{Buffer, HashSet, ListBuffer, ArrayBuffer}
+import scala.collection.mutable.{HashSet, ListBuffer, ArrayBuffer}
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,9 +25,8 @@ object Planet {
     /**
      * Extract a map set from ruby config.
      */
-    def extract(data: SRArray) = {
-      val maps = data.mapWithIndex { case (rawMapData, index) =>
-        val mapData = rawMapData.asMap
+    def extract(data: sc.Seq[sc.Map[String, Any]]) = {
+      val maps = data.mapWithIndex { case (mapData, index) =>
         val extracted = try {
           Map.extract(mapData)
         }
@@ -69,21 +67,22 @@ object Planet {
        'units' => UnitsEntry configuration
      }
      */
-    def extract(data: SRHash[IRubyObject, IRubyObject]): Map = {
+    def extract(data: sc.Map[String, Any]): Map = {
       try {
-        val size = data("size").asArray
-        val area = Area(size(0).asInt, size(1).asInt)
+        val size = data("size").asInstanceOf[sc.Seq[Long]]
+        val area = Area(size(0), size(1))
 
         val name = data("name").toString
-        val terrainKind = data("terrain").asInt
+        val terrainKind = data("terrain").asInstanceOf[Long]
 
         val tilesMap = new AreaMap(area)
 
-        data("tiles").asMap.foreach { case (tileKind, tiles) =>
-          val tile = Tile(tileKind.asInt)
-          tiles.asArray.foreach { rbCoordArray =>
-            val coordArray = rbCoordArray.asArray
-            val coord = Coords(coordArray(0).asInt, coordArray(1).asInt)
+        data("tiles").asInstanceOf[
+          sc.Map[Long, sc.Seq[sc.Seq[Long]]]
+        ].foreach { case (tileKind, tiles) =>
+          val tile = Tile(tileKind)
+          tiles.foreach { coordArray =>
+            val coord = Coords(coordArray(0), coordArray(1))
             try {
               Planet.setTile(tilesMap, tile, coord)
             }
@@ -98,19 +97,24 @@ object Planet {
           }
         }
 
-        val weight = data("weight").asInt
-        val resources = ResourcesEntry.extract(data("resources").asArray)
+        val weight = data("weight").asInstanceOf[Long]
+        val resources = ResourcesEntry.extract(
+          data("resources").asInstanceOf[sc.Seq[Double]]
+        )
 
         val (buildings, buildingTiles) =
-          data("buildings").asMap.foldLeft(
+          data("buildings").asInstanceOf[
+            sc.Map[String, sc.Seq[sc.Seq[Any]]]
+          ].foldLeft(
             (ListBuffer.empty[Building], HashSet.empty[Coords])
           ) { case ((b, bt), (buildingName, dataArray)) =>
-            dataArray.asArray.foreach { rbEntryArray =>
-              val entryArray = rbEntryArray.asArray
-              val x = entryArray(0).asInt
-              val y = entryArray(1).asInt
-              val level = entryArray(2).asInt
-              val units = UnitsEntry.extract(entryArray(3).asArray)
+            dataArray.foreach { entryArray =>
+              val x = entryArray(0).asInstanceOf[Long]
+              val y = entryArray(1).asInstanceOf[Long]
+              val level = entryArray(2).asInstanceOf[Long]
+              val units = UnitsEntry.extract(
+                entryArray(3).asInstanceOf[sc.Seq[sc.Seq[Any]]]
+              )
 
               val building = new Building(buildingName.toString, x, y, level)
               building.createUnits(units)
@@ -121,7 +125,9 @@ object Planet {
             (b, bt)
           }
 
-        val units = UnitsEntry.extract(data("units").asArray)
+        val units = UnitsEntry.extract(
+          data("units").asInstanceOf[sc.Seq[sc.Seq[Any]]]
+        )
 
         Map(
           area, name, terrainKind, weight, resources, tilesMap, buildings.toSeq,

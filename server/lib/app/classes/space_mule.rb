@@ -10,7 +10,7 @@ class SpaceMule
   DB = Java::spacemule.persistence.DB
 
   def initialize
-    Java::spacemule.helpers.JRuby.ruby = JRuby.runtime
+    Java::spacemule.helpers.JRuby.runtime = JRuby.runtime
     SmModules.config.objects.Config.data = GameConfig::ScalaWrapper.new
   end
 
@@ -22,8 +22,7 @@ class SpaceMule
     with_db_connection do
       CONFIG.with_set_scope(galaxy.ruleset) do
         Pmg.Runner.fill_galaxy(
-          galaxy.id.to_java(:int), galaxy.ruleset, free_zones.to_java(:int),
-          free_home_ss.to_java(:int)
+          galaxy.id, galaxy.ruleset, free_zones, free_home_ss
         )
       end
     end

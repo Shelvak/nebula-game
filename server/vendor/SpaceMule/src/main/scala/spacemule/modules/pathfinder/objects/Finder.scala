@@ -5,13 +5,12 @@
 
 package spacemule.modules.pathfinder.objects
 
-import java.{util => ju}
 import scala.collection.mutable.ListBuffer
 import spacemule.modules.pathfinder.{galaxy, solar_system}
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
 import spacemule.modules.config.objects.Config
-import scala.collection.JavaConversions._
+import scala.collection.{Set, Seq}
 
 object Finder {
   def find(

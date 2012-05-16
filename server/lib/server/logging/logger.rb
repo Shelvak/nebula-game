@@ -56,11 +56,22 @@ class Logging::Logger
       start = Time.now
       returned = yield
       timing = "[%5.3f seconds]" % (Time.now - start)
-    rescue Exception => exception; end
+    rescue Exception => exception
+    end
 
     @indent = old_indent
     end_name = message[0..10]
     end_name += "..." unless end_name == message
+
+    # This one is used by scala to implement returns from closures.
+    # So we catch it, save it, pretend that we have no exception, then raise
+    # it at the end of the logger.
+    if exception && exception.is_a?(NativeException) && exception.cause.is_a?(
+      Java::scala.runtime.NonLocalReturnControl
+    )
+      non_local_jump = exception.cause
+      exception = nil
+    end
 
     if exception
       @block_buffer +=
@@ -75,6 +86,9 @@ class Logging::Logger
         @block_buffer += "[END of #{end_name}] #{timing}\n"
       end
     end
+
+    # Ensure Scala non local jumps are preserved.
+    raise non_local_jump if non_local_jump
 
     returned
   ensure

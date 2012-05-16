@@ -23,16 +23,13 @@ class Logging::Scala
 
   #def logBlock[T](
   #  message: String, level: Int, component: String, block: () => T
-  #): T
+  #): Unit
   def logBlock(message, level, component, block)
-    ret_val = @logger.block(
+    @logger.block(
       message, level: Logging::Writer::LEVEL_TO_TYPE[level],
       component: component
-    ) { block.apply }
-
-    # Avoid unnecessary conversion to Long when we really expect Int.
-    return ret_val.to_java(:int) if ret_val.is_a?(Fixnum) &&
-      ret_val > Java::scala.Int.MinValue && ret_val < Java::scala.Int.MaxValue
-    ret_val
+    ) do
+      block.apply
+    end
   end
 end

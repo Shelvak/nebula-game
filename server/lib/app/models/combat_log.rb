@@ -25,10 +25,10 @@ class CombatLog < ActiveRecord::Base
 
     {
       "location" => client_location,
-      "alliances" => alliances,
-      "nap_rules" => nap_rules,
-      "outcomes" => outcomes,
-      "log" => log,
+      "alliances" => alliances.as_json,
+      "nap_rules" => nap_rules.as_json,
+      "outcomes" => outcomes.as_json,
+      "log" => log.as_json,
       "config" => CONFIG.filter(REPLAY_INFO_CONFIG_REGEXP)
     }
   end

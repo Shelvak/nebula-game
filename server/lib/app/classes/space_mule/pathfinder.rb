@@ -45,7 +45,7 @@ module SpaceMule::Pathfinder
 
     # Add avoidable points if we have something to avoid.
     sm_avoidable_points = avoidable_points.blank? \
-      ? None : Some(avoidable_points)
+      ? None : Some(avoidable_points.to_scala)
 
     sm_source_jumpgates = Set.new
     sm_target_jumpgates = Set.new
@@ -85,11 +85,11 @@ module SpaceMule::Pathfinder
     sm_target = to_pf_locatable(target, sm_target_solar_system)
 
     PfO.Finder.find(
-      sm_source, sm_source_jumpgates,
+      sm_source, sm_source_jumpgates.to_scala,
       sm_source_solar_system.nil? ? None : Some(sm_source_solar_system),
       sm_source_ss_galaxy_coords,
 
-      sm_target, sm_target_jumpgates,
+      sm_target, sm_target_jumpgates.to_scala,
       sm_target_solar_system.nil? ? None : Some(sm_target_solar_system),
       sm_target_ss_galaxy_coords,
 

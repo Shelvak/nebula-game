@@ -5,11 +5,15 @@
 
 package spacemule.modules.config.objects
 
+import scala.{collection => sc}
 import spacemule.helpers.Converters._
-import spacemule.helpers.JRuby._
+import jruby.JRuby._
+import core.Values._
 import spacemule.modules.pmg.objects.Troop
 
 object UnitsEntry {
+  type Data = sc.Seq[sc.Seq[Any]]
+
   /**
    * Extract data from dynamicly typed data store:
    *
@@ -18,14 +22,13 @@ object UnitsEntry {
       ...
     ]
    */
-  def extract(entries: SRArray): Seq[UnitsEntry] = {
-    entries.map { rbEntryArray =>
-      val entryArray = rbEntryArray.asArray
+  def extract(entries: Data): Seq[UnitsEntry] = {
+    entries.map { entryArray =>
       new UnitsEntry(
         entryArray(1).toString.camelcase,
-        entryArray(0).asInt,
-        entryArray(2).asInt,
-        entryArray(3).asDouble
+        entryArray(0).asInstanceOf[Long],
+        entryArray(2).asInstanceOf[Long],
+        entryArray(3)
       )
     }
   }

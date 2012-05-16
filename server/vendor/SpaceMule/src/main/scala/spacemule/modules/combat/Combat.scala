@@ -204,20 +204,24 @@ class Combat(
 
     L.block("Traversing initiatives", level=L.Debug) { () =>
       alliances.traverseInitiatives { case (allianceId, combatant) =>
-          val fire = L.block(
+          L.block(
             "Combatant "+combatant+" from alliance id "+allianceId+
             " is shooting", level=L.Debug
-          ) { () => shootGuns(allianceId, combatant) }
+          ) { () =>
+            val fire = shootGuns(allianceId, combatant)
 
-          if (! fire.isEmpty) tick += fire
-          else L.debug("Combatant could not shoot anything.")
+            if (! fire.isEmpty) tick += fire
+            else L.debug("Combatant could not shoot anything.")
+          }
       }
     }
 
     tick
   }
 
-  private def shootGuns(allianceId: Long, combatant: Combatant) = {
+  private def shootGuns(
+    allianceId: Long, combatant: Combatant
+  ): Log.Tick.Fire = {
     val fire = new Log.Tick.Fire(combatant)
 
     combatant.guns.foreach { gun =>

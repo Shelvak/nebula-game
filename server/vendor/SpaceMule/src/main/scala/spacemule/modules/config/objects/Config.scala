@@ -1,20 +1,21 @@
 package spacemule.modules.config.objects
 
+import _root_.java.util.NoSuchElementException
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
-import spacemule.modules.pmg.classes.ObjectChance
 import spacemule.modules.pmg.objects._
 import spacemule.modules.pmg.objects.planet._
 import spacemule.modules.combat
 import spacemule.modules.pathfinder.{objects => pfo}
 import scala.collection.Map
+import scala.{collection => sc}
 import spacemule.modules.combat.objects.{Combatant, Damage, Armor, Stance}
 import spacemule.modules.config.ScalaConfig
-import collection.mutable.HashMap
-import org.jruby.runtime.builtin.IRubyObject
-import org.jruby._
-import spacemule.helpers.JRuby._
+import core.Values._
+import jruby.JRuby._
+import _root_.java.{util => ju}
+import scala.collection.mutable.HashMap
 
 object Config {
   /**
@@ -34,63 +35,111 @@ object Config {
   // Called by JRuby
   def setData(value: ScalaConfig) { _data = value }
 
-  private[this] def get(key: String): IRubyObject =
-    data.get(key) match {
-      case null => throw new IllegalArgumentException(
-        "Cannot find config key "+key+"!"
-      )
-      case obj: IRubyObject => obj
-    }
-  private[this] def getOpt(key: String): Option[IRubyObject] =
-    data.get(key) match {
-      case null => None
-      case obj: IRubyObject => Some(obj)
-    }
-
   //////////////////////////////////////////////////////////////////////////////
   // Helper methods
   //////////////////////////////////////////////////////////////////////////////
 
-  private def int(key: String): Int = get(key).asInt
-  private def string(key: String): String = get(key).toString
-  private def boolean(key: String): Boolean = get(key).asBoolean
-  private def float(key: String) = get(key).asFloat
-  private def double(key: String) = get(key).asDouble
-  private def buffer(key: String) = get(key).asArray
+  private def any(key: String): Any = data.any(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def int(key: String): Int = data.int(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def string(key: String): String = data.string(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def symbol(key: String): Symbol = data.symbol(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def boolean(key: String): Boolean = data.boolean(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def float(key: String): Float = data.float(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def double(key: String): Double = data.double(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def seq[T](key: String): sc.Seq[T] =
+    data.array[T](key) match {
+      case None => throw new NoSuchElementException("Unknown config key: "+key)
+      case Some(x) => x
+    }
+  private def map[K, V](key: String): sc.Map[K, V] =
+    data.hash[K, V](key) match {
+      case None => throw new NoSuchElementException("Unknown config key: "+key)
+      case Some(x) => x
+    }
+  
+  private def anyOpt(key: String) = data.any(key)
+  private def intOpt(key: String) = data.int(key)
+  private def stringOpt(key: String) = data.string(key)
+  private def symbolOpt(key: String) = data.symbol(key)
+  private def booleanOpt(key: String) = data.boolean(key)
+  private def floatOpt(key: String) = data.float(key)
+  private def doubleOpt(key: String) = data.double(key)
+  private def seqOpt[T](key: String) = data.array[T](key)
+  private def mapOpt[K, V](key: String) = data.hash[K, V](key)
+
+  //////////////////////////////////////////////////////////////////////////////
+  // End of helper methods
+  //////////////////////////////////////////////////////////////////////////////
+
   private def area(key: String) = new Area(
     int("%s.width".format(key)), int("%s.height".format(key))
   )
 
+  private def formulaEvalMatch(
+    key: String, value: Any, calc: String => Double
+  ) =
+    value match {
+      case s: String => calc(s)
+      case l: Long => l.toDouble
+      case d: Double => d
+      case x: Any => throw new RuntimeException(
+        "Unknown formula value for key '"+key+"': "+x
+      )
+    }
+
   def formulaEval(key: String): Double =
-    FormulaCalc.calc(string(key), speedMap)
+    formulaEvalMatch(key, any(key), s => FormulaCalc.calc(s, speedMap))
 
   def formulaEval(key: String, vars: Map[String, Double]): Double =
-    FormulaCalc.calc(string(key), speedMap ++ vars)
+    formulaEvalMatch(key, any(key), s => FormulaCalc.calc(s, speedMap ++ vars))
 
   def formulaEval(key: String, default: Double): Double =
-    getOpt(key) match {
-      case Some(value) => FormulaCalc.calc(value.toString, speedMap)
+    anyOpt(key) match {
       case None => default
+      case Some(value) =>
+        formulaEvalMatch(key, value, s => FormulaCalc.calc(s, speedMap))
     }
 
   def formulaEval(
     key: String, vars: Map[String, Double], default: Double
   ): Double =
-    getOpt(key) match {
-      case Some(value) => FormulaCalc.calc(value.toString, speedMap ++ vars)
+    anyOpt(key) match {
       case None => default
+      case Some(value) =>
+        formulaEvalMatch(key, value, s => FormulaCalc.calc(s, speedMap ++ vars))
     }
 
   private def range(key: String): Range = {
-    val rangeData = buffer(key)
-    Range.inclusive(rangeData(0).asInt, rangeData(1).asInt)
+    val rangeData = seq[Long](key)
+    Range.inclusive(rangeData(0).toInt, rangeData(1).toInt)
   }
   
   /**
    * Same as range(), but range limits are formulas with speed.
    */
   private def evalRange(key: String): Range = {
-    val rangeData = buffer(key)
+    val rangeData = seq(key)
     val speedMap = this.speedMap
     val from = FormulaCalc.calc(rangeData(0).toString, speedMap).toInt
     val to = FormulaCalc.calc(rangeData(1).toString, speedMap).toInt
@@ -98,20 +147,18 @@ object Config {
     Range.inclusive(from, to)
   }
 
-  private def objectChances(name: String): Seq[ObjectChance] = {
-    buffer(name).map { data =>
-      val chances = data.asArray
-      ObjectChance(
-        chances(0).asInt,
-        chances(1).toString.camelcase
-      )
-    }
-  }
+//  private def objectChances(name: String): Seq[ObjectChance] = {
+//    buffer[ju.List[AnyRef]](name).map { chances =>
+//      ObjectChance(
+//        chances(0).asInstanceOf[Long].toInt,
+//        chances(1).asInstanceOf[String].camelcase
+//      )
+//    }
+//  }
 
   private def positions(name: String): Seq[Coords] = {
-    buffer(name).map { data =>
-      val coords = data.asArray
-      Coords(coords(0).asInt, coords(1).asInt)
+    seq[sc.Seq[Long]](name).map { coords =>
+      Coords(coords(0), coords(1))
     }
   }
 
@@ -130,21 +177,21 @@ object Config {
   def zoneDiameter = int("galaxy.zone.diameter")
   def zoneMaturityAge = int("galaxy.zone.maturity_age")
   def playersPerZone = int("galaxy.zone.players")
-  // Number of seconds for first inactivity check.
-  def playerInactivityCheck: Int = {
-    try {
-      val formula = buffer(
-        "galaxy.player.inactivity_check"
-      )(0).asArray(1).toString
-      FormulaCalc.calc(formula, speedMap).toInt
-    }
-    catch {
-      case e: Exception => throw new RuntimeException(
-        "Error while accessing galaxy.player.inactivity_check[0][1]:\n" +
-          string("galaxy.player.inactivity_check"), e
-      )
-    }
-  }
+//  // Number of seconds for first inactivity check.
+//  def playerInactivityCheck: Int = {
+//    try {
+//      val formula = buffer[ju.List[ju.List[(
+//        "galaxy.player.inactivity_check"
+//      )(0).asArray(1).toString
+//      FormulaCalc.calc(formula, speedMap).toInt
+//    }
+//    catch {
+//      case e: Exception => throw new RuntimeException(
+//        "Error while accessing galaxy.player.inactivity_check[0][1]:\n" +
+//          string("galaxy.player.inactivity_check"), e
+//      )
+//    }
+//  }
   lazy val freeSolarSystems =
     positions("galaxy.free_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")
@@ -206,8 +253,8 @@ object Config {
   lazy val battleVpsMaxWeakness = double("combat.battle.max_weakness")
 
   // Seq of location kinds where combat gives victory points
-  lazy val combatVpZones = buffer("combat.battle.vp_zones").
-    map { kind => Location(kind.asInt) }
+  lazy val combatVpZones = seq[Long]("combat.battle.vp_zones").
+    map { kind => Location(kind) }
   
   // Function that transforms groundDamage, spaceDamage & fairness_multiplier
   // to victory points.
@@ -218,13 +265,16 @@ object Config {
   private def getCombatVpsFormula(kind: String): CombatVpsFormula = {
     val key = "%s.battle.victory_points".format(kind)
     (groundDamage: Int, spaceDamage: Int, fairnessMultiplier: Double) => {
-      get(key) match {
-        case formula: RubyString => FormulaCalc.calc(formula.toString, Map(
+      any(key) match {
+        case formula: String => FormulaCalc.calc(formula, Map(
           "damage_dealt_to_ground" -> groundDamage.toDouble,
           "damage_dealt_to_space" -> spaceDamage.toDouble,
           "fairness_multiplier" -> fairnessMultiplier
         ))
-        case obj: IRubyObject => obj.asDouble
+        case l: Long => l.toDouble
+        case d: Double => d
+        case obj: Any =>
+          throw new RuntimeException("Unknown object "+obj+" for key "+key)
       }
     }
   }
@@ -232,11 +282,14 @@ object Config {
   private def getCombatCredsFormula(kind: String): CombatCredsFormula = {
     val key = "%s.battle.creds".format(kind)
     (victoryPoints: Double) => {
-      get(key) match {
-        case formula: RubyString => FormulaCalc.calc(formula.toString, Map(
+      any(key) match {
+        case formula: String => FormulaCalc.calc(formula, Map(
           "victory_points" -> victoryPoints
         ))
-        case obj: IRubyObject => obj.asDouble
+        case l: Long => l.toDouble
+        case d: Double => d
+        case obj: Any =>
+          throw new RuntimeException("Unknown object "+obj+" for key "+key)
       }
     }
   }
@@ -253,18 +306,18 @@ object Config {
   // Returns VPs given out for receiving number of damage points.
   def vpsForReceivedDamage(combatant: Combatant, damage: Int): Double = {
     val key = "%s.vps_on_damage".format(resolveCombatantKey(combatant))
-    val multiplier = getOpt(key) match {
-      case Some(v) => v.asDouble
+    val multiplier = doubleOpt(key) match {
       case None => 0.0
+      case Some(d) => d
     }
     multiplier * damage
   }
 
   def credsForKilling(combatant: Combatant): Int = {
     val key = "%s.creds_for_killing".format(resolveCombatantKey(combatant))
-    getOpt(key) match {
-      case Some(v) => v.asInt
+    intOpt(key) match {
       case None => 0
+      case Some(i) => i
     }
   }
 
@@ -291,8 +344,8 @@ object Config {
 
   def ssObjectSize = range("ss_object.size")
 
-  def planetExpandedMap(name: String) = get("planet.expanded_map").
-    asMap(name).asMap
+  def planetExpandedMap(name: String) =
+    map[String, ju.Map[String, Any]]("planet.expanded_map")(name)
 
   private[this] val solarSystemMapSets = HashMap.empty[String, SsMapSet]
   def solarSystemMapSet(key: String) = {
@@ -302,14 +355,14 @@ object Config {
     else {
       val configKey = "solar_system.map.%s".format(key)
       try {
-        val buffer = get(configKey).asArray
+        val buffer = this.seq[Any](configKey)
         val set = SsMapSet.extract(buffer)
         solarSystemMapSets(key) = set
         set
       }
       catch {
         case e: Exception =>
-          throw new RuntimeException("Error while getting "+configKey+"!", e)
+          throw core.Exceptions.extend("Error while getting " + configKey, e)
       }
     }
   }
@@ -324,10 +377,14 @@ object Config {
 
   // Common combatant attributes
 
-  type GunDefinition = SRHash[IRubyObject, IRubyObject]
-  private val gunDefinitionsCache = HashMap[String, Seq[GunDefinition]]()
+  type GunDefinition = sc.Map[String, Any]
+  private val gunDefinitionsCache =
+    HashMap[String, sc.Seq[GunDefinition]]()
   private def gunDefinitions(name: String) = {
-    gunDefinitionsCache ||= (name, buffer(name).map { data => data.asMap })
+    gunDefinitionsCache ||= (
+      name,
+      seq[GunDefinition](name)
+    )
     gunDefinitionsCache(name)
   }
 
@@ -425,10 +482,10 @@ object Config {
   def buildingZetiumStorage(building: Building) =
     buildingStorage(building, "zetium")
 
-  def isBuildingNpc(name: String) = getOpt(
+  def isBuildingNpc(name: String) = booleanOpt(
     "buildings.%s.npc".format(name.underscore)
   ) match {
-    case Some(value) => value.asBoolean
+    case Some(value) => value
     case None => false
   }
 
@@ -438,7 +495,7 @@ object Config {
   def troopGalaxySsHopTimeRatio = double("units.galaxy_ss_hop_ratio")
 
   def troopKind(name: String) =
-    string("units.%s.kind".format(name.underscore))
+    symbol("units.%s.kind".format(name.underscore)).name
   def troopArmor(name: String) =
     string("units.%s.armor".format(name.underscore))
   def troopArmorModifier(name: String, level: Int): Double =
@@ -475,8 +532,9 @@ object Config {
   def mapSet(key: String): ss_objects.Planet.MapSet = {
     if (! planetMapSetCache.contains(key)) {
       val mapSet = try {
+        val fullKey = "planet.map.%s".format(key)
         ss_objects.Planet.MapSet.extract(
-          get("planet.map.%s".format(key)).asArray
+          seq[sc.Map[String, Any]](fullKey)
         )
       }
       catch {
@@ -502,17 +560,17 @@ object Config {
   def folliageCount1stType = range("planet.folliage.type.1.count").random
   def folliageSpacingRadius1stType = 
     int("planet.folliage.type.2.spacing_radius")
-  def folliageKinds1stType(terrainType: Int) = buffer(
+  def folliageKinds1stType(terrainType: Int) = seq[Long](
     "planet.folliage.type.1.variations.%d".format(terrainType)
-  ).map { _.asInt }
+  ).map { _.toInt }
 
   def folliagePercentage2ndType = 
     range("planet.folliage.type.2.percentage").random
   def folliageSpacingRadius2ndType = 
     int("planet.folliage.type.2.spacing_radius")
-  def folliageKinds2ndType(terrainType: Int) = buffer(
+  def folliageKinds2ndType(terrainType: Int) = seq[Long](
     "planet.folliage.type.2.variations.%d".format(terrainType)
-  ).map { _.asInt }
+  ).map { _.toInt }
 
   // End of planet configuration
   

@@ -1,7 +1,6 @@
 package spacemule.modules.combat.objects
 
-import spacemule.helpers.Converters._
-import spacemule.helpers.JRuby._
+import core.Values._
 import spacemule.helpers.Random
 import spacemule.modules.config.objects.{FormulaCalc, Config}
 
@@ -16,7 +15,7 @@ object Gun {
         definition("dpt").toString,
         Map("level" -> owner.level.toDouble)
       ).intValue,
-      definition("period").asInt
+      definition("period").asInstanceOf[Long]
     )
 
   /**

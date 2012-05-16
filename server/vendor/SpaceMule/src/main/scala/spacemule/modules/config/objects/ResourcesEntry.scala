@@ -1,12 +1,15 @@
 package spacemule.modules.config.objects
 
-import spacemule.helpers.JRuby._
+import core.Values._
+import scala.{collection => sc}
 
 object ResourcesEntry {
-  def extract(resources: SRArray) = {
+  type Data = sc.Seq[Any]
+
+  def extract(resources: Data) = {
     try {
       ResourcesEntry(
-        resources(0).asDouble, resources(1).asDouble, resources(2).asDouble
+        resources(0), resources(1), resources(2)
       )
     }
     catch {

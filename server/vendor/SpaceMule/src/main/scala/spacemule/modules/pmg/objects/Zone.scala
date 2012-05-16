@@ -54,13 +54,12 @@ object Zone {
     )
   }
 
-  def iterate[T](diameter: Int, startSlot: Int)(fun: (Zone) => Option[T]): T = {
+  def iterate[T](diameter: Int, startSlot: Int)(fun: (Zone) => Unit) {
     var zoneX = 0
     var zoneY = 0
     var slot = startSlot
-    var returnValue: Option[T] = None
 
-    while (returnValue.isEmpty) {
+    while (true) {
       // Shamelessly stolen from Mykolas, I don't really have much idea on what
       // is going on here.
       Zone.Quarters.shuffled.foreach { quarter =>
@@ -77,13 +76,11 @@ object Zone {
         zoneY = if (quarter.y == -1) -y - 1 else y
 
         val zone = new Zone(zoneX, zoneY, diameter)
-        returnValue = fun(zone)
+        fun(zone)
       }
 
       slot += 1
     }
-
-    returnValue.get
   }
 }
 

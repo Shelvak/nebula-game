@@ -2,6 +2,7 @@ package spacemule.modules.pmg.persistence.objects
 
 import java.util.Calendar
 import spacemule.helpers.Converters._
+import jruby.JRuby._
 import spacemule.helpers.JRuby._
 import spacemule.modules.config.objects.Config
 import ss_object.{PlanetRow, AsteroidRow}

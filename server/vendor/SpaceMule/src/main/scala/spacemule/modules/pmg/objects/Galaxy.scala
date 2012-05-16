@@ -145,7 +145,7 @@ class Galaxy(val id: Int, val ruleset: String) {
 
       Zone.iterate(zoneDiameter, Config.zoneStartSlot) { zone =>
         // Exit if we created enough zones.
-        if (created == toCreate) Some(zone)
+        if (created == toCreate) return created
         else // Still need new zones.
           if (zones.contains(zone.coords)) None // This zone is already created.
           else {
@@ -161,15 +161,14 @@ class Galaxy(val id: Int, val ruleset: String) {
                   (toCreate-created)+" to go, but exiting because "+
                   "maxIterations"+max+" has been hit."
                 )
-                Some(zone)
+                return created
               }
-              else None
             }
           }
       }
-
-      created
     }
+
+    throw new IllegalStateException("Never should have arrived here.")
   }
 
   // Number of free zones in this galaxy.
@@ -191,9 +190,8 @@ class Galaxy(val id: Int, val ruleset: String) {
       toCreate+" home ss."
     ) { () =>
       var created = 0
-      var iterate = true
 
-      while (iterate && created < toCreate) {
+      while (created < toCreate) {
         val ss = new Homeworld()
         ss.createObjects()
         pooledHomeSystems += ss
@@ -209,7 +207,7 @@ class Galaxy(val id: Int, val ruleset: String) {
                 (toCreate-created)+" to go, but exiting because "+
                 "maxIterations="+iterations+" has been hit."
               )
-              iterate = false
+              return created
             }
         }
       }

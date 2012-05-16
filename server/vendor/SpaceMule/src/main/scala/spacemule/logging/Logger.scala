@@ -32,5 +32,5 @@ trait Logger {
 
   def logBlock[T](
     message: String, level: Int, component: String, block: () => T
-  ): T
+  ): Unit
 }

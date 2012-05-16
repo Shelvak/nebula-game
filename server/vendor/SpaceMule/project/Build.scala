@@ -51,7 +51,7 @@ object SpaceMule extends Build {
         organization        := "com.tinylabproductions",
         version             := "1.0",
         scalaVersion        := "2.9.2",
-        scalacOptions       := Seq("-deprecation"),
+        scalacOptions       := Seq("-deprecation", "-unchecked"),
         autoCompilerPlugins := true,
         resolvers           := Seq(
           // JGraphT

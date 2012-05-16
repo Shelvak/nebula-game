@@ -2,7 +2,7 @@ package spacemule.modules.config.objects
 
 import spacemule.helpers.JRuby._
 import spacemule.modules.pmg.classes.geom.Coords
-import org.jruby.runtime.builtin.IRubyObject
+import scala.{collection => sc}
 
 object SsConfig {
   sealed abstract class Entry(
@@ -43,50 +43,58 @@ object SsConfig {
     override val units: Option[Seq[UnitsEntry]] = None
   ) extends Entry(wreckage, units)
 
+  // ResourcesEntry data map
+  type REDataMap = sc.Map[String, ResourcesEntry.Data]
+  // UnitsEntry data map
+  type UEDataMap = sc.Map[String, UnitsEntry.Data]
+  // Generic data structure.
+  type Data = Map[Coords, Entry]
+
   private[this] def extractResources(
-    data: SRHash[IRubyObject, IRubyObject], key: String = "resources"
+    data: REDataMap, key: String = "resources"
   ) = {
-    data.by(key).map { array =>
-      ResourcesEntry.extract(array.asArray)
+    data.get(key).map { array =>
+      ResourcesEntry.extract(array)
     }
   }
 
-  private[this] def extractWreckage(data: SRHash[IRubyObject, IRubyObject]) =
+  private[this] def extractWreckage(data: REDataMap) =
     extractResources(data, "wreckage")
 
-  private[this] def extractUnits(data: SRHash[IRubyObject, IRubyObject]):
-  Option[Seq[UnitsEntry]] =
-    data.by("units").map { data => UnitsEntry.extract(data.asArray) }
+  private[this] def extractUnits(data: UEDataMap): Option[Seq[UnitsEntry]] =
+    data.get("units").map { UnitsEntry.extract(_) }
 
-  type Data = Map[Coords, Entry]
-
-  def apply(data: SRHash[IRubyObject, IRubyObject]): Data = {
+  def apply(data: sc.Map[String, Any]): Data = {
     data.map { case (positionStr, rbEntryData) =>
       val split = positionStr.toString.split(",").map(_.toInt)
       val (position, angle) = (split(0), split(1))
       val coords = Coords(position, angle)
 
-      val entryData = rbEntryData.asMap
+      val entryData = rbEntryData.asInstanceOf[sc.Map[String, Any]]
       val entry = entryData("type").toString match {
         case "planet" => SsConfig.PlanetEntry(
           entryData("map").toString,
-          entryData("owned_by_player").asBoolean,
-          extractWreckage(entryData),
-          extractUnits(entryData)
+          entryData("owned_by_player").asInstanceOf[Boolean],
+          extractWreckage(entryData.asInstanceOf[REDataMap]),
+          extractUnits(entryData.asInstanceOf[UEDataMap])
         )
         case "asteroid" => SsConfig.AsteroidEntry(
-          extractResources(entryData) match {
+          extractResources(entryData.asInstanceOf[REDataMap]) match {
             case Some(resources) => resources
             case None => sys.error(
               "Missing asteroid resources for %s!".format(positionStr)
             )
-          }, extractWreckage(entryData), extractUnits(entryData)
+          },
+          extractWreckage(entryData.asInstanceOf[REDataMap]),
+          extractUnits(entryData.asInstanceOf[UEDataMap])
         )
         case "jumpgate" => SsConfig.JumpgateEntry(
-          extractWreckage(entryData), extractUnits(entryData)
+          extractWreckage(entryData.asInstanceOf[REDataMap]),
+          extractUnits(entryData.asInstanceOf[UEDataMap])
         )
         case "nothing" => SsConfig.NothingEntry(
-          extractWreckage(entryData), extractUnits(entryData)
+          extractWreckage(entryData.asInstanceOf[REDataMap]),
+          extractUnits(entryData.asInstanceOf[UEDataMap])
         )
       }
 
