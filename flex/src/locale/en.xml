@@ -5618,6 +5618,10 @@
   <Authorization>
     <status.authorization value="Authorizing..."/>
     <status.login value="Logging into the server..."/>
+    <status.attaching>
+       Please wait for the server to create permanent user account for you.
+       This may take a few seconds.
+    </status.attaching>
   </Authorization>
 
   <PlanetMapEditor>

@@ -5704,6 +5704,10 @@
   <Authorization>
     <status.authorization value="Autorizuojama..."/>
     <status.login value="Jungiamasi prie serverio..."/>
+     <status.attaching>
+       Prašome palaukti, kol serveris tau sukurs nuolatinę vartotojo paskyrą.
+       Tai gali užtrukti kelias sekundes.
+     </status.attaching>
   </Authorization>
 
   <PlanetMapEditor>

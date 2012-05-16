@@ -14,6 +14,7 @@ bars and so on.
                     xmlns:ui="components.ui.*"
                     xmlns:cchat="components.chat.*"
                     xmlns:paging="components.base.paging.*"
+                    xmlns:player="components.player.*"
                     width="100%"
                     height="100%"
                     mouseEnabled="false"
@@ -99,5 +100,6 @@ bars and so on.
    <paging:CPageSwitcher
       verticalCenter="0" horizontalCenter="0"
       model="{MMainQuestLine.getInstance().currentPresentation}"/>
+   <player:CWaitingScreen/>
 
 </base:BaseContainer>
