@@ -72,9 +72,14 @@ set pastetoggle=<F3>
 
 MYCNF = %Q{
 [mysqld]
+innodb_file_per_table
 innodb_rollback_on_timeout = ON
 innodb_lock_wait_timeout = 10
-innodb_file_per_table
+# http://dev.mysql.com/doc/refman/5.5/en/innodb-auto-increment-handling.html#innodb-auto-increment-configurable
+# This is needed to allow multiple LOAD DATA statements to execute parallely.
+innodb_autoinc_lock_mode = 2
+# To allow replication on lock mode 2.
+binlog_format=row
 }
 
 SRVRUNNER = %Q{#!/bin/bash
@@ -564,6 +569,12 @@ innodb_lock_wait_timeout = 10})
   run("ln -sf " +
     "#{HOME}/nebula-server/current/script/munin-plugins/memory " +
     "/etc/munin/plugins/nebula44_mem ")
+  run("ln -sf " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/tasks " +
+    "/etc/munin/plugins/nebula44_tasks ")
+  run("ln -sf " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/pool " +
+    "/etc/munin/plugins/nebula44_pool ")
 
   # Market plugins
   resources = %w{metal energy zetium creds}

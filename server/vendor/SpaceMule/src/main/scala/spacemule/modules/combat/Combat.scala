@@ -204,15 +204,15 @@ class Combat(
 
     L.block("Traversing initiatives", level=L.Debug) { () =>
       alliances.traverseInitiatives { case (allianceId, combatant) =>
-          L.block(
-            "Combatant "+combatant+" from alliance id "+allianceId+
-            " is shooting", level=L.Debug
-          ) { () =>
-            val fire = shootGuns(allianceId, combatant)
+        L.block(
+          "Combatant "+combatant+" from alliance id "+allianceId+
+          " is shooting", level=L.Debug
+        ) { () =>
+          val fire = shootGuns(allianceId, combatant)
 
-            if (! fire.isEmpty) tick += fire
-            else L.debug("Combatant could not shoot anything.")
-          }
+          if (! fire.isEmpty) tick += fire
+          else L.debug("Combatant could not shoot anything.")
+        }
       }
     }
 

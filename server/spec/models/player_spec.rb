@@ -860,7 +860,7 @@ describe Player do
     it "should update dispatcher if player is connected" do
       @dispatcher.should_receive(:player_connected?).with(@player.id).
         and_return(true)
-      @dispatcher.should_receive(:update_player).with(@player)
+      @dispatcher.should_receive(:update_player!).with(@player)
       @player.creds += 1
       @player.save!
     end

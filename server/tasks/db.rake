@@ -143,7 +143,18 @@ namespace :db do
   namespace :test do
     desc "Clone database from current environment"
     task :clone => :environment do
-      ActiveRecord::Cloner.clone_db(DB_CONFIG[App.env], DB_CONFIG['test'])
+      # Replace enums to varchars because we create lots of custom subclasses in
+      # tests.
+      replace_type = lambda do |sql|
+        sql.sub(/`type` enum\(.+?\)/i, '`type` varchar(255)')
+      end
+
+      ActiveRecord::Cloner.clone_db(
+        DB_CONFIG[App.env], DB_CONFIG['test'],
+        units: [replace_type],
+        buildings: [replace_type],
+        technologies: [replace_type],
+      )
     end
   end
 end

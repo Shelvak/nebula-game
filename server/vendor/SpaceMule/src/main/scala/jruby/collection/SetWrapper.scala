@@ -1,8 +1,8 @@
-package jruby
+package jruby.collection
 
 import collection.mutable.Set
 import org.jruby.runtime.builtin.IRubyObject
-import JRuby._
+import Utils._
 import org.jruby.exceptions.RaiseException
 
 object SetWrapper {
@@ -11,7 +11,7 @@ object SetWrapper {
 }
 
 class SetWrapper[T <: AnyRef](raw: IRubyObject) extends Set[T] {
-  if (! SetWrapper.isRubySet(raw))
+  if (!SetWrapper.isRubySet(raw))
     throw new IllegalArgumentException(
       "Wrapped IRubyObject set must be Ruby ::Set, but it was ::" +
         raw.getMetaClass.getRealClass.toString
@@ -29,7 +29,7 @@ class SetWrapper[T <: AnyRef](raw: IRubyObject) extends Set[T] {
         case e: RaiseException =>
           if (
             e.getException.getMetaClass.getRealClass ==
-            iterator.getRuntime.getClass("StopIteration")
+              iterator.getRuntime.getClass("StopIteration")
           )
             false
           else
@@ -38,7 +38,7 @@ class SetWrapper[T <: AnyRef](raw: IRubyObject) extends Set[T] {
     }
 
     def next() =
-      JRuby.wrapRubyCollection[T](iterator.call("next").unwrap[AnyRef])
+      Utils.wrapRubyCollection[T](iterator.call("next").unwrap[AnyRef])
   }
 
   def rubySet = raw

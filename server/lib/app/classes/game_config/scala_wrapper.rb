@@ -53,14 +53,14 @@ class GameConfig::ScalaWrapper
   def array(key)
     value = CONFIG[key]
     check_value!(key, value, Array)
-    value.nil? ? None : Some(Java::jruby.ListWrapper.new(value))
+    value.nil? ? None : Some(Java::jruby.collection.ListWrapper.new(value))
   end
 
   #def hash[K, V](key: String): Option[sc.Map[K, V]]
   def hash(key)
     value = CONFIG[key]
     check_value!(key, value, Hash)
-    value.nil? ? None : Some(Java::jruby.MapWrapper.new(value))
+    value.nil? ? None : Some(Java::jruby.collection.MapWrapper.new(value))
   end
 
 private

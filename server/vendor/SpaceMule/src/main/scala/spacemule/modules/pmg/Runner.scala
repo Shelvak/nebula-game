@@ -5,7 +5,7 @@ import spacemule.modules.pmg.persistence.Manager
 import spacemule.logging.Log
 
 case class EnsurePoolResult(createdZones: Int, createdHomeSs: Int)
-case class FreeStatsResult(freeZones: Int, freeHomeSs: Int)
+case class PoolStatsResult(freeZones: Int, freeHomeSs: Int)
 
 object Runner {
   /**
@@ -86,11 +86,11 @@ object Runner {
     EnsurePoolResult(createdZones, createdHomeSs)
   }
 
-  def freeStats(galaxyId: Int): FreeStatsResult = {
+  def poolStats(galaxyId: Int): PoolStatsResult = {
     val galaxy = new Galaxy(galaxyId, "default")
 
     Log.block("load galaxy") { () => Manager.load(galaxy) }
 
-    FreeStatsResult(galaxy.freeZones, galaxy.freeHomeSystems)
+    PoolStatsResult(galaxy.freeZones, galaxy.freeHomeSystems)
   }
 }

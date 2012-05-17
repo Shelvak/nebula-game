@@ -196,17 +196,69 @@ Message was:
       stats = {
         :current => Celluloid::Actor[:dispatcher].logged_in_count,
         :in_1d => get_player_count_in[1.day],
-        :in_2d => get_player_count_in[2.days],
         :in_3d => get_player_count_in[3.days],
-        :in_4d => get_player_count_in[4.days],
-        :in_5d => get_player_count_in[5.days],
-        :in_6d => get_player_count_in[6.days],
         :in_7d => get_player_count_in[7.days],
+        :in_14d => get_player_count_in[14.days],
         :total => Player.count,
       }
 
       respond m, stats
     end
+  end
+
+  # Return statistics of galaxy pools.
+  #
+  # Parameters: None
+  #
+  # Response:
+  # - stats (Hash[String, Hash]): Hash of {
+  #   galaxy_id (String) => {
+  #     "free_zones" => Float (percentage of free zones left
+  #     relative to Galaxy#pool_free_zones),
+  #     "free_home_ss" => Float (percentage of free home solar
+  #     systems left relative to Galaxy#pool_free_home_ss)
+  #   },
+  #   ...
+  # }
+  #
+  ACTION_POOL_STATS = 'tasks|pool_stats'
+
+  POOL_STATS_OPTIONS = control_token
+  POOL_STATS_SCOPE = scope.world
+  def self.pool_stats_action(m)
+    stats = without_locking do
+      Galaxy.select("id, pool_free_zones, pool_free_home_ss").c_select_all
+    end.each_with_object({}) do |row, hash|
+      galaxy_id = row['id'].to_i
+      result = SpaceMule.instance.pool_stats(galaxy_id)
+      hash[galaxy_id] = {
+        free_zones:
+          result.free_zones.to_f / row['pool_free_zones'].to_i * 100,
+        free_home_ss:
+          result.free_home_ss.to_f / row['pool_free_home_ss'].to_i * 100,
+      }
+    end
+
+    respond m, stats: stats
+  end
+
+  # Return statistics of enqueued director tasks.
+  #
+  # Parameters: None
+  #
+  # Response:
+  # - stats (Hash[String, Fixnum]): Hash of {
+  #   director_name (String) => enqueued_tasks (Fixnum),
+  #   ...
+  # }
+  #
+  ACTION_DIRECTOR_STATS = 'tasks|director_stats'
+
+  DIRECTOR_STATS_OPTIONS = control_token
+  DIRECTOR_STATS_SCOPE = scope.world
+  def self.director_stats_action(m)
+    stats = Celluloid::Actor[:dispatcher].director_stats
+    respond m, stats: stats
   end
 
   # Return market rate for given resource pair in different galaxies.

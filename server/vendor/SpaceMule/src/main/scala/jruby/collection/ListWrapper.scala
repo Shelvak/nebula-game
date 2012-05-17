@@ -1,23 +1,24 @@
-package jruby
+package jruby.collection
 
 import collection.{JavaConversions => jc}
 import java.{util => ju}
 import collection.mutable.Buffer
 
 class ListWrapper[T <: AnyRef](raw: ju.List[AnyRef]) extends Buffer[T] {
+
   class Iterator extends scala.Iterator[T] {
     private[this] lazy val iterator = raw.iterator()
 
     def hasNext = iterator.hasNext
 
-    def next() = JRuby.wrapRubyCollection[T](iterator.next())
+    def next() = Utils.wrapRubyCollection[T](iterator.next())
   }
 
   def rubyArray = raw
 
   def apply(index: Int) = raw.get(index) match {
     case null => throw new NoSuchElementException("unknown index: " + index)
-    case x: Any => JRuby.wrapRubyCollection[T](x)
+    case x: Any => Utils.wrapRubyCollection[T](x)
   }
 
   def update(index: Int, newelem: T) {
@@ -44,7 +45,7 @@ class ListWrapper[T <: AnyRef](raw: ju.List[AnyRef]) extends Buffer[T] {
     raw.addAll(n, jc.asJavaCollection(elems.toIndexedSeq))
   }
 
-  def remove(n: Int) = JRuby.wrapRubyCollection[T](raw.remove(n))
+  def remove(n: Int) = Utils.wrapRubyCollection[T](raw.remove(n))
 
   def iterator = new Iterator
 }

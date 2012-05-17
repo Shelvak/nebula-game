@@ -120,7 +120,6 @@ class Galaxy < ActiveRecord::Base
 
   # Create player in galaxy _galaxy_id_ with Player#web_user_id, Player#name
   # and Player#trial.
-  # TODO: spec
   def self.create_player(galaxy_id, web_user_id, name, trial)
     player = Player.new(
       galaxy_id: galaxy_id, web_user_id: web_user_id, name: name, trial: trial,
@@ -142,7 +141,7 @@ class Galaxy < ActiveRecord::Base
     })
 
     home_ss = player.home_solar_system
-    raise "We've ran out of pooled solar systems in galaxy #{id}!" \
+    raise "We've ran out of pooled solar systems in galaxy #{galaxy_id}!" \
       if home_ss.nil?
 
     fse = FowSsEntry.new(

@@ -6,7 +6,7 @@ describe TasksController do
   include ControllerSpecHelper
 
   before(:each) do
-    init_controller TasksController, :login => true
+    init_controller TasksController
     @params = {
       GenericController::ParamOpts::CONTROL_TOKEN_KEY => Cfg.control_token
     }
@@ -200,6 +200,78 @@ describe TasksController do
 
     it_should_behave_like "with param options",
       :needs_login => false, :needs_control_token => true
+
+    it "should work" do
+      invoke @action, @params
+    end
+  end
+
+  describe "tasks|pool_stats" do
+    let(:galaxies) do
+      [
+        Factory.create(:galaxy, pool_free_zones: 20, pool_free_home_ss: 100),
+        Factory.create(:galaxy, pool_free_zones: 10, pool_free_home_ss: 25),
+        Factory.create(:galaxy, pool_free_zones: 10, pool_free_home_ss: 25),
+      ]
+    end
+    let(:klass) { Class.new(Struct.new(:free_zones, :free_home_ss)) }
+
+    before(:each) do
+      @action = "tasks|pool_stats"
+      galaxies
+    end
+
+    it_should_behave_like "with param options",
+      :needs_login => false, :needs_control_token => true
+
+    def data(free_zones, free_home_ss)
+      klass.new(free_zones, free_home_ss)
+    end
+
+    it "should return stats" do
+      SpaceMule.instance.should_receive(:pool_stats).
+        with(an_instance_of(Fixnum)).exactly(3).times.and_return do |id|
+          case id
+          when galaxies[0].id then data(10, 20)
+          when galaxies[1].id then data(10, 50)
+          when galaxies[2].id then data(13, 25)
+          else raise "Unknown galaxy id #{id.inspect} received!"
+          end
+        end
+
+      invoke @action, @params
+
+      response.should == {
+        stats: {
+          galaxies[0].id => {free_zones: 50.0, free_home_ss: 20.0},
+          galaxies[1].id => {free_zones: 100.0, free_home_ss: 200.0},
+          galaxies[2].id => {free_zones: 130.0, free_home_ss: 100.0},
+        }
+      }
+    end
+
+    it "should work" do
+      invoke @action, @params
+    end
+  end
+
+  describe "tasks|director_stats" do
+    let(:stats) { {world: 3, chat: 5} }
+
+    before(:each) do
+      @action = "tasks|director_stats"
+    end
+
+    it_should_behave_like "with param options",
+      :needs_login => false, :needs_control_token => true
+
+    it "should return stats" do
+      Celluloid::Actor[:dispatcher].should_receive(:director_stats).
+        and_return(stats)
+
+      invoke @action, @params
+      response.should == {stats: stats}
+    end
 
     it "should work" do
       invoke @action, @params

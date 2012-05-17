@@ -48,9 +48,10 @@ group :development_setup do
   # 0.7.6 is buggy and cannot be installed.
   # http://jira.codehaus.org/browse/JRUBY-6455
   gem 'jruby-openssl', '>=0.7.6.1'
-  gem "net-ssh", :git => "git://github.com/arturaz/net-ssh.git"
-  gem "net-sftp"#, :git => "git://github.com/net-ssh/net-sftp.git"
-  gem "net-scp"#, :git => "git://github.com/net-ssh/net-scp.git"
+  # jruby-pageant support was merged into 2.4.0.
+  gem "net-ssh", '>=2.4.0'
+  gem "net-sftp"
+  gem "net-scp"
   gem "xml-simple", "~>1.0"
 end
 

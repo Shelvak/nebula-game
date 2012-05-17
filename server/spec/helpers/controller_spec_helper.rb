@@ -126,7 +126,7 @@ module ControllerSpecHelper
   end
 
   def create_message(action, params, pushed, logged_in=true)
-    raise "Cannot log in player, but it is required!" \
+    raise "Player is not logged in, but we need him to be!" \
       if logged_in && @player.nil?
     Dispatcher::Message.new(
       @message_id, @seq, action, params, @client, logged_in ? @player : nil,

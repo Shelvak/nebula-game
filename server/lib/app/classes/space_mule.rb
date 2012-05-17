@@ -19,29 +19,35 @@ class SpaceMule
   def fill_galaxy(galaxy, free_zones, free_home_ss)
     typesig binding, Galaxy, Fixnum, Fixnum
 
-    with_db_connection do
-      CONFIG.with_set_scope(galaxy.ruleset) do
-        Pmg.Runner.fill_galaxy(
-          galaxy.id, galaxy.ruleset, free_zones, free_home_ss
-        )
-      end
+    CONFIG.with_set_scope(galaxy.ruleset) do
+      Pmg.Runner.fill_galaxy(
+        galaxy.id, galaxy.ruleset, free_zones, free_home_ss
+      )
     end
   end
 
   def ensure_pool(galaxy, max_zone_iterations=1, max_home_ss_iterations=10)
     typesig binding, Galaxy, Fixnum, Fixnum
 
-    with_db_connection do
-      CONFIG.with_set_scope(galaxy.ruleset) do
-        Pmg.Runner.ensurePool(
-          galaxy.id, galaxy.ruleset,
-          galaxy.pool_free_zones,
-          max_zone_iterations,
-          galaxy.pool_free_home_ss,
-          max_home_ss_iterations
-        )
-      end
+    CONFIG.with_set_scope(galaxy.ruleset) do
+      Pmg.Runner.ensurePool(
+        galaxy.id, galaxy.ruleset,
+        galaxy.pool_free_zones,
+        max_zone_iterations,
+        galaxy.pool_free_home_ss,
+        max_home_ss_iterations
+      )
     end
+  end
+
+  # Fetch pool stats for galaxy _galaxy_id_.
+  #
+  # Returns an object with two methods: #free_zones and #free_home_systems.
+  #
+  # TODO: spec when I'm not so lazy. This is only used in statistics, so its
+  # not so important.
+  def pool_stats(galaxy_id)
+    Pmg.Runner.poolStats(galaxy_id)
   end
 
   # Sends message to space mule for combat simulation.
@@ -78,13 +84,5 @@ class SpaceMule
   #
   def find_path(source, target, avoid_npc=true)
     Pathfinder.invoke(source, target, avoid_npc)
-  end
-
-private
-  def with_db_connection
-    DB.connection = ActiveRecord::Base.connection.jdbc_connection
-    yield
-  ensure
-    DB.connection = nil
   end
 end

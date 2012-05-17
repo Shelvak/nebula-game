@@ -310,11 +310,11 @@ class Object
     when ScalaSupport::Common
       self.scala_collection
     when Hash
-      Java::jruby.MapWrapper.new(self)
+      Java::jruby.collection.MapWrapper.new(self)
     when Set
-      Java::jruby.SetWrapper.new(self)
+      Java::jruby.collection.SetWrapper.new(self)
     when Array
-      Java::jruby.ListWrapper.new(self)
+      Java::jruby.collection.ListWrapper.new(self)
     when Symbol
       Java::scala.Symbol.apply(to_s)
     else
@@ -324,13 +324,13 @@ class Object
 
   def from_scala
     case self
-    when Java::jruby.MapWrapper
+    when Java::jruby.collection.MapWrapper
       self.rubyHash
     when Java::scala.collection.mutable.Map
       ScalaSupport::Map::Mutable.new(self)
     when Java::scala.collection.Map, Java::scala.collection.immutable.Map
       ScalaSupport::Map::Immutable.new(self)
-    when Java::Jruby.ListWrapper
+    when Java::jruby.collection.ListWrapper
       self.rubyArray
     when Java::scala.collection.mutable.Seq
       ScalaSupport::Seq::Mutable.new(self)
@@ -344,7 +344,7 @@ class Object
       else
         self
       end
-    when Java::jruby.SetWrapper
+    when Java::jruby.collection.SetWrapper
       self.rubySet
     when Java::scala.collection.mutable.Set
       ScalaSupport::Set::Mutable.new(self)
@@ -358,7 +358,7 @@ end
 
 module Kernel
   def Some(value); Java::scala.Some.new(value); end
-  None = Java::jruby.JRuby.None
+  None = Java::jruby.collection.Utils.None
 
   def add_exception_info(exception, message)
     raise exception.class, message + "\n\n" + exception.message,

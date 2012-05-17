@@ -527,6 +527,179 @@ describe Galaxy do
   end
 
   describe ".create_player" do
+    let(:galaxy) { Factory.create(:galaxy) }
+    let(:galaxy_id) { galaxy.id }
+    let(:web_user_id) { (Player.maximum(:web_user_id) || 0) + 1 }
+    let(:name) { "P-#{web_user_id}" }
+    let(:trial) { true }
+    let(:planets_count) { 1 }
+    let(:population_cap) { Building::Mothership.population(1) }
+    let(:pooled_ss) do
+      [
+        Factory.create(:ss_pooled, galaxy: galaxy),
+        Factory.create(:ss_pooled, galaxy: galaxy),
+      ]
+    end
+    let(:other_ss) do
+      [
+        Factory.create(:solar_system, galaxy: galaxy, x: 10),
+        Factory.create(:wormhole, galaxy: galaxy),
+        Factory.create(:mini_battleground, galaxy: galaxy, x: 11),
+        Factory.create(:battleground, galaxy: galaxy),
+        Factory.create(:ss_detached, galaxy: galaxy),
+      ]
+    end
+    let(:home_ss) { pooled_ss.first }
+    let(:player) { Galaxy.create_player(galaxy_id, web_user_id, name, trial) }
 
+    before(:each) do
+      other_ss
+      home_ss
+    end
+
+    %w{galaxy_id web_user_id name trial planets_count population_cap}.each do
+      |attr|
+
+      it "should set Player##{attr}" do
+        player.send(attr).should == send(attr)
+      end
+    end
+
+    it "should save the player" do
+      player.should be_saved
+    end
+
+    it "should start player quest line" do
+      Quest.should_receive(:start_player_quest_line).with(player.id)
+      player
+    end
+
+    it "should register inactivity check" do
+      player.should have_callback(
+        CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+        Cfg.player_inactivity_time(player.points).from_now
+      )
+    end
+
+    it "should assign a home solar system to player" do
+      player.home_solar_system.should == home_ss
+    end
+
+    it "should change kind of home solar system to normal" do
+      player.home_solar_system.kind.should == SolarSystem::KIND_NORMAL
+    end
+
+    it "should only assign one home solar system to player" do
+      player
+      SolarSystem.where(player_id: player.id).count.should == 1
+    end
+
+    it "should fail if there is no pooled home solar systems" do
+      pooled_ss.each(&:destroy)
+      lambda do
+        player
+      end.should raise_error(RuntimeError)
+    end
+
+    describe "fse" do
+      let(:fse) { FowSsEntry.where(player_id: player.id).first }
+
+      before(:each) do
+        player
+      end
+
+      it "should have player_planets set" do
+        fse.player_planets.should be_true
+      end
+
+      it "should have counter == 1" do
+        fse.counter.should == 1
+      end
+    end
+
+    it "should find zone and attach home solar system" do
+      zone = mock(Galaxy::Zone)
+      Galaxy::Zone.should_receive(:for_enrollment).with(
+        galaxy_id, Cfg.galaxy_zone_maturity_age
+      ).and_return(zone)
+      zone.should_receive(:free_spot_coords).with(galaxy_id).
+        and_return([3, 4])
+      [player.home_solar_system.x, player.home_solar_system.y].should == [3, 4]
+    end
+
+    describe "planets" do
+      let(:home_ss_planets) do
+        [
+          Factory.create(:planet, solar_system: home_ss,
+            last_resources_update: 1.day.ago),
+          Factory.create(:planet, solar_system: home_ss,
+            last_resources_update: 1.day.ago,
+            position: 1, owner_changed: 2.days.ago),
+        ]
+      end
+      let(:non_home_planet) { home_ss_planets.first }
+      let(:home_planet) { home_ss_planets.last }
+      let(:other_planets) do
+        [
+          Factory.create(:planet, last_resources_update: 1.day.ago)
+        ]
+      end
+
+      before(:each) do
+        home_ss_planets
+        other_planets
+      end
+
+      # Because planet.reload.last_resources_update actually updates it now via
+      # #after_find.
+      def last_resources_update(planet)
+        value = SsObject::Planet.select("last_resources_update").
+          where(id: planet.id).c_select_value
+
+        value.nil? ? nil : Time.parse(value)
+      end
+
+      it "should update SsObject::Planet#last_resources_update" do
+        home_ss_planets.each do |planet|
+          last_resources_update(planet).
+            should_not be_within(SPEC_TIME_PRECISION).of(Time.now)
+        end
+        player
+        home_ss_planets.each do |planet|
+          last_resources_update(planet).
+            should be_within(SPEC_TIME_PRECISION).of(Time.now)
+        end
+      end
+
+      it "should not update #last_resources_update in other ss planets" do
+        player
+        other_planets.each do |planet|
+          last_resources_update(planet).
+            should_not be_within(SPEC_TIME_PRECISION).of(Time.now)
+        end
+      end
+
+      it "should update SsObject::Planet#owner_changed in player planet" do
+        player
+        home_planet.reload.owner_changed.
+          should be_within(SPEC_TIME_PRECISION).of(Time.now)
+      end
+
+      it "should not update #owner_changed in other ss planets" do
+        player
+        (other_planets + [non_home_planet]).each do |planet|
+          planet.reload.owner_changed.should be_nil
+        end
+      end
+
+      it "should assign planet to player" do
+        player
+        home_planet.reload.player.should == player
+      end
+
+      it "should only assign one planet to player" do
+        player.planets.count.should == 1
+      end
+    end
   end
 end

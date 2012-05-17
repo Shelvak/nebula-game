@@ -30,4 +30,5 @@ object JRuby {
   def setRuntime(runtime: Ruby) { _ruby = runtime }
 
   def RClass(name: String) = ruby.getClass(name)
+  def RModule(name: String) = ruby.getModule(name)
 }

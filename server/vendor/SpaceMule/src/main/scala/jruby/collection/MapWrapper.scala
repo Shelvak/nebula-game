@@ -1,11 +1,11 @@
-package jruby
+package jruby.collection
 
 import java.{util => ju}
 import collection.mutable.Map
 
 // Scala-Ruby Hash
 class MapWrapper[K <: AnyRef, V <: AnyRef](raw: ju.Map[AnyRef, AnyRef])
-extends Map[K, V] {
+  extends Map[K, V] {
 
   class Iterator extends scala.Iterator[(K, V)] {
     private[this] lazy val iterator = raw.entrySet().iterator()
@@ -15,9 +15,9 @@ extends Map[K, V] {
     def next() = {
       val entry = iterator.next.asInstanceOf[ju.Map.Entry[AnyRef, AnyRef]]
       (
-        JRuby.wrapRubyCollection[K](entry.getKey),
-        JRuby.wrapRubyCollection[V](entry.getValue)
-      )
+        Utils.wrapRubyCollection[K](entry.getKey),
+        Utils.wrapRubyCollection[V](entry.getValue)
+        )
     }
   }
 
@@ -35,12 +35,12 @@ extends Map[K, V] {
 
   override def apply(key: K): V = raw.get(key) match {
     case null => throw new NoSuchElementException("unknown key: " + key)
-    case obj: Any => JRuby.wrapRubyCollection[V](obj)
+    case obj: Any => Utils.wrapRubyCollection[V](obj)
   }
 
   def get(key: K) = raw.get(key) match {
     case null => None
-    case obj: Any => Some(JRuby.wrapRubyCollection[V](obj))
+    case obj: Any => Some(Utils.wrapRubyCollection[V](obj))
   }
 
   override def size = raw.size()

@@ -30,6 +30,10 @@ class Threading::Director
     "director-#{@name}"
   end
 
+  def enqueued_tasks
+    @task_queue.size
+  end
+
   def work(task)
     typesig binding, Threading::Director::Task
 

@@ -1,8 +1,10 @@
 package jruby
 
 import _root_.java.{util => ju}
+import collection.{MapWrapper, ListWrapper}
 import org.jruby.runtime.builtin.IRubyObject
 import org.jruby._
+import jruby.collection.Utils._
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,15 +14,9 @@ import org.jruby._
  * To change this template use File | Settings | File Templates.
  */
 
-
 class IRubyObjectExtensions(obj: IRubyObject) {
-  def call(method: String) =
-    obj.callMethod(obj.getRuntime.getCurrentContext, method)
-  def call(method: String, arg: Any) =
-    obj.callMethod(
-      obj.getRuntime.getCurrentContext, method,
-      JRuby.any2Rb(arg, obj.getRuntime)
-    )
+  def call(method: String) = obj.call(method)
+  def call(method: String, arg: Any) = obj.call(method, arg)
 
   def asInt: Int = obj match {
     case fn: RubyFixnum => fn.getLongValue.toInt
@@ -76,7 +72,7 @@ class IRubyObjectExtensions(obj: IRubyObject) {
     case _ => throw conversionError("Map")
   }
 
-  def unwrap[T]: T = obj.toJava(classOf[AnyRef]).asInstanceOf[T]
+  def unwrap[T]: T = obj.unwrap[T]
 
   private[this] def conversionError(className: String): Exception =
     new RuntimeException("Cannot convert %s of class %s to %s!".format(

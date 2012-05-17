@@ -244,7 +244,7 @@ class Unit < ActiveRecord::Base
       end
 
       # If the unit was just built check its location for combat.
-      Combat::LocationCheckerAj.check_location(location) if can_fight?
+      Combat::LocationChecker.check_location(location) if can_fight?
     end
   end
 
@@ -619,7 +619,7 @@ class Unit < ActiveRecord::Base
       save_all_units(units, nil, EventBroker::CREATED)
       # Use units[0].location because location can be planet and
       # LocationChecker expects LocationPoint.
-      Combat::LocationCheckerAj.check_location(units[0].location) \
+      Combat::LocationChecker.check_location(units[0].location) \
         unless units.find(&:can_fight?).nil?
 
       units

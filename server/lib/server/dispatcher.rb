@@ -54,6 +54,15 @@ class Dispatcher
     client.nil? ? TAG : "#{TAG}-#{client}"
   end
 
+  # Returns Hash of {director_name => enqueued_tasks}.
+  def director_stats
+    @directors.map do |name, director|
+      [name, director.future(:enqueued_tasks)]
+    end.each_with_object({}) do |(name, future), hash|
+      hash[name] = future.value
+    end
+  end
+
   # Register new client to dispatcher.
   def register(client)
     info "Registering.", to_s(client)
