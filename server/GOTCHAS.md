@@ -43,6 +43,34 @@ The solution is either:
 conectivity is needed. Beware that this will return existing connection if it
 is not currently used and does not ensure that new connection will always be
 checked out.
-* Use ```ActiveRecord::Base.connection_pool.checkout``` and
-```ActiveRecord::Base.connection_pool.checkin``` in ```ensure``` section if
-you really need a separate connection.
+* Use ```ActiveRecord::Base.connection_pool.with_new_connection``` when DB
+conectivity is needed. This will enforce new connection checkout.
+* If you really need a separate connection use
+```ActiveRecord::Base.connection_pool.checkout_with_id```,
+```ActiveRecord::Base.connection_pool.checkin``` in ```ensure``` section and
+```ActiveRecord::Base.connection_id = stored_in```.
+
+Example:
+
+      class Pooler
+        include Celluloid
+
+        def initialize
+          @connection, @connection_id =
+            ActiveRecord::Base.connection_pool.checkout_with_id
+          run!
+        end
+
+        def finalize
+          ActiveRecord::Base.connection_pool.checkin(@connection)
+        end
+
+        def run
+          ActiveRecord::Base.connection_id = @connection_id
+
+          # ...
+        end
+      end
+
+This ensures that each #run invocation reuses same DB connection, even though
+it runs on different Fiber/Thread.

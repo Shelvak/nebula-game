@@ -23,7 +23,7 @@ module IRB # :nodoc:
     @CONF[:MAIN_CONTEXT] = irb.context
 
     catch(:IRB_EXIT) do
-      ActiveRecord::Base.connection_pool.with_connection do
+      ActiveRecord::Base.connection_pool.with_new_connection do
         irb.eval_input
       end
     end

@@ -80,6 +80,10 @@ class CallbackManager
   def initialize
     super
 
+    # See "Fibers, Tasks and database connections" in GOTCHAS.md
+    @connection, @connection_id =
+      ActiveRecord::Base.connection_pool.checkout_with_id
+
     # Crash if dispatcher crashes, because we might have sent some messages
     # there that will never be processed if we don't restart.
     current_actor.link Actor[:dispatcher]
@@ -88,14 +92,17 @@ class CallbackManager
     run!
   end
 
+  def finalize
+    ActiveRecord::Base.connection_pool.checkin(@connection)
+  end
+
   def run
     abort RuntimeError.new(
       "Cannot run callback manager while it is running!"
     ) if @running
     @running = true
 
-    # See "Fibers, Tasks and database connections" in GOTCHAS.md
-    connection = ActiveRecord::Base.connection_pool.checkout
+    ActiveRecord::Base.connection_id = @connection_id
 
     # Tick first time with failed callbacks. This should not be async.
     tick(true)
@@ -105,8 +112,6 @@ class CallbackManager
       sleep 1 # Wait 1 second before next tick.
       tick
     end
-  ensure
-    ActiveRecord::Base.connection_pool.checkin(connection)
   end
 
   def pause

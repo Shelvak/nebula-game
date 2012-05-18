@@ -22,7 +22,8 @@ class RaidSpawner
     register!
   end
 
-  private
+private
+
   # Registers next raid on planet.
   def register!
     @planet.next_raid_at += Cfg.raiding_delay_random

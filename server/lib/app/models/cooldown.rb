@@ -26,7 +26,9 @@ class Cooldown < ActiveRecord::Base
 
   # Return Cooldown#ends_at for planet.
   def self.for_planet(planet)
-    time = select("ends_at").where(planet.location_attrs).c_select_value
+    time = without_locking do
+      select("ends_at").where(planet.location_attrs).c_select_value
+    end
     # JRuby compatibility fix.
     time.is_a?(String) ? Time.parse(time) : time
   end
@@ -34,7 +36,7 @@ class Cooldown < ActiveRecord::Base
   # Create Cooldown identified by given _location_. If such record
   # already exists, update its _ends_at_.
   def self.create_unless_exists(location, ends_at)
-    model = in_location(location.location_attrs).first
+    model = without_locking { in_location(location.location_attrs).first }
 
     unless model
       model = new(:location => location, :ends_at => ends_at)

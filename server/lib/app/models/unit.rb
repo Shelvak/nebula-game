@@ -173,6 +173,8 @@ class Unit < ActiveRecord::Base
     else
       check_upgrade!
 
+      xp_needed = self.xp_needed
+
       if xp >= xp_needed
         self.xp -= xp_needed
         self.level += 1
@@ -254,8 +256,9 @@ class Unit < ActiveRecord::Base
     if number > 0
       number.times { upgrade }
       # Notify quest event handler about upgrade.
-      QUEST_EVENT_HANDLER.fire(self, EventBroker::CHANGED,
-        EventBroker::REASON_UPGRADE_FINISHED)
+      QUEST_EVENT_HANDLER.fire(
+        self, EventBroker::CHANGED, EventBroker::REASON_UPGRADE_FINISHED
+      )
     end
 
     true

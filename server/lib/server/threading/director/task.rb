@@ -25,12 +25,9 @@ class Threading::Director::Task
     @block = block
   end
 
-  # Runs this task passing it worker name. Checks out DB connection before
-  # running it.
+  # Runs this task passing it worker name.
   def run(worker_name)
-    ActiveRecord::Base.connection_pool.with_connection do
-      @block.call(worker_name)
-    end
+    @block.call(worker_name)
   end
 
   def to_s

@@ -12,9 +12,6 @@ end
 
 # Monkey-patches for ActiveRecord.
 module ActiveRecord
-  WC_CHECKING_OUT =
-    "ActiveRecord::ConnectionAdapters::ConnectionPool.with_connection"
-
   # We don't need our #destroy, #save and #save! automatically wrapped under
   # transaction because we wrap whole request in one and can't use nested
   # transactions due to BulkSql.
@@ -34,6 +31,32 @@ module ActiveRecord
       end.join(",")
 
       "ENUM(#{types})"
+    end
+  end
+
+  class ConnectionAdapters::ConnectionPool
+    def checkout_with_id
+      connection = checkout
+      connection_id = current_connection_id
+      raise "Connection ID #{connection_id} is already checked out!" \
+        if @reserved_connections.has_key?(connection_id)
+      @reserved_connections[connection_id] = connection
+
+      [connection, connection_id]
+    end
+
+    def current_connection_id
+      ActiveRecord::Base.connection_id = Celluloid.actor? \
+        ? Celluloid.current_actor.object_id \
+        : Thread.current.object_id
+    end
+
+    # Ensures that new connection is checked out for the block. See GOTCHAS.md
+    def with_new_connection
+      connection = checkout
+      yield
+    ensure
+      checkin(connection)
     end
   end
 end
