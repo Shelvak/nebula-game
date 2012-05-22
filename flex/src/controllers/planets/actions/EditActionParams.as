@@ -19,21 +19,21 @@ package controllers.planets.actions
        * @see #planet
        * @see #newName
        */
-      public function EditActionParams(planet:MPlanet, newName:String) {
+      public function EditActionParams(planet: MPlanet, newName: String) {
          this.planet = Objects.paramNotNull("planet", planet);
          this.newName = Objects.paramNotEmpty("newName", newName);
       }
-      
+
       /**
        * A planet that will be renamed.
        * <p>Not null.</p>
        */
-      public var planet:MPlanet;
-      
+      public var planet: MPlanet;
+
       /**
        * New name of a planet.
        * <p><b>Required. Not null. Not empty string.</b></p>
        */
-      public var newName:String;
+      public var newName: String;
    }
 }
