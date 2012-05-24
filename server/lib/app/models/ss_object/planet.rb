@@ -105,7 +105,7 @@ class SsObject::Planet < SsObject
       "terrain" => terrain,
       "width" => width,
       "height" => height,
-      "counter" => counter,
+      "spawn_counter" => spawn_counter,
       "next_spawn" => next_spawn
     }
     if options
@@ -289,7 +289,7 @@ class SsObject::Planet < SsObject
     ) if cooldown.present? && cooldown > Time.now
 
     raise GameLogicError.new(
-      "You cannot spawn until #next_spawn expires"
+      "You cannot spawn until #next_spawn_at expires"
     ) if self.next_spawn.present? && self.next_spawn > Time.now
 
     units = UnitBuilder.from_random_ranges(

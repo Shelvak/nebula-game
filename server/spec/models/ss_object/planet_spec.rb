@@ -726,7 +726,7 @@ describe SsObject::Planet do
 
     describe "without options" do
       it_behaves_like "as json", Factory.create(:planet), nil,
-        %w{name terrain width height},
+        %w{name terrain width height spawn_counter next_spawn},
         %w{metal metal_generation_rate metal_usage_rate metal_storage
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate metal_usage_rate zetium_storage

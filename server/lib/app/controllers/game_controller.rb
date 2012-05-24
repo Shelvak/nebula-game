@@ -34,6 +34,8 @@ class GameController < GenericController
     |
     planet\.validation\.
     |
+    ss_object\.spawn\.
+    |
     tiles\.exploration\.(scientists|time)
     |
     tiles\..+?\.mod\.
