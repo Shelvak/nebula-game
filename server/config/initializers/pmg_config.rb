@@ -1,10 +1,14 @@
 # Convention requires us to name this lambda as generator.
 lambda do
+  val = lambda do |value|
+    # Reduce the values in test, because otherwise testing takes very very long.
+    App.in_test? ? [1, (value * 0.01).round].max : value
+  end
+
   generate_ss_maps = lambda do
     dirac = Unit::Dirac.to_s.demodulize
     thor = Unit::Thor.to_s.demodulize
     demosis = Unit::Demosis.to_s.demodulize
-    convoy_ship = Unit::ConvoyShip.to_s.demodulize
 
     functions = {
       # Wreckage functions
@@ -21,67 +25,67 @@ lambda do
       # Unit functions
       'u' => lambda do |arg|
         units = [
-          [(0.8 * arg).round, dirac, 0, 1.0],
-          [arg.round, dirac, 1, 1.0],
+          [val[0.8 * arg], dirac, 0, 1.0],
+          [val[arg], dirac, 1, 1.0],
         ]
         units += [
-          [(0.25 * arg).round, thor, 0, 1.0],
-          [(0.75 * arg).round, thor, 1, 1.0],
+          [val[0.25 * arg], thor, 0, 1.0],
+          [val[0.75 * arg], thor, 1, 1.0],
         ] if arg >= 1.5
         units += [
-          [(0.5 * arg).round, demosis, 0, 1.0]
+          [val[0.5 * arg], demosis, 0, 1.0]
         ] if arg >= 3
         units
       end,
       'ud' => lambda do |arg|
         total = 5 * arg
         [
-          [(0.35 * total).round, dirac, 0, 1.0],
-          [(0.65 * total).round, dirac, 1, 1.0],
+          [val[0.35 * total], dirac, 0, 1.0],
+          [val[0.65 * total], dirac, 1, 1.0],
         ]
       end,
       'ut' => lambda do |arg|
         total = 3 * arg
         [
-          [(0.35 * total).round, thor, 0, 1.0],
-          [(0.65 * total).round, thor, 1, 1.0],
+          [val[0.35 * total], thor, 0, 1.0],
+          [val[0.65 * total], thor, 1, 1.0],
         ]
       end,
       'uD' => lambda do |arg|
         total = 1.5 * arg
         [
-          [(0.35 * total).round, demosis, 0, 1.0],
-          [(0.65 * total).round, demosis, 1, 1.0],
+          [val[0.35 * total], demosis, 0, 1.0],
+          [val[0.65 * total], demosis, 1, 1.0],
         ]
       end,
       'udt' => lambda do |arg|
         dirac_total = 3.5 * arg
         thor_total = 2 * arg
         [
-          [(0.85 * dirac_total).round, dirac, 0, 1.0],
-          [(0.15 * dirac_total).round, dirac, 1, 1.0],
-          [(0.05 * thor_total).round, thor, 0, 1.0],
-          [(0.95 * thor_total).round, thor, 1, 1.0],
+          [val[0.85 * dirac_total], dirac, 0, 1.0],
+          [val[0.15 * dirac_total], dirac, 1, 1.0],
+          [val[0.05 * thor_total], thor, 0, 1.0],
+          [val[0.95 * thor_total], thor, 1, 1.0],
         ]
       end,
       'udD' => lambda do |arg|
         dirac_total = 3 * arg
         demosis_total = 0.5 * arg
         [
-          [(0.10 * dirac_total).round, dirac, 0, 1.0],
-          [(0.90 * dirac_total).round, dirac, 1, 1.0],
-          [(0.95 * demosis_total).round, demosis, 0, 1.0],
-          [(0.05 * demosis_total).round, demosis, 1, 1.0],
+          [val[0.10 * dirac_total], dirac, 0, 1.0],
+          [val[0.90 * dirac_total], dirac, 1, 1.0],
+          [val[0.95 * demosis_total], demosis, 0, 1.0],
+          [val[0.05 * demosis_total], demosis, 1, 1.0],
         ]
       end,
       'utD' => lambda do |arg|
         thor_total = 1.5 * arg
         demosis_total = 0.5 * arg
         [
-          [(0.05 * thor_total).round, thor, 0, 1.0],
-          [(0.95 * thor_total).round, thor, 1, 1.0],
-          [(0.90 * demosis_total).round, demosis, 0, 1.0],
-          [(0.10 * demosis_total).round, demosis, 1, 1.0],
+          [val[0.05 * thor_total], thor, 0, 1.0],
+          [val[0.95 * thor_total], thor, 1, 1.0],
+          [val[0.90 * demosis_total], demosis, 0, 1.0],
+          [val[0.10 * demosis_total], demosis, 1, 1.0],
         ]
       end
     }
@@ -158,12 +162,13 @@ lambda do
         level_range.each do |level|
           unit_flanks.each_with_index do |flank_percentage, flank|
             # Subtract start of level range because it can start not from 0.
-            count = ((
-            min_count + per_level * (level - level_range.first)
-            ) * flank_percentage).round
+            count = (
+              (min_count + per_level * (level - level_range.first)) *
+              flank_percentage
+            ).round
 
             storage[name][level] <<
-              [count, unit_name, flank, hp_percentage] unless count <= 0
+              [val[count], unit_name, flank, hp_percentage] unless count <= 0
           end
         end
       end
