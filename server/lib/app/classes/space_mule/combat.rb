@@ -19,7 +19,7 @@ module SpaceMule::Combat
 
       # Convert players
       hashed_sm_players = convert_players(players)
-      sm_players = Set.new(hashed_sm_players.values)
+      sm_players = Set.new(hashed_sm_players.values).to_scala
 
       # Figure out planet owner
       sm_planet_owner = None
@@ -39,13 +39,13 @@ module SpaceMule::Combat
       end.compact.uniq
       sm_alliance_names = without_locking do
         Alliance.names_for(alliance_ids)
-      end
+      end.to_scala
 
       # Convert and partition troops.
 
       sm_troops = units.each_with_object(Set.new) do |unit, set|
         set.add convert_unit(hashed_sm_players, unit)
-      end
+      end.to_scala
 
       # Units which are loaded into transporters.
       sm_loaded_units = loaded_units.each_with_object({}) do
@@ -57,26 +57,28 @@ module SpaceMule::Combat
         end
 
         hash
-      end
+      end.to_scala
 
       # Convert buildings
       sm_buildings = buildings.each_with_object(Set.new) do |building, set|
         set.add convert_building(sm_planet_owner, building)
-      end
+      end.to_scala
 
-      battleground = battleground?(location)
+      sm_battleground = battleground?(location).to_java
+      sm_nap_rules = nap_rules.to_scala
+      sm_unloaded_unit_ids = unloaded_unit_ids.to_scala
 
       Combat.Runner.run(
-        sm_location.to_scala,
-        battleground.to_scala,
-        sm_planet_owner.to_scala,
-        sm_players.to_scala,
-        sm_alliance_names.to_scala,
-        nap_rules.to_scala,
-        sm_troops.to_scala,
-        sm_loaded_units.to_scala,
-        unloaded_unit_ids.to_scala,
-        sm_buildings.to_scala
+        sm_location,
+        sm_battleground,
+        sm_planet_owner,
+        sm_players,
+        sm_alliance_names,
+        sm_nap_rules,
+        sm_troops,
+        sm_loaded_units,
+        sm_unloaded_unit_ids,
+        sm_buildings
       )
     end
   end
