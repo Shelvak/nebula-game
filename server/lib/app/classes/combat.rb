@@ -26,6 +26,15 @@ class Combat
   # your allies were wiped out from the battlefield).
   OUTCOME_TIE = 2
 
+  # Combatant kinds.
+  # Used by SpaceMule in spacemule.modules.combat.objects.Combatant.Kind
+
+  COMBATANT_KIND_UNIT = 0
+  # Building with guns
+  COMBATANT_KIND_SHOOTING_BUILDING = 1
+  # Building without guns. We might have them one day...
+  COMBATANT_KIND_PASSIVE_BUILDING = 2
+
   # Attributes used in statistics
 
   STATS_PLR_DMG_DEALT_ATTR = "damage_dealt_player"

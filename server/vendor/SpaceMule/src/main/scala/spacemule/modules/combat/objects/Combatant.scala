@@ -2,12 +2,18 @@ package spacemule.modules.combat.objects
 
 import spacemule.helpers.Trackable
 import spacemule.modules.config.objects.Config
+import spacemule.helpers.JRuby._
+import core.Values._
 
 object Combatant {
   object Kind extends Enumeration {
-    val Troop = Value(0, "troop")
-    val BuildingShooting = Value(1, "shooting building")
-    val BuildingPassive = Value(2, "passive building")
+    private[this] def const(name: String): Int =
+      RClass("Combat").getConstant("COMBATANT_KIND_" + name).unwrap[Long]
+
+    val Troop = Value(const("UNIT"), "troop")
+    val BuildingShooting =
+      Value(const("SHOOTING_BUILDING"), "shooting building")
+    val BuildingPassive = Value(const("PASSIVE_BUILDING"), "passive building")
   }
 
   /**

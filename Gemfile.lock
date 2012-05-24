@@ -55,7 +55,7 @@ GEM
       bouncy-castle-java (>= 1.5.0146.1)
     jruby-pageant (1.0.2)
     jruby-pageant (1.0.2-java)
-    jruby-scala-collections (0.1.2)
+    jruby-scala-collections (0.1.3)
     json (1.6.6)
     json (1.6.6-java)
     mail (2.4.4)
@@ -107,7 +107,7 @@ DEPENDENCIES
   factory_girl (~> 2.1.2)
   flag_shih_tzu!
   jruby-openssl (>= 0.7.6.1)
-  jruby-scala-collections (>= 0.1.2)
+  jruby-scala-collections (>= 0.1.3)
   json (>= 1.4.6)
   mail (>= 2.2)
   mediawiki-gateway

@@ -264,7 +264,41 @@ describe Combat do
       end.run
     end
   end
-  
+
+  it "should have combat log ticks that make sense" do
+    b1 = b2 = u1 = u2 = nil
+    assets = CombatDsl.new do
+      location(:planet) { buildings { b1 = screamer; b2 = thunder(x: 10) } }
+      player(planet_owner: true) { units { u1 = scorpion } }
+      player { units { u2 = scorpion } }
+    end.run
+
+    combatant_ids = [b1.id, b2.id, u1.id, u2.id].uniq
+    kinds = [
+      Combat::COMBATANT_KIND_UNIT,
+      Combat::COMBATANT_KIND_SHOOTING_BUILDING,
+      Combat::COMBATANT_KIND_PASSIVE_BUILDING,
+    ]
+
+    ticks = assets.combat_log.info["log"]["ticks"]
+    ticks.should be_a(Array)
+    ticks.each do |fires|
+      fires.should be_a(Array)
+      fires.each do |(source_id, source_kind), hits|
+        source_id.should be_included_in(combatant_ids)
+        source_kind.should be_included_in(kinds)
+
+        hits.each do |gun_index, (target_id, target_kind), damage|
+          gun_index.should be_a(Fixnum)
+          gun_index.should be >= 0
+          target_id.should be_included_in(combatant_ids)
+          target_kind.should be_included_in(kinds)
+          damage.should be_a(Fixnum)
+        end
+      end
+    end
+  end
+
   it "should calculate overpopulation into account" do
     p1 = p2 = u1_normal = u2_normal = nil
     dsl = CombatDsl.new do
