@@ -24,6 +24,7 @@ package models.solarsystem
    import models.location.LocationType;
    import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
+   import models.planet.MPlanetBoss;
    import models.player.PlayerMinimal;
    import models.resource.Resource;
    import models.resource.ResourceType;
@@ -42,22 +43,16 @@ package models.solarsystem
 
    /**
     * Dispatched when player who owns this solar system object has changed.
-    * 
-    * @eventType models.solarsystem.events.MSSObjectEvent.PLAYER_CHANGE
     */
    [Event(name="playerChange", type="models.solarsystem.events.MSSObjectEvent")]
    
    /**
     * Dispatched when <code>owner</code> property changes.
-    * 
-    * @eventType models.solarsystem.events.MSSObjectEvent.OWNER_CHANGE
     */
    [Event(name="ownerChange", type="models.solarsystem.events.MSSObjectEvent")]
    
    /**
     * Dispatched when <code>cooldown</code> property changes.
-    * 
-    * @eventType models.solarsystem.events.MSSObjectEvent.COOLDOWN_CHANGE
     */
    [Event(
       name="cooldownChange",
@@ -68,6 +63,20 @@ package models.solarsystem
     */
    [Event(
       name="terrainChange",
+      type="models.solarsystem.events.MSSObjectEvent")]
+
+   /**
+    * Dispatched when <code>spawnCounter</code> property changes.
+    */
+   [Event(
+      name="spawnCounterChange",
+      type="models.solarsystem.events.MSSObjectEvent")]
+
+   /**
+    * Dispatched when <code>nextSpawn</code> property changes.
+    */
+   [Event(
+      name="nextSpawnChange",
       type="models.solarsystem.events.MSSObjectEvent")]
 
    /* when MSsObject gets updated, metal, energy and zetium properties gets overwritten.
@@ -411,6 +420,56 @@ package models.solarsystem
       
       public function get componentHeight() : int {
          return IMAGE_HEIGHT * size / 100;
+      }
+
+
+      /* ################## */
+      /* ### BOSS SPAWN ### */
+      /* ################## */
+
+      private var _spawnCounter: int = 0;
+      [Bindable(event="spawnCounterChange")]
+      /**
+       * Level of the boss-fleet to be spawned but only if this is a pulsar or battleground planet.
+       */
+      public function set spawnCounter(value: int): void {
+         if (_spawnCounter != value) {
+            _spawnCounter = value;
+            dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.SPAWN_COUNTER_CHANGE);
+         }
+      }
+      public function get spawnCounter(): int {
+         return _spawnCounter;
+      }
+
+      private var _nextSpawn: MTimeEventFixedMoment = null;
+      [Bindable(event="nextSpawnChange")]
+      /**
+       * Time until next boss can be spawned.
+       */
+      public function set nextSpawn(nextSpawn: MTimeEventFixedMoment): void {
+         if (_nextSpawn != nextSpawn) {
+            _nextSpawn = nextSpawn;
+            dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.NEXT_SPAWN_CHANGE);
+         }
+      }
+      public function get nextSpawn(): MTimeEventFixedMoment {
+         return _nextSpawn;
+      }
+
+      private var _bossCreated: Boolean = false;
+      private var _boss: MPlanetBoss = null;
+      /**
+       * A special object for handling spawning of boss. May be <code>null</code>.
+       */
+      public function get boss(): MPlanetBoss {
+         if (!_bossCreated) {
+            _bossCreated = true;
+            if (isPlanet && (inBattleground || inMiniBattleground)) {
+               _boss = new MPlanetBoss(this);
+            }
+         }
+         return _boss;
       }
       
       
@@ -1008,6 +1067,12 @@ package models.solarsystem
          recalculateResources();
          updateItem(nextRaidEvent);
          updateItem(explorationEndEvent);
+         if (nextSpawn != null) {
+            nextSpawn.update();
+            if (nextSpawn.hasOccurred) {
+               nextSpawn = null;
+            }
+         }
          if (cooldown != null) {
             cooldown.update();
             if (cooldown.endsEvent.hasOccurred) {
@@ -1024,6 +1089,7 @@ package models.solarsystem
          resetChangeFlagsOf(nextRaidEvent);
          resetChangeFlagsOf(explorationEndEvent);
          resetChangeFlagsOf(cooldown);
+         resetChangeFlagsOf(nextSpawn);
       }
    }
 }

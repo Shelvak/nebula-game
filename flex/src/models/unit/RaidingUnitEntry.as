@@ -1,12 +1,14 @@
 package models.unit
 {
    import flash.display.BitmapData;
-   
+
    import models.BaseModel;
+
+   import utils.ObjectStringBuilder;
    import utils.StringUtil;
    import utils.assets.AssetNames;
-   
-   
+
+
    public class RaidingUnitEntry extends BaseModel
    {
       public function RaidingUnitEntry(_type:String, _countFrom:int,
@@ -36,11 +38,22 @@ package models.unit
       {
          return IMG.getImage(AssetNames.getUnitImageName(type));
       }
-      
-      public override function toString() : String
-      {
-         return "[class: " + className + ", type: " + type + ", countFrom: "
-                 + countFrom + ", countTo: " + countTo + ", prob: " + prob + "]";
+
+      public override function toString(): String {
+         return new ObjectStringBuilder(this)
+            .addProp("type")
+            .addProp("countFrom")
+            .addProp("countTo")
+            .addProp("prob").finish();
+      }
+
+      public override function equals(o: Object): Boolean {
+         const another: RaidingUnitEntry = o as RaidingUnitEntry;
+         return another != null
+            && another.type == this.type
+            && another.countFrom == this.countFrom
+            && another.countTo == this.countTo
+            && another.prob == this.prob;
       }
    }
 }

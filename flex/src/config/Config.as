@@ -311,6 +311,14 @@ package config
       {
          return getValue('raiding.raiders.apocalypse');
       }
+
+      public static function getMiniBattlegroundBoss(): Array {
+         return getValue("spawn.mini_battleground.units");
+      }
+
+      public static function getBattlegroundBoss(): Array {
+         return getValue("spawn.battleground.units")
+      }
       
       public static function getPointsToWin(): int
       {

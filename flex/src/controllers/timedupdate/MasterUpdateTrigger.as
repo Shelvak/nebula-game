@@ -119,7 +119,7 @@ package controllers.timedupdate
             new SingleUpdatableUpdateTrigger(
                function (): IUpdatable { return SquadronsController.getInstance() }
             ),
-            new UIUpdateTrigger(),
+            new UIUpdateTrigger()
          ]);
          _triggersToReset = new Vector.<IUpdateTrigger>();
       }

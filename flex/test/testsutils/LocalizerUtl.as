@@ -21,6 +21,14 @@ package testsutils
        */
       public static function setUp() : void {
          StartupInfo.getInstance().locale = Locale.TEST;
+         addBundle("General", {
+            "day.short": "d",
+            "day.long": "day",
+            "hour.short": "h",
+            "hour.long": "hour",
+            "minute.short": "m",
+            "second.short": "s"
+         });
       }
       
       public static function addBundle(bundleName:String, content:Object) : void {
