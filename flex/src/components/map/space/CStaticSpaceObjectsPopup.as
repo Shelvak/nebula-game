@@ -41,7 +41,7 @@ package components.map.space
          super.createChildren();
          for each (var objectType:int in objectTypes)
          {
-            var component:CStaticSpaceObjectInfo =
+            var component:ICStaticSpaceObjectInfo =
                new (_customComponentClasses.getInfoClass(objectType))();
             addElement(component);
          }
@@ -52,9 +52,9 @@ package components.map.space
       {
          for (var i:int = 0; i < numElements; i++)
          {
-            var objectType:int = objectTypes[i];
-            var component:CStaticSpaceObjectInfo = CStaticSpaceObjectInfo(getElementAt(i));
-            var object:IMStaticSpaceObject = model ? model.findObjectOfType(objectType) : null;
+            const objectType: int = objectTypes[i];
+            const component: ICStaticSpaceObjectInfo = ICStaticSpaceObjectInfo(getElementAt(i));
+            const object: IMStaticSpaceObject = model ? model.findObjectOfType(objectType) : null;
             component.staticObject = object;
             component.visible = object != null;
             component.includeInLayout = component.visible;

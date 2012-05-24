@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         skinClass="components.skins.PanelSkin"
+         title="{model.title_panel}">
+   <fx:Script>
+      <![CDATA[
+      import models.planet.MPlanetBoss;
+
+
+      [Bindable]
+      public var model: MPlanetBoss;
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="justify"/>
+   </s:layout>
+   <s:Label text="{model.label_unitsList}"/>
+   <s:List dataProvider="{model.units}" itemRenderer="components.unit.IRRaidUnitEntry"/>
+   <s:Label text="{model.message_spawnAbility}"/>
+</s:Panel>

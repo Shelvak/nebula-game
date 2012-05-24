@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:space="components.map.space.*" xmlns:planet="components.planet.*"
+         implements="components.map.space.ICStaticSpaceObjectInfo">
+   <fx:Binding source="MSSObject(staticObject).boss" destination="boss"/>
+   <fx:Script>
+      <![CDATA[
+      import models.map.IMStaticSpaceObject;
+      import models.planet.MPlanetBoss;
+      import models.solarsystem.MSSObject;
+
+
+      [Bindable]
+      private var boss: MPlanetBoss;
+
+      private var _staticObject: IMStaticSpaceObject;
+      [Bindable]
+      public function set staticObject(value: IMStaticSpaceObject): void {
+         _staticObject = value;
+      }
+      public function get staticObject(): IMStaticSpaceObject {
+         return _staticObject;
+      }
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="justify"/>
+   </s:layout>
+   <space:CSSObjectInfo staticObject="{staticObject}"/>
+   <planet:CPlanetBossInfo model="{boss}" visible="{boss != null}" includeInLayout="{boss != null}"/>
+</s:Group>
