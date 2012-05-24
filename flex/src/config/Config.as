@@ -313,11 +313,11 @@ package config
       }
 
       public static function getMiniBattlegroundBoss(): Array {
-         return getValue("spawn.mini_battleground.units");
+         return getValue("ssObject.spawn.miniBattleground.units");
       }
 
       public static function getBattlegroundBoss(): Array {
-         return getValue("spawn.battleground.units")
+         return getValue("ssObject.spawn.battleground.units")
       }
       
       public static function getPointsToWin(): int

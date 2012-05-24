@@ -46,10 +46,10 @@ package tests.planetboss
       [Before]
       public function setUp(): void {
          Config.setConfig({
-            "spawn.mini_battleground.units": [
+            "ssObject.spawn.miniBattleground.units": [
                ["20 + 1 * counter / 4", "30 + 4 * counter / 2", "Gnat", 0],
                ["5 + 1 * counter / 2", "15 + 3 * counter / 5", "Glancer", 1]],
-            "spawn.battleground.units": [
+            "ssObject.spawn.battleground.units": [
                ["10 + 1 * counter / 4", "20 + 4 * counter / 2", "Azure", 0],
                ["20 + 1 * counter / 2", "25 + 3 * counter / 5", "Trooper", 1]]
          });
