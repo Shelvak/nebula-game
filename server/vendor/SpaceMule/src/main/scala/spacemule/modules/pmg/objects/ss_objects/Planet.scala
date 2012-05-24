@@ -2,6 +2,7 @@ package spacemule.modules.pmg.objects.ss_objects
 
 import spacemule.helpers.Converters._
 import core.Values._
+import core.AnyConversions._
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area._
 import spacemule.modules.pmg.objects.SSObject
@@ -73,7 +74,7 @@ object Planet {
         val area = Area(size(0), size(1))
 
         val name = data("name").toString
-        val terrainKind = data("terrain").asInstanceOf[Long]
+        val terrainKind = data("terrain").asInt
 
         val tilesMap = new AreaMap(area)
 
@@ -97,7 +98,7 @@ object Planet {
           }
         }
 
-        val weight = data("weight").asInstanceOf[Long]
+        val weight = data("weight").asInt
         val resources = ResourcesEntry.extract(
           data("resources").asInstanceOf[sc.Seq[Double]]
         )
@@ -109,9 +110,9 @@ object Planet {
             (ListBuffer.empty[Building], HashSet.empty[Coords])
           ) { case ((b, bt), (buildingName, dataArray)) =>
             dataArray.foreach { entryArray =>
-              val x = entryArray(0).asInstanceOf[Long]
-              val y = entryArray(1).asInstanceOf[Long]
-              val level = entryArray(2).asInstanceOf[Long]
+              val x = entryArray(0).asInt
+              val y = entryArray(1).asInt
+              val level = entryArray(2).asInt
               val units = UnitsEntry.extract(
                 entryArray(3).asInstanceOf[sc.Seq[sc.Seq[Any]]]
               )

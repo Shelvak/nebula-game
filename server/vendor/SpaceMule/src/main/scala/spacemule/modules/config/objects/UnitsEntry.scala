@@ -7,7 +7,7 @@ package spacemule.modules.config.objects
 
 import scala.{collection => sc}
 import spacemule.helpers.Converters._
-import core.Values._
+import core.AnyConversions._
 import spacemule.modules.pmg.objects.Troop
 
 object UnitsEntry {
@@ -25,9 +25,9 @@ object UnitsEntry {
     entries.map { entryArray =>
       new UnitsEntry(
         entryArray(1).toString.camelcase,
-        entryArray(0).asInstanceOf[Long],
-        entryArray(2).asInstanceOf[Long],
-        entryArray(3)
+        entryArray(0).asDouble.round.toInt,
+        entryArray(2).asInt,
+        entryArray(3).asDouble
       )
     }
   }

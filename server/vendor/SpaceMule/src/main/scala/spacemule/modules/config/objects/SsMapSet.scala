@@ -2,6 +2,7 @@ package spacemule.modules.config.objects
 
 import spacemule.helpers.Converters._
 import spacemule.helpers.JRuby._
+import core.AnyConversions._
 import scala.{collection => sc}
 
 /**
@@ -21,7 +22,10 @@ object SsMapSet {
 
       val weight = map.get("weight") match {
         case None => sys.error("No 'weight' for %s".format(map))
-        case Some(weight) => weight.asInstanceOf[Long].toInt
+        case Some(weight) => try { weight.asInt }
+        catch { case e: Exception =>
+          throw core.Exceptions.extend("Error while getting 'weight'", e)
+        }
       }
       val config = (map.get("map"): @unchecked) match {
         case None => sys.error("No 'map' for %s".format(map))

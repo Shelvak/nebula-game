@@ -76,7 +76,17 @@ class Logging::Logger
     if exception
       @block_buffer +=
         "[END of #{end_name} with EXCEPTION] #{timing} #{exception.inspect}\n"
-      raise exception
+      if exception.is_a?(NativeException)
+        message = exception.message.include?("JVM backtrace:") \
+          ? exception.message \
+          : %Q{#{exception.message}
+
+JVM backtrace:
+#{exception.cause.backtrace.join("\n")}}
+        raise exception.class, message
+      else
+        raise exception
+      end
     else
       if @block_buffer.ends_with?(data)
         @block_buffer.chomp!
