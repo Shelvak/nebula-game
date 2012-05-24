@@ -37,7 +37,7 @@
             <s:Group visible="{completed}">
                <s:Label text="{getString('label.choosePlanet')}" styleName="h3"/>
                <base:PlanetSelector id="planetSelector" minWidth="180" dataProvider="{ML.player.planets}"
-                                    itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
+                                    itemRenderer="components.planet.IRPlayerPlanet"
                                     change="planetSelector_changeHandler(event)"/>
                <s:layout>
                   <s:HorizontalLayout/>

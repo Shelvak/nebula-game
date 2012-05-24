@@ -270,7 +270,7 @@
                         color="#eec500"/>
                <base:PlanetSelector id="planetSelector" change="planetSelector_changeHandler(event)"
                                     minWidth="180" dataProvider="{planetsProvider}"
-                                    itemRenderer="components.gameobjects.planet.IRPlayerPlanet"/>
+                                    itemRenderer="components.planet.IRPlayerPlanet"/>
                <s:layout>
                  <s:HorizontalLayout verticalAlign="middle" paddingLeft="30" gap="10"/>
                </s:layout>

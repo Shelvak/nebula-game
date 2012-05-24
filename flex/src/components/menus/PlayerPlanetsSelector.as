@@ -1,6 +1,6 @@
 package components.menus
 {
-   import components.gameobjects.planet.IRPlayerPlanet;
+   import components.planet.IRPlayerPlanet;
    
    import controllers.ui.NavigationController;
    
