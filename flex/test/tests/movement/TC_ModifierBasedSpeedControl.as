@@ -34,6 +34,7 @@ package tests.movement
       [Before]
       public function setUp(): void {
          MovementTestUtil.setUp();
+         DateUtil.now = 0;
          baseValues = new BaseTripValues(10000, 10);
          speedupValues = new SpeedupValues(baseValues);
          control = new ModifierBasedSpeedControl(
