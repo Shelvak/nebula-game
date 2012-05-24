@@ -37,8 +37,6 @@ lambda do
   # main jar.
   Dir[File.dirname(jar_path) + "/lib/*.jar"].each { |jar| require jar }
   require jar_path
-
-  require File.dirname(__FILE__) + "/server/scala_support"
 end.call
 
 class App

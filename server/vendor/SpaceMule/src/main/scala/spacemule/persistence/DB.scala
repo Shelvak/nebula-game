@@ -13,7 +13,6 @@ import scala.collection.mutable.ListBuffer
 import java.io.{FileWriter, File}
 import spacemule.helpers.Converters._
 import java.sql._
-import jruby.JRuby._
 import spacemule.helpers.JRuby._
 
 object DB {

@@ -13,7 +13,6 @@ import scala.{collection => sc}
 import spacemule.modules.combat.objects.{Combatant, Damage, Armor, Stance}
 import spacemule.modules.config.ScalaConfig
 import core.Values._
-import jruby.JRuby._
 import _root_.java.{util => ju}
 import scala.collection.mutable.HashMap
 
@@ -162,7 +161,10 @@ object Config {
     }
   }
 
-  private def cost(key: String) = double(key).ceil.toInt
+  private def cost(key: String) = any(key) match {
+    case d: Double => d.ceil.toInt
+    case l: Long => l.toInt
+  }
   private def cost(key: String, level: Int) =
     formulaEval(key, Map("level" -> level.toDouble)).ceil.toInt
 

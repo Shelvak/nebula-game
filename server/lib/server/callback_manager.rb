@@ -2,6 +2,7 @@ class CallbackManager
   include Celluloid
   include NamedLogMessages
   include PauseableActor
+  include SeparateConnection
 
   # Raised if callback already exists and is in future.
   class CallbackAlreadyExists < RuntimeError; end
@@ -80,10 +81,6 @@ class CallbackManager
   def initialize
     super
 
-    # See "Fibers, Tasks and database connections" in GOTCHAS.md
-    @connection, @connection_id =
-      ActiveRecord::Base.connection_pool.checkout_with_id
-
     # Crash if dispatcher crashes, because we might have sent some messages
     # there that will never be processed if we don't restart.
     current_actor.link Actor[:dispatcher]
@@ -92,17 +89,13 @@ class CallbackManager
     run!
   end
 
-  def finalize
-    ActiveRecord::Base.connection_pool.checkin(@connection)
-  end
-
   def run
     abort RuntimeError.new(
       "Cannot run callback manager while it is running!"
     ) if @running
     @running = true
 
-    ActiveRecord::Base.connection_id = @connection_id
+    set_ar_connection_id!
 
     # Tick first time with failed callbacks. This should not be async.
     tick(true)

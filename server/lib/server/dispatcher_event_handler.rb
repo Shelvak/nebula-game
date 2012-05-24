@@ -48,6 +48,7 @@ class DispatcherEventHandler
         route_hops = [zone_route_hops[0]].compact
       end
 
+      typesig_bindless [["player_id", player_id]], Fixnum
       dispatcher.push_to_player!(
         player_id,
         UnitsController::ACTION_MOVEMENT_PREPARE,
@@ -166,6 +167,7 @@ class DispatcherEventHandler
       case reason
       when EventBroker::REASON_SS_ENTRY
         if fow_change_event.is_a?(Event::FowChange::SsDestroyed)
+          typesig_bindless [["player_id", player_id]], Fixnum
           dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_DESTROYED,
             {
@@ -175,6 +177,7 @@ class DispatcherEventHandler
           )
         elsif fow_change_event.is_a?(Event::FowChange::SsCreated)
           # Create single solar system
+          typesig_bindless [["player_id", player_id]], Fixnum
           dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_CREATED,
             {
@@ -184,6 +187,7 @@ class DispatcherEventHandler
           )
         else
           # Update single solar system
+          typesig_bindless [["player_id", player_id]], Fixnum
           dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_UPDATED,
             {
@@ -194,6 +198,7 @@ class DispatcherEventHandler
         end
       when EventBroker::REASON_GALAXY_ENTRY
         # Update galaxy map
+        typesig_bindless [["player_id", player_id]], Fixnum
         dispatcher.push_to_player!(player_id, GalaxiesController::ACTION_SHOW)
       end
     end
@@ -216,6 +221,7 @@ class DispatcherEventHandler
     typesig binding, [NilClass, Dispatcher::PushFilter], Fixnum, Array, Array,
             [NilClass, Time]
 
+    typesig_bindless [["player_id", player_id]], Fixnum
     dispatcher.push_to_player!(
       player_id,
       UnitsController::ACTION_MOVEMENT,

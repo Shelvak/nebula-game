@@ -7,7 +7,6 @@ package spacemule.modules.config.objects
 
 import scala.{collection => sc}
 import spacemule.helpers.Converters._
-import jruby.JRuby._
 import core.Values._
 import spacemule.modules.pmg.objects.Troop
 

@@ -4,48 +4,6 @@ def path(description)
   Path.new(description)
 end
 
-shared_examples_for "adding new solar systems (create player)" do
-  it "should add homeworld solar system" do
-    FowSsEntry.where(@conditions).map do |fse|
-      {
-        :player_planets => fse.player_planets,
-        :player_ships => fse.player_ships,
-        :enemy_planets => fse.enemy_planets,
-        :enemy_ships => fse.enemy_ships,
-        :counter => 2
-      }
-    end.should include(
-      :player_planets => false,
-      :player_ships => false,
-      :enemy_planets => true,
-      :enemy_ships => false,
-      :counter => 2
-    )
-  end
-
-  it_should_behave_like "adding new solar systems"
-end
-
-shared_examples_for "adding new solar systems" do
-  it "should add regular solar systems" do
-    FowSsEntry.where(@conditions).map do |fse|
-      {
-        :player_planets => fse.player_planets,
-        :player_ships => fse.player_ships,
-        :enemy_planets => fse.enemy_planets,
-        :enemy_ships => fse.enemy_ships,
-        :counter => fse.counter
-      }
-    end.should include(
-      :player_planets => false,
-      :player_ships => false,
-      :enemy_planets => false,
-      :enemy_ships => false,
-      :counter => 2
-    )
-  end
-end
-
 describe SpaceMule do
   before(:all) do
     # Ensure we're not testing against randomness: leave only one map of
@@ -64,38 +22,20 @@ describe SpaceMule do
     @old_maps.each { |key, map_set| CONFIG[key] = map_set }
   end
 
-  describe "#create_galaxy" do
+  describe "#fill_galaxy" do
+    let(:galaxy) { Factory.create(:galaxy) }
+    let(:free_zones) { 2 }
+    let(:free_home_ss) { 2 }
+
     before(:all) do
       @launch_time = Time.now
-      @galaxy_id = @mule.create_galaxy("default", "localhost")
-      @galaxy = Galaxy.find(@galaxy_id)
-    end
-
-    it "should return id" do
-      @galaxy_id.should == Galaxy.maximum(:id)
-    end
-
-    describe "new galaxy" do
-      it "should create a new galaxy" do
-        @galaxy.should_not be_nil
-      end
-
-      it "should have ruleset set" do
-        @galaxy.ruleset.should == "default"
-      end
-      
-      it "should have callback url set" do
-        @galaxy.callback_url.should == "localhost"
-      end
-
-      it "should have created_at set" do
-        @galaxy.created_at.should be_within(10.seconds).of(Time.now)
-      end
+      @mule.fill_galaxy(galaxy, free_zones, free_home_ss)
     end
 
     describe "battleground ss" do
       before(:all) do
-        @ss = @galaxy.solar_systems.where(:x => nil, :y => nil).first
+        @ss = galaxy.solar_systems.
+          where(x: nil, y: nil, kind: SolarSystem::KIND_BATTLEGROUND).first
         @solar_systems = [@ss]
       end
 
@@ -120,28 +60,11 @@ describe SpaceMule do
         )
       end
     end
-  
-    it "should have spawn callback for first convoy" do
-      @galaxy.should have_callback(
-        CallbackManager::EVENT_SPAWN,
-        @launch_time + CONFIG.evalproperty('galaxy.convoy.time')
-      )
-    end
-    
-    MarketOffer::CALLBACK_MAPPINGS.each do |kind, event|
-      it "should have spawn callback for resource kind #{kind}" do
-        seconds_range = Cfg.market_bot_resource_cooldown_range
-        range = (seconds_range.first.from_now..seconds_range.last.from_now)
-        @galaxy.should have_callback(event, range)
-      end
-    end
-  end
 
-  shared_examples_for "creating galaxy zone" do
     describe "wormholes" do
       before(:all) do
         @wormholes = SolarSystem.where(
-          :galaxy_id => @galaxy.id,
+          :galaxy_id => galaxy.id,
           :kind => SolarSystem::KIND_WORMHOLE
         )
       end
@@ -163,7 +86,7 @@ describe SpaceMule do
         @pulsars = SolarSystem.
           where("x IS NOT NULL AND y IS NOT NULL").
           where(
-            :galaxy_id => @galaxy.id,
+            :galaxy_id => galaxy.id,
             :kind => SolarSystem::KIND_BATTLEGROUND
           )
       end
@@ -191,10 +114,41 @@ describe SpaceMule do
       end
     end
 
+    describe "home solar systems" do
+      let(:condition) do
+        SolarSystem.where(galaxy_id: galaxy.id, kind: SolarSystem::KIND_POOLED)
+      end
+
+      before(:all) do
+        @solar_systems = condition.all
+      end
+
+      it "should create pooled home ss" do
+        condition.count.should == free_home_ss
+      end
+
+      it "should register callback for spawn" do
+        @solar_systems.each do |solar_system|
+          solar_system.should have_callback(
+            CallbackManager::EVENT_SPAWN, @launch_time
+          )
+        end
+      end
+
+      it "should be created from static configuration" do
+        @solar_systems.each do |solar_system|
+          solar_system.should be_created_from_static_ss_configuration(
+            CONFIG['solar_system.map.home'][0]['map'],
+            @launch_time
+          )
+        end
+      end
+    end
+
     describe "free solar systems" do
       before(:all) do
         @solar_systems = SolarSystem.where(
-          :galaxy_id => @galaxy.id, :kind => SolarSystem::KIND_NORMAL
+          :galaxy_id => galaxy.id, :kind => SolarSystem::KIND_NORMAL
         ).where("player_id IS NULL").all
       end
 
@@ -222,7 +176,7 @@ describe SpaceMule do
 
     describe "in planets" do
       before(:all) do
-        ss_ids = SolarSystem.where(:galaxy_id => @galaxy.id).map(&:id)
+        ss_ids = SolarSystem.where(:galaxy_id => galaxy.id).map(&:id)
         @planets = @models =
           SsObject::Planet.where(:solar_system_id => ss_ids).all
       end
@@ -271,262 +225,28 @@ describe SpaceMule do
         end
       end
     end
+
   end
 
-  describe "#create_players" do
-    before(:all) do
-      @quest = Factory.create(:quest)
-      @objective = Factory.create(:objective, :quest => @quest)
-
-      @galaxy = Factory.create(:galaxy)
-
-      # Ensure we see them, because the center is not filled, so need to take
-      # a bit bigger rectangle...
-      diameter = CONFIG['galaxy.zone.diameter'] * 10
-      diameter2 = CONFIG['galaxy.zone.diameter'] * 11
-      rectangle = Rectangle.new(-diameter, -diameter, diameter, diameter)
-      rectangle2 = Rectangle.new(-diameter2, -diameter2, diameter2, diameter2)
-      # Check that counter is increased instead of trying to create two FSEs
-      # for players which see newly created SS.
-      @player_fge = Factory.create(
-        :fge_player, :rectangle => rectangle, :galaxy => @galaxy
-      )
-      Factory.create(
-        :fge_player, :rectangle => rectangle2, :galaxy => @galaxy,
-        :player => @player_fge.player
-      )
-      @alliance_fge = Factory.create(
-        :fge_alliance, :rectangle => rectangle, :galaxy => @galaxy
-      )
-      Factory.create(
-        :fge_alliance, :rectangle => rectangle2, :galaxy => @galaxy,
-        :alliance => @alliance_fge.alliance
-      )
-
-      @existing_player = Factory.create(:player, :galaxy => @galaxy)
-      @web_user_id = @existing_player.web_user_id + 1
-      @players = {
-        @web_user_id => "Some player",
-        @existing_player.web_user_id => @existing_player.name
-      }
-      @launch_time = Time.now
-      @result = @mule.
-        create_players(@galaxy.id, @galaxy.ruleset, @players, true)
-      @player = Player.where(
-        :galaxy_id => @galaxy.id, :web_user_id => @web_user_id
-      ).first
+  describe "#ensure_pool & #pool_stats" do
+    let(:galaxy) do
+      Factory.create(:galaxy, pool_free_zones: 3, pool_free_home_ss: 5)
     end
 
-    describe "player" do
-      it "should be flagged as trial" do
-        @player.should be_trial
+    it "should ensure that pool is regenerated (with iteration limits)" do
+      result = lambda do
+        res = @mule.pool_stats(galaxy.id)
+        [res.free_zones, res.free_home_ss]
       end
 
-      it "should allow creating non-trial players" do
-        web_user_id = @web_user_id + 1
-        players = {web_user_id => "FooBarBaz"}
-        @mule.
-          create_players(@galaxy.id, @galaxy.ruleset, players, false)
-        player = Player.where(
-          :galaxy_id => @galaxy.id, :web_user_id => web_user_id
-        ).first
-        player.should_not be_trial
-      end
+      lambda do
+        @mule.ensure_pool(galaxy, 1, 1)
+      end.should change(result, :call).from([0, 0]).to([1, 1])
 
-      it "should start quests" do
-        QuestProgress.
-          where(:player_id => @player.id, :quest_id => @quest.id,
-                :completed => 0).
-          count.should == 1
-      end
-
-      it "should start objectives" do
-        ObjectiveProgress.
-          where(:player_id => @player.id, :objective_id => @objective.id,
-                :completed => 0).
-          count.should == 1
-      end
-
-      it "should register callback for inactivity check" do
-        @player.should have_callback(
-          CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
-          @launch_time + Cfg.player_inactivity_time(@player.points)
-        )
-      end
-
-      it "should set population_max" do
-        @player.population_max.should == Cfg::Java.startingPopulationMax
-      end
-
-      it "should set created_at" do
-        @player.created_at.should be_within(SPEC_TIME_PRECISION).
-          of(@launch_time)
-      end
+      lambda do
+        @mule.ensure_pool(galaxy, 10, 10)
+      end.should change(result, :call).from([1, 1]).to([3, 5])
     end
-
-    describe "returned value" do
-      it "should return created player ids" do
-        @result[@web_user_id].should == @player.id
-      end
-
-      it "should return existing player ids too" do
-        result = @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-        result[@web_user_id].should == @player.id
-      end
-
-      it "should merge created player ids with existing player ids" do
-        @result.should equal_to_hash(
-          @web_user_id => @player.id,
-          @existing_player.web_user_id => @existing_player.id
-        )
-      end
-    end
-
-    describe "home solar system" do
-      before(:all) do
-        @condition = SolarSystem.
-          where(:player_id => @player.id, :kind => SolarSystem::KIND_NORMAL)
-        @ss = @condition.first
-      end
-
-      it "should only have one home solar system" do
-        @condition.count.should == 1
-      end
-
-      it "should register callback for spawn" do
-        @ss.should have_callback(CallbackManager::EVENT_SPAWN, @launch_time)
-      end
-
-      it "should be created from static configuration" do
-        @ss.should be_created_from_static_ss_configuration(
-                     CONFIG['solar_system.map.home'][0]['map'],
-                     @launch_time
-                   )
-      end
-    end
-
-    it "should not create other player if we try that again" do
-      player_count = Player.count
-      @mule.create_players(@galaxy.id, @galaxy.ruleset, @players)
-      Player.count.should == player_count
-    end
-
-    it "should create fow ss entry for player" do
-      fse = FowSsEntry.where(:player_id => @player.id).first
-      {
-        :player_planets => fse.player_planets,
-        :player_ships => fse.player_ships,
-        :enemy_planets => fse.enemy_planets,
-        :enemy_ships => fse.enemy_ships,
-      }.should == {
-        :player_planets => true,
-        :player_ships => false,
-        :enemy_planets => false,
-        :enemy_ships => false,
-      }
-    end
-
-    it "should only create one fow ss entry" do
-      FowSsEntry.where(:player_id => @player.id).count.should == 1
-    end
-
-    describe "visibility for existing ss where radar covers it" do
-      describe "player" do
-        before(:each) do
-          @conditions = {:player_id => @player_fge.player_id}
-        end
-
-        it_behaves_like "adding new solar systems (create player)"
-      end
-
-      describe "alliance" do
-        before(:each) do
-          @conditions = {:alliance_id => @alliance_fge.alliance_id}
-        end
-
-        it_behaves_like "adding new solar systems (create player)"
-      end
-    end
-
-    it_should_behave_like "creating galaxy zone"
-
-    it "should not fail if galaxy zone is created first" do
-      # We need to make this non-transactional because Scala and Ruby use
-      # different database connections and deadlock occurs if trying to add to
-      # galaxy which creation is still in uncommited transaction.
-      break_transaction
-
-      galaxy = Factory.create(:galaxy)
-      start_slot = Cfg.galaxy_zone_start_slot
-      # Ensure all the starting points are covered.
-      1.upto(4) do |quarter|
-        @mule.create_zone(galaxy.id, galaxy.ruleset, start_slot, quarter)
-      end
-
-      players = {
-        (Player.maximum(:web_user_id) || 0) + 1 => "Dude 3000"
-      }
-      @mule.create_players(galaxy.id, galaxy.ruleset, players)
-    end
-  end
-
-  describe "#create_zone" do
-    before(:all) do
-      @galaxy = Factory.create(:galaxy)
-
-      # Ensure we see them, because the center is not filled, so need to take
-      # a bit bigger rectangle...
-      diameter = CONFIG['galaxy.zone.diameter'] * 10
-      diameter2 = CONFIG['galaxy.zone.diameter'] * 11
-      # Create two entries that cover same zone to check if fses are being
-      # created with proper counter value.
-      rectangle = Rectangle.new(-diameter, -diameter, diameter, diameter)
-      rectangle2 = Rectangle.new(-diameter2, -diameter2, diameter2, diameter2)
-      @player_fge = Factory.create(
-        :fge_player, :rectangle => rectangle, :galaxy => @galaxy
-      )
-      Factory.create(
-        :fge_player, :rectangle => rectangle2, :galaxy => @galaxy,
-        :player => @player_fge.player
-      )
-      @alliance_fge = Factory.create(
-        :fge_alliance, :rectangle => rectangle, :galaxy => @galaxy
-      )
-      Factory.create(
-        :fge_alliance, :rectangle => rectangle2, :galaxy => @galaxy,
-        :alliance => @alliance_fge.alliance
-      )
-      # Create a player for alliance.
-      Factory.create(:player, :alliance_id => @alliance_fge.alliance_id)
-
-      @launch_time = Time.now
-      @mule.create_zone(@galaxy.id, @galaxy.ruleset, 10, 3)
-    end
-
-    it "should not create any player solar systems" do
-      SolarSystem.where("player_id IS NOT NULL").
-        where(:galaxy_id => @galaxy.id).should_not exist
-    end
-
-    describe "visibility for existing ss where radar covers it" do
-      describe "player" do
-        before(:each) do
-          @conditions = {:player_id => @player_fge.player_id}
-        end
-
-        it_behaves_like "adding new solar systems"
-      end
-
-      describe "alliance" do
-        before(:each) do
-          @conditions = {:alliance_id => @alliance_fge.alliance_id}
-        end
-
-        it_behaves_like "adding new solar systems"
-      end
-    end
-
-    it_should_behave_like "creating galaxy zone"
   end
 
   describe "#find_path" do

@@ -43,9 +43,6 @@ class SpaceMule
   # Fetch pool stats for galaxy _galaxy_id_.
   #
   # Returns an object with two methods: #free_zones and #free_home_systems.
-  #
-  # TODO: spec when I'm not so lazy. This is only used in statistics, so its
-  # not so important.
   def pool_stats(galaxy_id)
     Pmg.Runner.poolStats(galaxy_id)
   end

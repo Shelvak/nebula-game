@@ -2,6 +2,7 @@ class Pooler
   include Celluloid
   include NamedLogMessages
   include PauseableActor
+  include SeparateConnection
 
   TAG = "pooler"
 
@@ -13,24 +14,16 @@ class Pooler
     super
     @running = false
 
-    # See "Fibers, Tasks and database connections" in GOTCHAS.md
-    @connection, @connection_id =
-      ActiveRecord::Base.connection_pool.checkout_with_id
-
     # Link to dispatcher.
     current_actor.link Actor[:dispatcher]
     run!
-  end
-
-  def finalize
-    ActiveRecord::Base.connection_pool.checkin(@connection)
   end
 
   def run
     abort RuntimeError.new("Cannot run pooler while it is running!") if @running
     @running = true
 
-    ActiveRecord::Base.connection_id = @connection_id
+    set_ar_connection_id!
 
     loop do
       check_for_pause

@@ -16,6 +16,7 @@ gem "celluloid",
 #gem "celluloid-io", '~>0.10.0', :require => "celluloid/io"
 # For natural date parsing, e.g. "in 5 minutes"
 gem "chronic", ">=0.6.2"
+gem "jruby-scala-collections", ">=0.1.2", require: "jruby/scala_support"
 
 # Gems that are needed but should never be activated.
 group :installation do
