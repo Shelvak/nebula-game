@@ -21,7 +21,7 @@ class PlayersController < GenericController
     :web_player_id => Fixnum,
     :version => String
   )
-  LOGIN_SCOPE = scope.world
+  LOGIN_SCOPE = scope.login
   def self.login_action(m)
     if ClientVersion.ok?(m.params['version'])
       player = without_locking { Player.find(m.params['server_player_id']) }
