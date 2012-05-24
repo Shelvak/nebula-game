@@ -59,6 +59,7 @@ DEPLOY_CONFIG = {
         File.join("script", "dump_galaxy.rb"),
         File.join("script", "log_analyzer.rb"),
         File.join("script", "render_winners.rb"),
+        File.join("script", "ensure_pool.rb"),
         File.join("script", "munin-plugins"),
         File.join("script", "fixes"),
         File.join("vendor", "plugins"),
