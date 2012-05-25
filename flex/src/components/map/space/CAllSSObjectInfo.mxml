@@ -28,5 +28,5 @@
       <s:VerticalLayout horizontalAlign="justify"/>
    </s:layout>
    <space:CSSObjectInfo staticObject="{staticObject}"/>
-   <planet:CPlanetBossInfo model="{boss}" visible="{boss != null}" includeInLayout="{boss != null}"/>
+   <planet:CPlanetBossInfo model="{boss}"/>
 </s:Group>

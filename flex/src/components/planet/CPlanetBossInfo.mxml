@@ -2,7 +2,9 @@
 <s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
          skinClass="components.skins.PanelSkin"
-         title="{model.title_panel}">
+         title="{model.title_panel}"
+         visible="{model != null}"
+         includeInLayout="{model != null}">
    <fx:Script>
       <![CDATA[
       import models.planet.MPlanetBoss;
@@ -13,9 +15,18 @@
       ]]>
    </fx:Script>
    <s:layout>
-      <s:VerticalLayout horizontalAlign="justify"/>
+      <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
    </s:layout>
-   <s:Label text="{model.label_unitsList}"/>
-   <s:List dataProvider="{model.units}" itemRenderer="components.unit.IRRaidUnitEntry"/>
-   <s:Label text="{model.message_spawnAbility}"/>
+   <s:Group>
+      <s:Label text="{model.label_unitsList}" left="0" right="0" lineBreak="toFit"/>
+   </s:Group>
+   <s:List dataProvider="{model.units}"
+           skinClass="components.planet.CBossUnitsListSkin">
+      <s:layout>
+         <s:TileLayout/>
+      </s:layout>
+   </s:List>
+   <s:Group>
+      <s:Label text="{model.message_spawnAbility}" left="0" right="0" lineBreak="toFit"/>
+   </s:Group>
 </s:Panel>

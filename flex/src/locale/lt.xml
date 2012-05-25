@@ -5756,7 +5756,7 @@
     <label.unitsList>Units that will be spawned:</label.unitsList>
     <label.spawnButton>Spawn</label.spawnButton>
     <message.canSpawnNow>You can spawn boss to this planet.</message.canSpawnNow>
-    <message.canSpawnIn>You will be able to spawn units to this planet in {}.</message.canSpawnIn>
+    <message.canSpawnIn>You will be able to spawn units to this planet in {0}.</message.canSpawnIn>
     <message.canNotSpawn>The planet must owned by you or be unoccupied at all if you want to spawn a boss to it.</message.canNotSpawn>
   </PlanetBoss>
 
