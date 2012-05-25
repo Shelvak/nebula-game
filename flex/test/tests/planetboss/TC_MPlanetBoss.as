@@ -88,8 +88,8 @@ package tests.planetboss
          assertThat(
             "should use formulas for mini-battleground",
             boss.units, array(
-               equals (new RaidingUnitEntry("Gnat", 20, 30, 1)),
-               equals (new RaidingUnitEntry("Glancer", 5, 15, 1))
+               equals (new RaidingUnitEntry("Gnat", 20, 30, 0.5)),
+               equals (new RaidingUnitEntry("Glancer", 5, 15, 0.5))
             )
          );
 
@@ -98,8 +98,8 @@ package tests.planetboss
          assertThat(
             "should use formulas for battleground",
             boss.units, array(
-               equals (new RaidingUnitEntry("Azure", 10, 22, 1)),
-               equals (new RaidingUnitEntry("Trooper", 20, 25, 1))
+               equals (new RaidingUnitEntry("Azure", 10, 22, 0.5)),
+               equals (new RaidingUnitEntry("Trooper", 20, 25, 0.5))
             )
          );
       }

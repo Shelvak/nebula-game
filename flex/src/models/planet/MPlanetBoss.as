@@ -43,8 +43,6 @@ package models.planet
             MSSObjectEvent.NEXT_SPAWN_CHANGE, planet_nextSpawnChangeHandler, false, 0, true);
       }
 
-
-
       public function spawn(): void {
          if (canSpawnNow) {
             new PlanetsCommand(
@@ -69,7 +67,7 @@ package models.planet
                entryData[2],
                StringUtil.evalFormula(entryData[0], counterParam),
                StringUtil.evalFormula(entryData[1], counterParam),
-               1
+               0.5
             ));
          }
          return unitEntries;
