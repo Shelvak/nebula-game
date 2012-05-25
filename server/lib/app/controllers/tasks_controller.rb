@@ -75,10 +75,15 @@ Message was:
   )
   CREATE_PLAYER_SCOPE = scope.enroll
   def self.create_player_action(m)
+    player = Player.where(
+      galaxy_id: m.params['galaxy_id'], web_user_id: m.params['web_user_id'],
+      name: m.params['name']
+    ).first
+
 		player = Galaxy.create_player(
       m.params['galaxy_id'], m.params['web_user_id'], m.params['name'],
       m.params['trial']
-    )
+    ) if player.nil?
 
 		respond m, :player_id => player.id
   end

@@ -52,16 +52,61 @@ describe TasksController do
       :required => %w{galaxy_id web_user_id name},
       :needs_login => false, :needs_control_token => true
 
-    it "should call Galaxy.create_player" do
-      Galaxy.should_receive(:create_player).with(
-        galaxy.id, @params['web_user_id'], @params['name'], @params['trial']
-      ).and_return(player)
-      invoke @action, @params
+    shared_examples_for "calling create player" do
+      it "should call Galaxy.create_player" do
+        Galaxy.should_receive(:create_player).with(
+          galaxy.id, @params['web_user_id'], @params['name'], @params['trial']
+        ).and_return(player)
+        invoke @action, @params
+      end
     end
 
-    it "should return player id" do
-      invoke @action, @params
-      Player.find(response[:player_id]).should == player
+    shared_examples_for "returning player id" do
+      it "should return player id" do
+        invoke @action, @params
+        Player.find(response[:player_id]).should == player
+      end
+    end
+
+    describe "player does not exist" do
+      it_should_behave_like "calling create player"
+      it_should_behave_like "returning player id"
+    end
+
+    describe "player already exists" do
+      let(:player) do
+        Factory.create(:player,
+          galaxy: galaxy, web_user_id: @params['web_user_id'],
+          name: @params['name']
+        )
+      end
+
+      before(:each) { player }
+
+      it "should not call Galaxy.create_player" do
+        Galaxy.should_not_receive(:create_player)
+        invoke @action, @params
+      end
+
+      describe "player has a different name" do
+        before(:each) do
+          player.name += "a"
+          player.save!
+        end
+
+        it_should_behave_like "calling create player"
+      end
+
+      describe "player has different web_user_id" do
+        before(:each) do
+          player.web_user_id += 1
+          player.save!
+        end
+
+        it_should_behave_like "calling create player"
+      end
+
+      it_should_behave_like "returning player id"
     end
   end
 
