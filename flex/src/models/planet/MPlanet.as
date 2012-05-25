@@ -1518,13 +1518,13 @@ package models.planet
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
 
-      public function dispatchUnitRefreshEvent(): void {
-         if (!f_cleanupStarted &&
-                !f_cleanupComplete &&
-                hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED)) {
-            hasUnitsCache = {};
-            activeUnitsCountCache = {};
-            aggressiveGroundUnitsCache = {};
+      public function invalidateUnitCachesAndDispatchEvent(): void {
+         hasUnitsCache = {};
+         activeUnitsCountCache = {};
+         aggressiveGroundUnitsCache = {};
+         if (!f_cleanupStarted
+               && !f_cleanupComplete
+               && hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_REFRESH_NEEDED));
          }
       }

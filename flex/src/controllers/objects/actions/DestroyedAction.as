@@ -41,7 +41,7 @@ package controllers.objects.actions
             if (ML.latestPlanet != null)
             {
                ML.latestPlanet.units.refresh();
-               ML.latestPlanet.dispatchUnitRefreshEvent();
+               ML.latestPlanet.invalidateUnitCachesAndDispatchEvent();
             }
             // TODO: Find out why some filters don't refresh if you dont call
             // refresh function on the list
@@ -87,7 +87,7 @@ package controllers.objects.actions
          ML.units.enableAutoUpdate();
          if (objectClass == ObjectClass.UNIT && ML.latestPlanet)
          {
-            ML.latestPlanet.dispatchUnitRefreshEvent();
+            ML.latestPlanet.invalidateUnitCachesAndDispatchEvent();
          }
       }
    }

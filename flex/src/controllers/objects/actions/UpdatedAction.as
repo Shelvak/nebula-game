@@ -33,7 +33,7 @@ package controllers.objects.actions
          else if (objectClass == ObjectClass.UNIT && ML.latestPlanet != null)
          {
             ML.latestPlanet.units.refresh();
-            ML.latestPlanet.dispatchUnitRefreshEvent();
+            ML.latestPlanet.invalidateUnitCachesAndDispatchEvent();
             // TODO: Find out why some filters don't refresh if you dont call
             // refresh function on the list
             var HS: MCHealingScreen = MCHealingScreen.getInstance();
