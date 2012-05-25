@@ -12,6 +12,9 @@
 
       [Bindable]
       public var model: MPlanetBoss;
+
+      [Bindable]
+      public var showSpawnButton:Boolean = false;
       ]]>
    </fx:Script>
    <s:layout>
@@ -28,5 +31,10 @@
    </s:List>
    <s:Group>
       <s:Label text="{model.message_spawnAbility}" left="0" right="0" lineBreak="toFit"/>
+   </s:Group>
+   <s:Group visible="{showSpawnButton}" includeInLayout="{showSpawnButton}">
+      <s:Button horizontalCenter="0" enabled="{model.canSpawnNow}"
+                skinClass="components.skins.RedButtonSkin"
+                label="{model.label_spawnButton}" click="model.spawn()"/>
    </s:Group>
 </s:Panel>

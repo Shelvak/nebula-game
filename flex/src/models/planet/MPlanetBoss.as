@@ -8,7 +8,9 @@ package models.planet
    import flash.events.EventDispatcher;
 
    import models.Owner;
+   import models.events.BaseModelEvent;
    import models.planet.events.MPlanetBossEvent;
+   import models.planet.events.MPlanetEvent;
    import models.solarsystem.MSSObject;
    import models.solarsystem.events.MSSObjectEvent;
    import models.unit.RaidingUnitEntry;
@@ -41,6 +43,28 @@ package models.planet
             MSSObjectEvent.SPAWN_COUNTER_CHANGE, planet_spawnCounterChangeHandler, false, 0, true);
          _planet.addEventListener(
             MSSObjectEvent.NEXT_SPAWN_CHANGE, planet_nextSpawnChangeHandler, false, 0, true);
+         _planet.addEventListener(
+            BaseModelEvent.UPDATE, planet_updateHandler, false, 0, true);
+      }
+
+      private var _planetMap: MPlanet;
+      public function set planetMap(value: MPlanet): void {
+         if (_planetMap != value) {
+            if (_planetMap != null) {
+               _planetMap.removeEventListener(
+                  MPlanetEvent.UNIT_REFRESH_NEEDED, planet_unitsRefreshHandler, false);
+            }
+            _planetMap = value;
+            if (_planetMap != null) {
+               _planetMap.addEventListener(
+                  MPlanetEvent.UNIT_REFRESH_NEEDED, planet_unitsRefreshHandler, false, 0, true);
+            }
+            dispatchAllSpawnEvents();
+         }
+      }
+
+      public function get planetMap(): MPlanet {
+         return _planetMap;
       }
 
       public function spawn(): void {
@@ -76,7 +100,8 @@ package models.planet
       [Bindable(event="canSpawnChange")]
       public function get canSpawn(): Boolean {
          return (_planet.owner == Owner.PLAYER || _planet.owner == Owner.NPC)
-            && _planet.cooldown == null;
+            && _planet.cooldown == null
+            && (_planetMap == null || _planetMap.hasAggressiveGroundUnits());
       }
 
       [Bindable(event="canSpawnNowChange")]
@@ -100,6 +125,14 @@ package models.planet
       /* ### EVENTS ### */
       /* ############## */
 
+      private function planet_updateHandler(event: BaseModelEvent): void {
+         dispatchThisEvent(MPlanetBossEvent.MESSAGE_SPAWN_ABILITY_CHANGE);
+      }
+
+      private function planet_unitsRefreshHandler(event: MPlanetEvent): void {
+         dispatchAllSpawnEvents();
+      }
+
       private function planet_spawnCounterChangeHandler(event: MSSObjectEvent): void {
          dispatchThisEvent(MPlanetBossEvent.UNITS_CHANGE);
       }
@@ -115,6 +148,10 @@ package models.planet
       }
 
       private function planet_cooldownChangeHandler(event: MSSObjectEvent): void {
+         dispatchAllSpawnEvents();
+      }
+
+      private function dispatchAllSpawnEvents(): void {
          planet_ownerChangeHandler(null);
       }
 

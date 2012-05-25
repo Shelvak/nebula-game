@@ -17,6 +17,7 @@ package tests.planetboss
    import models.Owner;
    import models.cooldown.MCooldown;
    import models.galaxy.Galaxy;
+   import models.planet.MPlanet;
    import models.planet.MPlanetBoss;
    import models.planet.events.MPlanetBossEvent;
    import models.solarsystem.MSSObject;
@@ -24,6 +25,8 @@ package tests.planetboss
    import models.solarsystem.SSKind;
    import models.time.MTimeEventFixedMoment;
    import models.unit.RaidingUnitEntry;
+
+   import org.hamcrest.Matcher;
 
    import org.hamcrest.assertThat;
    import org.hamcrest.core.not;
@@ -51,7 +54,9 @@ package tests.planetboss
                ["5 + 1 * counter / 2", "15 + 3 * counter / 5", "Glancer", 1]],
             "ssObject.spawn.battleground.units": [
                ["10 + 1 * counter / 4", "20 + 4 * counter / 2", "Azure", 0],
-               ["20 + 1 * counter / 2", "25 + 3 * counter / 5", "Trooper", 1]]
+               ["20 + 1 * counter / 2", "25 + 3 * counter / 5", "Trooper", 1]],
+            "units.trooper.guns": [0, 1],
+            "units.trooper.kind": "ground"
          });
          LocalizerUtl.setUp();
          LocalizerUtl.addBundle("PlanetBoss", {
@@ -163,21 +168,40 @@ package tests.planetboss
          );
 
          assertThat(
-            "changing planet.owner",
-            function():void{ planet.owner = Owner.ENEMY; },
-            causes (boss) .toDispatch(
+            "advancing time when planet.nextSpawn is in effect", planet.update,
+            causes (boss).toDispatchEvent (MPlanetBossEvent.MESSAGE_SPAWN_ABILITY_CHANGE)
+         );
+
+         function causesAllSpawnChangeEvents(): Matcher {
+            return causes (boss) .toDispatch(
                event (MPlanetBossEvent.CAN_SPAWN_CHANGE),
                event (MPlanetBossEvent.CAN_SPAWN_NOW_CHANGE),
                event (MPlanetBossEvent.MESSAGE_SPAWN_ABILITY_CHANGE))
+         }
+
+         assertThat(
+            "changing planet.owner",
+            function():void{ planet.owner = Owner.ENEMY; },
+            causesAllSpawnChangeEvents()
          );
 
          assertThat(
             "changing planet.cooldown",
             function():void{ planet.cooldown = new MCooldown(); },
-            causes (boss) .toDispatch(
-               event (MPlanetBossEvent.CAN_SPAWN_CHANGE),
-               event (MPlanetBossEvent.CAN_SPAWN_NOW_CHANGE),
-               event (MPlanetBossEvent.MESSAGE_SPAWN_ABILITY_CHANGE))
+            causesAllSpawnChangeEvents()
+         );
+
+         const planetMap: MPlanet = new MPlanet(planet);
+         assertThat(
+            "changing planetMap",
+            function():void{ boss.planetMap = planetMap; },
+            causesAllSpawnChangeEvents()
+         );
+
+         assertThat(
+            "changing planet units",
+            planetMap.invalidateUnitCachesAndDispatchEvent,
+            causesAllSpawnChangeEvents()
          );
       }
    }

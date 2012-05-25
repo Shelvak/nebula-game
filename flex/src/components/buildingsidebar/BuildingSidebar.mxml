@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                    xmlns:s="library://ns.adobe.com/flex/spark" 
+<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                    xmlns:s="library://ns.adobe.com/flex/spark"
                     xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:base="components.base.*"
                     xmlns:elements="components.buildingsidebar.*"
+                    xmlns:planet="components.planet.*"
                     rollOver="basecontainer1_rollOverHandler(event)"
                     creationComplete="this_creationCompleteHandler(event)"
                     width="100%" height="100%">
@@ -62,6 +63,7 @@
       import utils.datastructures.Collections;
       import utils.locale.Localizer;
 
+
       [Bindable]
       private var waitingForApproval: Boolean = false;
 
@@ -115,48 +117,44 @@
       }
 
       private static const CONSTRUCTORS: Array =
-              Config.getConstructors(ObjectClass.BUILDING);
+         Config.getConstructors(ObjectClass.BUILDING);
 
       private function setFacilities(): void {
          if (ML.latestPlanet != null) {
             facilitiesList.addEventListener(FlexEvent.UPDATE_COMPLETE,
-                    changeSelected);
-            if (_buildingFacilities != null)
-            {
+                                            changeSelected);
+            if (_buildingFacilities != null) {
                _buildingFacilities.removeEventListener(
-                       CollectionEvent.COLLECTION_CHANGE,
-                       refreshFacilitySelection)
+                  CollectionEvent.COLLECTION_CHANGE,
+                  refreshFacilitySelection)
             }
             _buildingFacilities = Collections.filter(
-                    ML.latestPlanet.objects,
-                    function (item: MPlanetObject): Boolean {
-                       if (!(item is Building)) {
-                          return false;
-                       }
-                       var building: Building = Building(item);
-                       return (BuildingSidebar.CONSTRUCTORS
-                               .indexOf(building.type) != -1)
-                               && (building.state != Building.INACTIVE)
-                               && (building.upgradePart != null)
-                               && (!building.isGhost)
-                               && (building.upgradePart.level > 0)
-                               && (building.upgradePart.upgradeEndsAt == null);
-                    });
+               ML.latestPlanet.objects,
+               function (item: MPlanetObject): Boolean {
+                  if (!(item is Building)) {
+                     return false;
+                  }
+                  var building: Building = Building(item);
+                  return (BuildingSidebar.CONSTRUCTORS.indexOf(building.type) != -1)
+                     && (building.state != Building.INACTIVE)
+                     && (building.upgradePart != null)
+                     && (!building.isGhost)
+                     && (building.upgradePart.level > 0)
+                     && (building.upgradePart.upgradeEndsAt == null);
+               });
             _buildingFacilities.sort = new Sort();
             _buildingFacilities.sort.fields = new Array();
             _buildingFacilities.sort.compareFunction = constructorModSort;
             _buildingFacilities.refresh();
-            _buildingFacilities.addEventListener(CollectionEvent.COLLECTION_CHANGE,
-               refreshFacilitySelection)
+            _buildingFacilities.addEventListener(
+               CollectionEvent.COLLECTION_CHANGE, refreshFacilitySelection)
          }
       }
 
-      private function refreshFacilitySelection(e: CollectionEvent): void
-      {
+      private function refreshFacilitySelection(e: CollectionEvent): void {
          if (e.kind == CollectionEventKind.ADD
-                 || e.kind == CollectionEventKind.REMOVE
-                 || e.kind == CollectionEventKind.RESET)
-         {
+            || e.kind == CollectionEventKind.REMOVE
+            || e.kind == CollectionEventKind.RESET) {
             changeSelected();
          }
       }
@@ -177,7 +175,9 @@
             else if (aBuilding.id > bBuilding.id) {
                return 1;
             }
-            else return -1;
+            else {
+               return -1;
+            }
          }
       }
 
@@ -191,14 +191,13 @@
          if (ML.latestPlanet != null) {
             if (selectedFacility != null) {
                var isConstructing: int =
-                       selectedFacility.constructableType != null ? 1 : 0;
+                  selectedFacility.constructableType != null ? 1 : 0;
                constructable.toggleToDemo(
-                       (selectedFacility.constructionQueueEntries.length
-                               + isConstructing) >= (selectedFacility.maxQueryItems + 1)
+                  (selectedFacility.constructionQueueEntries.length + isConstructing)
+                     >= (selectedFacility.maxQueryItems + 1)
                );
                selectedConstructionModel =
-                       ML.latestPlanet.getBuildingById(selectedFacility
-                               .constructableId);
+                  ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
             }
             else {
                constructable.toggleToDemo(true);
@@ -251,28 +250,25 @@
        *
        * @see NewAction.as
        **/
-      private function dispatchBuildingComand(e: GBuildingEvent): void {
+      private function dispatchBuildingCommand(e: GBuildingEvent): void {
          EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED, removePending);
          if (e.building.unitDeployed == null) {
             new BuildingsCommand(
-                    BuildingsCommand.NEW,
-                    {
-                       planetId: ML.latestPlanet.id,
-                       x: e.building.x, y: e.building.y,
-                       type: e.building.type,
-                       constructorId: selectedFacility.id,
-                       prepaid: resLeft == 0}
+               BuildingsCommand.NEW, {
+                  planetId:      ML.latestPlanet.id,
+                  x:             e.building.x, y: e.building.y,
+                  type:          e.building.type,
+                  constructorId: selectedFacility.id,
+                  prepaid:       resLeft == 0}
             ).dispatch();
             waitingForApproval = true;
          }
          else {
             new UnitsCommand(
-                    UnitsCommand.DEPLOY,
-                    {
-                       planetId: ML.latestPlanet.id,
-                       x: e.building.x, y: e.building.y,
-                       unitId: e.building.unitDeployed.id
-                    }
+               UnitsCommand.DEPLOY, {
+                  planetId: ML.latestPlanet.id,
+                  x:        e.building.x, y: e.building.y,
+                  unitId:   e.building.unitDeployed.id}
             ).dispatch();
             e.building.unitDeployed = null;
          }
@@ -301,23 +297,20 @@
          constructable.deselectBuilding();
          constructable.moving = false;
          if (e.type == GBuildingEvent.MOVE_CANCEL
-                 || e.type == GBuildingEvent.MOVE_CONFIRM) {
-            MCBuildingSelectedSidebar.getInstance().selectedBuilding =
-                    e.building;
-            MCSidebar.getInstance().showScreen
-                    (SidebarScreens.BUILDING_SELECTED);
+            || e.type == GBuildingEvent.MOVE_CONFIRM) {
+            MCBuildingSelectedSidebar.getInstance().selectedBuilding = e.building;
+            MCSidebar.getInstance().showScreen(SidebarScreens.BUILDING_SELECTED);
          }
       }
 
-      [Bindable (event = "buildTimeChanged")]
+      [Bindable(event="buildTimeChanged")]
       public function get buildTime(): String {
          if (selectedBuilding != null) {
             return DateUtil.secondsToHumanString(
-                    Upgradable.calculateUpgradeTime(
-                            UpgradableType.BUILDINGS, selectedBuilding, {"level": 1},
-                            (deployInProgress ? 0 : selectedFacility.constructorMod)
-                                    + constructionMod
-                    )
+               Upgradable.calculateUpgradeTime(
+                  UpgradableType.BUILDINGS, selectedBuilding, {"level": 1},
+                  (deployInProgress ? 0 : selectedFacility.constructorMod) + constructionMod
+               )
             );
          }
          else {
@@ -372,7 +365,7 @@
 
       private function setAllBonuses(e: GBuildingMoveEvent): void {
          var bonuses: BuildingBonuses =
-                 BuildingBonuses.refreshBonuses(e.tilesUnder);
+            BuildingBonuses.refreshBonuses(e.tilesUnder);
          armorBonus = bonuses.armor;
          energyBonus = bonuses.energyOutput;
          constructionBonus = bonuses.constructionTime;
@@ -393,62 +386,55 @@
        **/
       protected function changeSelected(e: FlexEvent = null): void {
          if (e != null) {
-            facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE,
-                    changeSelected);
+            facilitiesList.removeEventListener(FlexEvent.UPDATE_COMPLETE, changeSelected);
          }
          selectedConstructionModel = null;
          if (selectedFacility != null) {
-            selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE,
-                    cancelDrag);
-            selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE,
-                    checkTheDemoThing);
+            selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
+            selectedFacility.removeEventListener(BuildingEvent.QUERY_CHANGE, checkTheDemoThing);
          }
          selectedFacility = Building(facilitiesList.selectedItem);
          if (selectedFacility != null) {
-            selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE,
-                    cancelDrag);
-            selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE,
-                    checkTheDemoThing);
+            selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, cancelDrag);
+            selectedFacility.addEventListener(BuildingEvent.QUERY_CHANGE, checkTheDemoThing);
             selectedConstructionModel =
-                    ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
+               ML.latestPlanet.getBuildingById(selectedFacility.constructableId);
          }
          checkTheDemoThing();
          dispatchBuildTimeChangeEvent();
       }
 
-      [Bindable (event ="buildingsStatesChange")]
+      [Bindable(event="buildingsStatesChange")]
       private function getMetalPrice(): int {
          if (deployInProgress
-                 || (constructable != null && constructable.moving)) {
+            || (constructable != null && constructable.moving)) {
             return 0;
          }
-         return Upgradable.calculateCost(UpgradableType.BUILDINGS,
-                 selectedBuilding,
-                 ResourceType.METAL, {"level": 1});
+         return Upgradable.calculateCost(
+            UpgradableType.BUILDINGS, selectedBuilding, ResourceType.METAL, {"level": 1});
       }
 
 
-      [Bindable (event ="buildingsStatesChange")]
+      [Bindable(event="buildingsStatesChange")]
       private function getEnergyPrice(): int {
          if (deployInProgress
-                 || (constructable != null && constructable.moving)) {
+            || (constructable != null && constructable.moving)) {
             return 0;
          }
          return Upgradable.calculateCost(UpgradableType.BUILDINGS,
-                 selectedBuilding,
-                 ResourceType.ENERGY, {"level": 1});
+                                         selectedBuilding,
+                                         ResourceType.ENERGY, {"level": 1});
       }
 
 
-      [Bindable (event ="buildingsStatesChange")]
+      [Bindable(event="buildingsStatesChange")]
       private function getZetiumPrice(): int {
          if (deployInProgress
-                 || (constructable != null && constructable.moving)) {
+            || (constructable != null && constructable.moving)) {
             return 0;
          }
-         return Upgradable.calculateCost(UpgradableType.BUILDINGS,
-                 selectedBuilding,
-                 ResourceType.ZETIUM, {"level": 1});
+         return Upgradable.calculateCost(
+            UpgradableType.BUILDINGS, selectedBuilding, ResourceType.ZETIUM, {"level": 1});
       }
 
       private function handleScreenChange(e: ScreensSwitchEvent): void {
@@ -492,25 +478,16 @@
       private var SD: MCSidebar = MCSidebar.getInstance();
 
       protected function this_creationCompleteHandler(event: FlexEvent): void {
-         EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT,
-                 dispatchBuildingComand);
-         EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_CANCEL,
-                 constructionCanceledHandler);
-         EventBroker.subscribe(GBuildingEvent.MOVE_CANCEL,
-                 constructionCanceledHandler);
-         EventBroker.subscribe(GBuildingEvent.MOVE_CONFIRM,
-                 constructionCanceledHandler);
-         EventBroker.subscribe(GBuildingEvent.MOVE_INIT,
-                 constructionMoveHandler);
+         EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_COMMIT, dispatchBuildingCommand);
+         EventBroker.subscribe(GBuildingEvent.CONSTRUCTION_CANCEL, constructionCanceledHandler);
+         EventBroker.subscribe(GBuildingEvent.MOVE_CANCEL, constructionCanceledHandler);
+         EventBroker.subscribe(GBuildingEvent.MOVE_CONFIRM, constructionCanceledHandler);
+         EventBroker.subscribe(GBuildingEvent.MOVE_INIT, constructionMoveHandler);
          EventBroker.subscribe(GBuildingMoveEvent.MOVE, setAllBonuses);
-         EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED,
-                 changeConstructable);
-         SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
-                 handleSidebarChange);
-         MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
-                 handleScreenChange);
-         EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE,
-                 checkTheDemoThing);
+         EventBroker.subscribe(GSelectConstructableEvent.BUILDING_SELECTED, changeConstructable);
+         SD.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleSidebarChange);
+         MA.addEventListener(ScreensSwitchEvent.SCREEN_CHANGED, handleScreenChange);
+         EventBroker.subscribe(GPlanetEvent.BUILDINGS_CHANGE, checkTheDemoThing);
          EventBroker.subscribe(GPlanetEvent.PLANET_CHANGE, prepare);
          EventBroker.subscribe(GlobalEvent.APP_RESET, reset);
          //NavigationController.getInstance().addEventListener("mapLoaded", setFacilities);
@@ -521,21 +498,17 @@
       protected function queueList_dragCompleteHandler(event: DragEvent): void {
          if (queueList.dragMoveEnabled) {
             var tempElement: ConstructionQueueEntry =
-                    List(event.dragInitiator)
-                            .selectedItems[0] as ConstructionQueueEntry;
-            if (selectedFacility.constructionQueueEntries
-                    .getItemIndex(tempElement) != tempElement.position) {
+               List(event.dragInitiator).selectedItems[0] as ConstructionQueueEntry;
+            if (selectedFacility.constructionQueueEntries.getItemIndex(tempElement)
+                  != tempElement.position) {
                var newPosition: int =
-                       tempElement.position > selectedFacility
-                               .constructionQueueEntries
-                               .getItemIndex(tempElement)
-                               ? selectedFacility.constructionQueueEntries
-                               .getItemIndex(tempElement)
-                               : selectedFacility.constructionQueueEntries
-                               .getItemIndex(tempElement) + 1;
+                  tempElement.position >
+                     selectedFacility.constructionQueueEntries.getItemIndex(tempElement)
+                        ? selectedFacility.constructionQueueEntries.getItemIndex(tempElement)
+                        : selectedFacility.constructionQueueEntries.getItemIndex(tempElement) + 1;
                new ConstructionQueuesCommand(
-                       ConstructionQueuesCommand.MOVE,
-                       {id: tempElement.id, count: 1, position: newPosition}
+                  ConstructionQueuesCommand.MOVE,
+                  {id: tempElement.id, count: 1, position: newPosition}
                ).dispatch();
             }
          }
@@ -552,7 +525,7 @@
          }
          if (selectedFacility != null) {
             constructable.refreshBuildingsStates
-                    (selectedFacility.constructableType != null, cancelDisabled);
+               (selectedFacility.constructableType != null, cancelDisabled);
             dispatchBuildingStatesChangeEvent();
             if (selectedBuilding != null) {
                calculateResLeft()
@@ -580,22 +553,19 @@
          var metalCost: int = getMetalPrice();
          var energyCost: int = getEnergyPrice();
          var zetiumCost: int = getZetiumPrice();
-         missingStorageString = Resource.getMissingStoragesString(planet,
-                 metalCost,
-                 energyCost,
-                 zetiumCost);
+         missingStorageString = Resource.getMissingStoragesString(
+            planet, metalCost, energyCost, zetiumCost);
          enoughStorage = (missingStorageString == '' ? true : false);
-         resLeft = Resource.getTimeToReachResources
-                 (planet.metal, planet.energy, planet.zetium,
-                         metalCost, energyCost, zetiumCost);
+         resLeft = Resource.getTimeToReachResources(
+            planet.metal, planet.energy, planet.zetium, metalCost, energyCost, zetiumCost);
       }
 
 
       protected function constructable_creationCompleteHandler(event: FlexEvent): void {
          EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE,
-                 refreshConstructableStates);
+                               refreshConstructableStates);
          constructable.addEventListener
-                 (DemoChangedEvent.DEMO_SELECTION_CHANGED, handleDemoChange)
+            (DemoChangedEvent.DEMO_SELECTION_CHANGED, handleDemoChange)
       }
 
 
@@ -621,14 +591,13 @@
 
       protected function queueList_creationCompleteHandler(event: FlexEvent): void {
          queueList.scroller.setStyle('verticalScrollPolicy', ScrollPolicy.OFF);
-         queueList.scroller.setStyle('horizontalScrollPolicy',
-                 ScrollPolicy.OFF);
+         queueList.scroller.setStyle('horizontalScrollPolicy', ScrollPolicy.OFF);
       }
 
 
       protected function button1_clickHandler(event: MouseEvent): void {
          new PlanetsCommand(PlanetsCommand.TAKE, {
-            'id':ML.latestPlanet.id}).dispatch();
+            'id': ML.latestPlanet.id}).dispatch();
       }
 
       private function getString(prop: String, args: Array = null): String {
@@ -637,230 +606,239 @@
 
       [Bindable]
       private var BS: MCBuildingSelectedSidebar =
-              MCBuildingSelectedSidebar.getInstance();
+         MCBuildingSelectedSidebar.getInstance();
       ]]>
    </fx:Script>
    
    <base:SpinnerContainer busy="{waitingForApproval}" top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
-      <base:AdvancedContainer top="0" left="0" right="0" visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}">
-         <base:layout>
-            <s:VerticalLayout paddingLeft="6" paddingRight="6" paddingTop="6"
-                              horizontalAlign="justify"/>
-         </base:layout>
-         <base:Warning text="{getString('notYourPlanet')}"/>
-         <s:Group visible="{(ML.latestPlanet.hasAggressiveGroundUnits(Owner.ENEMY)
-                  || ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
-                  || ML.latestPlanet.hasBuildingsWithGuns)
-                  &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
-            <s:Label text="{getString('label.planetHasEnemies')}" styleName="unsatisfied"
-                     left="0" right="0"/>
-         </s:Group>
-         <s:Group visible="{!ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
-                  &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
-            <s:Label text="{getString('label.noPlayerUnits')}" styleName="unsatisfied"
-                     left="0" right="0"/>
-         </s:Group>
-         <s:Group visible="{ML.latestPlanet.ssObject.player == null
-             &amp;&amp; !ML.latestPlanet.hasAggressiveGroundUnits(Owner.ENEMY)
-             &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
-             &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
-             &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}">
-                <s:Button label="{getString('label.claimPlanet')}"
-                   visible="{!ML.latestGalaxy.apocalypseHasStarted}"
-                   includeInLayout="{!ML.latestGalaxy.apocalypseHasStarted}"
-                   skinClass="components.skins.GreenButtonSkin"
-                   click="button1_clickHandler(event)"
-                   horizontalCenter="0"/>
+      <s:Group top="0" left="0" right="0" bottom="0">
+         <s:layout>
+            <s:VerticalLayout horizontalAlign="justify" gap="6"/>
+         </s:layout>
+         <planet:CPlanetBossInfo model="{ML.latestPlanet.ssObject.boss}" showSpawnButton="true"/>
+         <s:Group height="100%">
+            <base:AdvancedContainer top="0" left="0" right="0" visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}">
+               <base:layout>
+                  <s:VerticalLayout paddingLeft="6" paddingRight="6" paddingTop="6"
+                                    horizontalAlign="justify"/>
+               </base:layout>
+               <base:Warning text="{getString('notYourPlanet')}"/>
+               <s:Group visible="{(ML.latestPlanet.hasAggressiveGroundUnits(Owner.ENEMY)
+                        || ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
+                        || ML.latestPlanet.hasBuildingsWithGuns)
+                        &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
+                  <s:Label text="{getString('label.planetHasEnemies')}" styleName="unsatisfied"
+                           left="0" right="0"/>
+               </s:Group>
+               <s:Group visible="{!ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
+                        &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
+                  <s:Label text="{getString('label.noPlayerUnits')}" styleName="unsatisfied"
+                           left="0" right="0"/>
+               </s:Group>
+               <s:Group visible="{ML.latestPlanet.ssObject.player == null
+                   &amp;&amp; !ML.latestPlanet.hasAggressiveGroundUnits(Owner.ENEMY)
+                   &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
+                   &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
+                   &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}">
+                      <s:Button label="{getString('label.claimPlanet')}"
+                         visible="{!ML.latestGalaxy.apocalypseHasStarted}"
+                         includeInLayout="{!ML.latestGalaxy.apocalypseHasStarted}"
+                         skinClass="components.skins.GreenButtonSkin"
+                         click="button1_clickHandler(event)"
+                         horizontalCenter="0"/>
 
-                <base:Warning width="100%" showSign="false"
-                   visible="{ML.latestGalaxy.apocalypseHasStarted}"
-                   includeInLayout="{ML.latestGalaxy.apocalypseHasStarted}"
-                   text="{getString('warning.apocalypseClaimForbidden')}"/>
+                      <base:Warning width="100%" showSign="false"
+                         visible="{ML.latestGalaxy.apocalypseHasStarted}"
+                         includeInLayout="{ML.latestGalaxy.apocalypseHasStarted}"
+                         text="{getString('warning.apocalypseClaimForbidden')}"/>
+               </s:Group>
+               <base:Warning showSign="false"
+                             visible="{deployInProgress}"
+                             text="{getString('warning.deployInAlliancePlanet')}"/>
+            </base:AdvancedContainer>
+            <s:Group top="0" left="0" right="0" bottom="0" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
+               <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
+                           title="{getString('facilitiesTitle')}">
+                  <base:AdvancedContainer id="facilitiesContainer"
+                                          left="0" right="0" top="0">
+                     <s:Label id="noFacLabel" text="{getString('noFacilities')}"
+                              visible="{_buildingFacilities.length == 0}"/>
+                     <s:List id="facilitiesList"
+                             itemRenderer="components.buildingsidebar.IRBuildingFacility"
+                             visible="{_buildingFacilities.length != 0}"
+                             borderVisible="false"
+                             dataProvider="{_buildingFacilities}"
+                             change="changeSelected()"
+                             creationComplete="changeSelected();
+                             facilitiesList.scroller.setStyle('horizontalScrollPolicy',
+                                 ScrollPolicy.OFF)"
+                             requireSelection="true"
+                             maxHeight="150">
+                        <s:layout>
+                           <s:TileLayout
+                              requestedColumnCount="{
+                                 (_buildingFacilities == null || _buildingFacilities.length &lt; 2) ? 1 : 2}"
+                              columnWidth="{(_buildingFacilities == null || _buildingFacilities.length &lt; 2)
+                                 ? facilitiesList.width - 2
+                                 : (
+                                    _buildingFacilities.length &lt; 5
+                                       ? (facilitiesList.width - 2) / 2 - 4
+                                       : (facilitiesList.width - 10) / 2 - 4)}"
+                              rowHeight="68"/>
+                        </s:layout>
+                     </s:List>
+
+                     <s:Group visible="{!(!(noFacLabel.visible == false) || !(selectedFacility.constructableId != 0))}"
+                              width="100%" id="queueGroup">
+                        <elements:BuildingProgressElement id="progressElement"
+                                                          width="100%"
+                                                          constructableModel="{selectedConstructionModel}"/>
+                        <s:List id="queueList" dataProvider="{selectedFacility.constructionQueueEntries}"
+                                useVirtualLayout="false"
+                                width="100%" rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
+                                dragEnabled="true" borderVisible="false" dragStart="queueList_dragStartHandler(event)"
+                                contentBackgroundAlpha="0" creationComplete="queueList_creationCompleteHandler(event)"
+                                dragComplete="queueList_dragCompleteHandler(event)"
+                                height="{selectedFacility.constructionQueueEntries.length > 0
+                                ?(selectedFacility.constructionQueueEntries.length > 4?96:50)
+                                :0}">
+                           <s:itemRenderer>
+                              <fx:Component>
+                                 <s:ItemRenderer width="100%" height="44">
+                                    <elements:BuildingQueryElement queryElementModel="{data}" width="100%" height="44"/>
+                                 </s:ItemRenderer>
+                              </fx:Component>
+                           </s:itemRenderer>
+
+                           <s:layout>
+                              <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="1"/>
+                           </s:layout>
+                        </s:List>
+                        <s:layout>
+                           <s:VerticalLayout paddingRight="7"/>
+                        </s:layout>
+                     </s:Group>
+                     <base:layout>
+                        <s:VerticalLayout paddingLeft="6" horizontalAlign="justify"/>
+                     </base:layout>
+
+                  </base:AdvancedContainer>
+               </base:Panel>
+
+
+               <base:Panel id="constructablePanel" left="0" right="0"
+                           top="{facilitiesPanel.height + 6}"
+                           bottom="{selectedBuilding != null? bonusPanel.height+6: 0 }"
+                           visible="{!noFacLabel.visible}"
+                           title="{getString('constructableTitle')}">
+                  <elements:BuildingList  left="0" right="0" top="0" bottom="0" borderVisible="false"
+                                          contentBackgroundAlpha="0" rollOverColor="#4f4f4f"
+                                          selectionColor="#2f2f2f"
+                                          id="constructable" constructableTypes="{BS.constructable}"
+                                          creationComplete="constructable_creationCompleteHandler(event)"/>
+               </base:Panel>
+
+               <s:Button
+                  id="deselectButton"
+                  toolTip="{getString('deselectButtonText')}"
+                  skinClass="components.skins.DeselectButtonSkin"
+                  right="5"
+                  top="{facilitiesPanel.height + 8}"
+                  width="16"
+                  visible="{selectedBuilding != null}"
+                  height="16"
+                  click="constructable.deselectBuilding()"/>
+
+               <base:Panel id="bonusPanel" left="0" right="0" bottom="0"
+                           title="{getString('infoTitle')}"
+                           visible="{selectedBuilding != null &amp;&amp;
+                           (deployInProgress || metalPrice || energyPrice || zetiumPrice || armorText ||
+                           energyText || constructionText)}">
+                  <base:AdvancedContainer left="0" right="0">
+                     <s:Label text="{getString('deployInProgress')}" fontWeight="bold"
+                              visible="{deployInProgress}"/>
+                     <s:Group visible="{metalPrice || energyPrice || zetiumPrice}">
+                        <s:Group width="100">
+                           <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}"
+                                               labelStyleName="{getMetalPrice() > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+                           <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}"
+                                               labelStyleName="{getZetiumPrice() > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                           <s:layout>
+                              <s:VerticalLayout gap="4"/>
+                           </s:layout>
+                        </s:Group>
+                        <s:Group width="100">
+                           <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}"
+                                               labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"
+                                               toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+                           <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{buildTime}"
+                                               toolTip="{getString('timeToFinish')}"/>
+                           <s:layout>
+                              <s:VerticalLayout gap="4"/>
+                           </s:layout>
+                        </s:Group>
+                        <s:layout>
+                           <s:HorizontalLayout/>
+                        </s:layout>
+                     </s:Group>
+
+                     <base:AdvancedContainer width="100%">
+                        <elements:BonusGroup building="{selectedBuilding}"
+                                             armor="{armorText}" energy="{energyText}"
+                                             construction="{constructionText}"/>
+                        <s:Group width="100%" visible="{resLeft != 0}">
+                           <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
+                                    left="0" right="0"/>
+                        </s:Group>
+                        <s:Group width="100%" visible="{resLeft > 0}">
+                           <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%" fontWeight="bold"/>
+                           <base:TimeLabel text="{getStringFromSeconds(resLeft)}" width="100%"/>
+                           <s:layout>
+                              <s:VerticalLayout paddingRight="6"/>
+                           </s:layout>
+                        </s:Group>
+
+                        <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
+                        styleName="unsatisfied"/-->
+                        <s:Group width="100%" visible="{!enoughStorage}">
+                           <s:Label text="{
+                                    missingStorageString == ''
+                                       ? ''
+                                       : Localizer.string('Resources','additionalStorage', [missingStorageString])
+                                    }"
+                                    styleName="unsatisfied" left="0" right="0"/>
+                        </s:Group>
+                        <base:layout>
+                           <s:VerticalLayout gap="1" paddingLeft="12"/>
+                        </base:layout>
+                     </base:AdvancedContainer>
+                     <base:layout>
+                        <s:VerticalLayout gap="6" paddingLeft="6"/>
+                     </base:layout>
+                  </base:AdvancedContainer>
+               </base:Panel>
+            </s:Group>
          </s:Group>
-         <base:Warning showSign="false"
-                       visible="{deployInProgress}"
-                       text="{getString('warning.deployInAlliancePlanet')}"/>
-      </base:AdvancedContainer>
+      </s:Group>
       <base:Panel left="0" right="0" bottom="0"
                   title="{getString('infoTitle')}"
                   visible="{selectedBuilding != null &amp;&amp;
                      (deployInProgress &amp;&amp;
                      (armorText || energyText || constructionText)) &amp;&amp;
                      ML.latestPlanet.ssObject.owner != Owner.PLAYER}">
-            <base:AdvancedContainer left="0" right="0">
-               <s:Label text="{getString('deployInProgress')}" fontWeight="bold"
-                        visible="{deployInProgress}"/>
+         <base:AdvancedContainer left="0" right="0">
+            <s:Label text="{getString('deployInProgress')}" fontWeight="bold"
+                     visible="{deployInProgress}"/>
 
-               <elements:BonusGroup building="{selectedBuilding}"
-                                    armor="{armorText}" energy="{energyText}"
-                                    construction="{constructionText}"/>
-               <base:layout>
-                  <s:VerticalLayout gap="6" paddingLeft="6"/>
-               </base:layout>
-            </base:AdvancedContainer>
-         </base:Panel>
-      <s:Group top="0" left="0" right="0" bottom="0" visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
-         <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
-                     title="{getString('facilitiesTitle')}">
-            <base:AdvancedContainer id="facilitiesContainer" 
-                                    left="0" right="0" top="0">
-               <s:Label id="noFacLabel" text="{getString('noFacilities')}"  
-                        visible="{_buildingFacilities.length == 0}"/>
-               <s:List id="facilitiesList"
-                       itemRenderer="components.buildingsidebar.IRBuildingFacility"
-                       visible="{_buildingFacilities.length != 0}"
-                       borderVisible="false"
-                       dataProvider="{_buildingFacilities}"
-                       change="changeSelected()"
-                       creationComplete="changeSelected();
-                       facilitiesList.scroller.setStyle('horizontalScrollPolicy',
-                           ScrollPolicy.OFF)"
-                       requireSelection="true"
-                       maxHeight="150">
-                  <s:layout>
-                     <s:TileLayout requestedColumnCount="{(_buildingFacilities
-                        == null || _buildingFacilities.length &lt; 2)
-                        ? 1 : 2}" columnWidth="{(_buildingFacilities
-                        == null || _buildingFacilities.length &lt; 2)
-                        ? facilitiesList.width - 2
-                        : (_buildingFacilities.length &lt; 5
-                        ? (facilitiesList.width - 2) / 2 - 4
-                        : (facilitiesList.width - 10) / 2 - 4)}"
-                        rowHeight="68"/>
-                  </s:layout>
-               </s:List>
-               
-               <s:Group visible="{!(!(noFacLabel.visible == false) || !(selectedFacility.constructableId != 0))}" 
-                        width="100%" id="queueGroup">
-                  <elements:BuildingProgressElement id="progressElement"
-                                                    width="100%"
-                                                    constructableModel="{selectedConstructionModel}"/>
-                  <s:List id="queueList" dataProvider="{selectedFacility.constructionQueueEntries}"
-                          useVirtualLayout="false"
-                          width="100%" rollOverColor="#0f0f0f" selectionColor="#0f0f0f" 
-                          dragEnabled="true" borderVisible="false" dragStart="queueList_dragStartHandler(event)"
-                          contentBackgroundAlpha="0" creationComplete="queueList_creationCompleteHandler(event)"
-                          dragComplete="queueList_dragCompleteHandler(event)"
-                          height="{selectedFacility.constructionQueueEntries.length > 0
-                          ?(selectedFacility.constructionQueueEntries.length > 4?96:50)
-                          :0}">
-                     <s:itemRenderer>
-                        <fx:Component>
-                           <s:ItemRenderer width="100%" height="44">
-                              <elements:BuildingQueryElement queryElementModel="{data}" width="100%" height="44"/>
-                           </s:ItemRenderer>
-                        </fx:Component>
-                     </s:itemRenderer>
-                     
-                     <s:layout>
-                        <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="1"/>
-                     </s:layout>
-                  </s:List>
-                  <s:layout>
-                     <s:VerticalLayout paddingRight="7"/>
-                  </s:layout>
-               </s:Group>
-               <base:layout>
-                  <s:VerticalLayout paddingLeft="6" horizontalAlign="justify"/>
-               </base:layout>
-               
-            </base:AdvancedContainer>
-         </base:Panel>
-         
-         
-         <base:Panel id="constructablePanel" left="0" right="0" 
-                     top="{facilitiesPanel.height + 6}" 
-                     bottom="{selectedBuilding != null? bonusPanel.height+6: 0 }"
-                     visible="{!noFacLabel.visible}" 
-                     title="{getString('constructableTitle')}">
-            <elements:BuildingList  left="0" right="0" top="0" bottom="0" borderVisible="false"
-                                    contentBackgroundAlpha="0" rollOverColor="#4f4f4f"
-                                    selectionColor="#2f2f2f"
-                                    id="constructable" constructableTypes="{BS.constructable}"
-                                    creationComplete="constructable_creationCompleteHandler(event)"/>
-         </base:Panel>
-         
-         <s:Button
-            id="deselectButton"
-            toolTip="{getString('deselectButtonText')}"
-            skinClass="components.skins.DeselectButtonSkin"
-            right="5" 
-            top="{facilitiesPanel.height + 8}"
-            width="16" 
-            visible="{selectedBuilding != null}" 
-            height="16"
-            click="constructable.deselectBuilding()"/>
-
-         <base:Panel id="bonusPanel" left="0" right="0" bottom="0"
-                     title="{getString('infoTitle')}"
-                     visible="{selectedBuilding != null &amp;&amp;
-                     (deployInProgress || metalPrice || energyPrice || zetiumPrice || armorText ||
-                     energyText || constructionText)}">
-            <base:AdvancedContainer left="0" right="0">
-               <s:Label text="{getString('deployInProgress')}" fontWeight="bold"
-                        visible="{deployInProgress}"/>
-               <s:Group visible="{metalPrice || energyPrice || zetiumPrice}">
-                  <s:Group width="100">
-                     <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}"
-                                         labelStyleName="{getMetalPrice() > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"
-                                         toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
-                     <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}"
-                                         labelStyleName="{getZetiumPrice() > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"
-                                         toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
-                     <s:layout>
-                        <s:VerticalLayout gap="4"/>
-                     </s:layout>
-                  </s:Group>
-                  <s:Group width="100">
-                     <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}"
-                                         labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"
-                                         toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
-                     <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{buildTime}"
-                                         toolTip="{getString('timeToFinish')}"/>
-                     <s:layout>
-                        <s:VerticalLayout gap="4"/>
-                     </s:layout>
-                  </s:Group>
-                  <s:layout>
-                     <s:HorizontalLayout/>
-                  </s:layout>
-               </s:Group>
-
-               <base:AdvancedContainer width="100%">
-                  <elements:BonusGroup building="{selectedBuilding}"
-                                       armor="{armorText}" energy="{energyText}"
-                                       construction="{constructionText}"/>
-                  <s:Group width="100%" visible="{resLeft != 0}">
-                     <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
-                              left="0" right="0"/>
-                  </s:Group>
-                  <s:Group width="100%" visible="{resLeft > 0}">
-                     <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%" fontWeight="bold"/>
-                     <base:TimeLabel text="{getStringFromSeconds(resLeft)}" width="100%"/>
-                     <s:layout>
-                        <s:VerticalLayout paddingRight="6"/>
-                     </s:layout>
-                  </s:Group>
-
-                  <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
-                  styleName="unsatisfied"/-->
-                  <s:Group width="100%" visible="{!enoughStorage}">
-                     <s:Label text="{
-                              missingStorageString == ''
-                                 ? ''
-                                 : Localizer.string('Resources','additionalStorage', [missingStorageString])
-                              }"
-                              styleName="unsatisfied" left="0" right="0"/>
-                  </s:Group>
-                  <base:layout>
-                     <s:VerticalLayout gap="1" paddingLeft="12"/>
-                  </base:layout>
-               </base:AdvancedContainer>
-               <base:layout>
-                  <s:VerticalLayout gap="6" paddingLeft="6"/>
-               </base:layout>
-            </base:AdvancedContainer>
-         </base:Panel>
-      </s:Group>
+            <elements:BonusGroup building="{selectedBuilding}"
+                                 armor="{armorText}" energy="{energyText}"
+                                 construction="{constructionText}"/>
+            <base:layout>
+               <s:VerticalLayout gap="6" paddingLeft="6"/>
+            </base:layout>
+         </base:AdvancedContainer>
+      </base:Panel>
    </base:SpinnerContainer>
 </base:BaseContainer>

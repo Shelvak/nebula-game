@@ -32,8 +32,12 @@ package models.factories
                                           tiles:Array,
                                           buildings:Array,
                                           foliage:Array) : MPlanet {
-         var planet:MPlanet = new MPlanet(ssObject);
-         var objects:ArrayCollection = new ArrayCollection();
+         const planet: MPlanet = new MPlanet(ssObject);
+         if (ssObject.boss != null) {
+            ssObject.boss.planetMap = planet;
+         }
+
+         const objects: ArrayCollection = new ArrayCollection();
          for each (var t: Object in tiles) {
             var tile: Tile = TileFactory.fromObject(t);
             if (tile.isFolliage()) {
@@ -60,9 +64,9 @@ package models.factories
             }
          }
          for each (var genericFoliage: Object in foliage) {
-            var foliageModel: NonblockingFolliage =
+            const foliageModel: NonblockingFolliage =
                    FolliageFactory.nonblockingFromObject(genericFoliage);
-            var object: MPlanetObject = Collections.findFirst(
+            const object: MPlanetObject = Collections.findFirst(
                objects,
                function(object: MPlanetObject): Boolean {
                   return object.fallsIntoArea(

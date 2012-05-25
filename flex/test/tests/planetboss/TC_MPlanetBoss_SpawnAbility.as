@@ -1,15 +1,21 @@
 package tests.planetboss
 {
+   import config.Config;
+
    import ext.hamcrest.object.equals;
 
    import models.ModelLocator;
    import models.Owner;
    import models.cooldown.MCooldown;
    import models.galaxy.Galaxy;
+   import models.location.LocationMinimal;
+   import models.location.LocationType;
+   import models.planet.MPlanet;
    import models.planet.MPlanetBoss;
    import models.solarsystem.MSSObject;
    import models.solarsystem.SSObjectType;
    import models.time.MTimeEventFixedMoment;
+   import models.unit.Unit;
 
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
@@ -29,6 +35,11 @@ package tests.planetboss
 
       [Before]
       public function setUp(): void {
+         Config.setConfig({
+            "units.trooper.guns": [0, 1],
+            "units.trooper.kind": "ground"
+         });
+
          LocalizerUtl.setUp();
          LocalizerUtl.addBundle("PlanetBoss", {
             "message.canSpawnNow": "Can spawn now",
@@ -54,6 +65,7 @@ package tests.planetboss
 
       [After]
       public function tearDown(): void {
+         Config.setConfig({});
          LocalizerUtl.tearDown();
          SingletonFactory.clearAllSingletonInstances();
       }
@@ -76,6 +88,24 @@ package tests.planetboss
          planet.nextSpawn = new MTimeEventFixedMoment();
          planet.nextSpawn.occursAt = new Date(1000);
          assertThat( "can spawn when cooldown for next spawn is in effect", boss.canSpawn, isTrue() );
+
+         const planetMap: MPlanet = new MPlanet(planet);
+         boss.planetMap = planetMap;
+         assertThat(
+            "can't spawn boss if user does not have military ground unit inside planet",
+            boss.canSpawn, isFalse());
+
+         const unit: Unit = new Unit();
+         unit.id = 1;
+         unit.level = 1;
+         unit.location = new LocationMinimal(LocationType.SS_OBJECT, planet.id);
+         unit.owner = Owner.PLAYER;
+         unit.type = "Trooper";
+         planetMap.units.addItem(unit);
+         planetMap.invalidateUnitCachesAndDispatchEvent();
+         assertThat(
+            "can spawn boss if user has military ground unit inside planet",
+            boss.canSpawn, isTrue());
       }
 
       [Test]
