@@ -34,6 +34,18 @@ module ActiveRecord
     end
   end
 
+  module ConnectionAdapters::DatabaseStatements
+    # Don't allow nesting transactions because we use DDL calls extensively and
+    # they would fail anyway.
+    def transaction_with_no_nesting(*args, &block)
+      raise "Nested transactions are not allowed! Connection ID: #{
+        ActiveRecord::Base.connection_id}" unless open_transactions == 0
+      transaction_without_no_nesting(*args, &block)
+    end
+
+    alias_method_chain :transaction, :no_nesting
+  end
+
   class ConnectionAdapters::ConnectionPool
     def checkout_with_id
       connection = checkout
