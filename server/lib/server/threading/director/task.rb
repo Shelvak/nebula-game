@@ -27,7 +27,10 @@ class Threading::Director::Task
 
   # Runs this task passing it worker name.
   def run(worker_name)
+    Thread.current[:sql_comment] = @description
     @block.call(worker_name)
+  ensure
+    Thread.current[:sql_comment] = nil
   end
 
   def to_s

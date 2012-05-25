@@ -121,15 +121,20 @@ JVM backtrace:
 
   private
   def data_for(component, type, message)
-    name = Celluloid.actor? ? Celluloid::Actor.name : "main"
     "%s[%s|%s|%s|%-5s] %s\n" % [
       ' ' * @indent,
       Time.now.strftime(DATETIME_FORMAT),
-      name, component, type, message
+      self.class.thread_name, component, type, message
     ]
   end
 
   def write(type, data); writer.write(type, data); end
   def callback(type, data); writer.callback(type, data); end
   def writer; Logging::Writer.instance; end
+
+  class << self
+    def thread_name
+      Celluloid.actor? ? Celluloid::Actor.name : "main"
+    end
+  end
 end
