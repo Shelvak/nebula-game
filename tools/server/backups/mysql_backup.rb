@@ -37,10 +37,9 @@ backups = Dir["#{MYSQL_DIR}/*"].map do |path|
   time.gsub!("_", ":")
   time = Time.parse("#{date} #{time}")
 
-  file = File.join(path, CHECKPOINTS)
-  if File.exists?(file)
-    is_incremental = File.read(file).include?("backup_type = incremental")
-
+  checkpoints = File.join(path, CHECKPOINTS)
+  if File.exists?(checkpoints)
+    is_incremental = File.read(checkpoints).include?("backup_type = incremental")
     {:path => path, :time => time, :incremental => is_incremental}
   else
     nil
