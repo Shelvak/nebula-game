@@ -25,7 +25,7 @@ class DispatcherEventHandler::LocationResolver
         parent = unit.location.object
         raise(
           "Support for dispatching when parent is #{parent} is not supported " +
-          "for units"
+          "for unit #{unit.inspect}"
         ) unless parent.is_a?(SsObject::Planet)
         [
           parent.observer_player_ids,
