@@ -134,8 +134,11 @@ module SpaceMule::Pathfinder
   # Otherwise travels as expected.
   def self.jump_coords(galaxy_id, wormhole_proximity_point, solar_system)
     if solar_system.main_battleground?
-      wormhole = Galaxy.closest_wormhole(galaxy_id,
-        wormhole_proximity_point.x, wormhole_proximity_point.y)
+      wormhole = without_locking do
+        Galaxy.closest_wormhole(
+          galaxy_id, wormhole_proximity_point.x, wormhole_proximity_point.y
+        )
+      end
       Coords.new(wormhole.x, wormhole.y)
     else
       Coords.new(solar_system.x, solar_system.y)
@@ -144,13 +147,14 @@ module SpaceMule::Pathfinder
 
   # Given PmO.SolarSystem returns Set of +PmO.SolarSystemPoint+s.
   def self.jumpgates_for(sm_solar_system)
-    points = SsObject::Jumpgate.where(:solar_system_id => sm_solar_system.id).
-      all.map do |jumpgate|
-        PfO.SolarSystemPoint.new(
-          sm_solar_system,
-          Coords.new(jumpgate.position, jumpgate.angle)
-        )
-      end
+    points = without_locking do
+      SsObject::Jumpgate.where(:solar_system_id => sm_solar_system.id).all
+    end.map do |jumpgate|
+      PfO.SolarSystemPoint.new(
+        sm_solar_system,
+        Coords.new(jumpgate.position, jumpgate.angle)
+      )
+    end
     Set.new(points)
   end
 end
