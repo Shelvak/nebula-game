@@ -97,8 +97,11 @@ class CallbackManager
 
     set_ar_connection_id!
 
-    # Tick first time with failed callbacks. This should not be async.
-    tick(true)
+    # Reset all callbacks to fresh state. If server has been restarted there
+    # is a chance some bug was fixed and the callbacks will be ok now.
+    connection.execute(
+      "UPDATE `#{TABLE_NAME}` SET `processing`=0 WHERE `processing`!= 0"
+    )
 
     loop do
       check_for_pause
@@ -120,19 +123,17 @@ class CallbackManager
 private
 
   # Run every callback that is not processed and should have happened by now.
-  def tick(include_all=false)
+  def tick
     exclusive do
       now = Time.now.to_s(:db)
-      conditions = include_all \
-        ? "ends_at <= '#{now}'" \
-        : "ends_at <= '#{now}' AND processing=0"
+      # processing condition is needed so what we don't loop on failed callbacks
+      # forever. When callback is fetched, processing is incremented by 1 and if
+      # it fails, we won't fetch it again.
+      conditions = "ends_at <= '#{now}' AND processing=0"
 
-      get_callback = lambda do |last_id|
+      get_callback = lambda do
         LOGGER.except(:debug) do
-          # Ensure we don't end up in an endless loop trying to execute same
-          # callback over and over again if it fails.
-          skip_failed = last_id.nil? ? "" : " AND id > #{last_id.to_i}"
-          sql = "WHERE #{conditions}#{skip_failed} ORDER BY ends_at"
+          sql = "WHERE #{conditions} ORDER BY ends_at"
 
           row = self.class.get(sql, connection)
           if row.nil?
@@ -148,18 +149,19 @@ private
       end
 
       # Request unprocessed entries that have hit.
-      callback = get_callback.call(nil)
+      callback = get_callback.call
 
       until callback.nil?
         info "Fetched: #{callback}"
 
         # Mark this row as sent to processing.
         connection.execute(
-          "UPDATE `#{TABLE_NAME}` SET processing=1 WHERE id=#{callback.id}"
+          "UPDATE `#{TABLE_NAME}` SET processing=processing+1 WHERE id=#{
+            callback.id}"
         )
         Actor[:dispatcher].callback!(callback)
 
-        callback = get_callback.call(callback.id)
+        callback = get_callback.call
       end
     end
   end
@@ -214,7 +216,7 @@ private
       register(object, event, time, true)
     end
 
-    def has?(object, event, time=nil)
+    def when(object, event, time=nil)
       time_condition = case time
       when nil
         "1=1"
@@ -227,10 +229,14 @@ private
 
       klass, column = parse_object(object)
       check_event!(klass, event)
-      ! ActiveRecord::Base.connection.select_value(
-        "SELECT 1 FROM `#{TABLE_NAME}` WHERE #{column}=#{object.id} AND event=#{
-        event} AND #{time_condition} LIMIT 1"
-      ).nil?
+      ActiveRecord::Base.connection.select_value(
+        "SELECT ends_at FROM `#{TABLE_NAME}` WHERE #{column}=#{object.id
+        } AND event=#{event} AND #{time_condition} LIMIT 1"
+      )
+    end
+
+    def has?(object, event, time=nil)
+      ! self.when(object, event, time).nil?
     end
 
     def unregister(object, event)
@@ -251,7 +257,8 @@ private
       connection.select_one("SELECT * FROM `#{TABLE_NAME}` #{sql} LIMIT 1")
     end
 
-    private
+  private
+
     def check_event!(klass, event)
       method = :"#{TYPES[event]}_callback"
       raise ArgumentError, "#{klass} does not respond to #{method}!" \
