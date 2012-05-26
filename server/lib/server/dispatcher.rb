@@ -263,13 +263,6 @@ class Dispatcher
     client_storage[key] = value
   end
 
-  # Solar system ID which is currently viewed by client.
-  def current_ss_id(client); @storage[client][S_KEY_CURRENT_SS_ID]; end
-  # SsObject ID which is currently viewed by client.
-  def current_planet_id(client)
-    @storage[client][S_KEY_CURRENT_PLANET_ID]
-  end
-
   def atomic(atomizer)
     atomizer.implode(self)
   end
@@ -360,7 +353,14 @@ class Dispatcher
     end
   end
 
-  private
+private
+
+  # Solar system ID which is currently viewed by client.
+  def current_ss_id(client); @storage[client][S_KEY_CURRENT_SS_ID]; end
+  # SsObject ID which is currently viewed by client.
+  def current_planet_id(client)
+    @storage[client][S_KEY_CURRENT_PLANET_ID]
+  end
 
   def initialize_controllers!
     return unless @controllers.nil?

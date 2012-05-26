@@ -38,9 +38,14 @@ module ActiveRecord
     # Don't allow nesting transactions because we use DDL calls extensively and
     # they would fail anyway.
     def transaction_with_no_nesting(*args, &block)
-      raise "Nested transactions are not allowed! Connection ID: #{
-        ActiveRecord::Base.connection_id}" unless open_transactions == 0
-      transaction_without_no_nesting(*args, &block)
+      if open_transactions == 0
+        @transaction_opened_by = ActiveRecord::Base.connection_id
+        transaction_without_no_nesting(*args, &block)
+      else
+        raise "Nested transactions are not allowed! Connection ID: #{
+          ActiveRecord::Base.connection_id}, transaction already opened by: #{
+          @transaction_opened_by}" unless open_transactions == 0
+      end
     end
 
     alias_method_chain :transaction, :no_nesting
@@ -48,24 +53,29 @@ module ActiveRecord
 
   class ConnectionAdapters::ConnectionPool
     def checkout_with_id
-      connection = checkout
-      connection_id = current_connection_id
-      raise "Connection ID #{connection_id} is already checked out!" \
-        if @reserved_connections.has_key?(connection_id)
-      @reserved_connections[connection_id] = connection
+      synchronize do
+        connection = checkout
+        connection_id = Celluloid.actor? \
+          ? Celluloid.current_actor.object_id \
+          : Thread.current.object_id
+        ActiveRecord::Base.connection_id = connection_id
+        raise "Connection ID #{connection_id} is already checked out!" \
+          if @reserved_connections.has_key?(connection_id)
+        @reserved_connections[connection_id] = connection
 
-      [connection, connection_id]
+        [connection, connection_id]
+      end
     end
 
+    private :checkout, :with_connection
+
     def current_connection_id
-      ActiveRecord::Base.connection_id = Celluloid.actor? \
-        ? Celluloid.current_actor.object_id \
-        : Thread.current.object_id
+      ActiveRecord::Base.connection_id || raise("DB connection ID is not set!")
     end
 
     # Ensures that new connection is checked out for the block. See GOTCHAS.md
     def with_new_connection
-      connection = checkout
+      connection, _ = checkout_with_id
       yield
     ensure
       checkin(connection)

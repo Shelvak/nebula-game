@@ -2,7 +2,9 @@ module Dispatcher::ControllerTask
   class << self
     # Creates a task which is ran in one of the worker threads.
     def create(controller_class, action_method, message)
-      Threading::Director::Task.new(message.to_s) do |worker_name|
+      Threading::Director::Task.new(
+        message.to_s, message.to_short_s
+      ) do |worker_name|
         dispatcher = Celluloid::Actor[:dispatcher]
         exception = nil
 

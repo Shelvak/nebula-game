@@ -2,7 +2,9 @@ module Dispatcher::CallbackTask
   class << self
     # Creates a task which is ran in one of the worker threads.
     def create(klass, method, callback)
-      Threading::Director::Task.non_failing(callback.to_s) do |worker_name|
+      Threading::Director::Task.non_failing(
+        callback.to_s, callback.to_short_s
+      ) do |worker_name|
         # Wrap our request in correct ruleset.
         CONFIG.with_set_scope(callback.ruleset) do
           # Ensure that if anything bad happens it would be rollbacked.

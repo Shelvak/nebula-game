@@ -1,7 +1,9 @@
 module SeparateConnection
   def finalize
-    ActiveRecord::Base.connection_pool.checkin(@ar_connection) \
-      unless @ar_connection.nil?
+    unless @ar_connection.nil?
+      ActiveRecord::Base.connection_id = @ar_connection_id
+      ActiveRecord::Base.connection_pool.checkin(@ar_connection)
+    end
   end
 
   def set_ar_connection_id!

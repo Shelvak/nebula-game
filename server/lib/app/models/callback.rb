@@ -53,6 +53,10 @@ class Callback
       @ends_at_str} (ruleset: #{@ruleset})>"
   end
 
+  def to_short_s
+    "<#{tag}: #{type} on #{@klass.to_s} (#{@object_id})>"
+  end
+
   def tag
     "callback-#{@id}"
   end

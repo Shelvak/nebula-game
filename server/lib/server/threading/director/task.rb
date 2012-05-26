@@ -9,8 +9,8 @@ class Threading::Director::Task
 
   # Creates a task, which cannot fail and crash the worker. All exceptions are
   # catched and logged.
-  def self.non_failing(description, &block)
-    new(description) do |worker_name|
+  def self.non_failing(description, short_description=nil, &block)
+    new(description, short_description) do |worker_name|
       begin
         block.call(worker_name)
       rescue Exception => e
@@ -20,14 +20,15 @@ class Threading::Director::Task
     end
   end
 
-  def initialize(description, &block)
+  def initialize(description, short_description=nil, &block)
     @description = description
+    @short_description = short_description
     @block = block
   end
 
   # Runs this task passing it worker name.
   def run(worker_name)
-    Thread.current[:sql_comment] = @description
+    Thread.current[:sql_comment] = @short_description || @description
     @block.call(worker_name)
   ensure
     Thread.current[:sql_comment] = nil
