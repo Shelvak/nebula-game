@@ -143,9 +143,9 @@ end
 DIRECTORS = {
   chat: 1,    # Not much to do, one worker is enough.
   enroll: 1,  # Sequential, otherwise db locks kick in.
-  world: 6,   # Main workhorse, not too concurrent because of DB locks.
+  world: 1,   # Main workhorse, not too concurrent because of DB locks.
   # Highly IO-bound, so can be very concurrent.
-  login: App.in_development? ? 1 : 20,
+  login: App.in_development? ? 1 : 1,
 }
 # Connections:
 # - callback manager
