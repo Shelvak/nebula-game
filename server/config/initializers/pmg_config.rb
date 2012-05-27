@@ -2,7 +2,7 @@
 lambda do
   val = lambda do |value|
     # Reduce the values in test, because otherwise testing takes very very long.
-    App.in_test? ? [1, (value * 0.01).round].max : value
+    (App.in_test? ? [1, value * 0.01].max : value).round
   end
 
   generate_ss_maps = lambda do
