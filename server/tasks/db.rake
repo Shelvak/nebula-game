@@ -86,7 +86,7 @@ namespace :db do
 
 
   desc 'Create the databases defined in lib/config.yml'
-  task :create => :connection do
+  task :create => :environment do
     each_unique_db_config do |config|
       create_database(config)
     end
@@ -99,6 +99,8 @@ namespace :db do
       ActiveRecord::Base.establish_connection(
         config.merge('database' => nil)
       )
+      connection, connection_id = ActiveRecord::Base.connection_pool.
+        checkout_with_id
       ActiveRecord::Base.connection.create_database(config['database'],
         :charset => @charset,
         :collation => @collation
