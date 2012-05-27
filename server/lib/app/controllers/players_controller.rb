@@ -35,7 +35,7 @@ class PlayersController < GenericController
         # to operate properly.
         push m, GameController::ACTION_CONFIG
 
-        if player.detached?
+        if without_locking { player.detached? }
           push m, ACTION_ATTACH
           respond m, success: true, attaching: true
         else

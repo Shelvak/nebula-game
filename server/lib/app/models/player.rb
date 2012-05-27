@@ -643,7 +643,8 @@ class Player < ActiveRecord::Base
     zone = Galaxy::Zone.for_reattachment(galaxy_id, points)
     x, y = zone.free_spot_coords(galaxy_id)
     LOGGER.info "Reattaching #{self} to #{x},#{y}."
-    home_solar_system.attach!(x, y)
+    # Ensure we get a lock on home solar system by reloading it.
+    home_solar_system(true).attach!(x, y)
 
     register_check_activity!
     Notification.create_for_player_attached(id)
