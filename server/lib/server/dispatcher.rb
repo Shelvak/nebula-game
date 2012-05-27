@@ -256,11 +256,10 @@ class Dispatcher
   end
   # Thread safe storage setter.
   def storage_set(client, key, value)
-    abort ClientDisconnected.new(
-      "#{client} has already disconnected, no storage available!"
-    ) unless client_connected?(client)
+    return unless client_connected?(client)
     client_storage = @storage[client]
     client_storage[key] = value
+    nil
   end
 
   def atomic(atomizer)
