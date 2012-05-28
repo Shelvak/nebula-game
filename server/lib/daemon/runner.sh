@@ -10,7 +10,7 @@ export JAVA_OPTS=""  # Clear Java opts
 
 opts="--1.9 -J-Dname=$server_name -J-Djruby.jit.max=25000 \
 --server -J-XX:+TieredCompilation \
--X+C -J-Xms512M -J-Xmx1024M -J-XX:MaxPermSize=256m \
+-X+C -J-Xms128M -J-Xmx1024M -J-XX:MaxPermSize=256m \
 -Xreify.classes=true"
 
 jmxpass="$HOME/config/jmx.password"
