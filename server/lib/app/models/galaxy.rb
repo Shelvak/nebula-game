@@ -34,10 +34,14 @@ class Galaxy < ActiveRecord::Base
 
   # Returns ID of battleground solar system.
   def self.battleground_id(galaxy_id)
-    SolarSystem.select("id").
-      where(:galaxy_id => galaxy_id, :x => nil, :y => nil,
-            :kind => SolarSystem::KIND_BATTLEGROUND).
-      c_select_value.to_i
+    without_locking do
+      SolarSystem.select("id").
+        where(
+          galaxy_id: galaxy_id, x: nil, y: nil,
+          kind: SolarSystem::KIND_BATTLEGROUND
+        ).
+        c_select_value
+    end.to_i
   end
 
   # Returns ID of battleground solar system.
