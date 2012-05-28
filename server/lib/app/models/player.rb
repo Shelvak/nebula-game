@@ -122,9 +122,10 @@ class Player < ActiveRecord::Base
   # Return +Hash+ of {player_id => Player#minimal} pairs from ids.
   def self.minimal_from_ids(ids)
     compacted_ids = ids.compact
-    hashed = select("id, name").where(:id => compacted_ids).c_select_all.
-      each_with_object({}) do |row, hash|
-        hash[row['id']] = {"id" => row['id'], "name" => row['name']}
+    hashed = without_locking do
+      select("id, name").where(:id => compacted_ids).c_select_all
+    end.each_with_object({}) do |row, hash|
+      hash[row['id']] = {"id" => row['id'], "name" => row['name']}
     end
     # Add NPC player if it was in the ids.
     hashed[nil] = nil if ids.size != compacted_ids.size
@@ -140,8 +141,11 @@ class Player < ActiveRecord::Base
 
   # Returns +Hash+ of {id => name} pairs.
   def self.names_for(player_ids)
-    names = select("name").where(:id => player_ids).c_select_values
-    Hash[player_ids.zip(names)]
+    without_locking do
+      select("id, name").where(:id => player_ids).c_select_all
+    end.each_with_object({}) do |row, hash|
+      hash[row['id'], row['name']]
+    end
   end
 
   # Return +PlayerOptions+ for this player.
@@ -189,33 +193,35 @@ class Player < ActiveRecord::Base
   # * :mode => :minimal - for showing in minimal attributes
   #
   def as_json(options=nil)
-    if options
-      case options[:mode]
-      when :minimal
-        {"id" => id, "name" => name}
-      when nil
+    without_locking do
+      if options
+        case options[:mode]
+        when :minimal
+          {"id" => id, "name" => name}
+        when nil
+        else
+          raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
+        end
       else
-        raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
-      end
-    else
-      json = attributes.only(*%w{
-        id name scientists scientists_total xp
-        economy_points army_points science_points war_points
-        victory_points population population_cap
-        alliance_id alliance_cooldown_ends_at alliance_cooldown_id
-        free_creds vip_creds vip_level vip_until vip_creds_until
-        planets_count bg_planets_count
-      })
-      json['creds'] = creds
-      json['portal_without_allies'] = portal_without_allies?
-      json['trial'] = trial?
-      unless alliance.nil?
-        is_owner = id == alliance.owner_id
-        json['alliance_owner'] = is_owner
-        json['alliance_player_count'] = alliance.players.count if is_owner
-      end
+        json = attributes.only(*%w{
+          id name scientists scientists_total xp
+          economy_points army_points science_points war_points
+          victory_points population population_cap
+          alliance_id alliance_cooldown_ends_at alliance_cooldown_id
+          free_creds vip_creds vip_level vip_until vip_creds_until
+          planets_count bg_planets_count
+        })
+        json['creds'] = creds
+        json['portal_without_allies'] = portal_without_allies?
+        json['trial'] = trial?
+        unless alliance.nil?
+          is_owner = id == alliance.owner_id
+          json['alliance_owner'] = is_owner
+          json['alliance_player_count'] = alliance.players.count if is_owner
+        end
 
-      json
+        json
+      end
     end
   end
 
@@ -258,29 +264,31 @@ class Player < ActiveRecord::Base
   #
   def self.ratings(galaxy_id, condition=nil)
     p = table_name
-    (condition.nil? ? self : condition).
-      select(
-        RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id, last_seen"
-      ).
-      where(:galaxy_id => galaxy_id).
-      joins("LEFT JOIN #{Alliance.table_name} AS a
-        ON `#{p}`.alliance_id=a.id").
-      order("id").
-      c_select_all.
-      map do |row|
-        alliance_id = row.delete('a_id')
-        alliance_name = row.delete('a_name')
-        row['alliance'] = alliance_id \
-          ? {'id' => alliance_id, 'name' => alliance_name} \
-          : nil
-        row['last_seen'] = true \
-          if Celluloid::Actor[:dispatcher].player_connected?(row['id'])
-        row['last_seen'] = Time.parse(row['last_seen']) \
-          if row['last_seen'].is_a?(String)
-        row['death_date'] = Time.parse(row['death_date']) \
-          if row['death_date'].is_a?(String)
-        row
-      end
+    without_locking do
+      (condition.nil? ? self : condition).
+        select(
+          RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id, last_seen"
+        ).
+        where(:galaxy_id => galaxy_id).
+        joins(
+          "LEFT JOIN #{Alliance.table_name} AS a ON `#{p}`.alliance_id=a.id"
+        ).
+        order("id").
+        c_select_all
+    end.map do |row|
+      alliance_id = row.delete('a_id')
+      alliance_name = row.delete('a_name')
+      row['alliance'] = alliance_id \
+        ? {'id' => alliance_id, 'name' => alliance_name} \
+        : nil
+      row['last_seen'] = true \
+        if Celluloid::Actor[:dispatcher].player_connected?(row['id'])
+      row['last_seen'] = Time.parse(row['last_seen']) \
+        if row['last_seen'].is_a?(String)
+      row['death_date'] = Time.parse(row['death_date']) \
+        if row['death_date'].is_a?(String)
+      row
+    end
   end
 
   # Returns
@@ -414,7 +422,7 @@ class Player < ActiveRecord::Base
 
     if victory_points_changed?
       old, new = victory_points_change
-      if galaxy.finished?
+      if without_locking { galaxy.finished? }
         # Don't change victory points after galaxy is finished.
         self.victory_points = old
       elsif ! alliance_id.nil?
@@ -426,7 +434,9 @@ class Player < ActiveRecord::Base
     if dead_changed? && dead?
       self.death_date = Time.now
       ControlManager.instance.player_death(
-        self, pure_creds + Cfg.apocalypse_survival_bonus(galaxy.apocalypse_day)
+        self, pure_creds + Cfg.apocalypse_survival_bonus(
+          without_locking { galaxy.apocalypse_day }
+        )
       )
       self.pure_creds = 0
     end
@@ -455,7 +465,7 @@ class Player < ActiveRecord::Base
   before_destroy do
     # Dispatch that home solar system is destroyed. This needs to be in
     # before_destroy so that visibilities can be gathered.
-    home_ss = home_solar_system
+    home_ss = without_locking { home_solar_system }
     if home_ss.nil?
       LOGGER.warn "No home solar system for #{self} but destroying it anyway."
     else
@@ -556,35 +566,41 @@ class Player < ActiveRecord::Base
 
   # Can this players home solar system be moved?
   def relocatable?
-    return false unless alliance_id.nil?
-    return false if Route.where(:player_id => id).exists?
+    without_locking do
+      return false unless alliance_id.nil?
+      return false if Route.where(:player_id => id).exists?
 
-    home_ss_id = SolarSystem.select("id").where(:player_id => id).c_select_value
-    raise "Home solar system could not be found for #{self}!" if home_ss_id.nil?
+      home_ss_id = SolarSystem.select("id").where(:player_id => id).
+        c_select_value
+      raise "Home solar system could not be found for #{self}!" \
+        if home_ss_id.nil?
 
-    return false if SsObject::Planet.where(:player_id => id).
-      where("solar_system_id!=?", home_ss_id).exists?
+      return false if SsObject::Planet.where(:player_id => id).
+        where("solar_system_id!=?", home_ss_id).exists?
 
-    home_planet_ids = SsObject::Planet.
-      select("id").
-      where(:solar_system_id => home_ss_id).
-      c_select_values
-    raise "No home planets could not be found for #{self}!" \
-      if home_planet_ids.blank?
+      home_planet_ids = SsObject::Planet.
+        select("id").
+        where(:solar_system_id => home_ss_id).
+        c_select_values
+      raise "No home planets could not be found for #{self}!" \
+        if home_planet_ids.blank?
 
-    return false if Unit.where(:player_id => id).
-      where(
-        %Q{
-        location_galaxy_id IS NOT NULL
-        OR
-        (location_solar_system_id IS NOT NULL AND location_solar_system_id != ?)
-        OR
-        (location_ss_object_id IS NOT NULL AND location_ss_object_id NOT IN (?))
-        },
-        home_ss_id, home_planet_ids
-      ).exists?
+      return false if Unit.where(:player_id => id).
+        where(
+          %Q{
+            location_galaxy_id IS NOT NULL
+            OR
+            (location_solar_system_id IS NOT NULL AND
+              location_solar_system_id != ?)
+            OR
+            (location_ss_object_id IS NOT NULL AND
+              location_ss_object_id NOT IN (?))
+          },
+          home_ss_id, home_planet_ids
+        ).exists?
 
-    true
+      true
+    end
   end
 
   # Is this player active?
@@ -667,12 +683,16 @@ class Player < ActiveRecord::Base
       )
     end
 
-    aggressor_row = condition.where(:id => aggressor_id).c_select_one
+    aggressor_row = without_locking do
+      condition.where(:id => aggressor_id).c_select_one
+    end
     raise GameLogicError, "cannot find aggressor with id #{aggressor_id}" \
       if aggressor_row.nil?
     aggressor_points = points[aggressor_row]
 
-    defender_row = condition.where(:id => defender_id).c_select_one
+    defender_row = without_locking do
+      condition.where(:id => defender_id).c_select_one
+    end
     raise GameLogicError, "cannot find defender with id #{defender_id}" \
       if defender_row.nil?
     defender_points = points[defender_row]

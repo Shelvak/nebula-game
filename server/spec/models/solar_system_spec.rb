@@ -59,14 +59,6 @@ describe SolarSystem do
     end
   end
 
-  describe "#orbit_count" do
-    it "should return max planet position + 1" do
-      @ss = Factory.create(:solar_system)
-      Factory.create(:planet, :solar_system => @ss, :position => 7)
-      @ss.orbit_count.should == 8
-    end
-  end
-
   describe "visibility methods" do
     describe ".single_visible_for" do
       before(:all) do

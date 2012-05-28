@@ -58,7 +58,9 @@ class Technology < ActiveRecord::Base
 
   # Check if player has enough planets for this technology.
   def check_planets!(level=nil, player=nil)
-    player ||= self.player
+    player ||= without_locking do
+      Player.select("planets_count, bg_planets_count").find(player_id).freeze
+    end
 
     req_planets = planets_required(level)
     has_planets = player.planets_count
@@ -223,7 +225,8 @@ class Technology < ActiveRecord::Base
     applies_to.map(&:camelcase)
   end
 
-  protected
+protected
+
   validate :validate_scientists
   def validate_scientists
     # `just_finished?` accounts for #on_upgrade_finished and #save
@@ -236,21 +239,23 @@ class Technology < ActiveRecord::Base
     end
 
     if ! @just_accelerated && (just_started? or just_resumed?)
-      # Force reload of association, because DB might have changed
-      player = player(true)
+      player_scientists = without_locking do
+        player.select("scientists").c_select_value
+      end
       errors.add(:base, "#{scientists} scientists requested but we " +
-        "only have #{player.scientists}!") \
-        if player.scientists < scientists
+        "only have #{player_scientists}!") \
+        if player_scientists < scientists
     elsif upgrading? and scientists_changed_while_upgrading?
-      # Force reload of association, because DB might have changed
-      player = player(true)
+      player_scientists = without_locking do
+        player.select("scientists").c_select_value
+      end
 
       old, new = scientists_change
       diff = new - old
 
       errors.add(:base, "Additional #{diff} scientists requested but we " +
-        "only have #{player.scientists}!") \
-        if player.scientists < diff
+        "only have #{player_scientists}!") \
+        if player_scientists < diff
     end
 
     errors.add(:base, "Min #{scientists_min} scientists required, but " +

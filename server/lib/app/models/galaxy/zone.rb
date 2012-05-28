@@ -82,10 +82,12 @@ class Galaxy::Zone
     possible = Set.new
     each_coord { |coords| possible.add(coords) }
 
-    SolarSystem.
-      select("x, y").
-      where(galaxy_id: galaxy_id, x: x_range, y: y_range).
-      c_select_all.each { |row| possible.delete([row['x'], row['y']]) }
+    without_locking do
+      SolarSystem.
+        select("x, y").
+        where(galaxy_id: galaxy_id, x: x_range, y: y_range).
+        c_select_all
+    end.each { |row| possible.delete([row['x'], row['y']]) }
 
     if possible.blank?
       raise "No possible spaces for #{self} in galaxy #{galaxy_id}!"
@@ -173,7 +175,7 @@ HAVING player_count < #{max_players}
 ORDER BY points_diff, slot, player_count
 LIMIT 1
       }
-      row = ActiveRecord::Base.connection.select_one(sql)
+      row = without_locking { ActiveRecord::Base.connection.select_one(sql) }
       return for_enrollment(galaxy_id, nil) if row.nil?
       new(row['slot'], row['quarter'])
     end

@@ -31,7 +31,7 @@ module Trait
       # Returns inclusive zone ([x_range, y_range]) of this radar reach.
       def radar_zone
         strength = radar_strength
-        solar_system = planet.solar_system
+        solar_system = without_locking { planet.solar_system }
         [
           (solar_system.x - strength)..(solar_system.x + strength),
           (solar_system.y - strength)..(solar_system.y + strength)

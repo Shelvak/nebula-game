@@ -62,7 +62,10 @@ class Threading::Director::Task
         if current_retry < MAX_RETRIES
           current_retry += 1
 
-          sleep_for = SLEEP_RANGE.random_element / 1000.0
+          sleep_for = (
+            (SLEEP_RANGE.first * current_retry)..
+            (SLEEP_RANGE.last * current_retry)
+          ).random_element / 1000.0
           LOGGER.send(
             log_method,
             %Q{Deadlock occurred for #{log_object}, retry #{current_retry

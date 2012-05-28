@@ -14,13 +14,12 @@ module Location
     
     player_ids = []
     if location_point.type == SS_OBJECT
-      ss_object = location_point.object
+      ss_object = without_locking { location_point.object }
       if ss_object.is_a?(SsObject::Planet)
         # Add non NPC players to combat or NPC players if they have combat
         # buildings.
         if ! ss_object.player_id.nil? || without_locking {
-          ss_object.buildings.combat.where(:state => Building::STATE_ACTIVE).
-            size != 0
+          ss_object.buildings.combat.active.exists?
         }
           player_ids.push ss_object.player_id
         end

@@ -217,7 +217,7 @@ class Cfg
     # Returns resource multiplier for given galaxy. This ensures amount of
     # resources stay relevant through course of the galaxy.
     def market_bot_resource_multiplier(galaxy_id)
-      galaxy = Galaxy.find(galaxy_id)
+      galaxy = without_locking { Galaxy.find(galaxy_id) }
       [1, galaxy.current_day / market_bot_resource_day_divider].max
     end
 

@@ -15,11 +15,13 @@ module Parts::WithLocking
     # Only lock records if we are in transaction.
     receiver.instance_eval do
       default_scope do
-        thread_name = Logging::Logger.thread_name
-        comment = "#{thread_name}: #{Thread.current[:sql_comment] || "nil"}"
+        if Parts::WithLocking.locking? && connection.open_transactions > 0
+          thread_name = Logging::Logger.thread_name
+          comment = "#{thread_name}: #{Thread.current[:sql_comment] || "nil"}"
 
-        lock(true).where("?!=''", comment) if Parts::WithLocking.locking? &&
-          connection.open_transactions > 0
+          add_lock
+          lock(true).where("?!=''", comment)
+        end
       end
     end
   end

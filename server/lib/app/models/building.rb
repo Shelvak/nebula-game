@@ -386,7 +386,9 @@ class Building < ActiveRecord::Base
       armor_mod = 0
       constructor_mod = 0
       energy_mod = 0
-      Tile.for_building(self).count(:group => "kind").each do |kind, count|
+      without_locking do
+        Tile.for_building(self).count(:group => "kind")
+      end.each do |kind, count|
         name = Tile::MAPPING[kind]
         armor_mod += count * (CONFIG["tiles.#{name}.mod.armor"] || 0)
         constructor_mod += count * (
@@ -450,14 +452,14 @@ class Building < ActiveRecord::Base
   after_create :remove_folliage
   def remove_folliage
     Folliage.delete_all([
-        "planet_id=? AND (" +
-          "(x BETWEEN ? AND ? AND y BETWEEN ? AND ?) OR " +
-          "(x=? AND y=?)" +
-        ")",
-        planet_id,
-        x, x_end, y, y_end,
-        x - 1, y - 1
-      ])
+      "planet_id=? AND (" +
+        "(x BETWEEN ? AND ? AND y BETWEEN ? AND ?) OR " +
+        "(x=? AND y=?)" +
+      ")",
+      planet_id,
+      x, x_end, y, y_end,
+      x - 1, y - 1
+    ])
   end
 
   UPGRADE_FINISHED_SCOPE = DScope.world

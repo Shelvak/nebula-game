@@ -26,8 +26,10 @@ class DispatcherEventHandler::Handler::Created < DispatcherEventHandler::Handler
     [Event::ApocalypseStart, lambda do |dispatcher, events, reason|
       events.each do |event|
         params = {'start' => event.start}
-        player_ids = Player.select("id").where(:galaxy_id => event.galaxy_id).
-          c_select_values
+        player_ids = without_locking do
+          Player.select("id").where(:galaxy_id => event.galaxy_id).
+            c_select_values
+        end
         player_ids.each do |player_id|
           dispatcher.push_to_player!(
             player_id, GalaxiesController::ACTION_APOCALYPSE,

@@ -90,6 +90,8 @@ class Wreckage < ActiveRecord::Base
   #
   # Returns [metal, energy, zetium]
   def self.calculate(participants)
+    typesig binding, Array
+
     metal = energy = zetium = 0
     participants.each do |participant|
       metal += calculate_metal(participant.metal_cost)
@@ -99,7 +101,7 @@ class Wreckage < ActiveRecord::Base
       # Add stored things as wreckage too.
       if participant.is_a?(Unit) && participant.stored > 0
         units_metal, units_energy, units_zetium = \
-          calculate(participant.units)
+          calculate(without_locking { participant.units.all })
         metal += units_metal + participant.metal
         energy += units_energy + participant.energy
         zetium += units_zetium + participant.zetium

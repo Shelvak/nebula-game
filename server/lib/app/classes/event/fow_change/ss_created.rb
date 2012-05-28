@@ -10,7 +10,9 @@ class Event::FowChange::SsCreated < Event::FowChange::SolarSystem
     solar_system_id, x, y, kind, player_minimal, fow_ss_entries
   )
     @solar_system_id = solar_system_id
-    fow_ss_entries ||= FowSsEntry.where(:solar_system_id => solar_system_id)
+    fow_ss_entries ||= without_locking do
+      FowSsEntry.where(:solar_system_id => solar_system_id).all
+    end
     process_changes(fow_ss_entries, [x, y], kind, player_minimal)
   end
 

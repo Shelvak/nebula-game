@@ -40,7 +40,7 @@ class FowSsEntry < ActiveRecord::Base
   class << self
     # Returns +Player+ ids that observe _solar_system_id_.
     def observer_player_ids(solar_system_id)
-      solar_system = SolarSystem.find(solar_system_id)
+      solar_system = without_locking { SolarSystem.find(solar_system_id) }
       if solar_system.main_battleground?
         ss_table = SolarSystem.table_name
         super(
@@ -332,8 +332,8 @@ class FowSsEntry < ActiveRecord::Base
         # before.
         recalculate(RecalculateScope.new(solar_system_id, scope), false)
 
-        ss = SolarSystem.find(solar_system_id)
-        fow_ss_entries = scope.all
+        ss = without_locking { SolarSystem.find(solar_system_id) }
+        fow_ss_entries = without_locking { scope.all.each(&:freeze) }
 
         event = Event::FowChange::SsCreated.new(
           ss.id, ss.x, ss.y, ss.kind, Player.minimal(ss.player_id),
@@ -359,10 +359,12 @@ class FowSsEntry < ActiveRecord::Base
 
     # Creates entries for _player_ for every +SolarSystem+ in _zone_.
     def increase_for_zone(zone, player, increment=1, should_dispatch=true)
-      SolarSystem.in_zone(*zone).where(:galaxy_id => player.galaxy_id).
-        all.each do |solar_system|
-          increase(solar_system.id, player, increment, should_dispatch)
-        end
+      without_locking do
+        SolarSystem.select("id").in_zone(*zone).
+          where(galaxy_id: player.galaxy_id).c_select_values
+      end.each do |solar_system_id|
+        increase(solar_system_id, player, increment, should_dispatch)
+      end
     end
 
     # Removes entries for _player_ for every +SolarSystem+ in _zone_.
@@ -373,13 +375,18 @@ class FowSsEntry < ActiveRecord::Base
     # Update player entries in alliance pool upon #assimilate_player or
     # #throw_out_player.
     def update_player(alliance_id, player_id, modifier)      
-      where(:player_id => player_id).each do |entry|
-        increase_for_kind(entry.solar_system_id, 'alliance_id', alliance_id,
-          entry.counter * modifier)
+      without_locking do
+        select("solar_system_id, counter").where(:player_id => player_id).
+          c_select_all
+      end.each do |row|
+        increase_for_kind(
+          row['solar_system_id'], 'alliance_id', alliance_id,
+          row['counter'] * modifier
+        )
         # Recalculate solar system metadata, because statuses have changed.
         # Do not dispatch events, because whole galaxy map will be resent
         # later.
-        recalculate(entry.solar_system_id, false)
+        recalculate(row['solar_system_id'], false)
       end
     end
 

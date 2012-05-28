@@ -332,9 +332,15 @@ class ActiveRecord::Relation
   # Usage:
   #   planet_ids = SsObject::Planet.where(:player_id => player).
   #     select("id").c_select_values
-  %w{all one rows value values}.each do |method|
+  %w{all rows values}.each do |method|
     define_method(:"c_select_#{method}") do
       connection.send(:"select_#{method}", to_sql)
+    end
+  end
+  %w{one value}.each do |method|
+    define_method(:"c_select_#{method}") do
+      sql = (limit_value.nil? ? limit(1) : self).to_sql
+      connection.send(:"select_#{method}", sql)
     end
   end
 end

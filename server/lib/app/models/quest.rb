@@ -109,22 +109,29 @@ class Quest < ActiveRecord::Base
     # ]
     #
     def achievements_by_player_id(player_id, achievement_ids=nil)
-      (achievement_ids.nil? ? self : where(:id => achievement_ids)).
-        achievement.
-        select("qp.status, o.type, o.key, o.level, o.alliance, " +
-          "o.npc, o.limit, o.count, o.outcome").
-        joins("LEFT JOIN `#{QuestProgress.table_name}` AS qp
-          ON `#{table_name}`.id=qp.quest_id AND qp.player_id=#{
-          player_id.to_i} AND qp.status=#{QuestProgress::STATUS_COMPLETED}"
-        ).
-        joins("LEFT JOIN `#{Objective.table_name}` AS o
-          ON `#{table_name}`.id=o.quest_id").
-        c_select_all.map do |row|
-          row["completed"] = ! row.delete("status").nil?
-          row["alliance"] = row["alliance"] == 1
-          row["npc"] = row["npc"] == 1
-          row
-        end
+      without_locking do
+        (achievement_ids.nil? ? self : where(:id => achievement_ids)).
+          achievement.
+          select(
+            "qp.status, o.type, o.key, o.level, o.alliance, " +
+            "o.npc, o.limit, o.count, o.outcome"
+          ).
+          joins(
+            "LEFT JOIN `#{QuestProgress.table_name}` AS qp " +
+            "ON `#{table_name}`.id=qp.quest_id AND qp.player_id=#{
+            player_id.to_i} AND qp.status=#{QuestProgress::STATUS_COMPLETED}"
+          ).
+          joins(
+            "LEFT JOIN `#{Objective.table_name}` AS o " +
+            "ON `#{table_name}`.id=o.quest_id"
+          ).
+          c_select_all
+      end.map do |row|
+        row["completed"] = ! row.delete("status").nil?
+        row["alliance"] = row["alliance"] == 1
+        row["npc"] = row["npc"] == 1
+        row
+      end
     end
 
     # Returns achievement for _player_id_ and _achievement_id_. Format is same
@@ -139,7 +146,9 @@ class Quest < ActiveRecord::Base
 
     # Start child quests for given player.
     def start_child_quests(parent_id, player_id)
-      Quest.where(:parent_id => parent_id).each do |quest|
+      without_locking do
+        Quest.where(:parent_id => parent_id).all
+      end.each do |quest|
         begin
           quest_progress = QuestProgress.new(:quest_id => quest.id,
             :player_id => player_id, :status => QuestProgress::STATUS_STARTED)
@@ -154,14 +163,17 @@ class Quest < ActiveRecord::Base
 
     # Optimized version of #start_child_quests which is used on player creation.
     def start_player_quest_line(player_id)
-      quest_ids = Quest.select("`id`").where(parent_id: nil).c_select_values
+      quest_ids = without_locking do
+        Quest.select("`id`").where(parent_id: nil)
+      end.c_select_values
       quest_progresses = quest_ids.map do |quest_id|
         QuestProgress.new(player_id: player_id, quest_id: quest_id)
       end
       BulkSql::QuestProgress.save(quest_progresses)
 
-      objective_ids = Objective.select("`id`").where(quest_id: quest_ids).
-        c_select_values
+      objective_ids = without_locking do
+        Objective.select("`id`").where(quest_id: quest_ids)
+      end.c_select_values
       objective_progresses = objective_ids.map do |objective_id|
         ObjectiveProgress.new(player_id: player_id, objective_id: objective_id)
       end

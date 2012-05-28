@@ -140,9 +140,11 @@ class SsObject::Planet < SsObject
 
   # Returns player ids which can look into this planet.
   def observer_player_ids
-    Player.find(
-      (Unit.player_ids_in_location(self) | [player_id]).compact
-    ).map(&:friendly_ids).flatten.uniq
+    without_locking do
+      Player.find(
+        (Unit.player_ids_in_location(self) | [player_id]).compact
+      ).map(&:friendly_ids).flatten.uniq
+    end
   end
 
   # #metal=(value)
@@ -399,7 +401,7 @@ private
       # Check if any of these locations are planets.
       locations.each do |location|
         if location.type == Location::SS_OBJECT
-          object = location.object
+          object = without_locking { location.object }
           if object.is_a?(SsObject::Planet)
             old_observers = object.observer_player_ids
             result = yield

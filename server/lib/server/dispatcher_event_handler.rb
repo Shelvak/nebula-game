@@ -68,7 +68,7 @@ class DispatcherEventHandler
   # TODO: spec
   def handle_movement(movement_event, reason)
     debug "Handling movement event (reason: #{reason})" do
-      player = movement_event.route.player
+      player = without_locking { movement_event.route.player }
       friendly_player_ids = player.nil? ? [] : player.friendly_ids
       next_hop = movement_event.next_hop
 
@@ -136,14 +136,14 @@ class DispatcherEventHandler
       when EventBroker::REASON_BETWEEN_ZONES
         # Movement was between zones.
         # Eagerly load collection to ensure threading safety.
-        units = movement_event.route.units
+        units = without_locking { movement_event.route.units.all }
 
         # Dispatch units that arrived at zone and their route hops for their
         # owner or alliance and only next hop otherwise.
         current_player_ids.each do |player_id|
           if friendly_player_ids.include?(player_id)
             dispatch_movement(filter, player_id, units,
-              movement_event.route.hops_in_current_zone,
+              without_locking { movement_event.route.hops_in_current_zone },
               movement_event.route.jumps_at)
           else
             dispatch_movement(filter, player_id, units,

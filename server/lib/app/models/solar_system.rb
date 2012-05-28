@@ -86,7 +86,7 @@ class SolarSystem < ActiveRecord::Base
   def self.visible_for(player)
     solar_system_entries = {}
 
-    FowSsEntry.for(player).each do |fse|
+    without_locking { FowSsEntry.for(player).all }.each do |fse|
       solar_system_entries[fse.solar_system_id] ||= {}
       # It may be either player or alliance entry
       solar_system_entries[fse.solar_system_id][
@@ -94,9 +94,9 @@ class SolarSystem < ActiveRecord::Base
       ] = fse
     end
 
-    SolarSystem.find(:all,
-      :conditions => {:id => solar_system_entries.keys}
-    ).map do |solar_system|
+    without_locking do
+      SolarSystem.where(id: solar_system_entries.keys).all
+    end.map do |solar_system|
       entries = solar_system_entries[solar_system.id]
 
       {
@@ -112,8 +112,10 @@ class SolarSystem < ActiveRecord::Base
   # _player_. Raises ActiveRecord::RecordNotFound if solar system is not
   # visible.
   def self.find_if_visible_for(id, player)
-    entries = FowSsEntry.for(player).where(:solar_system_id => id).count
-    raise ActiveRecord::RecordNotFound if entries == 0
+    raise ActiveRecord::RecordNotFound, "No FSE for SS #{id}, #{player}" \
+      unless without_locking {
+        FowSsEntry.for(player).where(:solar_system_id => id).exists?
+      }
 
     ss = SolarSystem.find(id)
     raise ActiveRecord::RecordNotFound if ! ss.player_id.nil? &&
@@ -150,12 +152,6 @@ class SolarSystem < ActiveRecord::Base
 
   def galaxy_point
     GalaxyPoint.new(galaxy_id, x, y)
-  end
-
-  # How many orbits this SolarSystem has?
-  def orbit_count
-    SsObject.maximum(:position,
-      :conditions => {:solar_system_id => id}) + 1
   end
   
   # Removes all ss_objects/wreckages/units in this solar system.

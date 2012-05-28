@@ -29,7 +29,9 @@ class Galaxy < ActiveRecord::Base
 
   # Returns number of wormholes in this galaxy.
   def wormhole_count
-    solar_systems.where(kind: SolarSystem::KIND_WORMHOLE).count
+    without_locking do
+      solar_systems.where(kind: SolarSystem::KIND_WORMHOLE).count
+    end
   end
 
   # Returns ID of battleground solar system.
@@ -46,9 +48,11 @@ class Galaxy < ActiveRecord::Base
 
   # Returns ID of battleground solar system.
   def self.apocalypse_start(galaxy_id)
-    time = Galaxy.select("apocalypse_start").where(:id => galaxy_id).
-      c_select_value
-    time.is_a?(String) ? Time.parse(time) : time
+    without_locking do
+      time = Galaxy.select("apocalypse_start").where(:id => galaxy_id).
+        c_select_value
+      time.is_a?(String) ? Time.parse(time) : time
+    end
   end
 
   # Returns units visible for _player_ in +Galaxy+.
@@ -259,7 +263,7 @@ class Galaxy < ActiveRecord::Base
   # @param galaxy_id [Fixnum]
   # @return [TrueClass]
   def self.save_apocalypse_finish_data(galaxy_id)
-    galaxy = Galaxy.find(galaxy_id)
+    galaxy = without_locking { Galaxy.find(galaxy_id) }
     ratings = Player.ratings(galaxy_id)
 
     data = JSON.generate({
@@ -284,7 +288,7 @@ class Galaxy < ActiveRecord::Base
     ) unless apocalypse_started?
 
     self.class.save_apocalypse_finish_data(id) \
-      unless players.where('planets_count > 0').exists?
+      unless without_locking { players.where('planets_count > 0').exists? }
   end
 
   # Convert victory points to creds.
@@ -298,7 +302,9 @@ class Galaxy < ActiveRecord::Base
   # - convert points to creds.
   #
   def convert_vps_to_creds!
-    alliance_ids = alliances.select("id").c_select_values.map(&:to_i)
+    alliance_ids = without_locking do
+      alliances.select("id").c_select_values.map(&:to_i)
+    end
 
     alliance_ids.each do |alliance_id|
       alliance_players = players.where(:alliance_id => alliance_id).all
@@ -316,7 +322,8 @@ class Galaxy < ActiveRecord::Base
           player.creds += added_creds
           player.save!
           Notification.create_for_vps_to_creds_conversion(
-            player.id, personal_creds, total_alliance_vps, alliance_vps_per_player
+            player.id, personal_creds, total_alliance_vps,
+            alliance_vps_per_player
           )
         end
       end

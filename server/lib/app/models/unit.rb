@@ -448,15 +448,16 @@ class Unit < ActiveRecord::Base
     # Types are underscored and counts are Fixnum.
     #
     def units_for_moving(unit_ids, player_id, location)
-      where(location.location_attrs).
-        where(:player_id => player_id, :id => unit_ids).
-        select("`type`, COUNT(*) as `count`").
-        group("`type`").
-        c_select_all.
-        inject({}) do |units, row|
-          units[row['type']] = row['count'].to_i
-          units
-        end
+      without_locking do
+        where(location.location_attrs).
+          where(:player_id => player_id, :id => unit_ids).
+          select("`type`, COUNT(*) as `count`").
+          group("`type`").
+          c_select_all
+      end.each_with_object({}) do |row, units|
+        units[row['type']] = row['count'].to_i
+        units
+      end
     end
 
     # Generates sql for setting location to given +LocationPoint+.
@@ -526,7 +527,7 @@ class Unit < ActiveRecord::Base
         if location.type == Location::SOLAR_SYSTEM ||
             location.type == Location::SS_OBJECT
           location_id = location.type == Location::SOLAR_SYSTEM \
-            ? location.id : location.object.solar_system_id
+            ? location.id : without_locking { location.object.solar_system_id }
 
           grouped_units.each do |player_id, player_units|
             unit_count = player_units.reject { |unit| ! unit.space? }.size
