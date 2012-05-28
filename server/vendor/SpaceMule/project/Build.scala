@@ -55,7 +55,7 @@ object SpaceMule extends Build {
         autoCompilerPlugins := true,
         resolvers           := Seq(
           // JGraphT
-          "conjars.org" at "http://conjars.org/repo",
+          "conjars.org" at "http://conjars.org/repo"
         ),
         libraryDependencies := Seq(
           // Java libraries
