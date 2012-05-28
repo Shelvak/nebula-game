@@ -164,7 +164,9 @@ MAILER = lambda do |short, long|
     Mail.deliver do
       from email_from
       to email_to
-      subject "[#{short}] #{error.split("\n")[0]}"
+      subject = error.split("\n")[0]
+      subject = "#{subject[0..120]}..." if subject.length > 120
+      subject "[#{short}] #{subject}"
       body "#{long}\n\n#{error}"
     end
   end
