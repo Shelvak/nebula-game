@@ -56,8 +56,6 @@ object SpaceMule extends Build {
         resolvers           := Seq(
           // JGraphT
           "conjars.org" at "http://conjars.org/repo",
-          // scala-enhanched-strings
-          "Virtual-Void repository" at "http://mvn.virtual-void.net"
         ),
         libraryDependencies := Seq(
           // Java libraries
@@ -67,17 +65,12 @@ object SpaceMule extends Build {
 
           // MySQL connector
           "mysql" % "mysql-connector-java" % "5.1.17",
-          // Apache Commons IO
-          "commons-io" % "commons-io" % "2.0.1",
+
           // Graph library
-          "thirdparty" % "jgrapht-jdk1.6" % "0.8.2",
+          "thirdparty" % "jgrapht-jdk1.6" % "0.8.2"
 
           // Scala libraries
 
-          // String interpolation
-          compilerPlugin(
-            "net.virtualvoid" % "scala-enhanced-strings_2.9.1" % "0.5.2"
-          )
         ),
         distTask
       )

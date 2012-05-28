@@ -52,22 +52,37 @@ object DB {
 
   def exec(sql: String): Int = {
     val statement = connection.createStatement
-    statement.executeUpdate(sql)
+    try {
+      statement.executeUpdate(sql)
+    }
+    finally {
+      statement.close()
+    }
   }
 
   def insert(sql: String, params: Seq[String]): Int = {
     val statement = connection.prepareStatement(
       sql, Statement.RETURN_GENERATED_KEYS
     )
-    params.view.zipWithIndex.foreach { case (param, index) =>
-      statement.setString(index + 1, param)
-    }
-    statement.executeUpdate()
+    try {
+      params.view.zipWithIndex.foreach { case (param, index) =>
+        statement.setString(index + 1, param)
+      }
+      statement.executeUpdate()
 
-    // Return generated id.
-    val resultSet = statement.getGeneratedKeys()
-    if (resultSet != null && resultSet.next()) resultSet.getInt(1)
-    else 0
+      // Return generated id.
+      val resultSet = statement.getGeneratedKeys()
+      try {
+        if (resultSet != null && resultSet.next()) resultSet.getInt(1)
+        else 0
+      }
+      finally {
+        resultSet.close()
+      }
+    }
+    finally {
+      statement.close()
+    }
   }
 
   /**
@@ -154,30 +169,39 @@ object DB {
     writer.close()
   }
 
-  def query(sql: String): ResultSet = {
+  def query[T](sql: String)(f: ResultSet => T): T = {
     // Configure to be Read Only
     val statement = connection.createStatement(
       ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
     )
 
-    statement.executeQuery(sql)
+    val rs = statement.executeQuery(sql)
+    try {
+      f(rs)
+    }
+    finally {
+      rs.close()
+      statement.close()
+    }
   }
 
   def getOne[T](sql: String): Option[T] = {
-    val resultSet = query(sql)
-    return if (resultSet.first)
-      Some(resultSet.getObject(1).asInstanceOf[T])
-    else
-      None
+    query(sql) { resultSet =>
+      if (resultSet.first)
+        Some(resultSet.getObject(1).asInstanceOf[T])
+      else
+        None
+    }
   }
 
-  def getCol[T](sql: String): List[T] = {
-    val resultSet = query(sql)
-    val list = ListBuffer[T]()
-    while (resultSet.next) {
-      list += resultSet.getObject(1).asInstanceOf[T]
-    }
+  def getCol[T](sql: String): collection.Seq[T] = {
+    query(sql) { resultSet =>
+      var list = ListBuffer.empty[T]
+      while (resultSet.next) {
+        list += resultSet.getObject(1).asInstanceOf[T]
+      }
 
-    return list.toList
+      list
+    }
   }
 }

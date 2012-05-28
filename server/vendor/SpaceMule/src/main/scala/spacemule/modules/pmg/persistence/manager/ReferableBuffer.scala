@@ -14,18 +14,17 @@ import spacemule.persistence._
 class ReferableBuffer(
   override val tableName: String, protected val rowObject: ReferableRowObject
 ) extends BufferLike[ReferableRow] {
-  @EnhanceStrings
   override def save(batchId: String) {
     super.save(batchId)
 
     val pk = rowObject.pkColumn
     val ids = DB.getCol[Int](
-      "SELECT `#pk` FROM `#tableName` WHERE `batch_id`='#batchId'"
+      "SELECT `"+pk+"` FROM `"+tableName+"` WHERE `batch_id`='"+batchId+"'"
     )
     if (buffer.size != ids.size)
       throw new IllegalStateException(
-        "Cannot find all IDs (#ids.size found) for entries in buffer (" +
-        "#buffer.size found) for table #tableName!"
+        "Cannot find all IDs ("+ids.size+" found) for entries in buffer (" +
+        buffer.size+" found) for table "+tableName+"!"
       )
 
     val zipped = buffer.view.zip(ids).force

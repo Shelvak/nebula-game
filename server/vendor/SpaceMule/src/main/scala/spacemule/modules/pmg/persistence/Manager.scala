@@ -58,7 +58,6 @@ object Manager {
     loadSolarSystems(galaxy)
   }
 
-  @EnhanceStrings
   private def loadSolarSystems(galaxy: Galaxy) {
     // String variables
     val now = DB.date(Calendar.getInstance())
@@ -67,35 +66,38 @@ object Manager {
 
     // Select attached solar systems
     def selectAttached() {
-      val rs = DB.query("""
+      DB.query("""
 SELECT
-  #ss.`x`,
-  #ss.`y`,
-  #ss.`player_id`,
-  IF(#p.`created_at`, TO_SECONDS('#now') - TO_SECONDS(#p.`created_at`), 0) AS age
-FROM `#ss`
-LEFT JOIN `#p` ON #ss.`player_id`=#p.`id`
-WHERE #ss.`galaxy_id`=#galaxy.id AND #ss.`kind`=#SolarSystem.Normal.id AND
-  #ss.`x` IS NOT NULL AND #ss.`y` IS NOT NULL
-      """)
+  """+ss+""".`x`,
+  """+ss+""".`y`,
+  """+ss+""".`player_id`,
+  IF("""+p+""".`created_at`, TO_SECONDS('#now') - TO_SECONDS("""+p+
+    """.`created_at`), 0) AS age
+FROM `"""+ss+"""`
+LEFT JOIN `"""+p+"""` ON """+ss+""".`player_id`="""+p+""".`id`
+WHERE """+ss+""".`galaxy_id`=#galaxy.id AND """+ss+""".`kind`="""+
+  SolarSystem.Normal.id+""" AND
+  """+ss+""".`x` IS NOT NULL AND """+ss+""".`y` IS NOT NULL"""
+      ) { rs =>
+        while (rs.next) {
+          val x = rs.getInt(1)
+          val y = rs.getInt(2)
+          val playerId = rs.getInt(3)
+          val age = rs.getInt(4)
 
-      while (rs.next) {
-        val x = rs.getInt(1)
-        val y = rs.getInt(2)
-        val playerId = rs.getInt(3)
-        val age = rs.getInt(4)
-
-        galaxy.addExistingSS(x, y, playerId, age)
+          galaxy.addExistingSS(x, y, playerId, age)
+        }
       }
     }
 
     def selectPooled() {
-      val rs = DB.query("""
-SELECT COUNT(*) FROM `#ss`
-WHERE #ss.`galaxy_id`=#galaxy.id AND #ss.`kind`=#SolarSystem.Pooled.id
-      """)
-
-      while (rs.next()) { galaxy.addPooledHomeSystems(rs.getInt(1)) }
+      DB.query("""
+SELECT COUNT(*) FROM `"""+ss+"""`
+WHERE """+ss+""".`galaxy_id`="""+galaxy.id+""" AND """+ss+""".`kind`="""+
+SolarSystem.Pooled.id
+      ) { rs =>
+        while (rs.next()) { galaxy.addPooledHomeSystems(rs.getInt(1)) }
+      }
     }
 
     selectAttached()
