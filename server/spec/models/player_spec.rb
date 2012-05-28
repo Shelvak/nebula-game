@@ -1880,13 +1880,13 @@ describe Player do
         Galaxy::Zone.should_receive(:for_reattachment).
           with(player.galaxy_id, player.points).and_return(zone)
 
-        x, y = zone.absolute(0, 0)
+        x, y = zone.absolute(4, 2)
         zone.should_receive(:free_spot_coords).with(player.galaxy_id).
           and_return([x, y])
 
-        player.home_solar_system.should_receive(:attach!).with(x, y)
-
         player.attach!
+        home_solar_system.reload
+        [home_solar_system.x, home_solar_system.y].should == [x, y]
       end
 
       it "should register player check activity" do
