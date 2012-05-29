@@ -5,8 +5,9 @@
 class ConstructionQueue
   # Count items in queue for _constructor_id_.
   def self.count(constructor_id)
-    ConstructionQueueEntry.sum(:count,
-      :conditions => {:constructor_id => constructor_id})
+    without_locking do
+      ConstructionQueueEntry.where(constructor_id: constructor_id).sum(:count)
+    end
   end
 
   # Pushes new entry to the end of a queue.
@@ -74,8 +75,9 @@ class ConstructionQueue
     typesig binding, Fixnum, Boolean
 
     condition = ConstructionQueueEntry.where(:constructor_id => constructor_id)
-    condition.prepaid.each { |entry| entry.return_resources!(entry.count) } \
-      if return_resources
+    without_locking { condition.prepaid.all }.each do |entry|
+      entry.return_resources!(entry.count)
+    end if return_resources
     condition.delete_all
   end
 

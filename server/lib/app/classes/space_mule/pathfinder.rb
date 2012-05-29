@@ -9,7 +9,7 @@ module SpaceMule::Pathfinder
   def self.invoke(source, target, avoid_npc)
     avoidable_points = []
 
-    source_solar_system = source.solar_system
+    source_solar_system = without_locking { source.solar_system }
     sm_source_solar_system = nil
     if source_solar_system
       sm_source_solar_system = to_pf_solar_system(source_solar_system)
@@ -26,7 +26,7 @@ module SpaceMule::Pathfinder
       end
     end
 
-    target_solar_system = target.solar_system
+    target_solar_system = without_locking { target.solar_system }
     sm_target_solar_system = nil
     if target_solar_system
       sm_target_solar_system = to_pf_solar_system(target_solar_system)

@@ -23,9 +23,10 @@ module Parts::Transportation
     def storage
       storage = self.class.storage(level)
       # Whoa, man, this is sooo suboptimal, hitting DB each time, but I'm still
-      # bit sick and have no better thoughs - arturaz, 2011-10-20
-      technologies = TechTracker.
-        query_active(player.id, TechTracker::STORAGE).all
+      # a bit sick and have no better thoughts - arturaz, 2011-10-20
+      technologies = without_locking do
+        TechTracker.query_active(player.id, TechTracker::STORAGE).all
+      end
       storage_mods = TechModApplier.apply(technologies, TechTracker::STORAGE)
       (storage * (1 + (storage_mods[self.class.to_s] || 0))).round
     end

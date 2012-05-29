@@ -185,7 +185,10 @@ class Zone(_x: Int, _y: Int, val diameter: Int) extends WithCoords {
    * Marks zone as having mature players. That makes it off limits for new
    * players.
    */
-  def markAsMature() = hasMaturePlayers = true
+  def markAsMature() = {
+    Log.debug("Marking "+this+" as mature.")
+    hasMaturePlayers = true
+  }
 
   def isMature = hasMaturePlayers
 

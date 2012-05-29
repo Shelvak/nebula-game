@@ -14,7 +14,7 @@ class LoadInFileException(
   filePath: String, tableName: String, columns: String, cause: Throwable
 ) extends SQLException(
   """Error while LOAD DATA INFILE from """+filePath+""" to """+tableName+"""
-for columns #columns
+for columns """+columns+"""
 
 Original exception:
 """+cause.toString, cause

@@ -119,9 +119,8 @@ class RouteHop < ActiveRecord::Base
         self.class.handle_fow_change(event)
         # Update Route#jumps_at when zone changes.
         route.jumps_at = without_locking do
-          route.hops.
-            where("location_#{route.current.type_column} IS NULL").
-            c_select_value("arrives_at")
+          route.hops.where("location_#{route.current.type_column} IS NULL").
+            select("arrives_at").c_select_value
         end
       end
 

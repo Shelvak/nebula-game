@@ -37,37 +37,42 @@ class Galaxy(val id: Int, val ruleset: String) {
     playerId: Int, // 0 if NULL.
     age: Int
   ) {
+    Log.block(
+      "Adding existing SS @ "+x+","+y+" player_id:"+playerId+" age:"+age,
+      level=Log.Debug
+    ) { () =>
+      // For some reason -1 / 2 == 0 instead of -1 in Java.
+      // We must fix this.
+      val zoneX = (x.toFloat / zoneDiameter).floor.toInt
+      val zoneY = (y.toFloat / zoneDiameter).floor.toInt
+      val zoneCoords = Coords(zoneX, zoneY)
 
-    // For some reason -1 / 2 == 0 instead of -1 in Java.
-    // We must fix this.
-    val zoneX = (x.toFloat / zoneDiameter).floor.toInt
-    val zoneY = (y.toFloat / zoneDiameter).floor.toInt
-    val zoneCoords = Coords(zoneX, zoneY)
-
-    val zone = zones.get(zoneCoords) match {
-      case Some(z) => z
-      case None =>
-        val zone = new Zone(zoneX, zoneY, zoneDiameter)
-        zones(zone.coords) = zone
-        zone
-    }
-
-    if (age >= Config.zoneMaturityAge) {
-      zone.markAsMature()
-    }
-    else {
-      // Calculate coordinate in zone. Ensure that in-zone coordinate is
-      // calculated correctly if absolute coord is negative.
-      def calcCoord(c: Int) = {
-        if (c >= 0) c % zoneDiameter
-        else {
-          val mod = c.abs % zoneDiameter
-          if (mod == 0) 0 else zoneDiameter - mod
-        }
+      val zone = zones.get(zoneCoords) match {
+        case Some(z) => z
+        case None =>
+          val zone = new Zone(zoneX, zoneY, zoneDiameter)
+          zones(zone.coords) = zone
+          zone
       }
-      val ssX = calcCoord(x)
-      val ssY = calcCoord(y)
-      zone.markAsTaken(Coords(ssX, ssY), playerId != 0)
+      Log.debug("Putting into zone: "+zone)
+
+      if (age >= Config.zoneMaturityAge) {
+        zone.markAsMature()
+      }
+      else {
+        // Calculate coordinate in zone. Ensure that in-zone coordinate is
+        // calculated correctly if absolute coord is negative.
+        def calcCoord(c: Int) = {
+          if (c >= 0) c % zoneDiameter
+          else {
+            val mod = c.abs % zoneDiameter
+            if (mod == 0) 0 else zoneDiameter - mod
+          }
+        }
+        val ssX = calcCoord(x)
+        val ssY = calcCoord(y)
+        zone.markAsTaken(Coords(ssX, ssY), playerId != 0)
+      }
     }
   }
 

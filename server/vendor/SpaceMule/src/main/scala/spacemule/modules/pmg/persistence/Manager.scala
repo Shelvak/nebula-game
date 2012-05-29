@@ -71,11 +71,11 @@ SELECT
   """+ss+""".`x`,
   """+ss+""".`y`,
   """+ss+""".`player_id`,
-  IF("""+p+""".`created_at`, TO_SECONDS('#now') - TO_SECONDS("""+p+
+  IF("""+p+""".`created_at`, TO_SECONDS('"""+now+"""') - TO_SECONDS("""+p+
     """.`created_at`), 0) AS age
 FROM `"""+ss+"""`
 LEFT JOIN `"""+p+"""` ON """+ss+""".`player_id`="""+p+""".`id`
-WHERE """+ss+""".`galaxy_id`=#galaxy.id AND """+ss+""".`kind`="""+
+WHERE """+ss+""".`galaxy_id`="""+galaxy.id+""" AND """+ss+""".`kind`="""+
   SolarSystem.Normal.id+""" AND
   """+ss+""".`x` IS NOT NULL AND """+ss+""".`y` IS NOT NULL"""
       ) { rs =>

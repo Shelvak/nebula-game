@@ -31,7 +31,7 @@ class DispatcherEventHandler::Handler::Changed < DispatcherEventHandler::Handler
     end],
     [Event::ConstructionQueue, lambda do |dispatcher, events, reason|
       events.each do |event|
-        planet = event.constructor.planet
+        planet = without_locking { event.constructor.planet }
         dispatcher.push_to_player!(
           planet.player_id,
           ConstructionQueuesController::ACTION_INDEX,

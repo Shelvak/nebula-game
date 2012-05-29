@@ -87,12 +87,14 @@ module Location
   def self.visible?(player, location)
     check_in_ss = lambda do |ss_id|
       if ss_id == Galaxy.battleground_id(player.galaxy_id)
-        FowSsEntry.for(player).joins(:solar_system).where(
-          SolarSystem.table_name => {:kind => SolarSystem::KIND_WORMHOLE}
-        ).count > 0
+        without_locking do
+          FowSsEntry.for(player).joins(:solar_system).where(
+            SolarSystem.table_name => {kind: SolarSystem::KIND_WORMHOLE}
+          ).exists?
+        end
       else
         begin
-          SolarSystem.find_if_visible_for(ss_id, player)
+          without_locking { SolarSystem.find_if_visible_for(ss_id, player) }
           true
         rescue ActiveRecord::RecordNotFound
           false

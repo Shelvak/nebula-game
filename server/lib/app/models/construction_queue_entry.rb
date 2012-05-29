@@ -136,7 +136,8 @@ class ConstructionQueueEntry < ActiveRecord::Base
       }, c_type: #{constructable_type}>"
   end
 
-  protected
+protected
+
   def get_player(planet, population_cost)
     player = nil
     if population_cost > 0

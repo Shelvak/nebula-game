@@ -198,10 +198,12 @@ class Technology < ActiveRecord::Base
 
   # Array of [name, property] pairs for all technology mods.
   MODS = TechTracker::MODS.map do |property|
-    [property.gsub(".", "_"), "mod.#{property}"]
+    [property.gsub(".", "_"), property]
   end
   
   MODS.each do |name, property|
+    property = "mod.#{property}"
+
     define_method("#{name}_mod") { self.class.send("#{name}_mod", level) }
     self.class.send(:define_method, "#{name}_mod") do |level|
       evalproperty(property, 0, 'level' => level)
@@ -238,18 +240,19 @@ protected
       )
     end
 
-    if ! @just_accelerated && (just_started? or just_resumed?)
-      player_scientists = without_locking do
-        player.select("scientists").c_select_value
+    get_player_scientists = lambda do
+      without_locking do
+        Player.where(id: player_id).select("scientists").c_select_value
       end
+    end
+
+    if ! @just_accelerated && (just_started? or just_resumed?)
+      player_scientists = get_player_scientists.call
       errors.add(:base, "#{scientists} scientists requested but we " +
         "only have #{player_scientists}!") \
         if player_scientists < scientists
     elsif upgrading? and scientists_changed_while_upgrading?
-      player_scientists = without_locking do
-        player.select("scientists").c_select_value
-      end
-
+      player_scientists = get_player_scientists.call
       old, new = scientists_change
       diff = new - old
 

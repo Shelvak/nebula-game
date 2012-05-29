@@ -144,7 +144,7 @@ class Player < ActiveRecord::Base
     without_locking do
       select("id, name").where(:id => player_ids).c_select_all
     end.each_with_object({}) do |row, hash|
-      hash[row['id'], row['name']]
+      hash[row['id']] = row['name']
     end
   end
 

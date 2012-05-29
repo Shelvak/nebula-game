@@ -342,8 +342,9 @@ private
     player_id ? without_locking {
       TechTracker.instance.query_active(
         player_id,
-        "metal_generate", "metal_store", "energy_generate", "energy_store",
-        "zetium_generate", "zetium_store"
+        TechTracker::METAL_GENERATE, TechTracker::METAL_STORE,
+        TechTracker::ENERGY_GENERATE, TechTracker::ENERGY_STORE,
+        TechTracker::ZETIUM_GENERATE, TechTracker::ZETIUM_STORE
       ).all
     } : []
   end

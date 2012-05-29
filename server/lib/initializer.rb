@@ -143,9 +143,9 @@ end
 DIRECTORS = {
   chat: 1,    # Not much to do, one worker is enough.
   enroll: 1,  # Sequential, otherwise db locks kick in.
-  world: 1,   # Main workhorse, not too concurrent because of DB locks.
+  world: 6,   # Main workhorse, not too concurrent because of DB locks.
   # Highly IO-bound, so can be very concurrent.
-  login: App.in_development? ? 1 : 1,
+  login: App.in_development? ? 1 : 20,
 }
 # Connections:
 # - callback manager
@@ -343,19 +343,6 @@ class ActiveRecord::Relation
       connection.send(:"select_#{method}", sql)
     end
   end
-end
-
-# Disables SQL locking for this thread in given block. Only use this on
-# read-only operations!
-def without_locking
-  old_value = Parts::WithLocking.locking?
-  begin
-    Parts::WithLocking.locking = false
-    ret_value = yield
-  ensure
-    Parts::WithLocking.locking = old_value
-  end
-  ret_value
 end
 
 ActiveSupport::JSON.backend = :json_gem

@@ -27,10 +27,10 @@ class DispatcherEventHandler
   # Handles preparations for unit movement.
   def handle_movement_prepare(movement_prepare_event)
     route = movement_prepare_event.route
-    zone_route_hops = route.hops_in_current_zone
+    zone_route_hops = without_locking { route.hops_in_current_zone }
     unit_ids = movement_prepare_event.unit_ids
 
-    player = route.player
+    player = without_locking { route.player }
     friendly_player_ids = player.nil? ? [] : player.friendly_ids
 
     player_ids, filter = LocationResolver.resolve_movement(
