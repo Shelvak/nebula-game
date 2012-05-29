@@ -16,6 +16,7 @@ class DispatcherEventHandler::Handler::Created < DispatcherEventHandler::Handler
         filter = Dispatcher::PushFilter.ss_object(event.planet_id)
 
         event.non_observer_ids.each do |player_id|
+          typesig_bindless [["player_id", player_id]], Fixnum
           dispatcher.push_to_player!(
             player_id, PlanetsController::ACTION_UNSET_CURRENT,
             {}, filter
@@ -31,6 +32,7 @@ class DispatcherEventHandler::Handler::Created < DispatcherEventHandler::Handler
             c_select_values
         end
         player_ids.each do |player_id|
+          typesig_bindless [["player_id", player_id]], Fixnum
           dispatcher.push_to_player!(
             player_id, GalaxiesController::ACTION_APOCALYPSE,
             params, nil
