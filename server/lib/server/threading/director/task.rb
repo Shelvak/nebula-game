@@ -15,10 +15,13 @@ class Threading::Director::Task
         block.call(worker_name)
       rescue Exception => e
         # Unexpected exceptions - log error, however do not crash the worker.
-        LOGGER.error "#{description} failed: #{e.to_log_str}", worker_name
+        LOGGER.error "#{description} failed: #{Exception.to_log_str(e)}",
+          worker_name
       end
     end
   end
+
+  attr_reader :description, :short_description
 
   def initialize(description, short_description=nil, &block)
     @description = description

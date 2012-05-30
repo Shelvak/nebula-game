@@ -7,6 +7,8 @@ class Threading::Director
     Actor[to_s] = current_actor
 
     @workers = {}
+    # {name => task_description}
+    @worker_tasks = {}
     @free_workers = Java::java.util.LinkedList.new
     @task_queue = Java::java.util.LinkedList.new
 
@@ -44,6 +46,7 @@ class Threading::Director
       @task_queue << task
     else
       info "Dispatching to #{entry.name}: #{task}"
+      @worker_tasks[entry.name] = task.short_description
       entry.worker.work!(task)
     end
 
@@ -58,9 +61,11 @@ class Threading::Director
     unless @task_queue.blank?
       task = @task_queue.remove_first
       info "Taking task from queue: #{task}"
+      @worker_tasks[entry.name] = task.short_description
       entry.worker.work!(task)
     else
       info "Returning #{name} to pool."
+      @worker_tasks.delete entry.name
       @free_workers << entry
     end
 
@@ -75,7 +80,7 @@ class Threading::Director
 
   def report
     info "free workers: #{@free_workers.size} enqueued tasks: #{
-      @task_queue.size}"
+      @task_queue.size}, current: #{@worker_tasks.inspect}"
   end
 
   def reserve_worker
