@@ -58,7 +58,7 @@ if run?("misc", "combat-log")
 
     CallbackManager.register_or_update(
       log, CallbackManager::EVENT_DESTROY,
-      Cfg.combat_log_expiration_time.from_now
+      (Cfg.combat_log_expiration_time + rand(2.days)).from_now
     )
   end
 end
