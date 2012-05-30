@@ -32,7 +32,7 @@ module Dispatcher::ControllerTask
           exception = e
         rescue Exception => e
           # Unexpected exceptions - log error, however do not crash the worker.
-          LOGGER.error "#{message} failed: #{e.to_log_str}", worker_name
+          LOGGER.error "#{message} failed: #{Exception.to_log_str(e)}", worker_name
           exception = e
         ensure
           # Confirm that our task has been successfully processed unless we are

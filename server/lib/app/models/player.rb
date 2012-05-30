@@ -416,7 +416,7 @@ class Player < ActiveRecord::Base
           unless galaxy.dev?
         self.referral_submitted = true
       rescue ControlManager::Error => e
-        LOGGER.warn("Player referral points callback failed!\n#{e.to_log_str}")
+        LOGGER.warn("Player referral points callback failed!\n#{Exception.to_log_str(e)}")
       end
     end
 

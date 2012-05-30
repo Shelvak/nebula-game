@@ -66,7 +66,7 @@ module ServerMachine
       end
     rescue Exception => e
       error "Failed while serializing message:\n\n#{
-        message.inspect}\n\n#{e.to_log_str}", to_s
+        message.inspect}\n\n#{Exception.to_log_str(e)}", to_s
       close_connection_after_writing
       return
     end

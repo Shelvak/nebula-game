@@ -6,7 +6,7 @@ class CallbackManager
 
   # Raised if callback already exists and is in future.
   class CallbackAlreadyExists < RuntimeError; end
-  
+
   # Constructable has finished upgrading.
   EVENT_UPGRADE_FINISHED = 0
   # Constructor has finished construction of constructable.

@@ -51,8 +51,9 @@ Message was:
       eval m.params['hotfix'], ROOT_BINDING
       respond m, :error => nil
     rescue Exception => e
-      LOGGER.fatal("Applying hotfix failed!\n\n#{e.to_log_str}")
-      respond m, :error => e.to_log_str
+      exception_str = Exception.to_log_str(e)
+      LOGGER.fatal("Applying hotfix failed!\n\n#{exception_str}")
+      respond m, :error => exception_str
     end
   end
 
