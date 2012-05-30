@@ -27,12 +27,13 @@ module Dispatcher::ControllerTask
         rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
             ActiveRecord::RecordNotDestroyed, GameError => e
           # Expected exceptions - notify client that his action failed.
-          LOGGER.info "#{message} failed: #{e.name} - #{e.message}",
+          LOGGER.info "#{message} failed: #{e.class.to_s} - #{e.message}",
             worker_name
           exception = e
         rescue Exception => e
           # Unexpected exceptions - log error, however do not crash the worker.
-          LOGGER.error "#{message} failed: #{Exception.to_log_str(e)}", worker_name
+          LOGGER.error "#{message} failed: #{Exception.to_log_str(e)}",
+            worker_name
           exception = e
         ensure
           # Confirm that our task has been successfully processed unless we are
