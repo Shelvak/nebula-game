@@ -1,4 +1,14 @@
 class Threading::Director
+  class TaskInfo < Struct.new(:description, :start_time)
+    def initialize(description)
+      super(description, Time.now)
+    end
+
+    def elapsed(now=Time.now)
+      now - start_time
+    end
+  end
+
   include NamedLogMessages
   include Celluloid
 
@@ -7,7 +17,7 @@ class Threading::Director
     Actor[to_s] = current_actor
 
     @workers = {}
-    # {name => task_description}
+    # {name => TaskInfo}
     @worker_tasks = {}
     @free_workers = Java::java.util.LinkedList.new
     @task_queue = Java::java.util.LinkedList.new
@@ -46,7 +56,7 @@ class Threading::Director
       @task_queue << task
     else
       info "Dispatching to #{entry.name}: #{task}"
-      @worker_tasks[entry.name] = task.short_description
+      @worker_tasks[entry.name] = TaskInfo.new(task.short_description)
       entry.worker.work!(task)
     end
 
@@ -61,7 +71,7 @@ class Threading::Director
     unless @task_queue.blank?
       task = @task_queue.remove_first
       info "Taking task from queue: #{task}"
-      @worker_tasks[entry.name] = task.short_description
+      @worker_tasks[entry.name] = TaskInfo.new(task.short_description)
       entry.worker.work!(task)
     else
       info "Returning #{name} to pool."
@@ -79,8 +89,15 @@ class Threading::Director
   private
 
   def report
-    info "free workers: #{@free_workers.size} enqueued tasks: #{
-      @task_queue.size}, current: #{@worker_tasks.inspect}"
+    now = Time.now
+    current = @worker_tasks.map do |name, task_info|
+      "%s => %s (%4.2fs)" % [
+        name, task_info.description, task_info.elapsed(now)
+      ]
+    end.join(", ")
+
+    info "free workers: #{@free_workers.size}, enqueued tasks: #{
+      @task_queue.size}, current: {#{current}}"
   end
 
   def reserve_worker
