@@ -4,8 +4,9 @@ class Threading::Director
       super(description, Time.now)
     end
 
+    # Return elapsed time from task start in milliseconds.
     def elapsed(now=Time.now)
-      now - start_time
+      ((now - start_time) * 1000).round
     end
   end
 
@@ -91,9 +92,7 @@ class Threading::Director
   def report
     now = Time.now
     current = @worker_tasks.map do |name, task_info|
-      "%s => %s (%4.2fs)" % [
-        name, task_info.description, task_info.elapsed(now)
-      ]
+      "#{name} => #{task_info.description} (#{task_info.elapsed(now)}ms)"
     end.join(", ")
 
     info "free workers: #{@free_workers.size}, enqueued tasks: #{
