@@ -138,9 +138,13 @@ end
 
 # Dispatcher directors.
 DIRECTORS = {
-  chat: 1,    # Not much to do, one worker is enough.
-  enroll: 1,  # Sequential, otherwise db locks kick in.
-  world: 6,   # Main workhorse, not too concurrent because of DB locks.
+  chat: 1,     # Not much to do, one worker is enough.
+  enroll: 1,   # Sequential, otherwise db locks kick in.
+  control: 1,  # For control tasks that should be responsive even if other
+               # workers are busy.
+  world: 6,    # Main workhorse, not too concurrent because of DB locks.
+  low_prio: 3, # For low priority tasks, such as cleaning up old notifications
+               # or combat logs.
   # Highly IO-bound, so can be very concurrent.
   login: App.in_development? ? 1 : 20,
 }

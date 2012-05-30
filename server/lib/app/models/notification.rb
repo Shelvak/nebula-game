@@ -85,7 +85,7 @@ class Notification < ActiveRecord::Base
     )
   end
 
-  DESTROY_SCOPE = DScope.world
+  DESTROY_SCOPE = DScope.low_prio
   def self.destroy_callback(notification); notification.destroy!; end
 
   def self.create_from_error(error)

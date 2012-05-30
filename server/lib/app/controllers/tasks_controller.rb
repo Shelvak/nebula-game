@@ -8,7 +8,7 @@ class TasksController < GenericController
   ACTION_REOPEN_LOGS = 'tasks|reopen_logs'
 
   REOPEN_LOGS_OPTIONS = control_token
-  REOPEN_LOGS_SCOPE = scope.world
+  REOPEN_LOGS_SCOPE = scope.control
   def self.reopen_logs_action(m)
     LOGGER.info "Reopening log outputs."
     Logging::Writer.instance.reopen!
@@ -24,7 +24,7 @@ class TasksController < GenericController
   ACTION_APPLY_HOTFIX = 'tasks|apply_hotfix'
 
   APPLY_HOTFIX_OPTIONS = control_token + required(:hotfix => String)
-  APPLY_HOTFIX_SCOPE = scope.world
+  APPLY_HOTFIX_SCOPE = scope.control
   # TODO: spec
   def self.apply_hotfix_action(m)
     unless m.client.host == '127.0.0.1'
@@ -187,7 +187,7 @@ Message was:
   ACTION_PLAYER_STATS = 'tasks|player_stats'
 
   PLAYER_STATS_OPTIONS = control_token
-  PLAYER_STATS_SCOPE = scope.world
+  PLAYER_STATS_SCOPE = scope.control
   # TODO: spec better
   def self.player_stats_action(m)
     without_locking do
@@ -230,7 +230,7 @@ Message was:
   ACTION_POOL_STATS = 'tasks|pool_stats'
 
   POOL_STATS_OPTIONS = control_token
-  POOL_STATS_SCOPE = scope.world
+  POOL_STATS_SCOPE = scope.control
   def self.pool_stats_action(m)
     stats = without_locking do
       Galaxy.select("id, pool_free_zones, pool_free_home_ss").c_select_all
@@ -261,7 +261,7 @@ Message was:
   ACTION_DIRECTOR_STATS = 'tasks|director_stats'
 
   DIRECTOR_STATS_OPTIONS = control_token
-  DIRECTOR_STATS_SCOPE = scope.world
+  DIRECTOR_STATS_SCOPE = scope.control
   def self.director_stats_action(m)
     stats = Celluloid::Actor[:dispatcher].director_stats
     respond m, stats: stats
@@ -279,7 +279,7 @@ Message was:
 
   MARKET_RATES_STATS_OPTIONS = control_token +
     required(:from_kind => Fixnum, :to_kind => Fixnum)
-  MARKET_RATES_STATS_SCOPE = scope.world
+  MARKET_RATES_STATS_SCOPE = scope.control
   # TODO: spec
   def self.market_rates_stats_action(m)
     without_locking do
@@ -307,7 +307,7 @@ Message was:
 
   MARKET_COUNTS_STATS_OPTIONS = control_token +
     required(:from_kind => Fixnum, :to_kind => Fixnum)
-  MARKET_COUNTS_STATS_SCOPE = scope.world
+  MARKET_COUNTS_STATS_SCOPE = scope.control
   # TODO: spec
   def self.market_counts_stats_action(m)
     without_locking do
@@ -340,7 +340,7 @@ Message was:
 
   ANNOUNCE_OPTIONS = control_token +
     required(:ends_at => String, :message => String)
-  ANNOUNCE_SCOPE = scope.world
+  ANNOUNCE_SCOPE = scope.control
   # TODO: spec
   def self.announce_action(m)
     time = Time.parse(m.params['ends_at'])
