@@ -11,10 +11,12 @@ class DispatcherEventHandler::Handler::Changed < DispatcherEventHandler::Handler
         planets.each do |planet|
           old_id, new_id = planet.player_id_change
           [old_id, new_id].each do |player_id|
-            typesig_bindless [["player_id", player_id]], Fixnum
-            dispatcher.push_to_player!(
-              player_id, PlanetsController::ACTION_PLAYER_INDEX
-            ) unless player_id.nil?
+            unless player_id.nil?
+              typesig_bindless [["player_id", player_id]], Fixnum
+              dispatcher.push_to_player!(
+                player_id, PlanetsController::ACTION_PLAYER_INDEX
+              )
+            end
           end
         end
       end
