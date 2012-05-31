@@ -37,6 +37,8 @@ end
 if App.in_development?
   # Console drop-out thread.
   Thread.new do
+    java.lang.Thread.current_thread.name = "irb-session"
+
     loop do
       if $IRB_RUNNING
         sleep 1

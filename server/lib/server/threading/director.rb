@@ -16,6 +16,7 @@ class Threading::Director
   def initialize(name, pool)
     @name = name
     Actor[to_s] = current_actor
+    java.lang.Thread.current_thread.name = "#{to_s}-main"
 
     @workers = {}
     # {name => TaskInfo}

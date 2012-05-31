@@ -80,6 +80,7 @@ class CallbackManager
 
   def initialize
     super
+    java.lang.Thread.current_thread.name = "#{TAG}-main"
 
     # Crash if dispatcher crashes, because we might have sent some messages
     # there that will never be processed if we don't restart.
@@ -94,6 +95,7 @@ class CallbackManager
       "Cannot run callback manager while it is running!"
     ) if @running
     @running = true
+    java.lang.Thread.current_thread.name = "#{TAG}-run"
 
     set_ar_connection_id!
 

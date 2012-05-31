@@ -13,6 +13,7 @@ class Pooler
   def initialize
     super
     @running = false
+    java.lang.Thread.current_thread.name = "#{TAG}-main"
 
     # Link to dispatcher.
     current_actor.link Actor[:dispatcher]
@@ -22,6 +23,7 @@ class Pooler
   def run
     abort RuntimeError.new("Cannot run pooler while it is running!") if @running
     @running = true
+    java.lang.Thread.current_thread.name = "#{TAG}-run"
 
     set_ar_connection_id!
 
