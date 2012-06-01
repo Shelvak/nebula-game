@@ -163,11 +163,12 @@ module Dev
         end
       end
 
-      owner = planet.player
-      raise "No planet owner in #{planet}!" if owner.nil?
+      unless defenders == ""
+        owner = planet.player
+        raise "No planet owner in #{planet}!" if owner.nil?
 
-      Unit.give_units(parse.call(defenders), planet, owner) \
-        unless defenders == ""
+        Unit.give_units(parse.call(defenders), planet, owner)
+      end
 
       attackers = []
       parse.call(offenders).each do |type, count|
