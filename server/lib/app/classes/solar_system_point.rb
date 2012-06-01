@@ -63,6 +63,9 @@ class SolarSystemPoint < LocationPoint
   alias :position :x
   alias :angle :y
 
+  # Ignore freeze, because we need memoizing.
+  def freeze; end
+
   def galaxy_id
     @galaxy_id ||= without_locking do
       SolarSystem.where(id: @id).select("galaxy_id").c_select_value

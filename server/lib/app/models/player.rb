@@ -528,6 +528,43 @@ class Player < ActiveRecord::Base
     galaxy.check_if_apocalypse_finished! if dead_changed? && dead?
   end
 
+  # {type => klass}
+  @@unit_class_cache = Java::java.util.concurrent.ConcurrentHashMap.new
+
+  # Sets #population to its real value.
+  def recalculate_population
+    unit_counts = without_locking do
+      Unit.select("type, COUNT(*) as count").where(player_id: id).
+        group("type").c_select_all
+    end
+    cqe_counts = without_locking do
+      connection.select_all(%Q{
+SELECT cqe.constructable_type AS type, SUM(cqe.count) AS count
+FROM `#{ConstructionQueueEntry.table_name}` AS cqe
+INNER JOIN `#{Building.table_name}` AS b ON cqe.constructor_id = b.id
+INNER JOIN `#{SsObject.table_name}` AS sso ON b.planet_id = sso.id
+WHERE cqe.constructable_type LIKE 'Unit::%' AND sso.player_id=#{id.to_i} AND
+  #{ConstructionQueueEntry.prepaid_condition(:table_alias => 'cqe')}
+GROUP BY cqe.constructable_type
+      })
+    end
+
+    self.population = unit_counts.inject(0) do |sum, row|
+      type = "Unit::#{row["type"]}"
+      klass = @@unit_class_cache[type] ||= type.constantize
+      sum + klass.population * row["count"]
+    end + cqe_counts.inject(0) do |sum, row|
+      type = row["type"]
+      klass = @@unit_class_cache[type] ||= type.constantize
+      sum + klass.population * row["count"].to_i
+    end
+  end
+
+  def recalculate_population!
+    recalculate_population
+    save!
+  end
+
   # Increase or decrease scientist count.
   def change_scientist_count!(count)
     ensure_free_scientists!(- count) if count < 0

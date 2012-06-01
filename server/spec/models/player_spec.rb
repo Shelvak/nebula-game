@@ -1104,6 +1104,87 @@ describe Player do
     end
   end
 
+  describe "#recalculate_population" do
+    let(:player) { Factory.create(:player, population: 1000) }
+    let(:planet) { Factory.create(:planet, player: player) }
+    let(:constructor) { Factory.create(:b_constructor_test, planet: planet) }
+    let(:units) do
+      # Random data that should not be taken into account
+      Factory.create!(:u_cyrix)
+      # Actual data
+      [
+        Factory.create!(:u_cyrix, player: player),
+        Factory.create!(:u_cyrix, player: player),
+        Factory.create!(:u_crow, player: player),
+        Factory.create!(:u_mule, player: player),
+        Factory.create!(:u_shocker, player: player),
+        Factory.create!(:u_zeus, player: player)
+      ]
+    end
+    let(:construction_queue_entries) do
+      # Random data that should not be taken into account
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Zeus.to_s, prepaid: true)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Zeus.to_s, prepaid: false)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Building::Barracks.to_s, prepaid: false)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Trooper.to_s, prepaid: false, constructor: constructor,
+        count: 10)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Trooper.to_s, prepaid: false, constructor: constructor,
+        count: 10)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Building::MetalStorage.to_s, prepaid: true,
+        constructor: constructor, count: 10)
+      # Actual data
+      [
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Trooper.to_s,
+          prepaid: true, constructor: constructor, count: 10),
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Rhyno.to_s,
+          prepaid: true, constructor: constructor),
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Zeus.to_s,
+          prepaid: true, constructor: constructor, count: 5),
+      ]
+    end
+
+    let(:population) do
+      (
+        units.map(&:population) + construction_queue_entries.
+          map { |cqe| cqe.constructable_class.population * cqe.count }
+      ).sum
+    end
+
+    it "should recalculate population to correct value" do
+      lambda do
+        player.recalculate_population
+      end.should change(player, :population).to(population)
+    end
+
+    it "should not save record" do
+      player.recalculate_population
+      player.should_not be_saved
+    end
+  end
+
+  describe "#recalculate_population!" do
+    let(:player) { Factory.create(:player) }
+
+    it "should call #recalculate_population" do
+      player.should_receive(:recalculate_population)
+      player.recalculate_population!
+    end
+
+    it "should save record" do
+      player.recalculate_population!
+      player.should be_saved
+    end
+  end
+
   describe "#change_scientist_count!" do
     before(:each) do
       @player = Factory.create(:player)

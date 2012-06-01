@@ -240,6 +240,7 @@ describe SsObject::Planet::OwnerChangeHandler do
     end
 
     it "should take population from old player" do
+      @old.recalculate_population
       lambda do
         @handler.handle!
         @old.reload
@@ -247,6 +248,7 @@ describe SsObject::Planet::OwnerChangeHandler do
     end
 
     it "should give population to new player" do
+      @new.recalculate_population
       lambda do
         @handler.handle!
         @new.reload
@@ -319,7 +321,11 @@ describe SsObject::Planet::OwnerChangeHandler do
     before(:each) do
       ConstructionQueue.push(constructor.id, Unit::Azure.to_s, false, 5)
       self.prepaid_entries
-      @old.reload
+      @old.recalculate_population
+      @new.recalculate_population
+      # We need to actually update planet player id, to transfer ownership of
+      # CQEs.
+      @planet.update_row! player_id: @new.id
     end
 
     it "should free population for old player" do

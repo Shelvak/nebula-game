@@ -49,6 +49,7 @@ describe ConstructionQueue do
       end
 
       it "should increase population if prepaid" do
+        @player.recalculate_population
         lambda do
           ConstructionQueue.push(@constructor_id, klass.to_s, true, count)
           @player.reload
@@ -121,7 +122,7 @@ describe ConstructionQueue do
         end.should change(@player, :population).by(klass.population * count)
       end
 
-      it "should not increase populatio if not prepaid" do
+      it "should not increase population if not prepaid" do
         ConstructionQueue.push(@constructor_id, klass.to_s, false)
         @player.reload
 
@@ -215,9 +216,10 @@ describe ConstructionQueue do
 
   describe ".clear" do
     let(:prepaid) { false }
+    let(:count) { 10 }
 
     before(:each) do
-      ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, prepaid, 10)
+      ConstructionQueue.push(@constructor.id, Unit::Crow.to_s, prepaid, count)
       @planet.reload
       @player.reload
     end
@@ -259,7 +261,8 @@ describe ConstructionQueue do
         lambda do
           ConstructionQueue.clear(@constructor.id)
           @player.reload
-        end.should change(@player, :population)
+        end.should change(@player, :population).
+          from(Unit::Crow.population * count).to(0)
       end
 
       describe "when asked not to return resources" do
@@ -270,7 +273,7 @@ describe ConstructionQueue do
           end.should_not change_resources_of(@planet)
         end
 
-        it "should free population for prepaid items" do
+        it "should not free population for prepaid items" do
           lambda do
             ConstructionQueue.clear(@constructor.id, false)
             @player.reload
@@ -351,10 +354,12 @@ describe ConstructionQueue do
         mock = ConstructionQueue.push(@constructor_id, klass.to_s, true, 10)
         ConstructionQueue.reduce(mock.id, 6)
         @player.reload
-      end.should change(@player, :population).by(klass.population * 4)
+      end.should change(@player, :population).to(klass.population * 4)
     end
 
     it "should return resources if prepaid && destroying object" do
+      @player.recalculate_population
+
       lambda do
         mock = ConstructionQueue.push(@constructor_id, klass.to_s, true, 10)
         ConstructionQueue.reduce(mock.id, 10)

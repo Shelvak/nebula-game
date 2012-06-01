@@ -44,14 +44,18 @@ class ConstructionQueue
     )
 
     if model and model.can_merge?(new_model)
-      model.reduce_resources!(count) if prepaid
+      recalculate_player_population = model.reduce_resources!(count) if prepaid
       model.merge!(new_model)
       return_value = model
     else
-      new_model.reduce_resources!(count) if prepaid
+      recalculate_player_population =
+        new_model.reduce_resources!(count) if prepaid
       new_model.save!
       return_value = new_model
     end
+
+    recalculate_player_population!(constructor_id) \
+      if recalculate_player_population
 
     EventBroker.fire(
       Event::ConstructionQueue.new(constructor_id), EventBroker::CHANGED
@@ -75,10 +79,22 @@ class ConstructionQueue
     typesig binding, Fixnum, Boolean
 
     condition = ConstructionQueueEntry.where(:constructor_id => constructor_id)
-    without_locking { condition.prepaid.all }.each do |entry|
-      entry.return_resources!(entry.count)
-    end if return_resources
+    recalculate_player_population = without_locking { condition.prepaid.all }.
+      map { |entry| entry.return_resources!(entry.count) }.any? \
+      if return_resources
+
     condition.delete_all
+
+    recalculate_player_population!(constructor_id) \
+      if recalculate_player_population
+  end
+
+  class << self
+  private
+    def recalculate_player_population!(constructor_id)
+      player = without_locking { Building.find(constructor_id).planet }.player
+      player.recalculate_population! unless player.nil?
+    end
   end
 
   # Reduce _count_ from given _model_ or _model_id_. Return resources for
@@ -92,12 +108,19 @@ class ConstructionQueue
       "Cannot reduce more (#{count}) than model has (#{model.count})!"
     ) if count > model.count
 
-    model.return_resources!(count) if return_resources && model.prepaid?
+    recalculate_player_population = model.return_resources!(count) \
+      if return_resources && model.prepaid?
+
     if count == model.count
       model.destroy!
       merge_outer(model.constructor_id, model.position)
     else
       model.reduce!(count)
+    end
+
+    if recalculate_player_population
+      player = without_locking { model.constructor.planet }.player
+      player.recalculate_population! unless player.nil?
     end
 
     EventBroker.fire(

@@ -690,12 +690,13 @@ describe Combat do
           buildings { thunder :hp => 3 }
         end
         player(:planet_owner => true)
-        player = self.player do
+        player = self.player(population: 1000, population_cap: 2500) do
           units { mule(:hp => 1) { azure :count => 1 } }
         end
       end
       @player = player.player
       @location_container = location_container
+      @player.recalculate_population
       @dsl.run
     end
     
@@ -710,6 +711,12 @@ describe Combat do
 
     it "should not destroy azures" do
       Unit::Azure.where(:player_id => @player.id).count.should == 1
+    end
+
+    it "should only reduce population for mule and not the azures" do
+      lambda do
+        @player.reload
+      end.should change(@player, :population).by(-Unit::Mule.population)
     end
   end
 

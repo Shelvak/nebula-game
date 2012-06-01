@@ -279,6 +279,9 @@ class Unit < ActiveRecord::Base
   def on_upgrade_reduce_resources
     super
     player = self.player
+    player.recalculate_population
+    # Manually increase population after recalculation, because this is called
+    # in before_save.
     player.population += population
     player.save!
   end
@@ -286,7 +289,7 @@ class Unit < ActiveRecord::Base
   after_destroy do
     player = self.player
     if player
-      player.population -= population
+      player.recalculate_population
       player.save!
     end
   end
@@ -495,31 +498,36 @@ class Unit < ActiveRecord::Base
       grouped_units = units.group_to_hash { |unit| unit.player_id }
       grouped_units.delete(nil)
 
-      player_cache = {}
-
-      # Remove army points when losing units.
-      grouped_units.each do |player_id, player_units|
-        loaded_units = []
-        player_units.each do |unit|
-          loaded_units += unit.units if unit.stored > 0
-        end
-
-        points = (player_units + loaded_units).map(&:points_on_destroy).sum
-        population = (player_units + loaded_units).map(&:population).sum
-        player_cache[player_id] = Player.find(player_id)
-        player_cache[player_id].population -= population
-        change_player_points(
-          player_cache[player_id],
-          points_attribute,
-          - points
-        )
-      end
-
       location = units[0].location
       SsObject::Planet.changing_viewable(location) do
+        player_cache = {}
+
+        # Calculate army points before actual units are destroyed to still
+        # get transported units.
+        army_points = grouped_units.each_with_object({}) do
+          |(player_id, player_units), hash|
+
+          points = 0
+          player_units.each do |unit|
+            points += unit.points_on_destroy
+            points += unit.units.all.sum(&:points_on_destroy) if unit.stored > 0
+          end
+          hash[player_id] = points
+        end
+
         unit_ids = units.map(&:id)
         # Delete units and other units inside those units.
         where(:id => unit_ids).delete_all
+
+        # Remove army points & recalculate population when losing units.
+        # We need to recalculate population after deletion from DB.
+        grouped_units.keys.each do |player_id|
+          points = army_points[player_id]
+          player = player_cache[player_id] = Player.find(player_id)
+          player.recalculate_population
+          change_player_points(player, points_attribute, -points)
+        end
+
         eb_units = killed_by.nil? ? units : CombatArray.new(units, killed_by)
 
         EventBroker.fire(eb_units, EventBroker::DESTROYED, reason)
@@ -598,20 +606,20 @@ class Unit < ActiveRecord::Base
     def give_units_raw(units, location, player)
       fse_counter = 0
       points = UnitPointsCounter.new
-      population = 0
 
       units.each do |unit|
         points.add_unit(unit)
-        population += unit.population
         fse_counter += 1 if unit.space?
         unit.player = player
         unit.location = location
         unit.skip_validate_technologies = true
       end
 
+      save_all_units(units, nil, EventBroker::CREATED)
+
       if player
         points.increase(player)
-        player.population += population
+        player.recalculate_population
         player.save!
 
         FowSsEntry.increase(
@@ -620,7 +628,6 @@ class Unit < ActiveRecord::Base
         Objective::HaveUpgradedTo.progress(units, strict: false)
       end
 
-      save_all_units(units, nil, EventBroker::CREATED)
       # Use units[0].location because location can be planet and
       # LocationChecker expects LocationPoint.
       Combat::LocationChecker.check_location(units[0].location) \

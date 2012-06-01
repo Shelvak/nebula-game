@@ -315,7 +315,6 @@ module Parts::Constructor
 
       units = []
       total_time = 0
-      population = 0
       # Cannot explode data into (array, time) because time is a primitive
       # value ant we need to increment it.
       construction_queue_entries.each do |entry|
@@ -337,7 +336,6 @@ module Parts::Constructor
 
           units << model
           total_time += model.upgrade_time(1)
-          population += model.population
         end
       end
 
@@ -353,7 +351,6 @@ module Parts::Constructor
 
       # TODO: s2_par - modify deh_buffer to discard events on failure.
 
-      player.population -= population # Unit.give_units_raw will increase pop.
       player.creds -= cost
       Unit.give_units_raw(units, planet, player) # This also saves player
 
