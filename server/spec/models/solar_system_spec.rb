@@ -257,7 +257,7 @@ describe SolarSystem do
       end
 
       it "should create cooldown after spawning" do
-        Cooldown.should_receive(:create_unless_exists).and_return do |ssp, time|
+        Cooldown.should_receive(:create_or_update!).and_return do |ssp, time|
           ssp.should be_instance_of(SolarSystemPoint)
           time.should be_within(SPEC_TIME_PRECISION).
             of(Cfg.after_spawn_cooldown)

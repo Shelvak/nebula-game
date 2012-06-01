@@ -370,7 +370,7 @@ class Galaxy < ActiveRecord::Base
         Cfg.galaxy_convoy_units_definition, source, nil, days, 1
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
-      Cooldown.create_unless_exists(source, Cfg.after_spawn_cooldown)
+      Cooldown.create_or_update!(source, Cfg.after_spawn_cooldown)
 
       unit_ids = units.map(&:id)
       LOGGER.debug "Launching convoy #{source} -> #{target} with unit ids #{

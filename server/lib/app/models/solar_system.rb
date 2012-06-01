@@ -180,7 +180,7 @@ class SolarSystem < ActiveRecord::Base
       Unit.save_all_units(units, nil, EventBroker::CREATED)
       self.spawn_counter += 1
       save!
-      Cooldown.create_unless_exists(location, Cfg.after_spawn_cooldown)
+      Cooldown.create_or_update!(location, Cfg.after_spawn_cooldown)
       
       location
     else

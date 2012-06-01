@@ -15,7 +15,7 @@ class RaidSpawner
     raiders = units
     unless raiders.blank?
       Unit.save_all_units(raiders, nil, EventBroker::CREATED)
-      Cooldown.create_unless_exists(
+      Cooldown.create_or_update!(
         @planet.location_point, Cfg.after_spawn_cooldown
       )
     end
