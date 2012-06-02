@@ -36,13 +36,16 @@ class DispatcherEventHandler::Handler::Changed < DispatcherEventHandler::Handler
     [Event::ConstructionQueue, lambda do |dispatcher, events, reason|
       events.each do |event|
         planet = without_locking { event.constructor.planet }
-        typesig_bindless [["planet.player_id", planet.player_id]], Fixnum
-        dispatcher.push_to_player!(
-          planet.player_id,
-          ConstructionQueuesController::ACTION_INDEX,
-          {'constructor_id' => event.constructor_id},
-          Dispatcher::PushFilter.ss_object(planet.id)
-        )
+        # Can be null if planet is not occupied.
+        unless planet.player_id.nil?
+          typesig_bindless [["planet.player_id", planet.player_id]], Fixnum
+          dispatcher.push_to_player!(
+            planet.player_id,
+            ConstructionQueuesController::ACTION_INDEX,
+            {'constructor_id' => event.constructor_id},
+            Dispatcher::PushFilter.ss_object(planet.id)
+          )
+        end
       end
     end],
     [Event::StatusChange, lambda do |dispatcher, events, reason|
