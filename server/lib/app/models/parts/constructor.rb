@@ -213,9 +213,21 @@ module Parts::Constructor
     # the resources back.
     def cancel_constructable!
       raise GameLogicError.new("Constructor isn't working!") unless working?
-      constructable.cancel!(true)
-      CallbackManager.unregister(self,
-        CallbackManager::EVENT_CONSTRUCTION_FINISHED)
+      if constructable.nil?
+        # Weird bug: building is working, but no constructable is set...
+        # #<Building::Barracks id: 141753, planet_id: 18296, x: 11, y: 13,
+        # armor_mod: 0, constructor_mod: 0, energy_mod: 0, level: 2, type:
+        # "Barracks", upgrade_ends_at: nil, x_end: 13, y_end: 15, state: 2,
+        # pause_remainder: nil, construction_mod: 0, cooldown_ends_at: nil,
+        # hp_percentage: 1.0, flags: 2, constructable_building_id: nil,
+        # constructable_unit_id: nil, batch_id: "">
+        LOGGER.warn "#{self} is working, but does not have constructable!"
+      else
+        constructable.cancel!(true)
+      end
+      CallbackManager.unregister(
+        self, CallbackManager::EVENT_CONSTRUCTION_FINISHED
+      )
       on_construction_finished!(false)
     end
 
