@@ -20,15 +20,19 @@ if [ -e "$jmxpass" ]; then
 -J-Dcom.sun.management.jmxremote.ssl=false"
 fi
 
-rundir=$(readlink -f "$(dirname $0)/..")
-logdir=$(readlink -f "$rundir/../log")
+appdir=$(readlink -f "$(dirname $0)/..")
+logdir=$(readlink -f "$appdir/../log")
 logfile="$logdir/daemon.log"
+rundir=$(readlink -f "$appdir/../run")
 
 echo >> "$logfile"
 echo >> "$logfile"
 echo >> "$logfile"
 echo "#### STARTING DAEMON ####" >> "$logfile"
+nohup jruby $opts "$appdir/main.rb" >> "$logfile" 2>&1 &
+pid=$!
+echo "Daemon pid: $pid" >> "$logfile"
+echo "$pid" > "$rundir/daemon.pid"
 echo >> "$logfile"
 date >> "$logfile"
 echo >> "$logfile"
-nohup jruby $opts "$rundir/main.rb" >> "$logfile" 2>&1 &
