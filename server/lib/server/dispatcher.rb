@@ -121,7 +121,7 @@ class Dispatcher
     if client
       @client_to_player[client] = player
     else
-      abort RuntimeException.new(
+      abort RuntimeError.new(
         "Cannot update player #{player} which is not registered!"
       )
     end
