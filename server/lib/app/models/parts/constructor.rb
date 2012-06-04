@@ -260,7 +260,7 @@ module Parts::Constructor
       free_slots += 1 unless working?
       raise GameLogicError,
         "Tried to construct #{count} entries, but only #{free_slots
-        } are available!" if count > free_slots
+        } free slots are available!" if count > free_slots
 
       if working?
         enqueue!(type, prepaid, count, params)
@@ -361,12 +361,12 @@ module Parts::Constructor
         "Needed #{cost} creds, but player only had #{player.creds}!" \
         if cost > player.creds
 
-      # TODO: s2_par - modify deh_buffer to discard events on failure.
+      # Clear entries because they will be included into population otherwise.
+      ConstructionQueue.clear(id, false)
 
       player.creds -= cost
       Unit.give_units_raw(units, planet, player) # This also saves player
 
-      ConstructionQueue.clear(id, false)
       # Reload queue entries after clearing.
       construction_queue_entries(true)
       on_construction_finished!

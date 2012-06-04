@@ -40,7 +40,9 @@ describe Building::ConstructorTest do
         constructable_type constructable_id
       }, []
 
-    let(:constructor) { Factory.create(:b_constructor_test) }
+    let(:constructor) do
+      Factory.create(:b_constructor_test, constructable: Factory.create(:unit))
+    end
 
     describe "when constructable is nil" do
       let(:constructor) do
@@ -614,11 +616,14 @@ describe Building::ConstructorTest do
 
     it "should register to cred stats" do
       grouped_counts = {class_name => count}
+      mock = mock(CredStats)
       CredStats.should_receive(:mass_accelerate).with(
         player, constructor, cost, an_instance_of(Fixnum), time, grouped_counts
       ).and_return do |_, _, _, total_time, _, _|
         total_time.should be_within(10).of(time)
+        mock
       end
+      mock.should_receive(:save!)
       constructor.mass_accelerate!(time, cost)
     end
 
