@@ -640,8 +640,7 @@ describe SsObject::Planet do
       @enemy = Factory.create :player
 
       @planet = Factory.create :planet, :player => @player
-      Factory.create :unit_built, :location_type => Location::SS_OBJECT,
-        :location_id => @planet.id, :player => @enemy_with_units
+      Factory.create :unit_built, location: @planet, player: @enemy_with_units
 
       @result = @planet.observer_player_ids
     end

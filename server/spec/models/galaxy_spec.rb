@@ -136,7 +136,7 @@ describe Galaxy do
         galaxy.should_receive(:spawn_convoy!)
         Galaxy.spawn_callback(galaxy)
       end
-      
+
       it "should register callback" do
         Galaxy.spawn_callback(galaxy)
         galaxy.should have_callback(
@@ -145,7 +145,7 @@ describe Galaxy do
         )
       end
     end
-  
+
     describe "system offers" do
       MarketOffer::CALLBACK_MAPPINGS.each do |kind, event|
         type = CallbackManager::TYPES[event]
@@ -398,14 +398,12 @@ describe Galaxy do
       end
 
       it "should have route that goes to other wormhole" do
-        points.each do |src, dst|
+        raise "no points matched!" unless points.any? do |src, dst|
           if src == route.source
             route.target.location_point.should == dst
-            return
+            true
           end
         end
-
-        raise "no points matched!"
       end
 
       it "should have callbacks for units which destroys them upon arrival" do
@@ -428,29 +426,29 @@ describe Galaxy do
       it_should_behave_like "convoy spawn"
     end
 
-    describe "galaxy with < 2 wormholes" do
-      it "should do nothing" do
-        galaxy.spawn_convoy!.should be_nil
-        Unit.where(:galaxy_id => galaxy.id).count.should == 0
-      end
-    end
-    
-    describe "galaxy with >= 2 wormholes" do
-      let(:wh1) do
-        Factory.create(:wormhole, :galaxy => galaxy, :x => -10, :y => 20)
-      end
-      let(:wh2) do
-        Factory.create(:wormhole, :galaxy => galaxy, :x => -30, :y => -10)
-      end
-      let(:points) do
-        wh1p = wh1.galaxy_point
-        wh2p = wh2.galaxy_point
-        [[wh1p, wh2p], [wh2p, wh1p]]
-      end
-      let(:route) { points; galaxy.spawn_convoy! }
-
-      it_should_behave_like "convoy spawn"
-    end
+    #describe "galaxy with < 2 wormholes" do
+    #  it "should do nothing" do
+    #    galaxy.spawn_convoy!.should be_nil
+    #    Unit.where(:galaxy_id => galaxy.id).count.should == 0
+    #  end
+    #end
+    #
+    #describe "galaxy with >= 2 wormholes" do
+    #  let(:wh1) do
+    #    Factory.create(:wormhole, :galaxy => galaxy, :x => -10, :y => 20)
+    #  end
+    #  let(:wh2) do
+    #    Factory.create(:wormhole, :galaxy => galaxy, :x => -30, :y => -10)
+    #  end
+    #  let(:points) do
+    #    wh1p = wh1.galaxy_point
+    #    wh2p = wh2.galaxy_point
+    #    [[wh1p, wh2p], [wh2p, wh1p]]
+    #  end
+    #  let(:route) { points; galaxy.spawn_convoy! }
+    #
+    #  it_should_behave_like "convoy spawn"
+    #end
   end
 
   describe ".create_galaxy" do

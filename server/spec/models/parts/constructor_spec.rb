@@ -198,7 +198,7 @@ describe Building::ConstructorTest do
 
   describe "#construct!" do
     before(:each) do
-      @type = 'Building::TestBuilding'
+      @type = Building::TestBuilding.to_s
       @args = {:x => 10, :y => 20}
       @constructor = Factory.create(:b_constructor_test, @args)
       set_resources(@constructor.planet, 10000, 10000, 10000)
@@ -375,38 +375,66 @@ describe Building::ConstructorTest do
       end
     end
 
-    it "should reduce count to free slots left + 1 if not working" do
-      params = {'x' => @constructor.x_end + 2, 'y' => 0}
+    shared_examples_for "calling #construct!" do
+      it "should raise error if constructing count > free_slots" do
+        params = {'x' => @constructor.x_end + 2, 'y' => 0}
 
-      with_config_values "buildings.constructor_test.queue.max" => 2 do
-        hash = @constructor.construct!(@type, false, params, 10)
-        hash[:model].should_not be_nil
-        hash[:construction_queue_entry].count.should == 2
+        with_config_values "buildings.constructor_test.queue.max" => max do
+          lambda do
+            @constructor.construct!(@type, false, params, err_count)
+          end.should raise_error(GameLogicError)
+        end
+      end
+
+      it "should not raise error if constructing count >= free_slots" do
+        params = {'x' => @constructor.x_end + 2, 'y' => 0}
+
+        with_config_values "buildings.constructor_test.queue.max" => max do
+          @constructor.construct!(@type, false, params, ok_count)
+        end
       end
     end
 
-    it "should reduce count to free slots left if working" do
-      opts_working | @constructor
+    describe "not working" do
+      let(:params) { {'x' => @constructor.x_end + 2, 'y' => 0} }
+      let(:max) { 2 }
+      let(:err_count) { 4 }
+      let(:ok_count) { 3 }
 
-      params = {'x' => @constructor.x_end + 2, 'y' => 0}
-      @constructor.construct!(@type, false, params.merge('y' => 2))
+      it_should_behave_like "calling #construct!"
 
-      with_config_values "buildings.constructor_test.queue.max" => 2 do
-        entry = @constructor.construct!(@type, false, params, 10)
-        entry.count.should == 1
+      it "should return correct params" do
+        with_config_values "buildings.constructor_test.queue.max" => max do
+          hash = @constructor.construct!(@type, false, params, ok_count)
+          hash[:model].should_not be_nil
+          hash[:construction_queue_entry].count.should == 2
+        end
       end
     end
 
-    it "should allow constructing if queue is full but constructor is" +
-    " not working" do
-      opts_active | @constructor
+    describe "working" do
+      before(:each) do
+        opts_working | @constructor
+      end
 
-      params = {'x' => @constructor.x_end + 2, 'y' => 0}
+      let(:max) { 2 }
+      let(:err_count) { 3 }
+      let(:ok_count) { 2 }
 
-      with_config_values "buildings.constructor_test.queue.max" => 0 do
-        lambda do
-          @constructor.construct!(@type, false, params)
-        end.should_not raise_error(GameLogicError)
+      it_should_behave_like "calling #construct!"
+    end
+
+    describe "queue is full but constructor is not working" do
+      it "should allow constructing" do
+        opts_active | @constructor
+
+        params = {'x' => @constructor.x_end + 2, 'y' => 0}
+
+        with_config_values "buildings.constructor_test.queue.max" => 0 do
+          lambda do
+            @constructor.construct!(@type, false, params)
+          end.should_not raise_error(GameLogicError)
+        end
       end
     end
   end
