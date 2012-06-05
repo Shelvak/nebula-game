@@ -51,13 +51,13 @@ class Threading::Director
   def work(task)
     typesig binding, Threading::Director::Task
 
-    info "Got work: #{task}"
+    debug "Got work: #{task}"
     entry = reserve_worker
     if entry.nil?
-      info "No free workers, enqueueing: #{task}"
+      debug "No free workers, enqueueing: #{task}"
       @task_queue << task
     else
-      info "Dispatching to #{entry.name}: #{task}"
+      debug "Dispatching to #{entry.name}: #{task}"
       @worker_tasks[entry.name] = TaskInfo.new(task.short_description)
       entry.worker.work!(task)
     end
@@ -66,17 +66,17 @@ class Threading::Director
   end
 
   def done(name)
-    info "*** #{name} is done working ***"
+    debug "*** #{name} is done working ***"
 
     entry = @workers[name]
 
     unless @task_queue.blank?
       task = @task_queue.remove_first
-      info "Taking task from queue: #{task}"
+      debug "Taking task from queue: #{task}"
       @worker_tasks[entry.name] = TaskInfo.new(task.short_description)
       entry.worker.work!(task)
     else
-      info "Returning #{name} to pool."
+      debug "Returning #{name} to pool."
       @worker_tasks.delete entry.name
       @free_workers << entry
     end

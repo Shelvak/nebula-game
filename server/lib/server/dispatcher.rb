@@ -137,7 +137,7 @@ class Dispatcher
       message = message_object(client, message_hash)
       LOGGER.block(
         "Received message: #{message}",
-        :component => log_tag
+        component: log_tag, level: :debug
       ) { process_message(message) }
     end
   rescue NotAMessage => e
@@ -152,7 +152,7 @@ class Dispatcher
   def callback(callback)
     exclusive do
       raise_to_abort { typesig binding, Callback }
-      info "Received: #{callback}"
+      debug "Received: #{callback}"
 
       klass = callback.klass
       method_name = callback.type
@@ -186,9 +186,9 @@ class Dispatcher
         'type' => error.class.to_s,
         'message' => error.message
       }
-      info "Confirming #{message} with error.", to_s(message.client)
+      debug "Confirming #{message} with error.", to_s(message.client)
     else
-      info "Confirming successful #{message}.", to_s(message.client)
+      debug "Confirming successful #{message}.", to_s(message.client)
     end
 
     transmit_to_client(message.client, confirmation)
@@ -436,7 +436,7 @@ private
     director = @directors[name]
     raise "Missing director #{name.inspect}!" if director.nil?
 
-    info "Dispatching to #{name} director: #{task}"
+    debug "Dispatching to #{name} director: #{task}"
     director.work!(task)
   end
 

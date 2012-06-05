@@ -27,7 +27,7 @@ module Dispatcher::CallbackTask
           end
         end
 
-        LOGGER.info "Processed: #{callback}", worker_name
+        LOGGER.debug "Processed: #{callback}", worker_name
       end
     end
   end

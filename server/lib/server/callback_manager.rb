@@ -196,7 +196,7 @@ private
     def register(object, event, time, force_replace=true)
       typesig binding, ActiveRecord::Base, Fixnum, Time, Boolean
 
-      LOGGER.info("Registering event '#{TYPES[event]
+      LOGGER.debug("Registering event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
       register_impl(object, event, time, force_replace)
@@ -206,7 +206,7 @@ private
     def update(object, event, time)
       typesig binding, ActiveRecord::Base, Fixnum, Time
 
-      LOGGER.info("Updating event '#{TYPES[event]
+      LOGGER.debug("Updating event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
       register_impl(object, event, time, true)
@@ -244,7 +244,7 @@ private
     def unregister(object, event)
       typesig binding, ActiveRecord::Base, Fixnum
 
-      LOGGER.info("unregistering event '#{TYPES[event]}' for #{object}", TAG)
+      LOGGER.debug("unregistering event '#{TYPES[event]}' for #{object}", TAG)
 
       klass, column = parse_object(object)
       check_event!(klass, event)
