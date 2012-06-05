@@ -34,15 +34,6 @@ def start
      } "#{SERVER_NAME}"`
 end
 
-def wait_until_alive
-  STDOUT.write "Waiting for process to appear..."
-  until running?
-    sleep 1
-    STDOUT.write(".")
-  end
-  puts " Alive!"
-end
-
 def wait_until_dead
   STDOUT.write "Waiting for process to disappear..."
   while running?
@@ -56,7 +47,6 @@ case ARGV[0]
 when "start"
   unless running?
     start
-    wait_until_alive
   else
     puts "Server is already running."
   end
