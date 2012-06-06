@@ -83,7 +83,7 @@ binlog_format=row
 }
 
 SRVRUNNER = %Q{#!/bin/bash
-HOME=/home/spacegame
+HOME=/home/#{USER}
 PATH=/bin/:/usr/bin:/usr/local/bin
 source /etc/profile
 source $HOME/.profile
@@ -92,6 +92,57 @@ cd $HOME/nebula-server/current/
 
 eval "$@"
 }
+WEBRUNNER = %Q{#!/bin/bash
+HOME=/home/#{USER}
+PATH=/bin/:/usr/bin:/usr/local/bin
+source /etc/profile
+source $HOME/.profile
+
+cd $HOME/web/current/www
+source ../.rvmrc
+
+eval "$@"
+}
+
+MONIT_MUNIN = %Q{
+check process munin-node with pidfile /var/run/munin/munin-node.pid
+      start program = "/etc/init.d/munin-node start"
+      stop program  = "/etc/init.d/munin-node stop"
+}
+MONIT_MYSQL = %Q{
+check process mysql with pidfile /var/run/mysqld/mysqld.pid
+      start program = "/etc/init.d/mysql start"
+      stop program  = "/etc/init.d/mysql stop"
+}
+MONIT_APACHE = %Q{
+check process apache with pidfile /var/run/apache2.pid
+      start program = "/etc/init.d/apache2 start"
+      stop program  = "/etc/init.d/apache2 stop"
+}
+MONIT_NEBULA_SERVER = %Q{
+check process nebula-server with pidfile /home/spacegame/nebula-server/shared/run/daemon.pid
+  start program = "/home/spacegame/bin/srvrunner lib/daemon.rb start"
+    as uid #{USER} and gid #{USER}
+  stop program = "/home/spacegame/bin/srvrunner lib/daemon.rb stop"
+    as uid #{USER} and gid #{USER}
+  if failed port 55345 send "?\n" expect "!\n" with timeout 5 seconds then restart
+}
+MONIT_DELAYED_JOB = %Q{
+check process dj_system_1
+  with pidfile /home/spacegame/web/shared/web/pids/delayed_job.production.system.1.pid
+  start program = "/home/spacegame/bin/webrunner script/delayed_job -i production.system.1 --queue=system start"
+    as uid spacegame and gid spacegame with timeout 120 seconds
+  stop program = "/home/spacegame/bin/webrunner script/delayed_job -i production.system.1 stop"
+    as uid spacegame and gid spacegame
+
+check process dj_enroll_1
+  with pidfile /home/spacegame/web/shared/web/pids/delayed_job.production.enroll.1.pid
+  start program = "/home/spacegame/bin/webrunner script/delayed_job -i production.enroll.1 --queue=enroll start"
+    as uid spacegame and gid spacegame with timeout 120 seconds
+  stop program = "/home/spacegame/bin/webrunner script/delayed_job -i production.enroll.1 stop"
+    as uid spacegame and gid spacegame
+}
+
 # }}}
 
 # DSL {{{
@@ -339,11 +390,7 @@ ExtendedStatus On
 end
 
 def apache_monit!
-  File.write("/etc/monit/conf.d/apache", %Q{
-check process apache with pidfile /var/run/apache2.pid
-      start program = "/etc/init.d/apache2 start"
-      stop program  = "/etc/init.d/apache2 stop"
-})
+  File.write("/etc/monit/conf.d/apache", MONIT_APACHE)
   run "/etc/init.d/monit restart"
 end
 
@@ -477,11 +524,7 @@ set httpd port 2812 and allow arturas:nebula44.mmosmrts.monit
 
 include /etc/monit/conf.d/*
   })
-  File.write("/etc/monit/conf.d/munin-node", 
-  %Q{check process munin-node with pidfile /var/run/munin/munin-node.pid
-      start program = "/etc/init.d/munin-node start"
-      stop program  = "/etc/init.d/munin-node stop"
-  })
+  File.write("/etc/monit/conf.d/munin-node", MONIT_MUNIN)
   File.modify("/etc/default/monit") do |contents|
     contents.sub("startup=0", "startup=1")
   end
@@ -585,11 +628,7 @@ key_buffer    = 16M
 
   run "/etc/init.d/mysql restart"
 
-  File.write("/etc/monit/conf.d/mysql", %Q{
-check process mysql with pidfile /var/run/mysqld/mysqld.pid
-      start program = "/etc/init.d/mysql start"
-      stop program  = "/etc/init.d/mysql stop"
-})
+  File.write("/etc/monit/conf.d/mysql", MONIT_MYSQL)
   run "/etc/init.d/monit restart"
 
   %w{queries threads bytes slowqueries}.each do |plugin|
@@ -692,14 +731,7 @@ production:
   password: "#{pass}"
 }, nil, UCH)
 
-  File.write("/etc/monit/conf.d/nebula-server", %Q{
-check process nebula-server with pidfile /home/spacegame/nebula-server/shared/run/daemon.pid
-  start program = "/home/spacegame/bin/srvrunner lib/daemon.rb start"
-    as uid #{USER} and gid #{USER}
-  stop program = "/home/spacegame/bin/srvrunner lib/daemon.rb stop"
-    as uid #{USER} and gid #{USER}
-  if failed port 55345 send "?\n" expect "!\n" with timeout 5 seconds then restart
-})
+  File.write("/etc/monit/conf.d/nebula-server", MONIT_NEBUlA_SERVER)
   run "/etc/init.d/monit restart"
 end # }}}
 
@@ -734,6 +766,8 @@ if ARGV.include?("web") # {{{
     rvm "install #{rubyv}"
   end
   File.ensure("#{HOME}/.profile", "export RAILS_ENV='production'\n", nil, UCH)
+  Dir.mkdir("#{HOME}/bin", nil, UCH)
+  File.write("#{HOME}/bin/webrunner", WEBRUNNER, 755, UCH)
 
   # Set up php
   install "libmysqlclient-dev libapache2-mod-php5 php5-mysql php-apc " +
@@ -975,4 +1009,7 @@ ActionMailer::Base.sendmail_settings[:arguments] = "-i"
 }
 
   run "/etc/init.d/apache2 restart"
+
+  File.write("/etc/monit/conf.d/delayed_job", MONIT_DELAYED_JOB)
+  run "/etc/init.d/monit restart"
 end # }}}
