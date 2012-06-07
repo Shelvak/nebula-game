@@ -8,12 +8,16 @@ package components.base
    import flash.utils.Timer;
    
    import mx.controls.ProgressBar;
-   
+
+   import spark.components.Label;
+
    import spark.components.SkinnableContainer;
-   
-   
-   
-   
+
+   import utils.DateUtil;
+
+   import utils.locale.Localizer;
+
+
    /**
     * While in this state component does not accept user input and spinner
     * is visible and animating.
@@ -26,6 +30,13 @@ package components.base
     * time left until timeout is shown.
     */ 
    [SkinState ("timeout")]
+
+
+   /**
+    * This is similar to timeout. Only difference is that reestablish button
+    * is shown.
+    */
+   [SkinState ("reestablish")]
    
    
    
@@ -41,13 +52,18 @@ package components.base
        * Amount of time in milliseconds when state is changed to timeout. 
        */      
       private static const TIME_UNTIL_TIMEOUT: Number = 3000;
+      /**
+       * Amount of time in milliseconds until reestablish button is shown.
+       */
+      private static const TIME_UNTIL_REESTABLISH: Number = 15000;
       
       
       private var flags: Object = new Object ();
-      private var timer: Timer = new Timer (200, ResponseMessagesTracker.MAX_WAIT_TIME / 1000 * 5);
+      private var timer: Timer = new Timer (200, 0);
       
       
       private var _timeout: Boolean = false;
+      private var _reestablish: Boolean = false;
       /**
        * When this is true, component is in "timeout" state.
        */ 
@@ -60,11 +76,29 @@ package components.base
          invalidateSkinState ();
       }
       /**
+       * When this is true, component is in "reestablish" state.
+       */
+      private function set reestablish (v: Boolean) :void
+      {
+         _reestablish = v;
+         flags.reestablishChanged = true;
+
+         invalidateProperties ();
+         invalidateSkinState ();
+      }
+      /**
        * @private
        */
       private function get timeout () :Boolean
       {
          return _timeout;
+      }
+      /**
+       * @private
+       */
+      private function get reestablish () :Boolean
+      {
+         return _reestablish;
       }
       
       
@@ -85,6 +119,7 @@ package components.base
          if (!v)
          {
             timeout = false;
+            reestablish = false;
          }
          flags.busyChanged = true;
          
@@ -131,7 +166,7 @@ package components.base
        * A progressbar that will be shown after 3 seconds if server does not respond.
        */
       [SkinPart (required="true")]
-      public var progress: ProgressBar = null;
+      public var progress: Label = null;
       
       
       public function SpinnerContainer ()
@@ -148,7 +183,7 @@ package components.base
          
          if (spinner && flags.busyChanged)
          {
-            enabled = !busy;
+            contentGroup.enabled = !busy;
             
             if (busy)
             {
@@ -170,7 +205,14 @@ package components.base
       {
          if (busy && timeout && timeoutEnabled)
          {
-            return "timeout";
+            if (reestablish)
+            {
+               return "reestablish";
+            }
+            else
+            {
+               return "timeout";
+            }
          }
          else if (busy)
          {
@@ -182,19 +224,22 @@ package components.base
          }
       }
       
-      
       private function timer_eventHandler (event: TimerEvent) :void
       {
          if (progress)
          {
-            progress.setProgress (
-               timer.currentCount * timer.delay,
-               timer.repeatCount * timer.delay
-            );
+            progress.text = Localizer.bundlesSet
+               ? DateUtil.secondsToHumanString(
+                  timer.currentCount * timer.delay / 1000)
+               : '';
          }
          if (timer.currentCount * timer.delay == TIME_UNTIL_TIMEOUT)
          {
             timeout = true;
+         }
+         if (timer.currentCount * timer.delay == TIME_UNTIL_REESTABLISH)
+         {
+            reestablish = true;
          }
       }
    }

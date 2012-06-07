@@ -146,8 +146,8 @@ package controllers.messages
          var nowDate: Date = new Date();
          for each (var record: PendingRMORecord in _pendingRMOs) {
             if (record.endTime < nowDate.time) {
-               reset();
-               connManager.responseTimeout();
+//               reset();
+//               connManager.responseTimeout();
             }
          }
       }

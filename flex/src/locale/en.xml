@@ -1441,6 +1441,9 @@
     <message.copyToClipboardSuccessful value="Copied to clipboard" />
     <message.planetClaimed value="Planet claimed" />
     <label.cooldownEndsIn value="Next battle in"/>
+    <label.longerThenExpected
+      value="This action is taking more time then expected." />
+    <label.reestablish value="Reestablish"/>
   </General>
 
   <Errors>

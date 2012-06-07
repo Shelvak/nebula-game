@@ -1573,6 +1573,8 @@
     <message.copyToClipboardSuccessful value="Nukopijuota į iškarpinę" />
     <message.planetClaimed value="Planeta perimta" />
     <label.cooldownEndsIn value="Kitas mūšis už" />
+    <label.longerThenExpected value="Veiksmas užtrunka ilgiau nei tikėtasi." />
+    <label.reestablish value="Patikrinti sesiją"/>
   </General>
 
   <Errors>
