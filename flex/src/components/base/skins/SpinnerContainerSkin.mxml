@@ -32,7 +32,6 @@
          <s:VerticalLayout horizontalAlign="center"/>
       </s:layout>
 
-     <s:Button/>
       <base:Spinner id="spinner"/>
       
       <s:Label id="progress" visible="false" visible.timeout="true"
