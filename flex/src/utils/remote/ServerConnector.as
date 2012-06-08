@@ -141,6 +141,8 @@ package utils.remote
             _buffer = _buffer.substr(index + 1);
             index = _buffer.indexOf("\n");
          }
+         killResponseTimer();
+         startPingTimer();
       }
 
       private function socket_ioErrorHandler(event: IOErrorEvent): void {
@@ -182,6 +184,7 @@ package utils.remote
       public function disconnect(): void {
          _connecting = false;
          killPingTimer();
+         killResponseTimer();
          // the method might be called event if the socket is not open
          try {
             _socket.close();
@@ -196,19 +199,26 @@ package utils.remote
          getUnprocessedMessages();
       }
 
-      private static const SEND_PING_EVERY: int = 5000;
+      private static const PING_DELAY: int = 5000;
+      private static const CHECK_RESPONSE_TIME: int = 10000;
 
       private var pingTimer: Timer;
+      private var responseTimer: Timer;
+
+      private function startResponseTimer(): void
+      {
+         killResponseTimer();
+         responseTimer = new Timer(CHECK_RESPONSE_TIME, 1);
+         responseTimer.addEventListener(TimerEvent.TIMER, noResponse);
+         responseTimer.start();
+      }
 
       private function startPingTimer(): void
       {
-//         TODO: this keep alive thing failed, need to figure out something better
-//         if (pingTimer == null)
-//         {
-//            pingTimer = new Timer(SEND_PING_EVERY);
-//            pingTimer.addEventListener(TimerEvent.TIMER, ping);
-//            pingTimer.start();
-//         }
+         killPingTimer();
+         pingTimer = new Timer(PING_DELAY, 1);
+         pingTimer.addEventListener(TimerEvent.TIMER, ping);
+         pingTimer.start();
       }
 
       private function killPingTimer(): void
@@ -221,10 +231,27 @@ package utils.remote
          }
       }
 
+      private function killResponseTimer(): void
+      {
+         if (responseTimer != null)
+         {
+            responseTimer.removeEventListener(TimerEvent.TIMER, noResponse);
+            responseTimer.stop();
+            responseTimer = null;
+         }
+      }
+
+      private function noResponse(e: TimerEvent): void
+      {
+         //TODO: TRY NEW SOCKET WITH 10s TIMEOUT, KILL ORIGINAL SOCKET ON SUCCESS AND USE NEW ONE AS ORIGINAL
+         // ON FAIL KILL NEW ONE AND START NEW RESPONSE TIMER
+      }
+
       private function ping(e: TimerEvent): void
       {
          if (_socket.connected) {
             _socket.writeUTFBytes('?\n');
+            startResponseTimer();
          }
       }
 
@@ -240,8 +267,17 @@ package utils.remote
          }
       }
 
+      public function requestReestablish(newSocket: Socket): void
+      {
+         if (newSocket.connected) {
+            //TODO: newSocket.writeUTFBytes('reestablish:player_id:lp_seq:token\n');
+         }
+      }
+
       public function sendMessage(rmo: ClientRMO): void {
          if (_socket.connected) {
+            killResponseTimer();
+            killPingTimer();
             var msg: String = rmo.toJSON();
             msgLog.logMessage(msg, "<-~ | Outgoing message: {0}", [msg]);
             _socket.writeUTFBytes(msg + "\n");

@@ -56,6 +56,9 @@ package controllers.startup
       public var assetsSums:Object;
       public var localeSums:Object;
       public var unbundledAssetsSums:Object;
+
+
+      public var reestablishmentToken: String;
       
       
       /* ########################### */
