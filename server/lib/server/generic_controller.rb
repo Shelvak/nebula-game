@@ -48,6 +48,8 @@ class GenericController
       # players|login action, because we need to ensure register has finished
       # before pushing chat|index.
       hub.register(player)
+
+      dispatcher.generate_reestablishment_token(player)
     end
 
     # Respond to clients message.
