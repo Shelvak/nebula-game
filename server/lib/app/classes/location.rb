@@ -14,13 +14,12 @@ module Location
     
     player_ids = []
     if location_point.type == SS_OBJECT
-      ss_object = location_point.object
+      ss_object = without_locking { location_point.object }
       if ss_object.is_a?(SsObject::Planet)
         # Add non NPC players to combat or NPC players if they have combat
         # buildings.
         if ! ss_object.player_id.nil? || without_locking {
-          ss_object.buildings.combat.where(:state => Building::STATE_ACTIVE).
-            size != 0
+          ss_object.buildings.combat.active.exists?
         }
           player_ids.push ss_object.player_id
         end
@@ -88,12 +87,14 @@ module Location
   def self.visible?(player, location)
     check_in_ss = lambda do |ss_id|
       if ss_id == Galaxy.battleground_id(player.galaxy_id)
-        FowSsEntry.for(player).joins(:solar_system).where(
-          SolarSystem.table_name => {:kind => SolarSystem::KIND_WORMHOLE}
-        ).count > 0
+        without_locking do
+          FowSsEntry.for(player).joins(:solar_system).where(
+            SolarSystem.table_name => {kind: SolarSystem::KIND_WORMHOLE}
+          ).exists?
+        end
       else
         begin
-          SolarSystem.find_if_visible_for(ss_id, player)
+          without_locking { SolarSystem.find_if_visible_for(ss_id, player) }
           true
         rescue ActiveRecord::RecordNotFound
           false

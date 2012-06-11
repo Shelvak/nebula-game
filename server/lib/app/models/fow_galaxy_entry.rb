@@ -54,7 +54,7 @@ class FowGalaxyEntry < ActiveRecord::Base
     # Returns if given spot is visible.
     # TODO: spec
     def visible?(player, x, y)
-      self.for(player).by_coords(x, y).first.nil? ? false : true
+      without_locking { self.for(player).by_coords(x, y).exists? }
     end
 
     # Creation/deletion
@@ -120,10 +120,15 @@ class FowGalaxyEntry < ActiveRecord::Base
     #
     # Multiply _counter_ by _modifier_ before adding.
     def change_player(alliance_id, player_id, modifier)
-      where(:player_id => player_id).all.each do |entry|
-        increase_for_kind(entry.rectangle, entry.galaxy_id,
-          'alliance_id', alliance_id,
-          entry.counter * modifier)
+      without_locking do
+        select("x, y, x_end, y_end, galaxy_id, counter").
+          where(player_id: player_id).c_select_all
+      end.each do |row|
+        rect = Rectangle.new(row['x'], row['y'], row['x_end'], row['y_end'])
+        increase_for_kind(
+          rect, row['galaxy_id'], 'alliance_id', alliance_id,
+          row['counter'] * modifier
+        )
       end
     end
 

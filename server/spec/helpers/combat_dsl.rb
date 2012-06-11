@@ -11,6 +11,8 @@ class CombatDsl
     def method_missing(name, *args)
       options = args.last || {}
       factory_options = options.except(:count, :level, :hp)
+
+      buildings = []
       (options[:count] || 1).times do
         building = Factory.build!(
           "b_#{name}", 
@@ -23,7 +25,10 @@ class CombatDsl
         building.save!
 
         @buildings.push building
+        buildings << building
       end
+
+      buildings.size == 1 ? buildings.first : buildings
     end
   end
 

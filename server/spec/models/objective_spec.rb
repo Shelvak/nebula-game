@@ -18,6 +18,22 @@ describe Objective do
       end.should change(objective_progress, :completed).by(1)
     end
 
+    it "should not fail if objective progress does not exist" do
+      @objective.class.progress(@models)
+    end
+
+    it "should update objective progress for given player" do
+      objective_progress = Factory.create :objective_progress,
+        :objective => @objective
+
+      lambda do
+        @objective.class.progress(
+          @models, player_id: objective_progress.player.id
+        )
+        objective_progress.reload
+      end.should change(objective_progress, :completed).by(1)
+    end
+
     it "should update objective regress for owner" do
       objective_progress = Factory.create :objective_progress,
         :objective => @objective, :player => @models[0].player
@@ -26,6 +42,20 @@ describe Objective do
 
       lambda do
         @objective.class.regress(@models)
+        objective_progress.reload
+      end.should change(objective_progress, :completed).by(-1)
+    end
+
+    it "should update objective regress for given player" do
+      objective_progress = Factory.create :objective_progress,
+        :objective => @objective
+      objective_progress.completed = 1
+      objective_progress.save!
+
+      lambda do
+        @objective.class.regress(
+          @models, player_id: objective_progress.player_id
+        )
         objective_progress.reload
       end.should change(objective_progress, :completed).by(-1)
     end

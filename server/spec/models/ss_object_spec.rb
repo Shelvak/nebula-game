@@ -30,20 +30,6 @@ describe SsObject do
     end
   end
 
-  describe ".find_for_player!" do
-    it "should raise ActiveRecord::RecordNotFound if not found" do
-      planet = Factory.create :planet
-      lambda do
-        SsObject.find_for_player!(planet.id, 0)
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should return Planet if found" do
-      planet = Factory.create :planet
-      SsObject.find_for_player!(planet.id, planet.player_id).should == planet
-    end
-  end
-
   describe "#as_json" do
     it_behaves_like "as json", Factory.create(:ss_object), nil,
                     %w{id solar_system_id position angle type size},

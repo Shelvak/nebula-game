@@ -794,6 +794,19 @@ assets:
         button_over.png:  Dailybonus_over.png
         button_blink.png:  Dailybonus_up2.png
 
+      "registration":
+        register_icon.png: Register_icon.png
+        button_up.png:     Register_up.png
+        button_over.png:   Register_over.png
+        button_blink.png:  Register_up2.png
+
+      "quests_button":
+        button_up_reward.png: Quests_claim_up.png
+        button_up.png:     Quests_all_up.png
+        button_over_reward.png: Quests_claim_over.png
+        button_over.png:   Quests_all_over.png
+        button_blink.png:  Quests_claim_up2.png
+
       "announcements":
         button_up.png:        Shutdown_button_up.png
         button_fade.png:      Shutdown_button_up2.png
@@ -1177,6 +1190,8 @@ assets:
         OreTile.jpg:                Tutorial_OreTile.jpg
         BgBattles.jpg: Lt_tutorial_BgBattles.jpg
         BossShip.jpg: Lt_tutorial_BossShip.jpg
+        ClaimReward.jpg:         ClaimReward.jpg
+        ClaimRewardRC.jpg:         ClaimRewardRC.jpg
         EcoTier2.jpg: Lt_tutorial_EcoTier2.jpg
         GalaxyBattles.jpg: Lt_tutorial_GalaxyBattles.jpg
         Pulsars.jpg: Lt_tutorial_Pulsars.jpg
@@ -1185,10 +1200,6 @@ assets:
         ZetiumTile.jpg: Lt_tutorial_ZetiumTile.jpg
         lt_BuildingSidebar.jpg:     Lt_tutorial_BuildingSidebar.jpg
         en_BuildingSidebar.jpg:     En_tutorial_BuildingSidebar.jpg
-        lt_ClaimReward.jpg:         Lt_tutorial_ClaimReward.jpg
-        en_ClaimReward.jpg:         En_tutorial_ClaimReward.jpg
-        lt_ClaimRewardRC.jpg:         Lt_tutorial_ClaimRewardRC.jpg
-        en_ClaimRewardRC.jpg:         En_tutorial_ClaimRewardRC.jpg
         lt_ArmorTiles.jpg: Lt_tutorial_ArmorTiles.jpg
         en_ArmorTiles.jpg: En_tutorial_ArmorTiles.jpg
         lt_AttackButton.jpg: Lt_tutorial_AttackButton.jpg

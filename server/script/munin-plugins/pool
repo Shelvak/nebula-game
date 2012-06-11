@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+require 'pathname'
+
+# For graphing free pool values.
+
+require File.expand_path(
+  File.dirname(Pathname.new(__FILE__).realpath) +
+  '/../../lib/server/control_client.rb'
+)
+
+begin
+  client = ControlClient.new
+
+  data = client.message("pool_stats")
+
+  if ARGV[0] == "config"
+    puts "graph_title Galaxy pools"
+    puts "graph_category nebula44"
+    puts "graph_args --base 1000 -l 0"
+    puts "graph_vlabel % available"
+    puts "graph_printf %3.1lf"
+    data["stats"].each do |galaxy_id, data|
+      data.each do |key, _|
+        title = case key
+          when "free_zones" then "free zones"
+          when "free_home_ss" then "free home ss"
+          else raise "Unknown key: #{key}"
+        end
+        puts "g#{galaxy_id}_#{key}.label Galaxy #{galaxy_id} #{title}"
+        puts "g#{galaxy_id}_#{key}.type GAUGE"
+        puts "g#{galaxy_id}_#{key}.min 0"
+      end
+    end
+  else
+    data["stats"].each do |galaxy_id, data|
+      data.each do |key, value|
+        puts "g#{galaxy_id}_#{key}.value #{value}"
+      end
+    end
+  end
+rescue ControlClient::ConnectionError
+  STDERR.write("Cannot connect to server!\n")
+  exit 2
+end

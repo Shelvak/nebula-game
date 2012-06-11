@@ -34,6 +34,7 @@ class Chat::Channel
         # Dispatch other players which are already joined to the channel to the
         # player which is joining.
         if dispatch_to_self && target_id != player.id
+          typesig_bindless [["player.id", player.id]], Fixnum
           dispatcher.push_to_player!(
             player.id, ChatController::ACTION_JOIN,
             {'channel' => @name, 'player' => target}
@@ -42,6 +43,7 @@ class Chat::Channel
 
         # Dispatch joining player to other players who are already in the channel.
         unless ! dispatch_to_self && player.id == target_id
+          typesig_bindless [["target_id", target_id]], Fixnum
           dispatcher.push_to_player!(
             target_id, ChatController::ACTION_JOIN, params
           )
@@ -60,6 +62,7 @@ class Chat::Channel
 
       params = {'channel' => @name, 'player' => player}
       @players.each do |target_id, target|
+        typesig_bindless [["target_id", target_id]], Fixnum
         dispatcher.push_to_player!(
           target_id, ChatController::ACTION_LEAVE, params
         ) unless ! dispatch_to_self && player.id == target_id

@@ -17,12 +17,12 @@ links.orbit.weight: 1 + 0.00000001 * position
 # How much time does it take to go between orbits.
 links.parent.weight: 1 + 0.000001 * position
 # How much time does it take to land to the planet. Does not support formulas!
-links.planet.weight: 0.5
+links.planet.weight: 0.2
 
-# How much time should jump from/to regular solar system take?
+# How much time should jump from/to regular solar system take? Double!
 regular.jump.multiplier: 1.5
-# How much time should jump from/to global battleground take?
-battleground.jump.multiplier: 4
+# How much time should jump from/to global battleground take? Double!
+battleground.jump.multiplier: 4.0
 
 ### Unit spawning
 # Available strategies:
@@ -40,48 +40,55 @@ spawn.home.max_spots: 8
 #
 # count numbers are inclusive.
 spawn.home.units:
-  - [2 + counter / spot, 6 + 3 * counter / spot, Dirac, 0]
-  - [2 + counter / spot, 8 + 4 * counter / spot, Dirac, 1]
-  - [1 + counter / 2 / spot, 3 + 3 * counter / 2 / spot, Thor, 0]
-  - [2 + counter / spot, 5 + 5 * counter / 2 / spot, Thor, 1]
-  - [0, 2 + counter / spot, Demosis, 0]
-  - [0, 2 + counter / spot, Demosis, 1]
+  - [3 + counter / (spot + 18), 5 + counter / (spot + 12), Dirac, 0]
+  - [5 + counter / (spot + 10), 8 + counter / (spot + 7), Dirac, 1]
+  - [1 + counter / (spot + 54), 5 + counter / (spot + 36), Thor, 0]
+  - [2 + counter / (spot + 30), 8 + counter / (spot + 21), Thor, 1]
+  - [0 + counter / (spot + 30), 2 + counter / (spot + 28), Demosis, 0]
+  - [0 + counter / (spot + 55), 1 + counter / (spot + 40), Demosis, 1]
 # Spawning strategy to use
 spawn.home.strategy: outer_circle
+
+# Pooled solar system is just a home solar system not assigned to player.
+# While it is not assigned - don't spawn anything there.
+spawn.pooled.delay: [<%= 12.hours %> / speed, <%= 12.hours %> / speed]
+spawn.pooled.max_spots: 0
+spawn.pooled.units: []
+spawn.pooled.strategy: outer_circle
 
 spawn.regular.delay: [<%= 12.hours %> / speed, <%= 24.hours %> / speed]
 spawn.regular.max_spots: 5
 spawn.regular.units:
-  - [4 + 2 * counter / spot, 8 + 4 * counter / spot, Dirac, 0]
-  - [4 + 2 * counter / spot, 12 + 6 * counter / spot, Dirac, 1]
-  - [2 + counter / spot, 6 + 3 * counter / spot, Thor, 0]
-  - [4 + 2 * counter / spot, 8 + 4 * counter / spot, Thor, 1]
-  - [2 + counter / spot, 6 + 3 * counter / spot, Demosis, 0]
-  - [2 + counter / spot, 6 + 3 * counter / spot, Demosis, 1]
+  - [3 + counter * 3 / 2 / (spot + 18), 5 + counter * 3 / 2 / (spot + 12), Dirac, 0]
+  - [5 + counter * 3 / 2 / (spot + 10), 8 + counter * 3 / 2 / (spot + 7), Dirac, 1]
+  - [1 + counter * 3 / 2 / (spot + 54), 5 + counter * 3 / 2 / (spot + 36), Thor, 0]
+  - [2 + counter * 3 / 2 / (spot + 30), 8 + counter * 3 / 2 / (spot + 21), Thor, 1]
+  - [0 + counter * 3 / 2 / (spot + 30), 2 + counter * 3 / 2 / (spot + 28), Demosis, 0]
+  - [0 + counter * 3 / 2 / (spot + 55), 1 + counter * 3 / 2 / (spot + 40), Demosis, 1]
 spawn.regular.strategy: random
 
 spawn.mini_battleground.delay: [<%= 6.hours %> / speed, <%= 24.hours %> / speed]
 spawn.mini_battleground.max_spots: 6
 spawn.mini_battleground.units:
-  - [5 + 2 * counter / spot, 10 + 5 * counter / spot, Dirac, 0]
-  - [5 + 2 * counter / spot, 20 + 10 * counter / spot, Dirac, 1]
-  - [5 + 2 * counter / spot, 10 + 5 * counter / spot, Thor, 0]
-  - [5 + 2 * counter / spot, 15 + 7 * counter / spot, Thor, 1]
-  - [1 + counter / 2 / spot, 8 + 4 * counter / spot, Demosis, 0]
-  - [0 + counter / spot, 10 + 5 * counter / spot, Demosis, 1]
+  - [3 + counter * 3 / (spot + 18), 5 + counter * 3 / (spot + 12), Dirac, 0]
+  - [5 + counter * 3 / (spot + 10), 8 + counter * 3 / (spot + 7), Dirac, 1]
+  - [1 + counter * 3 / (spot + 54), 5 + counter * 3 / (spot + 36), Thor, 0]
+  - [2 + counter * 3 / (spot + 30), 8 + counter * 3 / (spot + 21), Thor, 1]
+  - [0 + counter * 3 / (spot + 30), 2 + counter * 3 / (spot + 28), Demosis, 0]
+  - [0 + counter * 3 / (spot + 55), 1 + counter * 3 / (spot + 40), Demosis, 1]
   - [0, 1 + counter / 50 / spot, ConvoyShip, 1]
 spawn.mini_battleground.strategy: random
 
 spawn.battleground.delay: [<%= 12.hours %> / speed, <%= 36.hours %> / speed]
 spawn.battleground.max_spots: 1
 spawn.battleground.units:
-  - [1, 1, BossShip, 0]
-  - [0, 3, ConvoyShip, 1]
-  - [5 * counter, 15 * counter, Dirac, 0]
-  - [15 * counter, 20 * counter, Dirac, 1]
-  - [5 * counter, 10 * counter, Thor, 0]
-  - [10 * counter, 15 * counter, Thor, 1]
-  - [3 * counter, 8 * counter, Demosis, 0]
-  - [1 * counter, 10 * counter, Demosis, 1]
+  - [1,  1, BossShip, 0]
+  - [0,  3 + counter / 20, ConvoyShip, 1]
+  - [0, 10 * counter, Dirac, 0]
+  - [0, 15 * counter, Dirac, 1]
+  - [0,  5 * counter, Thor, 0]
+  - [0, 10 * counter, Thor, 1]
+  - [0,  5 * counter, Demosis, 0]
+  - [0,  3 * counter, Demosis, 1]
 spawn.battleground.strategy: outer_circle
 

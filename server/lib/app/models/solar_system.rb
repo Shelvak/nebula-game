@@ -14,6 +14,8 @@ class SolarSystem < ActiveRecord::Base
   KIND_WORMHOLE = 1
   # Battleground solar system
   KIND_BATTLEGROUND = 2
+  # Pooled homeworld system
+  KIND_POOLED = 3
 
   # FK :dependent => :delete_all
   belongs_to :player
@@ -57,6 +59,8 @@ class SolarSystem < ActiveRecord::Base
   scope :battleground, where(:kind => KIND_BATTLEGROUND)
   def wormhole?; kind == KIND_WORMHOLE; end
   scope :wormhole, where(:kind => KIND_WORMHOLE)
+  def pooled?; kind == KIND_POOLED; end
+  scope :pooled, where(:kind => KIND_POOLED)
 
   def to_s
     "<SolarSystem(#{id} @ #{x},#{y}) gid: #{galaxy_id} kind: #{kind}>"
@@ -82,7 +86,7 @@ class SolarSystem < ActiveRecord::Base
   def self.visible_for(player)
     solar_system_entries = {}
 
-    FowSsEntry.for(player).each do |fse|
+    without_locking { FowSsEntry.for(player).all }.each do |fse|
       solar_system_entries[fse.solar_system_id] ||= {}
       # It may be either player or alliance entry
       solar_system_entries[fse.solar_system_id][
@@ -90,9 +94,9 @@ class SolarSystem < ActiveRecord::Base
       ] = fse
     end
 
-    SolarSystem.find(:all,
-      :conditions => {:id => solar_system_entries.keys}
-    ).map do |solar_system|
+    without_locking do
+      SolarSystem.where(id: solar_system_entries.keys).all
+    end.map do |solar_system|
       entries = solar_system_entries[solar_system.id]
 
       {
@@ -108,8 +112,10 @@ class SolarSystem < ActiveRecord::Base
   # _player_. Raises ActiveRecord::RecordNotFound if solar system is not
   # visible.
   def self.find_if_visible_for(id, player)
-    entries = FowSsEntry.for(player).where(:solar_system_id => id).count
-    raise ActiveRecord::RecordNotFound if entries == 0
+    raise ActiveRecord::RecordNotFound, "No FSE for SS #{id}, #{player}" \
+      unless without_locking {
+        FowSsEntry.for(player).where(:solar_system_id => id).exists?
+      }
 
     ss = SolarSystem.find(id)
     raise ActiveRecord::RecordNotFound if ! ss.player_id.nil? &&
@@ -147,12 +153,6 @@ class SolarSystem < ActiveRecord::Base
   def galaxy_point
     GalaxyPoint.new(galaxy_id, x, y)
   end
-
-  # How many orbits this SolarSystem has?
-  def orbit_count
-    SsObject.maximum(:position,
-      :conditions => {:solar_system_id => id}) + 1
-  end
   
   # Removes all ss_objects/wreckages/units in this solar system.
   def delete_assets!
@@ -180,7 +180,7 @@ class SolarSystem < ActiveRecord::Base
       Unit.save_all_units(units, nil, EventBroker::CREATED)
       self.spawn_counter += 1
       save!
-      Cooldown.create_unless_exists(location, Cfg.after_spawn_cooldown)
+      Cooldown.create_or_update!(location, Cfg.after_spawn_cooldown)
       
       location
     else
@@ -234,45 +234,53 @@ class SolarSystem < ActiveRecord::Base
     # DB index: lookup
     raise ArgumentError.new(
       "Cannot attach #{self} to #{x},#{y} because it is occupied!"
-    ) if self.class.where(:galaxy_id => galaxy_id, :x => x, :y => y).exists?
+    ) if without_locking {
+      self.class.where(:galaxy_id => galaxy_id, :x => x, :y => y).exists?
+    }
 
     # Just a safety net, there should be none but if there is - fire up the
     # alarm bells.
     raise RuntimeError.new(
       "There are active radars in #{self
         }! Visibility will be inconsistent, cannot proceed!"
-    ) if Building::Radar.for_player(player_id).active.count > 0
+    ) if without_locking {
+      Building::Radar.for_player(player_id).active.count
+    } > 0
 
-    owner_fse = fow_ss_entries.where(:player_id => player_id).first
+    owner_fse = without_locking do
+      fow_ss_entries.where(:player_id => player_id).first
+    end
     raise RuntimeError.new(
       "Cannot find owner FSE for player #{player_id}!"
     ) if owner_fse.nil?
 
-    entries = FowGalaxyEntry.
-      select("counter, player_id, alliance_id").
-      where(:galaxy_id => galaxy_id).
-      where("player_id != ? OR player_id IS NULL", player_id).
-      where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
-      c_select_all.each_with_object({}) do |row, hash|
-        # Same owner can have several FGEs covering same area, so we need to
-        # sum their counters, instead of creating several FSEs.
-        owner = {
-          :player_id => row['player_id'],
-          :alliance_id => row['alliance_id']
-        }
-        # By idea player is not in the alliance so we don't need to create
-        # alliance entries or view him from a different perspective instead of
-        # enemy.
-        hash[owner] ||= FowSsEntry.new(
-          :solar_system_id => id,
-          :counter => 0,
-          :player_id => row['player_id'],
-          :alliance_id => row['alliance_id'],
-          :enemy_planets => owner_fse.player_planets,
-          :enemy_ships => owner_fse.player_ships
-        )
-        hash[owner].counter += row['counter']
-      end.values
+    entries = without_locking do
+      FowGalaxyEntry.
+        select("counter, player_id, alliance_id").
+        where(:galaxy_id => galaxy_id).
+        where("player_id != ? OR player_id IS NULL", player_id).
+        where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
+        c_select_all
+    end.each_with_object({}) do |row, hash|
+      # Same owner can have several FGEs covering same area, so we need to
+      # sum their counters, instead of creating several FSEs.
+      owner = {
+        :player_id => row['player_id'],
+        :alliance_id => row['alliance_id']
+      }
+      # By idea player is not in the alliance so we don't need to create
+      # alliance entries or view him from a different perspective instead of
+      # enemy.
+      hash[owner] ||= FowSsEntry.new(
+        :solar_system_id => id,
+        :counter => 0,
+        :player_id => row['player_id'],
+        :alliance_id => row['alliance_id'],
+        :enemy_planets => owner_fse.player_planets,
+        :enemy_ships => owner_fse.player_ships
+      )
+      hash[owner].counter += row['counter']
+    end.values
 
     self.x, self.y = x, y
     save!

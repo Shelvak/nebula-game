@@ -9,7 +9,7 @@
                                    AssetNames.getBuildingImageName(
                                    facility.type))}"/>
    <s:Label
-           text="{speedModText(facility)}"
+           text="{speedModText(facility.constructorMod)}"
            bottom="0"
            right="0"
            color="0x00FF00"/>
@@ -34,9 +34,9 @@
          facility = Building(value);
       }
 
-      public function speedModText(building: Building): String {
-         if (building.constructorMod != 0) {
-            return (building.constructorMod + "%")
+      public function speedModText(constructorMod: Number): String {
+         if (constructorMod != 0) {
+            return (constructorMod + "%")
          }
          else {
             return ("");

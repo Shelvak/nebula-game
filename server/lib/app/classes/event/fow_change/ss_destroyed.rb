@@ -20,14 +20,17 @@ class Event::FowChange::SsDestroyed < Event::FowChange
 
   # TODO: spec
   def self.all_except(solar_system_id, player_id)
-    player_ids = FowSsEntry.
-      select("player_id, alliance_id").
-      where(:solar_system_id => solar_system_id).
-      c_select_all.inject(Set.new) do |set, row|
-        set.add(row['player_id']) if row['player_id']
-        set.merge(Alliance.find(row['alliance_id']).member_ids) \
-          if row['alliance_id']
-        set
+    player_ids = without_locking do
+      FowSsEntry.
+        select("player_id, alliance_id").
+        where(:solar_system_id => solar_system_id).
+        c_select_all
+    end.inject(Set.new) do |set, row|
+      set.add(row['player_id']) if row['player_id']
+      set.merge(
+        without_locking { Alliance.find(row['alliance_id']).member_ids }
+      ) if row['alliance_id']
+      set
     end
     player_ids.delete(player_id)
 

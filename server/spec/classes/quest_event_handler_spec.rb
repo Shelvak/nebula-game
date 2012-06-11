@@ -126,28 +126,8 @@ describe QuestEventHandler do
 
       Objective::HaveUpgradedTo.should_receive(
         :regress
-      ).with(models, false).and_return(true)
+      ).with(models, strict: false).and_return(true)
       @handler.fire(models, EventBroker::DESTROYED, nil)
-    end
-
-    it "should update AnnexPlanet objectives on planet owner changed" do
-      models = [Factory.create(:planet)]
-
-      Objective::AnnexPlanet.should_receive(
-        :progress
-      ).with(models).and_return(true)
-      @handler.fire(models, EventBroker::CHANGED,
-        EventBroker::REASON_OWNER_CHANGED)
-    end
-
-    it "should update HavePlanets objectives on planet owner changed" do
-      models = [Factory.create(:planet)]
-
-      Objective::HavePlanets.should_receive(
-        :progress
-      ).with(models).and_return(true)
-      @handler.fire(models, EventBroker::CHANGED,
-        EventBroker::REASON_OWNER_CHANGED)
     end
   end
 end

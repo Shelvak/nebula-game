@@ -407,6 +407,7 @@ package controllers.startup
          bindPair(PlayersCommand.LOGIN, new LoginAction());
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
          bindPair(PlayersCommand.RATINGS, new controllers.players.actions.RatingsAction());
+         bindPair(PlayersCommand.RENAME, new controllers.players.actions.RenameAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
          bindPair(PlayersCommand.SHOW_PROFILE, new ShowProfileAction());
          bindPair(PlayersCommand.BATTLE_VPS_MULTIPLIER, new BattleVpsMultiplierAction());

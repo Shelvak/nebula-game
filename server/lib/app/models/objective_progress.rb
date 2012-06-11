@@ -53,8 +53,8 @@ class ObjectiveProgress < ActiveRecord::Base
     destroy!
 
     # Record this objective as completed
-    qp = without_locking { objective.quest }.quest_progresses.
-      where(:player_id => player_id).first
+    quest = without_locking { objective.quest }
+    qp = quest.quest_progresses.where(:player_id => player_id).first
     qp.completed += 1
     qp.save!
   end

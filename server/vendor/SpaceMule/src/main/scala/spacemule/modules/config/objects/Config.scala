@@ -1,17 +1,20 @@
 package spacemule.modules.config.objects
 
-import scala.collection.mutable.HashMap
+import _root_.java.util.NoSuchElementException
 import spacemule.helpers.Converters._
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.classes.geom.area.Area
-import spacemule.modules.pmg.classes.ObjectChance
 import spacemule.modules.pmg.objects._
 import spacemule.modules.pmg.objects.planet._
 import spacemule.modules.combat
 import spacemule.modules.pathfinder.{objects => pfo}
 import scala.collection.Map
+import scala.{collection => sc}
 import spacemule.modules.combat.objects.{Combatant, Damage, Armor, Stance}
 import spacemule.modules.config.ScalaConfig
+import core.Values._
+import _root_.java.{util => ju}
+import scala.collection.mutable.HashMap
 
 object Config {
   /**
@@ -31,70 +34,103 @@ object Config {
   // Called by JRuby
   def setData(value: ScalaConfig) { _data = value }
 
-  private[this] def getOpt[T](key: String): Option[T] = data.getOpt(key)
-
-  private[objects] def get[T](key: String): T = data.get(key)
-
   //////////////////////////////////////////////////////////////////////////////
   // Helper methods
   //////////////////////////////////////////////////////////////////////////////
+
+  private def any(key: String): Any = data.any(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def int(key: String): Int = data.int(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def string(key: String): String = data.string(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def symbol(key: String): Symbol = data.symbol(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def boolean(key: String): Boolean = data.boolean(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def float(key: String): Float = data.float(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def double(key: String): Double = data.double(key) match {
+    case None => throw new NoSuchElementException("Unknown config key: "+key)
+    case Some(x) => x
+  }
+  private def seq[T](key: String): sc.Seq[T] =
+    data.array[T](key) match {
+      case None => throw new NoSuchElementException("Unknown config key: "+key)
+      case Some(x) => x
+    }
+  private def map[K, V](key: String): sc.Map[K, V] =
+    data.hash[K, V](key) match {
+      case None => throw new NoSuchElementException("Unknown config key: "+key)
+      case Some(x) => x
+    }
   
-  private def int(key: String) = get[Any](key) match {
-    case i: Int => i
-    case l: Long => l.toInt
-    case d: Double => d.toInt
-    case value: AnyRef => sys.error(
-      "Cannot convert %s of class %s to Int (key: %s)!".format(
-        value.toString, value.getClass, key)
-      )
-    case value => sys.error(
-      "Cannot convert %s of AnyVal to Int (key: %s)!".format(
-        value.toString, key)
-      )
-  }
-  private def string(key: String) = get[String](key)
-  private def boolean(key: String) = get[Boolean](key)
-  private def double(key: String) = get[Any](key) match {
-    case i: Int => i.toDouble
-    case l: Long => l.toDouble
-    case d: Double => d
-    case value: AnyRef => sys.error(
-      "Cannot convert %s of class %s to Double (key: %s)!".format(
-        value.toString, value.getClass, key)
-      )
-    case value => sys.error(
-      "Cannot convert %s of AnyVal to Double (key: %s)!".format(
-        value.toString, key)
-      )
-  }
-  private def seq[T](key: String) = get[Seq[T]](key)
+  private def anyOpt(key: String) = data.any(key)
+  private def intOpt(key: String) = data.int(key)
+  private def stringOpt(key: String) = data.string(key)
+  private def symbolOpt(key: String) = data.symbol(key)
+  private def booleanOpt(key: String) = data.boolean(key)
+  private def floatOpt(key: String) = data.float(key)
+  private def doubleOpt(key: String) = data.double(key)
+  private def seqOpt[T](key: String) = data.array[T](key)
+  private def mapOpt[K, V](key: String) = data.hash[K, V](key)
+
+  //////////////////////////////////////////////////////////////////////////////
+  // End of helper methods
+  //////////////////////////////////////////////////////////////////////////////
+
   private def area(key: String) = new Area(
     int("%s.width".format(key)), int("%s.height".format(key))
   )
 
+  private def formulaEvalMatch(
+    key: String, value: Any, calc: String => Double
+  ) =
+    value match {
+      case s: String => calc(s)
+      case l: Long => l.toDouble
+      case d: Double => d
+      case x: Any => throw new RuntimeException(
+        "Unknown formula value for key '"+key+"': "+x
+      )
+    }
+
   def formulaEval(key: String): Double =
-    FormulaCalc.calc(get[Any](key).toString, speedMap)
+    formulaEvalMatch(key, any(key), s => FormulaCalc.calc(s, speedMap))
 
   def formulaEval(key: String, vars: Map[String, Double]): Double =
-    FormulaCalc.calc(get[Any](key).toString, speedMap ++ vars)
+    formulaEvalMatch(key, any(key), s => FormulaCalc.calc(s, speedMap ++ vars))
 
   def formulaEval(key: String, default: Double): Double =
-    getOpt[Any](key) match {
-      case Some(value) => FormulaCalc.calc(value.toString, speedMap)
+    anyOpt(key) match {
       case None => default
+      case Some(value) =>
+        formulaEvalMatch(key, value, s => FormulaCalc.calc(s, speedMap))
     }
 
   def formulaEval(
     key: String, vars: Map[String, Double], default: Double
   ): Double =
-    getOpt[Any](key) match {
-      case Some(value) => FormulaCalc.calc(value.toString, speedMap ++ vars)
+    anyOpt(key) match {
       case None => default
+      case Some(value) =>
+        formulaEvalMatch(key, value, s => FormulaCalc.calc(s, speedMap ++ vars))
     }
 
   private def range(key: String): Range = {
     val rangeData = seq[Long](key)
-
     Range.inclusive(rangeData(0).toInt, rangeData(1).toInt)
   }
   
@@ -102,30 +138,33 @@ object Config {
    * Same as range(), but range limits are formulas with speed.
    */
   private def evalRange(key: String): Range = {
-    val rangeData = seq[String](key)
+    val rangeData = seq(key)
     val speedMap = this.speedMap
-    val from = FormulaCalc.calc(rangeData(0), speedMap).toInt
-    val to = FormulaCalc.calc(rangeData(1), speedMap).toInt
+    val from = FormulaCalc.calc(rangeData(0).toString, speedMap).toInt
+    val to = FormulaCalc.calc(rangeData(1).toString, speedMap).toInt
 
     Range.inclusive(from, to)
   }
 
-  private def objectChances(name: String): Seq[ObjectChance] = {
-    seq[Seq[Any]](name).map { chanceSeq =>
-        ObjectChance(
-          chanceSeq(0).asInstanceOf[Long].toInt,
-          chanceSeq(1).asInstanceOf[String].camelcase
-        )
-    }
-  }
+//  private def objectChances(name: String): Seq[ObjectChance] = {
+//    buffer[ju.List[AnyRef]](name).map { chances =>
+//      ObjectChance(
+//        chances(0).asInstanceOf[Long].toInt,
+//        chances(1).asInstanceOf[String].camelcase
+//      )
+//    }
+//  }
 
   private def positions(name: String): Seq[Coords] = {
-    seq[Seq[Long]](name).map { coordsSeq =>
-      Coords(coordsSeq(0).toInt, coordsSeq(1).toInt)
+    seq[sc.Seq[Long]](name).map { coords =>
+      Coords(coords(0), coords(1))
     }
   }
 
-  private def cost(key: String) = double(key).ceil.toInt
+  private def cost(key: String) = any(key) match {
+    case d: Double => d.ceil.toInt
+    case l: Long => l.toInt
+  }
   private def cost(key: String, level: Int) =
     formulaEval(key, Map("level" -> level.toDouble)).ceil.toInt
 
@@ -140,30 +179,28 @@ object Config {
   def zoneDiameter = int("galaxy.zone.diameter")
   def zoneMaturityAge = int("galaxy.zone.maturity_age")
   def playersPerZone = int("galaxy.zone.players")
-  // Number of seconds for first inactivity check.
-  def playerInactivityCheck: Int = {
-    try {
-      val formula = seq[Seq[Any]](
-        "galaxy.player.inactivity_check"
-      )(0)(1).asInstanceOf[String]
-      FormulaCalc.calc(formula, speedMap).toInt
-    }
-    catch {
-      case e: Exception =>
-        System.err.println(
-          ("Error while accessing galaxy.player.inactivity_check[0][1]:" +
-              "\n%s").format(
-            get[Any]("galaxy.player.inactivity_check")
-          )
-        )
-      throw e
-    }
-  }
+//  // Number of seconds for first inactivity check.
+//  def playerInactivityCheck: Int = {
+//    try {
+//      val formula = buffer[ju.List[ju.List[(
+//        "galaxy.player.inactivity_check"
+//      )(0).asArray(1).toString
+//      FormulaCalc.calc(formula, speedMap).toInt
+//    }
+//    catch {
+//      case e: Exception => throw new RuntimeException(
+//        "Error while accessing galaxy.player.inactivity_check[0][1]:\n" +
+//          string("galaxy.player.inactivity_check"), e
+//      )
+//    }
+//  }
   lazy val freeSolarSystems =
     positions("galaxy.free_systems.positions")
   lazy val wormholes = positions("galaxy.wormholes.positions")
   lazy val miniBattlegrounds = positions("galaxy.mini_battlegrounds.positions")
-  def convoyTime = formulaEval("galaxy.convoy.time").toInt
+  def convoyTime = formulaEval(
+    "galaxy.convoy.time", Map("wormholes" -> 2.0)
+  ).toInt
   def marketBotResourceCooldownRange = 
     evalRange("market.bot.resources.cooldown")
   def marketBotRandomResourceCooldown = marketBotResourceCooldownRange.random
@@ -219,7 +256,7 @@ object Config {
 
   // Seq of location kinds where combat gives victory points
   lazy val combatVpZones = seq[Long]("combat.battle.vp_zones").
-    map(kind => Location(kind.toInt))
+    map { kind => Location(kind) }
   
   // Function that transforms groundDamage, spaceDamage & fairness_multiplier
   // to victory points.
@@ -230,7 +267,7 @@ object Config {
   private def getCombatVpsFormula(kind: String): CombatVpsFormula = {
     val key = "%s.battle.victory_points".format(kind)
     (groundDamage: Int, spaceDamage: Int, fairnessMultiplier: Double) => {
-      get[Any](key) match {
+      any(key) match {
         case formula: String => FormulaCalc.calc(formula, Map(
           "damage_dealt_to_ground" -> groundDamage.toDouble,
           "damage_dealt_to_space" -> spaceDamage.toDouble,
@@ -238,6 +275,8 @@ object Config {
         ))
         case l: Long => l.toDouble
         case d: Double => d
+        case obj: Any =>
+          throw new RuntimeException("Unknown object "+obj+" for key "+key)
       }
     }
   }
@@ -245,12 +284,14 @@ object Config {
   private def getCombatCredsFormula(kind: String): CombatCredsFormula = {
     val key = "%s.battle.creds".format(kind)
     (victoryPoints: Double) => {
-      get[Any](key) match {
+      any(key) match {
         case formula: String => FormulaCalc.calc(formula, Map(
           "victory_points" -> victoryPoints
         ))
         case l: Long => l.toDouble
         case d: Double => d
+        case obj: Any =>
+          throw new RuntimeException("Unknown object "+obj+" for key "+key)
       }
     }
   }
@@ -267,18 +308,18 @@ object Config {
   // Returns VPs given out for receiving number of damage points.
   def vpsForReceivedDamage(combatant: Combatant, damage: Int): Double = {
     val key = "%s.vps_on_damage".format(resolveCombatantKey(combatant))
-    val multiplier = getOpt[Double](key) match {
-      case Some(v) => v
+    val multiplier = doubleOpt(key) match {
       case None => 0.0
+      case Some(d) => d
     }
     multiplier * damage
   }
 
   def credsForKilling(combatant: Combatant): Int = {
     val key = "%s.creds_for_killing".format(resolveCombatantKey(combatant))
-    getOpt[Long](key) match {
-      case Some(v) => v.toInt
+    intOpt(key) match {
       case None => 0
+      case Some(i) => i
     }
   }
 
@@ -305,9 +346,8 @@ object Config {
 
   def ssObjectSize = range("ss_object.size")
 
-  def planetExpandedMap(name: String) = get[
-    Map[String, Map[String, Any]]
-  ]("planet.expanded_map")(name)
+  def planetExpandedMap(name: String) =
+    map[String, ju.Map[String, Any]]("planet.expanded_map")(name)
 
   private[this] val solarSystemMapSets = HashMap.empty[String, SsMapSet]
   def solarSystemMapSet(key: String) = {
@@ -317,15 +357,14 @@ object Config {
     else {
       val configKey = "solar_system.map.%s".format(key)
       try {
-        val data = get[Any](configKey)
-        val set = SsMapSet.extract(data)
+        val buffer = this.seq[Any](configKey)
+        val set = SsMapSet.extract(buffer)
         solarSystemMapSets(key) = set
         set
       }
       catch {
         case e: Exception =>
-          System.err.println("Error while getting %s!".format(configKey))
-          throw e
+          throw core.Exceptions.extend("Error while getting " + configKey, e)
       }
     }
   }
@@ -340,10 +379,14 @@ object Config {
 
   // Common combatant attributes
 
-  type GunDefinition = Map[String, Any]
-  private val gunDefinitionsCache = HashMap[String, Seq[GunDefinition]]()
+  type GunDefinition = sc.Map[String, Any]
+  private val gunDefinitionsCache =
+    HashMap[String, sc.Seq[GunDefinition]]()
   private def gunDefinitions(name: String) = {
-    gunDefinitionsCache ||= (name, seq[GunDefinition](name))
+    gunDefinitionsCache ||= (
+      name,
+      seq[GunDefinition](name)
+    )
     gunDefinitionsCache(name)
   }
 
@@ -441,7 +484,7 @@ object Config {
   def buildingZetiumStorage(building: Building) =
     buildingStorage(building, "zetium")
 
-  def isBuildingNpc(name: String) = getOpt[Boolean](
+  def isBuildingNpc(name: String) = booleanOpt(
     "buildings.%s.npc".format(name.underscore)
   ) match {
     case Some(value) => value
@@ -454,7 +497,7 @@ object Config {
   def troopGalaxySsHopTimeRatio = double("units.galaxy_ss_hop_ratio")
 
   def troopKind(name: String) =
-    string("units.%s.kind".format(name.underscore))
+    symbol("units.%s.kind".format(name.underscore)).name
   def troopArmor(name: String) =
     string("units.%s.armor".format(name.underscore))
   def troopArmorModifier(name: String, level: Int): Double =
@@ -491,8 +534,9 @@ object Config {
   def mapSet(key: String): ss_objects.Planet.MapSet = {
     if (! planetMapSetCache.contains(key)) {
       val mapSet = try {
+        val fullKey = "planet.map.%s".format(key)
         ss_objects.Planet.MapSet.extract(
-          get[Seq[Any]]("planet.map.%s".format(key))
+          seq[sc.Map[String, Any]](fullKey)
         )
       }
       catch {

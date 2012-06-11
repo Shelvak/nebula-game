@@ -60,6 +60,10 @@ package utils
          return getUnbundledAssetUrl("images/" + relativePath, includeLocale);
       }
 
+      public function showRegistrationUrl(): void {
+         navigateToURL(new URLRequest(urlRoot + 'register-trial'));
+      }
+
       public function showUrl(path: String): void {
          navigateToURL(new URLRequest(urlRoot + path));
       }

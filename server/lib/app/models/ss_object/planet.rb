@@ -140,9 +140,11 @@ class SsObject::Planet < SsObject
 
   # Returns player ids which can look into this planet.
   def observer_player_ids
-    Player.find(
-      (Unit.player_ids_in_location(self) | [player_id]).compact
-    ).map(&:friendly_ids).flatten.uniq
+    without_locking do
+      Player.find(
+        (Unit.player_ids_in_location(self) | [player_id]).compact
+      ).map(&:friendly_ids).flatten.uniq
+    end
   end
 
   # #metal=(value)
@@ -297,132 +299,7 @@ private
   # (like planets|player_index) would have the most recent data from DB.
   after_update :if => Proc.new { |r| r.player_id_changed? } do
     old_player, new_player = player_change
-
-    scientist_count = 0
-    population_count = 0
-    max_population_count = 0
-    buildings.each do |building|
-      if building.constructor? and building.working?
-        population_count += ConstructionQueueEntry.
-          where(:constructor_id => building.id).prepaid.
-          map { |cqe| cqe.get_resources(cqe.count)[3] }.sum
-      end
-
-      # Inactive buildings do not give radar visibility, scientists or
-      # population.
-      unless building.inactive?
-        if building.is_a?(Trait::Radar)
-          zone = building.radar_zone
-          Trait::Radar.decrease_vision(zone, old_player) if old_player
-          Trait::Radar.increase_vision(zone, new_player) if new_player
-        end
-
-        scientist_count += building.scientists \
-          if building.respond_to?(:scientists)
-
-        max_population_count += building.population \
-          if building.respond_to?(:population)
-      end
-      
-      building.reset_cooldown! if building.respond_to?(:reset_cooldown!)
-    end
-    
-    # Cancel all market offers where MarketOffer#from_kind was creds so
-    # owner of the planet would retrieve his creds without fee.
-    if old_player
-      MarketOffer.
-        where(:planet_id => id, :from_kind => MarketOffer::KIND_CREDS).
-        all.each do |market_offer|
-          old_player.creds += market_offer.from_amount
-          market_offer.destroy!
-        end
-    end
-    
-    # Transfer any alive units that were not included in combat to new 
-    # owner.
-    units = Unit.in_location(self).
-      where(:player_id => old_player ? old_player.id : nil)
-    fse_counter_change = 1 # 1 for the planet.
-    units.each do |unit|
-      population_count += unit.population
-      fse_counter_change += 1 if unit.space?
-      unit.player = new_player
-    end
-    Unit.save_all_units(units)
-
-    # Return exploring scientists if on a mission.
-    stop_exploration!(old_player) if exploring?
-
-    if scientist_count > 0
-      old_player.change_scientist_count!(- scientist_count) if old_player
-      new_player.change_scientist_count!(scientist_count) if new_player
-    end
-    
-    if old_player
-      old_player.population -= population_count
-      old_player.population_cap -= max_population_count
-    end
-    if new_player
-      new_player.population += population_count
-      new_player.population_cap += max_population_count
-    end
-
-    # Transfer all points to new player.
-    points = {}
-    buildings.reject(&:npc?).each do |building|
-      points_attribute = building.points_attribute
-      points[points_attribute] ||= 0
-      points[points_attribute] += building.points_on_destroy
-    end
-
-    unless points.blank?
-      points.each do |attribute, points|
-        old_player.send("#{attribute}=",
-          old_player.send(attribute) - points) if old_player
-        new_player.send("#{attribute}=",
-          new_player.send(attribute) + points) if new_player
-      end
-    end
-    
-    solar_system = self.solar_system
-    if solar_system.battleground?
-      if new_player
-        Unit.give_units(CONFIG['battleground.planet.bonus'], self, new_player)
-      end
-      old_player.bg_planets_count -= 1 if old_player
-      new_player.bg_planets_count += 1 if new_player
-    else
-      old_player.planets_count -= 1 if old_player
-      new_player.planets_count += 1 if new_player
-    end
-
-    if old_player
-      paused_technologies = old_player.technologies.upgrading.all.compact_map do
-        |technology|
-
-        # We need to pass old player, because it hasn't been saved to database
-        # yet.
-        if technology.planets_requirement_met?(old_player)
-          nil
-        else
-          technology.pause!
-          [technology, Reducer::RELEASED]
-        end
-      end
-
-      Notification.create_for_technologies_changed(
-        old_player.id, paused_technologies
-      ) unless paused_technologies.blank?
-
-      old_player.save! if old_player.changed?
-    end
-    new_player.save! if new_player && new_player.changed?
-
-    FowSsEntry.
-      change_planet_owner(self, old_player, new_player, fse_counter_change)
-    EventBroker.fire(self, EventBroker::CHANGED,
-      EventBroker::REASON_OWNER_CHANGED)
-
+    OwnerChangeHandler.new(self, old_player, new_player).handle!
     true
   end
 
@@ -465,8 +342,9 @@ private
     player_id ? without_locking {
       TechTracker.instance.query_active(
         player_id,
-        "metal_generate", "metal_store", "energy_generate", "energy_store",
-        "zetium_generate", "zetium_store"
+        TechTracker::METAL_GENERATE, TechTracker::METAL_STORE,
+        TechTracker::ENERGY_GENERATE, TechTracker::ENERGY_STORE,
+        TechTracker::ZETIUM_GENERATE, TechTracker::ZETIUM_STORE
       ).all
     } : []
   end
@@ -524,7 +402,7 @@ private
       # Check if any of these locations are planets.
       locations.each do |location|
         if location.type == Location::SS_OBJECT
-          object = location.object
+          object = without_locking { location.object }
           if object.is_a?(SsObject::Planet)
             old_observers = object.observer_player_ids
             result = yield

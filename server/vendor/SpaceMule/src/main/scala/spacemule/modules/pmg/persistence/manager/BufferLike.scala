@@ -21,12 +21,13 @@ trait BufferLike[+R <: Row] {
     buffer.clear()
   }
 
-  @EnhanceStrings
+  def size = buffer.size
+
   def save(batchId: String) {
     if (buffer.isEmpty) return
 
     DB.loadInFile(
-      tableName, rowObject.columns, buffer.map(_.values),
+      tableName, rowObject.columns, buffer.map(_.valuesSeq),
       batchIdToOpt(batchId)
     )
   }

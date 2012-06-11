@@ -6,12 +6,11 @@ import spacemule.persistence._
 
 object SolarSystemRow extends ReferableRowObject {
   val pkColumn = "id"
-  val columnsSeq = Seq("galaxy_id", "x", "y", "kind", "player_id")
+  val columnsSeq = Seq("galaxy_id", "x", "y", "kind")
 }
 
 case class SolarSystemRow(
-  val galaxyId: Int, val solarSystem: SolarSystem,
-  coords: Option[Coords], playerRow: Option[PlayerRow]
+  val galaxyId: Int, val solarSystem: SolarSystem, coords: Option[Coords]
 ) extends LocationRow {
   val companion = SolarSystemRow
 
@@ -19,7 +18,7 @@ case class SolarSystemRow(
   def y = coords.get.y
   def kind = solarSystem.kind.id
 
-  lazy val valuesSeq = Seq(
+  protected[this] def valuesImpl = Seq(
     galaxyId,
     coords match {
       case Some(coords) => coords.x.toString
@@ -29,10 +28,6 @@ case class SolarSystemRow(
       case Some(coords) => coords.y.toString
       case None => DB.loadInFileNull
     },
-    solarSystem.kind.id,
-    playerRow match {
-      case Some(playerRow) => playerRow.id.toString
-      case None => DB.loadInFileNull
-    }
+    kind
   )
 }

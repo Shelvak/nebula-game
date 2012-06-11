@@ -38,7 +38,7 @@ class Combat::Annexer
           outcome, duration) unless player_id.nil?
       end
 
-      Cooldown.create_unless_exists(planet, duration.from_now)
+      Cooldown.create_or_update!(planet, duration.from_now)
     end
     
     # Remove planet ownership and notify all combat participants.

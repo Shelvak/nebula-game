@@ -8,4 +8,5 @@ import spacemule.modules.config.objects.Config
  */
 class Battleground extends SolarSystem(Config.battlegroundSsConfig) {
   override val kind = SolarSystem.Battleground
+  override def toString = "<Battleground "+super.toString+">"
 }

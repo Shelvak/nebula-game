@@ -16,8 +16,7 @@ describe Combat::LocationCheckerAj do
       Combat::LocationCheckerAj.stub!(:check_for_enemies).and_return(
         check_report)
       Combat::LocationCheckerAj.check_location(@location_point)
-      @location.should have_cooldown(
-        CONFIG['combat.cooldown.after_jump.duration'].from_now)
+      @location.should have_cooldown(Cfg.after_jump_cooldown)
     end
     
     it "should not create a cooldown if no conflict" do
@@ -27,8 +26,7 @@ describe Combat::LocationCheckerAj do
       Combat::LocationCheckerAj.stub!(:check_for_enemies).and_return(
         check_report)
       Combat::LocationCheckerAj.check_location(@location_point)
-      @location.should_not have_cooldown(
-        CONFIG['combat.cooldown.after_jump.duration'].from_now)
+      @location.should_not have_cooldown(Cfg.after_jump_cooldown)
     end
 
     it "should try to annex if no conflict" do

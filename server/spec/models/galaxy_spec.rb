@@ -1,6 +1,19 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Galaxy do
+  describe "#wormhole_count" do
+    it "should calculate wormholes in this galaxy" do
+      galaxy = Factory.create(:galaxy)
+      wormholes = [
+        Factory.create(:wormhole, galaxy: galaxy, x: 0),
+        Factory.create(:wormhole, galaxy: galaxy, x: 1),
+        Factory.create(:solar_system, galaxy: galaxy, x: 3),
+        Factory.create(:wormhole, x: 1),
+      ]
+      galaxy.wormhole_count.should == 2
+    end
+  end
+
   describe ".battleground_id" do
     it "should return battleground id" do
       # other battleground in other galaxy.
@@ -115,18 +128,24 @@ describe Galaxy do
     let(:galaxy) { Factory.create(:galaxy) }
 
     describe ".spawn_callback" do
+      before(:each) do
+        galaxy.should_receive(:wormhole_count).and_return(5)
+      end
+
       it "should call #spawn_convoy!" do
         galaxy.should_receive(:spawn_convoy!)
         Galaxy.spawn_callback(galaxy)
       end
-      
+
       it "should register callback" do
         Galaxy.spawn_callback(galaxy)
-        galaxy.should have_callback(CallbackManager::EVENT_SPAWN,
-          CONFIG.evalproperty('galaxy.convoy.time').from_now)
+        galaxy.should have_callback(
+          CallbackManager::EVENT_SPAWN,
+          Cfg.next_convoy_time(5)
+        )
       end
     end
-  
+
     describe "system offers" do
       MarketOffer::CALLBACK_MAPPINGS.each do |kind, event|
         type = CallbackManager::TYPES[event]
@@ -379,14 +398,12 @@ describe Galaxy do
       end
 
       it "should have route that goes to other wormhole" do
-        points.each do |src, dst|
+        raise "no points matched!" unless points.any? do |src, dst|
           if src == route.source
             route.target.location_point.should == dst
-            return
+            true
           end
         end
-
-        raise "no points matched!"
       end
 
       it "should have callbacks for units which destroys them upon arrival" do
@@ -409,28 +426,278 @@ describe Galaxy do
       it_should_behave_like "convoy spawn"
     end
 
-    describe "galaxy with < 2 wormholes" do
-      it "should do nothing" do
-        galaxy.spawn_convoy!.should be_nil
-        Unit.where(:galaxy_id => galaxy.id).count.should == 0
+    #describe "galaxy with < 2 wormholes" do
+    #  it "should do nothing" do
+    #    galaxy.spawn_convoy!.should be_nil
+    #    Unit.where(:galaxy_id => galaxy.id).count.should == 0
+    #  end
+    #end
+    #
+    #describe "galaxy with >= 2 wormholes" do
+    #  let(:wh1) do
+    #    Factory.create(:wormhole, :galaxy => galaxy, :x => -10, :y => 20)
+    #  end
+    #  let(:wh2) do
+    #    Factory.create(:wormhole, :galaxy => galaxy, :x => -30, :y => -10)
+    #  end
+    #  let(:points) do
+    #    wh1p = wh1.galaxy_point
+    #    wh2p = wh2.galaxy_point
+    #    [[wh1p, wh2p], [wh2p, wh1p]]
+    #  end
+    #  let(:route) { points; galaxy.spawn_convoy! }
+    #
+    #  it_should_behave_like "convoy spawn"
+    #end
+  end
+
+  describe ".create_galaxy" do
+    let(:ruleset) { "default" }
+    let(:callback_url) { "nebula44.lh" }
+    let(:free_zones) { 1 }
+    let(:pool_free_zones) { 10 }
+    let(:free_home_ss) { 5 }
+    let(:pool_free_home_ss) { 50 }
+
+    before(:each) do
+      SpaceMule.instance.stub(:fill_galaxy).and_return do |galaxy|
+        # Create at least one wormhole in the galaxy, because
+        # Cfg#next_convoy_time depends on it.
+        Factory.create(:wormhole, galaxy: galaxy)
+
+        true
       end
     end
-    
-    describe "galaxy with >= 2 wormholes" do
-      let(:wh1) do
-        Factory.create(:wormhole, :galaxy => galaxy, :x => -10, :y => 20)
-      end
-      let(:wh2) do
-        Factory.create(:wormhole, :galaxy => galaxy, :x => -30, :y => -10)
-      end
-      let(:points) do
-        wh1p = wh1.galaxy_point
-        wh2p = wh2.galaxy_point
-        [[wh1p, wh2p], [wh2p, wh1p]]
-      end
-      let(:route) { points; galaxy.spawn_convoy! }
 
-      it_should_behave_like "convoy spawn"
+    %w{ruleset callback_url pool_free_zones pool_free_home_ss}.each do |attr|
+      it "should set ##{attr}" do
+        Galaxy.create_galaxy(
+          ruleset, callback_url, free_zones, pool_free_zones, free_home_ss,
+          pool_free_home_ss
+        ).send(attr).should == send(attr)
+      end
+    end
+
+    it "should set #pool_free_home_ss by default if value is not provided" do
+      Galaxy.create_galaxy(
+        ruleset, callback_url, free_zones, pool_free_zones
+      ).pool_free_home_ss.
+        should == pool_free_zones * Cfg.galaxy_zone_max_player_count
+    end
+
+    it "should call #fill_galaxy on SpaceMule" do
+      SpaceMule.instance.should_receive(:fill_galaxy).with(
+        an_instance_of(Galaxy), free_zones, free_home_ss
+      )
+      Galaxy.create_galaxy(
+        ruleset, callback_url, free_zones, pool_free_zones, free_home_ss,
+        pool_free_home_ss
+      )
+    end
+
+    it "should call #fill_galaxy with default free_home_ss on SpaceMule" do
+      SpaceMule.instance.should_receive(:fill_galaxy).with(
+        an_instance_of(Galaxy), free_zones,
+        free_zones * Cfg.galaxy_zone_max_player_count
+      )
+      Galaxy.create_galaxy(ruleset, callback_url, free_zones, pool_free_zones)
+    end
+
+    %w{
+      spawn_callback create_metal_system_offer_callback
+      create_energy_system_offer_callback create_zetium_system_offer_callback
+    }.each do |method|
+      it "should call ##{method}" do
+        Galaxy.should_receive(method).with(an_instance_of(Galaxy))
+        Galaxy.create_galaxy(
+          ruleset, callback_url, free_zones, pool_free_zones, free_home_ss,
+          pool_free_home_ss
+        )
+      end
+    end
+
+    it "should save the galaxy" do
+      Galaxy.create_galaxy(
+        ruleset, callback_url, free_zones, pool_free_zones, free_home_ss,
+        pool_free_home_ss
+      ).should be_saved
+    end
+  end
+
+  describe ".create_player" do
+    let(:galaxy) { Factory.create(:galaxy) }
+    let(:galaxy_id) { galaxy.id }
+    let(:web_user_id) { (Player.maximum(:web_user_id) || 0) + 1 }
+    let(:name) { "P-#{web_user_id}" }
+    let(:trial) { true }
+    let(:planets_count) { 1 }
+    let(:population_cap) { Building::Mothership.population(1) }
+    let(:pooled_ss) do
+      [
+        Factory.create(:ss_pooled, galaxy: galaxy),
+        Factory.create(:ss_pooled, galaxy: galaxy),
+      ]
+    end
+    let(:other_ss) do
+      [
+        Factory.create(:solar_system, galaxy: galaxy, x: 10),
+        Factory.create(:wormhole, galaxy: galaxy),
+        Factory.create(:mini_battleground, galaxy: galaxy, x: 11),
+        Factory.create(:battleground, galaxy: galaxy),
+        Factory.create(:ss_detached, galaxy: galaxy),
+      ]
+    end
+    let(:home_ss) { pooled_ss.first }
+    let(:player) { Galaxy.create_player(galaxy_id, web_user_id, name, trial) }
+
+    before(:each) do
+      other_ss
+      home_ss
+    end
+
+    %w{galaxy_id web_user_id name trial planets_count population_cap}.each do
+      |attr|
+
+      it "should set Player##{attr}" do
+        player.send(attr).should == send(attr)
+      end
+    end
+
+    it "should save the player" do
+      player.should be_saved
+    end
+
+    it "should start player quest line" do
+      Quest.should_receive(:start_player_quest_line).with(player.id)
+      player
+    end
+
+    it "should register inactivity check" do
+      player.should have_callback(
+        CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+        Cfg.player_inactivity_time(player.points).from_now
+      )
+    end
+
+    it "should assign a home solar system to player" do
+      player.home_solar_system.should == home_ss
+    end
+
+    it "should change kind of home solar system to normal" do
+      player.home_solar_system.kind.should == SolarSystem::KIND_NORMAL
+    end
+
+    it "should only assign one home solar system to player" do
+      player
+      SolarSystem.where(player_id: player.id).count.should == 1
+    end
+
+    it "should fail if there is no pooled home solar systems" do
+      pooled_ss.each(&:destroy)
+      lambda do
+        player
+      end.should raise_error(RuntimeError)
+    end
+
+    describe "fse" do
+      let(:fse) { FowSsEntry.where(player_id: player.id).first }
+
+      before(:each) do
+        player
+      end
+
+      it "should have player_planets set" do
+        fse.player_planets.should be_true
+      end
+
+      it "should have counter == 1" do
+        fse.counter.should == 1
+      end
+    end
+
+    it "should find zone and attach home solar system" do
+      zone = mock(Galaxy::Zone)
+      Galaxy::Zone.should_receive(:for_enrollment).with(
+        galaxy_id, Cfg.galaxy_zone_maturity_age
+      ).and_return(zone)
+      zone.should_receive(:free_spot_coords).with(galaxy_id).
+        and_return([3, 4])
+      [player.home_solar_system.x, player.home_solar_system.y].should == [3, 4]
+    end
+
+    describe "planets" do
+      let(:home_ss_planets) do
+        [
+          Factory.create(:planet, solar_system: home_ss,
+            last_resources_update: 1.day.ago),
+          Factory.create(:planet, solar_system: home_ss,
+            last_resources_update: 1.day.ago,
+            position: 1, owner_changed: 2.days.ago),
+        ]
+      end
+      let(:non_home_planet) { home_ss_planets.first }
+      let(:home_planet) { home_ss_planets.last }
+      let(:other_planets) do
+        [
+          Factory.create(:planet, last_resources_update: 1.day.ago)
+        ]
+      end
+
+      before(:each) do
+        home_ss_planets
+        other_planets
+      end
+
+      # Because planet.reload.last_resources_update actually updates it now via
+      # #after_find.
+      def last_resources_update(planet)
+        value = SsObject::Planet.select("last_resources_update").
+          where(id: planet.id).c_select_value
+
+        value.nil? ? nil : Time.parse(value)
+      end
+
+      it "should update SsObject::Planet#last_resources_update" do
+        home_ss_planets.each do |planet|
+          last_resources_update(planet).
+            should_not be_within(SPEC_TIME_PRECISION).of(Time.now)
+        end
+        player
+        home_ss_planets.each do |planet|
+          last_resources_update(planet).
+            should be_within(SPEC_TIME_PRECISION).of(Time.now)
+        end
+      end
+
+      it "should not update #last_resources_update in other ss planets" do
+        player
+        other_planets.each do |planet|
+          last_resources_update(planet).
+            should_not be_within(SPEC_TIME_PRECISION).of(Time.now)
+        end
+      end
+
+      it "should update SsObject::Planet#owner_changed in player planet" do
+        player
+        home_planet.reload.owner_changed.
+          should be_within(SPEC_TIME_PRECISION).of(Time.now)
+      end
+
+      it "should not update #owner_changed in other ss planets" do
+        player
+        (other_planets + [non_home_planet]).each do |planet|
+          planet.reload.owner_changed.should be_nil
+        end
+      end
+
+      it "should assign planet to player" do
+        player
+        home_planet.reload.player.should == player
+      end
+
+      it "should only assign one planet to player" do
+        player.planets.count.should == 1
+      end
     end
   end
 end

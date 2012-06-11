@@ -46,14 +46,15 @@ module Parts
           CONFIG.safe_eval(formula, params)
         end
       rescue Exception => e
-        add_exception_info(e, "While evaling property #{key.inspect} for #{
-          self}\n(default: #{default.inspect}, params: #{params.inspect})")
+        raise e.class, "While evaling property #{key.inspect} for #{
+          self}\n(default: #{default.inspect}, params: #{params.inspect}):\n#{
+          e.message}", e.backtrace
       end
 
       def config_name
         type, subtype = to_s.split("::").map { |item| item.underscore }
-        raise GameError.new("You cannot use class #{to_s
-          } directly! Instead use it's subclasses.") if subtype.nil?
+        raise GameError.new("You cannot use class '#{to_s
+          }' directly! Instead use it's subclasses.") if subtype.nil?
 
         "#{type.pluralize}.#{subtype}"
       end

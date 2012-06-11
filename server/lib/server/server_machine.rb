@@ -27,9 +27,13 @@ module ServerMachine
     else
       @buffer.data(data)
       @buffer.each_message do |message|
-        if message == ""
+        case message
+        when ""
           send_data("ERROR: empty message\n")
           close_connection_after_writing
+          return
+        when "?"
+          send_data("!\n")
           return
         end
 
@@ -62,7 +66,7 @@ module ServerMachine
       end
     rescue Exception => e
       error "Failed while serializing message:\n\n#{
-        message.inspect}\n\n#{e.to_log_str}", to_s
+        message.inspect}\n\n#{Exception.to_log_str(e)}", to_s
       close_connection_after_writing
       return
     end

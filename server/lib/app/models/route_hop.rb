@@ -118,9 +118,10 @@ class RouteHop < ActiveRecord::Base
       if zone_changed
         self.class.handle_fow_change(event)
         # Update Route#jumps_at when zone changes.
-        route.jumps_at = route.hops.
-          where("location_#{route.current.type_column} IS NULL").first.
-          try(:arrives_at)
+        route.jumps_at = without_locking do
+          route.hops.where("location_#{route.current.type_column} IS NULL").
+            select("arrives_at").c_select_value
+        end
       end
 
       # Destroy this route hop. This is important to do before firing the
@@ -158,6 +159,7 @@ class RouteHop < ActiveRecord::Base
     unit_count = route.cached_units.values.sum
     previous_location = movement_event.previous_location
     current_location = route.current
+    player = without_locking { route.player }
 
     if previous_location.type == Location::SOLAR_SYSTEM &&
         current_location.type == Location::SOLAR_SYSTEM
@@ -166,9 +168,9 @@ class RouteHop < ActiveRecord::Base
           movement_event.inspect}"
       )
     elsif previous_location.type == Location::GALAXY
-      FowSsEntry.increase(current_location.id, route.player, unit_count)
+      FowSsEntry.increase(current_location.id, player, unit_count)
     elsif current_location.type == Location::GALAXY
-      FowSsEntry.decrease(previous_location.id, route.player, unit_count)
+      FowSsEntry.decrease(previous_location.id, player, unit_count)
     elsif previous_location.type == Location::SS_OBJECT
       FowSsEntry.recalculate(current_location.id)
     elsif current_location.type == Location::SS_OBJECT

@@ -65,6 +65,10 @@ class Cfg
       CONFIG.evalproperty('combat.cooldown.after_spawn.duration').from_now
     end
 
+    def after_jump_cooldown
+      CONFIG.evalproperty('combat.cooldown.after_jump.duration').from_now
+    end
+
     ### creds.yml ###
 
     def creds_upgradable_speed_up_data
@@ -109,6 +113,8 @@ class Cfg
 
     def galaxy_zone_diameter; CONFIG['galaxy.zone.diameter']; end
 
+    def galaxy_zone_maturity_age; CONFIG['galaxy.zone.maturity_age']; end
+
     def player_max_population; CONFIG['galaxy.player.population.max']; end
 
     # Returns number of seconds player is required to be last seen ago to be
@@ -143,8 +149,12 @@ class Cfg
       CONFIG.evalproperty('galaxy.apocalypse.survival_bonus', 'days' => death_day)
     end
 
-    def next_convoy_time
-      CONFIG.evalproperty('galaxy.convoy.time').from_now
+    def next_convoy_time(wormholes)
+      typesig binding, Fixnum
+
+      CONFIG.evalproperty(
+        'galaxy.convoy.time', 'wormholes' => wormholes
+      ).from_now
     end
 
     def convoy_speed_modifier
@@ -207,7 +217,7 @@ class Cfg
     # Returns resource multiplier for given galaxy. This ensures amount of
     # resources stay relevant through course of the galaxy.
     def market_bot_resource_multiplier(galaxy_id)
-      galaxy = Galaxy.find(galaxy_id)
+      galaxy = without_locking { Galaxy.find(galaxy_id) }
       [1, galaxy.current_day / market_bot_resource_day_divider].max
     end
 
@@ -237,7 +247,7 @@ class Cfg
     end
 
     def combat_log_expiration_time
-      notification_expiration_time * 4
+      notification_expiration_time
     end
 
     ### raiding.yml ###
@@ -346,6 +356,8 @@ class Cfg
         solar_system.player_id.nil? ? "regular" : "home"
       when SolarSystem::KIND_BATTLEGROUND
         solar_system.main_battleground? ? "battleground" : "mini_battleground"
+      when SolarSystem::KIND_POOLED
+        "pooled"
       else
         raise ArgumentError,
           "Solar system #{solar_system} with unknown kind: #{solar_system.kind}"

@@ -258,7 +258,7 @@ describe FowSsEntry do
           solar_system.kind, Player.minimal(solar_system.player_id),
           lookup[
             "player_id=? OR alliance_id=?", player_w_alliance.id, alliance.id
-          ]
+          ].all
         )
 
         SPEC_EVENT_HANDLER.

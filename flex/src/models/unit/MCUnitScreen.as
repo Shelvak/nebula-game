@@ -252,10 +252,15 @@ package models.unit
                   return item.kind == currentKind;
                });
          }
-         else
+         else if (filteredSquadronUnits != null) //Shit happens
          {
             filteredUnits = filteredSquadronUnits;
             dispatchUnitsChangeEvent();
+         }
+         else
+         {
+            dispatchUnitsChangeEvent();
+            return;
          }
          
          filteredUnits.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);

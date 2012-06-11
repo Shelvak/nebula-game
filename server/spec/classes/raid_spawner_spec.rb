@@ -38,7 +38,7 @@ describe RaidSpawner do
       end
 
       it "should create cooldown in planet" do
-        Cooldown.should_receive(:create_unless_exists).and_return do |lp, time|
+        Cooldown.should_receive(:create_or_update!).and_return do |lp, time|
           lp.should == planet.location_point
           time.should be_within(SPEC_TIME_PRECISION).
             of(Cfg.after_spawn_cooldown)

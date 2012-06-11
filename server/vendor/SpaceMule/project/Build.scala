@@ -7,10 +7,13 @@ object SpaceMule extends Build {
   )
   lazy val distTask =
     dist <<= (
-      name, scalaVersion, version, update, crossTarget,
+      name, scalaVersion, version, update, crossTarget, scalaInstance,
       packageBin in Compile
     ).map {
-      case (projectName, scalaVersion, projectVersion, updateReport, out, _) =>
+      case (
+        projectName, scalaVersion, projectVersion, updateReport, out,
+        scalaInstance, _
+      ) =>
         val dist = (out / ".." / ".." / "dist").getAbsoluteFile
         // Clean up dist dir.
         IO.delete(dist)
@@ -21,6 +24,11 @@ object SpaceMule extends Build {
             projectName.toLowerCase, scalaVersion, projectVersion
           ),
           dist / "%s.jar".format(projectName)
+        )
+
+        // Copy scala-library.
+        IO.copyFile(
+          scalaInstance.libraryJar, dist / "lib" / "scala-library.jar"
         )
 
         // Copy libs.
@@ -35,20 +43,19 @@ object SpaceMule extends Build {
   lazy val spaceMule = Project(
     "SpaceMule",
     file("."),
+    /*_*/
     settings =
       Defaults.defaultSettings ++
       Seq(
         name                := "SpaceMule",
         organization        := "com.tinylabproductions",
         version             := "1.0",
-        scalaVersion        := "2.9.1",
-        scalacOptions       := Seq("-deprecation"),
+        scalaVersion        := "2.9.2",
+        scalacOptions       := Seq("-deprecation", "-unchecked"),
         autoCompilerPlugins := true,
         resolvers           := Seq(
           // JGraphT
-          "conjars.org" at "http://conjars.org/repo",
-          // scala-enhanched-strings
-          "Virtual-Void repository" at "http://mvn.virtual-void.net"
+          "conjars.org" at "http://conjars.org/repo"
         ),
         libraryDependencies := Seq(
           // Java libraries
@@ -58,21 +65,15 @@ object SpaceMule extends Build {
 
           // MySQL connector
           "mysql" % "mysql-connector-java" % "5.1.17",
-          // Apache Commons IO
-          "commons-io" % "commons-io" % "2.0.1",
+
           // Graph library
-          "thirdparty" % "jgrapht-jdk1.6" % "0.8.2",
+          "thirdparty" % "jgrapht-jdk1.6" % "0.8.2"
 
           // Scala libraries
 
-          // Converting between Java and Scala collections
-          "org.scalaj" %% "scalaj-collection" % "1.2",
-          // String interpolation
-          compilerPlugin(
-            "net.virtualvoid" %% "scala-enhanced-strings" % "0.5.2"
-          )
         ),
         distTask
       )
+    /*_*/
   )
 }

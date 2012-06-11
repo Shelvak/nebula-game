@@ -49,6 +49,7 @@ server/run/stopped_normally
 server/run/*.cache
 
 # SpaceMule ignores
+server/vendor/SpaceMule/lib/jruby.jar # Symlinked from your local source place!
 server/vendor/SpaceMule/target/
 server/vendor/SpaceMule/project/boot/
 server/vendor/SpaceMule/project/target/

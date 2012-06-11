@@ -3,12 +3,11 @@ class Objective::HealHp < Objective
   def self.resolve_key(klass); KEY; end
 
   def self.progress(player, hp_healed)
-    @hp_healed = hp_healed
-    super([player])
+    super([player], {data: hp_healed})
   end
 
-  def self.count_benefits(players)
+  def self.count_benefits(players, options)
     player = players[0]
-    {player.id => @hp_healed}
+    {player.id => options[:data]}
   end
 end

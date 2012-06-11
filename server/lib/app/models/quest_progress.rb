@@ -16,7 +16,7 @@ class QuestProgress < ActiveRecord::Base
 
   # Don't notify if this is for achievement.
   def notify_broker_update
-    quest.achievement? ? true : super
+    without_locking { quest.achievement? } ? true : super
   end
 
   include Parts::Object
@@ -82,9 +82,8 @@ class QuestProgress < ActiveRecord::Base
   private
   # Copies objectives for player, by creating objective progresses.
   def copy_objective_progresses
-    quest.objectives.each do |objective|
-      op = ObjectiveProgress.new(:player_id => player_id,
-        :objective => objective)
+    without_locking { quest.objectives.all }.each do |objective|
+      op = ObjectiveProgress.new(player_id: player_id, objective: objective)
       op.completed = objective.initial_completed(player_id)
 
       if op.completed?
@@ -104,7 +103,8 @@ class QuestProgress < ActiveRecord::Base
 
     # Change status so after_save would
     self.status = STATUS_COMPLETED \
-      if status == STATUS_STARTED && completed == quest.objectives.count
+      if status == STATUS_STARTED &&
+      completed == without_locking { quest.objectives.count }
 
     true
   end

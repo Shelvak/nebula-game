@@ -23,13 +23,42 @@ module IRB # :nodoc:
     @CONF[:MAIN_CONTEXT] = irb.context
 
     catch(:IRB_EXIT) do
-      ActiveRecord::Base.connection_pool.with_connection do
+      ActiveRecord::Base.connection_pool.with_new_connection do
         irb.eval_input
       end
     end
   ensure
     $IRB_RUNNING = false
     Celluloid::Actor[:callback_manager].resume!
+    Celluloid::Actor[:pooler].resume!
+  end
+end
+
+if App.in_development?
+  # Console drop-out thread.
+  Thread.new do
+    java.lang.Thread.current_thread.name = "irb-session"
+
+    loop do
+      if $IRB_RUNNING
+        sleep 1
+      else
+        input = gets.chomp
+        case input
+        when "cc"
+          puts "\n\nDropping into IRB shell. Server operation suspended."
+          puts "Press CTRL+C again to exit the server.\n\n"
+
+          puts "Pausing callback manager..."
+          Celluloid::Actor[:callback_manager].pause
+          puts "Pausing pooler..."
+          Celluloid::Actor[:pooler].pause
+          puts "Starting IRB session..."
+          IRB.start_session(ROOT_BINDING)
+          puts "\nIRB done. Server operation resumed.\n\n"
+        end
+      end
+    end
   end
 end
 
@@ -81,19 +110,18 @@ module Dev
 
   def self.seed(player_id=1, player_count=10)
     DispatcherEventHandler::Buffer.instance.wrap do
-      players = {}
       current_pid = Player.maximum(:id) + 1
       current_web_user_id = Player.maximum(:web_user_id) + 1
+      player = Player.find(player_id)
+
       player_count.times do |i|
         name = "p-#{current_pid + i}"
-        players[current_web_user_id + i] = name
+        web_user_id = current_web_user_id + i
+        puts "Creating player #{i + 1}: #{name}"
+        Galaxy.create_player(player.galaxy_id, web_user_id, name, false)
       end
 
-      player = Player.find(player_id)
-      SpaceMule.instance.create_players(player.galaxy_id,
-        player.galaxy.ruleset, players)
-
-      players.keys
+      true
     end
   end
 
@@ -135,11 +163,12 @@ module Dev
         end
       end
 
-      owner = planet.player
-      raise "No planet owner in #{planet}!" if owner.nil?
+      unless defenders == ""
+        owner = planet.player
+        raise "No planet owner in #{planet}!" if owner.nil?
 
-      Unit.give_units(parse.call(defenders), planet, owner) \
-        unless defenders == ""
+        Unit.give_units(parse.call(defenders), planet, owner)
+      end
 
       attackers = []
       parse.call(offenders).each do |type, count|

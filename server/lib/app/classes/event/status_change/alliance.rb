@@ -18,7 +18,7 @@ class Event::StatusChange::Alliance < Event::StatusChange
       raise ArgumentError.new("Unknown action: #{action.inspect}!")
     end
     
-    alliance.players.each do |alliance_player|
+    without_locking { alliance.players.all }.each do |alliance_player|
       unless alliance_player == player
         statuses[alliance_player.id] ||= []
         statuses[alliance_player.id].push([player.id, status])

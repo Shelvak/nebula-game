@@ -1824,7 +1824,7 @@
     <label.forum value="Forumas" />
     <label.wiki value="Wiki"/>
     <label.tips value="Patarimai"/>
-    <label.inviteFriend value="Pakvietimai"/>
+    <label.inviteFriend value="Pakviesk draugą"/>
     <tooltip.version value="Žaidimo versija" />
     <panelWidth value="95" />
   </MainMenu>
@@ -2155,6 +2155,8 @@
     <title.achievements value="PASIEKIMAI" />
     <label.close value="Uždaryti" />
     <label.noPlanets value="Tu neturi planetų"/>
+    <label.registerNow value="Užsiregistruoti" />
+    <label.registerLater value="Priminti vėliau" />
   </Players>
 
   <Popups>
@@ -2169,6 +2171,13 @@
     <label.ok value="Gerai" />
     <label.yes value="Taip" />
     <label.no value="Ne" />
+
+    <register.title value="UŽSIREGISTRUOK!"/>
+    <register.message.demo>
+       <![CDATA[Tai <span color="#EFC700">BANDOMOJI</span> paskyra.]]>
+    </register.message.demo>
+    <register.message.progress
+       value="Jei atsijungsi, prarasi viską, ką iki šiol pasiekei."/>
 
     <title.outdatedClient value="Žaidimo versija pasenusi" />
     <message.outdatedClient>
@@ -3578,8 +3587,8 @@
     <ClaimReward>
       <![CDATA[
       <p>Kiekviena įvykdyta užduotis duoda atlygį. Jį pasiimti gali nuėjęs į
-      užduočių langą: paspausk N44 logotipą apatiniame kairiame kampe ir
-      pasirink užduočių mygtuką.</p>
+      užduočių langą, kurį gali atsidaryti paspaudęs ant užduočių mygtuko kairėje
+      ekrano pusėje.</p>
       <p>Tada susirask įvykdytą užduotį (jos žymimos gelsvai) ir spausk pasiimti
       atlygį.</p>
       ]]>
@@ -5568,6 +5577,9 @@
         Tu buvai nutildytas iki {0} dėl pokalbių teršimo.
         Vėl galėsi šnekėti už {1}.
      </message.silence>
+     <message.trial>
+        Kad galėtum bendrauti pokalbių kambaryje, tau reikia užsiregistruoti.
+     </message.trial>
      <tooltip.btnDoIgnore>
        <p>Žaidėjas nėra ignoruojamas</p>
      </tooltip.btnDoIgnore>
@@ -5692,6 +5704,10 @@
   <Authorization>
     <status.authorization value="Autorizuojama..."/>
     <status.login value="Jungiamasi prie serverio..."/>
+     <status.attaching>
+       Prašome palaukti, kol serveris tau sukurs nuolatinę vartotojo paskyrą.
+       Tai gali užtrukti kelias sekundes.
+     </status.attaching>
   </Authorization>
 
   <PlanetMapEditor>

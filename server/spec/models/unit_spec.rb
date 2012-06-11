@@ -138,7 +138,7 @@ describe Unit do
       lambda do
         Unit.give_units_raw(@units, @location, @player)
         @player.reload
-      end.should change(@player, :population).by(population)
+      end.should change(@player, :population).to(population)
     end
     
     it "should increase fow counter for space units & ! for ground units" do
@@ -277,7 +277,7 @@ describe Unit do
     lambda do
       unit.upgrade!
       player.reload
-    end.should change(player, :population).to(player.population_max)
+    end.should change(player, :population).to(Unit::TestUnit.population)
   end
 
   describe ".flank_valid?" do
@@ -427,15 +427,14 @@ describe Unit do
     end
 
     it "should reduce player population (with loaded units)" do
-      @p1.population = 100000
-      @p1.save!
+      @p1.recalculate_population
       p1_units = @units.accept { |unit| unit.player_id == @p1.id }
       p1_loaded_units = @loaded_units.accept { |unit| unit.player_id == @p1.id }
       lambda do
         Unit.delete_all_units(@units)
         @p1.reload
-      end.should change(@p1, :population).by(
-        - (p1_units + p1_loaded_units).map(&:population).sum)
+      end.should change(@p1, :population).
+        from((p1_units + p1_loaded_units).map(&:population).sum).to(0)
     end
 
     it "should fire destroyed" do
@@ -519,7 +518,7 @@ describe Unit do
       lambda do
         @unit.destroy
         player.reload
-      end.should change(player, :population).by(-@unit.population)
+      end.should change(player, :population).to(0)
     end
 
     it "should still work" do

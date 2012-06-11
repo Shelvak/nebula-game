@@ -33,10 +33,9 @@ class Dispatcher
 
   # Initialize the dispatcher.
   def initialize
-    @directors = {
-      :chat => Threading::Director.new_link("chat", WORKERS_CHAT),
-      :world => Threading::Director.new_link("world", WORKERS_WORLD),
-    }
+    @directors = DIRECTORS.each_with_object({}) do |(name, workers), hash|
+      hash[name] = Threading::Director.new_link(name.to_s, workers)
+    end
 
     @client_to_player = {}
     @player_id_to_client = {}
@@ -53,6 +52,15 @@ class Dispatcher
 
   def to_s(client=nil)
     client.nil? ? TAG : "#{TAG}-#{client}"
+  end
+
+  # Returns Hash of {director_name => enqueued_tasks}.
+  def director_stats
+    @directors.map do |name, director|
+      [name, director.future(:enqueued_tasks)]
+    end.each_with_object({}) do |(name, future), hash|
+      hash[name] = future.value
+    end
   end
 
   # Register new client to dispatcher.
@@ -113,7 +121,9 @@ class Dispatcher
     if client
       @client_to_player[client] = player
     else
-      abort "Cannot update player #{player} which is not registered!"
+      abort RuntimeError.new(
+        "Cannot update player #{player} which is not registered!"
+      )
     end
   end
 
@@ -127,7 +137,7 @@ class Dispatcher
       message = message_object(client, message_hash)
       LOGGER.block(
         "Received message: #{message}",
-        :component => log_tag
+        component: log_tag, level: :debug
       ) { process_message(message) }
     end
   rescue NotAMessage => e
@@ -142,7 +152,7 @@ class Dispatcher
   def callback(callback)
     exclusive do
       raise_to_abort { typesig binding, Callback }
-      info "Received: #{callback}"
+      debug "Received: #{callback}"
 
       klass = callback.klass
       method_name = callback.type
@@ -176,9 +186,9 @@ class Dispatcher
         'type' => error.class.to_s,
         'message' => error.message
       }
-      info "Confirming #{message} with error.", to_s(message.client)
+      debug "Confirming #{message} with error.", to_s(message.client)
     else
-      info "Confirming successful #{message}.", to_s(message.client)
+      debug "Confirming successful #{message}.", to_s(message.client)
     end
 
     transmit_to_client(message.client, confirmation)
@@ -248,18 +258,10 @@ class Dispatcher
   end
   # Thread safe storage setter.
   def storage_set(client, key, value)
-    abort ClientDisconnected.new(
-      "#{client} has already disconnected, no storage available!"
-    ) unless client_connected?(client)
+    return unless client_connected?(client)
     client_storage = @storage[client]
     client_storage[key] = value
-  end
-
-  # Solar system ID which is currently viewed by client.
-  def current_ss_id(client); @storage[client][S_KEY_CURRENT_SS_ID]; end
-  # SsObject ID which is currently viewed by client.
-  def current_planet_id(client)
-    @storage[client][S_KEY_CURRENT_PLANET_ID]
+    nil
   end
 
   def atomic(atomizer)
@@ -267,9 +269,9 @@ class Dispatcher
   end
   
   # Pushes message to all logged in players.
-  def push_to_logged_in(action, params={})
+  def push_to_logged_in(action, params={}, filters=nil)
     @client_to_player.each do |client, _|
-      push(client, action, params)
+      push(client, action, params, filters)
     end
   end
 
@@ -336,12 +338,30 @@ class Dispatcher
     @player_id_to_client.has_key?(player_id)
   end
 
-  # Resolves _id_ to +Player+ model if it is connected.
-  def resolve_player(client)
-    @client_to_player[client]
+  # Resolves _what_ to +Player+ model if it is connected.
+  #
+  # _what_ can be +ServerActor::Client+ or +Fixnum+ (player id)
+  def resolve_player(what)
+    case what
+    when ServerActor::Client
+      @client_to_player[what]
+    when Fixnum
+      client = @player_id_to_client[what]
+      return if client.nil?
+      resolve_player(client)
+    else
+      abort ArgumentError.new("Unknown parameter type #{what.inspect}!")
+    end
   end
 
-  private
+private
+
+  # Solar system ID which is currently viewed by client.
+  def current_ss_id(client); @storage[client][S_KEY_CURRENT_SS_ID]; end
+  # SsObject ID which is currently viewed by client.
+  def current_planet_id(client)
+    @storage[client][S_KEY_CURRENT_PLANET_ID]
+  end
 
   def initialize_controllers!
     return unless @controllers.nil?
@@ -416,7 +436,7 @@ class Dispatcher
     director = @directors[name]
     raise "Missing director #{name.inspect}!" if director.nil?
 
-    info "Dispatching to #{name} director: #{task}"
+    debug "Dispatching to #{name} director: #{task}"
     director.work!(task)
   end
 

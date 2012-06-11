@@ -61,7 +61,8 @@ shared_examples_for "with param options" do |required_params|
     end
   else
     it "should not fail when with player" do
-      login unless player
+      # Cannot use #player because it might be defined in the test.
+      login if @player.nil?
       message = create_message @action, @params, options[:only_push], true
       check_options!(message)
     end
@@ -78,7 +79,7 @@ shared_examples_for "with param options" do |required_params|
         message = create_message(
           @action,
           @params.except(GenericController::ParamOpts::CONTROL_TOKEN_KEY),
-          options[:only_push]
+          options[:only_push], options[:needs_login]
         )
         check_options!(message)
       end.should raise_error(GenericController::ParamOpts::BadParams)
@@ -91,7 +92,7 @@ shared_examples_for "with param options" do |required_params|
           @params.merge(
             GenericController::ParamOpts::CONTROL_TOKEN_KEY => "asdfasasdgfdgdf"
           ),
-          options[:only_push]
+          options[:only_push], options[:needs_login]
         )
         check_options!(message)
       end.should raise_error(GenericController::ParamOpts::BadParams)

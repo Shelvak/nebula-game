@@ -6,7 +6,7 @@ class Cooldown < ActiveRecord::Base
   include Parts::ByFowEntries
   include Parts::Object
   def self.notify_on_create?; true; end
-  def self.notify_on_update?; false; end
+  def self.notify_on_update?; true; end
   def self.notify_on_destroy?; false; end
   include Parts::Notifier
 
@@ -26,22 +26,29 @@ class Cooldown < ActiveRecord::Base
 
   # Return Cooldown#ends_at for planet.
   def self.for_planet(planet)
-    time = select("ends_at").where(planet.location_attrs).c_select_value
+    time = without_locking do
+      select("ends_at").where(planet.location_attrs).c_select_value
+    end
     # JRuby compatibility fix.
     time.is_a?(String) ? Time.parse(time) : time
   end
 
   # Create Cooldown identified by given _location_. If such record
   # already exists, update its _ends_at_.
-  def self.create_unless_exists(location, ends_at)
-    model = in_location(location.location_attrs).first
-
-    unless model
-      model = new(:location => location, :ends_at => ends_at)
+  def self.create_or_update!(location, ends_at)
+    model = new(:location => location, :ends_at => ends_at)
+    begin
       model.save!
-      CallbackManager.register(model, CallbackManager::EVENT_DESTROY,
-        ends_at)
+    rescue ActiveRecord::RecordNotUnique
+      # Being multithreaded we cannot first ask and then do something.
+      model = in_location(location).first
+      model.ends_at = ends_at if ends_at > model.ends_at
+      model.save!
     end
+
+    CallbackManager.register_or_update(
+      model, CallbackManager::EVENT_DESTROY, model.ends_at
+    )
 
     model
   end

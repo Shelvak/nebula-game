@@ -1,12 +1,22 @@
 package spacemule.modules.config.objects
 
+import spacemule.helpers.JRuby._
 import spacemule.modules.pmg.classes.geom.Coords
+import scala.{collection => sc}
 
 object SsConfig {
   sealed abstract class Entry(
     val wreckage: Option[ResourcesEntry],
     val units: Option[Seq[UnitsEntry]]
-  )
+  ) {
+    override def toString = "<SsConfig.Entry wreckage:" + (wreckage match {
+      case None => "none"
+      case Some(resourcesEntry) => resourcesEntry
+    }) + " units:" + (units match {
+      case None => "none"
+      case Some(seq) => seq.size
+    }) + ">"
+  }
 
   case class PlanetEntry(
     mapName: String, ownedByPlayer: Boolean,
@@ -18,7 +28,10 @@ object SsConfig {
     resources: ResourcesEntry,
     override val wreckage: Option[ResourcesEntry] = None,
     override val units: Option[Seq[UnitsEntry]] = None
-  ) extends Entry(wreckage, units)
+  ) extends Entry(wreckage, units) {
+    override def toString = "<AsteroidEntry resources:"+resources+" "+
+      super.toString+">"
+  }
 
   case class JumpgateEntry(
     override val wreckage: Option[ResourcesEntry] = None,
@@ -30,54 +43,62 @@ object SsConfig {
     override val units: Option[Seq[UnitsEntry]] = None
   ) extends Entry(wreckage, units)
 
-  type CfgMap = Map[String, Any]
+  // ResourcesEntry data map
+  type REDataMap = sc.Map[String, ResourcesEntry.Data]
+  // UnitsEntry data map
+  type UEDataMap = sc.Map[String, UnitsEntry.Data]
+  // Generic data structure.
+  type Data = Map[Coords, Entry]
 
   private[this] def extractResources(
-    data: CfgMap, key: String = "resources"
+    data: REDataMap, key: String = "resources"
   ) = {
     data.get(key).map { array =>
       ResourcesEntry.extract(array)
     }
   }
 
-  private[this] def extractWreckage(data: CfgMap) =
+  private[this] def extractWreckage(data: REDataMap) =
     extractResources(data, "wreckage")
 
-  private[this] def extractUnits(data: CfgMap):
-    Option[Seq[UnitsEntry]] = data.get("units").map(UnitsEntry.extract(_))
+  private[this] def extractUnits(data: UEDataMap): Option[Seq[UnitsEntry]] =
+    data.get("units").map { UnitsEntry.extract(_) }
 
-  type Data = Map[Coords, Entry]
-
-  def apply(data: Map[String, CfgMap]) = {
-    data.map { case (positionStr, entryData) =>
-      val splited = positionStr.split(",").map(_.toInt)
-      val (position, angle) = (splited(0), splited(1))
+  def apply(data: sc.Map[String, Any]): Data = {
+    data.map { case (positionStr, rbEntryData) =>
+      val split = positionStr.toString.split(",").map(_.toInt)
+      val (position, angle) = (split(0), split(1))
       val coords = Coords(position, angle)
 
-      val entry = entryData("type") match {
+      val entryData = rbEntryData.asInstanceOf[sc.Map[String, Any]]
+      val entry = entryData("type").toString match {
         case "planet" => SsConfig.PlanetEntry(
-          entryData("map").asInstanceOf[String],
+          entryData("map").toString,
           entryData("owned_by_player").asInstanceOf[Boolean],
-          extractWreckage(entryData),
-          extractUnits(entryData)
+          extractWreckage(entryData.asInstanceOf[REDataMap]),
+          extractUnits(entryData.asInstanceOf[UEDataMap])
         )
         case "asteroid" => SsConfig.AsteroidEntry(
-          extractResources(entryData) match {
+          extractResources(entryData.asInstanceOf[REDataMap]) match {
             case Some(resources) => resources
             case None => sys.error(
               "Missing asteroid resources for %s!".format(positionStr)
             )
-          }, extractWreckage(entryData), extractUnits(entryData)
+          },
+          extractWreckage(entryData.asInstanceOf[REDataMap]),
+          extractUnits(entryData.asInstanceOf[UEDataMap])
         )
         case "jumpgate" => SsConfig.JumpgateEntry(
-          extractWreckage(entryData), extractUnits(entryData)
+          extractWreckage(entryData.asInstanceOf[REDataMap]),
+          extractUnits(entryData.asInstanceOf[UEDataMap])
         )
         case "nothing" => SsConfig.NothingEntry(
-          extractWreckage(entryData), extractUnits(entryData)
+          extractWreckage(entryData.asInstanceOf[REDataMap]),
+          extractUnits(entryData.asInstanceOf[UEDataMap])
         )
       }
 
       coords -> entry
-    }
+    }.toMap
   }
 }

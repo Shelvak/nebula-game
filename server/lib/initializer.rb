@@ -3,22 +3,31 @@ ROOT_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..')) \
 
 def rake?; File.basename($0) == 'rake'; end
 
-# flex:locales:check task is broken on 1.6.6, so we have to use something else.
-if RUBY_VERSION < '1.9.2' || ! (JRUBY_VERSION >= '1.6.7' || rake?)
-  w = 80
-  puts "#" * w
-  puts "We require JRuby 1.6.7 HEAD in 1.9 mode!".center(w)
-  puts
-  puts "To install JRuby 1.6.7 HEAD:".center(w)
-  puts "`rvm install jruby-head-n16 --branch jruby-1_6`".center(w)
-  puts
-  puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
-  puts "`export JRUBY_OPTS='--1.9'`".center(w)
-  puts
-  puts "Aborting!".center(w)
-  puts "#" * w
-  exit
-end
+require 'time'
+
+# Do JRuby version check.
+lambda do
+  ruby_version = '1.9.2'
+  jruby_version = '1.6.8.dev'
+  jruby_release = '2012-05-10'
+  if RUBY_VERSION < ruby_version || JRUBY_VERSION < jruby_version ||
+      Time.parse(RUBY_RELEASE_DATE) < Time.parse(jruby_release)
+    w = 80
+    puts "#" * w
+    puts "We require JRuby #{jruby_version}@#{jruby_release} in 1.9 mode!".
+      center(w)
+    puts
+    puts "To install JRuby #{jruby_version}:".center(w)
+    puts "`rvm install jruby-head-n16 --branch jruby-1_6`".center(w)
+    puts
+    puts "To trigger it into 1.9 mode, add this to your `~/.bashrc`:".center(w)
+    puts "`export JRUBY_OPTS='--1.9'`".center(w)
+    puts
+    puts "Aborting!".center(w)
+    puts "#" * w
+    exit 1
+  end
+end.call
 
 require 'bundler'
 
@@ -37,72 +46,6 @@ lambda do
   # main jar.
   Dir[File.dirname(jar_path) + "/lib/*.jar"].each { |jar| require jar }
   require jar_path
-
-  # Scala <-> Ruby interoperability.
-  class Object
-    def to_scala
-      case self
-      when Hash
-        scala_hash = Java::scala.collection.immutable.HashMap.new
-        each do |key, value|
-          scala_hash = scala_hash.updated(key.to_scala, value.to_scala)
-        end
-        scala_hash
-      when Set
-        scala_set = Java::scala.collection.immutable.HashSet.new
-        each { |item| scala_set = scala_set + item.to_scala }
-        scala_set
-      when Array
-        scala_array = Java::scala.collection.mutable.ArrayBuffer.new
-        each { |value| scala_array += value.to_scala }
-        scala_array.to_indexed_seq
-      when Symbol
-        to_s
-      else
-        self
-      end
-    end
-
-    def from_scala
-      case self
-      when Java::scala.collection.Map, Java::scala.collection.immutable.Map,
-          Java::scala.collection.mutable.Map
-        ruby_hash = {}
-        foreach { |tuple| ruby_hash[tuple._1.from_scala] = tuple._2.from_scala }
-        ruby_hash
-      when Java::scala.collection.Set, Java::scala.collection.immutable.Set,
-          Java::scala.collection.mutable.Set
-        ruby_set = Set.new
-        foreach { |item| ruby_set.add item.from_scala }
-        ruby_set
-      when Java::scala.collection.Seq
-        ruby_array = []
-        foreach { |item| ruby_array.push item.from_scala }
-        ruby_array
-      when Java::scala.Product
-        if self.class.to_s.match /Tuple\d+$/
-          # Conversion from scala Tuples.
-          ruby_array = []
-          productIterator.foreach { |item| ruby_array.push item.from_scala }
-          ruby_array
-        else
-          self
-        end
-      else
-        self
-      end
-    end
-  end
-
-  module Kernel
-    def Some(value); Java::scala.Some.new(value); end
-    None = Java::spacemule.helpers.JRuby.None
-
-    def add_exception_info(exception, message)
-      raise exception.class, message + "\n\n" + exception.message,
-        exception.backtrace
-    end
-  end
 end.call
 
 class App
@@ -145,13 +88,10 @@ class App
 end
 
 class Exception
-  def name
-    self.class.to_s
-  end
-
-  def to_log_str
+  def self.to_log_str(exception)
     "Exception: %s (%s)\n\nBacktrace:\n%s" % [
-      message, name, self.backtrace.try(:join, "\n") || "No backtrace"
+      exception.message, exception.class.to_s,
+      exception.backtrace.try(:join, "\n") || "No backtrace"
     ]
   end
 end
@@ -196,13 +136,23 @@ Dir[File.join(ROOT_DIR, 'vendor', 'plugins', '*')].each do |plugin_dir|
   require plugin
 end
 
-# Global constants related to server tweaking
-WORKERS_CHAT = 1
-WORKERS_WORLD = 1
+# Dispatcher directors.
+DIRECTORS = {
+  chat: 1,     # Not much to do, one worker is enough.
+  enroll: 1,   # Sequential, otherwise db locks kick in.
+  control: 1,  # For control tasks that should be responsive even if other
+               # workers are busy.
+  world: 6,    # Main workhorse, not too concurrent because of DB locks.
+  low_prio: 3, # For low priority tasks, such as cleaning up old notifications
+               # or combat logs.
+  # Highly IO-bound, so can be very concurrent.
+  login: App.in_development? ? 1 : 20,
+}
 # Connections:
 # - callback manager
+# - pooler
 # - workers
-DB_POOL_SIZE = WORKERS_CHAT + WORKERS_WORLD + 1
+DB_POOL_SIZE = DIRECTORS.values.sum + 2
 
 ENV['db_environment'] ||= App.env
 ENV['configuration'] ||= App.env
@@ -215,7 +165,9 @@ MAILER = lambda do |short, long|
     Mail.deliver do
       from email_from
       to email_to
-      subject "[#{short}] #{error.split("\n")[0]}"
+      subject = error.split("\n")[0]
+      subject = "#{subject[0..120]}..." if subject.length > 120
+      subject "[#{short}] #{subject}"
       body "#{long}\n\n#{error}"
     end
   end
@@ -271,6 +223,7 @@ LOGGER = Logging::ThreadRouter.instance
 ActiveRecord::Base.logger = LOGGER
 ActiveSupport::LogSubscriber.colorize_logging = false
 Celluloid.logger = LOGGER
+Java::spacemule.logging.Log.logger = Logging::Scala.new(LOGGER)
 
 # Set up config object
 require "#{ROOT_DIR}/lib/app/classes/game_config.rb"
@@ -303,9 +256,11 @@ end
 # on working DB connection.
 unless rake?
   ActiveRecord::Base.establish_connection(USED_DB_CONFIG)
+  require 'jruby/synchronized'
+  ActiveRecord::Base.connection_pool.extend JRuby::Synchronized
 
   unless App.in_test?
-    ActiveRecord::Base.connection_pool.with_connection do
+    ActiveRecord::Base.connection_pool.with_new_connection do
       migrator = ActiveRecord::Migrator.new(:up, DB_MIGRATIONS_DIR)
       pending = migrator.pending_migrations
       unless pending.blank?
@@ -378,39 +333,30 @@ class ActiveRecord::Relation
   # Usage:
   #   planet_ids = SsObject::Planet.where(:player_id => player).
   #     select("id").c_select_values
-  %w{all one rows value values}.each do |method|
+  %w{all rows values}.each do |method|
     define_method(:"c_select_#{method}") do
       connection.send(:"select_#{method}", to_sql)
     end
   end
-end
-
-# Disables SQL locking for this thread in given block. Only use this on
-# read-only operations!
-def without_locking
-  old_value = Parts::WithLocking.locking?
-  begin
-    Parts::WithLocking.locking = false
-    ret_value = yield
-  ensure
-    Parts::WithLocking.locking = old_value
+  %w{one value}.each do |method|
+    define_method(:"c_select_#{method}") do
+      sql = (limit_value.nil? ? limit(1) : self).to_sql
+      connection.send(:"select_#{method}", sql)
+    end
   end
-  ret_value
 end
 
 ActiveSupport::JSON.backend = :json_gem
 ActiveSupport.use_standard_json_time_format = true
 
-unless rake?
-  LOGGER.info "Creating dispatcher."
-  Celluloid::Actor[:dispatcher] = Dispatcher.new
+LOGGER.info "Creating dispatcher."
+Celluloid::Actor[:dispatcher] = Dispatcher.new
 
-  # Initialize event handlers
-  LOGGER.info "Creating quest event handler."
-  QUEST_EVENT_HANDLER = QuestEventHandler.new
-  LOGGER.info "Creating dispatcher event handler."
-  DISPATCHER_EVENT_HANDLER = DispatcherEventHandler.new
+# Initialize event handlers
+LOGGER.info "Creating quest event handler."
+QUEST_EVENT_HANDLER = QuestEventHandler.new
+LOGGER.info "Creating dispatcher event handler."
+DISPATCHER_EVENT_HANDLER = DispatcherEventHandler.new
 
-  # Used for hotfix evaluation and IRB sessions.
-  ROOT_BINDING = binding
-end
+# Used for hotfix evaluation and IRB sessions.
+ROOT_BINDING = binding

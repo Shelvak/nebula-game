@@ -3,7 +3,7 @@ package spacemule.modules.config.objects
 import scala.{collection => sc}
 import collection.mutable.HashMap
 import de.congrace.exp4j.ExpressionBuilder
-import spacemule.helpers.Exceptions.wrappingException
+import spacemule.logging.Log
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,17 +16,8 @@ import spacemule.helpers.Exceptions.wrappingException
 object FormulaCalc {
   type VarMap = sc.Map[String, Double]
   
-  private[this] val formulaCache = HashMap.empty[String, ExpressionBuilder]
-  private[this] def resolveExpression(formula: String) = {
-    if (formulaCache.contains(formula)) {
-      formulaCache(formula)
-    }
-    else {
-      val expression = new ExpressionBuilder(formula.replaceAll("\\*\\*", "^"))
-      formulaCache(formula) = expression
-      expression
-    }
-  }
+  private[this] def resolveExpression(formula: String) =
+    new ExpressionBuilder(formula.replaceAll("\\*\\*", "^"))
 
   private[this] def calculateValue(
     expression: ExpressionBuilder, variables: Option[sc.Map[String, Double]]
@@ -39,30 +30,28 @@ object FormulaCalc {
     }).build().calculate()
   }
 
-  implicit private[this] def exceptionWrapper =
-    (message: String, cause: Exception) => {
-      new IllegalArgumentException(message, cause)
+  def calc(formula: String): Double =
+    try {
+      calculateValue(resolveExpression(formula), None)
+    }
+    catch {
+      case e: Exception => throw core.Exceptions.extend(
+        "Error while calculating formula '"+formula+"' without variables", e
+      )
     }
 
-  def calc(formula: String): Double =
-    wrappingException(
-      "Error while calculating formula '%s' without variables.".format(
-        formula
-      )
-    ) { () => calculateValue(resolveExpression(formula), None) }
-  
   def calc(formula: String, vars: VarMap): Double =
-    wrappingException(
-      "Error while calculating formula '%s' with variables %s".format(
-        formula, vars
-      )
-    ) { () =>
+    try {
       calculateValue(resolveExpression(formula), Some(vars))
     }
+    catch {
+      case e: Exception => throw core.Exceptions.extend(
+        "Error while calculating formula '"+formula+"' with variables "+vars, e
+      )
+    }
   
-  // Just placeholders if formula is not exactly a formula. (When called from
-  // JRuby side)
-  
+  // For calling from JRuby.
+
   def calc(formula: Long) = formula
   def calc(formula: Long, vars: VarMap) = formula
   def calc(formula: Double) = formula

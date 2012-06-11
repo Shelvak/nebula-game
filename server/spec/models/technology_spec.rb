@@ -488,11 +488,13 @@ describe Technology do
   end
 
   describe "#check_planets!" do
-    let(:player) { Factory.build(:player) }
+    let(:player) do
+      Factory.create(:player, planets_count: 4, bg_planets_count: 4)
+    end
     let(:technology) do
       technology = Factory.build(:technology, :player => player)
-      technology.stub(:planets_required).and_return(0)
-      technology.stub(:pulsars_required).and_return(0)
+      technology.stub(:planets_required).and_return(4)
+      technology.stub(:pulsars_required).and_return(4)
       technology
     end
     let(:level) { 3 }
@@ -503,10 +505,14 @@ describe Technology do
     ].each do |type, tech_method, player_method|
       it "should fail #{type} check if player does not have enough #{type}" do
         technology.should_receive(tech_method).with(level).and_return(5)
-        player.should_receive(player_method).and_return(4)
         lambda do
           technology.check_planets!(level)
         end.should raise_error(GameLogicError)
+      end
+
+      it "should not fail #{type} check if player has enough #{type}" do
+        technology.should_receive(tech_method).with(level).and_return(3)
+        technology.check_planets!(level)
       end
     end
   end

@@ -860,7 +860,7 @@ describe Player do
     it "should update dispatcher if player is connected" do
       @dispatcher.should_receive(:player_connected?).with(@player.id).
         and_return(true)
-      @dispatcher.should_receive(:update_player).with(@player)
+      @dispatcher.should_receive(:update_player!).with(@player)
       @player.creds += 1
       @player.save!
     end
@@ -956,7 +956,7 @@ describe Player do
         victory_points creds population population_cap
         alliance_id alliance_cooldown_ends_at alliance_cooldown_id
         free_creds vip_level vip_creds vip_until vip_creds_until
-        portal_without_allies
+        portal_without_allies trial
         planets_count bg_planets_count
       }
       ommited_fields = fields - required_fields
@@ -1101,6 +1101,87 @@ describe Player do
         p2.id => p2.as_json(:mode => :minimal),
         nil => nil
       )
+    end
+  end
+
+  describe "#recalculate_population" do
+    let(:player) { Factory.create(:player, population: 1000) }
+    let(:planet) { Factory.create(:planet, player: player) }
+    let(:constructor) { Factory.create(:b_constructor_test, planet: planet) }
+    let(:units) do
+      # Random data that should not be taken into account
+      Factory.create!(:u_cyrix)
+      # Actual data
+      [
+        Factory.create!(:u_cyrix, player: player),
+        Factory.create!(:u_cyrix, player: player),
+        Factory.create!(:u_crow, player: player),
+        Factory.create!(:u_mule, player: player),
+        Factory.create!(:u_shocker, player: player),
+        Factory.create!(:u_zeus, player: player)
+      ]
+    end
+    let(:construction_queue_entries) do
+      # Random data that should not be taken into account
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Zeus.to_s, prepaid: true)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Zeus.to_s, prepaid: false)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Building::Barracks.to_s, prepaid: false)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Trooper.to_s, prepaid: false, constructor: constructor,
+        count: 10)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Trooper.to_s, prepaid: false, constructor: constructor,
+        count: 10)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Building::MetalStorage.to_s, prepaid: true,
+        constructor: constructor, count: 10)
+      # Actual data
+      [
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Trooper.to_s,
+          prepaid: true, constructor: constructor, count: 10),
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Rhyno.to_s,
+          prepaid: true, constructor: constructor),
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Zeus.to_s,
+          prepaid: true, constructor: constructor, count: 5),
+      ]
+    end
+
+    let(:population) do
+      (
+        units.map(&:population) + construction_queue_entries.
+          map { |cqe| cqe.constructable_class.population * cqe.count }
+      ).sum
+    end
+
+    it "should recalculate population to correct value" do
+      lambda do
+        player.recalculate_population
+      end.should change(player, :population).to(population)
+    end
+
+    it "should not save record" do
+      player.recalculate_population
+      player.should_not be_saved
+    end
+  end
+
+  describe "#recalculate_population!" do
+    let(:player) { Factory.create(:player) }
+
+    it "should call #recalculate_population" do
+      player.should_receive(:recalculate_population)
+      player.recalculate_population!
+    end
+
+    it "should save record" do
+      player.recalculate_population!
+      player.should be_saved
     end
   end
 
@@ -1880,13 +1961,13 @@ describe Player do
         Galaxy::Zone.should_receive(:for_reattachment).
           with(player.galaxy_id, player.points).and_return(zone)
 
-        x, y = zone.absolute(0, 0)
+        x, y = zone.absolute(4, 2)
         zone.should_receive(:free_spot_coords).with(player.galaxy_id).
           and_return([x, y])
 
-        player.home_solar_system.should_receive(:attach!).with(x, y)
-
         player.attach!
+        home_solar_system.reload
+        [home_solar_system.x, home_solar_system.y].should == [x, y]
       end
 
       it "should register player check activity" do

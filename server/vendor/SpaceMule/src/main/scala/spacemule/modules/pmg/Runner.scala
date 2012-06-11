@@ -1,95 +1,96 @@
 package spacemule.modules.pmg
 
-import objects.{Zone, Galaxy, Player}
-import persistence.objects.{SaveResult, CallbackRow, GalaxyRow}
-import spacemule.helpers.Converters._
-import spacemule.helpers.BenchmarkableMock
-import spacemule.modules.pmg.objects.solar_systems.Battleground
+import objects.Galaxy
 import spacemule.modules.pmg.persistence.Manager
-import spacemule.modules.config.objects.Config
-import java.util.{Calendar, Date}
-import spacemule.persistence.{ReferableRow, DB}
+import spacemule.logging.Log
 
-object Runner extends BenchmarkableMock {
+case class EnsurePoolResult(createdZones: Int, createdHomeSs: Int)
+case class PoolStatsResult(freeZones: Int, freeHomeSs: Int)
+
+object Runner {
   /**
-   * Creates galaxy with ruleset and callbackUrl. Returns galaxy id.
+   * Fills just created galaxy with objects.
+   *
+   * Creates battleground, given number of free zones and given number of pooled
+   * home systems.
+   *
+   * @param galaxyId
+   * @param ruleset
+   * @param freeZoneCount
+   * @param freeHomeSsCount
    */
-  @EnhanceStrings
-  def createGalaxy(ruleset: String, callbackUrl: String): Int = {
-    val createdAt = DB.date(new Date())
-    val galaxyId = DB.insert("""
-      INSERT INTO `#Manager.GalaxiesTable` SET
-      `ruleset`=?, `callback_url`=?, `created_at`=?
-    """, List(ruleset, callbackUrl, createdAt))
-    val galaxyRow = new GalaxyRow(galaxyId)
-
+  def fillGalaxy(
+    galaxyId: Int, ruleset: String, freeZoneCount: Int, freeHomeSsCount: Int
+  ) {
     Manager.initDates()
-
-    Manager.save { () =>
-      Manager.callbacks += CallbackRow(
-        galaxyRow, ruleset, CallbackRow.Events.Spawn,
-        Config.convoyTime.fromNow
-      )
-
-      // Create system offer creation cooldowns.
-      List(
-        CallbackRow.Events.CreateMetalSystemOffer,
-        CallbackRow.Events.CreateEnergySystemOffer,
-        CallbackRow.Events.CreateZetiumSystemOffer
-      ).foreach { event =>
-        Manager.callbacks += CallbackRow(
-          galaxyRow, ruleset, event,
-          Config.marketBotRandomResourceCooldown.fromNow
-        )
-      }
-
-      val galaxy = new Galaxy(galaxyId, ruleset)
-      val battleground = new Battleground()
-      battleground.createObjects()
-      Manager.readSolarSystem(galaxy, None, battleground)
-
-      galaxyId
-    }
-  }
-
-  def createPlayers(
-    ruleset: String,
-    galaxyId: Int,
-    // web user id -> player name
-    players: Map[Long, String]
-  ): SaveResult = {
     val galaxy = new Galaxy(galaxyId, ruleset)
 
-    benchmark("load galaxy") { () => Manager.load(galaxy) }
-
-    players.foreach { case(webUserId, name) =>
-      val player = Player(name, webUserId)
-      benchmark("create player") { () => galaxy.createZoneFor(player) }
+    Log.block("Creating battleground") { () => galaxy.createBattleground() }
+    Log.block("Ensuring "+freeZoneCount+" free zones") { () =>
+      galaxy.ensureFreeZones(freeZoneCount)
+    }
+    Log.block("Ensuring "+freeHomeSsCount+" free home ss") { () =>
+      galaxy.ensureFreeHomeSystems(freeHomeSsCount)
     }
 
-    val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
-    printBenchmarkResults()
-
-    result
+    Log.block("Saving galaxy") { () => Manager.save(galaxy) }
   }
-  
-  def createZone(
-    ruleset: String,
-    galaxyId: Int,
-    // [1, 4]
-    quarter: Int,
-    // [1, inf)
-    slot: Int
-  ) = {
+
+  /**
+   * Ensures that enough free zones and home solar systems exist in the galaxy
+   * pool.
+   *
+   * @param galaxyId
+   * @param ruleset
+   * @param freeZones ensured number of free zones.
+   * @param maxZoneIterations max number of zones per generation.
+   * @param freeHomeSystems ensured number of free home solar systems.
+   * @param maxHomeIterations max number of home ss per generation.
+   */
+  def ensurePool(
+    galaxyId: Int, ruleset: String,
+    freeZones: Int, maxZoneIterations: Int,
+    freeHomeSystems: Int, maxHomeIterations: Int
+  ): EnsurePoolResult = {
+    Some(3)
+    require(
+      freeZones >= 0,
+      "free zones should be >= 0, but was "+freeZones
+    )
+    require(
+      maxZoneIterations > 0,
+      "max zone iterations should be > 0, but was "+maxZoneIterations
+    )
+    require(
+      freeHomeSystems >= 0,
+      "free home ss should be >= 0, but was "+freeHomeSystems
+    )
+    require(
+      maxHomeIterations > 0,
+      "max home ss iterations should be > 0, but was "+maxHomeIterations
+    )
+
     val galaxy = new Galaxy(galaxyId, ruleset)
 
-    benchmark("generate zone") { () =>
-      galaxy.addZone(Zone(slot, quarter, Config.zoneDiameter))
+    Log.block("load galaxy") { () => Manager.load(galaxy) }
+
+    val createdZones = Log.block("ensure free zones") { () =>
+      galaxy.ensureFreeZones(freeZones, Some(maxZoneIterations))
+    }
+    val createdHomeSs = Log.block("ensure free home ss") { () =>
+      galaxy.ensureFreeHomeSystems(freeHomeSystems, Some(maxHomeIterations))
     }
 
-    val result = benchmark("save galaxy") { () => Manager.save(galaxy) }
-    printBenchmarkResults()
+    Log.block("save galaxy") { () => Manager.save(galaxy) }
 
-    result
+    EnsurePoolResult(createdZones, createdHomeSs)
+  }
+
+  def poolStats(galaxyId: Int): PoolStatsResult = {
+    val galaxy = new Galaxy(galaxyId, "default")
+
+    Log.block("load galaxy") { () => Manager.load(galaxy) }
+
+    PoolStatsResult(galaxy.freeZones, galaxy.freeHomeSystems)
   }
 }

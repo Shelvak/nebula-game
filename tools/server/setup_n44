@@ -72,13 +72,18 @@ set pastetoggle=<F3>
 
 MYCNF = %Q{
 [mysqld]
+innodb_file_per_table
 innodb_rollback_on_timeout = ON
 innodb_lock_wait_timeout = 10
-innodb_file_per_table
+# http://dev.mysql.com/doc/refman/5.5/en/innodb-auto-increment-handling.html#innodb-auto-increment-configurable
+# This is needed to allow multiple LOAD DATA statements to execute parallely.
+innodb_autoinc_lock_mode = 2
+# To allow replication on lock mode 2.
+binlog_format=row
 }
 
 SRVRUNNER = %Q{#!/bin/bash
-HOME=/home/spacegame
+HOME=/home/#{USER}
 PATH=/bin/:/usr/bin:/usr/local/bin
 source /etc/profile
 source $HOME/.profile
@@ -87,6 +92,57 @@ cd $HOME/nebula-server/current/
 
 eval "$@"
 }
+WEBRUNNER = %Q{#!/bin/bash
+HOME=/home/#{USER}
+PATH=/bin/:/usr/bin:/usr/local/bin
+source /etc/profile
+source $HOME/.profile
+
+cd $HOME/web/current/www
+source ../.rvmrc
+
+eval "$@"
+}
+
+MONIT_MUNIN = %Q{
+check process munin-node with pidfile /var/run/munin/munin-node.pid
+      start program = "/etc/init.d/munin-node start"
+      stop program  = "/etc/init.d/munin-node stop"
+}
+MONIT_MYSQL = %Q{
+check process mysql with pidfile /var/run/mysqld/mysqld.pid
+      start program = "/etc/init.d/mysql start"
+      stop program  = "/etc/init.d/mysql stop"
+}
+MONIT_APACHE = %Q{
+check process apache with pidfile /var/run/apache2.pid
+      start program = "/etc/init.d/apache2 start"
+      stop program  = "/etc/init.d/apache2 stop"
+}
+MONIT_NEBULA_SERVER = %Q{
+check process nebula-server with pidfile /home/spacegame/nebula-server/shared/run/daemon.pid
+  start program = "/home/spacegame/bin/srvrunner lib/daemon.rb start"
+    as uid #{USER} and gid #{USER}
+  stop program = "/home/spacegame/bin/srvrunner lib/daemon.rb stop"
+    as uid #{USER} and gid #{USER}
+  if failed port 55345 send "?\n" expect "!\n" with timeout 5 seconds then restart
+}
+MONIT_DELAYED_JOB = %Q{
+check process dj_system_1
+  with pidfile /home/spacegame/web/shared/web/pids/delayed_job.production.system.1.pid
+  start program = "/home/spacegame/bin/webrunner script/delayed_job -i production.system.1 --queue=system start"
+    as uid spacegame and gid spacegame with timeout 120 seconds
+  stop program = "/home/spacegame/bin/webrunner script/delayed_job -i production.system.1 stop"
+    as uid spacegame and gid spacegame
+
+check process dj_enroll_1
+  with pidfile /home/spacegame/web/shared/web/pids/delayed_job.production.enroll.1.pid
+  start program = "/home/spacegame/bin/webrunner script/delayed_job -i production.enroll.1 --queue=enroll start"
+    as uid spacegame and gid spacegame with timeout 120 seconds
+  stop program = "/home/spacegame/bin/webrunner script/delayed_job -i production.enroll.1 stop"
+    as uid spacegame and gid spacegame
+}
+
 # }}}
 
 # DSL {{{
@@ -333,6 +389,16 @@ ExtendedStatus On
   run "/etc/init.d/munin-node restart"
 end
 
+def apache_monit!
+  File.write("/etc/monit/conf.d/apache", MONIT_APACHE)
+  run "/etc/init.d/monit restart"
+end
+
+def apache_scripts!
+  apache_status!
+  apache_monit!
+end
+
 # }}}
 
 # Check if root.
@@ -370,7 +436,7 @@ if ARGV.include?("basic") # {{{
   install "dialog"
   remove "samba.*" if File.exists?("/etc/init.d/smbd")
   install "man less cron mc rubygems libjson-ruby irb gnupg wget host " +
-    "exim4 logrotate netcat ntpdate python-software-properties mutt"
+    "exim4 logrotate netcat ntpdate python-software-properties mutt monit"
   run "dpkg-reconfigure exim4-config"
   File.ensure("/etc/exim4/exim4.conf.template", "disable_ipv6 = true\n")
   run "dpkg-reconfigure tzdata"
@@ -438,6 +504,31 @@ export JRUBY_OPTS='--server --1.9 -J-XX:+TieredCompilation'},
       sub(/^#?PubkeyAuthentication .+$/, "PubkeyAuthentication yes")
   end
   run "/etc/init.d/ssh reload"
+
+  # Set up basic monit
+  File.write("/etc/monit/monitrc", 
+  %Q{# monit configuration file
+
+# Check every 30 seconds, wait 1 mins for first check after startup.
+set daemon 30 with start delay 60
+
+set logfile /var/log/monit.log
+set idfile /var/run/monit/monit.id
+set statefile /var/run/monit/monit.state
+
+set mailserver localhost
+set alert arturas@nebula44.com
+
+# Allow connecting to HTTP server.
+set httpd port 2812 and allow arturas:nebula44.mmosmrts.monit
+
+include /etc/monit/conf.d/*
+  })
+  File.write("/etc/monit/conf.d/munin-node", MONIT_MUNIN)
+  File.modify("/etc/default/monit") do |contents|
+    contents.sub("startup=0", "startup=1")
+  end
+  run "/etc/init.d/monit restart"
   
   puts "Checking for RVM..."
   (rvm() == "").and {
@@ -486,15 +577,59 @@ deb-src http://repo.percona.com/apt lucid main")
   end
   fix_php_ini!
 
-  File.write("/etc/mysql/backup.cnf", %Q{# At least specify datadir
-[mysqld]
-datadir=/var/lib/mysql
+  File.write("/etc/mysql/my.cnf", %Q{
+[client]
+port    = 3306
+socket    = /var/run/mysqld/mysqld.sock
 
-# This might be missing on some distros.
+[mysqld_safe]
+socket    = /var/run/mysqld/mysqld.sock
+nice    = 0
+
+[mysqld]
+user    = mysql
+socket    = /var/run/mysqld/mysqld.sock
+pid-file    = /var/run/mysqld/mysqld.pid
+port    = 3306
+basedir   = /usr
+datadir   = /var/lib/mysql
+tmpdir    = /tmp
+skip-external-locking
+bind-address    = 127.0.0.1
+key_buffer    = 16M
+max_allowed_packet  = 16M
+thread_stack    = 192K
+thread_cache_size       = 8
+myisam-recover         = BACKUP
+query_cache_limit = 1M
+query_cache_size        = 16M
+
+log_error                = /var/log/mysql/error.log
+
+slow_query_log  = /var/log/mysql/slow.log
+long_query_time = 0.1
+expire_logs_days  = 10
+max_binlog_size         = 100M
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet  = 16M
+
+[isamchk]
+key_buffer    = 16M
+
+!includedir /etc/mysql/conf.d/
+}, "0644")
+
+  File.write("/etc/mysql/backup.cnf", %Q{
 !include /etc/mysql/my.cnf
 !include /etc/mysql/debian.cnf}, "0600")
 
   run "/etc/init.d/mysql restart"
+
+  File.write("/etc/monit/conf.d/mysql", MONIT_MYSQL)
+  run "/etc/init.d/monit restart"
 
   %w{queries threads bytes slowqueries}.each do |plugin|
     run "ln -sfv /usr/share/munin/plugins/mysql_#{plugin
@@ -564,6 +699,12 @@ innodb_lock_wait_timeout = 10})
   run("ln -sf " +
     "#{HOME}/nebula-server/current/script/munin-plugins/memory " +
     "/etc/munin/plugins/nebula44_mem ")
+  run("ln -sf " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/tasks " +
+    "/etc/munin/plugins/nebula44_tasks ")
+  run("ln -sf " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/pool " +
+    "/etc/munin/plugins/nebula44_pool ")
 
   # Market plugins
   resources = %w{metal energy zetium creds}
@@ -589,6 +730,9 @@ production:
   username: "#{dbuser}"
   password: "#{pass}"
 }, nil, UCH)
+
+  File.write("/etc/monit/conf.d/nebula-server", MONIT_NEBUlA_SERVER)
+  run "/etc/init.d/monit restart"
 end # }}}
 
 if ARGV.include?("client") # {{{
@@ -604,7 +748,7 @@ if ARGV.include?("client") # {{{
   run "a2enmod expires headers"
   Dir.mkdir "#{HOME}/nebula-client", nil, UCH
   apache_vhost("nebula-client", "#{HOME}/nebula-client/current", "static")
-  apache_status!
+  apache_scripts!
 end # }}}
 
 if ARGV.include?("web") # {{{
@@ -622,6 +766,8 @@ if ARGV.include?("web") # {{{
     rvm "install #{rubyv}"
   end
   File.ensure("#{HOME}/.profile", "export RAILS_ENV='production'\n", nil, UCH)
+  Dir.mkdir("#{HOME}/bin", nil, UCH)
+  File.write("#{HOME}/bin/webrunner", WEBRUNNER, 755, UCH)
 
   # Set up php
   install "libmysqlclient-dev libapache2-mod-php5 php5-mysql php-apc " +
@@ -642,7 +788,7 @@ if ARGV.include?("web") # {{{
       sub(/^post_max_size = .+$/, "post_max_size = 8M")
   end
 
-  apache_status!
+  apache_scripts!
 
   # Enable xsendfile for avatars
   File.write("/etc/apache2/mods-available/xsendfile.conf", %Q{
@@ -863,4 +1009,7 @@ ActionMailer::Base.sendmail_settings[:arguments] = "-i"
 }
 
   run "/etc/init.d/apache2 restart"
+
+  File.write("/etc/monit/conf.d/delayed_job", MONIT_DELAYED_JOB)
+  run "/etc/init.d/monit restart"
 end # }}}

@@ -3,8 +3,10 @@
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:base="components.base.*"
          xmlns:announcement="components.announcement.*"
+         xmlns:registerrequired="components.registerrequired.*"
          currentState="visible"
-         visible="{ML.player.dailyBonus != null
+         visible="{ML.quests.currentTotal > 0
+         || ML.player.dailyBonus != null
          || MQL.showButton
          || announcementButton.visible}">
    <fx:Script>
@@ -14,6 +16,7 @@
       import components.popups.ActionConfirmationPopUp;
 
       import controllers.dailybonus.DailyBonusCommand;
+      import controllers.ui.NavigationController;
 
       import models.ModelLocator;
       import models.quest.MMainQuestLine;
@@ -46,19 +49,19 @@
          var cont: DailyBonusComp = new DailyBonusComp();
          cont.reward = ML.player.dailyBonus;
          cont.addEventListener(DailyBonusEvent.CLOSE_PANEL,
-                               function (e: DailyBonusEvent): void {
-                                  popUp.close();
-                               });
+                 function (e: DailyBonusEvent): void {
+                    popUp.close();
+                 });
          popUp.title = Localizer.string('Popups', 'title.dailyBonus');
          popUp.addElement(cont);
          popUp.confirmButtonLabel = Localizer.string('Quests',
-                                                     'label.claimReward');
+                 'label.claimReward');
          popUp.cancelButtonLabel = Localizer.string('Quests',
-                                                    'label.claimLater');
+                 'label.claimLater');
          popUp.confirmButtonClickHandler = function (button: Button): void {
             new DailyBonusCommand(
-               DailyBonusCommand.CLAIM,
-               {'planetId': MSSObject(cont.planetSelector.selectedItem).id}
+                    DailyBonusCommand.CLAIM,
+                    {'planetId':MSSObject(cont.planetSelector.selectedItem).id}
             ).dispatch();
          };
          popUp.show();
@@ -66,6 +69,17 @@
 
       private function btnTutorial_clickHandler(event: MouseEvent): void {
          MQL.openCurrentUncompletedQuest();
+      }
+
+      private function questButton_click(event: MouseEvent): void {
+         if (ML.quests.unclaimedQuestId > 0)
+         {
+            ML.quests.show(ML.quests.unclaimedQuestId);
+         }
+         else
+         {
+            NavigationController.getInstance().showQuests();
+         }
       }
       ]]>
    </fx:Script>
@@ -112,6 +126,7 @@
       <base:layout>
          <s:VerticalLayout gap="10" horizontalAlign="left"/>
       </base:layout>
+      <registerrequired:RegisterButton/>
       <s:Button
          skinClass="components.skins.DailyBonusButtonSkin"
          visible="{ML.player.dailyBonus != null}"
@@ -121,5 +136,9 @@
         skinClass="components.skins.MainQuestButtonSkin"
         id="btnTutorial" label="Tutorial" visible="{MQL.showButton}"
         click="btnTutorial_clickHandler(event)"/>
+      <s:Button
+         skinClass="components.skins.QuestScreenButtonSkin"
+         visible="{ML.quests.currentTotal > 0}"
+         click="questButton_click(event)"/>
    </base:AdvancedContainer>
 </s:Group>

@@ -6,9 +6,9 @@ class Event::FowChange::SolarSystem < Event::FowChange
 
   def initialize(solar_system_id)
     @solar_system_id = solar_system_id
-    process_changes(
-      FowSsEntry.where(:solar_system_id => solar_system_id)
-    )
+    process_changes(without_locking do
+      FowSsEntry.where(:solar_system_id => solar_system_id).all
+    end)
   end
 
   def solar_system
@@ -37,6 +37,9 @@ class Event::FowChange::SolarSystem < Event::FowChange
   # * #metadatas (+Hash+ of _player_id_ => +SolarSystemMetadata+)
   #
   def process_changes(fow_ss_entries, coords=nil, kind=nil, player_minimal=nil)
+    typesig binding, Array, [NilClass, Array], [NilClass, Fixnum],
+      [NilClass, Hash]
+
     metadatas = {}
     player_ids = Set.new
 

@@ -1,22 +1,16 @@
 package models.chat
 {
    import controllers.ui.NavigationController;
-   
+
    import models.BaseModel;
    import models.chat.events.MChatMemberEvent;
 
    import utils.autocomplete.IAutoCompleteValue;
 
 
-   /**
-    * @see models.chat.events.MChatMemberEvent#IS_ONLINE_CHANGE
-    */
    [Event(name="isOnlineChange", type="models.chat.events.MChatMemberEvent")]
-
-   /**
-    * @see models.chat.events.MChatMemberEvent#IS_IGNORED_CHANGE
-    */
    [Event(name="isIgnoredChage", type="models.chat.events.MChatMemberEvent")]
+   [Event(name="nameChange", type="models.chat.events.MChatMemberEvent")]
    
    
    /**
@@ -41,12 +35,22 @@ package models.chat
          this.isIgnored = isIgnored;
       }
 
+      private var _name: String;
+      [Bindable(event="nameChange")]
       /**
        * Name of the member (player actually).
        *
        * @default null
        */
-      public var name: String;
+      public function set name(value: String): void {
+         if (_name != value) {
+            _name = value;
+            dispatchSimpleEvent(MChatMemberEvent, MChatMemberEvent.NAME_CHANGE);
+         }
+      }
+      public function get name(): String {
+         return _name;
+      }
 
       public function get autoCompleteValue(): String {
          return name;

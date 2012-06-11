@@ -36,7 +36,7 @@ describe Objective::HavePlanets do
       @planet = Factory.create(:planet, :player => @old)
       # Change player
       @planet.player = @new
-      @models = [@planet]
+      @models = @planet
 
       @obj = Factory.create(:o_have_planets, :count => 3)
       @op_old = Factory.create(:objective_progress, :objective => @obj,

@@ -4,6 +4,8 @@ package components.popups
 
    import flash.events.MouseEvent;
 
+   import flashx.textLayout.formats.VerticalAlign;
+
    import models.ModelLocator;
 
    import mx.collections.ArrayCollection;
@@ -14,6 +16,9 @@ package components.popups
    import spark.components.Button;
    import spark.components.Group;
    import spark.components.Panel;
+   import spark.layouts.HorizontalAlign;
+   import spark.layouts.HorizontalLayout;
+   import spark.layouts.supportClasses.LayoutBase;
 
    import utils.Objects;
    import utils.datastructures.Collections;
@@ -70,6 +75,16 @@ package components.popups
       /* ###################### */
       /* ### ACTION BUTTONS ### */
       /* ###################### */
+
+      /**
+       * @param value one of <code>HorizontalAlign</code> class constants.
+       */
+      protected function get actionButtonsLayout(): LayoutBase {
+         const layout:HorizontalLayout = new HorizontalLayout();
+         layout.horizontalAlign = HorizontalAlign.RIGHT;
+         layout.verticalAlign = VerticalAlign.MIDDLE;
+         return layout;
+      }
       
       /**
        * A list of all action buttons in this popup.
@@ -89,7 +104,7 @@ package components.popups
        * when one of those buttons is clicked) to the popup. Buttons are ordered the same way as you
        * add them.
        * 
-       * @param button an istance of a button.
+       * @param button an instance of a button.
        * @param clickHandler click handler to invoke when the user clicks on this button. The handler will be
        * passed the button as the only argument. Can be <code>null</code>.
        * @param closeOnClick if <code>true</code>, popup will be closed when the button is clicked.
@@ -111,6 +126,7 @@ package components.popups
       protected override function partAdded(partName:String, instance:Object) : void {
          super.partAdded(partName, instance);
          if (instance == grpActionButtons) {
+            grpActionButtons.layout = actionButtonsLayout;
             for each (var actionButton:ActionButton in _actionButtons) {
                grpActionButtons.addElement(actionButton.button);
             }

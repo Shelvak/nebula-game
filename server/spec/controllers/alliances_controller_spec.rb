@@ -221,6 +221,10 @@ describe AlliancesController do
         with(@alliance, player)
       invoke @action, @params
     end
+
+    it "should work" do
+      invoke @action, @params
+    end
   end
 
   describe "alliances|leave" do
@@ -367,6 +371,18 @@ describe AlliancesController do
 
     it_behaves_like "only by owner"
     it_should_behave_like "having controller action scope"
+
+    it "should not fail with good params" do
+      message = create_message(@action, @params, false, true)
+      check_options!(message)
+    end
+
+    it "should fail with invalid params" do
+      message = create_message(@action, @params.merge('lol' => 3), false, true)
+      lambda do
+        check_options!(message)
+      end.should raise_error(GenericController::ParamOpts::BadParams)
+    end
 
     it "should reduce creds" do
       lambda do

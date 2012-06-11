@@ -19,7 +19,7 @@ describe Objective::Destroy do
       end.should change(@objective_progress, :completed).by(1)
     end
 
-    it "should progress if level si greater than wanted" do
+    it "should progress if level is greater than wanted" do
       @unit.level = 2
       @unit.save!
 

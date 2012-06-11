@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:BaseSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
+               xmlns:s="library://ns.adobe.com/flex/spark"
+               xmlns:base="components.base.*"
+               minWidth="16" minHeight="16"
+               creationComplete="group1_creationCompleteHandler(event)">
+   
+   <fx:Metadata>
+      [HostComponent("spark.components.Button")]
+   </fx:Metadata>
+   
+   <fx:Script>
+      import mx.events.CollectionEvent;
+      import mx.events.CollectionEventKind;
+      import mx.events.FlexEvent;
+      
+      import spark.effects.Fade;
+      import spark.effects.animation.RepeatBehavior;
+      
+      import utils.assets.AssetNames;
+      
+      private var fadeEffect: Fade = new Fade(overLabel);
+
+      private function refreshState(e: CollectionEvent = null): void
+      {
+         if (e == null || e.kind != CollectionEventKind.REFRESH)
+         {
+            if (ML.quests.unclaimedQuestId > 0)
+            {
+               fadeEffect.play([overLabel]);
+            }
+            else
+            {
+               fadeEffect.stop();
+            }
+         }
+      }
+      
+      protected function group1_creationCompleteHandler(event:FlexEvent):void
+      {
+         ML.quests.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshState);
+         fadeEffect.alphaFrom = 1;
+         fadeEffect.alphaTo = 0;
+         fadeEffect.repeatBehavior = RepeatBehavior.REVERSE;
+         fadeEffect.duration = 1000;
+         fadeEffect.repeatCount = 0;
+         refreshState();
+      }
+
+      private function getImage(name:String): BitmapData {
+         return IMG.getImage(
+            AssetNames.QUESTS_BUTTON_IMAGES_FOLDER + "button_" + name
+         );
+      }
+
+   </fx:Script>
+   
+   <!-- states -->
+   <base:states>
+      <s:State name="up" />
+      <s:State name="over" />
+      <s:State name="down" />
+      <s:State name="disabled" />
+   </base:states>
+   
+   <!-- layer 1: fill -->
+   <s:BitmapImage source="{getImage('up')}"
+                  source.over="{getImage('over')}"
+                  visible="{ML.quests.unclaimedQuestId == 0}"/>
+   <s:BitmapImage source="{getImage('up_reward')}"
+                  source.over="{getImage('over_reward')}"
+                  visible="{ML.quests.unclaimedQuestId > 0}"/>
+   <s:BitmapImage id="overLabel" visible="false" visible.up="{ML.quests.unclaimedQuestId > 0}"
+                  source="{getImage('blink')}"/>
+   
+</base:BaseSkin>
