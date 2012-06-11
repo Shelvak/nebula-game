@@ -1443,7 +1443,7 @@
     <label.cooldownEndsIn value="Next battle in"/>
     <label.longerThenExpected
       value="This action is taking more time then expected." />
-    <label.reestablish value="Reestablish"/>
+    <label.reestablish value="Reconnect"/>
   </General>
 
   <Errors>
@@ -2193,6 +2193,15 @@
       </p>
       <p>Click '{0}' to reconnect.</p>
     </message.disconnect.otherLogin>
+
+    <title.disconnect.cannotReestablish
+      value="Cannot reestablish connection!" />
+    <message.disconnect.cannotReestablish>
+      <p>Sorry.</p>
+      <p>Your connection to the server was lost and we were unable to
+      reestablish it.</p>
+      <p>Click '{0}' to reconnect.</p>
+    </message.disconnect.cannotReestablish>
     
     <title.disconnect.playerErased value="Bye bye!" />
     <message.disconnect.playerErased>

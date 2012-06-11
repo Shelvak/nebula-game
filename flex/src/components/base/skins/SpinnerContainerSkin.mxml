@@ -22,7 +22,7 @@
    <!--- Container for content of a component. -->
    <s:Group id="contentGroup"
             top="0" bottom="0" left="0" right="0" minWidth="0" minHeight="0"
-            alpha="1" alpha.busy="0.3" alpha.timeout="0.3" alpha.reestablish="0.3"/>
+            alpha="1"/>
    
    <s:Group horizontalCenter="0" verticalCenter="0"
             visible="false" visible.busy="true" visible.timeout="true"
@@ -48,17 +48,22 @@
                 label="{Localizer.bundlesSet
                               ? Localizer.string('General', 'label.reestablish')
                               : 'retry'}"
-                click="reestablish(event)"/>
-         
+                click="reconnect(event)"/>
+
                   
    </s:Group>
 
   <fx:Script><![CDATA[
-    import utils.locale.Localizer;
-    import utils.remote.ServerProxyInstance;
+    import controllers.startup.StartupManager;
 
-    private function reestablish(event: MouseEvent): void {
-      ServerProxyInstance.getInstance().reestablishConnection(true);
+    import mx.logging.Log;
+
+    import utils.locale.Localizer;
+
+    private function reconnect(event: MouseEvent): void {
+      Log.getLogger('SpinnerContainerSkin').info("Resetting due to failed reestablishment.");
+      StartupManager.resetApp();
+      StartupManager.connectAndAuthorize();
     }
     ]]></fx:Script>
 </s:SparkSkin>

@@ -44,7 +44,7 @@ package utils.remote
        * disconnect old socket and drop "Connection lost" popup on fail.
        */
       function reestablishConnection(killOldSocket: Boolean) : void;
-      
+
       
       /**
        * Clears history.<br/>

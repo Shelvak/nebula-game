@@ -65,7 +65,7 @@ package utils.remote.rmo
             "id":     id,
             "action": action,
             "params": PropertiesTransformer.objectToUnderscore(parameters),
-            "lp_seq": MessagesProcessor.getInstance().lastProcessedMessage
+            "lpseq": MessagesProcessor.getInstance().lastProcessedMessage
          });
       }
    }

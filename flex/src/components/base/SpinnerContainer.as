@@ -16,6 +16,7 @@ package components.base
    import utils.DateUtil;
 
    import utils.locale.Localizer;
+   import utils.remote.ServerConnector;
 
 
    /**
@@ -55,7 +56,8 @@ package components.base
       /**
        * Amount of time in milliseconds until reestablish button is shown.
        */
-      private static const TIME_UNTIL_REESTABLISH: Number = 15000;
+      private static const TIME_UNTIL_REESTABLISH: Number =
+         ServerConnector.CHECK_RESPONSE_TIME + 5000;
       
       
       private var flags: Object = new Object ();
@@ -139,7 +141,7 @@ package components.base
       /**
        * If <code>true</code> progress bar indicating timeout will be shown.
        * 
-       * @default false
+       * @default true
        */
       public function set timeoutEnabled(v:Boolean) : void
       {
