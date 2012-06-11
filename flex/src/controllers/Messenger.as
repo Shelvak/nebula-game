@@ -35,7 +35,7 @@ package controllers
       {
          hide();
       }
-      
+
       private static function resetTimer(): void
       {
          if (timer.running || timer.currentCount > 0)

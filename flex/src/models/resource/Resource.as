@@ -171,11 +171,11 @@ package models.resource
          if (currentMetal.currentStock  >= destMetal &&
             currentEnergy.currentStock >= destEnergy &&
             currentZetium.currentStock >= destZetium)
-            return 0
+            return 0;
          else if (((currentMetal.rate <= 0) && (currentMetal.currentStock < destMetal)) || 
             ((currentEnergy.rate <= 0) && (currentEnergy.currentStock < destEnergy)) || 
             ((currentZetium.rate <= 0) && (currentZetium.currentStock < destZetium)))
-            return -1
+            return -1;
          else
          {
             var tempMetalReach: int = currentMetal.currentStock >= destMetal?0:
@@ -194,7 +194,7 @@ package models.resource
             
             if (Math.max(tempMetalReach, tempEnergyReach, tempZetiumReach) > 
                Math.min(tempMetalLose, tempEnergyLose, tempZetiumLose))
-               return -1
+               return -1;
             else
                return Math.max(tempMetalReach, tempEnergyReach, tempZetiumReach);
          }

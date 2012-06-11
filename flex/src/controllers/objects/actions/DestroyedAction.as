@@ -43,7 +43,7 @@ package controllers.objects.actions
                ML.latestPlanet.units.refresh();
                ML.latestPlanet.invalidateUnitCachesAndDispatchEvent();
             }
-            // TODO: Find out why some filters don't refresh if you dont call
+            // TODO: Find out why some filters don't refresh if you don't call
             // refresh function on the list
             var HS: MCHealingScreen = MCHealingScreen.getInstance();
             if (HS.oldProvider != null)
@@ -51,7 +51,7 @@ package controllers.objects.actions
                HS.oldProvider.refresh();
                HS.refreshScreen();
             }
-            // TODO: Find out why some filters don't refresh if you dont call
+            // TODO: Find out why some filters don't refresh if you don't call
             // refresh function on the list
             var LS: MCLoadUnloadScreen = MCLoadUnloadScreen.getInstance();
             if (LS.oldProvider != null)
@@ -59,7 +59,7 @@ package controllers.objects.actions
                LS.oldProvider.refresh();
                LS.refreshScreen();
             }
-            // TODO: Find out why some filters don't refresh if you dont call
+            // TODO: Find out why some filters don't refresh if you don't call
             // refresh function on the list
             var US: MCUnitScreen = MCUnitScreen.getInstance();
             if (US.units != null)

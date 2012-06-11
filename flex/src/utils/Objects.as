@@ -611,7 +611,7 @@ package utils
                                                  high:Number,
                                                  paramValue:Number,
                                                  allowLow:Boolean = false,
-                                                 allowHight:Boolean = false) : Number {
+                                                 allowHigh:Boolean = false) : Number {
          if (low >= high) {
             throw new ArgumentError(
                "paramInRangeNumbers(): [param low] must be less than [param high] but\n"
@@ -620,7 +620,7 @@ package utils
             );
          }
          paramGreaterThanNumber(paramName, low, paramValue, allowLow);
-         paramLessThanNumber(paramName, high, paramValue, allowHight);
+         paramLessThanNumber(paramName, high, paramValue, allowHigh);
          return paramValue;
       }
       
