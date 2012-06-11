@@ -76,10 +76,10 @@ class GenericController
     ### Session variables ###
 
     def session_get(message, key)
-      dispatcher.storage_get(message.client, key)
+      dispatcher.storage_get(message, key)
     end
     def session_set(message, key, value)
-      dispatcher.storage_set(message.client, key, value)
+      dispatcher.storage_set(message, key, value)
     end
 
     # Galaxy ruleset player is in.

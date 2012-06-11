@@ -10,7 +10,7 @@ module Dispatcher::ControllerTask
 
         begin
           # Wrap our request in correct ruleset.
-          ruleset = dispatcher.storage_get(message.client, :ruleset)
+          ruleset = dispatcher.storage_get(message, :ruleset)
           ruleset ||= GameConfig::DEFAULT_SET
 
           CONFIG.with_set_scope(ruleset) do

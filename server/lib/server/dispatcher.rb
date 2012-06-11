@@ -143,15 +143,24 @@ class Dispatcher
       deliver_buffer(client, player_id, last_processed_seq)
       old_client = @player_id_to_client[player_id]
       player = @client_to_player[old_client]
-      disconnect(player_id, DISCONNECT_REESTABLISHING) # Disconnect old client.
+      storage = @storage[old_client]
+
+      # Remove old client to player association.
+      @client_to_player.delete old_client
+      @player_id_to_client.delete player_id
+
+      # Disconnect old client.
+      disconnect(old_client, DISCONNECT_REESTABLISHING)
+      # Associate new player.
       set_player(client, player)
 
       # Reassign stored values.
       @reestablishment_tokens[player_id] = stored_token
       @message_buffers[player_id] = stored_message_buffer
+      @storage[client] = storage
     else
       info "Cannot reestablish player #{player_id} with given data (#{data
-        }): bad token", to_s(client)
+        }): bad token: #{stored_token}", to_s(client)
       disconnect(client, DISCONNECT_CANNOT_REESTABLISH)
     end
   end
@@ -248,9 +257,10 @@ class Dispatcher
   def confirm_receive(message, error=nil)
     raise_to_abort { typesig binding, Message, [NilClass, Exception] }
 
+    client = client_from_message(message)
     confirmation = {
       MESSAGE_REPLY_TO_KEY => message.id,
-      MESSAGE_SEQ_KEY => next_client_seq(message.client)
+      MESSAGE_SEQ_KEY => next_client_seq(client)
     }
     if error
       confirmation['failed'] = true
@@ -258,12 +268,12 @@ class Dispatcher
         'type' => error.class.to_s,
         'message' => error.message
       }
-      debug "Confirming #{message} with error.", to_s(message.client)
+      debug "Confirming #{message} with error.", to_s(client)
     else
-      debug "Confirming successful #{message}.", to_s(message.client)
+      debug "Confirming successful #{message}.", to_s(client)
     end
 
-    transmit_to_client(message.client, confirmation)
+    transmit_to_client(client, confirmation)
   end
 
   # Disconnect client. Send message and close connection.
@@ -287,15 +297,16 @@ class Dispatcher
   def respond(message, params)
     raise_to_abort { typesig binding, Message, Hash }
 
+    client = client_from_message(message)
     message_hash = {
       # Pushed messages have message sequence number, regular messages don't.
       # Generate one for them instead. See #message_object for more info.
-      MESSAGE_SEQ_KEY => message.seq || next_client_seq(message.client),
+      MESSAGE_SEQ_KEY => message.seq || next_client_seq(client),
       "action" => message.full_action,
       "params" => params
     }
 
-    transmit_to_client(message.client, message_hash)
+    transmit_to_client(client, message_hash)
   end
 
   # Transmits message to given players ids.
@@ -324,7 +335,9 @@ class Dispatcher
   end
 
   # Thread safe storage getter.
-  def storage_get(client, key)
+  def storage_get(message, key)
+    client = client_from_message(message)
+
     abort ClientDisconnected.new(
       "#{client} has already disconnected, no storage available!"
     ) unless client_connected?(client)
@@ -332,7 +345,9 @@ class Dispatcher
     client_storage[key]
   end
   # Thread safe storage setter.
-  def storage_set(client, key, value)
+  def storage_set(message, key, value)
+    client = client_from_message(message)
+
     return unless client_connected?(client)
     client_storage = @storage[client]
     client_storage[key] = value
@@ -606,7 +621,8 @@ private
 
     # Clean up buffer from processed messages.
     cleaned = 0
-    while buffer.peek.message[MESSAGE_SEQ_KEY] <= last_processed_seq
+    while ! (entry = buffer.peek).nil? &&
+        entry.message[MESSAGE_SEQ_KEY] <= last_processed_seq
       cleaned += 1
       buffer.removeFirst
     end
@@ -635,6 +651,16 @@ private
       transmit_to_client(client, entry.message) \
         if entry.message[MESSAGE_SEQ_KEY] > last_processed_seq
     end
+  end
+
+  # Resolve current +Client+ from +Message+. Client might change if player had
+  # its connection dropped and is reestablishing connection.
+  def client_from_message(message)
+    # Lets try to find our socket from player -> client hash.
+    client = message.player.nil? ? nil : @player_id_to_client[message.player.id]
+    # If it is not found, just use original socket that message was received
+    # from.
+    client || message.client
   end
 end
 
