@@ -115,7 +115,12 @@ class BulkSql
         end
       end
 
+      keep_tempfile = ENV[
+        Java::spacemule.persistence.DB.KeepTmpFilesEnvVar
+      ] == "1"
+
       tempfile = Tempfile.new("bulk_sql-ruby-#{options[:table_name]}")
+      tempfile.binmode # Put into binary mode, because win32 mysql does not understand \r\n.
       begin
         content = builder.to_s
         tempfile.write(content)
@@ -140,9 +145,13 @@ class BulkSql
               c_select_values
           end
 
-          raise "Wanted to insert #{objects.size} rows, however only #{
-            ids.size} rows inserted for #{options[:table_name]}!" \
-            if objects.size != ids.size
+          if objects.size != ids.size
+            err = "Wanted to insert #{objects.size} rows, however only #{
+              ids.size} rows inserted for #{options[:table_name]}!"
+            err += " Temp file kept at: #{tempfile.path}" if keep_tempfile
+
+            raise err
+          end
 
           objects.each_with_index do |object, index|
             object[primary_key] = ids[index]
@@ -152,9 +161,7 @@ class BulkSql
         raise e.class,
           "#{e.message}\nData was:\n#{columns_str}\n#{content}", e.backtrace
       ensure
-        tempfile.close! unless ENV[
-          Java::spacemule.persistence.DB.KeepTmpFilesEnvVar
-        ] == "1"
+        tempfile.close! unless keep_tempfile
       end
     end
 
