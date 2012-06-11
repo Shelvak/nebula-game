@@ -1,5 +1,7 @@
 package utils.remote
 {
+   import controllers.connection.ConnectionManager;
+   import controllers.messages.MessagesProcessor;
    import controllers.messages.ResponseMessagesTracker;
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupMode;
@@ -13,6 +15,8 @@ package utils.remote
    import flash.events.TimerEvent;
    import flash.net.Socket;
    import flash.utils.Timer;
+
+   import models.ModelLocator;
 
    import mx.logging.ILogger;
    import mx.logging.Log;
@@ -73,7 +77,7 @@ package utils.remote
       }
 
       private const _timeSynchronizer:TimeSynchronizer = new TimeSynchronizer();
-      private const _socket: Socket = new Socket();
+      private var _socket: Socket = new Socket();
       private var _connecting: Boolean = false;
 
       client_internal function get lowestObservedLatency(): int {
@@ -100,6 +104,16 @@ package utils.remote
             addEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
             addEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
             addEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+         }
+      }
+
+      private function removeSocketEventHandlers(): void {
+         with (_socket) {
+            removeEventListener(Event.CLOSE, socket_closeHandler);
+            removeEventListener(Event.CONNECT, socket_connectHandler);
+            removeEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
+            removeEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
+            removeEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
          }
       }
 
@@ -243,8 +257,7 @@ package utils.remote
 
       private function noResponse(e: TimerEvent): void
       {
-         //TODO: TRY NEW SOCKET WITH 10s TIMEOUT, KILL ORIGINAL SOCKET ON SUCCESS AND USE NEW ONE AS ORIGINAL
-         // ON FAIL KILL NEW ONE AND START NEW RESPONSE TIMER
+         reestablishConnection(false);
       }
 
       private function ping(e: TimerEvent): void
@@ -257,20 +270,95 @@ package utils.remote
 
       private function isPong(msg: String): Boolean
       {
-         if (msg == '!')
+         return msg == '!';
+      }
+
+      private function get ML(): ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
+
+      private function get SI(): StartupInfo
+      {
+         return StartupInfo.getInstance();
+      }
+
+      private function reestablish_connectHandler(event: Event): void {
+         // normally there should not be anything in the buffer when
+         // connection has been established but clear it just in case
+         _buffer = "";
+         _connecting = false;
+         _socket = reestablishmentSocket;
+         removeReestablishmentSocketHandlers();
+         reestablishmentSocket = null;
+         addSocketEventHandlers();
+         requestReestablish();
+      }
+
+      private function reestablish_closeHandler(event: Event): void {
+         if (_socket == null)
          {
-            return true;
+            _buffer = "";
+            _connecting = false;
+            if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
+               dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST)
+            }
          }
          else
          {
-            return false;
+            startResponseTimer();
+         }
+         removeReestablishmentSocketHandlers();
+         reestablishmentSocket = null;
+      }
+
+      private var reestablishmentSocket: Socket;
+
+      public function reestablishConnection(killOldSocket: Boolean): void
+      {
+         killPingTimer();
+         killResponseTimer();
+         if (killOldSocket)
+         {
+            removeSocketEventHandlers();
+            disconnect();
+            _socket = null;
+         }
+         reestablishmentSocket = new Socket();
+         addReestablishmentSocketHandlers();
+         reestablishmentSocket.connect(SI.server, SI.port);
+      }
+
+      private function addReestablishmentSocketHandlers(): void
+      {
+         with (reestablishmentSocket)
+         {
+            addEventListener(Event.CLOSE, reestablish_closeHandler);
+            addEventListener(Event.CONNECT, reestablish_connectHandler);
+            addEventListener(ProgressEvent.SOCKET_DATA, reestablish_socketDataHandler);
+            addEventListener(IOErrorEvent.IO_ERROR, reestablish_closeHandler);
+            addEventListener(SecurityErrorEvent.SECURITY_ERROR, reestablish_closeHandler);
          }
       }
 
-      public function requestReestablish(newSocket: Socket): void
+      private function removeReestablishmentSocketHandlers(): void
       {
-         if (newSocket.connected) {
-            //TODO: newSocket.writeUTFBytes('reestablish:player_id:lp_seq:token\n');
+         with (reestablishmentSocket)
+         {
+            removeEventListener(Event.CLOSE, reestablish_closeHandler);
+            removeEventListener(Event.CONNECT, reestablish_connectHandler);
+            removeEventListener(ProgressEvent.SOCKET_DATA, reestablish_socketDataHandler);
+            removeEventListener(IOErrorEvent.IO_ERROR, reestablish_closeHandler);
+            removeEventListener(SecurityErrorEvent.SECURITY_ERROR, reestablish_closeHandler);
+         }
+      }
+
+      private function requestReestablish(): void
+      {
+         if (_socket.connected) {
+            _socket.writeUTFBytes('reestablish:' + ML.player.id + ':' +
+               MessagesProcessor.getInstance().lastProcessedMessage + ':'
+               + StartupInfo.getInstance().reestablishmentToken + '\n');
          }
       }
 

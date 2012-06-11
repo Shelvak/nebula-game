@@ -55,9 +55,10 @@
 
   <fx:Script><![CDATA[
     import utils.locale.Localizer;
+    import utils.remote.ServerProxyInstance;
 
     private function reestablish(event: MouseEvent): void {
-      //TODO: reestablish connection
+      ServerProxyInstance.getInstance().reestablishConnection(true);
     }
     ]]></fx:Script>
 </s:SparkSkin>

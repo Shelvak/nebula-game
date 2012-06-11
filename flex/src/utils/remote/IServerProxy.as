@@ -37,6 +37,13 @@ package utils.remote
        * Disconnects from the server. This operation is synchronous and no events are dispatched.
        */
       function disconnect() : void;
+
+
+      /**
+       * Try to connect on a new socket, param killOldSocket defines if we should
+       * disconnect old socket and drop "Connection lost" popup on fail.
+       */
+      function reestablishConnection(killOldSocket: Boolean) : void;
       
       
       /**
