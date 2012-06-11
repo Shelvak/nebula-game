@@ -302,7 +302,7 @@ package models.unit
          }
       }
 
-      private function getOtherSelected(resource: String = ''): int
+      private function getOtherSelected(resource: String = null): int
       {
          var selectedTotal: int = 0;
          if (resource != ResourceType.METAL)

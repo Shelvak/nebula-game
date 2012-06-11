@@ -14,9 +14,11 @@ package utils
    public class TextFlowUtil
    {
       private static const REGEXP_EVENT_HREF:RegExp =
-                              /<a(.+?)(href=["']event:[^>]+?)>([^<]+?)<\/a>/g;
+         new RegExp("<a(.+?)(href=[\"']event:[^>]+?)>([^<]+?)</a>","g")
+//                              /<a(.+?)(href=["']event:[^>]+?)>([^<]+?)<\/a>/g;
       private static const REGEXP_LINK_HREF:RegExp =
-                              /<a(.+?)(href=["'].+?:\/\/[^>]+?)>([^<]+?)<\/a>/g;
+         new RegExp("<a(.+?)(href=[\"'].+?://[^>]+?)>([^<]+?)</a>", "g")
+//                              /<a(.+?)(href=["'].+?:\/\/[^>]+?)>([^<]+?)<\/a>/g;
       
       private static function addLinkStyles(html:String): String {
          html = html.replace(

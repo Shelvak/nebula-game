@@ -113,7 +113,7 @@
     }
 
     [Bindable(event="selectedResourcesChange")]
-    private function getOtherSelected(resource: String = ''): int {
+    private function getOtherSelected(resource: String = null): int {
       var selectedTotal: int = 0;
       if (metalSelector && energySelector && zetiumSelector) {
         if (resource != ResourceType.METAL) {

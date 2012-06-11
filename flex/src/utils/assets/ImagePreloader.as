@@ -520,9 +520,10 @@ package utils.assets
                getVisualAsset(key);
             }
          }
-         else
-         {
-            throw new Error("Unexpected asset type: " + getQualifiedClassName(instance));
+         else {
+            throw new Error(
+               "Unexpected asset type " + getQualifiedClassName(instance) + " for loader "
+                  + mLoader.currentName);
          }
          loadNextSWF(mLoader);
       }
