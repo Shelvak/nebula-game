@@ -509,7 +509,6 @@ export JRUBY_OPTS='--server --1.9 -J-XX:+TieredCompilation'},
   File.write("/etc/monit/monitrc", 
   %Q{# monit configuration file
 
-# Check every 30 seconds, wait 1 mins for first check after startup.
 set daemon 30 with start delay 60
 
 set logfile /var/log/monit.log
@@ -518,9 +517,12 @@ set statefile /var/run/monit/monit.state
 
 set mailserver localhost
 set alert arturas@nebula44.com
+set alert elsbergass@gmail.com
 
 # Allow connecting to HTTP server.
-set httpd port 2812 and allow arturas:nebula44.mmosmrts.monit
+set httpd port 2812 
+  allow arturas:nebula44.mmosmrts.monit
+  allow henrikas:operatoReady1.2.3
 
 include /etc/monit/conf.d/*
   })
