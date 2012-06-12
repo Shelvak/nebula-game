@@ -34,10 +34,10 @@ package components.base
 
 
    /**
-    * This is similar to timeout. Only difference is that reestablish button
+    * This is similar to timeout. Only difference is that reconnect button
     * is shown.
     */
-   [SkinState ("reestablish")]
+   [SkinState ("reconnect")]
    
    
    
@@ -54,10 +54,9 @@ package components.base
        */      
       private static const TIME_UNTIL_TIMEOUT: Number = 3000;
       /**
-       * Amount of time in milliseconds until reestablish button is shown.
+       * Amount of time in milliseconds until reconnect button is shown.
        */
-      private static const TIME_UNTIL_REESTABLISH: Number =
-         ServerConnector.CHECK_RESPONSE_TIME + 5000;
+      private static const TIME_UNTIL_RECONNECT: Number = 15000;
       
       
       private var flags: Object = new Object ();
@@ -65,25 +64,23 @@ package components.base
       
       
       private var _timeout: Boolean = false;
-      private var _reestablish: Boolean = false;
+      private var _reconnect: Boolean = false;
       /**
        * When this is true, component is in "timeout" state.
        */ 
       private function set timeout (v: Boolean) :void
       {
          _timeout = v;
-         flags.timeoutChanged = true;
          
          invalidateProperties ();
          invalidateSkinState ();
       }
       /**
-       * When this is true, component is in "reestablish" state.
+       * When this is true, component is in "reconnect" state.
        */
-      private function set reestablish (v: Boolean) :void
+      private function set reconnect (v: Boolean) :void
       {
-         _reestablish = v;
-         flags.reestablishChanged = true;
+         _reconnect = v;
 
          invalidateProperties ();
          invalidateSkinState ();
@@ -98,9 +95,9 @@ package components.base
       /**
        * @private
        */
-      private function get reestablish () :Boolean
+      private function get reconnect () :Boolean
       {
-         return _reestablish;
+         return _reconnect;
       }
       
       
@@ -121,7 +118,7 @@ package components.base
          if (!v)
          {
             timeout = false;
-            reestablish = false;
+            reconnect = false;
          }
          flags.busyChanged = true;
          
@@ -207,9 +204,9 @@ package components.base
       {
          if (busy && timeout && timeoutEnabled)
          {
-            if (reestablish)
+            if (reconnect)
             {
-               return "reestablish";
+               return "reconnect";
             }
             else
             {
@@ -239,9 +236,9 @@ package components.base
          {
             timeout = true;
          }
-         if (timer.currentCount * timer.delay == TIME_UNTIL_REESTABLISH)
+         if (timer.currentCount * timer.delay == TIME_UNTIL_RECONNECT)
          {
-            reestablish = true;
+            reconnect = true;
          }
       }
    }
