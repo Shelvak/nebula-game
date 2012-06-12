@@ -14,6 +14,14 @@ class Dispatcher
   # Maximum number of bytes in message buffer.
   MSG_BUFFER_MAX_SIZE = 512.kilobytes
   
+  ### Connection throttling ###
+
+  # Maximum number of allowed connections to this server.
+  MAX_CONNECTIONS = 10000
+  # Maximum number of time after which cleanup kills your connection if you
+  # have no player.
+  MAX_NO_AUTH_TIMEOUT = 15.seconds
+
   # Special key for message id. This is needed for client to do time
   # syncing.
   MESSAGE_ID_KEY = 'id'
@@ -39,6 +47,8 @@ class Dispatcher
   DISCONNECT_REESTABLISHING = "reestablishing"
   # Cannot reestablish connection.
   DISCONNECT_CANNOT_REESTABLISH = "cannot_reestablish"
+  # Connection has been idle for too long.
+  DISCONNECT_IDLE_CONNECTION = "idle_connection"
 
   S_KEY_SEQ = :seq
   S_KEY_CURRENT_SS_ID = :current_ss_id
@@ -56,6 +66,8 @@ class Dispatcher
       hash[name] = Threading::Director.new_link(name.to_s, workers)
     end
 
+    # When which client has connected. {client => Time}
+    @connection_time = {}
     @client_to_player = {}
     @player_id_to_client = {}
     # Session level storage to store data between controllers
@@ -93,7 +105,9 @@ class Dispatcher
   # Register new client to dispatcher.
   def register(client)
     info "Registering.", to_s(client)
+    cleanup_idle_connections!
     @storage[client] = {}
+    @connection_time[client] = Time.now
   end
 
   # Unregister client from dispatcher.
@@ -124,6 +138,7 @@ class Dispatcher
     end
     @client_to_player.delete client
     @storage.delete client
+    @connection_time.delete client
   end
 
   def reestablish_connection(client, player_id, last_processed_seq, token)
@@ -661,6 +676,62 @@ private
     # If it is not found, just use original socket that message was received
     # from.
     client || message.client
+  end
+
+  # Clean idle connections up to ensure that we can open new connections.
+  def cleanup_idle_connections!
+    return unless @connection_time.size > MAX_CONNECTIONS
+
+    info "Cleaning up idle connections, because we have #{@connection_time.size
+      } connections, which is more than max #{MAX_CONNECTIONS}."
+    now = Time.now
+    cleaned_up = 0
+    @connection_time.each do |client, time|
+      next unless @client_to_player[client].nil?
+
+      if now - time >= MAX_NO_AUTH_TIMEOUT
+        disconnect(client, DISCONNECT_IDLE_CONNECTION)
+        cleaned_up += 1
+      end
+    end
+
+    if @connection_time.size > MAX_CONNECTIONS
+      info "Cleaned up #{cleaned_up} connections, but #{@connection_time.size
+        } > #{MAX_CONNECTIONS} connections still left. Entering phase 2."
+
+      cleaned_up = 0
+      @connection_time.sort do |(client1, time1), (client2, time2)|
+        player1 = @client_to_player[client1]
+        player2 = @client_to_player[client2]
+
+        # Both clients have no player - longer conn time first.
+        if player1.nil? && player2.nil? then time1 <=> time2
+        # Client 1: no player, client 2: player - client 1 first.
+        elsif player1.nil? && ! player2.nil? then -1
+        # Client 1: player, client 2: no player - client 2 first.
+        elsif player2.nil? && ! player1.nil? then 1
+        # Client 1: trial, client 2: trial - longer conn time first.
+        elsif player1.trial? && player2.trial? then time1 <=> time2
+        # Client 1: trial, client 2: non trial - first player first.
+        elsif player1.trial? && ! player2.trial? then -1
+        # Client 1: non trial, client 2: trial - second player first.
+        elsif player2.trial? && ! player1.trial? then 1
+        # Both clients non-trial - longer conn time first.
+        else time1 <=> time2; end
+      end.each do |client, time|
+        if @client_to_player[client].nil?
+          disconnect(client, DISCONNECT_IDLE_CONNECTION)
+          cleaned_up += 1
+        end
+
+        break unless @connection_time.size > MAX_CONNECTIONS
+      end
+      info "Phase 2: Cleaned up #{cleaned_up} connections, #{
+        @connection_time.size} connections left."
+    else
+      info "Cleaned up #{cleaned_up} connections, #{@connection_time.size
+        } connections left."
+    end
   end
 end
 
