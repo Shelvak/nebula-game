@@ -12,7 +12,7 @@
       <s:State name="disabled"/>
       <s:State name="busy"/>
      <s:State name="timeout"/>
-     <s:State name="reestablish"/>
+     <s:State name="reconnect"/>
    </s:states>
    
    <s:layout>
@@ -26,7 +26,7 @@
    
    <s:Group horizontalCenter="0" verticalCenter="0"
             visible="false" visible.busy="true" visible.timeout="true"
-            visible.reestablish="true" mouseEnabled="false">
+            visible.reconnect="true" mouseEnabled="false">
       
       <s:layout>
          <s:VerticalLayout horizontalAlign="center"/>
@@ -35,16 +35,16 @@
       <base:Spinner id="spinner"/>
       
       <s:Label id="progress" visible="false" visible.timeout="true"
-                visible.reestablish="true" fontSize="24" fontWeight="bold"/>
+                visible.reconnect="true" fontSize="24" fontWeight="bold"/>
       <s:Label text="{Localizer.bundlesSet
               ? Localizer.string('General', 'label.longerThenExpected')
               : '................'}"
                fontSize="14" fontWeight="bold"
                paddingTop="6"
                visible="false" visible.timeout="true"
-               visible.reestablish="true"/>
+               visible.reconnect="true"/>
       <s:Button skinClass="components.skins.LinkButtonSkin"
-                visible="false" visible.timeout="false" visible.reestablish="true"
+                visible="false" visible.timeout="false" visible.reconnect="true"
                 label="{Localizer.bundlesSet
                               ? Localizer.string('General', 'label.reestablish')
                               : 'retry'}"
@@ -59,9 +59,10 @@
     import mx.logging.Log;
 
     import utils.locale.Localizer;
+    import utils.remote.ServerProxyInstance;
 
     private function reconnect(event: MouseEvent): void {
-      Log.getLogger('SpinnerContainerSkin').info("Resetting due to failed reestablishment.");
+      Log.getLogger('SpinnerContainerSkin').info("Resetting due to player request.");
       StartupManager.resetApp();
       StartupManager.connectAndAuthorize();
     }

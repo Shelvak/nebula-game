@@ -1,6 +1,5 @@
 package utils.remote
 {
-   import controllers.connection.ConnectionManager;
    import controllers.messages.MessagesProcessor;
    import controllers.messages.ResponseMessagesTracker;
    import controllers.startup.StartupInfo;
@@ -13,10 +12,8 @@ package utils.remote
    import flash.events.IOErrorEvent;
    import flash.events.ProgressEvent;
    import flash.events.SecurityErrorEvent;
-   import flash.events.TimerEvent;
    import flash.external.ExternalInterface;
    import flash.net.Socket;
-   import flash.utils.Timer;
 
    import models.ModelLocator;
 
@@ -125,7 +122,6 @@ package utils.remote
          _buffer = "";
          _connecting = false;
          dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_ESTABLISHED);
-         startPingTimer();
       }
 
       private function socket_closeHandler(event: Event): void {
@@ -134,7 +130,6 @@ package utils.remote
          if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
             dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST)
          }
-         killPingTimer();
       }
       
       /**
@@ -147,26 +142,18 @@ package utils.remote
          var index: int = _buffer.indexOf("\n");
          while (index != -1) {
             const msg: String = _buffer.substring(0, index);
-            if (!isPong(msg))
-            {
-               msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
-               const rmo: ServerRMO = ServerRMO.parse(msg);
-               _timeSynchronizer.synchronize(rmo);
-               _unprocessedMessages.push(rmo);
-            }
+            msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
+            const rmo: ServerRMO = ServerRMO.parse(msg);
+            _timeSynchronizer.synchronize(rmo);
+            _unprocessedMessages.push(rmo);
             _buffer = _buffer.substr(index + 1);
             index = _buffer.indexOf("\n");
          }
-         killResponseTimer();
-         startPingTimer();
       }
-
-      private var errorReceived: Boolean = false;
 
       private function socket_ioErrorHandler(event: IOErrorEvent): void {
          log.error(event.text);
-         errorReceived = true;
-         reestablishConnection(true);
+         reestablishConnection();
          //dispatchServerProxyEvent(ServerProxyEvent.IO_ERROR);
       }
 
@@ -203,8 +190,6 @@ package utils.remote
 
       public function disconnect(): void {
          _connecting = false;
-         killPingTimer();
-         killResponseTimer();
          // the method might be called event if the socket is not open
          try {
             _socket.close();
@@ -219,81 +204,6 @@ package utils.remote
          getUnprocessedMessages();
       }
 
-      /* Delay before keep-alive message is sent. */
-      public static const PING_DELAY: int = 5000;
-      /* Delay before connection reestablishment is tried after keep-alive
-         message has been sent. */
-      public static const CHECK_RESPONSE_TIME: int = 15000;
-
-      private var pingTimer: Timer;
-      private var responseTimer: Timer;
-
-      private function get isDev(): Boolean
-      {
-         return ExternalInterface.call('inDeveloperMode');
-      }
-
-      private function startResponseTimer(): void
-      {
-         if (isDev)
-         {
-            return;
-         }
-         killResponseTimer();
-         responseTimer = new Timer(CHECK_RESPONSE_TIME, 1);
-         responseTimer.addEventListener(TimerEvent.TIMER, noResponse);
-         responseTimer.start();
-      }
-
-      private function startPingTimer(): void
-      {
-         if (isDev)
-         {
-            return;
-         }
-         killPingTimer();
-         pingTimer = new Timer(PING_DELAY, 1);
-         pingTimer.addEventListener(TimerEvent.TIMER, ping);
-         pingTimer.start();
-      }
-
-      private function killPingTimer(): void
-      {
-         if (pingTimer != null)
-         {
-            pingTimer.removeEventListener(TimerEvent.TIMER, ping);
-            pingTimer.stop();
-            pingTimer = null;
-         }
-      }
-
-      private function killResponseTimer(): void
-      {
-         if (responseTimer != null)
-         {
-            responseTimer.removeEventListener(TimerEvent.TIMER, noResponse);
-            responseTimer.stop();
-            responseTimer = null;
-         }
-      }
-
-      private function noResponse(e: TimerEvent): void
-      {
-         reestablishConnection(false);
-      }
-
-      private function ping(e: TimerEvent): void
-      {
-         if (_socket.connected) {
-            _socket.writeUTFBytes('?\n');
-            startResponseTimer();
-         }
-      }
-
-      private function isPong(msg: String): Boolean
-      {
-         return msg == '!';
-      }
 
       private function get ML(): ModelLocator
       {
@@ -327,65 +237,46 @@ package utils.remote
          reestablishmentSocket = null;
          addSocketEventHandlers();
          socket_socketDataHandler(event);
-         errorReceived = false;
       }
 
       private function reestablish_closeHandler(event: Event): void {
          log.info('reestablishment failed');
-         if (_killOldSocket)
-         {
-            disconnect();
-            _buffer = "";
-            _connecting = false;
-            if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR
-               && errorReceived) {
-               dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
-            }
-         }
-         else
-         {
-            startResponseTimer();
+         disconnect();
+         _buffer = "";
+         _connecting = false;
+         if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
+            addSocketEventHandlers();
+            dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
          }
          if (reestablishmentSocket != null)
          {
             removeReestablishmentSocketHandlers();
             reestablishmentSocket = null;
          }
-         if (!errorReceived)
-         {
-            errorReceived = false;
-            log.info("Resetting due to failed reestablishment.");
-            StartupManager.resetApp();
-            StartupManager.connectAndAuthorize();
-         }
       }
 
       private var reestablishmentSocket: Socket;
-      private var _killOldSocket: Boolean = false;
 
-      public function reestablishConnection(killOldSocket: Boolean): void
+      private function get isDev(): Boolean
+      {
+         return ExternalInterface.call("inDeveloperMode");
+      }
+
+      public function reestablishConnection(): void
       {
          if (isDev)
          {
-            if (killOldSocket)
-            {
-               log.info("Resetting...");
-               StartupManager.resetApp();
-               StartupManager.connectAndAuthorize();
-            }
-            return;
+            log.info("Resetting...");
+            StartupManager.resetApp();
+            StartupManager.connectAndAuthorize();
          }
-         log.info('creating reestablish socket');
-         _killOldSocket = killOldSocket;
-         killPingTimer();
-         killResponseTimer();
-         if (reestablishmentSocket != null)
+         if (reestablishmentSocket == null)
          {
-            removeReestablishmentSocketHandlers();
+            log.info('creating reestablish socket');
+            reestablishmentSocket = new Socket();
+            addReestablishmentSocketHandlers();
+            reestablishmentSocket.connect(SI.server, SI.port);
          }
-         reestablishmentSocket = new Socket();
-         addReestablishmentSocketHandlers();
-         reestablishmentSocket.connect(SI.server, SI.port);
       }
 
       private function addReestablishmentSocketHandlers(): void
@@ -426,8 +317,6 @@ package utils.remote
 
       public function sendMessage(rmo: ClientRMO): void {
          if (_socket.connected) {
-            startResponseTimer();
-            killPingTimer();
             var msg: String = rmo.toJSON();
             msgLog.logMessage(msg, "<-~ | Outgoing message: {0}", [msg]);
             _socket.writeUTFBytes(msg + "\n");

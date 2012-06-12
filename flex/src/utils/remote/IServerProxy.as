@@ -37,14 +37,6 @@ package utils.remote
        * Disconnects from the server. This operation is synchronous and no events are dispatched.
        */
       function disconnect() : void;
-
-
-      /**
-       * Try to connect on a new socket, param killOldSocket defines if we should
-       * disconnect old socket and drop "Connection lost" popup on fail.
-       */
-      function reestablishConnection(killOldSocket: Boolean) : void;
-
       
       /**
        * Clears history.<br/>
@@ -64,8 +56,6 @@ package utils.remote
        * Indicates if a proxy is connected to the server.
        */
       function get connected() : Boolean;
-      
-      
       /**
        * Returns messages received from the server that have not been processed yet. Clears internal list
        * that was used for holding those messages. You get a copy of that list first.
