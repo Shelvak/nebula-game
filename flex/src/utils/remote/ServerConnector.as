@@ -14,6 +14,7 @@ package utils.remote
    import flash.events.ProgressEvent;
    import flash.events.SecurityErrorEvent;
    import flash.events.TimerEvent;
+   import flash.external.ExternalInterface;
    import flash.net.Socket;
    import flash.utils.Timer;
 
@@ -227,8 +228,17 @@ package utils.remote
       private var pingTimer: Timer;
       private var responseTimer: Timer;
 
+      private function get isDev(): Boolean
+      {
+         return ExternalInterface.call('inDeveloperMode');
+      }
+
       private function startResponseTimer(): void
       {
+         if (isDev)
+         {
+            return;
+         }
          killResponseTimer();
          responseTimer = new Timer(CHECK_RESPONSE_TIME, 1);
          responseTimer.addEventListener(TimerEvent.TIMER, noResponse);
@@ -237,6 +247,10 @@ package utils.remote
 
       private function startPingTimer(): void
       {
+         if (isDev)
+         {
+            return;
+         }
          killPingTimer();
          pingTimer = new Timer(PING_DELAY, 1);
          pingTimer.addEventListener(TimerEvent.TIMER, ping);
@@ -348,6 +362,16 @@ package utils.remote
 
       public function reestablishConnection(killOldSocket: Boolean): void
       {
+         if (isDev)
+         {
+            if (killOldSocket)
+            {
+               log.info("Resetting...");
+               StartupManager.resetApp();
+               StartupManager.connectAndAuthorize();
+            }
+            return;
+         }
          _killOldSocket = killOldSocket;
          killPingTimer();
          killResponseTimer();
