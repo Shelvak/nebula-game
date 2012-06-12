@@ -308,6 +308,7 @@ package utils.remote
       private function reestablish_connectHandler(event: Event): void {
          // normally there should not be anything in the buffer when
          // connection has been established but clear it just in case
+         log.info('reestablishment socket connected');
          _buffer = "";
          _connecting = false;
          removeSocketEventHandlers();
@@ -320,6 +321,7 @@ package utils.remote
          {
             disconnect();
          }
+         log.info('reestablishment socket received data, switching to reestablished socket');
          _socket = reestablishmentSocket;
          removeReestablishmentSocketHandlers();
          reestablishmentSocket = null;
@@ -329,6 +331,7 @@ package utils.remote
       }
 
       private function reestablish_closeHandler(event: Event): void {
+         log.info('reestablishment failed');
          if (_killOldSocket)
          {
             disconnect();
@@ -372,6 +375,7 @@ package utils.remote
             }
             return;
          }
+         log.info('creating reestablish socket');
          _killOldSocket = killOldSocket;
          killPingTimer();
          killResponseTimer();
