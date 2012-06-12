@@ -22,6 +22,8 @@ package utils.remote
 
    import namespaces.client_internal;
 
+   import utils.ApplicationLocker;
+
    import utils.Events;
    import utils.Objects;
    import utils.logging.MessagesLogger;
@@ -128,7 +130,7 @@ package utils.remote
          _buffer = "";
          _connecting = false;
          if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
-            dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST)
+            reestablishConnection();
          }
       }
       
@@ -227,6 +229,7 @@ package utils.remote
 
       private function reestablishment_data(event: ProgressEvent): void
       {
+         ApplicationLocker.getInstance().decreaseLockCounter();
          if (_socket != null)
          {
             disconnect();
@@ -240,16 +243,17 @@ package utils.remote
       }
 
       private function reestablish_closeHandler(event: Event): void {
-         log.info('reestablishment failed');
-         disconnect();
-         _buffer = "";
-         _connecting = false;
-         if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
-            addSocketEventHandlers();
-            dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
-         }
          if (reestablishmentSocket != null)
          {
+            ApplicationLocker.getInstance().decreaseLockCounter();
+            log.info('reestablishment failed');
+            disconnect();
+            _buffer = "";
+            _connecting = false;
+            if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
+               addSocketEventHandlers();
+               dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
+            }
             removeReestablishmentSocketHandlers();
             reestablishmentSocket = null;
          }
@@ -257,21 +261,12 @@ package utils.remote
 
       private var reestablishmentSocket: Socket;
 
-      private function get isDev(): Boolean
-      {
-         return ExternalInterface.call("inDeveloperMode");
-      }
-
       public function reestablishConnection(): void
       {
-         if (isDev)
+         if (reestablishmentSocket == null && ML.player != null
+            && ML.player.id > 0)
          {
-            log.info("Resetting...");
-            StartupManager.resetApp();
-            StartupManager.connectAndAuthorize();
-         }
-         if (reestablishmentSocket == null)
-         {
+            ApplicationLocker.getInstance().increaseLockCounter();
             log.info('creating reestablish socket');
             reestablishmentSocket = new Socket();
             addReestablishmentSocketHandlers();
