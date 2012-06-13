@@ -639,9 +639,11 @@ deb-src http://repo.percona.com/apt lucid main")
 
   File.write("/etc/mysql/my.cnf", MYCNF, "0644")
 
+  # This file needs empty line at EOF.
   File.write("/etc/mysql/backup.cnf", %Q{
 !include /etc/mysql/my.cnf
-!include /etc/mysql/debian.cnf}, "0600")
+!include /etc/mysql/debian.cnf
+}, "0600")
 
   run "/etc/init.d/mysql restart"
 
