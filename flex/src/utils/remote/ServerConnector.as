@@ -99,22 +99,30 @@ package utils.remote
       // ############################# //
 
       private function addSocketEventHandlers(): void {
-         with (_socket) {
-            addEventListener(Event.CLOSE, socket_closeHandler);
-            addEventListener(Event.CONNECT, socket_connectHandler);
-            addEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
-            addEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
-            addEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+         if (!socketEventsRegistered)
+         {
+            with (_socket) {
+               addEventListener(Event.CLOSE, socket_closeHandler);
+               addEventListener(Event.CONNECT, socket_connectHandler);
+               addEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
+               addEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
+               addEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+               socketEventsRegistered = true;
+            }
          }
       }
 
       private function removeSocketEventHandlers(): void {
-         with (_socket) {
-            removeEventListener(Event.CLOSE, socket_closeHandler);
-            removeEventListener(Event.CONNECT, socket_connectHandler);
-            removeEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
-            removeEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
-            removeEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+         if (socketEventsRegistered)
+         {
+            with (_socket) {
+               removeEventListener(Event.CLOSE, socket_closeHandler);
+               removeEventListener(Event.CONNECT, socket_connectHandler);
+               removeEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
+               removeEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
+               removeEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+               socketEventsRegistered = false;
+            }
          }
       }
 
@@ -179,7 +187,8 @@ package utils.remote
       public function get connected(): Boolean {
          return _socket.connected;
       }
-      
+
+      private var socketEventsRegistered: Boolean = false;
       
       // ######################### //
       // ### INTERFACE METHODS ### //
@@ -187,7 +196,10 @@ package utils.remote
 
       public function connect(host: String, port: int): void {
          _connecting = true;
-         _socket.connect(host, port);
+         if (socketEventsRegistered)
+         {
+            _socket.connect(host, port);
+         }
       }
 
       public function disconnect(): void {
@@ -250,21 +262,21 @@ package utils.remote
             disconnect();
             _buffer = "";
             _connecting = false;
-            if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
-               addSocketEventHandlers();
-               dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
-            }
             removeReestablishmentSocketHandlers();
             reestablishmentSocket = null;
+            if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
+               dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
+            }
          }
       }
 
       private var reestablishmentSocket: Socket;
 
-      public function reestablishConnection(): void
+      private function reestablishConnection(): void
       {
          if (reestablishmentSocket == null && ML.player != null
-            && ML.player.id > 0)
+            && ML.player.id > 0
+            && MessagesProcessor.getInstance().lastProcessedMessage > 0)
          {
             ApplicationLocker.getInstance().increaseLockCounter();
             log.info('creating reestablish socket');
