@@ -776,6 +776,7 @@ if ARGV.include?("web") # {{{
   system "addgroup www-shared"
   system "adduser www-data www-shared"
   system "adduser #{USER} www-shared"
+
   
   rubyv="ruby-1.9.2" # ruby version
   rubygs="web" # ruby gemset
@@ -785,7 +786,7 @@ if ARGV.include?("web") # {{{
     puts "Building #{rubyv}. This may take a while..."
     rvm "install #{rubyv}"
   end
-  File.ensure("#{HOME}/.profile", "export RAILS_ENV='production'\n", nil, UCH)
+  File.ensure("#{HOME}/.profile", "\nexport RAILS_ENV='production'\n", nil, UCH)
   Dir.mkdir("#{HOME}/bin", nil, UCH)
   File.write("#{HOME}/bin/webrunner", WEBRUNNER, 755, UCH)
 
