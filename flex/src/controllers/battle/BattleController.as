@@ -439,7 +439,8 @@ package controllers.battle
             currentTickOrder = order;
             nextGroupOrder();
          }
-         else //Appear order
+         //Appear order
+         else
          {
             appeared = true;
             appearOrdersToExecute = 0;

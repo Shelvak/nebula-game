@@ -1,10 +1,9 @@
 package utils
 {
-   import mx.core.IFactory;
-   
    import utils.random.Rndm;
 
-	public class ArrayUtil
+
+   public class ArrayUtil
 	{
 		public static function fromObject(obj: Object, sort: Boolean = false, returnObjectsWithKeys: Boolean = false): Array
 		{
@@ -15,7 +14,7 @@ package utils
 					tempArray.push({'key': key, 'prop': obj[key]});
 				tempArray.sortOn('key');
 				if (returnObjectsWithKeys)
-					return tempArray
+					return tempArray;
 				else
 				{
 					var newArray: Array = new Array();

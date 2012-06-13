@@ -55,9 +55,16 @@ package controllers.planets
        * @see controllers.planets.actions.PortalUnitsAction
        */
       public static const PORTAL_UNITS:String = "planets|portal_units";
-      
-      
-      public function PlanetsCommand(type:String, parameters:Object = null, fromServer:Boolean = false) {
+
+      /**
+       * @see controllers.planets.actions.BgSpawnAction
+       */
+      public static const BG_SPAWN: String = "planets|bg_spawn";
+
+
+      public function PlanetsCommand(type: String,
+                                     parameters: Object = null,
+                                     fromServer: Boolean = false) {
          super(type, parameters, fromServer);
       }
    }

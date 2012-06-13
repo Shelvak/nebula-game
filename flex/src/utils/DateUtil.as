@@ -1,14 +1,14 @@
 package utils
 {
    import com.adobe.utils.DateUtil;
-   
+
    import mx.formatters.DateFormatter;
 
    import utils.StringUtil;
 
    import utils.locale.Localizer;
-   
-   
+
+
    /**
     * A few static methods for working with date and time.
     */
@@ -33,17 +33,17 @@ package utils
                                            value: String): Boolean {
          return currValue.time == parseServerDTF(value).time;
       }
-      
+
       /**
        * January 1, 1970
        */
       public static const BEGINNING:Date = new Date(0);
-      
+
       /**
        * Current time of the client machine in milliseconds.
        */
       public static var now:Number;
-      
+
       /**
        * Time difference (in milliseconds) of client and server times
        * (serverTime - clientTime). Is updated each time a message is received
@@ -52,10 +52,10 @@ package utils
        * @default 0
        */
       public static var timeDiff: Number = 0;
-      
+
       /**
        * Parses date and time of server format and returns that date.
-       * 
+       *
        * @throws Error if the date can't be parsed.
        */
       public static function parseServerDTF(dateTime: String,
@@ -121,12 +121,12 @@ package utils
             return StringUtil.trim(timeString);
          }
       }
-      
-      
+
+
       /* ############################# */
       /* ### DATE FORMAT FUNCTIONS ### */
       /* ############################# */
-      
+
       /**
        * Fromats given <code>date</code> as a short date string specified by
        * <code>locale.xml/Formatters.date.shortDate</code>.

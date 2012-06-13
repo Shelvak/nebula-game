@@ -115,11 +115,10 @@ class Dispatcher
     # Someone unregistered us before, probably from #disconnect
     return unless @storage.has_key?(client)
     tag = to_s(client)
-
-    info "Unregistering.", tag
-
     player = resolve_player(client)
-    # This is safe because it is in same thread.
+
+    info "Unregistering: #{player ? player.to_s : "not a player"}.", tag
+
     unless player.nil?
       dispatch_task(
         Scope.world, PlayerUnregisterTask.player(tag, player)
@@ -127,15 +126,13 @@ class Dispatcher
       # There is no point of notifying about leaves if server is shutdowning.
       dispatch_task(Scope.chat, PlayerUnregisterTask.chat(tag, player)) \
         unless App.server_shutdowning?
-    end
 
-    # Clean up containers.
-    player = @client_to_player[client]
-    unless player.nil?
+      # Clean up containers.
       @reestablishment_tokens.delete(player.id)
       @message_buffers.delete(player.id)
       @player_id_to_client.delete(player.id)
     end
+
     @client_to_player.delete client
     @storage.delete client
     @connection_time.delete client
@@ -151,16 +148,17 @@ class Dispatcher
 
     stored_token = @reestablishment_tokens[player_id]
     if token == stored_token
-      info "Reestablishing player #{player_id} with given data (#{data
-        })", to_s(client)
+      old_client = @player_id_to_client[player_id]
+      player = @client_to_player[old_client]
+
+      info "Reestablishing #{player} with given data (#{data})", to_s(client)
       stored_message_buffer = @message_buffers[player_id]
 
       deliver_buffer(client, player_id, last_processed_seq)
-      old_client = @player_id_to_client[player_id]
-      player = @client_to_player[old_client]
       storage = @storage[old_client]
 
-      # Remove old client to player association.
+      # Remove old client to player association to prevent unregistering from
+      # chat and etc.
       @client_to_player.delete old_client
       @player_id_to_client.delete player_id
 
@@ -175,7 +173,7 @@ class Dispatcher
       @storage[client] = storage
     else
       info "Cannot reestablish player #{player_id} with given data (#{data
-        }): bad token: #{stored_token}", to_s(client)
+        }): bad token", to_s(client)
       disconnect(client, DISCONNECT_CANNOT_REESTABLISH)
     end
   end
@@ -623,11 +621,13 @@ private
 
   # Clean up message buffers from processed messages.
   def cleanup_buffer(client, last_processed_seq)
+    player = @client_to_player[client]
+    # No lpseq is needed or possible for non-player clients.
+    return if player.nil?
+
+    # Authenticated players are required to provide lpseq.
     disconnect(client, DISCONNECT_NO_LPSEQ) \
       unless last_processed_seq.is_a?(Fixnum)
-
-    player = @client_to_player[client]
-    return if player.nil?
 
     tag = self.to_s(client)
     buffer = @message_buffers[player.id]

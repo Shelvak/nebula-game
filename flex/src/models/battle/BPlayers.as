@@ -82,10 +82,7 @@ package models.battle
          for each (var alliance: Array in alliances)
          if (alliance.indexOf(id) != -1)
          {
-            if (alliance.indexOf(id2) != -1)
-               return true
-            else
-               return false;
+            return alliance.indexOf(id2) != -1;
          }
          return false;
       }

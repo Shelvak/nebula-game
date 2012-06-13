@@ -57,6 +57,7 @@ DEPLOY_CONFIG = {
         File.join("script", "announce.rb"),
         File.join("script", "apply_hotfix.rb"),
         File.join("script", "dump_galaxy.rb"),
+        File.join("script", "deploy_gems.sh"),
         File.join("script", "log_analyzer.rb"),
         File.join("script", "render_winners.rb"),
         File.join("script", "ensure_pool.rb"),
@@ -265,7 +266,7 @@ class DeployHelpers; class << self
   end
 
   def install_gems(ssh)
-    response = exec_server(ssh, "rake gems:install:deploy", false)
+    response = exec_server(ssh, "script/deploy_gems.sh", false)
     puts response
   end
 

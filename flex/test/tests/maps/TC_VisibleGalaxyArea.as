@@ -455,7 +455,7 @@ package tests.maps
       // -----
       
       [Test]
-      public function hideSomeOfSectorInOneDimenstionAndAllOfSectorInAnother() : void {
+      public function hideSomeOfSectorInOneDimensionAndAllOfSectorInAnother() : void {
          init(new MapArea(0, 1, -1, 0));
          var initialVisibleArea:Rectangle = new Rectangle(
             2 * SECTOR_W, 2 * SECTOR_H,

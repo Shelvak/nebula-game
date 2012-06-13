@@ -1442,22 +1442,22 @@
     <message.planetClaimed value="Planet claimed" />
     <label.cooldownEndsIn value="Next battle in"/>
     <label.longerThenExpected
-      value="This action is taking more time then expected." />
+      value="This action is taking more time than expected." />
     <label.reestablish value="Reconnect"/>
   </General>
 
   <Errors>
-      <invalidBitmap.title>Broken bitmap</invalidBitmap.title>
-      <invalidBitmap.message>
-         <p>
-            One or more bitmaps were broken while downloading them form the
-            server and upacking afterwards.
-         </p>
-         <p>
-            Refresh the page please.
-         </p>
-      </invalidBitmap.message>
-   </Errors>
+    <invalidBitmap.title>Broken bitmap</invalidBitmap.title>
+    <invalidBitmap.message>
+      <p>
+        One or more bitmaps were broken while downloading them form the
+        server and upacking afterwards.
+      </p>
+      <p>
+        Refresh the page please.
+      </p>
+    </invalidBitmap.message>
+  </Errors>
 
   <InfoScreen>
     <title.details value="Details" />

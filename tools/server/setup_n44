@@ -5,7 +5,7 @@ DOMAIN = "com" # In what ending does your domain end
 LOCALE = "en" # Your locale.
 MUNIN_MASTER = "193.219.158.73" # thor.nebula44.com
 GA_ACCOUNT_ID = "UA-1799100-10" 
-JRUBY = 'head-n16'
+JRUBY = 'jruby-head-n16'
 JRUBY_INSTALL_OPTS = '--branch jruby-1_6'
 
 FORUM_LANGS = {
@@ -151,6 +151,11 @@ source ../.rvmrc
 eval "$@"
 }
 
+JMX_CONFIG = %Q{
+monitorRole  nebula44.mmosmrts.jmx
+controlRole  nebula44.mmosmrts.jmx
+}
+
 MONIT_MUNIN = %Q{
 check process munin-node with pidfile /var/run/munin/munin-node.pid
       start program = "/etc/init.d/munin-node start"
@@ -169,10 +174,10 @@ check process apache with pidfile /var/run/apache2.pid
 MONIT_NEBULA_SERVER = %Q{
 check process nebula-server with pidfile /home/spacegame/nebula-server/shared/run/daemon.pid
   start program = "/home/spacegame/bin/srvrunner lib/daemon.rb start"
-    as uid #{USER} and gid #{USER}
+    as uid #{USER} and gid #{USER} with timeout 60 seconds
   stop program = "/home/spacegame/bin/srvrunner lib/daemon.rb stop"
     as uid #{USER} and gid #{USER}
-  if failed port 55345 send "?\n" expect "!\n" with timeout 5 seconds then restart
+  if failed port 55345 send "?\\n" expect "!\\n" with timeout 5 seconds then restart
 }
 MONIT_DELAYED_JOB = %Q{
 check process dj_system_1
@@ -634,9 +639,11 @@ deb-src http://repo.percona.com/apt lucid main")
 
   File.write("/etc/mysql/my.cnf", MYCNF, "0644")
 
+  # This file needs empty line at EOF.
   File.write("/etc/mysql/backup.cnf", %Q{
 !include /etc/mysql/my.cnf
-!include /etc/mysql/debian.cnf}, "0600")
+!include /etc/mysql/debian.cnf
+}, "0600")
 
   run "/etc/init.d/mysql restart"
 
@@ -671,10 +678,11 @@ innodb_lock_wait_timeout = 10})
   end
 
   puts "Checking for jruby"
-  rvm("list rubies").include?("jruby-#{JRUBY}").or do
+  rvm("list rubies").include?(JRUBY).or do
     puts "Building jruby, this will take a while..."
-    rvm("install jruby #{JRUBY_INSTALL_OPTS}")
-    rvm("jruby do gem install bundler")
+    install "ant"
+    rvm("install #{JRUBY} #{JRUBY_INSTALL_OPTS}")
+    rvm("#{JRUBY} do gem install bundler")
   end
 
   Dir.mkdir("#{HOME}/bin", nil, UCH)
@@ -743,6 +751,8 @@ production:
   password: "#{pass}"
 }, nil, UCH)
 
+  File.ensure("#{HOME}/config/jmx.password", JMX_CONFIG, "0600", UCH)
+
   File.write("/etc/monit/conf.d/nebula-server", MONIT_NEBULA_SERVER)
   run "/etc/init.d/monit restart"
 end # }}}
@@ -768,6 +778,7 @@ if ARGV.include?("web") # {{{
   system "addgroup www-shared"
   system "adduser www-data www-shared"
   system "adduser #{USER} www-shared"
+
   
   rubyv="ruby-1.9.2" # ruby version
   rubygs="web" # ruby gemset
@@ -777,7 +788,7 @@ if ARGV.include?("web") # {{{
     puts "Building #{rubyv}. This may take a while..."
     rvm "install #{rubyv}"
   end
-  File.ensure("#{HOME}/.profile", "export RAILS_ENV='production'\n", nil, UCH)
+  File.ensure("#{HOME}/.profile", "\nexport RAILS_ENV='production'\n", nil, UCH)
   Dir.mkdir("#{HOME}/bin", nil, UCH)
   File.write("#{HOME}/bin/webrunner", WEBRUNNER, 755, UCH)
 
