@@ -13,6 +13,7 @@ package models.chat
    import utils.Events;
    import utils.Objects;
    import utils.StringUtil;
+   import utils.logging.IMethodLoggerFactory;
    import utils.logging.Log;
 
 
@@ -31,11 +32,13 @@ package models.chat
       private static function get MCHAT() : MChat {
          return MChat.getInstance();
       }
-      
-      
-      private var _membersHash:Object;
-      private var _channel:MChatChannel;
-      
+
+
+      private const loggerFactory: IMethodLoggerFactory =
+         Log.getMethodLoggerFactory(MChatMembersList);
+
+      private var _membersHash: Object;
+      private var _channel: MChatChannel;
       
       public function MChatMembersList(channel:MChatChannel = null) {
          super(null);
@@ -67,7 +70,7 @@ package models.chat
       public function addMember(member: MChatMember): void {
          Objects.paramNotNull("member", member);
          if (containsMember(member.id)) {
-            Log.getMethodLogger(this, "addMember")
+            loggerFactory.getLogger("addMember")
                .warn("Member {0} is already in the list. Ignoring.", member);
             return;
          }
@@ -88,9 +91,9 @@ package models.chat
          Objects.paramNotNull("member", member);
          var toRemove: MChatMember = getMember(member.id);
          if (toRemove == null) {
-            throw new ArgumentError(
-               "Unable to remove: member " + member + " is not in the list"
-            );
+            loggerFactory.getLogger("removeMember")
+               .warn("Member {0} is not in the list. Ignoring", member);
+            return;
          }
          removeItemAt(getItemIndex(toRemove));
          delete _membersHash[toRemove.id];

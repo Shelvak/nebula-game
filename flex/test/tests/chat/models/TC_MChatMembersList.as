@@ -92,13 +92,12 @@ package tests.chat.models
       }
 
       [Test]
-      public function should_throw_error_if_member_to_remove_not_found(): void {
+      public function should_ignore_if_member_to_remove_not_found(): void {
          var another: MChatMember = new MChatMember();
          another.id = 2;
          another.name = "jho";
-         assertThat(function (): void {
-            list.removeMember(another)
-         }, throws(ArgumentError));
+         list.removeMember(another);
+         assertThat("should only contain one member", list, array(member));
       }
       
       [Test]
