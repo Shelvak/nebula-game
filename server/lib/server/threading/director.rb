@@ -37,11 +37,11 @@ class Threading::Director
   end
 
   def inspect
-    "<#{self.class} workers=#{@workers.size}>"
+    "<#{self.class} workers=#{@workers.size} enqueued=#{enqueued_tasks}>"
   end
 
   def to_s
-    "director-#{@name}"
+    "director_#{@name}"
   end
 
   def enqueued_tasks

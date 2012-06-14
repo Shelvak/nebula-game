@@ -11,6 +11,7 @@ zeus_cannon
 dart_laser
 boss_light boss_heavy
 convoyship_heavy convoyship_light
+mantis_sniper
 } %>
 <% terrain_types = {
   0 => 'earth',

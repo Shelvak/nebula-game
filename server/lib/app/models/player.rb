@@ -214,7 +214,11 @@ class Player < ActiveRecord::Base
         json['creds'] = creds
         json['portal_without_allies'] = portal_without_allies?
         json['trial'] = trial?
+
+        # Prefetch alliance to avoid NPE?
+        alliance = self.alliance
         unless alliance.nil?
+          # alliance.owner_id fails with NPE here? Strange, huh?
           is_owner = id == alliance.owner_id
           json['alliance_owner'] = is_owner
           json['alliance_player_count'] = alliance.players.count if is_owner

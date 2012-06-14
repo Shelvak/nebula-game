@@ -8,12 +8,17 @@ package components.base
    import flash.utils.Timer;
    
    import mx.controls.ProgressBar;
-   
+
+   import spark.components.Label;
+
    import spark.components.SkinnableContainer;
-   
-   
-   
-   
+
+   import utils.DateUtil;
+
+   import utils.locale.Localizer;
+   import utils.remote.ServerConnector;
+
+
    /**
     * While in this state component does not accept user input and spinner
     * is visible and animating.
@@ -26,6 +31,13 @@ package components.base
     * time left until timeout is shown.
     */ 
    [SkinState ("timeout")]
+
+
+   /**
+    * This is similar to timeout. Only difference is that reconnect button
+    * is shown.
+    */
+   [SkinState ("reconnect")]
    
    
    
@@ -41,21 +53,35 @@ package components.base
        * Amount of time in milliseconds when state is changed to timeout. 
        */      
       private static const TIME_UNTIL_TIMEOUT: Number = 3000;
+      /**
+       * Amount of time in milliseconds until reconnect button is shown.
+       */
+      private static const TIME_UNTIL_RECONNECT: Number = 15000;
       
       
       private var flags: Object = new Object ();
-      private var timer: Timer = new Timer (200, ResponseMessagesTracker.MAX_WAIT_TIME / 1000 * 5);
+      private var timer: Timer = new Timer (200, 0);
       
       
       private var _timeout: Boolean = false;
+      private var _reconnect: Boolean = false;
       /**
        * When this is true, component is in "timeout" state.
        */ 
       private function set timeout (v: Boolean) :void
       {
          _timeout = v;
-         flags.timeoutChanged = true;
          
+         invalidateProperties ();
+         invalidateSkinState ();
+      }
+      /**
+       * When this is true, component is in "reconnect" state.
+       */
+      private function set reconnect (v: Boolean) :void
+      {
+         _reconnect = v;
+
          invalidateProperties ();
          invalidateSkinState ();
       }
@@ -65,6 +91,13 @@ package components.base
       private function get timeout () :Boolean
       {
          return _timeout;
+      }
+      /**
+       * @private
+       */
+      private function get reconnect () :Boolean
+      {
+         return _reconnect;
       }
       
       
@@ -85,6 +118,7 @@ package components.base
          if (!v)
          {
             timeout = false;
+            reconnect = false;
          }
          flags.busyChanged = true;
          
@@ -104,7 +138,7 @@ package components.base
       /**
        * If <code>true</code> progress bar indicating timeout will be shown.
        * 
-       * @default false
+       * @default true
        */
       public function set timeoutEnabled(v:Boolean) : void
       {
@@ -131,7 +165,7 @@ package components.base
        * A progressbar that will be shown after 3 seconds if server does not respond.
        */
       [SkinPart (required="true")]
-      public var progress: ProgressBar = null;
+      public var progress: Label = null;
       
       
       public function SpinnerContainer ()
@@ -148,7 +182,7 @@ package components.base
          
          if (spinner && flags.busyChanged)
          {
-            enabled = !busy;
+            contentGroup.enabled = !busy;
             
             if (busy)
             {
@@ -170,7 +204,14 @@ package components.base
       {
          if (busy && timeout && timeoutEnabled)
          {
-            return "timeout";
+            if (reconnect)
+            {
+               return "reconnect";
+            }
+            else
+            {
+               return "timeout";
+            }
          }
          else if (busy)
          {
@@ -182,19 +223,22 @@ package components.base
          }
       }
       
-      
       private function timer_eventHandler (event: TimerEvent) :void
       {
          if (progress)
          {
-            progress.setProgress (
-               timer.currentCount * timer.delay,
-               timer.repeatCount * timer.delay
-            );
+            progress.text = Localizer.bundlesSet
+               ? DateUtil.secondsToHumanString(
+                  timer.currentCount * timer.delay / 1000)
+               : '';
          }
          if (timer.currentCount * timer.delay == TIME_UNTIL_TIMEOUT)
          {
             timeout = true;
+         }
+         if (timer.currentCount * timer.delay == TIME_UNTIL_RECONNECT)
+         {
+            reconnect = true;
          }
       }
    }

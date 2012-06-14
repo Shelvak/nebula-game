@@ -3,9 +3,10 @@
 USER = "spacegame"
 DOMAIN = "com" # In what ending does your domain end
 LOCALE = "en" # Your locale.
-MUNIN_MASTER = "188.40.91.110" # thor.nebula44.com
+MUNIN_MASTER = "193.219.158.73" # thor.nebula44.com
 GA_ACCOUNT_ID = "UA-1799100-10" 
-JRUBY = '1.6.6'
+JRUBY = 'jruby-head-n16'
+JRUBY_INSTALL_OPTS = '--branch jruby-1_6'
 
 FORUM_LANGS = {
   "en" => "English",
@@ -71,6 +72,52 @@ set pastetoggle=<F3>
 }
 
 MYCNF = %Q{
+[client]
+port    = 3306
+socket    = /var/run/mysqld/mysqld.sock
+
+[mysqld_safe]
+socket    = /var/run/mysqld/mysqld.sock
+nice    = 0
+
+[mysqld]
+user    = mysql
+socket    = /var/run/mysqld/mysqld.sock
+pid-file    = /var/run/mysqld/mysqld.pid
+port    = 3306
+basedir   = /usr
+datadir   = /var/lib/mysql
+tmpdir    = /tmp
+skip-external-locking
+bind-address    = 127.0.0.1
+key_buffer    = 16M
+max_allowed_packet  = 16M
+thread_stack    = 192K
+thread_cache_size       = 8
+myisam-recover         = BACKUP
+query_cache_limit = 1M
+query_cache_size        = 16M
+
+log_error                = /var/log/mysql/error.log
+
+slow_query_log  = 1
+slow_query_log_file  = /var/log/mysql/slow.log
+long_query_time = 0.1
+expire_logs_days  = 10
+max_binlog_size         = 100M
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet  = 16M
+
+[isamchk]
+key_buffer    = 16M
+
+!includedir /etc/mysql/conf.d/
+}
+
+NEBULACNF = %Q{
 [mysqld]
 innodb_file_per_table
 innodb_rollback_on_timeout = ON
@@ -104,6 +151,11 @@ source ../.rvmrc
 eval "$@"
 }
 
+JMX_CONFIG = %Q{
+monitorRole  nebula44.mmosmrts.jmx
+controlRole  nebula44.mmosmrts.jmx
+}
+
 MONIT_MUNIN = %Q{
 check process munin-node with pidfile /var/run/munin/munin-node.pid
       start program = "/etc/init.d/munin-node start"
@@ -122,10 +174,10 @@ check process apache with pidfile /var/run/apache2.pid
 MONIT_NEBULA_SERVER = %Q{
 check process nebula-server with pidfile /home/spacegame/nebula-server/shared/run/daemon.pid
   start program = "/home/spacegame/bin/srvrunner lib/daemon.rb start"
-    as uid #{USER} and gid #{USER}
+    as uid #{USER} and gid #{USER} with timeout 60 seconds
   stop program = "/home/spacegame/bin/srvrunner lib/daemon.rb stop"
     as uid #{USER} and gid #{USER}
-  if failed port 55345 send "?\n" expect "!\n" with timeout 5 seconds then restart
+  if failed port 55345 send "?\\n" expect "!\\n" with timeout 5 seconds then restart
 }
 MONIT_DELAYED_JOB = %Q{
 check process dj_system_1
@@ -202,7 +254,7 @@ end
 def adduser(user)
   puts "Checking for user #{user}."
   system "adduser #{user}"
-  pubkeys(user, ARTURAZ_PUBKEY)yy
+  pubkeys(user, ARTURAZ_PUBKEY)
 end
 
 def apache_vhost(vhost, path, hostname="")
@@ -426,7 +478,7 @@ BASHRC = "/etc/bash.bashrc"
 require 'tempfile'
 
 if ARGV.include?("basic") # {{{
-  `locale-gen en_US.UTF8`
+  run "locale-gen en_US.UTF-8 lt_LT.UTF-8"
   
   adduser("x11")
   File.write("/home/x11/.vimrc", VIMRC, nil, "x11:")
@@ -438,7 +490,8 @@ if ARGV.include?("basic") # {{{
   install "man less cron mc rubygems libjson-ruby irb gnupg wget host " +
     "exim4 logrotate netcat ntpdate python-software-properties mutt monit"
   run "dpkg-reconfigure exim4-config"
-  File.ensure("/etc/exim4/exim4.conf.template", "disable_ipv6 = true\n")
+  # Not sure - it breaks some exim installations.
+  #File.ensure("/etc/exim4/exim4.conf.template", "disable_ipv6 = true\n")
   run "dpkg-reconfigure tzdata"
 
   run "apt-get dist-upgrade -y"
@@ -477,6 +530,11 @@ export JRUBY_OPTS='--server --1.9 -J-XX:+TieredCompilation'},
       io.write CRONTAB
     end
   }
+  
+  File.ensure("/etc/security/limits.d/spacegame.conf", %Q{
+spacegame  soft nofile 20000
+spacegame  hard nofile 20000
+}, "0600", "root:")
 
   File.ensure("#{HOME}/.rvmrc", %Q{rvm_trust_rvmrcs_flag=1\n}, nil, UCH)
 
@@ -509,7 +567,6 @@ export JRUBY_OPTS='--server --1.9 -J-XX:+TieredCompilation'},
   File.write("/etc/monit/monitrc", 
   %Q{# monit configuration file
 
-# Check every 30 seconds, wait 1 mins for first check after startup.
 set daemon 30 with start delay 60
 
 set logfile /var/log/monit.log
@@ -518,9 +575,12 @@ set statefile /var/run/monit/monit.state
 
 set mailserver localhost
 set alert arturas@nebula44.com
+set alert elsbergass@gmail.com
 
 # Allow connecting to HTTP server.
-set httpd port 2812 and allow arturas:nebula44.mmosmrts.monit
+set httpd port 2812 
+  allow arturas:nebula44.mmosmrts.monit
+  allow henrikas:operatoReady1.2.3
 
 include /etc/monit/conf.d/*
   })
@@ -563,10 +623,10 @@ deb-src http://repo.percona.com/apt lucid main")
   run "apt-get update"
 
   install "percona-server-server xtrabackup libcache-cache-perl libdbd-mysql-perl"
-  MYCNF_FILE = "/etc/mysql/conf.d/nebula.cnf"
-  unless File.exists?(MYCNF_FILE)
+  NEBULACNF_FILE = "/etc/mysql/conf.d/nebula.cnf"
+  unless File.exists?(NEBUlACNF_FILE)
     puts "Configuring mysqld..."
-    File.write(MYCNF_FILE, MYCNF)
+    File.write(NEBUlACNF_FILE, NEBULACNF)
   end
   install "phpmyadmin php5-mcrypt"
   File.modify("/etc/phpmyadmin/config.inc.php") do |data|
@@ -577,54 +637,13 @@ deb-src http://repo.percona.com/apt lucid main")
   end
   fix_php_ini!
 
-  File.write("/etc/mysql/my.cnf", %Q{
-[client]
-port    = 3306
-socket    = /var/run/mysqld/mysqld.sock
+  File.write("/etc/mysql/my.cnf", MYCNF, "0644")
 
-[mysqld_safe]
-socket    = /var/run/mysqld/mysqld.sock
-nice    = 0
-
-[mysqld]
-user    = mysql
-socket    = /var/run/mysqld/mysqld.sock
-pid-file    = /var/run/mysqld/mysqld.pid
-port    = 3306
-basedir   = /usr
-datadir   = /var/lib/mysql
-tmpdir    = /tmp
-skip-external-locking
-bind-address    = 127.0.0.1
-key_buffer    = 16M
-max_allowed_packet  = 16M
-thread_stack    = 192K
-thread_cache_size       = 8
-myisam-recover         = BACKUP
-query_cache_limit = 1M
-query_cache_size        = 16M
-
-log_error                = /var/log/mysql/error.log
-
-slow_query_log  = /var/log/mysql/slow.log
-long_query_time = 0.1
-expire_logs_days  = 10
-max_binlog_size         = 100M
-
-[mysqldump]
-quick
-quote-names
-max_allowed_packet  = 16M
-
-[isamchk]
-key_buffer    = 16M
-
-!includedir /etc/mysql/conf.d/
-}, "0644")
-
+  # This file needs empty line at EOF.
   File.write("/etc/mysql/backup.cnf", %Q{
 !include /etc/mysql/my.cnf
-!include /etc/mysql/debian.cnf}, "0600")
+!include /etc/mysql/debian.cnf
+}, "0600")
 
   run "/etc/init.d/mysql restart"
 
@@ -659,10 +678,11 @@ innodb_lock_wait_timeout = 10})
   end
 
   puts "Checking for jruby"
-  rvm("list rubies").include?("jruby-#{JRUBY}").or do
+  rvm("list rubies").include?(JRUBY).or do
     puts "Building jruby, this will take a while..."
-    rvm("install jruby")
-    rvm("jruby do gem install bundler")
+    install "ant"
+    rvm("install #{JRUBY} #{JRUBY_INSTALL_OPTS}")
+    rvm("#{JRUBY} do gem install bundler")
   end
 
   Dir.mkdir("#{HOME}/bin", nil, UCH)
@@ -731,7 +751,9 @@ production:
   password: "#{pass}"
 }, nil, UCH)
 
-  File.write("/etc/monit/conf.d/nebula-server", MONIT_NEBUlA_SERVER)
+  File.ensure("#{HOME}/config/jmx.password", JMX_CONFIG, "0600", UCH)
+
+  File.write("/etc/monit/conf.d/nebula-server", MONIT_NEBULA_SERVER)
   run "/etc/init.d/monit restart"
 end # }}}
 
@@ -756,6 +778,7 @@ if ARGV.include?("web") # {{{
   system "addgroup www-shared"
   system "adduser www-data www-shared"
   system "adduser #{USER} www-shared"
+
   
   rubyv="ruby-1.9.2" # ruby version
   rubygs="web" # ruby gemset
@@ -765,7 +788,7 @@ if ARGV.include?("web") # {{{
     puts "Building #{rubyv}. This may take a while..."
     rvm "install #{rubyv}"
   end
-  File.ensure("#{HOME}/.profile", "export RAILS_ENV='production'\n", nil, UCH)
+  File.ensure("#{HOME}/.profile", "\nexport RAILS_ENV='production'\n", nil, UCH)
   Dir.mkdir("#{HOME}/bin", nil, UCH)
   File.write("#{HOME}/bin/webrunner", WEBRUNNER, 755, UCH)
 

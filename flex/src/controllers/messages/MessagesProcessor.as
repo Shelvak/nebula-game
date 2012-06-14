@@ -39,6 +39,11 @@ package controllers.messages
       private var _bufferInOrder: RMOSequence;
       private var _nextSequenceNumber: int;
 
+      public function get lastProcessedMessage(): int
+      {
+         return _nextSequenceNumber - 1;
+      }
+
       public function MessagesProcessor() {
          reset();
       }

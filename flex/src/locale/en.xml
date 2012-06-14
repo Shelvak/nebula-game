@@ -1441,20 +1441,23 @@
     <message.copyToClipboardSuccessful value="Copied to clipboard" />
     <message.planetClaimed value="Planet claimed" />
     <label.cooldownEndsIn value="Next battle in"/>
+    <label.longerThenExpected
+      value="This action is taking more time than expected." />
+    <label.reestablish value="Reconnect"/>
   </General>
 
   <Errors>
-      <invalidBitmap.title>Broken bitmap</invalidBitmap.title>
-      <invalidBitmap.message>
-         <p>
-            One or more bitmaps were broken while downloading them form the
-            server and upacking afterwards.
-         </p>
-         <p>
-            Refresh the page please.
-         </p>
-      </invalidBitmap.message>
-   </Errors>
+    <invalidBitmap.title>Broken bitmap</invalidBitmap.title>
+    <invalidBitmap.message>
+      <p>
+        One or more bitmaps were broken while downloading them form the
+        server and upacking afterwards.
+      </p>
+      <p>
+        Refresh the page please.
+      </p>
+    </invalidBitmap.message>
+  </Errors>
 
   <InfoScreen>
     <title.details value="Details" />
@@ -2190,6 +2193,15 @@
       </p>
       <p>Click '{0}' to reconnect.</p>
     </message.disconnect.otherLogin>
+
+    <title.disconnect.cannotReestablish
+      value="Cannot reestablish connection!" />
+    <message.disconnect.cannotReestablish>
+      <p>Sorry.</p>
+      <p>Your connection to the server was lost and we were unable to
+      reestablish it.</p>
+      <p>Click '{0}' to reconnect.</p>
+    </message.disconnect.cannotReestablish>
     
     <title.disconnect.playerErased value="Bye bye!" />
     <message.disconnect.playerErased>

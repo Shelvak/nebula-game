@@ -2,6 +2,8 @@ package utils.remote.rmo
 {
    import com.adobe.serialization.json.JSON;
 
+   import controllers.messages.MessagesProcessor;
+
    import models.BaseModel;
 
    import utils.PropertiesTransformer;
@@ -62,7 +64,8 @@ package utils.remote.rmo
          return JSON.encode({
             "id":     id,
             "action": action,
-            "params": PropertiesTransformer.objectToUnderscore(parameters)
+            "params": PropertiesTransformer.objectToUnderscore(parameters),
+            "lpseq": MessagesProcessor.getInstance().lastProcessedMessage
          });
       }
    }

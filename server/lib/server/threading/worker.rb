@@ -10,7 +10,7 @@ class Threading::Worker
   end
 
   def to_s
-    "worker-#{@name}"
+    "worker_#{@name}"
   end
 
   def work(task)

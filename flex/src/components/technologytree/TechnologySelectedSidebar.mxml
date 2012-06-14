@@ -507,9 +507,9 @@
                
                <base:Panel title="{Localizer.string('Technologies', 
                            'upgradeCost')}" 
-                           visible="{!(!(_selectedModel.upgradePart.upgradeEndsAt == null) || 
-                           !(_selectedModel.pauseRemainder == 0) || 
-                           !(_selectedModel.upgradePart.level &lt; _selectedModel.maxLevel ))}">
+                           visible="{!(_selectedModel.upgradePart.upgradeEndsAt != null ||
+                           _selectedModel.pauseRemainder != 0 ||
+                           _selectedModel.upgradePart.level >= _selectedModel.maxLevel )}">
                   <base:AdvancedContainer left="0" right="0" height="100%">
                      <s:Group>
                         <s:layout>
