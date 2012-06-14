@@ -148,7 +148,7 @@ package components.movement
       
       protected override function getCurrentSkinState() : String {
          if (_locationSpace && _locationPlanet) return "dual";
-         if (_locationSpace) return "space"
+         if (_locationSpace) return "space";
          return "planet";
       }
       
