@@ -388,44 +388,4 @@ private
       send("#{resource}=", value + rate * time_diff)
     end
   end
-
-  class << self
-    # Checks if any of the given _locations_ is a planet. If so it
-    # calculates observer ids before and after block execution. If they are
-    # changed - dispatches changed event for that planet.
-    def changing_viewable(locations)
-      locations = [locations] unless locations.is_a?(Array)
-
-      # Check if any of these locations are planets.
-      locations.each do |location|
-        if location.type == Location::SS_OBJECT
-          object = location.object
-          if object.is_a?(SsObject::Planet)
-            old_observers = object.observer_player_ids
-            result = yield
-            new_observers = object.observer_player_ids
-
-            if old_observers != new_observers
-              # If observers changed, dispatch changed on the planet.
-              EventBroker.fire(object, EventBroker::CHANGED)
-              # And if some players were viewing the planet, but they can't
-              # anymore, dispatch event to unset their session planet ids.
-              EventBroker.fire(
-                Event::PlanetObserversChange.
-                  new(object.id, old_observers - new_observers),
-                EventBroker::CREATED
-              )
-            end
-
-
-            # Exit the method
-            return result
-          end
-        end
-      end
-
-      # If none of the locations were planets, just yield the block.
-      yield
-    end
-  end
 end

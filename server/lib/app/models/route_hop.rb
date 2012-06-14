@@ -96,7 +96,7 @@ class RouteHop < ActiveRecord::Base
     route = self.route
     old_location = route.current
 
-    SsObject::Planet.changing_viewable([old_location, location]) do
+    Visibility.track_movement_changes(old_location, location) do
       route.current = location.client_location
 
       Unit.where(:route_id => route.id).update_all(
@@ -116,7 +116,6 @@ class RouteHop < ActiveRecord::Base
       zone_changed = Zone.different?(old_location, route.current)
 
       if zone_changed
-        self.class.handle_fow_change(event)
         # Update Route#jumps_at when zone changes.
         route.jumps_at = route.hops.
           where("location_#{route.current.type_column} IS NULL").first.
@@ -147,32 +146,6 @@ class RouteHop < ActiveRecord::Base
         route.completed = true
         route.destroy!
       end
-    end
-  end
-
-  def self.handle_fow_change(movement_event)
-    # Increase/decrease FOW solar system cache counters upon units
-    # changing zones.
-
-    route = movement_event.route
-    unit_count = route.cached_units.values.sum
-    previous_location = movement_event.previous_location
-    current_location = route.current
-
-    if previous_location.type == Location::SOLAR_SYSTEM &&
-        current_location.type == Location::SOLAR_SYSTEM
-      raise ArgumentError.new(
-        "Cannot hop from SS to SS directly, must be a bug in the code! #{
-          movement_event.inspect}"
-      )
-    elsif previous_location.type == Location::GALAXY
-      FowSsEntry.increase(current_location.id, route.player, unit_count)
-    elsif current_location.type == Location::GALAXY
-      FowSsEntry.decrease(previous_location.id, route.player, unit_count)
-    elsif previous_location.type == Location::SS_OBJECT
-      FowSsEntry.recalculate(current_location.id)
-    elsif current_location.type == Location::SS_OBJECT
-      FowSsEntry.recalculate(previous_location.id)
     end
   end
 

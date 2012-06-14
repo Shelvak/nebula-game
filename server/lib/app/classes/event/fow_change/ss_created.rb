@@ -1,19 +1,17 @@
 # Notifies about created solar system.
 class Event::FowChange::SsCreated < Event::FowChange::SolarSystem
-  # @param solar_system_id [Fixnum] SolarSystem#id
-  # @param x [Fixnum] SolarSystem#x
-  # @param y [Fixnum] SolarSystem#y
-  # @param kind [Fixnum] SolarSystem#kind
-  # @param player_minimal [Hash] Player#minimal | nil
-  # @param fow_ss_entries [Array]
-  def initialize(
-    solar_system_id, x, y, kind, player_minimal, fow_ss_entries
-  )
-    @solar_system_id = solar_system_id
-    fow_ss_entries ||= FowSsEntry.where(:solar_system_id => solar_system_id)
-    process_changes(fow_ss_entries, [x, y], kind, player_minimal)
-  end
+  def initialize(solar_system_id, x, y, kind, players, metadatas)
+    typesig binding, Fixnum, Fixnum, Fixnum, Fixnum, Array,
+      SolarSystem::Metadatas
 
-  def ==(other); super(other); end
-  def eql?(other); super(other); end
+    @solar_system_id = solar_system_id
+    @player_ids = players.map(&:id)
+    @metadatas = players.each_with_object({}) do |player, hash|
+      hash[player.id] = metadatas.for_created(
+        solar_system_id, player.as_json(mode: :minimal),
+        player.friendly_ids, player.alliance_ids,
+        x, y, kind
+      )
+    end
+  end
 end

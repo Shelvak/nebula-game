@@ -376,7 +376,8 @@ class Player < ActiveRecord::Base
   # Returns array of player ids which are friendly to this player (self and
   # alliance members).
   def friendly_ids
-    alliance_id.nil? ? [id] : Alliance.player_ids_for(alliance_id)
+    @friendly_ids ||=
+      alliance_id.nil? ? [id] : Alliance.player_ids_for(alliance_id)
   end
 
   # Returns array of player ids which are in his alliance. Returns empty array

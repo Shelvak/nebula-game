@@ -264,7 +264,7 @@ class SolarSystem < ActiveRecord::Base
     #
     def visible_for(player)
       friendly_ids = player.friendly_ids
-      alliance_ids = friendly_ids - [player.id]
+      alliance_ids = player.alliance_ids
       conditions = []
 
       # Solar systems covered by radars.
@@ -305,21 +305,8 @@ class SolarSystem < ActiveRecord::Base
       solar_systems.map do |solar_system|
         {
           solar_system: solar_system,
-          metadata: SolarSystemMetadata.existing(
-            solar_system.id,
-            player_planets: metadatas.player_planets?(solar_system.id, player.id),
-            player_ships: metadatas.player_ships?(solar_system.id, player.id),
-            enemy_planets:
-              metadatas.enemies_with_planets(solar_system.id, friendly_ids),
-            enemy_ships:
-              metadatas.enemies_with_ships(solar_system.id, friendly_ids),
-            alliance_planets:
-              metadatas.allies_with_planets(solar_system.id, alliance_ids),
-            alliance_ships:
-              metadatas.allies_with_ships(solar_system.id, alliance_ids),
-            # TODO: nap support
-            nap_planets: false,
-            nap_ships: false
+          metadata: metadatas.for_existing(
+            solar_system.id, player.id, friendly_ids, alliance_ids
           )
         }
       end
@@ -403,17 +390,6 @@ IF(
       ss
     end
 
-    # Retrieves metadata for single solar system and player.
-    def metadata_for(id, player)
-      FowSsEntry.merge_metadata(
-        entries.find { |entry| entry.player_id == player.id },
-        # Try to find alliance entry if player is in alliance.
-        player.alliance_id \
-          ? entries.find { |entry| entry.alliance_id == player.alliance_id } \
-          : nil
-      )
-    end
-
     # Returns player ids for those who can see this solar system.
     #
     # TODO: spec
@@ -453,24 +429,6 @@ UNION
       }).map(&:to_i)
 
       Player.join_alliance_ids(player_ids)
-    end
-
-    def tracking_changes(solar_system_id, update_metadata=false)
-      typesig binding, Fixnum
-
-      previous_player_ids = observer_player_ids(solar_system_id)
-      ret_val = yield
-      current_player_ids = observer_player_ids(solar_system_id)
-
-      # Some changes occurred.
-      if previous_player_ids != current_player_ids
-        created = current_player_ids - previous_player_ids
-        destroyed = previous_player_ids - current_player_ids
-
-
-      end
-
-      ret_val
     end
   end
 end

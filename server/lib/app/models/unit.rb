@@ -106,9 +106,9 @@ class Unit < ActiveRecord::Base
     end
   end
 
-  # Wraps standard #destroy in SsObject::Planet#changing_viewable.
+  # Wraps standard #destroy in Visibility#track_changes.
   def destroy
-    SsObject::Planet.changing_viewable(location) do
+    Visibility.track_changes(location) do
       super
     end
   end
@@ -513,7 +513,7 @@ class Unit < ActiveRecord::Base
       end
 
       location = units[0].location
-      SsObject::Planet.changing_viewable(location) do
+      Visibility.track_changes(location) do
         unit_ids = units.map(&:id)
         # Delete units and other units inside those units.
         where(:id => unit_ids).delete_all

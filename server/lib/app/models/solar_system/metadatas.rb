@@ -56,6 +56,51 @@ class SolarSystem::Metadatas
     alliance(@unit_metas, solar_system_id, alliance_ids)
   end
 
+  # Returns +SolarSystemMetadata+ for solar system which is being created from
+  # clients perspective.
+  def for_created(
+    solar_system_id, player_minimal, friendly_ids, alliance_ids,
+    x, y, kind
+  )
+    player_id = player_minimal.try(:[], 'id')
+    SolarSystemMetadata.new(
+      id: solar_system_id,
+      x: x, y: y, kind: kind, player: player_minimal,
+      player_planets: player_planets?(solar_system_id, player_id),
+      player_ships: player_ships?(solar_system_id, player_id),
+      enemy_planets: enemies_with_planets(solar_system_id, friendly_ids),
+      enemy_ships: enemies_with_ships(solar_system_id, friendly_ids),
+      alliance_planets: allies_with_planets(solar_system_id, alliance_ids),
+      alliance_ships: allies_with_ships(solar_system_id, alliance_ids),
+      # TODO: nap support
+      nap_planets: false,
+      nap_ships: false
+    )
+  end
+
+  # Returns +SolarSystemMetadata+ for solar system which is existing from
+  # clients perspective.
+  def for_existing(solar_system_id, player_id, friendly_ids, alliance_ids)
+    SolarSystemMetadata.existing(
+      solar_system_id,
+      player_planets: player_planets?(solar_system_id, player_id),
+      player_ships: player_ships?(solar_system_id, player_id),
+      enemy_planets: enemies_with_planets(solar_system_id, friendly_ids),
+      enemy_ships: enemies_with_ships(solar_system_id, friendly_ids),
+      alliance_planets: allies_with_planets(solar_system_id, alliance_ids),
+      alliance_ships: allies_with_ships(solar_system_id, alliance_ids),
+      # TODO: nap support
+      nap_planets: false,
+      nap_ships: false
+    )
+  end
+
+  # Returns +SolarSystemMetadata+ for solar system which is destroyed from
+  # clients perspective.
+  def for_destroyed(solar_system_id)
+    SolarSystemMetadata.destroyed(solar_system_id)
+  end
+
 private
 
   def player?(storage, solar_system_id, player_id)
