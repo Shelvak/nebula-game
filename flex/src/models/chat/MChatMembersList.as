@@ -11,9 +11,9 @@ package models.chat
    import mx.utils.ObjectUtil;
 
    import utils.Events;
-
    import utils.Objects;
    import utils.StringUtil;
+   import utils.logging.Log;
 
 
    [Event(name="membersFilterChange", type="models.chat.events.MChatChannelEvent")]
@@ -63,16 +63,13 @@ package models.chat
        * Adds given <code>MChatMember</code> to the list.
        * 
        * @param member instance of <code>MChatMember</code> to add. <b>Not null</b>.
-       * 
-       * @throws ArgumentError if given <code>MChatMember</code> is already in
-       * the list.
        */
       public function addMember(member: MChatMember): void {
          Objects.paramNotNull("member", member);
          if (containsMember(member.id)) {
-            throw new ArgumentError(
-               "Member " + member + " is already in the list"
-            );
+            Log.getMethodLogger(this, "addMember")
+               .warn("Member {0} is already in the list. Ignoring.", member);
+            return;
          }
          _membersHash[member.id] = member;
          addItem(member);
