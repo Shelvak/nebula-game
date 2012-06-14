@@ -69,32 +69,26 @@ package controllers.startup
 
 import controllers.startup.StartupInfo;
 
-import mx.logging.ILogger;
-import mx.logging.Log;
 import mx.rpc.events.FaultEvent;
 import mx.rpc.events.ResultEvent;
 import mx.rpc.http.HTTPService;
 
 import utils.Objects;
 import utils.StringUtil;
+import utils.logging.Log;
 
 
 class ChecksumsFileLoader
 {
-   private function get logger() : ILogger {
-      return Log.getLogger("controllers.startup.ChecksumsLoader");
-   }
-   
    private function get startupInfo() : StartupInfo {
       return StartupInfo.getInstance();
    }
-   
-   private var _loader:HTTPService;
-   private var _resource:String;
-   private var _onComplete:Function;
-   
-   
-   public function ChecksumsFileLoader(resource:String, onComplete:Function) {
+
+   private var _loader: HTTPService;
+   private var _resource: String;
+   private var _onComplete: Function;
+
+   public function ChecksumsFileLoader(resource: String, onComplete: Function) {
       this._resource = Objects.paramNotNull("resource", resource);
       this._onComplete = Objects.paramNotNull("onComplete", onComplete);
       this._loader = new HTTPService();
@@ -103,18 +97,16 @@ class ChecksumsFileLoader
       this._loader.addEventListener(FaultEvent.FAULT, loader_faultHandler, false, 0, true);
       this._loader.send();
    }
-   
-   
-   private function loader_faultHandler(event:FaultEvent) : void {
-      logger.warn(
+
+   private function loader_faultHandler(event: FaultEvent): void {
+      Log.getMethodLogger(ChecksumsFileLoader, "loader_faultHandler").warn(
          "Unable to download {0} checksums file: {1} {2}",
          _resource, event.fault.faultString, event.fault.faultDetail
       );
       _onComplete.call(null, null);
    }
-   
-   private function loader_resultHandler(event:ResultEvent) : void {
+
+   private function loader_resultHandler(event: ResultEvent): void {
       _onComplete.call(null, StringUtil.parseChecksums(String(event.result)));
    }   
-   
 }

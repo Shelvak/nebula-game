@@ -59,7 +59,7 @@ package utils.remote
    
 
    /**
-    * Implementation of <code>IServerProxy</code> wich communicates with a server through
+    * Implementation of <code>IServerProxy</code> which communicates with a server through
     * TCP/IP socket connection.
     */
    public class ServerConnector extends EventDispatcher implements IServerProxy

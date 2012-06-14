@@ -16,21 +16,18 @@ package utils
 
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   import mx.logging.ILogger;
-   import mx.logging.Log;
    import mx.utils.ObjectUtil;
 
    import namespaces.client_internal;
+
+   import utils.logging.Log;
+
 
    /**
     * Has a bunch of methods for working with objects and classes. 
     */
    public final class Objects
    {
-      private static function get logger():ILogger {
-         return Log.getLogger("utils.Objects");
-      }
-
       /* ############# */
       /* ### CLASS ### */
       /* ############# */
@@ -69,7 +66,10 @@ package utils
       public static function getInstance(instance:Object) : * {
          return new (getClass(instance))();
       }
-      
+
+
+      private static const INNER_CLASS_FILE_REGEXP: RegExp = /^.+\$\d+::/;
+
       /**
        * Returns the fully qualified class name of a given object.
        * 
@@ -77,7 +77,7 @@ package utils
        * from class name with a dot (.) symbol.
        */
       public static function getClassName(o:Object, replaceColons:Boolean = false) : String {
-         var className:String = getQualifiedClassName(o);
+         var className:String = getQualifiedClassName(o).replace(INNER_CLASS_FILE_REGEXP, "");
          if (replaceColons)
             className = className.replace("::", ".");
          return className;
@@ -1068,10 +1068,9 @@ package utils
                propValue = object[propName];
             }
             catch (err: Error) {
-               logger.warn(
-                  "@createImpl(): Error '{0}' while reading property '{1}' "
-                     + "of instance of {2}. Assuming 'undefined' value.",
-                  err.message, propName, type
+               Log.getMethodLogger(Objects, "createImpl").warn(
+                  "Error '{0}' while reading property '{1}' of instance of {2}. "
+                     + "Assuming 'undefined' value.", err.message, propName, type
                );
             }
             // read-only null property
