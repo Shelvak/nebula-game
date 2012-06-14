@@ -3,7 +3,6 @@ package utils.remote
    import controllers.messages.MessagesProcessor;
    import controllers.messages.ResponseMessagesTracker;
    import controllers.startup.StartupInfo;
-   import controllers.startup.StartupManager;
    import controllers.startup.StartupMode;
 
    import flash.errors.IOError;
@@ -12,20 +11,16 @@ package utils.remote
    import flash.events.IOErrorEvent;
    import flash.events.ProgressEvent;
    import flash.events.SecurityErrorEvent;
-   import flash.external.ExternalInterface;
    import flash.net.Socket;
 
    import models.ModelLocator;
 
-   import mx.logging.ILogger;
-   import mx.logging.Log;
-
    import namespaces.client_internal;
 
    import utils.ApplicationLocker;
-
    import utils.Events;
-   import utils.Objects;
+   import utils.logging.IMethodLoggerFactory;
+   import utils.logging.Log;
    import utils.logging.MessagesLogger;
    import utils.remote.events.ServerProxyEvent;
    import utils.remote.rmo.*;
@@ -69,9 +64,8 @@ package utils.remote
     */
    public class ServerConnector extends EventDispatcher implements IServerProxy
    {
-      private function get log() : ILogger {
-         return Log.getLogger(Objects.getClassName(this, true));
-      }
+      private const loggerFactory: IMethodLoggerFactory =
+         Log.getMethodLoggerFactory(ServerConnector);
       
       private function get msgLog() : MessagesLogger {
          return MessagesLogger.getInstance();
@@ -162,7 +156,7 @@ package utils.remote
       }
 
       private function socket_ioErrorHandler(event: IOErrorEvent): void {
-         log.error(event.text);
+         loggerFactory.getLogger("socket_ioErrorHandler").error(event.text);
          reestablishConnection();
          //dispatchServerProxyEvent(ServerProxyEvent.IO_ERROR);
       }
@@ -175,7 +169,8 @@ package utils.remote
          }
          // Apparently the famous #2048 error is thrown every time connection is closed so just ignore it.
          else {
-            log.debug("Expected security error after disconnect: {0}", event.text);
+            loggerFactory.getLogger("socket_securityErrorHandler")
+               .debug("Expected security error after disconnect: {0}", event.text);
          }
       }
 
@@ -189,7 +184,8 @@ package utils.remote
       }
 
       private var socketEventsRegistered: Boolean = false;
-      
+
+
       // ######################### //
       // ### INTERFACE METHODS ### //
       // ######################### //
@@ -208,9 +204,8 @@ package utils.remote
          try {
             _socket.close();
          }
-            // well we can't do much about the error, can we?
-         catch (error: IOError) {
-         }
+         // well we can't do much about the error, can we?
+         catch (error: IOError) {}
       }
 
       public function reset(): void {
@@ -218,35 +213,32 @@ package utils.remote
          getUnprocessedMessages();
       }
 
-
-      private function get ML(): ModelLocator
-      {
+      private function get ML(): ModelLocator {
          return ModelLocator.getInstance();
       }
 
-      private function get SI(): StartupInfo
-      {
+      private function get SI(): StartupInfo {
          return StartupInfo.getInstance();
       }
 
       private function reestablish_connectHandler(event: Event): void {
          // normally there should not be anything in the buffer when
          // connection has been established but clear it just in case
-         log.info('reestablishment socket connected');
+         loggerFactory.getLogger("reestablish_connectHandler")
+            .info('reestablishment socket connected');
          _buffer = "";
          _connecting = false;
          removeSocketEventHandlers();
          requestReestablish();
       }
 
-      private function reestablishment_data(event: ProgressEvent): void
-      {
+      private function reestablishment_data(event: ProgressEvent): void {
          ApplicationLocker.getInstance().decreaseLockCounter();
-         if (_socket != null)
-         {
+         if (_socket != null) {
             disconnect();
          }
-         log.info('reestablishment socket received data, switching to reestablished socket');
+         loggerFactory.getLogger("reestablishment_data")
+            .info('reestablishment socket received data, switching to reestablished socket');
          _socket = reestablishmentSocket;
          removeReestablishmentSocketHandlers();
          reestablishmentSocket = null;
@@ -255,10 +247,9 @@ package utils.remote
       }
 
       private function reestablish_closeHandler(event: Event): void {
-         if (reestablishmentSocket != null)
-         {
+         if (reestablishmentSocket != null) {
             ApplicationLocker.getInstance().decreaseLockCounter();
-            log.info('reestablishment failed');
+            loggerFactory.getLogger("reestablish_closeHandler").info('reestablishment failed');
             disconnect();
             _buffer = "";
             _connecting = false;
@@ -272,24 +263,21 @@ package utils.remote
 
       private var reestablishmentSocket: Socket;
 
-      private function reestablishConnection(): void
-      {
-         if (reestablishmentSocket == null && ML.player != null
-            && ML.player.id > 0
-            && MessagesProcessor.getInstance().lastProcessedMessage > 0)
-         {
+      private function reestablishConnection(): void {
+         if (reestablishmentSocket == null
+               && ML.player != null
+               && ML.player.id > 0
+               && MessagesProcessor.getInstance().lastProcessedMessage > 0) {
             ApplicationLocker.getInstance().increaseLockCounter();
-            log.info('creating reestablish socket');
+            loggerFactory.getLogger("reestablishConnection").info('creating reestablish socket');
             reestablishmentSocket = new Socket();
             addReestablishmentSocketHandlers();
             reestablishmentSocket.connect(SI.server, SI.port);
          }
       }
 
-      private function addReestablishmentSocketHandlers(): void
-      {
-         with (reestablishmentSocket)
-         {
+      private function addReestablishmentSocketHandlers(): void {
+         with (reestablishmentSocket) {
             addEventListener(Event.CLOSE, reestablish_closeHandler);
             addEventListener(Event.CONNECT, reestablish_connectHandler);
             addEventListener(ProgressEvent.SOCKET_DATA, reestablishment_data);
@@ -298,10 +286,8 @@ package utils.remote
          }
       }
 
-      private function removeReestablishmentSocketHandlers(): void
-      {
-         with (reestablishmentSocket)
-         {
+      private function removeReestablishmentSocketHandlers(): void {
+         with (reestablishmentSocket) {
             removeEventListener(Event.CLOSE, reestablish_closeHandler);
             removeEventListener(Event.CONNECT, reestablish_connectHandler);
             removeEventListener(ProgressEvent.SOCKET_DATA, reestablishment_data);
@@ -310,14 +296,13 @@ package utils.remote
          }
       }
 
-      private function requestReestablish(): void
-      {
+      private function requestReestablish(): void {
          if (reestablishmentSocket.connected) {
             var reestablishMsg: String = 'reestablish:' + ML.player.id + ':' +
                MessagesProcessor.getInstance().lastProcessedMessage + ':'
                + StartupInfo.getInstance().reestablishmentToken + '\n';
-            log.info('requesting reestablish: '
-            + ' >>> ' + reestablishMsg);
+            loggerFactory.getLogger("requestReestablish")
+               .info('requesting reestablish:  >>> {0}', reestablishMsg);
             reestablishmentSocket.writeUTFBytes(reestablishMsg);
          }
       }

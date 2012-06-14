@@ -54,17 +54,17 @@
    </s:Group>
 
   <fx:Script><![CDATA[
-    import controllers.startup.StartupManager;
+     import controllers.startup.StartupManager;
 
-    import mx.logging.Log;
+     import utils.locale.Localizer;
+     import utils.logging.Log;
 
-    import utils.locale.Localizer;
-    import utils.remote.ServerProxyInstance;
 
-    private function reconnect(event: MouseEvent): void {
-      Log.getLogger('SpinnerContainerSkin').info("Resetting due to player request.");
-      StartupManager.resetApp();
-      StartupManager.connectAndAuthorize();
-    }
-    ]]></fx:Script>
+     private function reconnect(event: MouseEvent): void {
+        Log.getMethodLogger(SpinnerContainerSkin, "reconnect")
+           .info("Resetting due to player request.");
+        StartupManager.resetApp();
+        StartupManager.connectAndAuthorize();
+     }
+     ]]></fx:Script>
 </s:SparkSkin>
