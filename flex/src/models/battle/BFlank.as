@@ -92,9 +92,8 @@ package models.battle
       public function getUnitById(id: int): BaseModel
       {
          if (groundUnits.find(id) != null)
-            return groundUnits.find(id)
-         else
-         if (spaceUnits.find(id) != null)
+            return groundUnits.find(id);
+         else if (spaceUnits.find(id) != null)
             return spaceUnits.find(id);
          return null;
       }

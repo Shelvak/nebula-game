@@ -1,3 +1,4 @@
+# Construction queue for constructor has been changed.
 class Event::ConstructionQueue
   attr_reader :constructor_id
 

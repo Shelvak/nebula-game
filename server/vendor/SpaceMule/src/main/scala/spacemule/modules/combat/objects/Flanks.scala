@@ -10,14 +10,14 @@ import spacemule.modules.config.objects.Config
  * Companion object to Flanks class.
  */
 object Flanks {
-  def toInitiativeLists(combatants: Iterable[Combatant]) =
+  def toInitiativeLists(combatants: sc.Iterable[Combatant]) =
     combatants.toList.groupBy { _.initiative }
 }
 
 /**
  * Object that represents all flanks for given set of combatants.
  */
-class Flanks(description: String, combatants: Set[Combatant]) {
+class Flanks(description: String, combatants: sc.Set[Combatant]) {
   /**
    * List of combatants not yet activated sorted by descending initiative.
    */

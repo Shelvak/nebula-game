@@ -20,7 +20,7 @@ module Visibility
       solar_system_id = location_point.id
       yielder.call
     when Location::SS_OBJECT
-      planet = location_point.object
+      planet = without_locking { location_point.object.freeze }
       raise "Visibility changes in #{planet.inspect} does not make any sense!" \
         unless planet.is_a?(SsObject::Planet)
 

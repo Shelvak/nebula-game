@@ -34,8 +34,10 @@ class SsSpawnStrategy
     )
     jumpgate_points = lambda do
       fields = "position, angle"
-      SsObject::Jumpgate.in_solar_system(@solar_system).
-        select(fields).group(fields).c_select_all
+      without_locking do
+        SsObject::Jumpgate.in_solar_system(@solar_system).
+          select(fields).group(fields).c_select_all
+      end
     end.call.each_with_object(Set.new) do |row, set|
       set.add SolarSystemPoint.new(
         @solar_system.id, row['position'], row['angle']

@@ -133,7 +133,7 @@ units.test_unit.metal.cost: 300
 units.test_unit.energy.cost: 300
 units.test_unit.zetium.cost: 300
 units.test_unit.initiative: 5
-units.test_unit.armor: :light
+units.test_unit.armor: light
 units.test_unit.armor_mod: 0
 units.test_unit.population: 25
 units.test_unit.kind: :ground
@@ -153,7 +153,7 @@ units.deployable_test.metal.cost: 300
 units.deployable_test.energy.cost: 300
 units.deployable_test.zetium.cost: 300
 units.deployable_test.initiative: 5
-units.deployable_test.armor: :light
+units.deployable_test.armor: light
 units.deployable_test.kind: :ground
 units.deployable_test.guns:
   - dpt: 15 * level
@@ -172,7 +172,7 @@ units.with_storage.energy.cost: 300
 units.with_storage.zetium.cost: 300
 units.with_storage.initiative: 5
 units.with_storage.population: 2
-units.with_storage.armor: :light
+units.with_storage.armor: light
 units.with_storage.kind: :ground
 units.with_storage.guns: []
 
@@ -186,6 +186,6 @@ units.loadable_test.metal.cost: 300
 units.loadable_test.energy.cost: 300
 units.loadable_test.zetium.cost: 300
 units.loadable_test.initiative: 5
-units.loadable_test.armor: :light
+units.loadable_test.armor: light
 units.loadable_test.kind: :ground
 units.loadable_test.guns: []

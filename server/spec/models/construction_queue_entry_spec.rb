@@ -82,11 +82,8 @@ describe ConstructionQueueEntry do
         end.should raise_error(ArgumentError)
       end
 
-      it "should increase player population" do
-        lambda do
-          entry.reduce_resources!(count)
-          player.reload
-        end.should change(player, :population).by(klass.population * count)
+      it "should return true" do
+        entry.reduce_resources!(count).should be_true
       end
     end
 
@@ -97,14 +94,14 @@ describe ConstructionQueueEntry do
       end
 
       it "should not fail when planet player is nil" do
+        planet.player = nil
+        planet.save!
+
         entry.reduce_resources!(1)
       end
 
-      it "should not change player population" do
-        lambda do
-          entry.reduce_resources!(1)
-          player.reload
-        end.should_not change(player, :population)
+      it "should return false" do
+        entry.reduce_resources!(1).should be_false
       end
     end
   end
@@ -146,42 +143,13 @@ describe ConstructionQueueEntry do
                  )
     end
 
-    describe "when using population" do
-      let(:count) { 2 }
-
-      it "should fail if planet player is nil" do
-        planet.player = nil
-        planet.save!
-
-        lambda do
-          entry.return_resources!(1)
-        end.should raise_error(ArgumentError)
-      end
-
-      it "should decrease player population" do
-        lambda do
-          entry.return_resources!(count)
-          player.reload
-        end.should change(player, :population).by(- klass.population * count)
-      end
+    it "should return true if using population" do
+      entry.return_resources!(1).should be_true
     end
 
-    describe "when not using population" do
-      let(:klass) { Building::CollectorT1 }
-      before(:each) do
-        entry.constructable_type = klass.to_s
-      end
-
-      it "should not fail when planet player is nil" do
-        entry.return_resources!(1)
-      end
-
-      it "should not change player population" do
-        lambda do
-          entry.return_resources!(1)
-          player.reload
-        end.should_not change(player, :population)
-      end
+    it "should return false if not using population" do
+      entry.constructable_type = Building::CollectorT1.to_s
+      entry.return_resources!(1).should be_false
     end
   end
 

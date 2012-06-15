@@ -114,7 +114,7 @@ class Chat::Control
     check_args(player, args, 2) or return
 
     name, time_str = args
-    target = find_player(player, name) or return
+    target = without_locking { find_player(player, name) } or return
 
     if target.chat_mod?
       report(player.id, %Q{Cannot silence another chat moderator!})

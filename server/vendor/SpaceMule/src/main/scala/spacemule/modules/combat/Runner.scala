@@ -1,13 +1,13 @@
 package spacemule.modules.combat
 
-import spacemule.helpers.StdErrLog
+import spacemule.logging.Log
 import spacemule.modules.combat.objects._
 import spacemule.helpers.Converters._
-import spacemule.helpers.Benchmarkable
-import spacemule.helpers.BenchmarkableMock
+import spacemule.helpers.JRuby._
 import post_combat._
+import scala.{collection => sc}
 
-object Runner extends BenchmarkableMock {
+object Runner {
   /**
    * Maps attribute changes (ID -> Map[attribute -> newValue]).
    */
@@ -34,33 +34,28 @@ object Runner extends BenchmarkableMock {
     location: Location,
     isBattleground: Boolean,
     planetOwner: Option[Player],
-    players: Set[Option[Player]],
+    players: sc.Set[Option[Player]],
     allianceNames: Combat.AllianceNames,
     napRules: Combat.NapRules,
-    troops: Set[Troop],
-    loadedTroops: Map[Long, Set[Troop]],
-    unloadedTroopIds: Set[Long],
-    buildings: Set[Building]
+    troops: sc.Set[Troop],
+    loadedTroops: Combat.LoadedTroops,
+    unloadedTroopIds: sc.Set[Long],
+    buildings: sc.Set[Building]
   ): Option[Response] = {
-//    StdErrLog.level = StdErrLog.Debug
-    val combat = benchmark("Combat simulation") { () =>
-      StdErrLog.debug("Combat simulation", () =>
-        Combat(
-          location,
-          isBattleground,
-          planetOwner,
-          players,
-          allianceNames,
-          napRules,
-          troops,
-          loadedTroops,
-          unloadedTroopIds,
-          buildings
-        )
+    val combat = Log.block("Combat simulation", level=Log.Debug) { () =>
+      Combat(
+        location,
+        isBattleground,
+        planetOwner,
+        players,
+        allianceNames,
+        napRules.map { case (k, v) => k -> v.toSet },
+        troops,
+        loadedTroops.map { case(k, v) => k -> v.toSet },
+        unloadedTroopIds,
+        buildings
       )
     }
-
-    printBenchmarkResults()
 
     if (combat.log.isEmpty && combat.outcomes.isTie) {
       // There was not combat if all sides have alive enemies and there were

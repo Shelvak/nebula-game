@@ -114,118 +114,143 @@ describe Galaxy::Zone do
     end
   end
 
-  describe ".list_for" do
+  describe ".for_reattachment" do
     let(:galaxy) { Factory.create(:galaxy) }
-
-    def ss_in(x, y, with_player)
-      Factory.create(:solar_system, :galaxy => galaxy, :x => x, :y => y,
-        :player => with_player ? Factory.create(:player_for_ratings) : nil)
-    end
-
-    def solar_systems(with_players=true)
-      diam = Cfg.galaxy_zone_diameter
-      wp = with_players
-      srand(121223) # Seed random to get predictable test results.
-      ss = {
-        # 2 ss in 1st slot, 1 in 3rd.
-        1 => [ss_in(0, -1, wp), ss_in(1,-2, wp), ss_in(0, -diam - 1, wp)],
-        2 => [ss_in(-1, -1, wp), ss_in(-2, -2, wp), ss_in(-1, -diam - 1, wp)],
-        3 => [ss_in(-1, 1, wp), ss_in(-2, 2, wp), ss_in(-1, diam, wp)],
-        4 => [ss_in(0, 0, wp), ss_in(1, 1, wp), ss_in(0, diam, wp)]
-      }
-      srand(Time.now.to_i) # Restore randomness
-      ss
-    end
-
-    def expected_row(quarter, slot, solar_systems, target_points)
-      {
-        'quarter' => quarter, 'slot' => slot,
-        'points_diff' => (
-          solar_systems.map { |ss| ss.try(:player).try(:points) || 0 }.average -
-          target_points
-        ).abs.round,
-        'player_count' => solar_systems.map(&:player_id).compact.size
-      }
-    end
-
-    def create_expected(solar_systems, target_points)
-      solar_systems.keys.each_with_object([]) do |quarter, array|
-        array << expected_row(
-          quarter, 1, solar_systems[quarter][0..1], target_points
+    let(:player_points) { 1000 }
+    let(:ss) do
+      lambda do |x, y, eco|
+        Factory.create(
+          :solar_system, galaxy: galaxy, x: x, y: y, player: player[eco]
         )
-        array << expected_row(
-          quarter, 3, solar_systems[quarter][2..2], target_points
+      end
+    end
+    let(:player) do
+      lambda do |eco|
+        Factory.create(:player_no_home_ss,
+          galaxy: galaxy, economy_points: eco, science_points: 0,
+          army_points: 0, war_points: 0
         )
-      end.sort_by { |row| [row['points_diff'], row['quarter'], row['slot']] }
+      end
     end
 
-    it "should return zone averages" do
-      solar_systems = solar_systems()
-      target_points = 1000
-
-      expected = create_expected(solar_systems, target_points)
-
-      rows = Galaxy::Zone.list_for(galaxy.id, target_points)
-      rows.should == expected
+    before(:each) do
+      Cfg.stub(:galaxy_zone_diameter).and_return(8)
+      Cfg.stub(:galaxy_zone_max_player_count).and_return(3)
     end
 
-    it "should include non-home solar systems if no player systems are found" do
-      break_transaction
-      solar_systems = solar_systems(false)
-      target_points = 1000
+    it "should return zone where player points avg is closest" do
+      ss[1, 0, 900]   # Q4, Slot 1
+      ss[10, 0, 500]  # Q4, Slot 2
+      ss[10, 1, 1500] # Q4, Slot 2
+      ss[1, 9, 1100]  # Q4, Slot 3
 
-      expected = create_expected(solar_systems, target_points)
-
-      rows = Galaxy::Zone.list_for(galaxy.id, target_points)
-      rows.should == expected
+      Galaxy::Zone.for_reattachment(galaxy.id, player_points).should ==
+        Galaxy::Zone.new(2, 4)
     end
 
-    it "should raise exception if no systems are found at all" do
-      lambda do
-        Galaxy::Zone.list_for(galaxy.id)
-      end.should raise_error(RuntimeError)
+    it "should not include detached systems" do
+      ss[nil, nil, player_points]
+      ss[10, 0, 500] # Q4, Slot 2
+      Galaxy::Zone.for_reattachment(galaxy.id, player_points).should ==
+        Galaxy::Zone.new(2, 4)
+    end
+
+    it "should not include systems from other galaxies" do
+      ss[1, 0, player_points].tap do |s|
+        s.galaxy = Factory.create(:galaxy)
+        s.save!
+      end
+      ss[10, 0, 500] # Q4, Slot 2
+      Galaxy::Zone.for_reattachment(galaxy.id, player_points).should ==
+        Galaxy::Zone.new(2, 4)
+    end
+
+    it "should filter out zones that have >= than max players" do
+      (0...Cfg.galaxy_zone_max_player_count).each do |y|
+        ss[1, y, player_points]
+      end
+      ss[10, 0, 500] # Q4, Slot 2
+      Galaxy::Zone.for_reattachment(galaxy.id, player_points).should ==
+        Galaxy::Zone.new(2, 4)
+    end
+
+    it "should pass its job to .for_enrollment if there are no players" do
+      Galaxy::Zone.should_receive(:for_enrollment).with(galaxy.id, nil).
+        and_return(:zone)
+      Galaxy::Zone.for_reattachment(galaxy.id, player_points).should == :zone
     end
   end
 
-  describe ".for_reattachment" do
-    let(:galaxy_id) { 10 }
-    let(:target_points) { 12356 }
-
-    it "should return first zone from the list" do
-      Galaxy::Zone.stub(:list_for).with(galaxy_id, target_points).and_return([
-        {'quarter' => 3, 'slot' => 1, 'points_diff' => 1, 'player_count' => 0},
-        {'quarter' => 2, 'slot' => 1, 'points_diff' => 1, 'player_count' => 0},
-      ])
-      zone = Galaxy::Zone.for_reattachment(galaxy_id, target_points)
-      [zone.slot, zone.quarter].should == [1, 3]
+  describe ".for_enrollment" do
+    let(:galaxy) { Factory.create(:galaxy) }
+    let(:ss) do
+      lambda do |x, y, player|
+        Factory.create(
+          :solar_system, galaxy: galaxy, x: x, y: y, player: player
+        )
+      end
+    end
+    let(:player) do
+      lambda do |age|
+        Factory.create(
+          :player_no_home_ss, galaxy: galaxy, created_at: age.hours.ago
+        )
+      end
     end
 
-    it "should skip zones if they are full" do
-      Galaxy::Zone.stub(:list_for).with(galaxy_id, target_points).and_return([
-        {'quarter' => 3, 'slot' => 1, 'points_diff' => 1,
-         'player_count' => Cfg.galaxy_zone_max_player_count},
-        {'quarter' => 2, 'slot' => 1, 'points_diff' => 1, 'player_count' => 0},
-      ])
-      zone = Galaxy::Zone.for_reattachment(galaxy_id, target_points)
-      [zone.slot, zone.quarter].should == [1, 2]
+    before(:each) do
+      Cfg.stub(:galaxy_zone_diameter).and_return(8)
+      Cfg.stub(:galaxy_zone_max_player_count).and_return(3)
     end
 
-    it "should create new zone if all zones are full" do
-      galaxy = Factory.create(:galaxy)
-      Galaxy::Zone.stub(:list_for).with(galaxy.id, target_points).and_return([
-        {'quarter' => 3, 'slot' => 1, 'points_diff' => 1,
-         'player_count' => Cfg.galaxy_zone_max_player_count},
-        {'quarter' => 2, 'slot' => 1, 'points_diff' => 1,
-         'player_count' => Cfg.galaxy_zone_max_player_count},
-      ])
+    it "should return zone with free spots" do
+      # Q4, Slot 1, full
+      ss[0, 0, player[1]]; ss[0, 1, player[1]]; ss[0, 2, player[1]]
+      # Q1, Slot 2, free
+      ss[8, -1, player[1]]
 
-      quarter = 2
-      slot = 2
+      Galaxy::Zone.for_enrollment(galaxy.id, nil).should ==
+        Galaxy::Zone.new(2, 1)
+    end
 
-      SpaceMule.instance.should_receive(:create_zone).
-        with(galaxy.id, galaxy.ruleset, slot, quarter)
-      zone = Galaxy::Zone.for_reattachment(galaxy.id, target_points)
-      [zone.slot, zone.quarter].should == [slot, quarter]
+    it "should return zone with lowest spot number" do
+      # Q4, Slot 1, free
+      ss[0, 0, player[1]]; ss[0, 1, player[1]]
+      # Q1, Slot 2, free
+      ss[8, -1, player[1]]
+
+      Galaxy::Zone.for_enrollment(galaxy.id, nil).should ==
+        Galaxy::Zone.new(1, 4)
+    end
+
+    it "should raise error if no free zones exist" do
+      lambda do
+        Galaxy::Zone.for_enrollment(galaxy.id, nil)
+      end.should raise_error(RuntimeError)
+    end
+
+    describe "max_age=nil" do
+      it "should ignore player age" do
+        # Q4, Slot 1, full
+        ss[0, 0, player[10]]; ss[0, 1, player[5]]
+        # Q1, Slot 2, free
+        ss[8, -1, player[3]]
+
+        Galaxy::Zone.for_enrollment(galaxy.id, nil).should ==
+          Galaxy::Zone.new(1, 4)
+      end
+    end
+
+    describe "max_age=Fixnum" do
+      it "should skip zones where at least one player is old enough" do
+        # Q4, Slot 1, full
+        ss[0, 0, player[10]]; ss[0, 1, player[5]]
+        # Q1, Slot 2, free
+        ss[8, -1, player[1]]
+
+        Galaxy::Zone.for_enrollment(galaxy.id, 2.hours).should ==
+          Galaxy::Zone.new(2, 1)
+      end
     end
   end
 end

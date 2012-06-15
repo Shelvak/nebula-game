@@ -171,7 +171,8 @@ package controllers.timedupdate
 
          // process a few messages
          MessagesProcessor.getInstance().process(5);
-         ResponseMessagesTracker.getInstance().checkWaitingMessages();
+         //TODO: remove following commented method if new keep alive thing will work
+         //ResponseMessagesTracker.getInstance().checkWaitingMessages();
          
          // advance to the next trigger
          _triggerIndex++;

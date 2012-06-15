@@ -59,14 +59,6 @@ describe SolarSystem do
     end
   end
 
-  describe "#orbit_count" do
-    it "should return max planet position + 1" do
-      @ss = Factory.create(:solar_system)
-      Factory.create(:planet, :solar_system => @ss, :position => 7)
-      @ss.orbit_count.should == 8
-    end
-  end
-
   describe "visibility methods" do
     describe ".find_if_viewable_for" do
       let(:alliance) { create_alliance }
@@ -550,7 +542,7 @@ describe SolarSystem do
       end
 
       it "should create cooldown after spawning" do
-        Cooldown.should_receive(:create_unless_exists).and_return do |ssp, time|
+        Cooldown.should_receive(:create_or_update!).and_return do |ssp, time|
           ssp.should be_instance_of(SolarSystemPoint)
           time.should be_within(SPEC_TIME_PRECISION).
             of(Cfg.after_spawn_cooldown)

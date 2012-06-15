@@ -50,7 +50,7 @@ class FowGalaxyEntry < ActiveRecord::Base
     # Returns if given spot is visible.
     # TODO: spec
     def visible?(player, x, y)
-      ! self.for(player).by_coords(x, y).first.nil?
+      without_locking { self.for(player).by_coords(x, y).exists? }
     end
 
     # Returns SQL for conditions that limits things on table identified by

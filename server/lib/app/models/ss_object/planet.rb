@@ -140,9 +140,11 @@ class SsObject::Planet < SsObject
 
   # Returns player ids which can look into this planet.
   def observer_player_ids
-    Player.find(
-      (Unit.player_ids_in_location(self) | [player_id]).compact
-    ).map(&:friendly_ids).flatten.uniq
+    without_locking do
+      Player.find(
+        (Unit.player_ids_in_location(self) | [player_id]).compact
+      ).map(&:friendly_ids).flatten.uniq
+    end
   end
 
   # #metal=(value)
@@ -340,8 +342,9 @@ private
     player_id ? without_locking {
       TechTracker.instance.query_active(
         player_id,
-        "metal_generate", "metal_store", "energy_generate", "energy_store",
-        "zetium_generate", "zetium_store"
+        TechTracker::METAL_GENERATE, TechTracker::METAL_STORE,
+        TechTracker::ENERGY_GENERATE, TechTracker::ENERGY_STORE,
+        TechTracker::ZETIUM_GENERATE, TechTracker::ZETIUM_STORE
       ).all
     } : []
   end

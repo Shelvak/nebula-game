@@ -5,6 +5,8 @@ if $SPEC_INITIALIZED.nil?
   ENV['environment'] = 'test'
   require File.join(File.dirname(__FILE__), '..', 'lib', 'initializer.rb')
 
+  ActiveRecord::Base.connection_pool.checkout_with_id
+
   DEFAULT_SPEC_CLIENT_ID = -1
   SPEC_TIME_PRECISION = 5
   SPEC_FLOAT_PRECISION = 0.0001
@@ -17,9 +19,6 @@ if $SPEC_INITIALIZED.nil?
     File.join(File.dirname(__FILE__), '{helpers,shared}', '*.rb')
   )
   Dir[glob].each { |file| require file }
-
-  # Pretend we're in #with_connection
-  Thread.current[ActiveRecord::WC_CHECKING_OUT] = true
 
   # Truncate test tables
   def cleanup_database

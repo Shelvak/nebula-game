@@ -10,6 +10,7 @@ import spacemule.modules.pathfinder.{galaxy, solar_system}
 import spacemule.modules.pmg.classes.geom.Coords
 import spacemule.modules.pmg.objects
 import spacemule.modules.config.objects.Config
+import scala.collection.{Set, Seq}
 
 object Finder {
   def find(

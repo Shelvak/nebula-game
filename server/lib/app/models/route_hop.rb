@@ -117,9 +117,10 @@ class RouteHop < ActiveRecord::Base
 
       if zone_changed
         # Update Route#jumps_at when zone changes.
-        route.jumps_at = route.hops.
-          where("location_#{route.current.type_column} IS NULL").first.
-          try(:arrives_at)
+        route.jumps_at = without_locking do
+          route.hops.where("location_#{route.current.type_column} IS NULL").
+            select("arrives_at").c_select_value
+        end
       end
 
       # Destroy this route hop. This is important to do before firing the

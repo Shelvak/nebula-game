@@ -33,16 +33,14 @@ shared_examples_for "resource increasing technology" do |model|
     end
   end
 
-  it "should fetch all the resource entries belonging to player " +
-  "on upgrade" do
+  it "should fetch all the resource entries belonging to player on upgrade" do
     opts_upgrading.apply(model)
-    model.send(:on_upgrade_finished)
-    time = SsObject.connection.select_value(
-      "SELECT last_resources_update FROM `#{SsObject.table_name}` p " +
-      "WHERE p.player_id=#{model.player_id} LIMIT 1"
-    )
+    time = Time.now
+    model.send(:on_upgrade_finished!)
+    time = SsObject.select(:last_resources_update).
+      where(player_id: model.player_id).c_select_value
     # JRuby compatibility
     time = Time.parse(time) unless time.is_a?(Time)
-    time.should be_within(SPEC_TIME_PRECISION).of(Time.now)
+    time.should be_within(SPEC_TIME_PRECISION).of(time)
   end
 end

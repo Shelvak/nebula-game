@@ -106,8 +106,7 @@ class ServerActor
   #    end
   #  rescue Exception => e
   #    error "Failed while serializing message:\n\n#{
-  #      message.inspect}\n\n#{
-  #      e.to_log_str}",
+  #      message.inspect}\n\n#{Exception.to_log_str(e)}",
   #      to_s(client)
   #    socket.close
   #    return

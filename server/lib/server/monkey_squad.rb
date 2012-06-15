@@ -12,9 +12,6 @@ end
 
 # Monkey-patches for ActiveRecord.
 module ActiveRecord
-  WC_CHECKING_OUT =
-    "ActiveRecord::ConnectionAdapters::ConnectionPool.with_connection"
-
   # We don't need our #destroy, #save and #save! automatically wrapped under
   # transaction because we wrap whole request in one and can't use nested
   # transactions due to BulkSql.
@@ -24,52 +21,64 @@ module ActiveRecord
     def save!(*); super; end
   end
 
-  # Fiber safety patches.
+  class Migration
+    def enum_for_classes(dir_name)
+      puts "#{ROOT_DIR}/lib/app/models/#{dir_name}/*.rb"
+      types = Dir[
+        "#{ROOT_DIR}/lib/app/models/#{dir_name}/*.rb"
+      ].sort.map do |name|
+        "'#{File.basename(name, ".rb").camelcase}'"
+      end.join(",")
 
-  class ConnectionAdapters::ConnectionPool
-    alias_method :unsafe_with_connection, :with_connection
-
-    def with_connection(&block)
-      name = Celluloid.actor? ? Celluloid::Actor.name : "main"
-
-      synchronize do
-        @wc_connections ||= {}
-        @wc_connections[name] ||= 0
-        @wc_connections[name] += 1
-      end
-
-      Thread.current[ActiveRecord::WC_CHECKING_OUT] = true
-      unsafe_with_connection do
-        # The connection has been checked out.
-        Thread.current[ActiveRecord::WC_CHECKING_OUT] = false
-        block.call
-      end
-
-      synchronize do
-        @wc_connections[name] -= 1
-      end
-    rescue ActiveRecord::ConnectionTimeoutError => e
-      synchronize do
-        LOGGER.error("Connections: #{@wc_connections.inspect}")
-      end
-      raise e
+      "ENUM(#{types})"
     end
   end
 
-  class Base
-    class << self
-      alias_method :unsafe_connection_id, :connection_id
-
-      # Ensure Fiber safety for connections. Each fiber has its own thread
-      # locals and Celluloid uses a lot of fibers...
-      def connection_id
-        id = unsafe_connection_id
-        # Raise error if not checking connection out with #with_connection
-        raise "Connection not checked out!" \
-          unless Thread.current[ActiveRecord::WC_CHECKING_OUT] || ! id.nil? ||
-            rake?
-        id
+  module ConnectionAdapters::DatabaseStatements
+    # Don't allow nesting transactions because we use DDL calls extensively and
+    # they would fail anyway.
+    def transaction_with_no_nesting(*args, &block)
+      if open_transactions == 0
+        @transaction_opened_by = ActiveRecord::Base.connection_id
+        transaction_without_no_nesting(*args, &block)
+      else
+        raise "Nested transactions are not allowed! Connection ID: #{
+          ActiveRecord::Base.connection_id}, transaction already opened by: #{
+          @transaction_opened_by}" unless open_transactions == 0
       end
+    end
+
+    alias_method_chain :transaction, :no_nesting
+  end
+
+  class ConnectionAdapters::ConnectionPool
+    def checkout_with_id
+      synchronize do
+        connection = checkout
+        connection_id = Celluloid.actor? \
+          ? Celluloid.current_actor.object_id \
+          : Thread.current.object_id
+        ActiveRecord::Base.connection_id = connection_id
+        raise "Connection ID #{connection_id} is already checked out!" \
+          if @reserved_connections.has_key?(connection_id)
+        @reserved_connections[connection_id] = connection
+
+        [connection, connection_id]
+      end
+    end
+
+    private :checkout, :with_connection
+
+    def current_connection_id
+      ActiveRecord::Base.connection_id || raise("DB connection ID is not set!")
+    end
+
+    # Ensures that new connection is checked out for the block. See GOTCHAS.md
+    def with_new_connection
+      connection, _ = checkout_with_id
+      yield
+    ensure
+      checkin(connection)
     end
   end
 end

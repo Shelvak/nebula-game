@@ -2,6 +2,8 @@ module ServerMachine
   include NamedLogMessages
   include FlashPolicyHandler
 
+  REESTABLISHMENT_REGEXP = /reestablish:(\d+):(\d+):(\w+)/
+
   def to_s
     @client.nil? ? "server" : "server-#{@client}"
   end
@@ -34,7 +36,15 @@ module ServerMachine
           return
         when "?"
           send_data("!\n")
-          return
+          next
+        when REESTABLISHMENT_REGEXP
+          player_id = $1.to_i
+          last_processed_seq = $2.to_i
+          token = $3
+          Celluloid::Actor[:dispatcher].reestablish_connection!(
+            @client, player_id, last_processed_seq, token
+          )
+          next
         end
 
         debug "Received message: \"#{message}\""
@@ -66,7 +76,7 @@ module ServerMachine
       end
     rescue Exception => e
       error "Failed while serializing message:\n\n#{
-        message.inspect}\n\n#{e.to_log_str}", to_s
+        message.inspect}\n\n#{Exception.to_log_str(e)}", to_s
       close_connection_after_writing
       return
     end

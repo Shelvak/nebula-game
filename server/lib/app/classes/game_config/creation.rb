@@ -46,11 +46,11 @@ module GameConfig::Creation
   def setup!(config_dir, cache_dir)
     current_hashes, @setup_fallbacks = gather_data(config_dir)
     hashes_file = File.expand_path(
-      File.join(cache_dir, "config_hashes.cache")
+      File.join(cache_dir, "config_hashes-#{App.env}.cache")
     )
 
     config_file = File.expand_path(
-      File.join(cache_dir, "config_data.cache")
+      File.join(cache_dir, "config_data-#{App.env}.cache")
     )
 
     # Store data for #ensure_setup! & #setup_initializers!

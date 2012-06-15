@@ -15,7 +15,7 @@
       ]]>
    </fx:Script>
    <s:layout>
-      <s:VerticalLayout paddingTop="60"
+      <s:VerticalLayout paddingTop="-160"
                         verticalAlign="middle"
                         horizontalAlign="center"/>
    </s:layout>

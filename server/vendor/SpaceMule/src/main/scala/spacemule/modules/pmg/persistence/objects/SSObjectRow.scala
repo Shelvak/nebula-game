@@ -13,7 +13,7 @@ object SSObjectRow extends RowObject with ReferableRowObject {
   val pkColumn = "id"
   val columnsSeq = List(
     "type", "solar_system_id", "angle", "position", "width", "height",
-    "terrain", "player_id", "name", "size", "owner_changed",
+    "terrain", "name", "size", "owner_changed",
     "metal", "metal_generation_rate", "metal_usage_rate", "metal_storage",
     "energy", "energy_generation_rate", "energy_usage_rate", "energy_storage",
     "zetium", "zetium_generation_rate", "zetium_usage_rate", "zetium_storage",
@@ -60,8 +60,6 @@ abstract class SSObjectRow(
   val height = 0
   val size = Config.ssObjectSize.random
   val terrain = 0
-  // Initialize this lazily, to allow subclasses to have lazy eval too.
-  lazy val playerId = DB.loadInFileNull
   val name = "" // not null!
   val resources = SSObjectRow.Resources(
     SSObjectRow.Resources.Resource(0, 0, 0, 0),
@@ -71,10 +69,9 @@ abstract class SSObjectRow(
   val ownerChanged: Option[Calendar] = None
   val nextRaidAt: Option[Calendar] = None
 
-  // Initialize this lazily, because this abstract class is subclassed.
-  lazy val valuesSeq = List(
+  protected[this] def valuesImpl = List(
     ssObject.name, solarSystemRow.id, coord.angle, coord.position,
-    width, height, terrain, playerId, name, size, DB.date(ownerChanged)
+    width, height, terrain, name, size, DB.date(ownerChanged)
   ) ++ resources.toSeq :+ (nextRaidAt match {
     case Some(time) => DB.date(time)
     case None => DB.loadInFileNull

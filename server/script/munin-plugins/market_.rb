@@ -57,7 +57,7 @@ begin
   if ARGV[0] == "config"
     info = type == COUNTS ? "Market offer counts" : "Market rate average"
     puts "graph_title #{info} (#{match[2]} to #{match[3]})"
-    puts "graph_category nebula44_market"
+    puts "graph_category nebula44_market_#{type}"
     puts "graph_args --base 1000 -l 0"
     puts "graph_vlabel #{type == COUNTS ? 'Count' : 'Rate'}"
     puts "graph_printf #{type == COUNTS ? '%6.0lf' : '%4.3lf'}"

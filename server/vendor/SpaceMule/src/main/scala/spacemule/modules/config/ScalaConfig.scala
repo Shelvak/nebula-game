@@ -1,5 +1,7 @@
 package spacemule.modules.config
 
+import scala.{collection => sc}
+
 /**
  * Created by IntelliJ IDEA.
  * User: arturas
@@ -9,7 +11,13 @@ package spacemule.modules.config
  */
 
 trait ScalaConfig {
-  def get[T](key: String): T
-
-  def getOpt[T](key: String): Option[T]
+  def any(key: String): Option[Any]
+  def int(key: String): Option[Int]
+  def float(key: String): Option[Float]
+  def double(key: String): Option[Double]
+  def string(key: String): Option[String]
+  def symbol(key: String): Option[Symbol]
+  def boolean(key: String): Option[Boolean]
+  def array[T](key: String): Option[sc.Seq[T]]
+  def hash[K, V](key: String): Option[sc.Map[K, V]]
 }

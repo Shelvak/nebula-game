@@ -79,10 +79,10 @@ package com.tinylabproductions.stacktracer {
       }
 
       public static function trace(
-         e: Error, currentFunction: String, variables: Object
+         e: Error, currentFunction: String, variables: Object, currentLine: uint
       ): Error {
          var entry: StacktraceEntry =
-            new StacktraceEntry(currentFunction, variables);
+            new StacktraceEntry(currentFunction, variables, currentLine);
 
          if (e is StacktraceError) {
             var ste: StacktraceError = e as StacktraceError;
@@ -109,17 +109,19 @@ package com.tinylabproductions.stacktracer {
 
 class StacktraceEntry {
    private var _currentFunction: String;
+   private var _currentLine: uint;
    private var _variables: Object;
 
    public function StacktraceEntry(
-      currentFunction: String, variables: Object
+      currentFunction: String, variables: Object, currentLine: uint
    ) {
       _currentFunction = currentFunction;
+      _currentLine = currentLine
       _variables = variables;
    }
 
    public function get currentFunction(): String {
-      return _currentFunction;
+      return _currentFunction + ":" + _currentLine;
    }
 
    public function get variables(): Object {

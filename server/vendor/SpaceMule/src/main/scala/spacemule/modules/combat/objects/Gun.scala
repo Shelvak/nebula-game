@@ -1,6 +1,6 @@
 package spacemule.modules.combat.objects
 
-import spacemule.helpers.Converters._
+import core.Values._
 import spacemule.helpers.Random
 import spacemule.modules.config.objects.{FormulaCalc, Config}
 
@@ -9,13 +9,13 @@ object Gun {
     new Gun(
       index,
       owner,
-      Kind(definition.getOrError("reach").asInstanceOf[String]),
-      Damage(definition.getOrError("damage").asInstanceOf[String]),
+      Kind(definition("reach").toString),
+      Damage(definition("damage").toString),
       FormulaCalc.calc(
-        definition.getOrError("dpt").toString,
+        definition("dpt").toString,
         Map("level" -> owner.level.toDouble)
       ).intValue,
-      definition.getOrError("period").asInstanceOf[Long].intValue()
+      definition("period").asInstanceOf[Long]
     )
 
   /**

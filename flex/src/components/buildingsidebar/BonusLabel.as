@@ -45,7 +45,7 @@ package components.buildingsidebar
          if (ammount == null)
             return "positive";
          if (ammount.charAt() == '-')
-            return "negative"
+            return "negative";
          else
             return "positive";
       }

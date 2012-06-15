@@ -16,6 +16,7 @@ gem "celluloid",
 #gem "celluloid-io", '~>0.10.0', :require => "celluloid/io"
 # For natural date parsing, e.g. "in 5 minutes"
 gem "chronic", ">=0.6.2"
+gem "jruby-scala-collections", ">=0.1.3", :require => "jruby/scala_support"
 
 # Gems that are needed but should never be activated.
 group :installation do
@@ -48,15 +49,16 @@ group :development_setup do
   # 0.7.6 is buggy and cannot be installed.
   # http://jira.codehaus.org/browse/JRUBY-6455
   gem 'jruby-openssl', '>=0.7.6.1'
-  gem "net-ssh", :git => "git://github.com/arturaz/net-ssh.git"
-  gem "net-sftp"#, :git => "git://github.com/net-ssh/net-sftp.git"
-  gem "net-scp"#, :git => "git://github.com/net-ssh/net-scp.git"
+  # jruby-pageant support was merged into 2.4.0.
+  gem "net-ssh", '>=2.4.0'
+  gem "net-sftp"
+  gem "net-scp"
   gem "xml-simple", "~>1.0"
 end
 
 # Only setuped, but not required (in test env).
 group :test_setup do
-  gem "rspec", "~>2.9.0"
+  gem "rspec", "~>2.10.0"
   gem "factory_girl", "~>2.1.2"
 end
 

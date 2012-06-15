@@ -155,7 +155,9 @@ class Objective < ActiveRecord::Base
     # should benefit to.
     def objective_progresses(player_id, objective, cache)
       if objective.alliance?
-        cache[player_id] ||= Player.find(player_id).friendly_ids
+        cache[player_id] ||= without_locking do
+          Player.find(player_id).friendly_ids
+        end
         player_ids = cache[player_id]
       else
         player_ids = player_id

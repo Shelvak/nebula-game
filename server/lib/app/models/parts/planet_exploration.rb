@@ -134,7 +134,10 @@ module Parts::PlanetExploration
     
     # Return tile kind for coordinates _x_, _y_.
     def tile_kind(x, y)
-      Tile.where(:planet_id => id, :x => x, :y => y).first.try(:kind)
+      without_locking do
+        Tile.where(:planet_id => id, :x => x, :y => y).select("kind").
+          c_select_value
+      end
     end
 
     # Returns how much scientists are exploring this planet.

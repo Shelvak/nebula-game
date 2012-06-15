@@ -1,6 +1,7 @@
 class Threading::Worker
   include Celluloid
   include NamedLogMessages
+  include SeparateConnection
 
   def initialize(director, name)
     @director = director
@@ -9,11 +10,12 @@ class Threading::Worker
   end
 
   def to_s
-    "worker-#{@name}"
+    "worker_#{@name}"
   end
 
   def work(task)
     typesig binding, Threading::Director::Task
+    set_ar_connection_id!
 
     tag = to_s
     exclusive do

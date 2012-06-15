@@ -31,4 +31,8 @@ class Dispatcher::Message
     "<#{self.class} #{full_action}: id=#{@id} seq=#{@seq || "nil"} client=#{
       @client} player=#{@player} pushed=#{@pushed} params=#{@params.inspect}>"
   end
+
+  def to_short_s
+    "<DM #{full_action}: plr=#{@player.try(:name)} pushed=#{@pushed}>"
+  end
 end

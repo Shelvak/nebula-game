@@ -1,6 +1,7 @@
 package spacemule.modules.pmg.persistence.manager
 
 import spacemule.persistence.{Row, DB}
+import spacemule.logging.Log
 
 
 /**
@@ -16,6 +17,13 @@ class BufferManager(buffers: BufferLike[Row]*) {
 
   def save() {
     val batchId = DB.batchId
-    buffers.foreach { _.save(batchId) }
+    buffers.foreach { buffer =>
+      Log.block(
+        "Saving buffer "+buffer.tableName+" with "+buffer.size+" entries",
+        level=Log.Debug
+      ) { () =>
+        buffer.save(batchId)
+      }
+    }
   }
 }

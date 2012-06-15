@@ -63,8 +63,9 @@ mini_battlegrounds.positions:
   - [2, 5]
   - [6, 5]
   - [7, 0]
-  
-convoy.time: <%= 4.hours %> / speed
+
+# Convoy respawn time. _wormholes_ is number of wormholes.
+convoy.time: <%= 24.hours %> / (wormholes / 10) / speed
 # Speed modifier for convoy ships.
 convoy.speed_modifier: 6
 # - [count_from, count_to, type, flank]
@@ -74,10 +75,6 @@ convoy.speed_modifier: 6
 #
 # count numbers are inclusive.
 convoy.units:
-  - [0 + counter / 4, 10 + counter / 2, Dirac, 0]
-  - [1 + counter / 2, 10 + counter * 3 / 4, Dirac, 1]
-  - [0 + counter / 6, 5 + counter / 2, Thor, 0]
-  - [0 + counter / 4, 10 + counter * 3 / 4, Thor, 1]
-  - [0 + counter / 8, 4 + counter / 4, Demosis, 0]
-  - [0 + counter / 10, 2 + counter / 5, Demosis, 1]
-  - [1, 2, ConvoyShip, 1]
+  - [0 + counter / 3, 5 + counter / 2, Demosis, 0]
+  - [0 + counter / 4, 1 + counter / 3, Demosis, 1]
+  - [1 + counter / 30, 3 + counter / 15, ConvoyShip, 1]

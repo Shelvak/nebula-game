@@ -198,8 +198,7 @@ describe Building do
     # This could have been avoided if:
     # 1) AR would use += in SQL.
     # 2) or it would have a identity map which actually works.
-    it "should return resources for building, constructable & prepaid entries" \
-    do
+    it "should return resources for building, constructable & prepaid entries" do
       set_resources(@planet, 100_000, 100_000, 100_000,
                     200_000, 200_000, 200_000)
       unit_class = Unit::Scorpion
@@ -207,10 +206,7 @@ describe Building do
 
       model = Factory.create!(:b_ground_factory,
                               opts_active + {:planet => @planet, :x => 10})
-      model.construct!(
-        unit_class.to_s, true,
-        {:galaxy_id => model.planet.solar_system.galaxy_id}, count
-      )
+      model.construct!(unit_class.to_s, true, {}, count)
       @planet.reload
 
       metal, energy, zetium = model.self_destruct_resources

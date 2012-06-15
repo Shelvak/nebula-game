@@ -1,4 +1,6 @@
 class Callback
+  TABLE_NAME = "callbacks"
+
   attr_reader :id, :klass, :object_id, :event, :ruleset, :ends_at_str
 
   def initialize(id, klass, object_id, event, ruleset, ends_at_str)
@@ -49,6 +51,10 @@ class Callback
   def to_s
     "<#{tag}: #{type} on #{@klass.to_s} (#{@object_id}) @ #{
       @ends_at_str} (ruleset: #{@ruleset})>"
+  end
+
+  def to_short_s
+    "<#{tag}: #{type} on #{@klass.to_s} (#{@object_id})>"
   end
 
   def tag

@@ -62,7 +62,8 @@ class Alliance < ActiveRecord::Base
       EventBroker.fire(@cached_players, EventBroker::CHANGED)
     end      
 
-    ControlManager.instance.alliance_destroyed(self) unless galaxy.dev?
+    ControlManager.instance.alliance_destroyed(self) \
+      unless without_locking { galaxy.dev? }
 
     true
   end
@@ -80,47 +81,50 @@ class Alliance < ActiveRecord::Base
   # Returns +Array+ of +Player+ ids who are in _alliance_ids_.
   # _alliance_ids_ can be Array or Fixnum.
   def self.player_ids_for(alliance_ids)
-    Player.
-      select("`id`").
-      where(alliance_id: alliance_ids).
-      c_select_values.
-      map(&:to_i)
+    without_locking do
+      Player.select("id").where(:alliance_id => alliance_ids).c_select_values
+    end.map(&:to_i)
   end
 
   # Returns +Hash+ of {id => name} pairs.
   def self.names_for(alliance_ids)
-    select("id, name").where(:id => alliance_ids).c_select_all.
-      each_with_object({}) do |row, hash|
-        hash[row['id']] = row['name']
-      end
+    without_locking do
+      select("id, name").where(:id => alliance_ids).c_select_all
+    end.each_with_object({}) do |row, hash|
+      hash[row['id']] = row['name']
+    end
   end
 
   # Returns non-ally players which own planets and we can see them for _player_.
   def self.visible_enemy_player_ids(alliance_id)
     ally_ids = player_ids_for(alliance_id)
 
-    solar_system_ids = FowSsEntry.
-      select("solar_system_id").
-      where(:alliance_id => alliance_id, :enemy_planets => true).
-      c_select_values
+    solar_system_ids = without_locking do
+      FowSsEntry.
+        select("solar_system_id").
+        where(:alliance_id => alliance_id, :enemy_planets => true).
+        c_select_values
+    end
     player_ids = SsObject::Planet.
       select("DISTINCT(player_id)").
       where("player_id IS NOT NULL").
       where(:solar_system_id => solar_system_ids)
     player_ids = player_ids.where("player_id NOT IN (?)", ally_ids) \
       unless ally_ids.blank?
-    player_ids = player_ids.c_select_values
+    player_ids = without_locking { player_ids.c_select_values }
     player_ids
   end
 
   # Returns visible non-napped alliance ids for alliance with ID _alliance_id_.
   def self.visible_enemy_alliance_ids(alliance_id)
     player_ids = visible_enemy_player_ids(alliance_id)
-    alliance_ids = Player.
-      select("DISTINCT(alliance_id)").
-      where("alliance_id IS NOT NULL").
-      where(:id => player_ids).
-      c_select_values
+    alliance_ids = without_locking do
+      Player.
+        select("DISTINCT(alliance_id)").
+        where("alliance_id IS NOT NULL").
+        where(:id => player_ids).
+        c_select_values
+    end
     alliance_ids
   end
 
@@ -167,14 +171,14 @@ class Alliance < ActiveRecord::Base
 
   # Player#ratings for this alliance members.
   def player_ratings
-    Player.ratings(galaxy_id, Player.where(:alliance_id => id))
+    Player.ratings(galaxy_id, Player.where(alliance_id: id))
   end
 
   # Player#ratings for players that can be invited to this alliance.
   def invitable_ratings
     Player.ratings(
       galaxy_id,
-      Player.where(:id => self.class.visible_enemy_player_ids(id))
+      Player.where(id: self.class.visible_enemy_player_ids(id))
     )
   end
 
@@ -193,7 +197,7 @@ class Alliance < ActiveRecord::Base
 
   # Returns if this alliance is full.
   def full?
-    players.size >= technology.max_players
+    without_locking { players.size >= technology.max_players }
   end
 
   # Accepts _player_ into +Alliance+.
@@ -275,18 +279,21 @@ class Alliance < ActiveRecord::Base
       }) not from this alliance!"
     ) unless player.alliance_id == id
 
-    technology = Technology::Alliances.where(:player_id => player.id).first
+    technology_level = without_locking do
+      Technology::Alliances.where(player_id: player.id).
+        select("level").c_select_value
+    end
     raise TechnologyLevelTooLow.new(
       "#{player} does not have alliances technology!"
-    ) if technology.nil?
+    ) if technology_level.nil?
 
     required_level = Technology::Alliances.
-      required_level_for_player_count(players.size)
+      required_level_for_player_count(without_locking { players.size })
     raise TechnologyLevelTooLow.new(
-      "#{player} only has level #{technology.level
+      "#{player} only has level #{technology_level
       } of alliances technology but level #{required_level
       } is required to transfer alliance ownership."
-    ) if technology.level < required_level
+    ) if technology_level < required_level
 
     transfer_ownership_impl!(player)
   end
@@ -303,14 +310,16 @@ class Alliance < ActiveRecord::Base
     required_level = Technology::Alliances.
       required_level_for_player_count(potential_ids.size)
 
-    successor_id = Technology::Alliances.
-      select("player_id").
-      where(:player_id => potential_ids).
-      where("level >= ?", required_level).
-      joins(:player).
-      order("victory_points DESC").
-      limit(1).
-      c_select_value
+    successor_id = without_locking do
+      Technology::Alliances.
+        select("player_id").
+        where(:player_id => potential_ids).
+        where("level >= ?", required_level).
+        joins(:player).
+        order("victory_points DESC").
+        limit(1).
+        c_select_value
+    end
 
     raise NoSuccessorFound.new(
       "Cannot find a successor for #{self}! Alliance technology level #{
@@ -318,7 +327,7 @@ class Alliance < ActiveRecord::Base
     ) if successor_id.nil?
 
     current_owner = owner
-    new_owner = Player.find(successor_id)
+    new_owner = without_locking { Player.find(successor_id) }
 
     transfer_ownership_impl!(new_owner)
     throw_out(current_owner)

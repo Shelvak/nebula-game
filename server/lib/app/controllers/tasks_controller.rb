@@ -8,7 +8,7 @@ class TasksController < GenericController
   ACTION_REOPEN_LOGS = 'tasks|reopen_logs'
 
   REOPEN_LOGS_OPTIONS = control_token
-  REOPEN_LOGS_SCOPE = scope.world
+  REOPEN_LOGS_SCOPE = scope.control
   def self.reopen_logs_action(m)
     LOGGER.info "Reopening log outputs."
     Logging::Writer.instance.reopen!
@@ -24,7 +24,7 @@ class TasksController < GenericController
   ACTION_APPLY_HOTFIX = 'tasks|apply_hotfix'
 
   APPLY_HOTFIX_OPTIONS = control_token + required(:hotfix => String)
-  APPLY_HOTFIX_SCOPE = scope.world
+  APPLY_HOTFIX_SCOPE = scope.control
   # TODO: spec
   def self.apply_hotfix_action(m)
     unless m.client.host == '127.0.0.1'
@@ -51,47 +51,10 @@ Message was:
       eval m.params['hotfix'], ROOT_BINDING
       respond m, :error => nil
     rescue Exception => e
-      LOGGER.fatal("Applying hotfix failed!\n\n#{e.to_log_str}")
-      respond m, :error => e.to_log_str
+      exception_str = Exception.to_log_str(e)
+      LOGGER.fatal("Applying hotfix failed!\n\n#{exception_str}")
+      respond m, :error => exception_str
     end
-  end
-
-  # Create a new galaxy.
-  #
-  # Parameters:
-  # - ruleset (String): ruleset for given galaxy
-  # - callback_url (String): URL for callback
-  #
-  # Response:
-  # - galaxy_id (Fixnum): ID of created galaxy
-  #
-  ACTION_CREATE_GALAXY = 'tasks|create_galaxy'
-
-  CREATE_GALAXY_OPTIONS = control_token +
-    required(:ruleset => String, :callback_url => String)
-  CREATE_GALAXY_SCOPE = scope.world
-  def self.create_galaxy_action(m)
-    galaxy_id = Galaxy.create_galaxy(
-      m.params['ruleset'], m.params['callback_url']
-    )
-    respond m, :galaxy_id => galaxy_id
-  end
-
-  # Destroy an existing galaxy.
-  #
-  # Parameters:
-  # - id (Fixnum): id of galaxy to be destroyed.
-  #
-  # Response: None
-  #
-  ACTION_DESTROY_GALAXY = 'tasks|destroy_galaxy'
-
-  DESTROY_GALAXY_OPTIONS = control_token + required(:id => Fixnum)
-  DESTROY_GALAXY_SCOPE = scope.world
-  def self.destroy_galaxy_action(m)
-    Galaxy.find(m.params['id']).destroy!
-  rescue ActiveRecord::RecordNotFound
-    # If there is no galaxy, then there is no problem, right?
   end
 
   # Create a new player in galaxy.
@@ -111,14 +74,19 @@ Message was:
     :galaxy_id => Fixnum, :web_user_id => Fixnum, :name => String,
     :trial => Boolean
   )
-  CREATE_PLAYER_SCOPE = scope.world
+  CREATE_PLAYER_SCOPE = scope.enroll
   def self.create_player_action(m)
-    web_user_id = m.params['web_user_id']
-		response = Galaxy.create_player(
-      m.params['galaxy_id'], web_user_id, m.params['name'], m.params['trial']
-    )
+    player = Player.where(
+      galaxy_id: m.params['galaxy_id'], web_user_id: m.params['web_user_id'],
+      name: m.params['name']
+    ).first
 
-		respond m, :player_id => response[web_user_id]
+		player = Galaxy.create_player(
+      m.params['galaxy_id'], m.params['web_user_id'], m.params['name'],
+      m.params['trial']
+    ) if player.nil?
+
+		respond m, :player_id => player.id
   end
 
   # Destroy an existing player.
@@ -219,7 +187,7 @@ Message was:
   ACTION_PLAYER_STATS = 'tasks|player_stats'
 
   PLAYER_STATS_OPTIONS = control_token
-  PLAYER_STATS_SCOPE = scope.world
+  PLAYER_STATS_SCOPE = scope.control
   # TODO: spec better
   def self.player_stats_action(m)
     without_locking do
@@ -234,17 +202,69 @@ Message was:
       stats = {
         :current => Celluloid::Actor[:dispatcher].logged_in_count,
         :in_1d => get_player_count_in[1.day],
-        :in_2d => get_player_count_in[2.days],
         :in_3d => get_player_count_in[3.days],
-        :in_4d => get_player_count_in[4.days],
-        :in_5d => get_player_count_in[5.days],
-        :in_6d => get_player_count_in[6.days],
         :in_7d => get_player_count_in[7.days],
+        :in_14d => get_player_count_in[14.days],
         :total => Player.count,
       }
 
       respond m, stats
     end
+  end
+
+  # Return statistics of galaxy pools.
+  #
+  # Parameters: None
+  #
+  # Response:
+  # - stats (Hash[String, Hash]): Hash of {
+  #   galaxy_id (String) => {
+  #     "free_zones" => Float (percentage of free zones left
+  #     relative to Galaxy#pool_free_zones),
+  #     "free_home_ss" => Float (percentage of free home solar
+  #     systems left relative to Galaxy#pool_free_home_ss)
+  #   },
+  #   ...
+  # }
+  #
+  ACTION_POOL_STATS = 'tasks|pool_stats'
+
+  POOL_STATS_OPTIONS = control_token
+  POOL_STATS_SCOPE = scope.control
+  def self.pool_stats_action(m)
+    stats = without_locking do
+      Galaxy.select("id, pool_free_zones, pool_free_home_ss").c_select_all
+    end.each_with_object({}) do |row, hash|
+      galaxy_id = row['id'].to_i
+      result = SpaceMule.instance.pool_stats(galaxy_id)
+      hash[galaxy_id] = {
+        free_zones:
+          result.free_zones.to_f / row['pool_free_zones'].to_i * 100,
+        free_home_ss:
+          result.free_home_ss.to_f / row['pool_free_home_ss'].to_i * 100,
+      }
+    end
+
+    respond m, stats: stats
+  end
+
+  # Return statistics of enqueued director tasks.
+  #
+  # Parameters: None
+  #
+  # Response:
+  # - stats (Hash[String, Fixnum]): Hash of {
+  #   director_name (String) => enqueued_tasks (Fixnum),
+  #   ...
+  # }
+  #
+  ACTION_DIRECTOR_STATS = 'tasks|director_stats'
+
+  DIRECTOR_STATS_OPTIONS = control_token
+  DIRECTOR_STATS_SCOPE = scope.control
+  def self.director_stats_action(m)
+    stats = Celluloid::Actor[:dispatcher].director_stats
+    respond m, stats: stats
   end
 
   # Return market rate for given resource pair in different galaxies.
@@ -259,7 +279,7 @@ Message was:
 
   MARKET_RATES_STATS_OPTIONS = control_token +
     required(:from_kind => Fixnum, :to_kind => Fixnum)
-  MARKET_RATES_STATS_SCOPE = scope.world
+  MARKET_RATES_STATS_SCOPE = scope.control
   # TODO: spec
   def self.market_rates_stats_action(m)
     without_locking do
@@ -287,7 +307,7 @@ Message was:
 
   MARKET_COUNTS_STATS_OPTIONS = control_token +
     required(:from_kind => Fixnum, :to_kind => Fixnum)
-  MARKET_COUNTS_STATS_SCOPE = scope.world
+  MARKET_COUNTS_STATS_SCOPE = scope.control
   # TODO: spec
   def self.market_counts_stats_action(m)
     without_locking do
@@ -320,7 +340,7 @@ Message was:
 
   ANNOUNCE_OPTIONS = control_token +
     required(:ends_at => String, :message => String)
-  ANNOUNCE_SCOPE = scope.world
+  ANNOUNCE_SCOPE = scope.control
   # TODO: spec
   def self.announce_action(m)
     time = Time.parse(m.params['ends_at'])

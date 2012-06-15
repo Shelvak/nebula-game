@@ -40,31 +40,15 @@ private
   end
 
   def handle_population
-    population_count = 0
     max_population_count = 0
     buildings.each do |building|
-      if building.constructor? && building.working?
-        population_count += ConstructionQueueEntry.
-          where(:constructor_id => building.id).prepaid.
-          map { |cqe| cqe.get_resources(cqe.count)[3] }.sum
-      elsif ! building.inactive? && building.respond_to?(:population)
+      if ! building.inactive? && building.respond_to?(:population)
         max_population_count += building.population
       end
     end
 
-    units.each do |unit|
-      population_count += unit.population
-      population_count += unit.units.map(&:population).sum if unit.transporter?
-    end
-
-    if @old_player
-      @old_player.population -= population_count
-      @old_player.population_cap -= max_population_count
-    end
-    if @new_player
-      @new_player.population += population_count
-      @new_player.population_cap += max_population_count
-    end
+    @old_player.population_cap -= max_population_count if @old_player
+    @new_player.population_cap += max_population_count if @new_player
   end
 
   def handle_building_cooldowns!
@@ -203,6 +187,11 @@ private
   end
 
   def save_players!
+    # Do this finally, because they depend on actual in-DB units and
+    # construction queue entries.
+    @old_player.recalculate_population if @old_player
+    @new_player.recalculate_population if @new_player
+
     @old_player.save! if @old_player && @old_player.changed?
     @new_player.save! if @new_player && @new_player.changed?
   end

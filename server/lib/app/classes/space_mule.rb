@@ -1,3 +1,5 @@
+require 'jruby'
+
 # Heavy work mule written in Scala.
 class SpaceMule
   include Singleton
@@ -8,33 +10,41 @@ class SpaceMule
   DB = Java::spacemule.persistence.DB
 
   def initialize
+    Java::spacemule.helpers.JRuby.runtime = JRuby.runtime
     SmModules.config.objects.Config.data = GameConfig::ScalaWrapper.new
   end
 
-  # Create a new galaxy with battleground solar system. Returns id of that
-  # galaxy.
-  def create_galaxy(ruleset, callback_url)
-    with_db_connection do
-      CONFIG.with_set_scope(ruleset) do
-        Pmg.Runner.create_galaxy(ruleset, callback_url)
-      end
+  # Fill created galaxy with battleground solar system and ensure it has free
+  # zones and home solar systems.
+  def fill_galaxy(galaxy, free_zones, free_home_ss)
+    typesig binding, Galaxy, Fixnum, Fixnum
+
+    CONFIG.with_set_scope(galaxy.ruleset) do
+      Pmg.Runner.fill_galaxy(
+        galaxy.id, galaxy.ruleset, free_zones, free_home_ss
+      )
     end
   end
 
-  # Create a new players in _galaxy_id_. _players_ is a +Hash+ of
-  # {web_user_id => player_name} pairs. If )trial_ is given, those players are
-  # flagged as trial.
-  def create_players(galaxy_id, ruleset, players, trial)
-    with_db_connection do
-      PlayerCreator.invoke(galaxy_id, ruleset, players, trial)
+  def ensure_pool(galaxy, max_zone_iterations=1, max_home_ss_iterations=10)
+    typesig binding, Galaxy, Fixnum, Fixnum
+
+    CONFIG.with_set_scope(galaxy.ruleset) do
+      Pmg.Runner.ensurePool(
+        galaxy.id, galaxy.ruleset,
+        galaxy.pool_free_zones,
+        max_zone_iterations,
+        galaxy.pool_free_home_ss,
+        max_home_ss_iterations
+      )
     end
   end
 
-  # Creates a new, empty zone with only non-player solar systems.
-  def create_zone(galaxy_id, ruleset, slot, quarter)
-    with_db_connection do
-      PlayerCreator.create_zone(galaxy_id, ruleset, slot, quarter)
-    end
+  # Fetch pool stats for galaxy _galaxy_id_.
+  #
+  # Returns an object with two methods: #free_zones and #free_home_systems.
+  def pool_stats(galaxy_id)
+    Pmg.Runner.poolStats(galaxy_id)
   end
 
   # Sends message to space mule for combat simulation.
@@ -48,8 +58,10 @@ class SpaceMule
   # _buildings_ is Array of +Building+s.
   def combat(location, players, nap_rules, units, loaded_units,
              unloaded_unit_ids, buildings)
-    response = Combat.invoke(location, players, nap_rules, units, loaded_units,
-                             unloaded_unit_ids, buildings)
+    response = Combat.invoke(
+      location, players, nap_rules, units, loaded_units, unloaded_unit_ids,
+      buildings
+    )
     response.empty? ? nil : response.get
   end
 
@@ -69,13 +81,5 @@ class SpaceMule
   #
   def find_path(source, target, avoid_npc=true)
     Pathfinder.invoke(source, target, avoid_npc)
-  end
-
-  private
-  def with_db_connection
-    DB.connection = ActiveRecord::Base.connection.jdbc_connection
-    yield
-  ensure
-    DB.connection = nil
   end
 end

@@ -21,19 +21,38 @@ class Galaxy < ActiveRecord::Base
   # development galaxies.
   def dev?; Cfg.development_galaxy?(ruleset); end
 
+  def to_s
+    "<Galaxy(#{id}) ruleset:#{ruleset} pool(zones:#{pool_free_zones
+      } home_ss:#{pool_free_home_ss}) callback:#{callback_url} created:#{
+      created_at} apocalypse:#{apocalypse_start} dev:#{dev?}>"
+  end
+
+  # Returns number of wormholes in this galaxy.
+  def wormhole_count
+    without_locking do
+      solar_systems.where(kind: SolarSystem::KIND_WORMHOLE).count
+    end
+  end
+
   # Returns ID of battleground solar system.
   def self.battleground_id(galaxy_id)
-    SolarSystem.select("id").
-      where(:galaxy_id => galaxy_id, :x => nil, :y => nil,
-            :kind => SolarSystem::KIND_BATTLEGROUND).
-      c_select_value.to_i
+    without_locking do
+      SolarSystem.select("id").
+        where(
+          galaxy_id: galaxy_id, x: nil, y: nil,
+          kind: SolarSystem::KIND_BATTLEGROUND
+        ).
+        c_select_value
+    end.to_i
   end
 
   # Returns ID of battleground solar system.
   def self.apocalypse_start(galaxy_id)
-    time = Galaxy.select("apocalypse_start").where(:id => galaxy_id).
-      c_select_value
-    time.is_a?(String) ? Time.parse(time) : time
+    without_locking do
+      time = Galaxy.select("apocalypse_start").where(:id => galaxy_id).
+        c_select_value
+      time.is_a?(String) ? Time.parse(time) : time
+    end
   end
 
   # Returns units visible for _player_ in +Galaxy+.
@@ -57,25 +76,99 @@ class Galaxy < ActiveRecord::Base
     ).order("distance ASC").first
   end
 
-  def self.create_galaxy(ruleset, callback_url)
-    SpaceMule.instance.create_galaxy(ruleset, callback_url)
+  # Creates a new galaxy. This might take a lot of time depending on
+  # _free_zones_ and _free_home_ss_ parameters.
+  #
+  # @param [String] ruleset Ruleset for this new galaxy.
+  # @param [String] callback_url URL for events that should be posted back to
+  # web.
+  # @param [Fixnum] free_zones Number of ensured free zones in the galaxy at the
+  # time of its creation.
+  # @param [Fixnum] pool_free_zones Number of ensured free zones in the galaxy
+  # when the pooler runs.
+  # @param [Fixnum] free_home_ss Number of ensured free home solar systems in
+  # the galaxy at the time of its creation.
+  # @param [Fixnum] pool_free_home_ss Number of ensured free home solar systems
+  # when the pooler runs.
+  # @return [Galaxy] Newly created galaxy.
+  def self.create_galaxy(
+    ruleset, callback_url, free_zones, pool_free_zones, free_home_ss=nil,
+    pool_free_home_ss=nil
+  )
+    typesig binding, String, String, Fixnum, Fixnum,
+      [NilClass, Fixnum], [NilClass, Fixnum]
+
+    free_home_ss ||= free_zones * Cfg.galaxy_zone_max_player_count
+    pool_free_home_ss ||= pool_free_zones * Cfg.galaxy_zone_max_player_count
+
+    galaxy = new(
+      ruleset: ruleset, callback_url: callback_url,
+      pool_free_zones: pool_free_zones, pool_free_home_ss: pool_free_home_ss
+    )
+    galaxy.save!
+
+    SpaceMule.instance.fill_galaxy(galaxy, free_zones, free_home_ss)
+
+    spawn_callback(galaxy)
+    create_metal_system_offer_callback(galaxy)
+    create_energy_system_offer_callback(galaxy)
+    create_zetium_system_offer_callback(galaxy)
+
+    galaxy
   end
 
   # Create player in galaxy _galaxy_id_ with Player#web_user_id, Player#name
   # and Player#trial.
   def self.create_player(galaxy_id, web_user_id, name, trial)
-    without_locking { find(galaxy_id) }.create_player(web_user_id, name, trial)
-  end
+    player = Player.new(
+      galaxy_id: galaxy_id, web_user_id: web_user_id, name: name, trial: trial,
+      planets_count: 1, population_cap: Building::Mothership.population(1)
+    )
+    player.save!
 
-  def self.create_player_scope(galaxy_id, web_user_id, name)
-    Dispatcher::Scope.galaxy(galaxy_id)
+    Quest.start_player_quest_line(player.id)
+
+    CallbackManager.register(
+      player, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+      Cfg.player_inactivity_time(player.points).from_now
+    )
+
+    connection.execute(%Q{
+    UPDATE `#{SolarSystem.table_name}` SET
+      kind=#{SolarSystem::KIND_NORMAL}, player_id=#{player.id}
+    WHERE kind=#{SolarSystem::KIND_POOLED} LIMIT 1
+    })
+
+    home_ss = player.home_solar_system
+    raise "We've ran out of pooled solar systems in galaxy #{galaxy_id}!" \
+      if home_ss.nil?
+
+    fse = FowSsEntry.new(
+      solar_system: home_ss, player: player, player_planets: true, counter: 1
+    )
+    fse.save!
+
+    zone = Galaxy::Zone.for_enrollment(
+      galaxy_id, Cfg.galaxy_zone_maturity_age
+    )
+    x, y = zone.free_spot_coords(galaxy_id)
+    home_ss.attach!(x, y)
+
+    now = Time.now
+    scope = SsObject::Planet.where(solar_system_id: home_ss.id)
+    scope.update_all(last_resources_update: now)
+    scope.where("owner_changed IS NOT NULL").
+      update_all(owner_changed: now, player_id: player.id)
+
+    player
   end
 
   SPAWN_SCOPE = DScope.world
   def self.spawn_callback(galaxy)
     galaxy.spawn_convoy!
     CallbackManager.register(
-      galaxy, CallbackManager::EVENT_SPAWN, Cfg.next_convoy_time
+      galaxy, CallbackManager::EVENT_SPAWN,
+      Cfg.next_convoy_time(galaxy.wormhole_count)
     )
   end
 
@@ -161,7 +254,7 @@ class Galaxy < ActiveRecord::Base
   # @param galaxy_id [Fixnum]
   # @return [TrueClass]
   def self.save_apocalypse_finish_data(galaxy_id)
-    galaxy = Galaxy.find(galaxy_id)
+    galaxy = without_locking { Galaxy.find(galaxy_id) }
     ratings = Player.ratings(galaxy_id)
 
     data = JSON.generate({
@@ -186,7 +279,7 @@ class Galaxy < ActiveRecord::Base
     ) unless apocalypse_started?
 
     self.class.save_apocalypse_finish_data(id) \
-      unless players.where('planets_count > 0').exists?
+      unless without_locking { players.where('planets_count > 0').exists? }
   end
 
   # Convert victory points to creds.
@@ -200,7 +293,9 @@ class Galaxy < ActiveRecord::Base
   # - convert points to creds.
   #
   def convert_vps_to_creds!
-    alliance_ids = alliances.select("id").c_select_values.map(&:to_i)
+    alliance_ids = without_locking do
+      alliances.select("id").c_select_values.map(&:to_i)
+    end
 
     alliance_ids.each do |alliance_id|
       alliance_players = players.where(:alliance_id => alliance_id).all
@@ -218,12 +313,13 @@ class Galaxy < ActiveRecord::Base
           player.creds += added_creds
           player.save!
           Notification.create_for_vps_to_creds_conversion(
-            player.id, personal_creds, total_alliance_vps, alliance_vps_per_player
+            player.id, personal_creds, total_alliance_vps,
+            alliance_vps_per_player
           )
         end
       end
     end
-    
+
     players.where(:alliance_id => nil).find_each do |player|
       unless player.victory_points == 0
         player.creds += player.victory_points
@@ -265,7 +361,7 @@ class Galaxy < ActiveRecord::Base
         Cfg.galaxy_convoy_units_definition, source, nil, days, 1
       )
       Unit.save_all_units(units, nil, EventBroker::CREATED)
-      Cooldown.create_unless_exists(source, Cfg.after_spawn_cooldown)
+      Cooldown.create_or_update!(source, Cfg.after_spawn_cooldown)
 
       unit_ids = units.map(&:id)
       LOGGER.debug "Launching convoy #{source} -> #{target} with unit ids #{
@@ -287,12 +383,6 @@ class Galaxy < ActiveRecord::Base
 
       route
     end
-  end
-
-  def create_player(web_user_id, name, trial)
-    SpaceMule.instance.create_players(
-      id, ruleset, {web_user_id => name}, trial
-    )
   end
 
   # Return solar system with coordinates x, y.

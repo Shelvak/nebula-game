@@ -1573,6 +1573,8 @@
     <message.copyToClipboardSuccessful value="Nukopijuota į iškarpinę" />
     <message.planetClaimed value="Planeta perimta" />
     <label.cooldownEndsIn value="Kitas mūšis už" />
+    <label.longerThenExpected value="Veiksmas užtrunka ilgiau nei tikėtasi." />
+    <label.reestablish value="Jungtis iš naujo"/>
   </General>
 
   <Errors>
@@ -2322,6 +2324,14 @@
       saugumą.</p>
       <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
     </message.disconnect.otherLogin>
+
+    <title.disconnect.cannotReestablish
+      value="Neįmanoma atkurti ryšio su serveriu!" />
+    <message.disconnect.cannotReestablish>
+      <p>Atsiprašome.</p>
+      <p>Buvo prarastas ryšys su serveriu ir mums nepavyko jo atkurti.</p>
+      <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
+    </message.disconnect.cannotReestablish>
     
     <title.disconnect.playerErased value="Viso gero!" />
     <message.disconnect.playerErased>
@@ -3587,8 +3597,8 @@
     <ClaimReward>
       <![CDATA[
       <p>Kiekviena įvykdyta užduotis duoda atlygį. Jį pasiimti gali nuėjęs į
-      užduočių langą: paspausk N44 logotipą apatiniame kairiame kampe ir
-      pasirink užduočių mygtuką.</p>
+      užduočių langą, kurį gali atsidaryti paspaudęs ant užduočių mygtuko kairėje
+      ekrano pusėje.</p>
       <p>Tada susirask įvykdytą užduotį (jos žymimos gelsvai) ir spausk pasiimti
       atlygį.</p>
       ]]>
@@ -5704,6 +5714,10 @@
   <Authorization>
     <status.authorization value="Autorizuojama..."/>
     <status.login value="Jungiamasi prie serverio..."/>
+     <status.attaching>
+       Prašome palaukti, kol serveris tau sukurs nuolatinę vartotojo paskyrą.
+       Tai gali užtrukti kelias sekundes.
+     </status.attaching>
   </Authorization>
 
   <PlanetMapEditor>

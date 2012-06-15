@@ -9,4 +9,5 @@ import spacemule.modules.pmg.objects.SolarSystem
 
 class Wormhole extends SolarSystem(None) {
   override val kind = SolarSystem.Wormhole
+  override def toString = "<Wormhole "+super.toString+">"
 }

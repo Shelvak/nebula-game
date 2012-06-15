@@ -640,8 +640,7 @@ describe SsObject::Planet do
       @enemy = Factory.create :player
 
       @planet = Factory.create :planet, :player => @player
-      Factory.create :unit_built, :location_type => Location::SS_OBJECT,
-        :location_id => @planet.id, :player => @enemy_with_units
+      Factory.create :unit_built, location: @planet, player: @enemy_with_units
 
       @result = @planet.observer_player_ids
     end
@@ -1076,22 +1075,16 @@ describe SsObject::Planet do
   describe "#resource_modifier_technologies" do
     it "should not use technologies of level 0" do
       model = Factory.create :planet_with_player
-      tech = Factory.create :t_test_resource_mod,
-        :player => model.player, :level => 0
+      tech = Factory.create :t_test_resource_mod, player: model.player, level: 0
 
-      model.send(
-        :resource_modifier_technologies
-      ).should_not include(tech)
+      model.send(:resource_modifier_technologies).should_not include(tech)
     end
 
     it "should use technologies of level > 0" do
       model = Factory.create :planet_with_player
-      tech = Factory.create :t_test_resource_mod,
-        :player => model.player, :level => 1
+      tech = Factory.create :t_test_resource_mod, player: model.player, level: 1
 
-      model.send(
-        :resource_modifier_technologies
-      ).should include(tech)
+      model.send(:resource_modifier_technologies).should include(tech)
     end
   end
 

@@ -92,6 +92,7 @@ package utils.locale
             Localizer.addBundle(new XMLBundle(_locale, bundleData.name(), bundleData));
          }
          _loadSuccessful = true;
+         Localizer.bundlesSet = true;
          dispatchCompleteEvent();
       }
       

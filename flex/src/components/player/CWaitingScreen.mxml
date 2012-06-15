@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:base="components.base.*" xmlns:screens="components.screens.*"
+         visible="{model.visible}" width="100%" height="100%">
+   <fx:Script>
+      <![CDATA[
+      import utils.locale.Localizer;
+
+
+      private const model: MWaitingScreen = MWaitingScreen.getInstance();
+
+      private function getMessage(): String {
+         return Localizer.string("Authorization", "status.attaching");
+      }
+      ]]>
+   </fx:Script>
+   <screens:GradientBackground gradientWidth="{(this.width - 800) / 2}"
+                               left="0" right="0" top="0" bottom="0"/>
+   <s:Group width="100%" height="100%">
+      <s:layout>
+         <s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
+      </s:layout>
+      <base:SpinnerContainer busy="{visible}" timeoutEnabled="false"/>
+      <s:Label text="{getMessage()}" width="600" textAlign="center" lineBreak="toFit"/>
+   </s:Group>
+</s:Group>

@@ -1,6 +1,7 @@
 # Tracks which technologies has which mods.
 class TechTracker
   include Singleton
+  include MonitorMixin
 
   # Regular expression for matching technologies.
   REGEXP = /^technologies\.\w+\.mod\./
@@ -25,31 +26,42 @@ class TechTracker
   def initialize
     # Hash of {name => Set} pairs.
     @tracker = {}
+    super
   end
 
   def scan(force_rescan=false)
-    return if @scanned && ! force_rescan
+    synchronize do
+      return if @scanned && ! force_rescan
 
-    # Initialize technologies which have mods.
-    CONFIG.each_matching(REGEXP) do |key, value|
-      klass = "Technology::#{key.split(".")[1].camelcase}".constantize
-      Technology::MODS.each do |name, property|
-        register(name, klass) if klass.send(:"#{name}_mod?")
+      # Initialize technologies which have mods.
+      CONFIG.each_matching(REGEXP) do |key, value|
+        klass = "Technology::#{key.split(".")[1].camelcase}".constantize
+        Technology::MODS.each do |name, property|
+          register(property, klass) if klass.send(:"#{name}_mod?")
+        end
       end
-    end
 
-    @scanned = true
+      @scanned = true
+    end
   end
 
   def register(name, klass)
-    @tracker[name] ||= Set.new
-    @tracker[name].add klass
+    check_name!(name)
+
+    synchronize do
+      @tracker[name] ||= Set.new
+      @tracker[name].add klass
+    end
   end
 
   # Returns technology classes for mod with _name_.
   def get(name)
+    check_name!(name)
     scan
-    @tracker[name] || Set.new
+
+    synchronize do
+      @tracker[name] || Set.new
+    end
   end
 
   # Return technology classes for mods with _names_.
@@ -62,7 +74,7 @@ class TechTracker
   # Return AREL query for technologies which have mods.
   def query(*names)
     Technology.where(
-      :type => get_all(*names).map { |klass| klass.to_s.demodulize }
+      type: get_all(*names).map { |klass| klass.to_s.demodulize }
     )
   end
 
@@ -74,4 +86,13 @@ class TechTracker
   class << self
     def method_missing(method, *args); instance.send(method, *args); end
   end
+
+private
+
+  def check_name!(name)
+    raise ArgumentError,
+      "Invalid key #{name.inspect}, allowed keys: #{MODS.inspect}" \
+      unless MODS.include?(name)
+  end
+
 end

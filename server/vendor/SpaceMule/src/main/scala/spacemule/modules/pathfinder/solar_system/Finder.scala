@@ -6,7 +6,7 @@
 package spacemule.modules.pathfinder.solar_system
 
 import org.jgrapht.graph.DefaultDirectedWeightedGraph
-import scalaj.collection.Implicits._
+import collection.JavaConversions._
 import org.jgrapht.alg.DijkstraShortestPath
 import spacemule.modules.pathfinder.objects.Hop
 import spacemule.modules.pmg.classes.geom.Coords
@@ -53,7 +53,7 @@ object Finder {
 
     val path = DijkstraShortestPath.findPathBetween(graph, from, to)
     // No path could be found, let's try without avoidable points.
-    if (path == null) findPath(from, to) else path.asScala
+    if (path == null) findPath(from, to) else path
   }
   
   private val maxPosition = Config.orbitCount

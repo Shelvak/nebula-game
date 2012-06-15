@@ -17,7 +17,7 @@ class PlayerOptions < ActiveRecord::Base
     if options.nil?
       raise ActiveRecord::RecordNotFound.new(
         "Player with id #{player_id} does not exist!"
-      ) unless Player.exists?(player_id)
+      ) unless without_locking { Player.exists?(player_id) }
       options = new.tap { |o| o.id = player_id; o.data = Data.new }
     end
     options

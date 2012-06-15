@@ -1,13 +1,32 @@
 class Dispatcher
+  class BufferEntry < Struct.new(:message, :size)
+    def initialize(message)
+      size = Marshal.dump(message).size
+      super(message, size)
+    end
+  end
+
   include NamedLogMessages
   include Celluloid
 
   TAG = 'dispatcher'
+
+  # Maximum number of bytes in message buffer.
+  MSG_BUFFER_MAX_SIZE = 512.kilobytes
   
+  ### Connection throttling ###
+
+  # Maximum number of allowed connections to this server.
+  MAX_CONNECTIONS = 10000
+  # Maximum number of time after which cleanup kills your connection if you
+  # have no player.
+  MAX_NO_AUTH_TIMEOUT = 15.seconds
+
   # Special key for message id. This is needed for client to do time
   # syncing.
   MESSAGE_ID_KEY = 'id'
   MESSAGE_SEQ_KEY = 'seq'
+  MESSAGE_LAST_PROCESSED_SEQ_KEY = 'lpseq'
   MESSAGE_REPLY_TO_KEY = 'reply_to'
   # Disconnect action name.
   ACTION_DISCONNECT = 'players|disconnect'
@@ -20,6 +39,16 @@ class Dispatcher
   DISCONNECT_PLAYER_ERASED = "player_erased"
   # Server has encountered an error.
   DISCONNECT_SERVER_ERROR = "server_error"
+  # Client did not provide or provided bad last processed sequence number.
+  DISCONNECT_NO_LPSEQ = "no_lpseq"
+  # Message buffer was overflowed.
+  DISCONNECT_MSG_BUFFER_OVERFLOW = "msg_buffer_overflow"
+  # Reestablishing connection from other session.
+  DISCONNECT_REESTABLISHING = "reestablishing"
+  # Cannot reestablish connection.
+  DISCONNECT_CANNOT_REESTABLISH = "cannot_reestablish"
+  # Connection has been idle for too long.
+  DISCONNECT_IDLE_CONNECTION = "idle_connection"
 
   S_KEY_SEQ = :seq
   S_KEY_CURRENT_SS_ID = :current_ss_id
@@ -33,15 +62,24 @@ class Dispatcher
 
   # Initialize the dispatcher.
   def initialize
-    @directors = {
-      :chat => Threading::Director.new_link("chat", WORKERS_CHAT),
-      :world => Threading::Director.new_link("world", WORKERS_WORLD),
-    }
+    @directors = DIRECTORS.each_with_object({}) do |(name, workers), hash|
+      hash[name] = Threading::Director.new_link(name.to_s, workers)
+    end
 
+    # When which client has connected. {client => Time}
+    @connection_time = {}
     @client_to_player = {}
     @player_id_to_client = {}
     # Session level storage to store data between controllers
+    # {client => {key => value}}
     @storage = {}
+
+    # {player_id => token}
+    @reestablishment_tokens = {}
+    # {player_id => LinkedList[String]}
+    @message_buffers = Hash.new do |hash, player_id|
+      hash[player_id] = Java::java.util.LinkedList.new
+    end
   end
 
   # Override inspect from celluloid because that gets us infinite recursion
@@ -55,10 +93,21 @@ class Dispatcher
     client.nil? ? TAG : "#{TAG}-#{client}"
   end
 
+  # Returns Hash of {director_name => enqueued_tasks}.
+  def director_stats
+    @directors.map do |name, director|
+      [name, director.future(:enqueued_tasks)]
+    end.each_with_object({}) do |(name, future), hash|
+      hash[name] = future.value
+    end
+  end
+
   # Register new client to dispatcher.
   def register(client)
     info "Registering.", to_s(client)
+    cleanup_idle_connections!
     @storage[client] = {}
+    @connection_time[client] = Time.now
   end
 
   # Unregister client from dispatcher.
@@ -66,11 +115,10 @@ class Dispatcher
     # Someone unregistered us before, probably from #disconnect
     return unless @storage.has_key?(client)
     tag = to_s(client)
-
-    info "Unregistering.", tag
-
     player = resolve_player(client)
-    # This is safe because it is in same thread.
+
+    info "Unregistering: #{player ? player.to_s : "not a player"}.", tag
+
     unless player.nil?
       dispatch_task(
         Scope.world, PlayerUnregisterTask.player(tag, player)
@@ -78,13 +126,56 @@ class Dispatcher
       # There is no point of notifying about leaves if server is shutdowning.
       dispatch_task(Scope.chat, PlayerUnregisterTask.chat(tag, player)) \
         unless App.server_shutdowning?
+
+      # Clean up containers.
+      @reestablishment_tokens.delete(player.id)
+      @message_buffers.delete(player.id)
+      @player_id_to_client.delete(player.id)
     end
 
-    # Clean up containers.
-    player = @client_to_player[client]
-    @player_id_to_client.delete(player.id) unless player.nil?
     @client_to_player.delete client
     @storage.delete client
+    @connection_time.delete client
+  end
+
+  def reestablish_connection(client, player_id, last_processed_seq, token)
+    raise_to_abort do
+      typesig binding, ServerActor::Client, Fixnum, Fixnum, String
+    end
+
+    data = "player_id:#{player_id} last_processed_seq:#{last_processed_seq
+      } token:#{token}"
+
+    stored_token = @reestablishment_tokens[player_id]
+    if token == stored_token
+      old_client = @player_id_to_client[player_id]
+      player = @client_to_player[old_client]
+
+      info "Reestablishing #{player} with given data (#{data})", to_s(client)
+      stored_message_buffer = @message_buffers[player_id]
+
+      deliver_buffer(client, player_id, last_processed_seq)
+      storage = @storage[old_client]
+
+      # Remove old client to player association to prevent unregistering from
+      # chat and etc.
+      @client_to_player.delete old_client
+      @player_id_to_client.delete player_id
+
+      # Disconnect old client.
+      disconnect(old_client, DISCONNECT_REESTABLISHING)
+      # Associate new player.
+      set_player(client, player)
+
+      # Reassign stored values.
+      @reestablishment_tokens[player_id] = stored_token
+      @message_buffers[player_id] = stored_message_buffer
+      @storage[client] = storage
+    else
+      info "Cannot reestablish player #{player_id} with given data (#{data
+        }): bad token", to_s(client)
+      disconnect(client, DISCONNECT_CANNOT_REESTABLISH)
+    end
   end
 
   # Returns number of logged in players.
@@ -107,13 +198,24 @@ class Dispatcher
     @player_id_to_client[player.id] = client
   end
 
+  # Generate connection reestablishment token, associate it with Player and
+  # return it.
+  def generate_reestablishment_token(player)
+    raise_to_abort { typesig binding, Player }
+    token = (0...100).map { |i| rand(4294967296).to_s(36) }.join("")
+    @reestablishment_tokens[player.id] = token
+    token
+  end
+
   # Update player entry if player is connected.
   def update_player(player)
     client = @player_id_to_client[player.id]
     if client
       @client_to_player[client] = player
     else
-      abort "Cannot update player #{player} which is not registered!"
+      abort RuntimeError.new(
+        "Cannot update player #{player} which is not registered!"
+      )
     end
   end
 
@@ -122,12 +224,14 @@ class Dispatcher
     exclusive do
       log_tag = to_s(client)
 
+      cleanup_buffer(client, message_hash[MESSAGE_LAST_PROCESSED_SEQ_KEY])
+
       debug "Received message hash: #{message_hash.inspect}", log_tag
 
       message = message_object(client, message_hash)
       LOGGER.block(
         "Received message: #{message}",
-        :component => log_tag
+        component: log_tag, level: :debug
       ) { process_message(message) }
     end
   rescue NotAMessage => e
@@ -142,7 +246,7 @@ class Dispatcher
   def callback(callback)
     exclusive do
       raise_to_abort { typesig binding, Callback }
-      info "Received: #{callback}"
+      debug "Received: #{callback}"
 
       klass = callback.klass
       method_name = callback.type
@@ -166,9 +270,10 @@ class Dispatcher
   def confirm_receive(message, error=nil)
     raise_to_abort { typesig binding, Message, [NilClass, Exception] }
 
+    client = client_from_message(message)
     confirmation = {
       MESSAGE_REPLY_TO_KEY => message.id,
-      MESSAGE_SEQ_KEY => next_client_seq(message.client)
+      MESSAGE_SEQ_KEY => next_client_seq(client)
     }
     if error
       confirmation['failed'] = true
@@ -176,12 +281,12 @@ class Dispatcher
         'type' => error.class.to_s,
         'message' => error.message
       }
-      info "Confirming #{message} with error.", to_s(message.client)
+      debug "Confirming #{message} with error.", to_s(client)
     else
-      info "Confirming successful #{message}.", to_s(message.client)
+      debug "Confirming successful #{message}.", to_s(client)
     end
 
-    transmit_to_client(message.client, confirmation)
+    transmit_to_client(client, confirmation)
   end
 
   # Disconnect client. Send message and close connection.
@@ -205,15 +310,16 @@ class Dispatcher
   def respond(message, params)
     raise_to_abort { typesig binding, Message, Hash }
 
+    client = client_from_message(message)
     message_hash = {
       # Pushed messages have message sequence number, regular messages don't.
       # Generate one for them instead. See #message_object for more info.
-      MESSAGE_SEQ_KEY => message.seq || next_client_seq(message.client),
+      MESSAGE_SEQ_KEY => message.seq || next_client_seq(client),
       "action" => message.full_action,
       "params" => params
     }
 
-    transmit_to_client(message.client, message_hash)
+    transmit_to_client(client, message_hash)
   end
 
   # Transmits message to given players ids.
@@ -234,12 +340,17 @@ class Dispatcher
     message_hash = {"action" => action, "params" => params}
 
     clients.each do |client|
-      transmit_to_client(client, message_hash)
+      transmit_to_client(
+        client,
+        message_hash.merge(MESSAGE_SEQ_KEY => next_client_seq(client))
+      )
     end
   end
 
   # Thread safe storage getter.
-  def storage_get(client, key)
+  def storage_get(message, key)
+    client = client_from_message(message)
+
     abort ClientDisconnected.new(
       "#{client} has already disconnected, no storage available!"
     ) unless client_connected?(client)
@@ -247,19 +358,13 @@ class Dispatcher
     client_storage[key]
   end
   # Thread safe storage setter.
-  def storage_set(client, key, value)
-    abort ClientDisconnected.new(
-      "#{client} has already disconnected, no storage available!"
-    ) unless client_connected?(client)
+  def storage_set(message, key, value)
+    client = client_from_message(message)
+
+    return unless client_connected?(client)
     client_storage = @storage[client]
     client_storage[key] = value
-  end
-
-  # Solar system ID which is currently viewed by client.
-  def current_ss_id(client); @storage[client][S_KEY_CURRENT_SS_ID]; end
-  # SsObject ID which is currently viewed by client.
-  def current_planet_id(client)
-    @storage[client][S_KEY_CURRENT_PLANET_ID]
+    nil
   end
 
   def atomic(atomizer)
@@ -352,7 +457,14 @@ class Dispatcher
     end
   end
 
-  private
+private
+
+  # Solar system ID which is currently viewed by client.
+  def current_ss_id(client); @storage[client][S_KEY_CURRENT_SS_ID]; end
+  # SsObject ID which is currently viewed by client.
+  def current_planet_id(client)
+    @storage[client][S_KEY_CURRENT_PLANET_ID]
+  end
 
   def initialize_controllers!
     return unless @controllers.nil?
@@ -427,7 +539,7 @@ class Dispatcher
     director = @directors[name]
     raise "Missing director #{name.inspect}!" if director.nil?
 
-    info "Dispatching to #{name} director: #{task}"
+    debug "Dispatching to #{name} director: #{task}"
     director.work!(task)
   end
 
@@ -492,11 +604,134 @@ class Dispatcher
 
   # Set message id and push it into outgoing messages stack for given IO.
   def transmit_to_client(client, message_hash)
-    message_hash[MESSAGE_ID_KEY] = next_message_id
-    EventMachine.next_tick do
-      client.em_connection.write(message_hash)
-    end
+    # Message ID may be already stored if we are replaying old messages on
+    # connection reestablishment.
+    message_hash[MESSAGE_ID_KEY] ||= next_message_id
+
+    # Write data to socket.
+    EventMachine.next_tick { client.em_connection.write(message_hash) }
+
+    # Store message for connection reestablishment.
+    player = @client_to_player[client]
+    @message_buffers[player.id].add BufferEntry.new(message_hash) \
+      unless player.nil?
+
     #Actor[:server].write!(client, message_hash)
+  end
+
+  # Clean up message buffers from processed messages.
+  def cleanup_buffer(client, last_processed_seq)
+    player = @client_to_player[client]
+    # No lpseq is needed or possible for non-player clients.
+    return if player.nil?
+
+    # Authenticated players are required to provide lpseq.
+    disconnect(client, DISCONNECT_NO_LPSEQ) \
+      unless last_processed_seq.is_a?(Fixnum)
+
+    tag = self.to_s(client)
+    buffer = @message_buffers[player.id]
+    debug "Preparing to clean #{player} buffer with #{buffer.size} messages.",
+      tag
+
+    # Clean up buffer from processed messages.
+    cleaned = 0
+    while ! (entry = buffer.peek).nil? &&
+        entry.message[MESSAGE_SEQ_KEY] <= last_processed_seq
+      cleaned += 1
+      buffer.removeFirst
+    end
+    debug "#{cleaned} messages cleaned from buffer for #{player}", tag
+
+    # Calculate total size.
+    total_size = buffer.inject(0) { |sum, entry| sum + entry.size }
+    debug "Current buffer for #{player}: msgsize:#{buffer.size} bytesize:#{
+      total_size}", tag
+
+    # Disconnect client if buffer is still too large.
+    if total_size > MSG_BUFFER_MAX_SIZE
+      info "Disconnecting because #{player} buffer (msgsize:#{buffer.size
+        } bytesize:#{total_size}) is too big!", tag
+      disconnect(client, DISCONNECT_MSG_BUFFER_OVERFLOW)
+    end
+  end
+
+  # Deliver missed messages to client.
+  def deliver_buffer(client, player_id, last_processed_seq)
+    debug "Delivering stored message buffer to player #{player_id
+      }, last processed seq: #{last_processed_seq}", to_s(client)
+
+    buffer = @message_buffers[player_id]
+    buffer.each do |entry|
+      transmit_to_client(client, entry.message) \
+        if entry.message[MESSAGE_SEQ_KEY] > last_processed_seq
+    end
+  end
+
+  # Resolve current +Client+ from +Message+. Client might change if player had
+  # its connection dropped and is reestablishing connection.
+  def client_from_message(message)
+    # Lets try to find our socket from player -> client hash.
+    client = message.player.nil? ? nil : @player_id_to_client[message.player.id]
+    # If it is not found, just use original socket that message was received
+    # from.
+    client || message.client
+  end
+
+  # Clean idle connections up to ensure that we can open new connections.
+  def cleanup_idle_connections!
+    return unless @connection_time.size > MAX_CONNECTIONS
+
+    info "Cleaning up idle connections, because we have #{@connection_time.size
+      } connections, which is more than max #{MAX_CONNECTIONS}."
+    now = Time.now
+    cleaned_up = 0
+    @connection_time.each do |client, time|
+      next unless @client_to_player[client].nil?
+
+      if now - time >= MAX_NO_AUTH_TIMEOUT
+        disconnect(client, DISCONNECT_IDLE_CONNECTION)
+        cleaned_up += 1
+      end
+    end
+
+    if @connection_time.size > MAX_CONNECTIONS
+      info "Cleaned up #{cleaned_up} connections, but #{@connection_time.size
+        } > #{MAX_CONNECTIONS} connections still left. Entering phase 2."
+
+      cleaned_up = 0
+      @connection_time.sort do |(client1, time1), (client2, time2)|
+        player1 = @client_to_player[client1]
+        player2 = @client_to_player[client2]
+
+        # Both clients have no player - longer conn time first.
+        if player1.nil? && player2.nil? then time1 <=> time2
+        # Client 1: no player, client 2: player - client 1 first.
+        elsif player1.nil? && ! player2.nil? then -1
+        # Client 1: player, client 2: no player - client 2 first.
+        elsif player2.nil? && ! player1.nil? then 1
+        # Client 1: trial, client 2: trial - longer conn time first.
+        elsif player1.trial? && player2.trial? then time1 <=> time2
+        # Client 1: trial, client 2: non trial - first player first.
+        elsif player1.trial? && ! player2.trial? then -1
+        # Client 1: non trial, client 2: trial - second player first.
+        elsif player2.trial? && ! player1.trial? then 1
+        # Both clients non-trial - longer conn time first.
+        else time1 <=> time2; end
+      end.each do |client, time|
+        if @client_to_player[client].nil?
+          disconnect(client, DISCONNECT_IDLE_CONNECTION)
+          cleaned_up += 1
+        end
+
+        break unless @connection_time.size > MAX_CONNECTIONS
+      end
+      info "Phase 2: Cleaned up #{cleaned_up} connections, #{
+        @connection_time.size} connections left."
+    else
+      info "Cleaned up #{cleaned_up} connections, #{@connection_time.size
+        } connections left."
+    end
   end
 end
 

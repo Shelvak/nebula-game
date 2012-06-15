@@ -7,6 +7,7 @@ class DispatcherEventHandler::Handler
       dataset.each do |data|
         params = params_function[data.objects, reason]
         data.player_ids.each do |player_id|
+          typesig_bindless [["player_id", player_id]], Fixnum
           dispatcher.push_to_player!(player_id, action, params, data.filter)
         end
       end
