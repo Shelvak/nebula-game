@@ -12,7 +12,7 @@ class DispatcherEventHandler::LocationResolver
         ]
       when Location::SOLAR_SYSTEM
         [
-          FowSsEntry.observer_player_ids(location.id),
+          SolarSystem.observer_player_ids(location.id),
           Dispatcher::PushFilter.solar_system(location.id)
         ]
       when Location::SS_OBJECT

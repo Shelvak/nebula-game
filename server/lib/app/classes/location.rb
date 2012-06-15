@@ -91,7 +91,6 @@ module Location
         SolarSystem.sees_wormhole?(player)
       else
         begin
-          SolarSystem.visible?(ss_id, player.id)
           SolarSystem.find_if_viewable_for(ss_id, player)
           true
         rescue ActiveRecord::RecordNotFound

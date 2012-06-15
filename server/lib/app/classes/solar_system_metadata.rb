@@ -13,12 +13,12 @@
 #   # Metadata flags - only on create/update, otherwise nil.
 #   :player_planets => +Boolean+,
 #   :player_ships => +Boolean+,
-#   :enemy_planets => +Array+,
-#   :enemy_ships => +Array+,
-#   :alliance_planets => +Array+,
-#   :alliance_ships => +Array+,
-#   :nap_planets => +Array+,
-#   :nap_ships => +Array+,
+#   :enemies_with_planets => +[Player#minimal, ...]+,
+#   :enemies_with_ships => +[Player#minimal, ...]+,
+#   :allies_with_planets => +[Player#minimal, ...]+,
+#   :allies_with_ships => +[Player#minimal, ...]+,
+#   :naps_with_planets => +[Player#minimal, ...]+,
+#   :naps_with_ships => +[Player#minimal, ...]+,
 # }
 #
 # _id_ is solar system id.
@@ -33,9 +33,9 @@ class SolarSystemMetadata
         :id => Fixnum, :x => [Fixnum, NilClass], :y => [Fixnum, NilClass],
         :kind => [Fixnum, NilClass], :player => [Hash, NilClass],
         :player_planets => Boolean, :player_ships => Boolean,
-        :enemy_planets => Array, :enemy_ships => Array,
-        :alliance_planets => Array, :alliance_ships => Array,
-        :nap_planets => Array, :nap_ships => Array
+        :enemies_with_planets => Array, :enemies_with_ships => Array,
+        :allies_with_planets => Array, :allies_with_ships => Array,
+        :naps_with_planets => Array, :naps_with_ships => Array
       }
     )
 
@@ -50,12 +50,11 @@ class SolarSystemMetadata
 
   def self.destroyed(solar_system_id)
     new(
-      :id => solar_system_id, :x => nil, :y => nil, :kind => nil,
-      :player => nil,
-      :player_planets => false, :player_ships => false,
-      :enemy_planets => [], :enemy_ships => [],
-      :alliance_planets => [], :alliance_ships => [],
-      :nap_planets => [], :nap_ships => []
+      id: solar_system_id, x: nil, y: nil, kind: nil, player: nil,
+      player_planets: false, player_ships: false,
+      enemies_with_planets: [], enemies_with_ships: [],
+      allies_with_planets: [], allies_with_ships: [],
+      naps_with_planets: [], naps_with_ships: []
     )
   end
 

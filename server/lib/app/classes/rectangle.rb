@@ -9,6 +9,8 @@ class Rectangle
     [:x_end, :x_end],
     [:y_end, :y_end]
   ]
+  # Fields that need to be selected to form a +Rectangle+.
+  SELECT_FIELDS = MAPPING.map { |db_attr, obj_attr| "`#{db_attr}`" }.join(",")
 
   # Create a rectangle. All coordinates are inclusive.
   def initialize(x, y, x_end, y_end)

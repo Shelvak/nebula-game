@@ -9,16 +9,12 @@ class FowGalaxyEntry < ActiveRecord::Base
   # FK :dependent => :destroy_all
   belongs_to :player
 
+  # TODO: spec
   scope :for, lambda { |player| where(:player_id => player.friendly_ids) }
 
   # Retrieve +FowGalaxyEntry+ by given coordinates.
-  scope :by_coords, Proc.new { |x, y|
-    {
-      :conditions => [
-        "(? BETWEEN x AND x_end) AND (? BETWEEN y AND y_end)",
-        x, y
-      ]
-    }
+  scope :by_coords, lambda { |x, y|
+    where("(? BETWEEN x AND x_end) AND (? BETWEEN y AND y_end)", x, y)
   }
 
   composed_of :rectangle, :mapping => Rectangle::MAPPING
@@ -40,11 +36,13 @@ class FowGalaxyEntry < ActiveRecord::Base
     # TODO: spec
     def observer_player_ids(galaxy_id, x, y)
       # Player ids that see that spot.
-      player_ids = select("DISTINCT(`player_id`)").
-        where(galaxy_id: galaxy_id).
-        where("? BETWEEN `x` AND `x_end`", x).
-        where("? BETWEEN `y` AND `y_end`", y).
-        c_select_values
+      player_ids = without_locking do
+        select("DISTINCT(`player_id`)").
+          where(galaxy_id: galaxy_id).
+          where("? BETWEEN `x` AND `x_end`", x).
+          where("? BETWEEN `y` AND `y_end`", y).
+          c_select_values
+      end
 
       Player.join_alliance_ids(player_ids)
     end
@@ -89,6 +87,8 @@ class FowGalaxyEntry < ActiveRecord::Base
     #
     # This also creates entry for +Alliance+ if _player_ is in one.
     def increase(rectangle, player, increment=1)
+      typesig binding, Rectangle, Player, Fixnum
+
       status = increase_impl(
         rectangle, player.galaxy_id, player.id, increment
       )

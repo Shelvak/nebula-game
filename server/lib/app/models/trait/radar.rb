@@ -9,11 +9,11 @@ module Trait
     end
 
     def self.increase_vision(zone, player)
-      FowGalaxyEntry.increase(rectangle_from_zone(zone), player.id)
+      FowGalaxyEntry.increase(rectangle_from_zone(zone), player)
     end
 
     def self.decrease_vision(zone, player)
-      FowGalaxyEntry.decrease(rectangle_from_zone(zone), player.id)
+      FowGalaxyEntry.decrease(rectangle_from_zone(zone), player)
     end
 
     module ClassMethods

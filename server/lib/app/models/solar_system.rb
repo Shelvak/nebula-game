@@ -24,9 +24,6 @@ class SolarSystem < ActiveRecord::Base
   has_many :asteroids, :class_name => "SsObject::Asteroid"
   has_many :jumpgates, :class_name => "SsObject::Jumpgate"
 
-  # FK :dependent => :delete_all
-  has_many :fow_ss_entries
-
   scope :in_galaxy, Proc.new { |galaxy|
     galaxy = galaxy.id if galaxy.is_a? Galaxy
 
@@ -151,9 +148,6 @@ class SolarSystem < ActiveRecord::Base
       EventBroker::FOW_CHANGE,
       EventBroker::REASON_SS_ENTRY
     )
-    # Remove fow ss entries for everyone except owner.
-    fow_ss_entries.where("player_id != ? OR player_id IS NULL", player_id).
-      delete_all
 
     # Set coordinates to detached state.
     self.x = self.y = nil
@@ -245,15 +239,18 @@ class SolarSystem < ActiveRecord::Base
 
   class << self
     # Does _player_ see any wormhole?
-    #
-    # TODO: spec
     def sees_wormhole?(player)
       friendly_ids = player.friendly_ids
       conditions = without_locking do
-        FowGalaxyEntry.where(player_id: friendly_ids).all
-      end.map { |fge| fge.rectangle.to_sql(player.galaxy_id) }.join(" OR ")
+        FowGalaxyEntry.select(Rectangle::SELECT_FIELDS).
+          where(player_id: friendly_ids).all
+      end.map { |fge| fge.rectangle.to_sql(player.galaxy_id) }
 
-      SolarSystem.where(conditions).where(kind: KIND_WORMHOLE).exists?
+      # No conditions = No FGEs = No wormhole
+      return false if conditions.blank?
+
+      SolarSystem.where(conditions.join(" OR ")).where(kind: KIND_WORMHOLE).
+        exists?
     end
 
     # Returns +Array+ of _player_ visible +SolarSystem+s with their metadata
@@ -296,15 +293,18 @@ class SolarSystem < ActiveRecord::Base
           c_select_values
       end.map { |id| "`id`=#{id}" }
 
+      # No conditions = no solar systems.
+      return [] if conditions.blank?
+
       conditions = conditions.join(" OR ")
-      solar_systems = SolarSystem.where(conditions).all
+      solar_systems = without_locking { SolarSystem.where(conditions).all }
 
       ss_ids = solar_systems.map(&:id)
       metadatas = SolarSystem::Metadatas.new(ss_ids)
 
       solar_systems.map do |solar_system|
         {
-          solar_system: solar_system,
+          solar_system: solar_system.freeze,
           metadata: metadatas.for_existing(
             solar_system.id, player.id, friendly_ids, alliance_ids
           )
@@ -314,8 +314,6 @@ class SolarSystem < ActiveRecord::Base
 
     # Determines if any of the _player_ids_ have visibility on SolarSystem
     # _solar_system_id_.
-    #
-    # TODO: spec
     def visible?(solar_system_id, player_ids)
       typesig binding, Fixnum, [Fixnum, Array]
       player_ids = Array(player_ids)
@@ -328,11 +326,16 @@ class SolarSystem < ActiveRecord::Base
 
       row = without_locking do
         SolarSystem.select("`galaxy_id`, `x`, `y`").
-          where(:id => solar_system_id).c_select_one
+          where(id: solar_system_id).c_select_one
       end
 
       galaxy_id, x, y = row['galaxy_id'], row['x'], row['y']
 
+      # Check for:
+      # * Radar coverage
+      # * Occupied planets
+      # * Units inside solar system
+      # * Units inside solar system objects
       connection.select_value(%Q{
 SELECT
 IF(
@@ -391,10 +394,13 @@ IF(
     end
 
     # Returns player ids for those who can see this solar system.
-    #
-    # TODO: spec
-    def observer_player_ids(id)
-      solar_system = find(id)
+    def observer_player_ids(solar_system_or_id)
+      typesig binding, [Fixnum, SolarSystem]
+
+      solar_system = solar_system_or_id.is_a?(Fixnum) \
+        ? without_locking { find(solar_system_or_id).freeze } \
+        : solar_system_or_id
+
       if solar_system.main_battleground?
         # This is a bit hacky. For speed purposes lets say that every player
         # that has FGE sees at least one wormhole.
@@ -406,6 +412,10 @@ IF(
         }
       end
 
+      # Select ids from:
+      # * Radar coverage
+      # * SSO ownership
+      # * Unit ownership in solar system on SSOs inside of it
       player_ids = connection.select_values(%Q{
   SELECT DISTINCT(`player_id`)
   FROM `#{FowGalaxyEntry.table_name}`
