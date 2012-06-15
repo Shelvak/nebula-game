@@ -1,6 +1,7 @@
 package controllers.objects.actions.customcontrollers
 {
    import controllers.galaxies.GalaxiesCommand;
+   import controllers.startup.StartupInfo;
    import controllers.ui.NavigationController;
 
    import models.map.MapType;
@@ -20,6 +21,9 @@ package controllers.objects.actions.customcontrollers
       public override function objectUpdated(objectSubclass: String,
                                              object: Object,
                                              reason: String): void {
+         if (StartupInfo.relaxedServerMessagesHandlingMode && ML.latestGalaxy == null) {
+            return;
+         }
          const ss: MSolarSystem = ML.latestGalaxy.getSSById(object.id);
          Objects.notNull(ss, "Solar system with id " + object["id"] + " not found.");
          const metadata: MSSMetadata = ss.metadata;

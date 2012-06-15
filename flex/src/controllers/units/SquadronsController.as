@@ -3,6 +3,7 @@ package controllers.units
    import components.map.space.SquadronsController;
 
    import controllers.Messenger;
+   import controllers.startup.StartupInfo;
    import controllers.timedupdate.MasterUpdateTrigger;
 
    import interfaces.IUpdatable;
@@ -165,6 +166,9 @@ package controllers.units
          var squad:MSquadron = findSquad(routeId);
          if (route == null) {
             if (squad == null) {
+               if (StartupInfo.relaxedServerMessagesHandlingMode) {
+                  return;
+               }
                throw new ArgumentError(
                   "Unable to update route and squadron: route with id " + routeId + " could not be found." +
                   "New route data was: " + ObjectUtil.toString(routeData)
