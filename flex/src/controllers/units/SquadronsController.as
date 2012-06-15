@@ -28,7 +28,6 @@ package controllers.units
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.logging.ILogger;
-   import mx.logging.Log;
    import mx.utils.ObjectUtil;
 
    import utils.DateUtil;
@@ -36,6 +35,8 @@ package controllers.units
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
+   import utils.logging.IMethodLoggerFactory;
+   import utils.logging.Log;
 
 
    /**
@@ -58,10 +59,8 @@ package controllers.units
       private var SQUADS: SquadronsList = ML.squadrons;
       private var ROUTES: ModelsCollection = ML.routes;
       private var UNITS: ModelsCollection = ML.units;
-      
-      private function get logger() : ILogger {
-         return Log.getLogger("MOVEMENT");
-      }
+
+      private const loggerFactory: IMethodLoggerFactory = Log.getMethodLoggerFactory("MOVEMENT");
       
       
       /**
@@ -122,22 +121,21 @@ package controllers.units
        */
       public function destroySquadron(id:int) : Boolean
       {
-         if (id <= 0)
-         {
-            throw new ArgumentError("Illegal moving squadron id: " + id);
-         }
-         logger.debug("@destroySquadron(): Will try to destroy squad {0}", id);
+         Objects.paramIsId("id", id);
+         const logger: ILogger = loggerFactory.getLogger("destroySquadron");
+
+         logger.debug("Will try to destroy squad {0}", id);
          var squad:MSquadron = SQUADS.remove(id, true);
          if (squad != null)
          {
-            logger.debug("@destroySquadron(): Destroying squadron {0}", squad);
+            logger.debug("Destroying squadron {0}", squad);
             var fromPlanet: Boolean = squad.currentHop.location.isSSObject;
             var unitIds:Array = squad.units.toArray().map(
-               function(unit:Unit, index:int, array:Array) : int {
+               function (unit: Unit, index: int, array: Array): int {
                   return unit.id;
                }
             );
-            logger.debug("@destroySquadron():    removing units {0}", unitIds);
+            logger.debug("removing units {0}", unitIds);
             Collections.cleanListOfICleanables(squad.units);
             squad.cleanup();
             // If units navigate from planet we need to refresh some getters
@@ -189,7 +187,7 @@ package controllers.units
                // the same jump. In such case ships will be removed a bit too early but players
                // might not even notice that as we have 500 ms errors anyway due to duration of effects
                && (jumpsAt == null || (squad.jumpsAtEvent.occursAt.time - jumpsAt.time) < -200)) {
-            logger.debug(
+            loggerFactory.getLogger("updateRoute").debug(
                "Received new jumpsAt {0} form server for squad {1} before the old " +
                "jumpsAt {2} was cleared. Forcing the jump (removing squad) before update.",
                jumpsAt, squad, squad.jumpsAtEvent.occursAt
@@ -228,6 +226,8 @@ package controllers.units
                }
             }
          }
+
+         const logger: ILogger = loggerFactory.getLogger("stopSquadron");
          
          if (id <= 0) {
             throwIllegalMovingSquadId(id);
@@ -235,17 +235,11 @@ package controllers.units
          ROUTES.remove(id, true);
          var squadToStop:MSquadron = SQUADS.remove(id, true);
          if (squadToStop == null) {
-            logger.warn(
-               "stopSquadron(): unable to find squad with id {0} (atLastHop: {1})",
-               id, atLastHop
-            );
+            logger.warn("unable to find squad with id {0} (atLastHop: {1})", id, atLastHop);
             return;
          }
          if (atLastHop) {
-            logger.debug(
-               "stopSquadron(): stopping squad {0} at last hop",
-               squadToStop
-            );
+            logger.debug("stopping squad {0} at last hop", squadToStop);
             squadToStop.moveToLastHop();
             // This behaviour (destruction of squad) relies on the fact that the server
             // will send units|movement *before* objects|destroyed with a route. Because it does that
@@ -253,10 +247,7 @@ package controllers.units
             // needs to be stopped in that map. If it needs to be stopped just in another map in an
             // immediate sector after jump, squad has to be destroyed because that map is not cached.
             if (squadToStop.jumpPending) {
-               logger.debug(
-                  "@stopSquadron(): squad {0} is waiting for a jump. "
-                     + "Cleaning up:", squadToStop.id
-               );
+               logger.debug("squad {0} is waiting for a jump. Cleaning up:", squadToStop.id);
                const units:Array = squadToStop.units.toArray();
                if (units.length > 0) {
                   logger.debug("   removing units: {0}", units.join(", "));
@@ -276,20 +267,14 @@ package controllers.units
                if (map != null) {
                   for each (unit in units) {
                      if (Collections.findFirstWithId(map.units,unit.id) != null) {
-                        logger.error(
-                           "   unit {0} has not been removed from map "
-                              + "units list!", unit
-                        );
+                        logger.error("   unit {0} has not been removed from map units list!", unit);
                      }
                   }
                }
                // were those units removed from the global list?
                for each (unit in units) {
                   if (ML.units.find(unit.id) != null) {
-                     logger.error(
-                        "   unit {0} has not been removed from global units list!",
-                        unit
-                     );
+                     logger.error("   unit {0} has not been removed from global units list!", unit);
                   }
                }
                squadToStop.cleanup();

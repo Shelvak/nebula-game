@@ -10,8 +10,6 @@ package components.popups
 
    import mx.collections.ArrayCollection;
    import mx.events.FlexEvent;
-   import mx.logging.ILogger;
-   import mx.logging.Log;
 
    import spark.components.Button;
    import spark.components.Group;
@@ -20,8 +18,8 @@ package components.popups
    import spark.layouts.HorizontalLayout;
    import spark.layouts.supportClasses.LayoutBase;
 
-   import utils.Objects;
    import utils.datastructures.Collections;
+   import utils.logging.Log;
 
 
    /**
@@ -38,11 +36,6 @@ package components.popups
        */
       protected static function get ML() : ModelLocator {
          return ModelLocator.getInstance();
-      }
-      
-      
-      private function get logger() : ILogger {
-         return Log.getLogger(Objects.getClassName(this, true));
       }
       
       
@@ -76,9 +69,6 @@ package components.popups
       /* ### ACTION BUTTONS ### */
       /* ###################### */
 
-      /**
-       * @param value one of <code>HorizontalAlign</code> class constants.
-       */
       protected function get actionButtonsLayout(): LayoutBase {
          const layout:HorizontalLayout = new HorizontalLayout();
          layout.horizontalAlign = HorizontalAlign.RIGHT;
@@ -142,7 +132,7 @@ package components.popups
                      actionButton.closeHandler.call(null, actionButton.button);
                   }
                   catch (err:Error) {
-                     logger.error(
+                     Log.getMethodLogger(BasePopUp, "this_clickHandler").error(
                         "Invoking handler of an action button {0} failed with the error: {1}",
                         actionButton.button, err.message
                      );

@@ -6,20 +6,20 @@ package models.chat
 
    import models.BaseModel;
    import models.ModelLocator;
-   import models.chat.MChatMember;
    import models.chat.events.IgnoredMembersEvent;
    import models.chat.events.MChatEvent;
    import models.time.MTimeEventFixedMoment;
 
    import mx.logging.ILogger;
 
-   import mx.logging.Log;
    import mx.utils.ObjectUtil;
 
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
+   import utils.logging.IMethodLoggerFactory;
+   import utils.logging.Log;
    import utils.pool.IObjectPool;
    import utils.pool.impl.StackObjectPoolFactory;
 
@@ -101,9 +101,7 @@ package models.chat
          return ModelLocator.getInstance();
       }
 
-      private function get logger(): ILogger {
-         return Log.getLogger(Objects.getClassName(this, true));
-      }
+      private const loggerFactory: IMethodLoggerFactory = Log.getMethodLoggerFactory(MChat);
 
       public function MChat() {
          _messagePool = new StackObjectPoolFactory(new MChatMessageFactory()).createPool();
@@ -803,10 +801,8 @@ package models.chat
          var channel: MChatChannel = _channels.getChannel(channelName);
          if (channel == null) {
             // Not a critical error here I suppose.
-            logger.warn(
-               "closePrivateChannel() is unable to find channel with name '{0}'. Returning.",
-               channelName
-            );
+            loggerFactory.getLogger("closePrivateChannel").warn(
+               "unable to find channel with name '{0}'. Returning.", channelName);
             return;
          }
          if (channel.isPublic) {
@@ -917,6 +913,7 @@ package models.chat
       public function receivePublicMessage(message: MChatMessage): void {
          Objects.paramNotNull("message", message);
 
+         const logger: ILogger = loggerFactory.getLogger("receivePublicMessage");
          const channel: MChatChannelPublic =
                 MChatChannelPublic(_channels.getChannel(message.channel));
          if (channel == null) {
@@ -1051,10 +1048,10 @@ package models.chat
              * This is probably not critical error since MChatChannel.messageSendFailure()
              * only returns message to the pool.
              */
-            logger.warn(
-               "messageSendFailure({0}) did not find channel '{1}'. Unable to call " +
-               "MChatChannel.messageSendFailure(). Returning MChatMessage to MChat.messagePool.",
-               message, message.channel
+            loggerFactory.getLogger("messageSendFailure").warn(
+               "Could not find channel '{0}'. Unable to call MChatChannel.messageSendFailure(). "
+                  + "Returning MChatMessage to MChat.messagePool. Message was: {1}",
+               message.channel, message
             );
             messagePool.returnObject(message);
             return;

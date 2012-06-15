@@ -6,16 +6,20 @@ package utils.datastructures
    import mx.collections.ICollectionView;
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
-   import mx.logging.ILogger;
-   import mx.logging.Log;
 
    import utils.Objects;
+   import utils.logging.IMethodLoggerFactory;
+   import utils.logging.Log;
 
 
    public class Collections
    {
-      private static function get logger(): ILogger {
-         return Log.getLogger("utils.datastructures.Collections");
+      private static var _loggerFactory: IMethodLoggerFactory = null;
+      private static function get loggerFactory(): IMethodLoggerFactory {
+         if (_loggerFactory == null) {
+            _loggerFactory = Log.getMethodLoggerFactory(Collections);
+         }
+         return _loggerFactory;
       }
 
       /**
@@ -33,9 +37,8 @@ package utils.datastructures
                list.removeAll();
             }
             catch (err: Error) {
-               logger.error(
-                  "@cleanListOfICleanables: Error while removing all items: {0}",
-                     err.message
+               loggerFactory.getLogger("cleanListOfICleanables").error(
+                  "Error while removing all items: {0}", err.message
                );
             }
          }
@@ -177,8 +180,7 @@ package utils.datastructures
        * @param list | <b>not null</b>
        * @param example | <b>not null</b>
        */
-      public static function findFirstEqualTo(list:IList,
-                                              example:IEqualsComparable): * {
+      public static function findFirstEqualTo(list: IList, example: IEqualsComparable): * {
          Objects.paramNotNull("list", list);
          Objects.paramNotNull("example", example);
          var idx:int = findFirstIndexEqualTo(list, example);
@@ -222,11 +224,8 @@ package utils.datastructures
                   "Could not find an item to remove (using testFunction)"
                );
             }
-            else
-            {
-               Log.getLogger("utils.datastructures.Collections").warn(
-                  "Object not found, could not remove"
-               );
+            else {
+               loggerFactory.getLogger("removeFirst").warn("Object not found, could not remove");
             }
             return null;
          }
@@ -254,11 +253,9 @@ package utils.datastructures
             if (!silent) {
                throw new Error("Could not find an item equal to " + example);
             }
-            else
-            {
-               Log.getLogger("utils.datastructures.Collections").warn(
-                  "Object not found, could not remove"
-               );
+            else {
+               loggerFactory.getLogger("removeFirstEqualTo").warn(
+                  "Object not found, could not remove");
             }
             return null;
          }

@@ -4,13 +4,10 @@ package controllers.objects.actions.customcontrollers
    import models.quest.Quest;
    import models.quest.events.QuestEvent;
 
-   import mx.logging.ILogger;
-
-   import mx.logging.Log;
-
    import utils.PropertiesTransformer;
-   
-   
+   import utils.logging.Log;
+
+
    public class ObjectiveProgressController extends BaseObjectController
    {
       public function ObjectiveProgressController() {
@@ -28,23 +25,18 @@ package controllers.objects.actions.customcontrollers
          pQuest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
       }
 
-      private function get logger(): ILogger
-      {
-         return Log.getLogger(
-            "controllers.objects.actions.customcontrollers.ObjectiveProgressController");
-      }
-      
-      public override function objectDestroyed(objectSubclass:String, objectId:int, reason:String) : void {
-         var quest:Quest = ML.quests.findQuestByProgress(objectId);
-         if (quest == null)
-         {
-            logger.warn("Quest with objective progress id " +
-               objectId + " was not found");
+      public override function objectDestroyed(
+         objectSubclass: String, objectId: int, reason: String): void {
+         var quest: Quest = ML.quests.findQuestByProgress(objectId);
+         if (quest == null) {
+            Log.getMethodLogger(this, "objectDestroyed").warn(
+               "Quest with objective progress id {0} was not found", objectId);
             return;
          }
-         var objective:QuestObjective = quest.findObjectiveByProgress(objectId);
-         if (objective == null)
+         var objective: QuestObjective = quest.findObjectiveByProgress(objectId);
+         if (objective == null) {
             throw new Error("quest objective with progress id " + objectId + " was not found");
+         }
          objective.completed = objective.count;
          quest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
       }

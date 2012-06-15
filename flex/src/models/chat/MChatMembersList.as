@@ -11,9 +11,10 @@ package models.chat
    import mx.utils.ObjectUtil;
 
    import utils.Events;
-
    import utils.Objects;
    import utils.StringUtil;
+   import utils.logging.IMethodLoggerFactory;
+   import utils.logging.Log;
 
 
    [Event(name="membersFilterChange", type="models.chat.events.MChatChannelEvent")]
@@ -31,11 +32,13 @@ package models.chat
       private static function get MCHAT() : MChat {
          return MChat.getInstance();
       }
-      
-      
-      private var _membersHash:Object;
-      private var _channel:MChatChannel;
-      
+
+
+      private const loggerFactory: IMethodLoggerFactory =
+         Log.getMethodLoggerFactory(MChatMembersList);
+
+      private var _membersHash: Object;
+      private var _channel: MChatChannel;
       
       public function MChatMembersList(channel:MChatChannel = null) {
          super(null);
@@ -63,16 +66,13 @@ package models.chat
        * Adds given <code>MChatMember</code> to the list.
        * 
        * @param member instance of <code>MChatMember</code> to add. <b>Not null</b>.
-       * 
-       * @throws ArgumentError if given <code>MChatMember</code> is already in
-       * the list.
        */
       public function addMember(member: MChatMember): void {
          Objects.paramNotNull("member", member);
          if (containsMember(member.id)) {
-            throw new ArgumentError(
-               "Member " + member + " is already in the list"
-            );
+            loggerFactory.getLogger("addMember")
+               .warn("Member {0} is already in the list. Ignoring.", member);
+            return;
          }
          _membersHash[member.id] = member;
          addItem(member);
@@ -91,9 +91,9 @@ package models.chat
          Objects.paramNotNull("member", member);
          var toRemove: MChatMember = getMember(member.id);
          if (toRemove == null) {
-            throw new ArgumentError(
-               "Unable to remove: member " + member + " is not in the list"
-            );
+            loggerFactory.getLogger("removeMember")
+               .warn("Member {0} is not in the list. Ignoring", member);
+            return;
          }
          removeItemAt(getItemIndex(toRemove));
          delete _membersHash[toRemove.id];
