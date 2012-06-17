@@ -66,8 +66,6 @@ package controllers.startup
    import models.quest.MainQuestSlideFactory;
    import models.time.MTimeEventFixedMoment;
 
-   import mx.logging.ILogger;
-   import mx.logging.Log;
    import mx.logging.LogEventLevel;
    import mx.logging.targets.TraceTarget;
    import mx.managers.ToolTipManager;
@@ -82,16 +80,13 @@ package controllers.startup
    import utils.execution.GameLogicExecutionManager;
    import utils.execution.JobExecutorsManager;
    import utils.logging.InMemoryTarget;
+   import utils.logging.Log;
    import utils.logging.MessagesLogger;
    import utils.remote.ServerProxyInstance;
 
 
    public final class StartupManager
    {
-      private static function get logger() : ILogger {
-         return Log.getLogger("controllers.startup.StartupManager");
-      }
-      
       private static function get ML() : ModelLocator
       {
          return ModelLocator.getInstance();
@@ -186,7 +181,8 @@ package controllers.startup
        * Resets the application: clears the state and switches login screen.
        */
       public static function resetApp() : void {
-         logger.info("-------------- APPLICATION RESET --------------");
+         Log.getMethodLogger(StartupManager, "resetApp")
+            .info("-------------- APPLICATION RESET --------------");
          StartupInfo.getInstance().initializationComplete = false;
          new GlobalEvent(GlobalEvent.APP_RESET);
          JobExecutorsManager.getInstance().stopAll();
