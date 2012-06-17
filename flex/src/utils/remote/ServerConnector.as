@@ -246,12 +246,34 @@ package utils.remote
          {
             disconnect();
          }
-         log.info('reestablishment socket received data, switching to reestablished socket');
-         _socket = reestablishmentSocket;
-         removeReestablishmentSocketHandlers();
-         reestablishmentSocket = null;
-         addSocketEventHandlers();
-         socket_socketDataHandler(event);
+         var success: Boolean = true;
+         _buffer += _socket.readUTFBytes(_socket.bytesAvailable);
+         var index: int = _buffer.indexOf("\n");
+         while (index != -1) {
+            const msg: String = _buffer.substring(0, index);
+            msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
+            const rmo: ServerRMO = ServerRMO.parse(msg);
+            if (rmo.action == "players|disconnect")
+            {
+               dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
+               success = false;
+            }
+            else
+            {
+               _timeSynchronizer.synchronize(rmo);
+               _unprocessedMessages.push(rmo);
+               _buffer = _buffer.substr(index + 1);
+               index = _buffer.indexOf("\n");
+            }
+         }
+         if (success)
+         {
+            log.info('reestablishment socket received data, switching to reestablished socket');
+            _socket = reestablishmentSocket;
+            removeReestablishmentSocketHandlers();
+            reestablishmentSocket = null;
+            addSocketEventHandlers();
+         }
       }
 
       private function reestablish_closeHandler(event: Event): void {
