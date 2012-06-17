@@ -196,10 +196,11 @@ package utils.remote
 
       public function connect(host: String, port: int): void {
          _connecting = true;
-         if (socketEventsRegistered)
+         if (!socketEventsRegistered)
          {
-            _socket.connect(host, port);
+            addSocketEventHandlers();
          }
+         _socket.connect(host, port);
       }
 
       public function disconnect(): void {
