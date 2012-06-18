@@ -248,7 +248,7 @@ package utils.remote
             disconnect();
          }
          var success: Boolean = true;
-         _buffer += _socket.readUTFBytes(_socket.bytesAvailable);
+         _buffer += reestablishmentSocket.readUTFBytes(reestablishmentSocket.bytesAvailable);
          var index: int = _buffer.indexOf("\n");
          while (index != -1) {
             const msg: String = _buffer.substring(0, index);
