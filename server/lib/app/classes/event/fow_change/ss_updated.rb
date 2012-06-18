@@ -1,8 +1,7 @@
 # Notifies about updated solar system.
 class Event::FowChange::SsUpdated < Event::FowChange::SolarSystem
   def initialize(solar_system_id, players, metadatas)
-    typesig binding, Fixnum, Fixnum, Fixnum, Fixnum, Array,
-      SolarSystem::Metadatas
+    typesig binding, Fixnum, Array, SolarSystem::Metadatas
 
     @solar_system_id = solar_system_id
     @player_ids = players.map(&:id)

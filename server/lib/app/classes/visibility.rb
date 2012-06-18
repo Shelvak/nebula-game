@@ -1,9 +1,10 @@
 module Visibility
+  # TODO: spec
   # TODO: doc
   def self.track_location_changes(location_point, &block)
-    typesig binding, LocationPoint
+    typesig binding, LocationPoint, Proc
 
-    return yield unless location_point.type == Location::SOLAR_SYSTEM ||
+    return block.call unless location_point.type == Location::SOLAR_SYSTEM ||
       location_point.type == Location::SS_OBJECT
 
     solar_system_id = ss_previous_player_ids = previous_metadatas = ret_val =
@@ -57,7 +58,8 @@ module Visibility
 
       EventBroker.fire(
         Event::FowChange::SsCreated.new(
-          solar_system_id, x, y, kind, players, current_metadatas
+          solar_system_id, x, y, kind, player_minimal, players,
+          current_metadatas
         ),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
@@ -99,52 +101,23 @@ module Visibility
     ret_val
   end
 
-  # TODO: doc
-  def self.track_movement_changes(source_location_point, target_location_point)
-    typesig binding, LocationPoint, LocationPoint
+  # Tracks visibility changes for movement. Given two +LocationPoint+s choose
+  # one that would yield more data and pass it to #track_location_changes.
+  def self.track_movement_changes(
+    source_location_point, target_location_point, &block
+  )
+    typesig binding, LocationPoint, LocationPoint, Proc
 
     if source_location_point.type == Location::SS_OBJECT
-      track_location_changes(source_location_point)
+      track_location_changes(source_location_point, &block)
     elsif target_location_point.type == Location::SS_OBJECT
-      track_location_changes(target_location_point)
+      track_location_changes(target_location_point, &block)
     elsif source_location_point.type == Location::SOLAR_SYSTEM
-      track_location_changes(source_location_point)
+      track_location_changes(source_location_point, &block)
     elsif target_location_point.type == Location::SOLAR_SYSTEM
-      track_location_changes(target_location_point)
+      track_location_changes(target_location_point, &block)
+    else
+      block.call
     end
-  end
-
-
-  # Checks if any of the given _locations_ is a planet. If so it
-  # calculates observer ids before and after block execution. If they are
-  # changed - dispatches changed event for that planet.
-  def changing_viewable(locations)
-    # Check if any of these locations are planets.
-    locations.each do |location|
-      if location.type == Location::SS_OBJECT
-
-      end
-    end
-
-    # If none of the locations were planets, just yield the block.
-    yield
-  end
-
-  def tracking_changes(solar_system_id, update_metadata=false)
-    typesig binding, Fixnum
-
-    previous_player_ids = observer_player_ids(solar_system_id)
-    ret_val = yield
-    current_player_ids = observer_player_ids(solar_system_id)
-
-    # Some changes occurred.
-    if previous_player_ids != current_player_ids
-      created = current_player_ids - previous_player_ids
-      destroyed = previous_player_ids - current_player_ids
-
-
-    end
-
-    ret_val
   end
 end

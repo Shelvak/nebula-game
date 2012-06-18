@@ -178,51 +178,28 @@ class SolarSystem < ActiveRecord::Base
       Building::Radar.for_player(player_id).active.count
     } > 0
 
-    owner_fse = without_locking do
-      fow_ss_entries.where(:player_id => player_id).first
-    end
-    raise RuntimeError.new(
-      "Cannot find owner FSE for player #{player_id}!"
-    ) if owner_fse.nil?
-
-    entries = without_locking do
-      FowGalaxyEntry.
-        select("counter, player_id, alliance_id").
-        where(:galaxy_id => galaxy_id).
-        where("player_id != ? OR player_id IS NULL", player_id).
-        where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
-        c_select_all
-    end.each_with_object({}) do |row, hash|
-      # Same owner can have several FGEs covering same area, so we need to
-      # sum their counters, instead of creating several FSEs.
-      owner = {
-        :player_id => row['player_id'],
-        :alliance_id => row['alliance_id']
-      }
-      # By idea player is not in the alliance so we don't need to create
-      # alliance entries or view him from a different perspective instead of
-      # enemy.
-      hash[owner] ||= FowSsEntry.new(
-        :solar_system_id => id,
-        :counter => 0,
-        :player_id => row['player_id'],
-        :alliance_id => row['alliance_id'],
-        :enemy_planets => owner_fse.player_planets,
-        :enemy_ships => owner_fse.player_ships
+    metadatas = SolarSystem::Metadatas.new(id)
+    players = without_locking do
+      Player.find(
+        FowGalaxyEntry.
+          select("player_id").
+          where(galaxy_id: galaxy_id).
+          where("player_id != ?", player_id).
+          where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
+          c_select_values
       )
-      hash[owner].counter += row['counter']
-    end.values
+    end
 
     self.x, self.y = x, y
     save!
 
-    unless entries.blank?
-      BulkSql::FowSsEntry.save(entries)
-      player = Player.minimal(player_id)
+    unless players.blank?
       # Dispatch updates for other connected players. We don't dispatch to self
-      # because this method does not work if player is connected.
+      # because this method does not work if player is logged in.
       EventBroker.fire(
-        Event::FowChange::SsCreated.new(id, x, y, kind, player, entries),
+        Event::FowChange::SsCreated.new(
+          id, x, y, kind, Player.minimal(player_id), players, metadatas
+        ),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
       )
