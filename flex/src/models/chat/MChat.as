@@ -1,5 +1,6 @@
 package models.chat
 {
+   import controllers.startup.StartupInfo;
    import controllers.ui.NavigationController;
 
    import interfaces.IUpdatable;
@@ -13,6 +14,8 @@ package models.chat
    import mx.logging.ILogger;
 
    import mx.utils.ObjectUtil;
+
+   import namespaces.client_internal;
 
    import utils.Objects;
    import utils.SingletonFactory;
@@ -186,6 +189,11 @@ package models.chat
       /* ###################### */
 
       private var _jsCallbacksInvoker: IChatJSCallbacksInvoker;
+
+      client_internal var _initialized: Boolean = false;
+      private function get initialized(): Boolean {
+         return client_internal::_initialized;
+      }
       
       /**
        * Initializes the chat:
@@ -247,6 +255,8 @@ package models.chat
          }
 
          selectChannel(MChatChannel(_channels.getItemAt(0)).name);
+
+         client_internal::_initialized = true;
       }
       
       
@@ -269,6 +279,7 @@ package models.chat
          _visible = false;
          _selectedChannel = null;
          _recentPrivateChannel = null;
+         client_internal::_initialized = false;
          
          // need events for these
          setAllianceChannelOpen(false);
@@ -585,6 +596,13 @@ package models.chat
       public function channelJoin(channelName: String,
                                   member: MChatMember): void {
          Objects.paramNotNull("channelName", channelName);
+
+         // Server sometimes sends chat|join messages before chat|index.
+         // So when chat|index hits the processor, initialize() tries to create channels that
+         // already exist.
+         if (!initialized && StartupInfo.relaxedServerMessagesHandlingMode) {
+            return;
+         }
 
          var existingMember: MChatMember = _members.getMember(member.id);
          if (existingMember == null) {
