@@ -12,7 +12,7 @@ package models.solarsystem
    {
       [Required]
       public var playerPlanets: Boolean = false;
-      
+
       
       [Required]
       public var playerShips: Boolean = false;
