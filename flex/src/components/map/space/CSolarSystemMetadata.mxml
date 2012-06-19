@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:solarsystem="components.gameobjects.solarsystem.*"
+         xmlns:space="components.map.space.*"
+         minWidth="0" minHeight="0">
+   <fx:Script>
+      <![CDATA[
+      import models.solarsystem.MSSMetadata;
+      import models.solarsystem.SSMetadataType;
+
+
+      [Bindable]
+      public var model: MSSMetadata;
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="left"/>
+   </s:layout>
+   <solarsystem:SSStatusIcon
+      explanationVisible="true" type="{SSMetadataType.PLAYER_PLANETS}"
+      visible="{model.playerPlanets}" includeInLayout="{model.playerPlanets}"/>
+   <solarsystem:SSStatusIcon
+      explanationVisible="true" type="{SSMetadataType.PLAYER_SHIPS}"
+      visible="{model.playerShips}" includeInLayout="{model.playerShips}"/>
+   <space:CSingleOwnerAssets model="{new CSingleOwnerAssetsM(model.alliesMetadata)}"/>
+   <space:CSingleOwnerAssets model="{new CSingleOwnerAssetsM(model.napsMetadata)}"/>
+   <space:CSingleOwnerAssets model="{new CSingleOwnerAssetsM(model.enemiesMetadata)}"/>
+</s:Group>

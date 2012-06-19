@@ -133,7 +133,7 @@ package models.solarsystem
 
       public function get canInviteOwnerToAlliance(): Boolean {
          return _player != null
-                   && !metadata.alliancePlanets
+                   && !metadata.alliesMetadata.hasPlanets
                    && !_player.equals(ML.player)
                    &&  ML.player.canInviteToAlliance;
       }

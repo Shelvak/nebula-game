@@ -11,6 +11,7 @@
       import models.location.LocationMinimal;
       import models.solarsystem.MSSObject;
       import models.solarsystem.MSolarSystem;
+      import models.solarsystem.SSMetadataType;
 
       import utils.DateUtil;
       import utils.locale.Localizer;
@@ -52,21 +53,7 @@
                   source="{ss.imageData}" fillMode="scale"/>
    <s:Label text="{ss.name}"/>
    <s:Label text="{getSectorLabel(ss)}"/>
-   <s:Group minWidth="0" minHeight="0">
-      <s:layout>
-         <s:VerticalLayout horizontalAlign="left"/>
-      </s:layout>
-      <solarsystem:SSShipsStatusIcons explanationVisible="true" solarSystem="{ss}">
-         <solarsystem:layout>
-            <s:VerticalLayout horizontalAlign="left" gap="2"/>
-         </solarsystem:layout>
-      </solarsystem:SSShipsStatusIcons>
-      <solarsystem:SSPlanetsStatusIcons explanationVisible="true" solarSystem="{ss}">
-         <solarsystem:layout>
-            <s:VerticalLayout horizontalAlign="left" gap="2"/>
-         </solarsystem:layout>
-      </solarsystem:SSPlanetsStatusIcons>
-   </s:Group>
+   <space:CSolarSystemMetadata model="{ss.metadata}"/>
    
    <s:Label id="lblShield" text="{getString('label.shield')}"
             visible="{ss.isShielded}" includeInLayout="{ss.isShielded}"

@@ -210,7 +210,7 @@ package tests.maps
          ss.y = y;
          ss.metadata = new MSSMetadata();
          ss.metadata.playerShips = playerShips;
-         ss.metadata.enemyShips = enemyShips;
+         ss.metadata.enemiesWithShips = enemyShips ? ["test"] : [];
          return ss;
       }
 

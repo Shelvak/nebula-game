@@ -1,66 +1,56 @@
 package models.solarsystem
 {
    import models.BaseModel;
+   import models.Owner;
 
-   [Bindable]
-   /**
-    * Aggregates solar system metadata boolean variables. Variables indicate
-    * if player, allies of the player or enemy players have ships or planets
-    * in the solar system.
-    */ 
+
    public class MSSMetadata extends BaseModel
    {
       [Required]
       public var playerPlanets: Boolean = false;
-      
-      
+
       [Required]
       public var playerShips: Boolean = false;
-      
-      
-      [Required]
-      public var alliancePlanets: Boolean = false;
-      
-      
-      [Required]
-      public var allianceShips: Boolean = false;
-      
-      
-      [Required]
-      public var enemyPlanets: Boolean = false;
-      
-      
-      [Required]
-      public var enemyShips: Boolean = false;
-      
-      
-      [Required]
-      public var napPlanets: Boolean = false;
-      
-      
-      [Required]
-      public var napShips: Boolean = false;
-      
-      
-      public function reset() : void
-      {
-         playerPlanets =
-         playerShips =
-         alliancePlanets = 
-         allianceShips =
-         enemyPlanets = 
-         enemyShips = 
-         napPlanets = 
-         napShips = false;
-      }
-      
+
       /**
        * Does the player has any ships or planets in a solar system?
-       */ 
+       */
       public function get playerAssets() : Boolean {
          return playerPlanets || playerShips;
       }
-      
+
+      [Required(elementType="models.player.PlayerMinimal")]
+      public var alliesWithPlanets: Array = [];
+
+      [Required(elementType="models.player.PlayerMinimal")]
+      public var alliesWithShips: Array = [];
+
+      public function get alliesMetadata(): MSSMetadataOfOwner {
+         return new MSSMetadataOfOwner(Owner.ALLY, alliesWithPlanets, alliesWithShips);
+      }
+
+
+      [Required(elementType="models.player.PlayerMinimal")]
+      public var enemiesWithPlanets: Array = [];
+
+      [Required(elementType="models.player.PlayerMinimal")]
+      public var enemiesWithShips: Array = [];
+
+      public function get enemiesMetadata(): MSSMetadataOfOwner {
+         return new MSSMetadataOfOwner(Owner.ENEMY, enemiesWithPlanets, enemiesWithShips)
+      }
+
+
+      [Required(elementType="models.player.PlayerMinimal")]
+      public var napsWithPlanets: Array = [];
+
+      [Required(elementType="models.player.PlayerMinimal")]
+      public var napsWithShips: Array = [];
+
+      public function get napsMetadata(): MSSMetadataOfOwner {
+         return new MSSMetadataOfOwner(Owner.NAP, napsWithPlanets, napsWithShips)
+      }
+
       
       /* ########################### */
       /* ### BaseModel OVERRIDES ### */
@@ -70,12 +60,12 @@ package models.solarsystem
          return "[class: " + className +
                 ", playerPlanets: " + playerPlanets +
                 ", playerShips: " + playerShips +
-                ", alliancePlanets: " + alliancePlanets +
-                ", allianceShips: " + allianceShips +
-                ", napPlanets: " + napPlanets +
-                ", napShips: " + napShips +
-                ", enemyPlanets: " + enemyPlanets +
-                ", enemyShips: " + enemyShips + "]";
+                ", alliesWithPlanets: " + alliesWithPlanets +
+                ", alliesWithShips: " + alliesWithShips +
+                ", napsWithPlanets: " + napsWithPlanets +
+                ", napsWithShips: " + napsWithShips +
+                ", enemiesWithPlanets: " + enemiesWithPlanets +
+                ", enemiesWithShips: " + enemiesWithShips + "]";
       }
    }
 }

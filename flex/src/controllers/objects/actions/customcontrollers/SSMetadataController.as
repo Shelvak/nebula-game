@@ -22,8 +22,7 @@ package controllers.objects.actions.customcontrollers
                                              reason: String): void {
          const ss: MSolarSystem = ML.latestGalaxy.getSSById(object.id);
          Objects.notNull(ss, "Solar system with id " + object["id"] + " not found.");
-         const metadata: MSSMetadata = ss.metadata;
-         Objects.update(metadata, object);
+         ss.metadata = Objects.create(MSSMetadata, object);
          ML.latestGalaxy.refreshSolarSystemsWithPlayer();
       }
       
@@ -51,10 +50,10 @@ package controllers.objects.actions.customcontrollers
       public override function objectCreated(objectSubclass: String,
                                              object: Object,
                                              reason: String): * {
-         const ssMetadata: MSSMetadata = Objects.create(MSSMetadata, object);
+         const metadata: MSSMetadata = Objects.create(MSSMetadata, object);
          const ss: MSolarSystem = new MSolarSystem();
-         ss.id = ssMetadata.id;
-         ss.metadata = ssMetadata;
+         ss.id = metadata.id;
+         ss.metadata = metadata;
          ss.x = object["x"];
          ss.y = object["y"];
          ss.kind = object["kind"];
