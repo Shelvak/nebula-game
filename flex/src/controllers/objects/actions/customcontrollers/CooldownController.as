@@ -46,5 +46,9 @@ package controllers.objects.actions.customcontrollers
          
          return cooldown;
       }
+
+      public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
+         objectCreated(objectSubclass, object, reason);
+      }
    }
 }

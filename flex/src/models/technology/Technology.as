@@ -21,16 +21,13 @@ package models.technology
    import models.parts.Upgradable;
    import models.parts.events.UpgradeEvent;
    
-   import mx.logging.Log;
-   
    import utils.DateUtil;
    import utils.Objects;
    import utils.StringUtil;
-   import utils.StringUtil;
-   import utils.StringUtil;
    import utils.locale.Localizer;
-   
-   
+   import utils.logging.Log;
+
+
    /**
     * Dispatched on the model, when upgrade of technology model
     * has finished.
@@ -246,7 +243,7 @@ package models.technology
       }
       
       [Bindable(event="validationChange")]
-      public function get groupForbiden(): Boolean
+      public function get groupForbidden(): Boolean
       {
          var requirements: Object = Config.getTechnologyRequirements(type);
          for (var requirement: String in requirements)
@@ -262,7 +259,7 @@ package models.technology
                THIS IS TEMPORARY AND NEEDS TO BE CHANGED
                2011.03.01
                */
-               Log.getLogger(Objects.getClassName(Technology, true))
+               Log.getMethodLogger(Technology, "groupForbidden")
                   .warn("Technology {0} not found in config!", requirement);
                return false;
             }

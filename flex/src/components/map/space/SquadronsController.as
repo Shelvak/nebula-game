@@ -9,8 +9,6 @@ package components.map.space
 
    import interfaces.ICleanable;
 
-   import models.Owner;
-
    import models.events.BaseModelEvent;
    import models.location.LocationMinimal;
    import models.map.MMap;
@@ -24,16 +22,15 @@ package components.map.space
    import mx.collections.ListCollectionView;
    import mx.events.EffectEvent;
    import mx.logging.ILogger;
-   import mx.logging.Log;
 
    import spark.components.Group;
    import spark.effects.Fade;
    import spark.effects.Move;
    import spark.primitives.BitmapImage;
 
-   import utils.Objects;
    import utils.components.DisplayListUtil;
    import utils.datastructures.Collections;
+   import utils.logging.Log;
 
 
    public class SquadronsController implements ICleanable
@@ -43,10 +40,6 @@ package components.map.space
 
       private function get ORDERS_CTRL(): OrdersController {
          return OrdersController.getInstance();
-      }
-
-      private function get logger(): ILogger {
-         return Log.getLogger(Objects.getClassName(this, true));
       }
 
       private var _mapM: MMap;
@@ -250,15 +243,16 @@ package components.map.space
             }
          }
       }
-      
-      private function selectSquadWithUnits(units:IList) : void {
+
+      private function selectSquadWithUnits(units: IList): void {
+         const logger: ILogger = Log.getMethodLogger(this, "selectSquadWithUnits");
          const unit: Unit = Unit(units.getItemAt(0));
          if (_mapM.squadrons == null) {
             logger.warn(
-               "@selectSquadWithUnits(): Map model {0} most likely has been "
-               + "cleaned up and _mapM.squadrons is null. Unable to select units:"
-               + "\n   {1}"
-               + "\nReturning",
+               "Map model {0} most likely has been cleaned up and _mapM.squadrons is null. "
+                  + "Unable to select units:"
+                  + "\n   {1}"
+                  + "\nReturning",
                _mapM, units.toArray().join("   \n")
             );
             return;
@@ -271,7 +265,7 @@ package components.map.space
             function (squad: MSquadron): Boolean {
                if (squad.units.length == 0) {
                   logger.warn(
-                     "@selectSquadWithUnits()=> Collections.findFirst(=> testFunction):"
+                     "=> Collections.findFirst(=> testFunction):"
                         + "\n   Squad {0} has most likely been cleaned up and has no units."
                         + "\n   Assuming the squad should not be selected.",
                      squad
@@ -286,8 +280,7 @@ package components.map.space
          }
          else {
             logger.warn(
-               "@selectSquadWithUnits(): Unable to find squad with unit {0}."
-                  + "Deselecting currently selected squad.", unit
+               "Unable to find squad with unit {0}. Deselecting currently selected squad.", unit
             );
             deselectSelectedSquadron();
          }

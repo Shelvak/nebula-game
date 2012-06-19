@@ -21,9 +21,9 @@ package models.movement
    import mx.collections.IList;
    import mx.collections.ListCollectionView;
    import mx.logging.ILogger;
-   import mx.logging.Log;
 
    import utils.Objects;
+   import utils.logging.Log;
 
 
    /**
@@ -52,11 +52,6 @@ package models.movement
                                                        ILocationUser,
                                                        IUpdatable
    {
-      private function get logger() : ILogger {
-         return Log.getLogger("MOVEMENT");
-      }
-      
-      
       public function MSquadron(): void {
          super();
          units.list = ML.units;
@@ -415,6 +410,8 @@ package models.movement
             return currentHop;
          
          hop = null;
+         const logger: ILogger = Log.getMethodLogger(MSquadron, "moveToNextHop");
+
          // TODO: is this actually ever executed?
          // jump between maps: don't need dispatching any events
          if (endHop.location.type != startHop.location.type ||
