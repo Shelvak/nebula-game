@@ -8,6 +8,9 @@
       public var model: CSingleOwnerAssetsM;
       ]]>
    </fx:Script>
+   <s:layout>
+      <s:VerticalLayout horizontalAlign="justify"/>
+   </s:layout>
    <space:CSolarSystemAssets model="{model.planets}"/>
    <space:CSolarSystemAssets model="{model.ships}"/>
 </s:Group>

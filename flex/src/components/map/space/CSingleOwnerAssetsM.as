@@ -25,7 +25,7 @@ package components.map.space
       }
 
       private function assetType(constantPostfix: String): String {
-         return SSMetadataType.getConstantNamePrefixFor(_metadata.owner) + constantPostfix;
+         return SSMetadataType[SSMetadataType.getConstantNamePrefixFor(_metadata.owner) + constantPostfix];
       }
    }
 }

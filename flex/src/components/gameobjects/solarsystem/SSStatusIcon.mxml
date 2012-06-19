@@ -32,7 +32,7 @@
       ]]>
    </fx:Script>
    <base:layout>
-      <s:HorizontalLayout gap="2"/>
+      <s:HorizontalLayout gap="4" verticalAlign="middle"/>
    </base:layout>
    <s:BitmapImage source="{IMG.getImage(AssetNames.getSSStatusIconName(type))}"
                   smooth="true"/>

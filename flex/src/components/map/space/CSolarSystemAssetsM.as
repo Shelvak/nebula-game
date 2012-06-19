@@ -1,14 +1,11 @@
 package components.map.space
 {
-   import flash.display.BitmapData;
+   import models.player.PlayerMinimal;
 
    import mx.collections.ArrayList;
    import mx.collections.IList;
 
    import utils.Objects;
-   import utils.assets.AssetNames;
-   import utils.assets.ImagePreloader;
-   import utils.locale.Localizer;
 
 
    public class CSolarSystemAssetsM
@@ -28,15 +25,11 @@ package components.map.space
       }
 
       public function get dataProvider(): IList {
-         return new ArrayList(_players);
-      }
-
-      public function get icon(): BitmapData {
-         return ImagePreloader.getInstance().getImage(AssetNames.getSSStatusIconName(_assetType));
-      }
-
-      public function get tooltip(): String {
-         return Localizer.string('Galaxy', 'label.' + _assetType);
+         return new ArrayList(_players.map(
+            function (player: PlayerMinimal, index: int, array: Array): MSingleAsset {
+               return new MSingleAsset(_assetType, player);
+            }
+         ));
       }
    }
 }
