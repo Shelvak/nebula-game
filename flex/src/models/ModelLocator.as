@@ -47,7 +47,7 @@ package models
    
    /**
     * A class that implements "model locator" pattern (idea more precisely) from the
-    * Cairngom micro-architecture framework.
+    * Cairngorm micro-architecture framework.
     * 
     * <p>This class should be treated as a singleton and instance of it should
     * be retrieved either using static method <code>getInstance()</code> or
@@ -73,8 +73,6 @@ package models
          message += StartupManager.inMemoryLog.getContent("\n") + "\n\n";
 
          const dateNow: Date = new Date();
-         const dateFmt: DateFormatter = new DateFormatter();
-         dateFmt.formatString = "YYYY-MM-DD JJ:NN:SS";
          message += StringUtil.substitute(
             "Lowest observed communications latency: {0}\n",
             ServerConnector(ServerProxyInstance.getInstance()).client_internal::lowestObservedLatency
@@ -86,11 +84,10 @@ package models
             "Local machine timezone offset: {0}\n", dateNow.timezoneOffset
          );
          message += StringUtil.substitute(
-            "Local machine time: {0}\n", dateFmt.format(dateNow)
+            "Local machine time (UTC): {0}\n", dateNow.toUTCString()
          );
          message += StringUtil.substitute(
-            "Server machine time: {0}\n\n",
-            dateFmt.format(DateUtil.getServerTime(dateNow))
+            "Server machine time (UTC): {0}\n\n", DateUtil.getServerTime(dateNow).toUTCString()
          );
 
          message += "Player:\n" + player + "\n\n";

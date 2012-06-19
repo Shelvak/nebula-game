@@ -140,7 +140,6 @@
          EventBroker.unsubscribe(GBuildingEvent.MOVE_CONFIRM,
                                  buildingMovedHandler);
          EventBroker.unsubscribe(GlobalEvent.APP_RESET, removeEventListeners);
-         purchasePending = false;
       }
 
       private function buildingMovedHandler(e: GBuildingEvent): void
@@ -191,9 +190,6 @@
       private static function get IMG(): ImagePreloader {
          return ImagePreloader.getInstance();
       }
-
-      [Bindable]
-      private var purchasePending: Boolean = false;
 
       private function refreshUpgradeState(e: Event = null): void {
          if (ML.latestPlanet) {
@@ -282,7 +278,6 @@
       }
 
       private function removePurchacePending(e: Event): void {
-         purchasePending = false;
          EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED,
                                  removePurchacePending);
          facility.removeEventListener(BuildingEvent.QUERY_CHANGE,
@@ -290,7 +285,6 @@
       }
 
       protected function bButton_clickHandler(event: MouseEvent): void {
-         purchasePending = true;
          EventBroker.subscribe(GObjectEvent.OBJECT_APPROVED,
                                removePurchacePending);
          facility.addEventListener(BuildingEvent.QUERY_CHANGE,
@@ -390,7 +384,7 @@
       }
       ]]>
    </fx:Script>
-   <base:SpinnerContainer busy="{purchasePending}" top="0" left="0" right="0" bottom="0"  timeoutEnabled="false">
+   <s:Group top="0" left="0" right="0" bottom="0">
       
       <s:Group rollOver="rolledOver()" 
                rollOut="
@@ -490,5 +484,5 @@
                text="{getString('label.technologyNeeded')}"
                fontSize="12" fontWeight="bold" color="#eec500"
                alpha="{isValid?0:1}" id="lblValidation"/>
-   </base:SpinnerContainer>
+   </s:Group>
 </s:ItemRenderer>

@@ -124,8 +124,8 @@ class SsObject::Planet < SsObject
         # Player was passed.
         resolver = StatusResolver.new(resolver) if resolver.is_a?(Player)
         additional["status"] = resolver.status(player_id)
-        additional["viewable"] = ! (
-          observer_player_ids & resolver.friendly_ids).blank?
+        additional["viewable"] =
+          ! (observer_player_ids & resolver.friendly_ids).blank?
       end
     end
     
@@ -140,11 +140,9 @@ class SsObject::Planet < SsObject
 
   # Returns player ids which can look into this planet.
   def observer_player_ids
-    without_locking do
-      Player.find(
-        (Unit.player_ids_in_location(self) | [player_id]).compact
-      ).map(&:friendly_ids).flatten.uniq
-    end
+    player_ids = Unit.player_ids_in_location(self)
+    player_ids |= [player_id] unless player_id.nil?
+    Player.join_alliance_ids(player_ids)
   end
 
   # #metal=(value)

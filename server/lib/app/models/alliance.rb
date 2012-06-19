@@ -69,21 +69,22 @@ class Alliance < ActiveRecord::Base
   end
 
   # Returns alliance IDS for given players. Does not include nil.
-  # TODO: spec
   def self.alliance_ids_for(player_ids)
-    Player.
-      select("DISTINCT(`alliance_id`)").
-      where(id: player_ids).
-      where("`alliance_id` IS NOT NULL").
-      c_select_values.map(&:to_i)
+    without_locking do
+      Player.
+        select("DISTINCT(`alliance_id`)").
+        where(id: player_ids).
+        where("`alliance_id` IS NOT NULL").
+        c_select_values
+    end
   end
 
   # Returns +Array+ of +Player+ ids who are in _alliance_ids_.
   # _alliance_ids_ can be Array or Fixnum.
   def self.player_ids_for(alliance_ids)
     without_locking do
-      Player.select("id").where(:alliance_id => alliance_ids).c_select_values
-    end.map(&:to_i)
+      Player.select("id").where(alliance_id: alliance_ids).c_select_values
+    end
   end
 
   # Returns +Hash+ of {id => name} pairs.
@@ -98,17 +99,18 @@ class Alliance < ActiveRecord::Base
   # Returns non-ally players which own planets and we can see them for _player_.
   def self.visible_enemy_player_ids(alliance_id)
     ally_ids = player_ids_for(alliance_id)
+    player = Player.find(ally_ids.first)
 
-    solar_system_ids = without_locking do
-      FowSsEntry.
-        select("solar_system_id").
-        where(:alliance_id => alliance_id, :enemy_planets => true).
-        c_select_values
+    solar_system_ids = SolarSystem.visible_for(player).each_with_object([]) do
+      |hash, ids|
+
+      ids << hash[:solar_system].id \
+        unless hash[:metadata][:enemies_with_planets].blank?
     end
     player_ids = SsObject::Planet.
       select("DISTINCT(player_id)").
       where("player_id IS NOT NULL").
-      where(:solar_system_id => solar_system_ids)
+      where(solar_system_id: solar_system_ids)
     player_ids = player_ids.where("player_id NOT IN (?)", ally_ids) \
       unless ally_ids.blank?
     player_ids = without_locking { player_ids.c_select_values }

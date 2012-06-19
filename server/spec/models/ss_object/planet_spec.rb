@@ -627,48 +627,54 @@ describe SsObject::Planet do
   end
 
   describe "#observer_player_ids" do
-    before(:all) do
-      @alliance = Factory.create :alliance
-      @player = Factory.create :player, :alliance => @alliance
-      @ally = Factory.create :player, :alliance => @alliance
-      
-      @enemy_allliance = Factory.create(:alliance)
-      @enemy_with_units = Factory.create :player, 
-        :alliance => @enemy_allliance
-      @enemy_ally = Factory.create :player, 
-        :alliance => @enemy_allliance
-      @enemy = Factory.create :player
+    let(:alliance) { create_alliance }
+    let(:galaxy) { alliance.galaxy }
+    let(:player) { alliance.owner }
+    let(:ally) { Factory.create(:player, galaxy: galaxy, alliance: alliance) }
+    let(:enemy_alliance) { create_alliance }
+    let(:enemy_with_units) { enemy_alliance.owner }
+    let(:enemy_ally) do
+      Factory.create(:player, galaxy: galaxy, alliance: enemy_alliance)
+    end
+    let(:enemy) { Factory.create(:player, galaxy: galaxy) }
 
-      @planet = Factory.create :planet, :player => @player
-      Factory.create :unit_built, location: @planet, player: @enemy_with_units
+    let(:planet) { Factory.create(:planet, player: player) }
 
-      @result = @planet.observer_player_ids
+    before(:each) do
+      ally; enemy_ally; enemy
+      Factory.create(:unit_built, location: planet, player: enemy_with_units)
     end
 
     it "should include planet owner" do
-      @result.should include(@player.id)
+      planet.observer_player_ids.should include(player.id)
     end
 
     it "should include owners alliance members" do
-      @result.should include(@ally.id)
+      planet.observer_player_ids.should include(ally.id)
     end
 
     it "should include other players that have units there" do
-      @result.should include(@enemy_with_units.id)
+      planet.observer_player_ids.should include(enemy_with_units.id)
     end
     
     it "should include player which belong to enemy alliance which has units" do
-      @result.should include(@enemy_ally.id)
+      planet.observer_player_ids.should include(enemy_ally.id)
     end
 
-    it "should work without owning player" do
-      @planet.player = nil
-      @planet.save!
-      @planet.observer_player_ids.should be_instance_of(Array)
+    describe "planet owner is npc" do
+      let(:planet) { Factory.create(:planet) }
+
+      it "should work without owning player" do
+        planet.observer_player_ids.should be_instance_of(Array)
+      end
+
+      it "should not include nil if planet owner is NPC" do
+        planet.observer_player_ids.should_not include(nil)
+      end
     end
 
     it "should not include players that do not have units there" do
-      @result.should_not include(@enemy.id)
+      planet.observer_player_ids.should_not include(enemy.id)
     end
   end
 

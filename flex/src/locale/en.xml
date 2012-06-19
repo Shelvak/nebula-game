@@ -1499,6 +1499,7 @@
     <gun.boss_heavy value="Shock Shells" />
     <gun.convoyship_light value="Photon Collider" />
     <gun.convoyship_heavy value="TR-3 Launcher" />
+    <gun.mantis_sniper value ="OSV-96 sniper rifle" />
     <armorType value="Armor type" />
     <damageInPercent value="Percentage" />
     <damage value="Damage" />

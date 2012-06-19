@@ -506,9 +506,9 @@ describe Unit do
       @unit = Factory.create(:unit, :level => 1)
     end
 
-    it "should be wrapped in SsObject::Planet.changing_viewable" do
-      SsObject::Planet.should_receive(:changing_viewable).with(
-        @unit.location).and_return(true)
+    it "should be wrapped in Visibility#track_location_changes" do
+      Visibility.should_receive(:track_location_changes).with(@unit.location).
+        and_return(true)
       @unit.destroy
     end
 

@@ -6,6 +6,8 @@ package tests.chat.models
    
    import controllers.ui.NavigationController;
 
+   import ext.hamcrest.collection.array;
+
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.events.causes;
    import ext.hamcrest.object.definesProperty;
@@ -77,11 +79,10 @@ package tests.chat.models
       }
 
       [Test]
-      public function should_throw_error_if_member_is_already_in_the_channel(): void {
+      public function should_ignore_if_member_is_already_in_the_channel(): void {
          var clone: MChatMember = cloneMember(member);
-         assertThat(function (): void {
-            list.addMember(clone)
-         }, throws(ArgumentError));
+         list.addMember(clone);
+         assertThat("should only contain one member", list, array(member));
       }
 
       [Test]
@@ -91,13 +92,12 @@ package tests.chat.models
       }
 
       [Test]
-      public function should_throw_error_if_member_to_remove_not_found(): void {
+      public function should_ignore_if_member_to_remove_not_found(): void {
          var another: MChatMember = new MChatMember();
          another.id = 2;
          another.name = "jho";
-         assertThat(function (): void {
-            list.removeMember(another)
-         }, throws(ArgumentError));
+         list.removeMember(another);
+         assertThat("should only contain one member", list, array(member));
       }
       
       [Test]

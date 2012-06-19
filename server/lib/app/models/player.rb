@@ -760,7 +760,6 @@ GROUP BY cqe.constructable_type
   def self.vip_stop_callback(player); player.vip_stop!; end
 
   # Given _player_ids_ join their ally ids to the array.
-  # TODO: spec
   def self.join_alliance_ids(player_ids)
     alliance_ids = Alliance.alliance_ids_for(player_ids)
     player_ids | Alliance.player_ids_for(alliance_ids)

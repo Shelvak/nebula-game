@@ -18,7 +18,6 @@ class SsObject::Planet::OwnerChangeHandler
     handle_objectives!
     handle_planet_counts!
     handle_technologies!
-    handle_fse_change!
 
     save_players!
 
@@ -194,13 +193,5 @@ private
 
     @old_player.save! if @old_player && @old_player.changed?
     @new_player.save! if @new_player && @new_player.changed?
-  end
-
-  def handle_fse_change!
-    # 1 for the planet.
-    fse_counter_change = 1 + units.accept(&:space?).size
-    FowSsEntry.change_planet_owner(
-      @planet, @old_player, @new_player, fse_counter_change
-    )
   end
 end

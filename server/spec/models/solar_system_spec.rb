@@ -276,6 +276,11 @@ describe SolarSystem do
           should == SolarSystem.observer_player_ids(ss.id)
       end
 
+      it "should return [] if solar system is detached" do
+        ss = Factory.create(:ss_detached, galaxy: galaxy)
+        SolarSystem.observer_player_ids(ss).should == []
+      end
+      
       describe "FowGalaxyEntry" do
         describe "main battleground" do
           let(:ss) { Factory.create(:battleground, galaxy: galaxy) }
@@ -344,6 +349,18 @@ describe SolarSystem do
         it "should not return player & alliance ids if there is no owned SSO" do
           Factory.create(:planet, solar_system: ss)
           (SolarSystem.observer_player_ids(ss) & id_arr).should be_blank
+        end
+
+        it "should not include nil if NPC has a planet" do
+          Factory.create(:planet, solar_system: ss, player: player)
+          Factory.create(:planet, solar_system: ss, angle: 90)
+          SolarSystem.observer_player_ids(ss).should_not include(nil)
+        end
+
+        it "should not include nil if non-allied player has a planet" do
+          Factory.create(:planet, solar_system: ss, player: player)
+          Factory.create(:planet_with_player, solar_system: ss, angle: 90)
+          SolarSystem.observer_player_ids(ss).should_not include(nil)
         end
       end
 
@@ -668,35 +685,12 @@ describe SolarSystem do
     let(:solar_system) do
       Factory.create(:ss_detached, :player => player, :galaxy => galaxy)
     end
-    let(:fse) do
-      Factory.create(
-        :fse_player, :player => player, :solar_system => solar_system,
-        :counter => 1
-      )
+    let(:fges) do
+      [
+        Factory.create(:fge, coords.merge(galaxy: galaxy, counter: 1)),
+        Factory.create(:fge, coords.merge(galaxy: galaxy, counter: 1))
+      ]
     end
-
-    def create_fges(merged={})
-      fge = Factory.create(
-        :fge, coords.merge(merged).merge(:counter => 1)
-      )
-      fge_alliance = Factory.create(
-        :fge_alliance, coords.merge(merged).merge(:counter => 1)
-      )
-      # Second one to check counter summing values.
-      coords2 = coords.dup
-      coords2[:x] -= 1
-      Factory.create(
-        :fge, coords2.merge(merged).
-          merge(:player => fge.player, :counter => 2)
-      )
-      Factory.create(
-        :fge_alliance, coords2.merge(merged).
-          merge(:alliance => fge_alliance.alliance, :counter => 2)
-      )
-      [fge, fge_alliance]
-    end
-
-    before(:each) { fse() }
 
     it "should fail if it is already attached" do
       solar_system.x = x; solar_system.y = y
@@ -729,34 +723,6 @@ describe SolarSystem do
       end
     end
 
-    it "should fail if there is no owner FSE" do
-      fse.destroy!
-      lambda do
-        solar_system.attach!(x, y)
-      end.should raise_error(RuntimeError)
-    end
-
-    it "should create FSEs for players who will be able to see it" do
-      fow_galaxy_entries = create_fges(:galaxy => galaxy)
-      solar_system.attach!(x, y)
-
-      fow_galaxy_entries.each do |fge|
-        FowSsEntry.where(
-          :solar_system_id => solar_system.id, :player_id => fge.player_id,
-          :alliance_id => fge.alliance_id, :counter => 3
-        ).exists?.should be_true
-      end
-    end
-
-    it "should not create FSEs for player from other galaxy" do
-      create_fges()
-      lambda do
-        solar_system.attach!(x, y)
-      end.should_not change(
-        FowSsEntry.where(:solar_system_id => solar_system.id), :count
-      )
-    end
-
     it "should set its coordinates" do
       solar_system.attach!(x, y)
       [solar_system.x, solar_system.y].should == [x, y]
@@ -767,21 +733,16 @@ describe SolarSystem do
       solar_system.should be_saved
     end
 
-    it "should dispatch created with FSEs" do
-      entries = create_fges(:galaxy => galaxy).map do |fge|
-        FowSsEntry.new(
-          :solar_system_id => solar_system.id,
-          :counter => 3,
-          :player_id => fge.player_id,
-          :alliance_id => fge.alliance_id,
-          :enemy_planets => fse.player_planets,
-          :enemy_ships => fse.player_ships
-        )
-      end
-      player = Player.minimal(player().id)
+    it "should dispatch created for players which see it" do
+      players = fges.map(&:player)
+      player_minimal = Player.minimal(player.id)
+      metadatas = SolarSystem::Metadatas.new(solar_system.id)
+
       should_fire_event(
-        Event::FowChange::SsCreated.
-          new(solar_system.id, x, y, solar_system.kind, player, entries),
+        Event::FowChange::SsCreated.new(
+          solar_system.id, x, y, solar_system.kind, player_minimal, players,
+          metadatas
+        ),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
       ) do

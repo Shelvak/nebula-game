@@ -67,8 +67,6 @@ module ActiveRecord
       end
     end
 
-    private :checkout, :with_connection
-
     def current_connection_id
       ActiveRecord::Base.connection_id || raise("DB connection ID is not set!")
     end

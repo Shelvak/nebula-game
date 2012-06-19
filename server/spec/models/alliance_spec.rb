@@ -215,6 +215,32 @@ describe Alliance do
     end
   end
 
+  describe ".alliance_ids_for" do
+    let(:ally1) { create_alliance.owner }
+    let(:ally2) { create_alliance.owner }
+    let(:non_ally1) { Factory.create(:player) }
+    let(:non_ally2) { Factory.create(:player) }
+    let(:player_ids) { [ally1.id, non_ally1.id, ally2.id, non_ally2.id] }
+    let(:alliance_ids) { [ally1.alliance_id, ally2.alliance_id] }
+
+    it "should return alliance ids for given players" do
+      Alliance.alliance_ids_for(player_ids).should == alliance_ids
+    end
+
+    it "should not include nils" do
+      Alliance.alliance_ids_for(player_ids).should_not include(nil)
+    end
+
+    it "should return empty array if all players are not in alliance" do
+      Alliance.alliance_ids_for([non_ally1.id, non_ally2.id]).should == []
+    end
+
+    it "should return distinct values" do
+      Alliance.alliance_ids_for([ally1.id, ally2.id, ally1.id]).
+        should == alliance_ids
+    end
+  end
+
   describe ".player_ids_for" do
     it "should return player ids" do
       alliance = Factory.create(:alliance)
@@ -226,6 +252,10 @@ describe Alliance do
       Alliance.player_ids_for(alliance.id).sort.should == [
         alliance.owner.id, p1.id, p2.id, p4.id
       ].sort
+    end
+
+    it "should return empty array given empty player ids" do
+      Alliance.player_ids_for([]).should == []
     end
   end
 
@@ -249,56 +279,48 @@ describe Alliance do
   end
 
   describe ".visible_enemy_player_ids" do
+    let(:alliance) { create_alliance }
+    let(:galaxy) { alliance.galaxy }
+    let(:player) { alliance.owner }
+    let(:ally) { Factory.create(:player, alliance: alliance, galaxy: galaxy) }
+    let(:ss) { Factory.create(:solar_system, galaxy: galaxy) }
+    let(:enemy) { Factory.create(:player, galaxy: galaxy) }
+
     it "should include enemy player ids where they have planets" do
-      fse = Factory.create(:fse_alliance, :enemy_planets => true,
-                           :enemy_ships => false)
-      planet = Factory.create(:planet_with_player,
-                              :solar_system => fse.solar_system)
-      Alliance.visible_enemy_player_ids(fse.alliance_id).
+      planet = Factory.create(:planet_with_player, solar_system: ss)
+      Factory.create(:planet, solar_system: ss, player: player, angle: 90)
+      Alliance.visible_enemy_player_ids(alliance.id).
         should include(planet.player_id)
     end
 
     it "should include enemy player ids in home ss" do
-      enemy = Factory.create(:player)
       home_ss = enemy.home_solar_system
-      fse = Factory.create(:fse_alliance, :enemy_planets => true,
-                           :enemy_ships => false, :solar_system => home_ss)
-      planet = Factory.create(:planet, :player => enemy,
-                              :solar_system => home_ss)
-      Alliance.visible_enemy_player_ids(fse.alliance_id).
-        should include(planet.player_id)
+      Factory.create(:fge, galaxy: galaxy, player: player, rectangle:
+        Rectangle.new(home_ss.x, home_ss.y, home_ss.x + 1, home_ss.y + 1))
+      Factory.create(:planet, player: enemy, solar_system: home_ss)
+      Alliance.visible_enemy_player_ids(alliance.id).should include(enemy.id)
     end
 
     it "should not include enemy player ids where they have units" do
-      fse = Factory.create(:fse_alliance, :enemy_planets => false,
-                           :enemy_ships => true)
-      unit = Factory.create(:u_crow,
-        :location => SolarSystemPoint.new(fse.solar_system_id, 0, 0)
-      )
-      Alliance.visible_enemy_player_ids(fse.alliance_id).
+      location = SolarSystemPoint.new(ss.id, 0, 0)
+      Factory.create(:planet, player: player, solar_system: ss)
+      unit = Factory.create(:u_crow, location: location)
+      Alliance.visible_enemy_player_ids(alliance.id).
         should_not include(unit.player_id)
     end
 
     it "should not include allies even if they share same ss with enemy" do
-      fse = Factory.create(:fse_alliance, :enemy_planets => true,
-                           :enemy_ships => false)
-      Factory.create(:planet_with_player, :solar_system => fse.solar_system)
-      ally = Factory.create(:player, :alliance => fse.alliance)
-      Factory.create(:planet, :player => ally,
-                     :solar_system => fse.solar_system, :position => 1)
-      Alliance.visible_enemy_player_ids(fse.alliance_id).
-        should_not include(ally.id)
+      Factory.create(:planet, player: enemy, solar_system: ss)
+      Factory.create(:planet, player: ally, solar_system: ss, angle: 90)
+      Alliance.visible_enemy_player_ids(alliance.id).should_not include(ally.id)
     end
 
     it "should return unique set" do
-      fse = Factory.create(:fse_alliance, :enemy_planets => true,
-                           :enemy_ships => false)
-      player = Factory.create(:player)
-      Factory.create(:planet, :player => player,
-                     :solar_system => fse.solar_system)
-      Factory.create(:planet, :player => player,
-                     :solar_system => fse.solar_system, :position => 1)
-      ids = Alliance.visible_enemy_player_ids(fse.alliance_id)
+      Factory.create(:planet, player: enemy, solar_system: ss)
+      Factory.create(:planet, player: enemy, solar_system: ss, angle: 90)
+      Factory.create(:planet_with_player, solar_system: ss, angle: 180)
+      Factory.create(:planet, player: player, solar_system: ss, angle: 270)
+      ids = Alliance.visible_enemy_player_ids(alliance.id)
       ids.should == ids.uniq
     end
   end
@@ -389,18 +411,6 @@ describe Alliance do
       end.should change(@player, :alliance_vps).to(0)
     end
 
-    it "should assimilate player Galaxy cache" do
-      FowGalaxyEntry.should_receive(:assimilate_player).with(
-        @alliance, @player)
-      @alliance.accept(@player)
-    end
-
-    it "should assimilate player SS cache" do
-      FowSsEntry.should_receive(:assimilate_player).with(
-        @alliance, @player)
-      @alliance.accept(@player)
-    end
-
     it "should integrate with web" do
       ControlManager.instance.should_receive(:player_joined_alliance).
         with(@player, @alliance)
@@ -465,18 +475,6 @@ describe Alliance do
         @alliance.throw_out(@player)
         @player.reload
       end.should change(@player, :alliance).from(@alliance).to(nil)
-    end
-
-    it "should throw out player Galaxy cache" do
-      FowGalaxyEntry.should_receive(:throw_out_player).with(
-        @alliance, @player)
-      @alliance.throw_out(@player)
-    end
-
-    it "should throw out player SS cache" do
-      FowSsEntry.should_receive(:throw_out_player).with(
-        @alliance, @player)
-      @alliance.throw_out(@player)
     end
 
     it "should integrate with web" do

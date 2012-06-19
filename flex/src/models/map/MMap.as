@@ -18,10 +18,11 @@ package models.map
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    import mx.logging.ILogger;
-   import mx.logging.Log;
 
    import utils.Objects;
    import utils.datastructures.Collections;
+   import utils.logging.IMethodLoggerFactory;
+   import utils.logging.Log;
 
 
    /**
@@ -72,10 +73,6 @@ package models.map
    
    public class MMap extends BaseModel implements ICleanable, IUpdatable
    {
-      private function get logger() : ILogger {
-         return Log.getLogger("MAP");
-      }
-      
       public function MMap() {
          super();
          _squadrons = Collections.filter(ML.squadrons,
@@ -90,7 +87,9 @@ package models.map
          );
          addSquadronsCollectionEventHandlers(_squadrons);
       }
-      
+
+      private const loggerFactory: IMethodLoggerFactory = Log.getMethodLoggerFactory(MMap);
+
       /**
        * <ul>
        *    <li>calls <code>cleanup()</code> on all squadrons, removes them, sets <code>squadrons</code>
@@ -101,9 +100,11 @@ package models.map
        * @see ICleanable#cleanup()
        */
       public function cleanup() : void {
+         const logger: ILogger = loggerFactory.getLogger("cleanup");
+
          if (_squadrons != null) {
-            var squadIds:Array = _squadrons.toArray().map(
-               function(squad:MSquadron, index:int, array:Array) : int {
+            var squadIds: Array = _squadrons.toArray().map(
+               function (squad: MSquadron, index: int, array: Array): int {
                   return squad.id
                }
             );
@@ -116,8 +117,8 @@ package models.map
             _squadrons = null;
          }
          if (_units != null) {
-            var unitIds:Array = _units.toArray().map(
-               function(unit:Unit, index:int, array:Array) : int {
+            var unitIds: Array = _units.toArray().map(
+               function (unit: Unit, index: int, array: Array): int {
                   return unit.id
                }
             );
@@ -288,14 +289,11 @@ package models.map
          }
          else if (!silent) {
             throw new IllegalOperationError(
-               "Can't remove object " + object + ": the equal object "
-                  + "could not be found"
-            );
+               "Can't remove object " + object + ": the equal object could not be found");
          }
-         else
-         {
-            Log.getLogger("models.map.MMap").warn("Can't remove object " +
-               object + ": the equal object could not be found");
+         else {
+            loggerFactory.getLogger("removeObject")
+               .warn("Can't remove object {0}: the equal object could not be found", object);
          }
       }
       

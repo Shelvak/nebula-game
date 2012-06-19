@@ -45,6 +45,7 @@ describe Galaxy do
   describe ".units" do
     before(:all) do
       galaxy = Factory.create :galaxy
+      solar_system = Factory.create(:solar_system, galaxy: galaxy)
       alliance = Factory.create :alliance
       you = Factory.create :player, :galaxy => galaxy, :alliance => alliance
       ally = Factory.create :player, :galaxy => galaxy,
@@ -65,7 +66,7 @@ describe Galaxy do
       @ally_unit_invisible = Factory.create :u_mule, :player => ally,
         :location => GalaxyPoint.new(galaxy.id, 0, 1)
       @not_in_galaxy = Factory.create :u_mule, :player => you,
-        :location => SolarSystemPoint.new(1, 0, 0)
+        :location => SolarSystemPoint.new(solar_system.id, 0, 0)
 
       @result = Galaxy.units(you)
     end
@@ -103,8 +104,8 @@ describe Galaxy do
     before(:each) do
       @player = Factory.create(:player)
       @galaxy = @player.galaxy
-      Factory.create(:fge_player, :galaxy => @galaxy,
-        :player => @player, :rectangle => Rectangle.new(0, 0, 10, 10))
+      Factory.create(:fge, galaxy: @galaxy, player: @player,
+        rectangle: Rectangle.new(0, 0, 10, 10))
     end
 
     it "should return closest wormhole" do
@@ -597,22 +598,6 @@ describe Galaxy do
       lambda do
         player
       end.should raise_error(RuntimeError)
-    end
-
-    describe "fse" do
-      let(:fse) { FowSsEntry.where(player_id: player.id).first }
-
-      before(:each) do
-        player
-      end
-
-      it "should have player_planets set" do
-        fse.player_planets.should be_true
-      end
-
-      it "should have counter == 1" do
-        fse.counter.should == 1
-      end
     end
 
     it "should find zone and attach home solar system" do

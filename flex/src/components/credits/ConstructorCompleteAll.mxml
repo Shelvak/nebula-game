@@ -27,22 +27,21 @@
       import mx.collections.ArrayCollection;
       import mx.events.FlexEvent;
       import mx.logging.ILogger;
-      import mx.logging.Log;
 
       import utils.ModelUtil;
       import utils.StringUtil;
       import utils.TextFlowUtil;
       import utils.locale.Localizer;
+      import utils.logging.Log;
+
 
       private static function get logger(): ILogger {
          return Log.getLogger("ConstructorCompleteAll.mxml");
       }
 
-      public function set constructor(value: Building): void
-      {
+      public function set constructor(value: Building): void {
          _constructor = value;
-         if (value != null)
-         {
+         if (value != null) {
             refreshCurrentModel();
          }
       }
@@ -55,42 +54,37 @@
 
       public var popUp: ActionConfirmationPopUp;
 
-      private function getFullTime(): int
-      {
-         if (_constructor.constructableId == 0)
-         {
+      private function getFullTime(): int {
+         if (_constructor.constructableId == 0) {
             return 0;
          }
-         if (_constructor.constructableId != constructableId)
-         {
+         if (_constructor.constructableId != constructableId) {
             var constructableClass: String =
-                    ModelUtil.getModelClass(_constructor.constructableType);
-            if (constructableClass == ObjectClass.UNIT)
-            {
+               ModelUtil.getModelClass(_constructor.constructableType);
+            if (constructableClass == ObjectClass.UNIT) {
                constructablePart = ML.latestPlanet.getUnitById(
-                               _constructor.constructableId).upgradePart;
+                  _constructor.constructableId).upgradePart;
             }
-            else
-            {
+            else {
                constructablePart = ML.latestPlanet.getBuildingById(
-                               _constructor.constructableId).upgradePart;
+                  _constructor.constructableId).upgradePart;
             }
             constructableId = _constructor.constructableId;
          }
 
-         if (constructablePart == null)
+         if (constructablePart == null) {
             return 0;
+         }
          var wholeTime: int = constructablePart.timeToFinish;
          for each (var queueEntry: ConstructionQueueEntry in
-                         _constructor.constructionQueueEntries)
-         {
+            _constructor.constructionQueueEntries) {
             wholeTime += queueEntry.getConstructionTime(
-                    queueEntry.isUnit
-                            ? _constructor.constructorMod
-                              +  BuildingUpgradable.getConstructionMod(
-                                    _constructor.type, _constructor.level
-                                 )
-                            : _constructor.constructorMod
+               queueEntry.isUnit
+                  ? _constructor.constructorMod
+                  + BuildingUpgradable.getConstructionMod(
+                  _constructor.type, _constructor.level
+               )
+                  : _constructor.constructorMod
             );
          }
          return Math.round(wholeTime);
@@ -113,23 +107,18 @@
 
       private var lowerModel: MAccelerateBase = null;
 
-      private function refreshCurrentModel(e: GlobalEvent = null): void
-      {
-         if (e == null)
-         {
+      private function refreshCurrentModel(e: GlobalEvent = null): void {
+         if (e == null) {
             refreshList();
          }
-         if (getFullTime() == 0)
-         {
+         if (getFullTime() == 0) {
             popUp.close();
             reset();
             return;
          }
-         if (e == null || (lowerModel != null && lowerModel.time > getFullTime()))
-         {
+         if (e == null || (lowerModel != null && lowerModel.time > getFullTime())) {
             lowerModel = null;
-            for each (var model: MAccelerateBase in accelerateInfo)
-            {
+            for each (var model: MAccelerateBase in accelerateInfo) {
                if (model.time > getFullTime()) {
                   currentModel = model;
                   break;
@@ -138,37 +127,31 @@
             }
          }
          popUp.confirmButtonLabel = Localizer.string('Credits', hasEnoughCredits()
-                                                     ? 'label.confirm'
-                                                        : 'label.buy');
+            ? 'label.confirm'
+            : 'label.buy');
          usualCost = getUsualCost();
       }
 
-      private function getUsualCost(): int
-      {
+      private function getUsualCost(): int {
          var result: int = 0;
-         for each (var model: MAccelerateBase in accelerateInfo)
-         {
-            if (model.time > constructablePart.timeToFinish)
-            {
+         for each (var model: MAccelerateBase in accelerateInfo) {
+            if (model.time > constructablePart.timeToFinish) {
                result += model.credits;
                break;
             }
          }
          for each (var queueEntry: ConstructionQueueEntry in
-                                          _constructor.constructionQueueEntries)
-         {
+            _constructor.constructionQueueEntries) {
             var constructionTime: int = queueEntry.getConstructionTime(
-                    queueEntry.isUnit
-                            ? _constructor.constructorMod
-                              +  BuildingUpgradable.getConstructionMod(
-                                    _constructor.type, _constructor.level
-                                 )
-                            : _constructor.constructorMod
+               queueEntry.isUnit
+                  ? _constructor.constructorMod
+                  + BuildingUpgradable.getConstructionMod(
+                  _constructor.type, _constructor.level
+               )
+                  : _constructor.constructorMod
             ) / queueEntry.count;
-            for each (model in accelerateInfo)
-            {
-               if (model.time > constructionTime)
-               {
+            for each (model in accelerateInfo) {
+               if (model.time > constructionTime) {
                   result += (model.credits * queueEntry.count);
                   break;
                }
@@ -177,15 +160,14 @@
          return result;
       }
 
-      private function reset(): void
-      {
+      private function reset(): void {
          constructor = null;
          GlobalEvent.unsubscribe_TIMED_UPDATE(refreshCurrentModel);
       }
 
       public function hasEnoughCredits(): Boolean {
          return ModelLocator.getInstance().player.creds >= Math.min(
-                 currentModel.credits, usualCost);
+            currentModel.credits, usualCost);
       }
 
       [Bindable]
@@ -195,49 +177,41 @@
          GlobalEvent.subscribe_TIMED_UPDATE(refreshCurrentModel);
       }
 
-      private function getProvider(building: Building, entries: ArrayCollection): ArrayCollection
-      {
+      private function getProvider(building: Building, entries: ArrayCollection): ArrayCollection {
          var types: Object = {};
          if (building.constructableType == null) {
-            logger.info(
-               "Constructable type is null for " + building.toString() +
-               ", returning."
+            Log.getMethodLogger(this, "getProvider").info(
+               "Constructable type is null for {0}, returning.", building.toString()
             );
             return null;
          }
 
          var constructableClass: String =
-                 ModelUtil.getModelClass(building.constructableType);
+            ModelUtil.getModelClass(building.constructableType);
          var constructable: String;
-         if (constructableClass == ObjectClass.UNIT)
-         {
+         if (constructableClass == ObjectClass.UNIT) {
             constructable = ModelUtil.getModelType(ObjectClass.UNIT,
-                    ML.latestPlanet.getUnitById(
-                            building.constructableId).type, true);
+                                                   ML.latestPlanet.getUnitById(
+                                                      building.constructableId).type, true);
          }
-         else
-         {
+         else {
             constructable = ModelUtil.getModelType(ObjectClass.BUILDING,
-                    ML.latestPlanet.getBuildingById(
-                            building.constructableId).type, true);
+                                                   ML.latestPlanet.getBuildingById(
+                                                      building.constructableId).type, true);
          }
          types[constructable] =
-                 new UnitBuildingEntry(constructable, 1);
-         for each (var entry: ConstructionQueueEntry in entries)
-         {
+            new UnitBuildingEntry(constructable, 1);
+         for each (var entry: ConstructionQueueEntry in entries) {
             constructable = StringUtil.underscoreToCamelCase(entry.constructableType);
-            if (types[constructable] == null)
-            {
+            if (types[constructable] == null) {
                types[constructable] = new UnitBuildingEntry(constructable, entry.count);
             }
-            else
-            {
+            else {
                UnitBuildingEntry(types[constructable]).count += entry.count;
             }
          }
          var provider: ArrayCollection = new ArrayCollection();
-         for each (var readyEntry: UnitBuildingEntry in types)
-         {
+         for each (var readyEntry: UnitBuildingEntry in types) {
             provider.addItem(readyEntry);
          }
          return provider;

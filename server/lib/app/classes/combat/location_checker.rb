@@ -138,7 +138,7 @@ class Combat::LocationChecker
       units = Set.new(units)
       buildings = Set.new(buildings)
 
-      assets = Visibility.track_changes(location_point) do
+      assets = Visibility.track_location_changes(location_point) do
         Combat.run(
           location, players, check_report.nap_rules, units, buildings
         )

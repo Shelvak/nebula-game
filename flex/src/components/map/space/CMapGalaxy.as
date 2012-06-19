@@ -12,13 +12,11 @@ package components.map.space
    import models.map.MStaticSpaceObjectsAggregator;
 
    import mx.collections.ArrayCollection;
-   import mx.logging.ILogger;
-   import mx.logging.Log;
 
    import spark.components.Group;
 
-   import utils.Objects;
    import utils.locale.Localizer;
+   import utils.logging.Log;
 
 
    public class CMapGalaxy extends CMapSpace implements IVisibleGalaxyAreaClient
@@ -48,10 +46,6 @@ package components.map.space
       COMP_CLASSES.addComponents(MMapSpace.STATIC_OBJECT_COOLDOWN, CCooldown, CCooldownInfo);
       COMP_CLASSES.addComponents(MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage, CWreckageInfo);
 
-      private function get logger() : ILogger {
-         return Log.getLogger(Objects.getClassName(this, true));
-      }
-      
       /* ###################### */
       /* ### INITIALIZATION ### */
       /* ###################### */
@@ -130,15 +124,11 @@ package components.map.space
             while (aggrComponent == null) {
                aggrComponent = _staticObjectsPool.borrowObject();
                if (aggrComponent.model.length > 0) {
-                  logger.warn(
-                     "sectorShown(): Got invalid object {0} from "
-                        + "_staticObjectsPool."
-                        + "\nNOT returning it to the pool. Will try getting "
-                        + "another one."
-                        + "\nThis indicates potential error in the pool "
-                        + "implementation or its usage and is potentially "
-                        + "causing memory leak.", aggrComponent
-                  );
+                  Log.getMethodLogger(this, "sectorShown").warn(
+                     "Got invalid object {0} from _staticObjectsPool."
+                        + "\nNOT returning it to the pool. Will try getting another one."
+                        + "\nThis indicates potential error in the pool implementation or its "
+                        + "usage and is potentially causing memory leak.", aggrComponent);
                   aggrComponent = null;
                }
             }

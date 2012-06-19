@@ -1,7 +1,6 @@
 package utils.logging
 {
    import mx.logging.ILogger;
-   import mx.logging.Log;
 
    import utils.Objects;
    import utils.SingletonFactory;
@@ -49,7 +48,7 @@ package utils.logging
       }
 
       private function get log(): ILogger {
-         return Log.getLogger(Objects.getClassName(this, true));
+         return utils.logging.Log.getLogger(this);
       }
    }
 }

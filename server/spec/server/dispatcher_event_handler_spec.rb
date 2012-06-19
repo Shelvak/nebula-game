@@ -4,7 +4,7 @@ describe DispatcherEventHandler do
   include ControllerSpecHelper
 
   before(:each) do
-    @dispatcher = mock_dispatcher
+    @dispatcher = mock(Dispatcher)
     @handler = DispatcherEventHandler.new(@dispatcher)
     # Don't get other events, only ones we submit
     EventBroker.unregister(@handler)
@@ -88,7 +88,7 @@ describe DispatcherEventHandler do
             hash[id] = mock(SolarSystemMetadata)
           end
           event = Event::FowChange::SsCreated.new(
-            10, 5, 50, SolarSystem::KIND_NORMAL, nil, []
+            10, 5, 50, SolarSystem::KIND_NORMAL, nil, [], nil
           )
           event.stub!(:player_ids).and_return(player_ids)
           event.stub!(:metadatas).and_return(metadatas)
