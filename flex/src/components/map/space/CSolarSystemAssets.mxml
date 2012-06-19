@@ -10,9 +10,6 @@
       public var model: CSolarSystemAssetsM;
       ]]>
    </fx:Script>
-   <s:layout>
-      <s:HorizontalLayout gap="6" verticalAlign="top"/>
-   </s:layout>
    <s:DataGroup dataProvider="{model.dataProvider}" width="100%">
       <s:itemRenderer>
          <fx:Component>

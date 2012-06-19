@@ -15,7 +15,7 @@
       ]]>
    </fx:Script>
    <s:layout>
-      <s:VerticalLayout horizontalAlign="justify"/>
+      <s:VerticalLayout horizontalAlign="justify" verticalAlign="top"/>
    </s:layout>
    <solarsystem:SSStatusIcon
       explanationVisible="true" type="{SSMetadataType.PLAYER_PLANETS}"
