@@ -165,16 +165,6 @@ describe SsObject::Planet::OwnerChangeHandler do
     end
   end
 
-  it "should call FowSsEntry.change_planet_owner after save" do
-    FowSsEntry.should_receive(:change_planet_owner).with(
-      @planet, @old, @new, 1
-    ).and_return do |planet, old_player, new_player|
-      planet.should be_saved
-      true
-    end
-    @handler.handle!
-  end
-
   it "should fire event" do
     should_fire_event(@planet, EventBroker::CHANGED,
     EventBroker::REASON_OWNER_CHANGED) do
@@ -253,17 +243,6 @@ describe SsObject::Planet::OwnerChangeHandler do
         @handler.handle!
         @new.reload
       end.should change(@new, :population).by(@units.map(&:population).sum)
-    end
-
-    it "should call transfer fow ss entries for space units" do
-      Factory.create!(:u_crow, :player => @old, :location => @planet)
-      Factory.create!(:u_crow, :player => @old, :location => @planet)
-      Factory.create!(:u_scorpion, :player => @old, :location => @planet)
-
-      FowSsEntry.should_receive(:change_planet_owner).with(
-        @planet, @old, @new, 4 # 1 mule + 2 crows + 1 for planet
-      )
-      @handler.handle!
     end
 
     it "should dispatch changed event" do

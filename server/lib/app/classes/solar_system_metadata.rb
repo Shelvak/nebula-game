@@ -82,10 +82,6 @@ class SolarSystemMetadata
   end
 
   def as_json(options=nil)
-    @metadata.merge(
-      enemy_planets: true, enemy_ships: true,
-      alliance_planets: true, alliance_ships: true,
-      nap_planets: true, nap_ships: true
-    )
+    @metadata
   end
 end

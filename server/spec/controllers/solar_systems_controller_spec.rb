@@ -11,8 +11,7 @@ describe SolarSystemsController do
     before(:each) do
       @action = "solar_systems|show"
       @solar_system = Factory.create :solar_system, :galaxy => player.galaxy
-      @fse = Factory.create :fse_player, :solar_system => @solar_system,
-        :player => player
+      @fge = fge_around(@solar_system, player: player)
 
       @params = {'id' => @solar_system.id}
     end
@@ -81,10 +80,9 @@ describe SolarSystemsController do
 
     it "should return battleground if we requested to view a wormhole" do
       wormhole = Factory.create :wormhole, :galaxy => player.galaxy
-      Factory.create :fse_player, :solar_system => wormhole,
-        :player => player
-      battleground = Factory.create(:solar_system, :galaxy => player.galaxy,
-        :x => nil, :y => nil)
+      fge_around(wormhole)
+      battleground = Factory.create(:solar_system, galaxy: player.galaxy,
+        x: nil, y: nil)
       invoke @action, @params.merge('id' => wormhole.id)
       response_should_include(:solar_system => battleground.as_json)
     end
@@ -125,9 +123,6 @@ describe SolarSystemsController do
     describe "visible units in solar system" do
       before(:each) do
         @zone = @solar_system
-
-        @fse.player_planets = true
-        @fse.save!
 
         @unit = Factory.build :u_crow
         @unit.location = SolarSystemPoint.new(@solar_system.id, 1, 0)

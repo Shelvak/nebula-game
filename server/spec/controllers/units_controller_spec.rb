@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb
 
 shared_examples_for "checking visibility" do
   it "should raise GameLogicError if target is not visible" do
-    FowSsEntry.decrease(@target.id, player)
+    @fge.destroy
     lambda do
       invoke @action, @params
     end.should raise_error(GameLogicError)
@@ -284,12 +284,9 @@ describe UnitsController do
       @action = "units|move_meta"
       @unit_ids = [1, 2, 3]
       @source = SolarSystemPoint.new(10, 1, 0)
-      @target = SolarSystemPoint.new(
-        Factory.create(:solar_system).id,
-        1,
-        0
-      )
-      FowSsEntry.increase(@target.id, player)
+      solar_system = Factory.create(:solar_system, galaxy: player.galaxy)
+      @target = SolarSystemPoint.new(solar_system.id, 1, 0)
+      @fge = fge_around(solar_system, player: player)
       @jg = Factory.create(:sso_jumpgate)
       @params = {
         'unit_ids' => @unit_ids,
@@ -341,9 +338,12 @@ describe UnitsController do
   describe "units|move" do
     before(:each) do
       @action = "units|move"
-      ss = Factory.create(:solar_system)
-      @source = SolarSystemPoint.new(ss.id, 1, 0)
-      @target = SolarSystemPoint.new(ss.id, 3, 180)
+      source_ss = Factory.create(:solar_system, galaxy: player.galaxy, x: 1)
+      Factory.create(:sso_jumpgate, solar_system: source_ss, position: 3)
+      target_ss = Factory.create(:solar_system, galaxy: player.galaxy)
+      Factory.create(:sso_jumpgate, solar_system: target_ss, position: 3)
+      @source = SolarSystemPoint.new(source_ss.id, 1, 0)
+      @target = SolarSystemPoint.new(target_ss.id, 3, 180)
       
       units = [
         Factory.create(:u_crow, :player => player, :location => @source),
@@ -351,7 +351,7 @@ describe UnitsController do
         Factory.create(:u_crow, :player => player, :location => @source),
       ]
       @unit_ids = units.map(&:id)
-      FowSsEntry.increase(@target.id, player)
+      @fge = fge_around(target_ss, player: player)
       @params = {
         'unit_ids' => @unit_ids,
         'source' => {
@@ -505,8 +505,8 @@ describe UnitsController do
     end
 
     it "should fail if player doesn't own that planet" do
-      @planet.player = nil
-      @planet.save!
+      # To prevent unit ownership transfer.
+      @planet.update_row! player_id: nil
 
       lambda do
         invoke @action, @params

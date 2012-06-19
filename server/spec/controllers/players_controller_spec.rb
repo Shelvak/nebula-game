@@ -94,9 +94,12 @@ describe PlayersController do
               end
             end
 
-            it "should respond with success" do
+            it "should respond with success and reestablishment token" do
               invoke @action, @params
-              response.should == {success: true}
+              response.should == {
+                success: true,
+                reestablishment_token: @controller.reestablishment_token
+              }
             end
           end
 
@@ -120,9 +123,13 @@ describe PlayersController do
               should_have_not_pushed PlayersController::ACTION_PUSH_ASSETS
             end
 
-            it "should respond with success & attaching flag" do
+            it "should respond with correct params" do
               invoke @action, @params
-              response.should == {success: true, attaching: true}
+              response.should == {
+                success: true,
+                attaching: true,
+                reestablishment_token: @controller.reestablishment_token
+              }
             end
           end
         end

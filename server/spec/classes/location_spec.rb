@@ -223,12 +223,11 @@ describe Location do
       before(:each) do
         @battleground = Factory.create(:battleground)
         @player = Factory.create(:player, :galaxy => @battleground.galaxy)
-        @wormhole = Factory.create(:wormhole,
-          :galaxy => @battleground.galaxy)
+        @wormhole = Factory.create(:wormhole, :galaxy => @battleground.galaxy)
       end
 
       it "should return true if wormhole is visible" do
-        FowSsEntry.increase(@wormhole.id, @player)
+        fge_around(@wormhole, player: @player)
         Location.visible?(@player,
           SolarSystemPoint.new(@battleground.id, 1, 0)
         ).should be_true
@@ -246,7 +245,7 @@ describe Location do
         end
 
         it "should return true if wormhole is visible" do
-          FowSsEntry.increase(@wormhole.id, @player)
+          fge_around(@wormhole, player: @player)
           Location.visible?(@player, @planet).should be_true
         end
 
