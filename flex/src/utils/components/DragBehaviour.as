@@ -72,14 +72,14 @@ package utils.components
       
       
       /**
-       * Creates an instance of <code>DragBehaviour</code> that porvides drag behaviour for the given
-       * display object.
+       * Creates an instance of <code>DragBehaviour</code> that provides drag behaviour for the
+       * given display object.
        * 
-       * @param client an instance of <code></code> <b>Not null.</b>
+       * @param client an instance of <code>InteractiveObject</code> | <b>Not null.</b>
        */
       public function DragBehaviour(client:InteractiveObject)
       {
-         _client = Objects.paramNotNull("client", client);;
+         _client = Objects.paramNotNull("client", client);
       }
       
       
@@ -154,18 +154,18 @@ package utils.components
          assertSetupNotComplete();
          if (!useBoundsObject)
          {
-            throw new IllegalOperationError("fixOnBoundsObjectRezize requires boundsObject to be specified");
+            throw new IllegalOperationError("fixOnBoundsObjectResize requires boundsObject to be specified");
          }
          _fixOnBoundsObjectResize = fixOnResize;
          return this;
       }
-      
-      
-      private var _innerEdgeAsDatum:Boolean = false;
-      private var _left:Number = 0,
-                  _right:Number = 0,
-                  _top:Number = 0,
-                  _bottom:Number = 0;
+
+
+      private var _innerEdgeAsDatum: Boolean = false;
+      private var _left: Number = 0;
+      private var _right: Number = 0;
+      private var _top: Number = 0;
+      private var _bottom: Number = 0;
       /**
        * 
        * 
@@ -195,8 +195,8 @@ package utils.components
       
       private var _setupComplete:Boolean = false;
       /**
-       * Call this when you are done customizing this instance and want your configuration to take an effect.
-       * Once you call this you won't be able to call any of configaration methods.
+       * Call this when you are done customizing this instance and want your configuration to take
+       * an effect. Once you call this you won't be able to call any of configuration methods.
        */
       public function setupComplete() : DragBehaviour
       {
@@ -247,10 +247,10 @@ package utils.components
       {
          fixClientPosition();
       }
-      
-      
-      private var _capturedMouseX:Number = 0,
-                  _capturedMouseY:Number = 0;
+
+
+      private var _capturedMouseX: Number = 0;
+      private var _capturedMouseY: Number = 0;
       private function captureMouseCoordinates() : void
       {
          _capturedMouseX = stage.mouseX;
@@ -276,8 +276,8 @@ package utils.components
       
       private function stage_mouseMoveHandler(event:MouseEvent) : void
       {
-         var oldMouseX:Number = _capturedMouseX,
-             oldMouseY:Number = _capturedMouseY;
+         var oldMouseX:Number = _capturedMouseX;
+         var oldMouseY:Number = _capturedMouseY;
          captureMouseCoordinates();
          var dx:Number = _capturedMouseX - oldMouseX;
          var dy:Number = _capturedMouseY - oldMouseY;
@@ -312,11 +312,11 @@ package utils.components
          
          var topLeftBoundsObject:Point = _boundsObject.localToGlobal(POINT_0x0);
          
-         var minX:Number = topLeftBoundsObject.x + _left,
-             minY:Number = topLeftBoundsObject.y + _top;
+         var minX:Number = topLeftBoundsObject.x + _left;
+         var minY:Number = topLeftBoundsObject.y + _top;
          
-         var alignedTop:Boolean = false,
-             alignedLeft:Boolean = false;
+         var alignedTop:Boolean = false;
+         var alignedLeft:Boolean = false;
          
          if (topLeftClient.y < minY)
          {

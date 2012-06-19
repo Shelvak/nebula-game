@@ -17,13 +17,13 @@ package tests.chat.models.chat
       public function TC_MChat_publicMessages()
       {
          super();
-      };
+      }
       
       
       public override function classesToMock() : Array
       {
          return super.classesToMock().concat(MChatChannelPublic);
-      };
+      }
       
       
       private var channelGalaxy:MChatChannelPublic;
@@ -39,7 +39,7 @@ package tests.chat.models.chat
          message = MChatMessage(chat.messagePool.borrowObject());
          message.channel = "galaxy";
          message.message = "Lets blow something up!";
-      };
+      }
       
       
       [After]
@@ -48,7 +48,7 @@ package tests.chat.models.chat
          super.tearDown();
          channelGalaxy = null;
          message = null;
-      };
+      }
       
       
       [Test]
@@ -71,6 +71,6 @@ package tests.chat.models.chat
          chat.channelJoin("galaxy", member);
          chat.receivePublicMessage(message);
          mockRepository.verifyAll();
-      };
+      }
    }
 }
