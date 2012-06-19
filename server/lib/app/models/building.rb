@@ -175,7 +175,7 @@ class Building < ActiveRecord::Base
   # Check for combat after upgrading.
   def on_upgrade_just_finished_after_save
     super if defined?(super)
-    Combat::LocationCheckerAj.check_location(planet.location_point) if can_fight?
+    Combat::LocationChecker.check_location(planet.location_point) if can_fight?
   end
 
   # Deactivate building before destruction.

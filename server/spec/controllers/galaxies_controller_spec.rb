@@ -13,10 +13,10 @@ describe GalaxiesController do
       @params = {}
 
       @battleground = Factory.create(:battleground, :galaxy => player.galaxy)
-      Factory.create :fge_player, :player => player,
+      Factory.create :fge, :player => player,
         :galaxy => player.galaxy,
         :rectangle => Rectangle.new(0, 0, 2, 2)
-      Factory.create :fge_player, :player => player,
+      Factory.create :fge, :player => player,
         :galaxy => player.galaxy,
         :rectangle => Rectangle.new(2, 2, 4, 4)
       # Visible units
@@ -70,7 +70,7 @@ describe GalaxiesController do
 
     it "should include non friendly route jumps_at hash" do
       FowGalaxyEntry.stub!(:for).with(player).and_return([
-        Factory.create(:fge_player, :galaxy => player.galaxy)
+        Factory.create(:fge, :galaxy => player.galaxy)
       ])
       routes = [Factory.create(:route, :jumps_at => 5.minutes.from_now)]
       Route.should_receive(:non_friendly_for_galaxy).with(
@@ -99,7 +99,7 @@ describe GalaxiesController do
 
     describe "in visible zone" do
       before(:each) do
-        Factory.create(:fge_player,
+        Factory.create(:fge,
           :rectangle => Rectangle.new(0, 0, 4, 4),
           :galaxy => player.galaxy,
           :player => player)

@@ -138,9 +138,10 @@ class SsObject::Planet < SsObject
 
   def landable?; true; end
 
-  # Returns player ids which can look into this planet.
+  # Returns player ids which can look into this planet. Does not include nil
+  # player id.
   def observer_player_ids
-    player_ids = Unit.player_ids_in_location(self)
+    player_ids = Unit.player_ids_in_location(self).compact
     player_ids |= [player_id] unless player_id.nil?
     Player.join_alliance_ids(player_ids)
   end

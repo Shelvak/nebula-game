@@ -673,6 +673,11 @@ describe SsObject::Planet do
       end
     end
 
+    it "should not include npc if they have units there" do
+      Factory.create(:unit_built, location: planet, player: nil)
+      planet.observer_player_ids.should_not include(nil)
+    end
+
     it "should not include players that do not have units there" do
       planet.observer_player_ids.should_not include(enemy.id)
     end
@@ -1358,61 +1363,6 @@ describe SsObject::Planet do
           @planet.send(:resource_modifiers, true)[mod].should ==
             CONFIG['creds.planet.resources.boost']
         end
-      end
-    end
-  end
-
-  describe ".changing_viewable" do
-    describe "location is planet" do
-      before(:each) do
-        @planet = Factory.create(:planet)
-        @unit = Factory.create(:unit_built, :location => @planet)
-      end
-
-      describe "if observer ids changed" do
-        it "should fire changed on planet" do
-          should_fire_event(@planet, EventBroker::CHANGED) do
-            SsObject::Planet.changing_viewable(@unit.location) do
-              @unit.delete
-            end
-          end
-        end
-
-        it "should fire created with Event::PlanetObserversChange" do
-          event = Event::PlanetObserversChange.
-            new(@planet.id, [@unit.player_id])
-          should_fire_event(event, EventBroker::CREATED) do
-            SsObject::Planet.changing_viewable(@unit.location) do
-              @unit.delete
-            end
-          end
-        end
-
-        it "should fire changed on first location that is planet" do
-          should_fire_event(@planet, EventBroker::CHANGED) do
-            SsObject::Planet.changing_viewable([
-                GalaxyPoint.new(1, 0, 0),
-                @planet.location_point,
-                Factory.create(:planet).location_point
-            ]) do
-              @unit.delete
-            end
-          end
-        end
-      end
-
-      it "should not fire changed if observer ids didn't change" do
-        should_not_fire_event(@planet, EventBroker::CHANGED) do
-          SsObject::Planet.changing_viewable(@planet.location_point) { }
-        end
-      end
-    end
-
-    describe "location is not a planet" do      
-      it "should simply return block value" do
-        SsObject::Planet.changing_viewable(GalaxyPoint.new(1, 0, 0)) do
-          "a"
-        end.should == "a"
       end
     end
   end

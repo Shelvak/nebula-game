@@ -54,10 +54,7 @@ describe Rewards do
       @planet.energy_storage += energy
       @planet.zetium_storage += zetium
       @player = @planet.player
-      @fse = Factory.create(:fse_player,
-        :solar_system_id => @planet.solar_system_id,
-        :player => @player)
-      
+
       @rewards = Rewards.new(
         Rewards::METAL => metal,
         Rewards::ENERGY => energy,

@@ -1946,11 +1946,7 @@ describe Player do
 
   describe "#attach!" do
     let(:player) { Factory.create(:player) }
-    let(:home_solar_system) do
-      home_ss = player.home_solar_system
-      Factory.create(:fse_player, :solar_system => home_ss, :player => player)
-      home_ss
-    end
+    let(:home_solar_system) { player.home_solar_system }
     let(:normal_solar_system) do
       Factory.create(:solar_system, :galaxy => player.galaxy, :x => 10)
     end
