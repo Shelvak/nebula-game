@@ -8,6 +8,7 @@ development: true
 galaxy.convoy.time: <%= 10.minutes %>
 ss_object.asteroid.wreckage.time.spawn: [<%= 30.minutes %>, <%= 90.minutes %>]
 ss_object.asteroid.wreckage.time.first: <%= 30.seconds %>
+solar_system.links.planet.weight: 1.0
 
 buildings.barracks.queue.max: 100
 buildings.ground_factory.queue.max: 100

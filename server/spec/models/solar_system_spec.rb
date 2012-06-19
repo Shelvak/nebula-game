@@ -276,6 +276,11 @@ describe SolarSystem do
           should == SolarSystem.observer_player_ids(ss.id)
       end
 
+      it "should return [] if solar system is detached" do
+        ss = Factory.create(:ss_detached, galaxy: galaxy)
+        SolarSystem.observer_player_ids(ss).should == []
+      end
+      
       describe "FowGalaxyEntry" do
         describe "main battleground" do
           let(:ss) { Factory.create(:battleground, galaxy: galaxy) }
@@ -344,6 +349,18 @@ describe SolarSystem do
         it "should not return player & alliance ids if there is no owned SSO" do
           Factory.create(:planet, solar_system: ss)
           (SolarSystem.observer_player_ids(ss) & id_arr).should be_blank
+        end
+
+        it "should not include nil if NPC has a planet" do
+          Factory.create(:planet, solar_system: ss, player: player)
+          Factory.create(:planet, solar_system: ss, angle: 90)
+          SolarSystem.observer_player_ids(ss).should_not include(nil)
+        end
+
+        it "should not include nil if non-allied player has a planet" do
+          Factory.create(:planet, solar_system: ss, player: player)
+          Factory.create(:planet_with_player, solar_system: ss, angle: 90)
+          SolarSystem.observer_player_ids(ss).should_not include(nil)
         end
       end
 

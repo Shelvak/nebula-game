@@ -2073,4 +2073,40 @@ describe Player do
       end
     end
   end
+
+  describe ".join_alliance_ids" do
+    let(:alliance1) { create_alliance }
+    let(:a1_p1) { alliance1.owner }
+    let(:a1_p2) { Factory.create(:player, alliance: alliance1) }
+    let(:a1_p3) { Factory.create(:player, alliance: alliance1) }
+    let(:alliance2) { create_alliance }
+    let(:a2_p1) { alliance2.owner }
+    let(:a2_p2) { Factory.create(:player, alliance: alliance2) }
+    let(:a2_p3) { Factory.create(:player, alliance: alliance2) }
+    let(:player_ids) { [a1_p1.id, a2_p3.id] }
+    let(:alliance_player_ids) {
+      [a1_p1.id, a1_p2.id, a1_p3.id, a2_p1.id, a2_p2.id, a2_p3.id]
+    }
+    let(:non_ally) { Factory.create(:player) }
+
+    def create_allies
+      a1_p1; a1_p2; a1_p3; a2_p1; a2_p2; a2_p3
+    end
+
+    it "should join player allies" do
+      create_allies
+      Set.new(Player.join_alliance_ids(player_ids)).
+        should == Set.new(alliance_player_ids)
+    end
+
+    it "should return distinct values" do
+      ids = Player.join_alliance_ids(player_ids)
+      ids.should == ids.uniq
+    end
+
+    it "should not include nils when joining players without alliance" do
+      Player.join_alliance_ids(player_ids + [non_ally.id]).
+        should_not include(nil)
+    end
+  end
 end

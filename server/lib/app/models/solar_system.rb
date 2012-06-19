@@ -386,6 +386,8 @@ IF(
         ? without_locking { find(solar_system_or_id).freeze } \
         : solar_system_or_id
 
+      return [] if ! solar_system.main_battleground? && solar_system.detached?
+
       if solar_system.main_battleground?
         # This is a bit hacky. For speed purposes lets say that every player
         # that has FGE sees at least one wormhole.
@@ -421,7 +423,7 @@ UNION
       WHERE `solar_system_id`=#{solar_system.id}
     )
   )
-      }).map(&:to_i)
+      })
 
       Player.join_alliance_ids(player_ids)
     end

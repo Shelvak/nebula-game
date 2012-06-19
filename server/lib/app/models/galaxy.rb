@@ -143,11 +143,6 @@ class Galaxy < ActiveRecord::Base
     raise "We've ran out of pooled solar systems in galaxy #{galaxy_id}!" \
       if home_ss.nil?
 
-    fse = FowSsEntry.new(
-      solar_system: home_ss, player: player, player_planets: true, counter: 1
-    )
-    fse.save!
-
     zone = Galaxy::Zone.for_enrollment(
       galaxy_id, Cfg.galaxy_zone_maturity_age
     )
