@@ -271,10 +271,10 @@ package utils.remote
          {
             log.info('reestablishment socket received data, switching to reestablished socket');
             _socket = reestablishmentSocket;
-            removeReestablishmentSocketHandlers();
-            reestablishmentSocket = null;
             addSocketEventHandlers();
          }
+         removeReestablishmentSocketHandlers();
+         reestablishmentSocket = null;
       }
 
       private function reestablish_closeHandler(event: Event): void {
