@@ -106,7 +106,10 @@ package utils.remote
                addEventListener(Event.CONNECT, socket_connectHandler);
                addEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
                addEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
-               addEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+               if (!hasEventListener(SecurityErrorEvent.SECURITY_ERROR))
+               {
+                  addEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+               }
                socketEventsRegistered = true;
             }
          }
@@ -120,7 +123,7 @@ package utils.remote
                removeEventListener(Event.CONNECT, socket_connectHandler);
                removeEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
                removeEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
-               removeEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+               //removeEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
                socketEventsRegistered = false;
             }
          }
@@ -210,7 +213,7 @@ package utils.remote
             _socket.close();
          }
             // well we can't do much about the error, can we?
-         catch (error: IOError) {
+         catch (error: Error) {
          }
       }
 
@@ -274,7 +277,14 @@ package utils.remote
             addSocketEventHandlers();
          }
          removeReestablishmentSocketHandlers();
+         reestablishmentSocket.addEventListener(SecurityErrorEvent.SECURITY_ERROR,
+            reestablishment_securityErrorHandler);
          reestablishmentSocket = null;
+      }
+
+      private function reestablishment_securityErrorHandler(event: SecurityErrorEvent): void
+      {
+         log.debug("Expected security error after reestablishment failure: {0}", event.text);
       }
 
       private function reestablish_closeHandler(event: Event): void {
@@ -282,10 +292,12 @@ package utils.remote
          {
             ApplicationLocker.getInstance().decreaseLockCounter();
             log.info('reestablishment failed');
-            disconnect();
+            //disconnect();
             _buffer = "";
             _connecting = false;
             removeReestablishmentSocketHandlers();
+            reestablishmentSocket.addEventListener(SecurityErrorEvent.SECURITY_ERROR,
+               reestablishment_securityErrorHandler);
             reestablishmentSocket = null;
             if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
                dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
