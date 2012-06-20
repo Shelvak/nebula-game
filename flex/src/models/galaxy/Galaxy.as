@@ -129,7 +129,7 @@ package models.galaxy
 
       private var _solarSystemsWithPlayer: ListCollectionView;
       private function ff_solarSystemsWithPlayer(ss: MSolarSystem): Boolean {
-         return ss.metadata != null && ss.metadata.playerAssets;
+         return !ss.isWormhole && ss.metadata != null && ss.metadata.playerAssets;
       }
       [Bindable(event="willNotChange")]
       /**
