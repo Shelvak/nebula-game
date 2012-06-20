@@ -8,7 +8,7 @@ describe DispatcherEventHandler::LocationResolver do
       galaxy = Factory.create(:galaxy)
       point = GalaxyPoint.new(galaxy.id, 0, 0)
       unit = Factory.create(:unit, :location => point)
-      Factory.create(:fge_player, :player => unit.player, :x => -5, :y => -5,
+      Factory.create(:fge, :player => unit.player, :x => -5, :y => -5,
         :x_end => 5, :y_end => 5)
       DispatcherEventHandler::LocationResolver.resolve(unit.location).
         should == [
@@ -24,7 +24,7 @@ describe DispatcherEventHandler::LocationResolver do
       Factory.create(:fse_player, :player => unit.player, :solar_system => ss)
       DispatcherEventHandler::LocationResolver.resolve(unit.location).
         should == [
-          FowSsEntry.observer_player_ids(point.id),
+          SolarSystem.observer_player_ids(point.id),
           Dispatcher::PushFilter.solar_system(point.id)
         ]
     end

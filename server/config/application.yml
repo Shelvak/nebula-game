@@ -6,7 +6,7 @@
 server:
   port: 55345
 client:
-  required_version: 2012-0418-1628
+  required_version: 2012-0620-1040
 control:
   token: "u8943hgf238huin&*%Tgbuyb67532fuybvyu3cg6FV#&@GV*IUI@#}234U(**UBCU{bbsjdgbaijgbdasc}"
   # %s will be replaced by Galaxy#callback_url

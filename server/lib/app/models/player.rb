@@ -28,6 +28,8 @@ class Player < ActiveRecord::Base
   # FK :dependent => :delete_all
   has_many :notifications
   # FK :dependent => :delete_all
+  has_many :routes
+  # FK :dependent => :delete_all
   has_many :quest_progresses
   has_many :started_quests,
     :class_name => "Quest",
@@ -67,8 +69,6 @@ class Player < ActiveRecord::Base
     # For defensive portals - skip ally planets when transferring. Don't send
     # units to ally planets or receive units from them.
     4 => :portal_without_allies,
-    # This player has been detached from galaxy map.
-    5 => :detached,
     # This player is a chat moderator.
     6 => :chat_mod,
     # This is a trial user who hasn't been registered permanently.
@@ -388,7 +388,14 @@ class Player < ActiveRecord::Base
   # Returns array of player ids which are friendly to this player (self and
   # alliance members).
   def friendly_ids
-    alliance_id.nil? ? [id] : Alliance.player_ids_for(alliance_id)
+    @friendly_ids ||=
+      alliance_id.nil? ? [id] : Alliance.player_ids_for(alliance_id)
+  end
+
+  # Returns array of player ids which are in his alliance. Returns empty array
+  # if
+  def alliance_ids
+    friendly_ids - [id]
   end
 
   # Returns array of player ids which are napped to this player.
@@ -751,4 +758,10 @@ GROUP BY cqe.constructable_type
 
   VIP_STOP_SCOPE = DScope.world
   def self.vip_stop_callback(player); player.vip_stop!; end
+
+  # Given _player_ids_ join their ally ids to the array.
+  def self.join_alliance_ids(player_ids)
+    alliance_ids = Alliance.alliance_ids_for(player_ids)
+    player_ids | Alliance.player_ids_for(alliance_ids)
+  end
 end

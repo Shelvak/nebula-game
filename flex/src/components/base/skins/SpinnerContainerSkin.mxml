@@ -11,8 +11,8 @@
       <s:State name="normal"/>
       <s:State name="disabled"/>
       <s:State name="busy"/>
-     <s:State name="timeout"/>
-     <s:State name="reconnect"/>
+      <s:State name="timeout"/>
+      <s:State name="reconnect"/>
    </s:states>
    
    <s:layout>
@@ -25,8 +25,11 @@
             alpha="1"/>
    
    <s:Group horizontalCenter="0" verticalCenter="0"
-            visible="false" visible.busy="true" visible.timeout="true"
-            visible.reconnect="true" mouseEnabled="false">
+            visible="false" includeInLayout="false"
+            visible.busy="true" includeInLayout.busy="true"
+            visible.timeout="true" includeInLayout.timeout="true"
+            visible.reconnect="true" includeInLayout.reconnect="true"
+            mouseEnabled="false">
       
       <s:layout>
          <s:VerticalLayout horizontalAlign="center"/>
@@ -34,23 +37,28 @@
 
       <base:Spinner id="spinner"/>
       
-      <s:Label id="progress" visible="false" visible.timeout="true"
-                visible.reconnect="true" fontSize="24" fontWeight="bold"/>
+      <s:Label id="progress"
+         visible="false" includeInLayout="false"
+         visible.timeout="true" includeInLayout.timeout="true"
+         visible.reconnect="true" includeInLayout.reconnect="true"
+         fontSize="24" fontWeight="bold"/>
       <s:Label text="{Localizer.bundlesSet
-              ? Localizer.string('General', 'label.longerThenExpected')
-              : '................'}"
+                ? Localizer.string('General', 'label.longerThenExpected')
+                : '................'}"
                fontSize="14" fontWeight="bold"
                paddingTop="6"
-               visible="false" visible.timeout="true"
-               visible.reconnect="true"/>
+               visible="false" includeInLayout="false"
+               visible.timeout="true" includeInLayout.timeout="true"
+               visible.reconnect="true" includeInLayout.reconnect="true"
+        />
       <s:Button skinClass="components.skins.LinkButtonSkin"
-                visible="false" visible.timeout="false" visible.reconnect="true"
+                visible="false" includeInLayout="false"
+                visible.timeout="false" includeInLayout.timeout="false"
+                visible.reconnect="true" includeInLayout.reconnect="true"
                 label="{Localizer.bundlesSet
-                              ? Localizer.string('General', 'label.reestablish')
-                              : 'retry'}"
+                  ? Localizer.string('General', 'label.reestablish')
+                  : 'retry'}"
                 click="reconnect(event)"/>
-
-                  
    </s:Group>
 
   <fx:Script><![CDATA[

@@ -93,8 +93,7 @@ package controllers.solarsystems.actions
             createMapObjects(ssMap, MCooldownSpace, params["cooldowns"]);
             const planet: MPlanet = ML.latestPlanet;
             // destroy latest a planet if its not in the given solar system
-            if (planet != null
-                   && (!planet.inBattleground || !ss.isGlobalBattleground)) {
+            if (planet != null && (!planet.inBattleground || !ss.isGlobalBattleground)) {
                if (!(planet.inBattleground
                         && ss.isGlobalBattleground
                         || planet.solarSystemId == ss.id)) {

@@ -221,7 +221,6 @@ class DispatcherEventHandler
     typesig binding, [NilClass, Dispatcher::PushFilter], Fixnum, Array, Array,
             [NilClass, Time]
 
-    typesig_bindless [["player_id", player_id]], Fixnum
     dispatcher.push_to_player!(
       player_id,
       UnitsController::ACTION_MOVEMENT,

@@ -1257,6 +1257,16 @@ describe Player do
     end
   end
 
+  describe "#alliance_ids" do
+    let(:player) { Factory.build(:player) }
+
+    it "should return #friendly_ids without you" do
+      player.id = 2
+      player.should_receive(:friendly_ids).and_return([1,2,3,4])
+      player.alliance_ids.should == [1,3,4]
+    end
+  end
+
   describe "#nap_ids" do
     before(:all) do
       @alliance = Factory.create :alliance
@@ -1936,11 +1946,7 @@ describe Player do
 
   describe "#attach!" do
     let(:player) { Factory.create(:player) }
-    let(:home_solar_system) do
-      home_ss = player.home_solar_system
-      Factory.create(:fse_player, :solar_system => home_ss, :player => player)
-      home_ss
-    end
+    let(:home_solar_system) { player.home_solar_system }
     let(:normal_solar_system) do
       Factory.create(:solar_system, :galaxy => player.galaxy, :x => 10)
     end
@@ -2061,6 +2067,42 @@ describe Player do
         defender = player(30, 30, 30, 30, 30)
         Player.battle_vps_multiplier(aggressor.id, defender.id).should == 3
       end
+    end
+  end
+
+  describe ".join_alliance_ids" do
+    let(:alliance1) { create_alliance }
+    let(:a1_p1) { alliance1.owner }
+    let(:a1_p2) { Factory.create(:player, alliance: alliance1) }
+    let(:a1_p3) { Factory.create(:player, alliance: alliance1) }
+    let(:alliance2) { create_alliance }
+    let(:a2_p1) { alliance2.owner }
+    let(:a2_p2) { Factory.create(:player, alliance: alliance2) }
+    let(:a2_p3) { Factory.create(:player, alliance: alliance2) }
+    let(:player_ids) { [a1_p1.id, a2_p3.id] }
+    let(:alliance_player_ids) {
+      [a1_p1.id, a1_p2.id, a1_p3.id, a2_p1.id, a2_p2.id, a2_p3.id]
+    }
+    let(:non_ally) { Factory.create(:player) }
+
+    def create_allies
+      a1_p1; a1_p2; a1_p3; a2_p1; a2_p2; a2_p3
+    end
+
+    it "should join player allies" do
+      create_allies
+      Set.new(Player.join_alliance_ids(player_ids)).
+        should == Set.new(alliance_player_ids)
+    end
+
+    it "should return distinct values" do
+      ids = Player.join_alliance_ids(player_ids)
+      ids.should == ids.uniq
+    end
+
+    it "should not include nils when joining players without alliance" do
+      Player.join_alliance_ids(player_ids + [non_ally.id]).
+        should_not include(nil)
     end
   end
 end

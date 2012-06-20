@@ -35,7 +35,8 @@ class DispatcherEventHandler::Buffer < BasicObject
     ret_val
   end
 
-  private
+private
+
   def dispatcher
     ::Celluloid::Actor[:dispatcher]
   end

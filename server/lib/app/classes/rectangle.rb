@@ -9,6 +9,8 @@ class Rectangle
     [:x_end, :x_end],
     [:y_end, :y_end]
   ]
+  # Fields that need to be selected to form a +Rectangle+.
+  SELECT_FIELDS = MAPPING.map { |db_attr, obj_attr| "`#{db_attr}`" }.join(",")
 
   # Create a rectangle. All coordinates are inclusive.
   def initialize(x, y, x_end, y_end)
@@ -34,6 +36,11 @@ class Rectangle
 
   def hash
     @x * 7 + @y * 7 + @x_end * 7 + @y_end * 13
+  end
+
+  def to_sql(galaxy_id, prefix="")
+    "(`galaxy_id`=#{galaxy_id.to_i} AND `x` BETWEEN #{@x} AND #{@x_end
+      } AND `y` BETWEEN #{@y} AND #{@y_end})"
   end
 
   def as_json(options=nil)

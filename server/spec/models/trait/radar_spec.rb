@@ -15,12 +15,6 @@ describe Building::RadarTraitMock do
       @player = Factory.create(:player)
     end
 
-    it "should increase fow ss cache in zone" do
-      FowSsEntry.should_receive(:increase_for_zone).with(@zone, @player,
-        1, false)
-      Trait::Radar.increase_vision(@zone, @player)
-    end
-
     it "should increase fow galaxy cache in zone" do
       FowGalaxyEntry.should_receive(:increase).with(
         Trait::Radar.rectangle_from_zone(@zone),
@@ -34,12 +28,6 @@ describe Building::RadarTraitMock do
     before(:each) do
       @zone = [0..10, 4..8]
       @player = Factory.create(:player)
-    end
-
-    it "should reduce fow ss cache" do
-      FowSsEntry.should_receive(:decrease_for_zone).with(@zone, @player,
-        1, false)
-      Trait::Radar.decrease_vision(@zone, @player)
     end
 
     it "should reduce fow galaxy cache in zone" do
