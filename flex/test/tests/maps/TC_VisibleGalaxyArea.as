@@ -1,6 +1,6 @@
 package tests.maps
 {
-   import components.map.space.GalaxyMapCoordsTransform;
+   import components.map.space.galaxy.GalaxyMapCoordsTransform;
    import models.galaxy.IVisibleGalaxyAreaClient;
    
    import ext.hamcrest.object.equals;
