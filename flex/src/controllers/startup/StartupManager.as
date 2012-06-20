@@ -52,6 +52,7 @@ package controllers.startup
    import controllers.technologies.TechnologiesCommand;
    import controllers.technologies.actions.*;
    import controllers.timedupdate.MasterUpdateTrigger;
+   import controllers.ui.NavigationController;
    import controllers.units.UnitsCommand;
    import controllers.units.actions.*;
 
@@ -77,7 +78,6 @@ package controllers.startup
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.StringUtil;
-   import utils.execution.GameLogicExecutionManager;
    import utils.execution.JobExecutorsManager;
    import utils.logging.InMemoryTarget;
    import utils.logging.Log;
@@ -197,6 +197,10 @@ package controllers.startup
          AllianceScreenM.getInstance().reset();
          ApplicationLocker.reset();
          MainQuestSlideFactory.getInstance().reset();
+
+         // in case there is some screen or sidebar with old state
+         // so that user won't click on any buttons while server pushes all necessary messages
+         NavigationController.getInstance().showGalaxy();
       }
       
       
@@ -403,7 +407,7 @@ package controllers.startup
          bindPair(PlayersCommand.LOGIN, new LoginAction());
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
          bindPair(PlayersCommand.RATINGS, new controllers.players.actions.RatingsAction());
-         bindPair(PlayersCommand.RENAME, new controllers.players.actions.RenameAction());
+         bindPair(PlayersCommand.RENAME, new RenameAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
          bindPair(PlayersCommand.SHOW_PROFILE, new ShowProfileAction());
          bindPair(PlayersCommand.BATTLE_VPS_MULTIPLIER, new BattleVpsMultiplierAction());

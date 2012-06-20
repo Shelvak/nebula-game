@@ -41,12 +41,7 @@ package models.player
       [Optional]
       /**
        * Name of the player.
-       * 
-       * <p>Metadata:<br/>
-       * [Bindable]<br/>
-       * [Optional]
-       * </p>
-       * 
+       *
        * @default empty string
        */
       public var name:String = "";

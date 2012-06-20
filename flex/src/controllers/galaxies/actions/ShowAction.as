@@ -151,9 +151,7 @@ package controllers.galaxies.actions
                               function (): void {
                                  if (_restorePlanet != 0) {
                                     const p: MSSObject =
-                                             ML.latestSSMap.getSSObjectById(
-                                                _restorePlanet
-                                             );
+                                             ML.latestSSMap.getSSObjectById(_restorePlanet);
                                     if (p != null) {
                                        NAV_CTRL.toPlanet(p);
                                     }

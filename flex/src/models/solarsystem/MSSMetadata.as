@@ -19,6 +19,14 @@ package models.solarsystem
          return playerPlanets || playerShips;
       }
 
+      public function get playerMetadata(): MSSMetadataOfOwner {
+
+         return new MSSMetadataOfOwner(
+            Owner.PLAYER,
+            playerPlanets ? [ML.player]: [],
+            playerShips ? [ML.player]: []);
+      }
+
       [Required(elementType="models.player.PlayerMinimal")]
       public var alliesWithPlanets: Array = [];
 
