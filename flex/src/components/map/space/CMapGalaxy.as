@@ -25,7 +25,8 @@ package components.map.space
        * Called by <code>NavigationController</code> when galaxy map screen is shown.
        */
       public static function screenShowHandler() : void {
-         if (!ModelLocator.getInstance().latestGalaxy.canBeExplored) {
+         const galaxy: Galaxy = ModelLocator.getInstance().latestGalaxy;
+         if (galaxy != null && !galaxy.canBeExplored) {
             Messenger.show(
                Localizer.string("Galaxy", "message.noRadar"),
                Messenger.VERY_LONG, 'info/galaxy'

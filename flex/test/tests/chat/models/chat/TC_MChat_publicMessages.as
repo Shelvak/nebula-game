@@ -2,16 +2,18 @@ package tests.chat.models.chat
 {
    import asmock.framework.Expect;
    import asmock.framework.SetupResult;
-   
+
+   import controllers.startup.StartupInfo;
+
    import ext.hamcrest.object.equals;
-   
+
    import models.chat.MChatChannelPublic;
    import models.chat.MChatMember;
    import models.chat.MChatMessage;
-   
+
    import org.hamcrest.assertThat;
-   
-   
+
+
    public class TC_MChat_publicMessages extends TC_BaseMChat
    {
       public function TC_MChat_publicMessages()
@@ -34,6 +36,7 @@ package tests.chat.models.chat
       public override function setUp() : void
       {
          super.setUp();
+         StartupInfo.getInstance().initializationComplete = true;
          channelGalaxy = MChatChannelPublic(mockRepository.createDynamic(MChatChannelPublic, ["galaxy"]));
          SetupResult.forCall(channelGalaxy.name).returnValue("galaxy");
          message = MChatMessage(chat.messagePool.borrowObject());

@@ -4,7 +4,7 @@
                         xmlns:base="components.base.*"
                         xmlns:ss="components.gameobjects.solarsystem.*">
    <fx:Binding source="solarSystem.metadata.playerPlanets ||
-                       solarSystem.metadata.enemiesMetadata.hasPlanets ||
+                       solarSystem.metadata.alliesMetadata.hasPlanets ||
                        solarSystem.metadata.napsMetadata.hasPlanets ||
                        solarSystem.metadata.enemiesMetadata.hasPlanets"
                destination="visible"/>
