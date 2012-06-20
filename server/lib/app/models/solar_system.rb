@@ -49,6 +49,7 @@ class SolarSystem < ActiveRecord::Base
 
   # Is this solar system a global battleground?
   def main_battleground?; x.nil? && y.nil? && battleground?; end
+  scope :main_battleground, where(x: nil, y: nil, kind: KIND_BATTLEGROUND)
   
   def normal?; kind == KIND_NORMAL; end
   scope :normal, where(:kind => KIND_NORMAL)
@@ -245,6 +246,7 @@ class SolarSystem < ActiveRecord::Base
     def visible_for(player)
       friendly_ids = player.friendly_ids
       alliance_ids = player.alliance_ids
+      battleground_id = Galaxy.battleground_id(player.galaxy_id)
       conditions = []
 
       # Solar systems covered by radars.
@@ -258,6 +260,7 @@ class SolarSystem < ActiveRecord::Base
           select("DISTINCT(`location_solar_system_id`)").
           where(player_id: friendly_ids).
           where("`location_solar_system_id` IS NOT NULL").
+          where("`location_solar_system_id` != ?", battleground_id).
           c_select_values
       end.map { |id| "`id`=#{id}" }
 
@@ -273,6 +276,7 @@ class SolarSystem < ActiveRecord::Base
         SsObject::Planet.
           select("DISTINCT(`solar_system_id`)").
           where("`player_id` IN (?) OR `id` IN (?)", friendly_ids, sso_ids).
+          where("`solar_system_id` != ?", battleground_id).
           c_select_values
       end.map { |id| "`id`=#{id}" }
 
@@ -282,14 +286,23 @@ class SolarSystem < ActiveRecord::Base
       conditions = conditions.join(" OR ")
       solar_systems = without_locking { SolarSystem.where(conditions).all }
 
-      ss_ids = solar_systems.map(&:id)
+      # Wormholes do not have any metadata anyway, so we don't need to fetch it.
+      ss_ids = solar_systems.each_with_object([]) do |solar_system, array|
+        array << solar_system.id unless solar_system.wormhole?
+      end
+
+      # Include battleground id if player sees any wormholes.
+      ss_ids << battleground_id if solar_systems.any?(&:wormhole?)
       metadatas = SolarSystem::Metadatas.new(ss_ids)
 
       solar_systems.map do |solar_system|
+        # If it is wormhole - get metadata from battleground.
+        metadata_ss_id =
+          solar_system.wormhole? ? battleground_id : solar_system.id
         {
           solar_system: solar_system.freeze,
           metadata: metadatas.for_existing(
-            solar_system.id, player.id, friendly_ids, alliance_ids
+            metadata_ss_id, player.id, friendly_ids, alliance_ids
           )
         }
       end
@@ -307,12 +320,8 @@ class SolarSystem < ActiveRecord::Base
 
       player_ids = "(#{player_ids.join(",")})"
 
-      row = without_locking do
-        SolarSystem.select("`galaxy_id`, `x`, `y`").
-          where(id: solar_system_id).c_select_one
-      end
-
-      galaxy_id, x, y = row['galaxy_id'], row['x'], row['y']
+      ss = without_locking { SolarSystem.find(solar_system_id).freeze }
+      return false if ss.main_battleground?
 
       # Check for:
       # * Radar coverage
@@ -324,9 +333,9 @@ SELECT
 IF(
   (SELECT 1
     FROM `#{FowGalaxyEntry.table_name}`
-    WHERE `galaxy_id`=#{galaxy_id}
-      AND #{x} BETWEEN `x` and `x_end`
-      AND #{y} BETWEEN `y` AND `y_end`
+    WHERE `galaxy_id`=#{ss.galaxy_id}
+      AND #{ss.x} BETWEEN `x` and `x_end`
+      AND #{ss.y} BETWEEN `y` AND `y_end`
       AND `player_id` IN #{player_ids}
     LIMIT 1
   ) = 1,
@@ -334,7 +343,7 @@ IF(
 IF(
   (SELECT 1
     FROM `#{SsObject.table_name}`
-    WHERE `solar_system_id`=#{solar_system_id} AND `player_id` IN #{player_ids}
+    WHERE `solar_system_id`=#{ss.id} AND `player_id` IN #{player_ids}
     LIMIT 1
   ) = 1,
   1,
@@ -342,7 +351,7 @@ IF(
   (SELECT 1
     FROM `#{Unit.table_name}`
     WHERE `player_id` IN #{player_ids}
-      AND `location_solar_system_id`=#{solar_system_id}
+      AND `location_solar_system_id`=#{ss.id}
     LIMIT 1
   ) = 1,
   1,
@@ -352,7 +361,7 @@ IF(
     WHERE `player_id` IN #{player_ids}
       AND `location_ss_object_id` IN (
         SELECT `id` FROM `#{SsObject.table_name}`
-          WHERE `solar_system_id`=#{solar_system_id}
+          WHERE `solar_system_id`=#{ss.id}
             AND `type`='#{SsObject::Planet.to_s.demodulize}'
       )
     LIMIT 1

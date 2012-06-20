@@ -153,6 +153,39 @@ describe SolarSystem do
         SolarSystem.visible_for(player).should_not include(ss_data(ss, md))
       end
 
+      it "should not include battleground even if you have units inside" do
+        ss = Factory.create(:battleground, galaxy: galaxy)
+        Factory.create(
+          :u_crow, player: player, location: SolarSystemPoint.new(ss.id, 0, 0)
+        )
+        md = create_md(ss)
+        SolarSystem.visible_for(player).should_not include(ss_data(ss, md))
+      end
+
+      it "should not include battleground even if you have planets inside" do
+        ss = Factory.create(:battleground, galaxy: galaxy)
+        Factory.create(:planet, player: player, solar_system: ss)
+        md = create_md(ss)
+        SolarSystem.visible_for(player).should_not include(ss_data(ss, md))
+      end
+
+      it "should assign battleground metadata to wormholes" do
+        bg = Factory.create(:battleground, galaxy: galaxy)
+        Factory.create(
+          :u_crow, player: player, location: SolarSystemPoint.new(bg.id, 0, 0)
+        )
+        fge = Factory.create(:fge, galaxy: galaxy, player: player)
+        wh = Factory.create(:wormhole, galaxy: galaxy, x: fge.x, y: fge.y)
+        metadatas = create_md(bg, wh)
+
+        SolarSystem.visible_for(player).should include({
+          solar_system: wh,
+          metadata: metadatas.for_existing(
+            bg.id, player.id, friendly_ids, alliance_ids
+          )
+        })
+      end
+
       it "should include solar systems with player units inside" do
         Factory.create(
           :u_crow, player: player, location: SolarSystemPoint.new(ss.id, 0, 0)
@@ -198,6 +231,14 @@ describe SolarSystem do
 
       def create_ss(x=0, y=0)
         Factory.create(:solar_system, galaxy: galaxy, x: x, y: y)
+      end
+
+      it "should return false for battleground" do
+        ss = Factory.create(:battleground, galaxy: galaxy)
+        Factory.create(
+          :u_crow, player: player, location: SolarSystemPoint.new(ss.id, 0, 0)
+        )
+        SolarSystem.visible?(ss.id, pids).should be_false
       end
 
       it "should return true for solar systems covered by radars" do

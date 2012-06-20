@@ -42,6 +42,14 @@ module Visibility
       ss_updated = ss_current_player_ids & ss_previous_player_ids
       ss_destroyed = ss_previous_player_ids - ss_current_player_ids
 
+      # If it is main galaxy battleground, never dispatch created/destroyed for
+      # it and just update metadata as client will apply this update to all
+      # visible wormholes instead of applying it to battleground solar system.
+      if SolarSystem.main_battleground.where(id: solar_system_id).exists?
+        ss_updated |= ss_created | ss_destroyed
+        ss_created = ss_destroyed = []
+      end
+
       dispatch_created_ss(solar_system_id, ss_created, current_metadatas) \
         unless ss_created.blank?
 
