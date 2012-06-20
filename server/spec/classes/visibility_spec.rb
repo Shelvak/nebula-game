@@ -50,6 +50,18 @@ describe Visibility do
             end
           end
         end
+
+        it "should not dispatch event if it happened in battleground" do
+          should_not_fire_event(
+            an_instance_of(Event::FowChange::SsCreated),
+            EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+          ) do
+            Visibility.track_location_changes(bg_location_point) do
+              Factory.create(:u_crow, location: bg_location_point,
+                player: player)
+            end
+          end
+        end
       end
 
       describe "solar system destroyed" do
@@ -91,6 +103,29 @@ describe Visibility do
             delete.call
           end
         end
+
+        describe "if it happened in battleground" do
+          let(:unit) do
+            Factory.create(:u_crow, location: bg_location_point, player: player)
+          end
+          let(:delete) do
+            lambda do
+              Visibility.track_location_changes(bg_location_point) do
+                # #destroy wraps it in #track_location_changes.
+                Unit.where(id: unit.id).delete_all
+              end
+            end
+          end
+
+          it "should not dispatch event" do
+            should_not_fire_event(
+              an_instance_of(Event::FowChange::SsDestroyed),
+              EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+            ) do
+              delete.call
+            end
+          end
+        end
       end
     end
 
@@ -103,6 +138,8 @@ describe Visibility do
     describe "tracking solar system point" do
       let(:solar_system) { Factory.create(:solar_system) }
       let(:location_point) { SolarSystemPoint.new(solar_system.id, 0, 0) }
+      let(:battleground) { Factory.create(:battleground) }
+      let(:bg_location_point) { SolarSystemPoint.new(battleground.id, 0, 0) }
 
       it_should_behave_like "calling block"
       it_should_behave_like "tracking ss metadata"
@@ -136,6 +173,43 @@ describe Visibility do
             end
           end
         end
+
+        describe "in battleground" do
+          it "should dispatch updated even if metadata was created" do
+            SPEC_EVENT_HANDLER.clear_events!
+
+            Visibility.track_location_changes(bg_location_point) do
+              Factory.create(:u_crow, location: bg_location_point,
+                player: player)
+            end
+
+            event = Event::FowChange::SsUpdated.new(
+              battleground.id, [player],
+              SolarSystem::Metadatas.new(battleground.id)
+            )
+            SPEC_EVENT_HANDLER.events.should include([
+              event, EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+            ])
+          end
+
+          it "should dispatch updated even if metadata was destroyed" do
+            SPEC_EVENT_HANDLER.clear_events!
+
+            unit = Factory.create(:u_crow, location: bg_location_point,
+              player: player)
+            Visibility.track_location_changes(bg_location_point) do
+              Unit.where(id: unit.id).delete_all
+            end
+
+            event = Event::FowChange::SsUpdated.new(
+              battleground.id, [player],
+              SolarSystem::Metadatas.new(battleground.id)
+            )
+            SPEC_EVENT_HANDLER.events.should include([
+              event, EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+            ])
+          end
+        end
       end
     end
 
@@ -143,15 +217,21 @@ describe Visibility do
       let(:planet) { Factory.create(:planet) }
       let(:solar_system) { planet.solar_system }
       let(:location_point) { LocationPoint.planet(planet.id) }
+      let(:battleground) { Factory.create(:battleground) }
+      let(:bg_planet) { Factory.create(:planet, solar_system: battleground) }
+      let(:bg_location_point) { LocationPoint.planet(bg_planet.id) }
 
       it_should_behave_like "calling block"
       it_should_behave_like "tracking ss metadata"
 
       describe "solar system updated" do
-        it "should dispatch event if metadata was updated" do
-          # To gain visibility.
+        def gain_visibility
           planet
           Factory.create(:u_crow, location: location_point, player: player)
+        end
+
+        it "should dispatch event if metadata was updated" do
+          gain_visibility
 
           SPEC_EVENT_HANDLER.clear_events!
           # Actual update.
@@ -176,6 +256,42 @@ describe Visibility do
             Visibility.track_location_changes(location_point) do
               Factory.create(:u_crow, location: location_point, player: player)
             end
+          end
+        end
+
+        describe "in battleground" do
+          it "should dispatch updated even if metadata was created" do
+            bg_planet
+
+            SPEC_EVENT_HANDLER.clear_events!
+            Visibility.track_location_changes(bg_location_point) do
+              bg_planet.update_row! player_id: player.id
+            end
+
+            event = Event::FowChange::SsUpdated.new(
+              battleground.id, [player],
+              SolarSystem::Metadatas.new(battleground.id)
+            )
+            SPEC_EVENT_HANDLER.events.should include([
+              event, EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+            ])
+          end
+
+          it "should dispatch updated even if metadata was destroyed" do
+            bg_planet.update_row! player_id: player.id
+            SPEC_EVENT_HANDLER.clear_events!
+
+            Visibility.track_location_changes(bg_location_point) do
+              bg_planet.update_row! player_id: nil
+            end
+
+            event = Event::FowChange::SsUpdated.new(
+              battleground.id, [player],
+              SolarSystem::Metadatas.new(battleground.id)
+            )
+            SPEC_EVENT_HANDLER.events.should include([
+              event, EventBroker::FOW_CHANGE, EventBroker::REASON_SS_ENTRY
+            ])
           end
         end
       end
