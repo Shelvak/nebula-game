@@ -255,6 +255,8 @@ package utils.remote
          var index: int = _buffer.indexOf("\n");
          while (index != -1) {
             const msg: String = _buffer.substring(0, index);
+            _buffer = _buffer.substr(index + 1);
+            index = _buffer.indexOf("\n");
             msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
             const rmo: ServerRMO = ServerRMO.parse(msg);
             if (rmo.action == "players|disconnect")
@@ -266,8 +268,6 @@ package utils.remote
             {
                _timeSynchronizer.synchronize(rmo);
                _unprocessedMessages.push(rmo);
-               _buffer = _buffer.substr(index + 1);
-               index = _buffer.indexOf("\n");
             }
          }
          if (success)
