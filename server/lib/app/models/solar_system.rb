@@ -49,6 +49,7 @@ class SolarSystem < ActiveRecord::Base
 
   # Is this solar system a global battleground?
   def main_battleground?; x.nil? && y.nil? && battleground?; end
+  scope :main_battleground, where(x: nil, y: nil, kind: KIND_BATTLEGROUND)
   
   def normal?; kind == KIND_NORMAL; end
   scope :normal, where(:kind => KIND_NORMAL)
