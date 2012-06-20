@@ -4,10 +4,13 @@
                               xmlns:space="components.map.space.*"
                               xmlns:solarsystem="components.gameobjects.solarsystem.*"
                               xmlns:ui="components.ui.*"
+                              xmlns:galaxy="components.map.space.galaxy.*"
                               title="{getString('title.solarSystemInfo')}">
    <fx:Binding source="MSolarSystem(staticObject)" destination="ss"/>
    <fx:Script>
       <![CDATA[
+      import components.map.space.*;
+
       import models.location.LocationMinimal;
       import models.solarsystem.MSSObject;
       import models.solarsystem.MSolarSystem;
@@ -21,8 +24,7 @@
       private var ss: MSolarSystem;
 
 
-      private function getString(property: String,
-                                 parameters: Array = null): String {
+      private function getString(property: String, parameters: Array = null): String {
          return Localizer.string("Galaxy", property, parameters);
       }
 
@@ -34,7 +36,7 @@
 
       private function getSectorLabel(ss: MSolarSystem): String {
          return ss == null
-                   ? "" : LocationMinimal.getSectorLabel(ss.currentLocation);
+            ? "" : LocationMinimal.getSectorLabel(ss.currentLocation);
       }
 
       private function btnOpen_clickHandler(event: MouseEvent): void {
@@ -53,8 +55,8 @@
                   source="{ss.imageData}" fillMode="scale"/>
    <s:Label text="{ss.name}"/>
    <s:Label text="{getSectorLabel(ss)}"/>
-   <space:CSolarSystemMetadata model="{ss.metadata}"/>
-   
+   <galaxy:CSolarSystemMetadata model="{ss.metadata}"/>
+
    <s:Label id="lblShield" text="{getString('label.shield')}"
             visible="{ss.isShielded}" includeInLayout="{ss.isShielded}"
             width="{MSSObject.IMAGE_WIDTH}" lineBreak="toFit"

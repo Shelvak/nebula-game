@@ -1,4 +1,4 @@
-package components.map.space
+package components.map.space.galaxy
 {
    import flash.display.BitmapData;
 

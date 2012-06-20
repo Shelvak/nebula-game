@@ -9,6 +9,8 @@
    <fx:Binding source="MSSObject(staticObject)" destination="ssObject"/>
    <fx:Script>
       <![CDATA[
+      import components.map.space.*;
+
       import controllers.players.PlayersCommand;
 
       import models.Owner;

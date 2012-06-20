@@ -1,5 +1,6 @@
-package components.map.space
+package components.map.space.galaxy
 {
+   import components.map.space.*;
    import components.gameobjects.solarsystem.SSPlanetsStatusIcons;
    import components.gameobjects.solarsystem.SSShipsStatusIcons;
 

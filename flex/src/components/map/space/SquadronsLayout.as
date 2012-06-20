@@ -21,7 +21,7 @@ package components.map.space
       /**
        * Gap between adjecent <code>CSquadronMapIcon</code> components in pixels. 
        */
-      internal static const GAP:int = 0;
+      public static const GAP:int = 0;
       
       
       private var _grid:Grid;

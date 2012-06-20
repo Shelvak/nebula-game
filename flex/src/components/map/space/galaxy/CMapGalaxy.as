@@ -1,5 +1,6 @@
-package components.map.space
+package components.map.space.galaxy
 {
+   import components.map.space.*;
    import controllers.Messenger;
 
    import models.ModelLocator;
@@ -260,7 +261,7 @@ package components.map.space
 }
 
 
-import components.map.space.CMapGalaxy;
+import components.map.space.galaxy.CMapGalaxy;
 import components.map.space.CStaticSpaceObjectsAggregator;
 
 import flash.errors.IllegalOperationError;

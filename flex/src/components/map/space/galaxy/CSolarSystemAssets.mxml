@@ -6,6 +6,9 @@
          includeInLayout="{model.visible}">
    <fx:Script>
       <![CDATA[
+      import components.map.space.*;
+
+
       [Bindable]
       public var model: CSolarSystemAssetsM;
       ]]>
@@ -21,6 +24,9 @@
                   <s:BitmapImage source="{MSingleAsset(data).icon}"/>
                </s:Group>
                <ui:PlayerProfileButton player="{MSingleAsset(data).player}"/>
+               <fx:Script><![CDATA[
+                  import components.map.space.*;
+                  ]]></fx:Script>
             </s:ItemRenderer>
          </fx:Component>
       </s:itemRenderer>

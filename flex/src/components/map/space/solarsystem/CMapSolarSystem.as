@@ -1,5 +1,6 @@
-package components.map.space
+package components.map.space.solarsystem
 {
+   import components.map.space.*;
    import controllers.Messenger;
 
    import models.ModelLocator;
