@@ -610,6 +610,22 @@ describe Galaxy do
       [player.home_solar_system.x, player.home_solar_system.y].should == [3, 4]
     end
 
+    it "should dispatch created with appropriate metadata" do
+      Factory.create(:planet, solar_system: home_ss, owner_changed: 2.days.ago)
+      viewer = Factory.create(:fge, galaxy: galaxy,
+        rectangle: Rectangle.new(-100, -100, 100, 100))
+
+      SPEC_EVENT_HANDLER.clear_events!
+      player
+      event, kind, reason = SPEC_EVENT_HANDLER.events.find do
+        |f_event, f_kind, f_reason|
+        f_event.is_a?(Event::FowChange::SsCreated)
+      end
+
+      event.metadatas[viewer.player_id][:enemies_with_planets].
+        should_not be_blank
+    end
+
     describe "planets" do
       let(:home_ss_planets) do
         [
