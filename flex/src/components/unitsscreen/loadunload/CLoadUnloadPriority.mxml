@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:mx="library://ns.adobe.com/flex/mx">
+  <s:Rect width="72" height="72">
+    <s:stroke>
+      <s:SolidColorStroke color="#afafaf" weight="1"/>
+    </s:stroke>
+  </s:Rect>
+  <s:BitmapImage
+</s:Group>
