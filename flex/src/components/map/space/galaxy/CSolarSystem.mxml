@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<space:CStaticSpaceObject xmlns:fx="http://ns.adobe.com/mxml/2009"
+                          xmlns:s="library://ns.adobe.com/flex/spark"
+                          xmlns:space="components.map.space.*"
+                          xmlns:solarsystem="components.gameobjects.solarsystem.*">
+   <fx:Binding source="MSolarSystem(staticObject)" destination="ss"/>
+   <fx:Script>
+      <![CDATA[
+      import models.solarsystem.MSolarSystem;
+
+      import utils.assets.AssetNames;
+
+      import utils.assets.ImagePreloader;
+
+
+      [Bindable]
+      private var ss: MSolarSystem;
+
+      private function get shieldImage(): BitmapData {
+         return ImagePreloader.getInstance().getImage(AssetNames.SS_SHIELD_IMAGE_NAME);
+      }
+      ]]>
+   </fx:Script>
+   <s:Group left="0" right="0" verticalCenter="0">
+      <s:layout>
+         <s:VerticalLayout gap="10" horizontalAlign="center"/>
+      </s:layout>
+      <s:Group width="{MSolarSystem.IMAGE_WIDTH}" height="{MSolarSystem.IMAGE_HEIGHT}">
+         <s:BitmapImage
+            source="{ss.imageData}"
+            fillMode="scale" smooth="true"
+            left="0" right="0" top="0" bottom="0"/>
+         <s:BitmapImage
+            left="-5" right="-5" top="-5" bottom="-5"
+            fillMode="scale" source="{shieldImage}"
+            visible="{ss.isShielded}"/>
+      </s:Group>
+      <s:Label color="0x9D9D9D" text="{ss.name}"/>
+   </s:Group>
+   <solarsystem:SSPlanetsStatusIcons left="0" top="0" solarSystem="{ss}">
+      <solarsystem:layout><s:VerticalLayout gap="2"/></solarsystem:layout>
+   </solarsystem:SSPlanetsStatusIcons>
+   <solarsystem:SSShipsStatusIcons right="0" top="0" solarSystem="{ss}">
+      <solarsystem:layout><s:VerticalLayout gap="2"/></solarsystem:layout>
+   </solarsystem:SSShipsStatusIcons>
+</space:CStaticSpaceObject>

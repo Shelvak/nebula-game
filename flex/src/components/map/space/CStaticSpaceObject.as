@@ -13,6 +13,7 @@ package components.map.space
       }
       
       private var _staticObject:IMStaticSpaceObject;
+      [Bindable]
       public function set staticObject(value:IMStaticSpaceObject) : void {
          if (_staticObject != value) {
             _staticObject = value;
