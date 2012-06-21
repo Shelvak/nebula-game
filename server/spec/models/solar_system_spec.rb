@@ -724,7 +724,7 @@ describe SolarSystem do
     let(:galaxy) { Factory.create(:galaxy) }
     let(:player) { Factory.create(:player_no_home_ss, :galaxy => galaxy) }
     let(:solar_system) do
-      Factory.create(:ss_detached, :player => player, :galaxy => galaxy)
+      Factory.create(:ss_detached, player: player, galaxy: galaxy)
     end
     let(:fges) do
       [
@@ -774,8 +774,30 @@ describe SolarSystem do
       solar_system.should be_saved
     end
 
-    it "should dispatch created for players which see it" do
+    it "should dispatch created if player sees it" do
       players = fges.map(&:player)
+      player_minimal = Player.minimal(player.id)
+      metadatas = SolarSystem::Metadatas.new(solar_system.id)
+
+      should_fire_event(
+        Event::FowChange::SsCreated.new(
+          solar_system.id, x, y, solar_system.kind, player_minimal, players,
+          metadatas
+        ),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      ) do
+        solar_system.attach!(x, y)
+      end
+    end
+
+    it "should dispatch created for player if alliance member sees it" do
+      alliance = create_alliance(galaxy: galaxy)
+      viewer = alliance.owner
+      ally = Factory.create(:player, galaxy: galaxy, alliance: alliance)
+      Factory.create(:fge, coords.merge(player: ally, galaxy: galaxy))
+
+      players = [viewer, ally]
       player_minimal = Player.minimal(player.id)
       metadatas = SolarSystem::Metadatas.new(solar_system.id)
 
