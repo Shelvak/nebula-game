@@ -6,6 +6,7 @@
    <fx:Binding source="MSolarSystem(staticObject)" destination="ss"/>
    <fx:Script>
       <![CDATA[
+      import models.player.PlayerOptions;
       import models.solarsystem.MSolarSystem;
 
       import utils.assets.AssetNames;
@@ -37,10 +38,12 @@
       </s:Group>
       <s:Label color="0x9D9D9D" text="{ss.name}"/>
    </s:Group>
-   <solarsystem:SSPlanetsStatusIcons left="0" top="0" solarSystem="{ss}">
-      <solarsystem:layout><s:VerticalLayout gap="2"/></solarsystem:layout>
-   </solarsystem:SSPlanetsStatusIcons>
-   <solarsystem:SSShipsStatusIcons right="0" top="0" solarSystem="{ss}">
-      <solarsystem:layout><s:VerticalLayout gap="2"/></solarsystem:layout>
-   </solarsystem:SSShipsStatusIcons>
+   <s:Group  visible="{!ss.isWormhole || PlayerOptions.showWormholeIcons}" left="0" right="0">
+      <solarsystem:SSPlanetsStatusIcons left="0" top="0" solarSystem="{ss}">
+         <solarsystem:layout><s:VerticalLayout gap="2"/></solarsystem:layout>
+      </solarsystem:SSPlanetsStatusIcons>
+      <solarsystem:SSShipsStatusIcons right="0" top="0" solarSystem="{ss}">
+         <solarsystem:layout><s:VerticalLayout gap="2"/></solarsystem:layout>
+      </solarsystem:SSShipsStatusIcons>
+   </s:Group>
 </space:CStaticSpaceObject>

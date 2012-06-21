@@ -5675,6 +5675,7 @@
      <label.ignoreFiltered value="Show covered messages"/>
      <label.ignoreType value="Ignore type:"/>
      <label.enablePlanetAnimations value="Animations in planet"/>
+     <label.showWormholeIcons value="Show planets and ships icons next to wormholes in galaxy"/>
     <label.technologiesSortType
      value="Sort researched technologies in technology tree:" />
     <label.techSortScientists value="By scientists"/>
