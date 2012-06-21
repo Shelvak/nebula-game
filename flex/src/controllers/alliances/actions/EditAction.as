@@ -4,9 +4,10 @@ package controllers.alliances.actions
    
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.Messenger;
    import controllers.alliances.AlliancesErrorType;
-   
+
+   import models.notification.MTimedEvent;
+
    import utils.locale.Localizer;
    
    /**
@@ -28,8 +29,7 @@ package controllers.alliances.actions
       {
          if (cmd.parameters.error == AlliancesErrorType.NOT_UNIQUE)
          {
-            Messenger.show(Localizer.string('Alliances','label.allyExists'),
-               Messenger.LONG);
+            new MTimedEvent(Localizer.string('Alliances','label.allyExists'));
          }
          else
          {

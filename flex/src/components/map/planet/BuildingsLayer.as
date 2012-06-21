@@ -12,10 +12,10 @@ package components.map.planet
 
    import config.Config;
 
-   import controllers.Messenger;
    import controllers.buildings.BuildingsCommand;
    import controllers.buildings.actions.MoveActionParams;
    import controllers.navigation.MCSidebar;
+   import controllers.notifications.EventsController;
    import controllers.screens.SidebarScreens;
 
    import flash.events.KeyboardEvent;
@@ -31,6 +31,7 @@ package components.map.planet
    import models.building.Building;
    import models.building.Extractor;
    import models.building.MCBuildingSelectedSidebar;
+   import models.notification.MPermanentEvent;
    import models.planet.MPlanet;
    import models.planet.events.MPlanetEvent;
    import models.tile.Tile;
@@ -286,13 +287,15 @@ package components.map.planet
          initBuildingPH(building);
       }
 
+      private var eventPopUpId: int;
+
       /**
        * Cancels building process if one has been started.
        */
       private function cancelBuildingProcess(): void {
          _buildingProcessStarted = false;
          destroyBuildingPH();
-         Messenger.hide();
+         EventsController.getInstance().removeEventById(eventPopUpId);
       }
 
       /**
@@ -439,7 +442,8 @@ package components.map.planet
       
       
       private function initBuildingPH(building: Building): void {
-         Messenger.show(Localizer.string('BuildingSidebar', 'pressEsc'));
+         eventPopUpId = new MPermanentEvent(
+            Localizer.string('BuildingSidebar', 'pressEsc')).id;
 
          objectsLayer.passOverMouseEventsTo(this);
 

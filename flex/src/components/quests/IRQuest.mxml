@@ -74,13 +74,13 @@
       <![CDATA[
       import com.developmentarc.core.utils.EventBroker;
 
-      import controllers.Messenger;
       import controllers.quests.QuestsCommand;
 
       import globalevents.GQuestEvent;
       import globalevents.GlobalEvent;
 
       import models.ModelLocator;
+      import models.notification.MTimedEvent;
       import models.quest.MMainQuestLine;
       import models.quest.Quest;
       import models.quest.events.QuestEvent;
@@ -222,11 +222,9 @@
       }
 
       private function approveClaim(event: GQuestEvent): void {
-         Messenger.show(
+         MTimedEvent(
             getString('message.rewardClaimed',
-                      [MSSObject(planetSelector.selectedItem).name]),
-            Messenger.MEDIUM
-         );
+                      [MSSObject(planetSelector.selectedItem).name]));
          EventBroker.unsubscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
          refreshNotFitting();
       }

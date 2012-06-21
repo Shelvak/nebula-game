@@ -3,6 +3,7 @@ package controllers.units.actions
 
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.notifications.EventsController;
 
    import models.factories.NotificationFactory;
 
@@ -16,16 +17,8 @@ package controllers.units.actions
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
          NotificationFactory.fromObject(cmd.parameters.notification);
-         for each (var alert: Notification in ML.notificationAlerts)
-         {
-            if (alert.id == cmd.parameters.notification.id)
-            {
-               ML.notificationAlerts.removeItemAt(
-                  ML.notificationAlerts.getItemIndex(alert)
-               );
-               break;
-            }
-         }
+         EventsController.getInstance().removeNotificationEvent(
+            cmd.parameters.notification.id);
          ML.notifications.show(cmd.parameters.notification.id, true);
       }
    }

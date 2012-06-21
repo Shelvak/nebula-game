@@ -2,7 +2,8 @@ package controllers.alliances.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.Messenger;
+
+   import models.notification.MTimedEvent;
 
    import models.player.PlayerMinimal;
 
@@ -51,7 +52,7 @@ package controllers.alliances.actions
                break;
 
             case "technology_level_too_low":
-               Messenger.show(
+               new MTimedEvent(
                   getString("giveAway.message.techLevelTooLow", [lastPlayer.name])
                );
                break;

@@ -1,23 +1,17 @@
 package models.healing
 {
-   import com.developmentarc.core.utils.EventBroker;
-   
    import components.unitsscreen.events.UnitsScreenEvent;
 
    import controllers.navigation.MCMainArea;
    import controllers.screens.MainAreaScreens;
 
    import models.events.ScreensSwitchEvent;
+   import models.notification.MTimedEvent;
 
-   import utils.ApplicationLocker;
-   import controllers.Messenger;
    import controllers.units.UnitsCommand;
    
    import flash.events.EventDispatcher;
    import flash.events.MouseEvent;
-   
-   import globalevents.GResourcesEvent;
-   import globalevents.GUnitsScreenEvent;
    
    import models.Owner;
    import models.building.Building;
@@ -26,8 +20,6 @@ package models.healing
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
-   import mx.collections.Sort;
-   import mx.collections.SortField;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
    
@@ -293,7 +285,7 @@ package models.healing
       {
          if (!selectionClass.selectAll(onlyHealable))
          {
-            Messenger.show(Localizer.string('Units', 'message.noResources'), Messenger.SHORT);
+            new MTimedEvent(Localizer.string('Units', 'message.noResources'));
          }
          refreshPrice();
       }

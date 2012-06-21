@@ -2,8 +2,9 @@ package controllers.alliances.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.Messenger;
-   
+
+   import models.notification.MTimedEvent;
+
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
    
@@ -35,8 +36,7 @@ package controllers.alliances.actions
       public override function result(rmo:ClientRMO):void
       {
          super.result(rmo);
-         Messenger.show(Localizer.string('Alliances', 'message.playerInvited'),
-            Messenger.MEDIUM);
+         new MTimedEvent(Localizer.string('Alliances', 'message.playerInvited'));
       }
    }
 }

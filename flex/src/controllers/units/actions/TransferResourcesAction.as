@@ -3,9 +3,10 @@ package controllers.units.actions
 
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.Messenger;
 
    import globalevents.GResourcesEvent;
+
+   import models.notification.MTimedEvent;
 
    import models.resource.Resource;
    import models.resource.ResourceType;
@@ -43,9 +44,8 @@ package controllers.units.actions
             addIfNeeded(ResourceType.METAL, keptResources.metal);
             addIfNeeded(ResourceType.ENERGY, keptResources.energy);
             addIfNeeded(ResourceType.ZETIUM, keptResources.zetium);
-            Messenger.show(Localizer.string('Units', 'message.didNotFit',
-               [Resource.getResourceString(resources, amounts)]),
-               Messenger.MEDIUM);
+            new MTimedEvent(Localizer.string('Units', 'message.didNotFit',
+               [Resource.getResourceString(resources, amounts)]));
          }
       }
 

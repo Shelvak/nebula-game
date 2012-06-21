@@ -181,6 +181,11 @@ package utils.assets
        * Path to the folder where achievement images reside.
        */
       public static const ACHIEVEMENT_IMAGE_FOLDER: String = IMAGE_FOLDER + "achievements/";
+
+      /**
+       * Path to the folder where events images reside.
+       */
+      public static const EVENTS_IMAGE_FOLDER:String = UI_IMAGES_FOLDER + "events/";
       
       /**
        * Path to the folder where notification images reside.

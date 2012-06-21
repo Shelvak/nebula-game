@@ -2,8 +2,8 @@ package controllers.market.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import utils.ApplicationLocker;
-   import controllers.Messenger;
+
+   import models.notification.MTimedEvent;
    
    import models.factories.MarketOfferFactory;
    import models.market.MCMarketScreen;
@@ -47,8 +47,7 @@ package controllers.market.actions
       public override function result(rmo:ClientRMO):void
       {
          super.result(rmo);
-         Messenger.show(Localizer.string('Market', 'message.offerSubmited'), 
-            Messenger.MEDIUM);
+         new MTimedEvent(Localizer.string('Market', 'message.offerSubmited'));
       }
    }
 }

@@ -7,8 +7,6 @@ package components.notifications.parts
    import components.notifications.parts.skins.CombatLogGrid;
    import components.notifications.parts.skins.CombatLogSkin;
 
-   import controllers.Messenger;
-
    import flash.events.Event;
    import flash.events.MouseEvent;
    import flash.external.ExternalInterface;
@@ -17,6 +15,7 @@ package components.notifications.parts
    import flash.system.System;
 
    import models.ModelLocator;
+   import models.notification.MTimedEvent;
    import models.notification.parts.CombatLog;
    import models.notification.parts.CombatOutcomeType;
    import models.unit.UnitBuildingEntry;
@@ -871,7 +870,7 @@ package components.notifications.parts
       private function btnCopyLogUrlToClipboard_clickHandler(event:MouseEvent) : void
       {
          System.setClipboard(combatLogUrl);
-         Messenger.show(Localizer.string("General", "message.copyToClipboardSuccessful"), Messenger.MEDIUM);
+         new MTimedEvent(Localizer.string("General", "message.copyToClipboardSuccessful"));
       }
    }
 }

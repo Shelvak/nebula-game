@@ -631,6 +631,21 @@ assets:
       "healing":
         indicator.png:              Building_heal_bar.png
 
+      "events":
+        "top_right_black.png":      Event_msg_close_black_top.png
+        "center_right_black.png":   Event_msg_close_black_center.png
+        "bottom_right_black.png":   Event_msg_close_black_bottom.png
+        "top_right_red.png":        Event_msg_close_red_top.png
+        "center_right_red.png":     Event_msg_close_red_center.png
+        "bottom_right_red.png":     Event_msg_close_red_bottom.png
+        "top_left.png":             Event_msg_close_top.png
+        "center_left.png":          Event_msg_close_center.png
+        "bottom_left.png":          Event_msg_close_bottom.png
+        "close.png":                Event_msg_close_x.png
+        "notification.png":         Event_msg_picture1.png
+        "alert.png":                Event_msg_picture2.png
+        "info.png":                 Event_msg_picture3.png
+
       "ss_navigator":
         bottom_left.png:            Snavig_bottom_left.png
         center_left.png:            Snavig_center_left.png

@@ -2,9 +2,8 @@ package controllers.planets.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.Messenger;
-   
-   import models.planet.MPlanet;
+
+   import models.notification.MTimedEvent;
    
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
@@ -34,8 +33,8 @@ package controllers.planets.actions
       public override function result(rmo:ClientRMO):void {
          super.result(rmo);
          if (ML.latestPlanet != null)
-            Messenger.show(Localizer.string('SSObjects', 'message.planetRenamed', 
-               [ML.latestPlanet.ssObject.name]), Messenger.MEDIUM);
+            new MTimedEvent(Localizer.string('SSObjects', 'message.planetRenamed',
+               [ML.latestPlanet.ssObject.name]));
       }
    }
 }

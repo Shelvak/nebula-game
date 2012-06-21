@@ -2,7 +2,6 @@ package controllers.units
 {
    import components.map.space.SquadronsController;
 
-   import controllers.Messenger;
    import controllers.startup.StartupInfo;
    import controllers.timedupdate.MasterUpdateTrigger;
 
@@ -21,6 +20,7 @@ package controllers.units
    import models.movement.MRoute;
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
+   import models.notification.MTimedEvent;
    import models.unit.MCUnitScreen;
    import models.unit.Unit;
    import models.unit.UnitKind;
@@ -484,10 +484,7 @@ package controllers.units
             }
             if (squad.owner == Owner.PLAYER && ordersCtrl.issuingOrders) {
                ordersCtrl.orderComplete();
-               Messenger.show(
-                  Localizer.string("Movement", "message.orderComplete"),
-                  Messenger.MEDIUM
-               );
+               new MTimedEvent(Localizer.string("Movement", "message.orderComplete"));
             }
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open: create route then

@@ -1,6 +1,6 @@
 package components.map.space
 {
-   import controllers.Messenger;
+   import controllers.notifications.EventsController;
 
    import models.ModelLocator;
    import models.location.LocationMinimal;
@@ -8,6 +8,7 @@ package components.map.space
    import models.location.LocationType;
    import models.map.MMapSolarSystem;
    import models.map.MMapSpace;
+   import models.notification.MPermanentEvent;
    import models.solarsystem.MSSObject;
 
    import mx.graphics.SolidColorStroke;
@@ -15,6 +16,8 @@ package components.map.space
    import spark.components.Group;
    import spark.primitives.BitmapImage;
    import spark.primitives.Ellipse;
+
+   import utils.UrlNavigate;
 
    import utils.locale.Localizer;
 
@@ -62,17 +65,21 @@ package components.map.space
       public function CMapSolarSystem(model: MMapSolarSystem) {
          super(model);
       }
-      
+
+      private static var eventPopUpId: int;
+
       /**
        * Called by <code>NavigationController</code> when ssobject map screen is shown.
        */
       public static function screenShowHandler(): void {
          var ssMap:MMapSolarSystem = ModelLocator.getInstance().latestSSMap;
          if (ssMap.solarSystem.isBattleground) {
-            Messenger.show(
-               Localizer.string("SSObjects", "message.battleground"),
-               Messenger.VERY_LONG, 'info/battleground'
-            );
+            function openInfo(): void {
+               UrlNavigate.getInstance().showUrl('info/battleground');
+            }
+            eventPopUpId = new MPermanentEvent(
+               Localizer.string("SSObjects", "message.battleground"), openInfo
+            ).id;
          }
       }
 
@@ -80,7 +87,7 @@ package components.map.space
        * Called by <code>NavigationController</code> when galaxy map screen is hidden.
        */
       public static function screenHideHandler(): void {
-         Messenger.hide();
+         EventsController.getInstance().removeEventById(eventPopUpId);
       }
 
       protected override function createGrid(): Grid {

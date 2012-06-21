@@ -14,12 +14,11 @@ package models.unit
 
    import models.location.ILocationUser;
    import models.location.LocationType;
+   import models.notification.MTimedEvent;
    import models.player.PlayerOptions;
 
    import models.solarsystem.MSSObject;
 
-   import utils.ApplicationLocker;
-   import controllers.Messenger;
    import controllers.units.UnitsCommand;
 
    import flash.events.Event;
@@ -539,8 +538,7 @@ package models.unit
       {
          if (!selectionClass.selectAll())
          {
-            Messenger.show(Localizer.string('Units', 'message.notSelected'), 
-               Messenger.MEDIUM);
+            new MTimedEvent(Localizer.string('Units', 'message.notSelected'));
          }
          refreshVolume();
       }
