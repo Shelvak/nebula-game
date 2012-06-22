@@ -258,6 +258,21 @@ package config
          return getValue("market.avgRate.offset");
       }
 
+      public static function getMinOfferRate(): Number
+      {
+         return getValue("market.avgRate.minRate");
+      }
+
+      public static function getMaxOfferRate(): Number
+      {
+         return getValue("market.avgRate.maxRate");
+      }
+
+      public static function getMarketOfferCancelCooldown()
+      {
+         return getValue("market.cancelCooldown");
+      }
+
       public static function getMinOfferOffset(): Number
       {
          return getValue("market.avgRate.minPrice.offset");

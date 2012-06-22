@@ -392,8 +392,20 @@ package models.player
       public function get canInviteToAlliance(): Boolean {
          return hasAllianceTechnology && allianceOwner && !allianceFull;
       }
-      
-      
+
+      [Optional]
+      //Last market offer cancel
+      private var lastMarketOfferCancel: Date;
+
+      public function get marketOfferCancelCooldown(): int
+      {
+         return Math.max(
+                  Config.getMarketOfferCancelCooldown() -
+                     Math.floor(new Date().time - lastMarketOfferCancel.time),
+                  0
+                );
+      }
+
       /* ######################### */
       /* ### ALLIANCE COOLDOWN ### */
       /* ######################### */

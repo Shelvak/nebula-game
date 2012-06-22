@@ -86,6 +86,12 @@
       private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
 
       private function confirm(e: MouseEvent): void {
+         if (_selectedOffer.fromId == ML.player.id &&
+             ML.player.marketOfferCancelCooldown > 0)
+         {
+           //TODO: show message
+           return;
+         }
          var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
          popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');

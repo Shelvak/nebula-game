@@ -180,11 +180,21 @@
         var lowestRate: Number = lowestMarketRate;
         var lowestOffset: Number = Config.getMinOfferOffset();
         var normalOffset: Number = Config.getMarketRange();
+        var minOfferRate: Number = Config.getMinOfferRate();
+        var maxOfferRate: Number = Config.getMaxOfferRate();
 
         var avgRateLowBound: Number = mScreen.avgRate * (1 - normalOffset);
-        return Math.floor((lowestRate == -1
-          ? avgRateLowBound
-          : Math.min(avgRateLowBound, lowestRate - lowestOffset)) * amount);
+        return Math.floor(
+          Math.max (
+            minOfferRate,
+            Math.min(
+              maxOfferRate,
+              (lowestRate == -1
+                ? avgRateLowBound
+                : Math.min(avgRateLowBound, lowestRate - lowestOffset))
+            )
+          ) * amount
+        );
       }
 
       private function getResourceWithoutTaxes(resource: String, taxes: Number): Number {
