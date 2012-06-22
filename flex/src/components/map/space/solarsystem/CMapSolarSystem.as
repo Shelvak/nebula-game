@@ -1,6 +1,7 @@
-package components.map.space
+package components.map.space.solarsystem
 {
    import controllers.notifications.EventsController;
+   import components.map.space.*;
 
    import models.ModelLocator;
    import models.location.LocationMinimal;

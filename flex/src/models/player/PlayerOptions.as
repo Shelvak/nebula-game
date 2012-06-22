@@ -33,6 +33,7 @@ package models.player {
          defaultTransporterTab = options.defaultTransporterTab;
          technologiesSortType = options.technologiesSortType;
          enablePlanetAnimations = options.enablePlanetAnimations;
+         showWormholeIcons = options.showWormholeIcons;
       }
 
       private static var originalData: Object;
@@ -49,7 +50,8 @@ package models.player {
             'warnBeforeUnload': warnBeforeUnload,
             'defaultTransporterTab': defaultTransporterTab,
             'technologiesSortType': technologiesSortType,
-            'enablePlanetAnimations': enablePlanetAnimations
+            'enablePlanetAnimations': enablePlanetAnimations,
+            'showWormholeIcons': showWormholeIcons
          }
       }
 
@@ -65,6 +67,7 @@ package models.player {
          defaultTransporterTab = originalData.defaultTransporterTab;
          technologiesSortType = originalData.technologiesSortType;
          enablePlanetAnimations = originalData.enablePlanetAnimations;
+         showWormholeIcons = originalData.showWormholeIcons;
          hasChanges = false;
       }
       [Bindable]
@@ -80,7 +83,8 @@ package models.player {
          && warnBeforeUnload == originalData.warnBeforeUnload
          && defaultTransporterTab == originalData.defaultTransporterTab
          && technologiesSortType == originalData.technologiesSortType
-         && enablePlanetAnimations == originalData.enablePlanetAnimations);
+         && enablePlanetAnimations == originalData.enablePlanetAnimations
+         && showWormholeIcons == originalData.showWormholeIcons);
       }
 
       public static function addIgnoredPlayer(playerName: String): void
@@ -126,7 +130,13 @@ package models.player {
       public static var defaultTransporterTab: int;
       [Bindable]
       public static var technologiesSortType: int;
+
+      /*### Map options ###*/
+
       [Bindable]
       public static var enablePlanetAnimations: Boolean = true;
+
+      [Bindable]
+      public static var showWormholeIcons: Boolean = true;
    }
 }

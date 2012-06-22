@@ -1,5 +1,7 @@
-package components.map.space
+package components.map.space.galaxy
 {
+   import components.map.space.*;
+   import components.map.space.galaxy.CMapGalaxy;
    import components.movement.CSquadronMapIcon;
    
    import flash.geom.Point;
@@ -76,7 +78,7 @@ package components.map.space
       }
       
       
-      internal override function getAllSectors() : ArrayCollection {
+      public override function getAllSectors() : ArrayCollection {
          return new ArrayCollection(_map.getLocationsInVisibleArea());
       }
    }

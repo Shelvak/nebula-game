@@ -5759,6 +5759,7 @@
      <label.ignoreFiltered value="Uždengti žinutes"/>
      <label.ignoreType value="Ignoravimo būdas:"/>
      <label.enablePlanetAnimations value="Animacijos planetoje"/>
+     <label.showWormholeIcons value="Rodyti planetų ir laivų ikonėles prie arenos vartų galaktikoje"/>
      <label.technologiesSortType
       value="Išradinėjamų technologijų rikiavimo būdas technologijų medyje:" />
      <label.techSortScientists value="Pagal mokslininkus"/>

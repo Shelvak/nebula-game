@@ -1,5 +1,6 @@
-package components.map.space
+package components.map.space.galaxy
 {
+   import components.map.space.*;
    import flash.display.BitmapData;
    import flash.display.Graphics;
    import flash.geom.Matrix;

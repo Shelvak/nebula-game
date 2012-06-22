@@ -1,5 +1,6 @@
-package components.map.space
+package components.map.space.galaxy
 {
+   import components.map.space.*;
    import components.map.BaseMapCoordsTransform;
    import components.movement.CSquadronMapIcon;
    
