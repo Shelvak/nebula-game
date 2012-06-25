@@ -174,7 +174,7 @@ class Cfg
 
     # How often are you able to cancel your offers?
     def market_offer_cancellation_cooldown
-      CONFIG['market.offers.cancellation_cooldown']
+      CONFIG.evalproperty('market.offers.cancellation_cooldown')
     end
 
     # Returns +Float+ offset (like 0.10) for MarketOffer#to_rate deviation
