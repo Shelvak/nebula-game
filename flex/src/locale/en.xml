@@ -5596,6 +5596,8 @@
     <filter.clear value="Clear" />
     <label.freeCreds value="You can not use free creds in the market." />
     <label.moreInfo value="Why?" />
+    <message.cancelCooldown
+      value="You can't cancel your offer yet! Try again in {0}" />
   </Market>
 
   <ResourceTransporter>

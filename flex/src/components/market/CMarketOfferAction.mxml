@@ -19,6 +19,8 @@
       import components.skins.LargePanelSkin;
       import components.skins.LinkButtonSkin;
 
+      import models.notification.MTimedEvent;
+
       import utils.ApplicationLocker;
 
       import controllers.market.MarketCommand;
@@ -31,6 +33,8 @@
       import models.resource.Resource;
       import models.resource.ResourceType;
       import models.solarsystem.MSSObject;
+
+      import utils.DateUtil;
 
       import utils.UrlNavigate;
       import utils.assets.AssetNames;
@@ -86,11 +90,15 @@
       private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
 
       private function confirm(e: MouseEvent): void {
-         if (_selectedOffer.fromId == ML.player.id &&
-             ML.player.marketOfferCancelCooldown > 0)
+         if (_selectedOffer.fromId == ML.player.id)
          {
-           //TODO: show message
-           return;
+           var cancelCooldown = ML.player.marketOfferCancelCooldown;
+           if (cancelCooldown > 0)
+           {
+             new MTimedEvent(getText("message.cancelCooldown",
+               [DateUtil.secondsToHumanString(cancelCooldown)]));
+             return;
+           }
          }
          var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');

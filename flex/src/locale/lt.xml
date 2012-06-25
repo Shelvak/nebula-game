@@ -5680,6 +5680,8 @@
     <filter.clear value="Valyti" />
     <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje." />
     <label.moreInfo value="Kodėl?" />
+    <message.cancelCooldown
+      value="Tu dar negali atšaukti savo pasiūlymo. Pabandyk dar kartą už {0}." />
   </Market>
 
   <ResourceTransporter>
