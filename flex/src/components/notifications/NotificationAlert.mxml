@@ -33,7 +33,7 @@
          
          protected function basecontainer2_creationCompleteHandler(event:FlexEvent):void
          {
-            if (model.duration > 0)
+            if (model != null && model.duration > 0)
             {
               hideTimer = new Timer(model.duration, 1);
               hideTimer.addEventListener(TimerEvent.TIMER, hideAlert, false, 0, true);
