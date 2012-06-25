@@ -13,6 +13,8 @@ zone.players: 20
 # than this time.
 zone.maturity_age: <%= 1.week %>
 
+# How much creds does player has on start. Mostly useful on testing galaxies.
+player.creds.starting: 0
 # Maximum population player can have.
 player.population.max: 2500
 player.inactivity_check:

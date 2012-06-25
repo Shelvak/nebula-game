@@ -115,6 +115,9 @@ class Cfg
 
     def galaxy_zone_maturity_age; CONFIG['galaxy.zone.maturity_age']; end
 
+    # How much creds does player has on start.
+    def player_starting_creds; CONFIG['galaxy.player.creds.starting']; end
+
     def player_max_population; CONFIG['galaxy.player.population.max']; end
 
     # Returns number of seconds player is required to be last seen ago to be

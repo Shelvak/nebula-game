@@ -533,6 +533,7 @@ describe Galaxy do
     let(:trial) { true }
     let(:planets_count) { 1 }
     let(:population_cap) { Building::Mothership.population(1) }
+    let(:creds) { Cfg.player_starting_creds }
     let(:pooled_ss) do
       [
         Factory.create(:ss_pooled, galaxy: galaxy),
@@ -552,13 +553,14 @@ describe Galaxy do
     let(:player) { Galaxy.create_player(galaxy_id, web_user_id, name, trial) }
 
     before(:each) do
+      Cfg.stub(:player_starting_creds).and_return(5000)
       other_ss
       home_ss
     end
 
-    %w{galaxy_id web_user_id name trial planets_count population_cap}.each do
-      |attr|
-
+    %w{
+      galaxy_id web_user_id name trial planets_count population_cap creds
+    }.each do |attr|
       it "should set Player##{attr}" do
         player.send(attr).should == send(attr)
       end

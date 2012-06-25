@@ -416,6 +416,12 @@ class Player < ActiveRecord::Base
     planets_count_changed? || bg_planets_count_changed?
   end
 
+  # Ensure #last_market_offer_cancel is not null. Stupid AR. Tries to insert
+  # NULL without this into a non-null column with default value.
+  before_create do
+    self.last_market_offer_cancel ||= Cfg.market_offer_cancellation_cooldown.ago
+  end
+
   # Make sure we don't get below 0 points, 
   before_save do
     POINT_ATTRIBUTES.each do |attr|
