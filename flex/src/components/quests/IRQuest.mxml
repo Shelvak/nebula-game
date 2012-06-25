@@ -225,7 +225,7 @@
       private var claimedToPlanet: String;
 
       private function approveClaim(event: GQuestEvent): void {
-         MTimedEvent(getString('message.rewardClaimed', [claimedToPlanet]));
+         new MTimedEvent(getString('message.rewardClaimed', [claimedToPlanet]));
          EventBroker.unsubscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
          refreshNotFitting();
       }
