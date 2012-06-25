@@ -39,8 +39,6 @@ namespace :build do
   bin_dir = "#{output_dir}/bin"
   bin_swf = "#{bin_dir}/#{swf_name}.swf"
   bin_version = "#{bin_dir}/VERSION"
-  srv_config = "#{basedir}/../server/config/application.yml"
-  srv_client_ver_re = /^(  required_version): \d{4}-\d{4}-\d{4}$/
   test_report_dir = "#{output_dir}/report"
   dist_dir = "#{output_dir}/dist"
   dist_locale_dir = "#{dist_dir}/locale"
@@ -267,10 +265,6 @@ namespace :build do
           end
           
           File.open(bin_version, "w") { |f| f.write(build + "\n") }
-          # Update server minimal client version.
-          cfg = File.read(srv_config)
-          cfg.sub!(srv_client_ver_re, "\\1: #{build}")
-          File.open(srv_config, "wb") { |f| f.write(cfg) }
 
           mxmlc(
             "#{src_pp_dir}/SpaceGame.mxml",
