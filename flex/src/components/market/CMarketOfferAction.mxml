@@ -2,7 +2,8 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
-         xmlns:base="components.base.*" xmlns:credits="components.credits.*">   
+         xmlns:base="components.base.*"
+         xmlns:credits="components.credits.*">
    <fx:Metadata>
       /**
       * Dispatched when selected resource in radio group changes
@@ -18,6 +19,8 @@
       import components.skins.GreenButtonSkin;
       import components.skins.LargePanelSkin;
       import components.skins.LinkButtonSkin;
+
+      import globalevents.GlobalEvent;
 
       import models.notification.MTimedEvent;
 
@@ -56,6 +59,31 @@
          selector.value = 0;
          cost = 0;
          missingString = null;
+        if (_selectedOffer != null && ML.player != null
+          && _selectedOffer.fromId == ML.player.id)
+        {
+           GlobalEvent.subscribe_TIMED_UPDATE(cancelCooldownUpdate);
+        }
+        else
+        {
+          GlobalEvent.unsubscribe_TIMED_UPDATE(cancelCooldownUpdate);
+          cancelCooldown = null;
+        }
+      }
+
+      private var cancelCooldown: String;
+
+      private function cancelCooldownUpdate(e: GlobalEvent): void
+      {
+        if (ML.player.marketOfferCancelCooldown == 0)
+        {
+          GlobalEvent.unsubscribe_TIMED_UPDATE(cancelCooldownUpdate);
+          cancelCooldown = null;
+        }
+        else
+        {
+          cancelCooldown = DateUtil.secondsToHumanString(ML.player.marketOfferCancelCooldown);
+        }
       }
 
       public function get selectedOffer(): MarketOffer {
@@ -90,16 +118,6 @@
       private var mScreen: MCMarketScreen = MCMarketScreen.getInstance();
 
       private function confirm(e: MouseEvent): void {
-         if (_selectedOffer.fromId == ML.player.id)
-         {
-           var cancelCooldown = ML.player.marketOfferCancelCooldown;
-           if (cancelCooldown > 0)
-           {
-             new MTimedEvent(getText("message.cancelCooldown",
-               [DateUtil.secondsToHumanString(cancelCooldown)]));
-             return;
-           }
-         }
          var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
          popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
@@ -232,21 +250,26 @@
                     paddingTop="6"
                     visible="{ML.player.id == _selectedOffer.fromId
                     &amp;&amp; mScreen.privateOffers.find(_selectedOffer.id) == null}"/>
-      <s:Button label="{ML.player.id != _selectedOffer.fromId
-                ?getText('label.buy')
-                :getText('label.cancel')}" 
-                right="6"
-                enabled="{ML.player.id == _selectedOffer.fromId
-                ?true
-                :selector.value > 0}"
-                visible="{ML.player.id == _selectedOffer.fromId
-                ?(mScreen.privateOffers.find(_selectedOffer.id) != null)
-                :(!(_selectedOffer.toResource == ResourceType.CREDS
-                ? ML.player.pureCreds &lt; Math.ceil(1 * _selectedOffer.toRate)
-                : planetResource(_selectedOffer.toResource).currentStock
-                &lt; Math.ceil(1 * _selectedOffer.toRate)))}"
-                skinClass="components.skins.GreenButtonSkin"
-                click="confirm(event)"/>
+      <s:Group right="6" toolTip="{cancelCooldown == null
+            ? ''
+            : getText('toolTip.cancelCooldown')}">
+        <s:Button label="{ML.player.id != _selectedOffer.fromId
+                  ? getText('label.buy')
+                  : (cancelCooldown != null
+                    ? cancelCooldown
+                    : getText('label.cancel'))}"
+                  enabled="{ML.player.id == _selectedOffer.fromId
+                  ? (cancelCooldown == null ? true : false)
+                  :selector.value > 0}"
+                  visible="{ML.player.id == _selectedOffer.fromId
+                  ?(mScreen.privateOffers.find(_selectedOffer.id) != null)
+                  :(!(_selectedOffer.toResource == ResourceType.CREDS
+                  ? ML.player.pureCreds &lt; Math.ceil(1 * _selectedOffer.toRate)
+                  : planetResource(_selectedOffer.toResource).currentStock
+                  &lt; Math.ceil(1 * _selectedOffer.toRate)))}"
+                  skinClass="components.skins.GreenButtonSkin"
+                  click="confirm(event)"/>
+      </s:Group>
       <s:Button label="{getText('label.close')}" 
                 right="6"
                 skinClass="components.skins.RedButtonSkin"

@@ -401,7 +401,7 @@ package models.player
       {
          return Math.max(
                   Config.getMarketOfferCancelCooldown() -
-                     Math.floor(new Date().time - lastMarketOfferCancel.time),
+                     Math.floor((new Date().time - lastMarketOfferCancel.time)/1000),
                   0
                 );
       }

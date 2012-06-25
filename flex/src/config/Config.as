@@ -263,12 +263,7 @@ package config
          return getValue("market.avgRate.minRate");
       }
 
-      public static function getMaxOfferRate(): Number
-      {
-         return getValue("market.avgRate.maxRate");
-      }
-
-      public static function getMarketOfferCancelCooldown()
+      public static function getMarketOfferCancelCooldown(): int
       {
          return getValue("market.cancelCooldown");
       }
