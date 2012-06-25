@@ -251,8 +251,14 @@
                     visible="{ML.player.id == _selectedOffer.fromId
                     &amp;&amp; mScreen.privateOffers.find(_selectedOffer.id) == null}"/>
       <s:Group right="6" toolTip="{cancelCooldown == null
-            ? ''
-            : getText('toolTip.cancelCooldown')}">
+                ? ''
+                : getText('toolTip.cancelCooldown')}"
+               visible="{ML.player.id == _selectedOffer.fromId
+                                 ?(mScreen.privateOffers.find(_selectedOffer.id) != null)
+                                 :(!(_selectedOffer.toResource == ResourceType.CREDS
+                                 ? ML.player.pureCreds &lt; Math.ceil(1 * _selectedOffer.toRate)
+                                 : planetResource(_selectedOffer.toResource).currentStock
+                                 &lt; Math.ceil(1 * _selectedOffer.toRate)))}">
         <s:Button label="{ML.player.id != _selectedOffer.fromId
                   ? getText('label.buy')
                   : (cancelCooldown != null
@@ -261,12 +267,6 @@
                   enabled="{ML.player.id == _selectedOffer.fromId
                   ? (cancelCooldown == null ? true : false)
                   :selector.value > 0}"
-                  visible="{ML.player.id == _selectedOffer.fromId
-                  ?(mScreen.privateOffers.find(_selectedOffer.id) != null)
-                  :(!(_selectedOffer.toResource == ResourceType.CREDS
-                  ? ML.player.pureCreds &lt; Math.ceil(1 * _selectedOffer.toRate)
-                  : planetResource(_selectedOffer.toResource).currentStock
-                  &lt; Math.ceil(1 * _selectedOffer.toRate)))}"
                   skinClass="components.skins.GreenButtonSkin"
                   click="confirm(event)"/>
       </s:Group>

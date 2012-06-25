@@ -5596,10 +5596,10 @@
     <filter.clear value="Clear" />
     <label.freeCreds value="You can not use free creds in the market." />
     <label.moreInfo value="Why?" />
-    <message.cancelCooldown>
+    <toolTip.cancelCooldown>
       <p>You can't cancel this offer yet because you have canceled another one
         recently.</p>
-    </message.cancelCooldown>
+    </toolTip.cancelCooldown>
   </Market>
 
   <ResourceTransporter>
