@@ -265,7 +265,7 @@ package config
 
       public static function getMarketOfferCancelCooldown(): int
       {
-         return getValue("market.cancelCooldown");
+         return getValue("market.offers.cancellationCooldown");
       }
 
       public static function getMinOfferOffset(): Number

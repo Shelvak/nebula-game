@@ -2,8 +2,8 @@
 
 # Applies hotfix to running server
 
-if ARGV.size != 1
-  puts "Usage: #{$0} 'hotfix_file'"
+if ARGV.size == 0
+  puts "Usage: #{$0} 'hotfix_file' ['hotfix_file' ...]"
   puts
   puts "Arguments were:"
   puts "#{ARGV.inspect}"
@@ -13,13 +13,17 @@ end
 require File.expand_path(File.dirname(__FILE__) + 
     '/../lib/server/control_client.rb')
 
-hotfix_file = ARGV[0]
-unless File.exists?(hotfix_file) && File.readable?(hotfix_file)
-  puts "Please ensure that #{hotfix_file} exists and is readable!"
-  exit 1
-end
+hotfix_files = ARGV
 
-hotfix = File.read(hotfix_file)
+hotfix = ""
+hotfix_files.each do |hotfix_file|
+  unless File.exists?(hotfix_file) && File.readable?(hotfix_file)
+    puts "Please ensure that #{hotfix_file} exists and is readable!"
+    exit 1
+  end
+
+  hotfix += File.read(hotfix_file) + "\n"
+end
 
 puts
 puts "!!! WARNING !!!"

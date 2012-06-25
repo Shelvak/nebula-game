@@ -143,17 +143,19 @@ class Galaxy < ActiveRecord::Base
     raise "We've ran out of pooled solar systems in galaxy #{galaxy_id}!" \
       if home_ss.nil?
 
-    zone = Galaxy::Zone.for_enrollment(
-      galaxy_id, Cfg.galaxy_zone_maturity_age
-    )
-    x, y = zone.free_spot_coords(galaxy_id)
-    home_ss.attach!(x, y)
-
+    # Assign planet attributes so that metadata would be correct.
     now = Time.now
     scope = SsObject::Planet.where(solar_system_id: home_ss.id)
     scope.update_all(last_resources_update: now)
     scope.where("owner_changed IS NOT NULL").
       update_all(owner_changed: now, player_id: player.id)
+
+    # Finally attach the zone.
+    zone = Galaxy::Zone.for_enrollment(
+      galaxy_id, Cfg.galaxy_zone_maturity_age
+    )
+    x, y = zone.free_spot_coords(galaxy_id)
+    home_ss.attach!(x, y)
 
     player
   end

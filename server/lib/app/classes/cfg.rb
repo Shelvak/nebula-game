@@ -169,9 +169,19 @@ class Cfg
     # Maximum number of market offers player can offer.
     def market_offers_max; CONFIG['market.offers.max']; end
 
+    # How often are you able to cancel your offers?
+    def market_offer_cancellation_cooldown
+      CONFIG['market.offers.cancellation_cooldown']
+    end
+
     # Returns +Float+ offset (like 0.10) for MarketOffer#to_rate deviation
     # from MarketOffer#average.
     def market_rate_offset; CONFIG['market.avg_rate.offset']; end
+
+    # Minimal value for resource pair rate.
+    def market_rate_min
+      CONFIG['market.avg_rate.min_rate']
+    end
 
     def market_rate_min_price_offset
       CONFIG['market.avg_rate.min_price.offset']
