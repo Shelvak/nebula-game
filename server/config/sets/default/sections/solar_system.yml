@@ -76,7 +76,7 @@ spawn.mini_battleground.units:
   - [2 + counter * 3 / (spot + 30), 8 + counter * 3 / (spot + 21), Thor, 1]
   - [0 + counter * 3 / (spot + 30), 2 + counter * 3 / (spot + 28), Demosis, 0]
   - [0 + counter * 3 / (spot + 55), 1 + counter * 3 / (spot + 40), Demosis, 1]
-  - [0, 1 + counter / 50 / spot, ConvoyShip, 1]
+  - [0, 1 + counter / 100 / spot, ConvoyShip, 1]
 spawn.mini_battleground.strategy: random
 
 spawn.battleground.delay: [<%= 12.hours %> / speed, <%= 36.hours %> / speed]
