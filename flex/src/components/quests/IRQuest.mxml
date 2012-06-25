@@ -214,6 +214,7 @@
 
       private function btnClaim_clickHandler(event: MouseEvent): void {
          EventBroker.subscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
+         claimedToPlanet = MSSObject(planetSelector.selectedItem).name;
          new QuestsCommand(
             QuestsCommand.CLAIM_REWARDS,
             {"planetId": MSSObject(planetSelector.selectedItem).id,
@@ -221,10 +222,10 @@
          ).dispatch();
       }
 
+      private var claimedToPlanet: String;
+
       private function approveClaim(event: GQuestEvent): void {
-         MTimedEvent(
-            getString('message.rewardClaimed',
-                      [MSSObject(planetSelector.selectedItem).name]));
+         MTimedEvent(getString('message.rewardClaimed', [claimedToPlanet]));
          EventBroker.unsubscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
          refreshNotFitting();
       }
