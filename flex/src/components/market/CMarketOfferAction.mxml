@@ -59,25 +59,32 @@
          selector.value = 0;
          cost = 0;
          missingString = null;
+         cancelCooldown = null;
+         if (timedUpdateSubscribed)
+         {
+           GlobalEvent.unsubscribe_TIMED_UPDATE(cancelCooldownUpdate);
+           timedUpdateSubscribed = false;
+         }
         if (_selectedOffer != null && ML.player != null
           && _selectedOffer.fromId == ML.player.id)
         {
-           GlobalEvent.subscribe_TIMED_UPDATE(cancelCooldownUpdate);
-        }
-        else
-        {
-          GlobalEvent.unsubscribe_TIMED_UPDATE(cancelCooldownUpdate);
-          cancelCooldown = null;
+          GlobalEvent.subscribe_TIMED_UPDATE(cancelCooldownUpdate);
+          timedUpdateSubscribed = true;
+          cancelCooldownUpdate();
         }
       }
 
+      private var timedUpdateSubscribed: Boolean = false;
+
+      [Bindable]
       private var cancelCooldown: String;
 
-      private function cancelCooldownUpdate(e: GlobalEvent): void
+      private function cancelCooldownUpdate(e: GlobalEvent = null): void
       {
         if (ML.player.marketOfferCancelCooldown == 0)
         {
           GlobalEvent.unsubscribe_TIMED_UPDATE(cancelCooldownUpdate);
+          timedUpdateSubscribed = false;
           cancelCooldown = null;
         }
         else
