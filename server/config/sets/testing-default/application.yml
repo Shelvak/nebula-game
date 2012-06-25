@@ -3,6 +3,7 @@
 # For quick and dirty test game runs.
 
 speed: 40
+battleground.victory.condition: 100000000
 galaxy.player.creds.starting: 10000000
 buildings.mothership.population: 2500
 buildings.mothership.metal.generate: 10000000
