@@ -394,16 +394,15 @@ package models.player
       }
 
       [Optional]
-      //Last market offer cancel
-      private var lastMarketOfferCancel: Date;
+      public var lastMarketOfferCancel: Date;
 
       public function get marketOfferCancelCooldown(): int
       {
          return Math.max(
-                  Config.getMarketOfferCancelCooldown() -
-                     Math.floor((new Date().time - lastMarketOfferCancel.time)/1000),
-                  0
-                );
+            Config.getMarketOfferCancelCooldown() -
+               Math.floor((new Date().time - lastMarketOfferCancel.time) / 1000),
+            0
+         );
       }
 
       /* ######################### */
