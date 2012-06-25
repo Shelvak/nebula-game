@@ -509,7 +509,7 @@ class Player < ActiveRecord::Base
   # Update player in dispatcher if it is connected so alliance ids and other
   # things would be intact.
   #
-  # Also give vicotry points to alliance if player earned them.
+  # Also give victory points to alliance if player earned them.
   #
   # This is why DataMapper is great - it keeps one object in memory for one
   # row in DB.

@@ -181,14 +181,14 @@ class SolarSystem < ActiveRecord::Base
 
     metadatas = SolarSystem::Metadatas.new(id)
     players = without_locking do
-      Player.find(
-        FowGalaxyEntry.
-          select("player_id").
-          where(galaxy_id: galaxy_id).
-          where("player_id != ?", player_id).
-          where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
-          c_select_values
-      )
+      player_ids = FowGalaxyEntry.
+        select("player_id").
+        where(galaxy_id: galaxy_id).
+        where("player_id != ?", player_id).
+        where("? BETWEEN x AND x_end AND ? BETWEEN y AND y_end", x, y).
+        c_select_values
+      player_ids = Player.join_alliance_ids(player_ids)
+      Player.find(player_ids)
     end
 
     self.x, self.y = x, y
