@@ -9,6 +9,7 @@ Factory.define :player_no_home_ss, :class => Player do |m|
   # We often take planets away from players, so just give extra planets.
   m.planets_count 3
   m.war_points 1000
+  m.last_market_offer_cancel { Cfg.market_offer_cancellation_cooldown.ago }
 end
 
 Factory.define :player, :parent => :player_no_home_ss do |m|

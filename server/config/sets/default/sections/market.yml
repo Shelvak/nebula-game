@@ -3,6 +3,9 @@
 # Maximum number of active simultaneous offers for player.
 offers.max: 15
 
+# How often are you able to cancel your offers?
+offers.cancellation_cooldown: <%= 10.minutes %>
+
 # Minimal amount of resource you are able to offer.
 offer.min_amount: 500
 
@@ -12,6 +15,8 @@ avg_rate.offset: 0.30
 # If avg_rate - offset% is X, but market has entries with to_rate <= X, then
 # allow player to add value that is X - this_offset.
 avg_rate.min_price.offset: 0.001
+# Minimal allowed rate for resource pair.
+avg_rate.min_rate: 0.001
 
 # How much of the offer person should buy so that seller would get notified?
 buy.notification.threshold: 0.03

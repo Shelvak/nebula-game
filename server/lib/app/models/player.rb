@@ -210,6 +210,7 @@ class Player < ActiveRecord::Base
           alliance_id alliance_cooldown_ends_at alliance_cooldown_id
           free_creds vip_creds vip_level vip_until vip_creds_until
           planets_count bg_planets_count
+          last_market_offer_cancel
         })
         json['creds'] = creds
         json['portal_without_allies'] = portal_without_allies?

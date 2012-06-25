@@ -958,6 +958,7 @@ describe Player do
         free_creds vip_level vip_creds vip_until vip_creds_until
         portal_without_allies trial
         planets_count bg_planets_count
+        last_market_offer_cancel
       }
       ommited_fields = fields - required_fields
       it_behaves_like "as json", Factory.create(:player), nil,
