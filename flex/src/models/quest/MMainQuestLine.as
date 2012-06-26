@@ -46,7 +46,7 @@ package models.quest
       }
 
       public function hasUncompletedMainQuest(): Boolean {
-         return _quests.hasUncompletedMainQuest;
+         return _quests != null ? _quests.hasUncompletedMainQuest : false;
       }
 
       public function openCurrentUncompletedQuest(): void {

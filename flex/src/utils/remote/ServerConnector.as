@@ -239,7 +239,6 @@ package utils.remote
          log.info('reestablishment socket connected');
          _buffer = "";
          _connecting = false;
-         removeSocketEventHandlers();
          requestReestablish();
       }
 
@@ -317,6 +316,7 @@ package utils.remote
             log.info('creating reestablish socket');
             reestablishmentSocket = new Socket();
             addReestablishmentSocketHandlers();
+            removeSocketEventHandlers();
             reestablishmentSocket.connect(SI.server, SI.port);
          }
       }
