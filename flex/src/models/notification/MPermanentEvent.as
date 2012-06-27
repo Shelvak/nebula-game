@@ -31,7 +31,7 @@ package models.notification {
 
       [Bindable(event="WillNotChange")]
       override public function get rendererAlpha(): Number {
-         return 0.6;
+         return INACTIVE_CONTENT_ALPHA;
       }
 
       public override function clickHandler(event: MouseEvent): void {

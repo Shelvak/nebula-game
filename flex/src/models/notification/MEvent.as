@@ -19,6 +19,8 @@ package models.notification {
 
    public class MEvent {
 
+      public static const INACTIVE_CONTENT_ALPHA: Number = 0.4;
+
       public var id: int;
 
       [Bindable]
