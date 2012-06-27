@@ -829,10 +829,6 @@ end # }}}
 
 if ARGV.include?("web") # {{{
   pubkeys(USER, *WEB_PUBKEYS)
-  system "addgroup www-shared"
-  system "adduser www-data www-shared"
-  system "adduser #{USER} www-shared"
-
   
   rubyv=WEB_RUBY_VERSION # ruby version
   rubygs=WEB_RUBY_GEMSET # ruby gemset
@@ -924,7 +920,7 @@ PassengerPoolIdleTime #{PASSENGER_POOL_IDLE_TIME}
   def create_shared(base, *dirs)
     dirs.each do |dir|
       as(USER) { "mkdir -p #{base}/#{dir}" }
-      run "chown #{USER}:www-shared #{base}/#{dir}"
+      run "chown #{USER}: #{base}/#{dir}"
       run "chmod 775 #{base}/#{dir}"
     end
   end
