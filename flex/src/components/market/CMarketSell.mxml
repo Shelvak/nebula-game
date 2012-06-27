@@ -157,7 +157,9 @@
 
       [Bindable (event="avgRateChange")]
       private function getMaxOffer(amount: int): int {
-         return Math.round((mScreen.avgRate * (1 + Config.getMarketRange())) * amount);
+         return Math.max(getMinOffer(amount),
+             Math.round((mScreen.avgRate * (1 + Config.getMarketRange())) * amount)
+         );
       }
       
       private function get lowestMarketRate(): Number
