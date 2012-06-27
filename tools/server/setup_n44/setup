@@ -8,8 +8,8 @@ JHO_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmYVjgKrRV3wltV7yTmBKo/Z0ENjA8Ga
 MIKISM_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIB7B6kL0+oQ37yeMhy3MTyWfGXLtEwas9dfZH9IU5lhebIMGqz5VkdvvT/AD3nNInrGzgVc16S1H8fffKqH5YwtaRQLePWrJ1Aq/L9R+Fb9T7OWOOdHiTK6OZ2vPbYeitQzWQzJ1uUBsZpq3ddibnjv+cS37/DwbCDxZOyfkqpfXQ== Mykolas Mickus"
 HENRIKAS_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQ43QAmFhlC4K7BmG1boe2CTIIGC42GPjpFrAkR2kkDCeAXNZF8PYhHcrAy3D2XCBKoA3np+esxOjG3fPbxlOJQPXQp5bMhaR8YABUc58yvrBjtKA/zZRLPf6YebaF20fil5t0TbLFoskNOrEuzRhr0IwvEbPJtXcp3zcXUl09jBFa5OP4a++d3eVHDhUllT+tM8ECZGXaN3S7jSSrf89Ifgd2L3JLu2JVXm4+xkkev1lrUjop5GD6sm2yc+AQ/tdlZMoWbmVrlYZqL5t4UfBWAWM6jRLQNrmLcSG13/rZleiDbEYIWirBQTTt8pZQZpTW6LQ6Ujd8c5R7ZdGvKH85 netyciuks@gmail.com"
 
-CLIENT_PUBKEYS = [ARTURAZ_PUBKEY, JHO_PUBKEY, MIKISM_PUBKEY]
-WEB_PUBKEYS = [ARTURAZ_PUBKEY, HENRIKAS_PUBKEY]
+CLIENT_PUBKEYS = WEB_PUBKEYS = [ARTURAZ_PUBKEY, JHO_PUBKEY, MIKISM_PUBKEY, 
+  HENRIKAS_PUBKEY]
 
 CRONTAB = %Q{
 SHELL=/bin/bash
@@ -650,19 +650,9 @@ deb-src http://repo.percona.com/apt precise main")
 
   install "percona-server-server xtrabackup libcache-cache-perl libdbd-mysql-perl"
   NEBULACNF_FILE = "/etc/mysql/conf.d/nebula.cnf"
-  unless File.exists?(NEBUlACNF_FILE)
+  unless File.exists?(NEBULACNF_FILE)
     puts "Configuring mysqld..."
-    File.write(NEBUlACNF_FILE, NEBULACNF)
-  end
-
-  setup_apache
-  setup_php
-  install "phpmyadmin php5-mcrypt"
-  File.modify("/etc/phpmyadmin/config.inc.php") do |data|
-    # Disable advanced phpmyadmin functions.
-    data.
-      sub("$cfg['Servers'][$i]['controluser']", "// $cfg['Servers'][$i]['controluser']").
-      sub("$cfg['Servers'][$i]['controlpass']", "// $cfg['Servers'][$i]['controluser']")
+    File.write(NEBULACNF_FILE, NEBULACNF)
   end
 
   File.write("/etc/mysql/my.cnf", MYCNF, "0644")
