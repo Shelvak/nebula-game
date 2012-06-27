@@ -624,11 +624,9 @@ include /etc/monit/conf.d/*
     run("chmod +x #{rvminst}")
     run("#{rvminst} stable")
     File.unlink(rvminst)
-
-    File.modify(BASHRC) do |bashrc|
-      bashrc.sub!(%Q{[ -z "$PS1" ] && return}, %Q{if [ -z "$PS1" ]; then})
-      bashrc += %Q{\nfi\n\n[[ -s "/usr/local/rvm/scripts/rvm" ]] && . "/usr/local/rvm/scripts/rvm"}
-      bashrc
+  
+    %W{root #{USER} x11}.each do |user|
+      run "adduser #{user} rvm"
     end
 
     puts
