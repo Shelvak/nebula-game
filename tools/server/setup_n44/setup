@@ -145,6 +145,37 @@ monitorRole  nebula44.mmosmrts.jmx
 controlRole  nebula44.mmosmrts.jmx
 }
 
+PHP_FPM_RUN = "/var/run/php-fpm"
+PHP_FPM_PID = "#{PHP_FPM_RUN}/master.pid"
+PHP_FPM_POOL_SOCKET = "#{PHP_FPM_RUN}/#{USER}.socket"
+
+PHP_FPM_POOL_CONF = %Q{
+[#{USER}]
+user = #{USER}
+group = #{GROUP}
+listen = #{PHP_FPM_POOL_SOCKET}
+listen.owner = www-data
+listen.group = www-data
+listen.mode = 0666
+pm = dynamic
+pm.max_children = 20
+pm.min_spare_servers = 4
+pm.max_spare_servers = 10
+pm.max_requests = 500
+chdir = /
+catch_workers_output = yes
+security.limit_extensions = .php
+}
+
+def php_fpm_vhost_conf(suffix)
+  %Q{
+    AddHandler php5-fcgi .php
+    Action php5-fcgi /php5-fcgi-#{suffix}
+    Alias /php5-fcgi-#{suffix} /home/#{USER}/php5-fcgi-#{suffix}
+    FastCgiExternalServer /home/#{USER}/php5-fcgi-#{suffix} -socket #{PHP_FPM_SOCKET} -pass-header Authorization
+  }
+end
+
 MONIT_MUNIN = %Q{
 check process munin-node with pidfile /var/run/munin/munin-node.pid
       start program = "/etc/init.d/munin-node start"
@@ -160,6 +191,13 @@ check process apache with pidfile /var/run/apache2.pid
       start program = "/etc/init.d/apache2 start"
       stop program  = "/etc/init.d/apache2 stop"
 }
+
+MONIT_PHP_FPM = %Q{
+check process php-fpm with pidfile #{PHP_FPM_PID}
+      start program = "/etc/init.d/php5-fpm start"
+      stop program  = "/etc/init.d/php5-fpm stop"
+}
+
 MONIT_NEBULA_SERVER = %Q{
 check process nebula-server with pidfile /home/spacegame/nebula-server/shared/run/daemon.pid
   start program = "/home/spacegame/bin/srvrunner lib/daemon.rb start"
@@ -245,7 +283,7 @@ def adduser(user)
   pubkeys(user, ARTURAZ_PUBKEY)
 end
 
-def apache_vhost(vhost, path, hostname)
+def apache_vhost(vhost, path, hostname, additional="")
   File.write("/etc/apache2/sites-available/#{vhost}", %Q{
 <VirtualHost *:80>
   ServerName #{hostname}
@@ -255,6 +293,8 @@ def apache_vhost(vhost, path, hostname)
     AllowOverride All
     Options -MultiViews -Indexes
   </Directory>
+
+  #{additional}
 
   ErrorLog #{LOGS}/#{vhost}.error.log
   CustomLog #{LOGS}/#{vhost}.access.log common
@@ -346,12 +386,18 @@ ExtendedStatus On
 end
 
 def setup_php
+  run "add-apt-repository ppa:l-mierzwa/lucid-php5"
+  run "apt-get update"
   install "libmysqlclient-dev php-apc php5-fpm php5-cli php5-intl"
-  run "mkdir -p /var/run/php5-fpm"
-  socket = "/var/run/php5-fpm/fpm.sock"
-  File.modify("/etc/php5/fpm/pool.d/www.conf") do |contents|
-    contents.sub("^listen = .+$", "listen = #{socket}")
+  run "mkdir -p #{PHP_FPM_RUN}"
+  File.modify("/etc/init.d/php5-fpm") do |contents|
+    contents.sub("^PIDFILE=.+$", "PIDFILE=#{PHP_FPM_PID}")
   end
+  File.modify("/etc/php5/fpm/php-fpm.conf") do |contents|
+    contents.sub("^pid = .+$", "pid = #{PHP_FPM_PID}")
+  end
+  File.write("/etc/php5/fpm/pool.d/#{USER}.conf", PHP_FPM_POOL_CONF)
+  run "mv /etc/php5/fpm/pool.d/www.conf /etc/php5/fpm/pool.d/www.conf.example"
   
   # Fix ini files.
   Dir["/etc/php5/conf.d/*.ini"].each do |path|
@@ -368,19 +414,12 @@ def setup_php
     end
   end
 
-  run "/etc/init.d/php5-fpm reload"
-
-  File.write("/etc/apache2/conf.d/php5-fpm.conf", %Q{
-<IfModule mod_fastcgi.c>
-  AddHandler php5-fcgi .php
-  Action php5-fcgi /php5-fcgi
-  Alias /php5-fcgi /usr/lib/cgi-bin/php5-fcgi
-  FastCgiExternalServer /usr/lib/cgi-bin/php5-fcgi -socket #{socket} -pass-header Authorization
-</IfModule>
-  })
-
+  run "/etc/init.d/php5-fpm restart"
   run "a2enmod actions fastcgi alias"
   run "/etc/init.d/apache2 restart"
+
+  File.write("/etc/monit/conf.d/php-fpm", MONIT_PHP_FPM)
+  run "/etc/init.d/monit restart"
 end
 
 class String
@@ -642,8 +681,8 @@ if ARGV.include?("sql") # {{{
   run "gpg --keyserver  hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A"
   run "gpg -a --export CD2EFD2A | apt-key add -"
   File.write("/etc/apt/sources.list.d/percona.list", 
-"deb http://repo.percona.com/apt precise main
-deb-src http://repo.percona.com/apt precise main")
+"deb http://repo.percona.com/apt #{DISTRO} main
+deb-src http://repo.percona.com/apt #{DISTRO} main")
   run "apt-get update"
 
   install "percona-server-server xtrabackup libcache-cache-perl libdbd-mysql-perl"
@@ -891,7 +930,10 @@ PassengerPoolIdleTime #{PASSENGER_POOL_IDLE_TIME}
   end
 
   # Forum configuration
-  apache_vhost("nebula-forum", "#{HOME}/web/current/forum", "forum.nebula44.#{DOMAIN}")
+  apache_vhost(
+    "nebula-forum", "#{HOME}/web/current/forum", 
+    "forum.nebula44.#{DOMAIN}", php_fpm_vhost_conf("forum")
+  )
   forum_dbuser, forum_pass = create_mysql("forum")
   forum_secret = rand_pass(64)
   forum_cookie = "forum_n44_#{DOMAIN}_#{rand(10000)}"
@@ -924,7 +966,10 @@ define('DEFAULT_LANGUAGE', "#{FORUM_LANG}");
   create_shared("#{HOME}/web/shared/forum", "cache", "attachments")
 
   # WIKI configuration
-  apache_vhost("nebula-wiki", "#{HOME}/web/current/wiki", "wiki.nebula44.#{DOMAIN}")
+  apache_vhost(
+    "nebula-wiki", "#{HOME}/web/current/wiki",
+    "wiki.nebula44.#{DOMAIN}", php_fpm_vhost_conf("wiki")
+  )
   dbuser, pass = create_mysql("wiki")
   File.write("#{HOME}/config/wiki.php", %Q{<?php
 
@@ -948,7 +993,10 @@ $wgPasswordSender = "apache@wiki.$webDomain";
     "/etc/apache2/sites-enabled/nebula-web", 
     %Q{PassengerPreStart http://nebula44.#{DOMAIN}}
   )
-  apache_vhost("nebula-web-www", "#{HOME}/web/current/www-redirect", "www.nebula44.#{DOMAIN}")
+  apache_vhost(
+    "nebula-web-www", "#{HOME}/web/current/www-redirect", 
+    "www.nebula44.#{DOMAIN}", php_fpm_vhost_conf("www")
+  )
   dbuser, pass = create_mysql("web")
   File.write("#{HOME}/config/db.web.yml", %Q{---
 production: &production

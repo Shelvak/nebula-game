@@ -1,5 +1,6 @@
 # General configuration.
 
+DISTRO = "lucid"
 USER = "spacegame"
 DOMAIN = "com" # In what ending does your domain end
 HOSTNAME = "worg.nebula44.#{DOMAIN}"
