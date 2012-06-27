@@ -5,6 +5,7 @@ package controllers.market.actions
 
    import models.market.MCMarketScreen;
    import models.market.MarketOffer;
+   import models.notification.MFaultEvent;
    import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
@@ -47,7 +48,7 @@ package controllers.market.actions
       {
          if (cmd.parameters.amount <= 0)
          {
-            new MTimedEvent(Localizer.string('Market', 'message.offerGone'));
+            new MFaultEvent(Localizer.string('Market', 'message.offerGone'));
             MCMarketScreen.getInstance().publicOffers.remove(offer.id);
          }
          else

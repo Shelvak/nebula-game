@@ -29,6 +29,11 @@ package models.notification {
          return IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'info');
       }
 
+      [Bindable(event="WillNotChange")]
+      override public function get rendererAlpha(): Number {
+         return 0.6;
+      }
+
       public override function clickHandler(event: MouseEvent): void {
          if (defaultClickHandler != null)
          {

@@ -80,6 +80,7 @@
       import globalevents.GlobalEvent;
 
       import models.ModelLocator;
+      import models.notification.MSuccessEvent;
       import models.notification.MTimedEvent;
       import models.quest.MMainQuestLine;
       import models.quest.Quest;
@@ -225,7 +226,7 @@
       private var claimedToPlanet: String;
 
       private function approveClaim(event: GQuestEvent): void {
-         new MTimedEvent(getString('message.rewardClaimed', [claimedToPlanet]));
+         new MSuccessEvent(getString('message.rewardClaimed', [claimedToPlanet]));
          EventBroker.unsubscribe(GQuestEvent.CLAIM_APROVED, approveClaim);
          refreshNotFitting();
       }

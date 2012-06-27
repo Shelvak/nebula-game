@@ -3,6 +3,8 @@ package controllers.market.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
 
+   import models.notification.MSuccessEvent;
+
    import models.notification.MTimedEvent;
    
    import models.factories.MarketOfferFactory;
@@ -47,7 +49,7 @@ package controllers.market.actions
       public override function result(rmo:ClientRMO):void
       {
          super.result(rmo);
-         new MTimedEvent(Localizer.string('Market', 'message.offerSubmited'));
+         new MSuccessEvent(Localizer.string('Market', 'message.offerSubmited'));
       }
    }
 }

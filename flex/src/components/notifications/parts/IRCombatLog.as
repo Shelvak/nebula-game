@@ -15,6 +15,7 @@ package components.notifications.parts
    import flash.system.System;
 
    import models.ModelLocator;
+   import models.notification.MSuccessEvent;
    import models.notification.MTimedEvent;
    import models.notification.parts.CombatLog;
    import models.notification.parts.CombatOutcomeType;
@@ -870,7 +871,7 @@ package components.notifications.parts
       private function btnCopyLogUrlToClipboard_clickHandler(event:MouseEvent) : void
       {
          System.setClipboard(combatLogUrl);
-         new MTimedEvent(Localizer.string("General", "message.copyToClipboardSuccessful"));
+         new MSuccessEvent(Localizer.string("General", "message.copyToClipboardSuccessful"));
       }
    }
 }

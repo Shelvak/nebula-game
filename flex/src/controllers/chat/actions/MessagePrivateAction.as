@@ -3,6 +3,7 @@ package controllers.chat.actions
    import controllers.CommunicationCommand;
 
    import models.chat.MChatMessage;
+   import models.notification.MFaultEvent;
    import models.notification.MTimedEvent;
 
    import utils.DateUtil;
@@ -78,7 +79,7 @@ package controllers.chat.actions
       public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void
       {
          MCHAT.messageSendFailure(MChatMessage(rmo.additionalParams));
-         new MTimedEvent(Localizer.string("General", "message.actionCanceled"));
+         new MFaultEvent(Localizer.string("General", "message.actionCanceled"));
       }
    }
 }

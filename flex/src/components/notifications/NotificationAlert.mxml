@@ -3,6 +3,7 @@
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
                     width="400" minHeight="84"
+                    alpha="{model.rendererAlpha}"
                     xmlns:base="components.base.*"
                     creationComplete="basecontainer2_creationCompleteHandler(event)"
                     rollOver="_hovered = true" rollOut="_hovered = false">

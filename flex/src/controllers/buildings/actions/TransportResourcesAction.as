@@ -10,6 +10,8 @@ package controllers.buildings.actions {
    import controllers.CommunicationCommand;
    import controllers.buildings.TransportResourcesErrorType;
 
+   import models.notification.MFaultEvent;
+
    import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
@@ -39,7 +41,7 @@ package controllers.buildings.actions {
       public override function applyServerAction(cmd: CommunicationCommand): void {
          if (cmd.parameters.error == TransportResourcesErrorType.NO_TRANSPORTER)
          {
-            new MTimedEvent(Localizer.string('ResourceTransporter',
+            new MFaultEvent(Localizer.string('ResourceTransporter',
                'message.noTransporter'));
          }
       }

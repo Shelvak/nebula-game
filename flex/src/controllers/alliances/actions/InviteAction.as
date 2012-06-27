@@ -3,6 +3,8 @@ package controllers.alliances.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
 
+   import models.notification.MSuccessEvent;
+
    import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
@@ -36,7 +38,7 @@ package controllers.alliances.actions
       public override function result(rmo:ClientRMO):void
       {
          super.result(rmo);
-         new MTimedEvent(Localizer.string('Alliances', 'message.playerInvited'));
+         new MSuccessEvent(Localizer.string('Alliances', 'message.playerInvited'));
       }
    }
 }

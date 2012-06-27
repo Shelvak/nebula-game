@@ -48,6 +48,12 @@ package models.notification {
          return EventsController.getInstance();
       }
 
+      [Bindable (event="WillNotChange")]
+      public function get rendererAlpha(): Number
+      {
+         return 1;
+      }
+
       public function clickHandler(event:MouseEvent): void
       {
          //override this function to implement any action
