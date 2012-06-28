@@ -28,7 +28,7 @@ package models.factories {
          var oldNotif: Notification = ML.notifications.find(data.id);
          if (oldNotif != null)
          {
-            if (!Objects.containsSameData(oldNotif, data))
+            if (oldNotif.read != data.read || oldNotif.starred != data.starred)
             {
                Objects.throwStateOutOfSyncError(oldNotif, data);
             }
