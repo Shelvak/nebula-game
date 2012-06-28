@@ -157,7 +157,9 @@
 
       [Bindable (event="avgRateChange")]
       private function getMaxOffer(amount: int): int {
-         return Math.round((mScreen.avgRate * (1 + Config.getMarketRange())) * amount);
+         return Math.max(getMinOffer(amount),
+             Math.round((mScreen.avgRate * (1 + Config.getMarketRange())) * amount)
+         );
       }
       
       private function get lowestMarketRate(): Number
@@ -180,11 +182,17 @@
         var lowestRate: Number = lowestMarketRate;
         var lowestOffset: Number = Config.getMinOfferOffset();
         var normalOffset: Number = Config.getMarketRange();
+        var minOfferRate: Number = Config.getMinOfferRate();
 
         var avgRateLowBound: Number = mScreen.avgRate * (1 - normalOffset);
-        return Math.floor((lowestRate == -1
-          ? avgRateLowBound
-          : Math.min(avgRateLowBound, lowestRate - lowestOffset)) * amount);
+        return Math.floor(
+          Math.max (
+            minOfferRate,
+            (lowestRate == -1
+              ? avgRateLowBound
+              : Math.min(avgRateLowBound, lowestRate - lowestOffset))
+          ) * amount
+        );
       }
 
       private function getResourceWithoutTaxes(resource: String, taxes: Number): Number {

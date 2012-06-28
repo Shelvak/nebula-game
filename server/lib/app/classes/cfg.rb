@@ -115,6 +115,9 @@ class Cfg
 
     def galaxy_zone_maturity_age; CONFIG['galaxy.zone.maturity_age']; end
 
+    # How much creds does player has on start.
+    def player_starting_creds; CONFIG['galaxy.player.creds.starting']; end
+
     def player_max_population; CONFIG['galaxy.player.population.max']; end
 
     # Returns number of seconds player is required to be last seen ago to be
@@ -169,9 +172,19 @@ class Cfg
     # Maximum number of market offers player can offer.
     def market_offers_max; CONFIG['market.offers.max']; end
 
+    # How often are you able to cancel your offers?
+    def market_offer_cancellation_cooldown
+      CONFIG.evalproperty('market.offers.cancellation_cooldown')
+    end
+
     # Returns +Float+ offset (like 0.10) for MarketOffer#to_rate deviation
     # from MarketOffer#average.
     def market_rate_offset; CONFIG['market.avg_rate.offset']; end
+
+    # Minimal value for resource pair rate.
+    def market_rate_min
+      CONFIG['market.avg_rate.min_rate']
+    end
 
     def market_rate_min_price_offset
       CONFIG['market.avg_rate.min_price.offset']

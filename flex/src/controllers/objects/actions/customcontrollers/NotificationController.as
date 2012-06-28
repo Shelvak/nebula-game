@@ -1,5 +1,7 @@
 package controllers.objects.actions.customcontrollers
 {
+   import controllers.startup.StartupInfo;
+
    import models.factories.NotificationFactory;
 
    public class NotificationController extends BaseObjectController
@@ -11,13 +13,19 @@ package controllers.objects.actions.customcontrollers
       public override function objectCreated(objectSubclass: String,
                                              object: Object,
                                              reason: String): * {
-         return NotificationFactory.fromObject(object);
+         if (StartupInfo.getInstance().initializationComplete)
+         {
+            return NotificationFactory.fromObject(object);
+         }
       }
 
       public override function objectDestroyed(objectSubclass: String,
                                                objectId: int,
                                                reason: String): void {
-         ML.notifications.remove(objectId, true);
+         if (StartupInfo.getInstance().initializationComplete)
+         {
+            ML.notifications.remove(objectId, true);
+         }
       }
    }
 }

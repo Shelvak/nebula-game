@@ -2194,15 +2194,6 @@
       </p>
       <p>Click '{0}' to reconnect.</p>
     </message.disconnect.otherLogin>
-
-    <title.disconnect.cannotReestablish
-      value="Cannot reestablish connection!" />
-    <message.disconnect.cannotReestablish>
-      <p>Sorry.</p>
-      <p>Your connection to the server was lost and we were unable to
-      reestablish it.</p>
-      <p>Click '{0}' to reconnect.</p>
-    </message.disconnect.cannotReestablish>
     
     <title.disconnect.playerErased value="Bye bye!" />
     <message.disconnect.playerErased>
@@ -5596,6 +5587,10 @@
     <filter.clear value="Clear" />
     <label.freeCreds value="You can not use free creds in the market." />
     <label.moreInfo value="Why?" />
+    <toolTip.cancelCooldown>
+      <p>You can't cancel this offer yet because you have canceled another one
+        recently.</p>
+    </toolTip.cancelCooldown>
   </Market>
 
   <ResourceTransporter>
@@ -5632,8 +5627,8 @@
     <status.authorization value="Authorizing..."/>
     <status.login value="Logging into the server..."/>
     <status.attaching>
-       Please wait for the server to create permanent user account for you.
-       This may take a few seconds.
+      Please wait for the server to attach you to the galaxy. This may take a
+      few seconds.
     </status.attaching>
   </Authorization>
 
@@ -5675,6 +5670,7 @@
      <label.ignoreFiltered value="Show covered messages"/>
      <label.ignoreType value="Ignore type:"/>
      <label.enablePlanetAnimations value="Animations in planet"/>
+     <label.showWormholeIcons value="Show planets and ships icons next to wormholes in galaxy"/>
     <label.technologiesSortType
      value="Sort researched technologies in technology tree:" />
     <label.techSortScientists value="By scientists"/>

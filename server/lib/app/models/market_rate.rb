@@ -13,13 +13,13 @@ class MarketRate < ActiveRecord::Base
     #
     # Creates from seed values if it does not exist.
     def get(galaxy_id, from_kind, to_kind)
-      model = where(:galaxy_id => galaxy_id, :from_kind => from_kind,
-                    :to_kind => to_kind).first
+      model = where(galaxy_id: galaxy_id, from_kind: from_kind,
+                    to_kind: to_kind).first
       if model.nil?
         seed_amount, seed_rate = Cfg.market_seed(from_kind, to_kind)
-        model = new(:galaxy_id => galaxy_id, :from_kind => from_kind,
-                    :to_kind => to_kind, :from_amount => seed_amount,
-                    :to_rate => seed_rate)
+        model = new(galaxy_id: galaxy_id, from_kind: from_kind,
+                    to_kind: to_kind, from_amount: seed_amount,
+                    to_rate: seed_rate)
         model.save!
       end
 
@@ -82,7 +82,7 @@ class MarketRate < ActiveRecord::Base
     def lowest(galaxy_id, from_kind, to_kind)
       rate = without_locking do
         MarketOffer.select(:to_rate).where(
-          :galaxy_id => galaxy_id, :from_kind => from_kind, :to_kind => to_kind
+          galaxy_id: galaxy_id, from_kind: from_kind, to_kind: to_kind
         ).order(:to_rate).c_select_value
       end
       rate.is_a?(String) ? rate.to_f : rate

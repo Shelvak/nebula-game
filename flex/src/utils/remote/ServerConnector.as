@@ -141,7 +141,7 @@ package utils.remote
          _buffer = "";
          _connecting = false;
          if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
-            reestablishConnection();
+            dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
          }
       }
       
@@ -166,8 +166,7 @@ package utils.remote
 
       private function socket_ioErrorHandler(event: IOErrorEvent): void {
          log.error(event.text);
-         reestablishConnection();
-         //dispatchServerProxyEvent(ServerProxyEvent.IO_ERROR);
+         dispatchServerProxyEvent(ServerProxyEvent.IO_ERROR);
       }
 
       private function socket_securityErrorHandler(event: SecurityErrorEvent): void {
@@ -231,130 +230,6 @@ package utils.remote
       private function get SI(): StartupInfo
       {
          return StartupInfo.getInstance();
-      }
-
-      private function reestablish_connectHandler(event: Event): void {
-         // normally there should not be anything in the buffer when
-         // connection has been established but clear it just in case
-         log.info('reestablishment socket connected');
-         _buffer = "";
-         _connecting = false;
-         removeSocketEventHandlers();
-         requestReestablish();
-      }
-
-      private function reestablishment_data(event: ProgressEvent): void
-      {
-         ApplicationLocker.getInstance().decreaseLockCounter();
-         if (_socket != null)
-         {
-            disconnect();
-         }
-         var success: Boolean = true;
-         _buffer += reestablishmentSocket.readUTFBytes(reestablishmentSocket.bytesAvailable);
-         var index: int = _buffer.indexOf("\n");
-         while (index != -1) {
-            const msg: String = _buffer.substring(0, index);
-            msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
-            const rmo: ServerRMO = ServerRMO.parse(msg);
-            if (rmo.action == "players|disconnect")
-            {
-               dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
-               success = false;
-            }
-            else
-            {
-               _timeSynchronizer.synchronize(rmo);
-               _unprocessedMessages.push(rmo);
-               _buffer = _buffer.substr(index + 1);
-               index = _buffer.indexOf("\n");
-            }
-         }
-         if (success)
-         {
-            log.info('reestablishment socket received data, switching to reestablished socket');
-            _socket = reestablishmentSocket;
-            addSocketEventHandlers();
-         }
-         removeReestablishmentSocketHandlers();
-         reestablishmentSocket.addEventListener(SecurityErrorEvent.SECURITY_ERROR,
-            reestablishment_securityErrorHandler);
-         reestablishmentSocket = null;
-      }
-
-      private function reestablishment_securityErrorHandler(event: SecurityErrorEvent): void
-      {
-         log.debug("Expected security error after reestablishment failure: {0}", event.text);
-      }
-
-      private function reestablish_closeHandler(event: Event): void {
-         if (reestablishmentSocket != null)
-         {
-            ApplicationLocker.getInstance().decreaseLockCounter();
-            log.info('reestablishment failed');
-            //disconnect();
-            _buffer = "";
-            _connecting = false;
-            removeReestablishmentSocketHandlers();
-            reestablishmentSocket.addEventListener(SecurityErrorEvent.SECURITY_ERROR,
-               reestablishment_securityErrorHandler);
-            reestablishmentSocket = null;
-            if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
-               dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
-            }
-         }
-      }
-
-      private var reestablishmentSocket: Socket;
-
-      private function reestablishConnection(): void
-      {
-         if (reestablishmentSocket == null && ML.player != null
-            && ML.player.id > 0
-            && MessagesProcessor.getInstance().lastProcessedMessage > 0)
-         {
-            ApplicationLocker.getInstance().increaseLockCounter();
-            log.info('creating reestablish socket');
-            reestablishmentSocket = new Socket();
-            addReestablishmentSocketHandlers();
-            reestablishmentSocket.connect(SI.server, SI.port);
-         }
-      }
-
-      private function addReestablishmentSocketHandlers(): void
-      {
-         with (reestablishmentSocket)
-         {
-            addEventListener(Event.CLOSE, reestablish_closeHandler);
-            addEventListener(Event.CONNECT, reestablish_connectHandler);
-            addEventListener(ProgressEvent.SOCKET_DATA, reestablishment_data);
-            addEventListener(IOErrorEvent.IO_ERROR, reestablish_closeHandler);
-            addEventListener(SecurityErrorEvent.SECURITY_ERROR, reestablish_closeHandler);
-         }
-      }
-
-      private function removeReestablishmentSocketHandlers(): void
-      {
-         with (reestablishmentSocket)
-         {
-            removeEventListener(Event.CLOSE, reestablish_closeHandler);
-            removeEventListener(Event.CONNECT, reestablish_connectHandler);
-            removeEventListener(ProgressEvent.SOCKET_DATA, reestablishment_data);
-            removeEventListener(IOErrorEvent.IO_ERROR, reestablish_closeHandler);
-            removeEventListener(SecurityErrorEvent.SECURITY_ERROR, reestablish_closeHandler);
-         }
-      }
-
-      private function requestReestablish(): void
-      {
-         if (reestablishmentSocket.connected) {
-            var reestablishMsg: String = 'reestablish:' + ML.player.id + ':' +
-               MessagesProcessor.getInstance().lastProcessedMessage + ':'
-               + StartupInfo.getInstance().reestablishmentToken + '\n';
-            log.info('requesting reestablish: '
-            + ' >>> ' + reestablishMsg);
-            reestablishmentSocket.writeUTFBytes(reestablishMsg);
-         }
       }
 
       public function sendMessage(rmo: ClientRMO): void {

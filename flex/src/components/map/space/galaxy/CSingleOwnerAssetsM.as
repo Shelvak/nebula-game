@@ -1,5 +1,6 @@
-package components.map.space
+package components.map.space.galaxy
 {
+   import components.map.space.*;
    import models.solarsystem.MSSMetadataOfOwner;
    import models.solarsystem.SSMetadataType;
 

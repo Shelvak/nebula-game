@@ -45,7 +45,9 @@ module Visibility
       # If it is main galaxy battleground, never dispatch created/destroyed for
       # it and just update metadata as client will apply this update to all
       # visible wormholes instead of applying it to battleground solar system.
-      if SolarSystem.main_battleground.where(id: solar_system_id).exists?
+      if without_locking do
+        SolarSystem.main_battleground.where(id: solar_system_id).exists?
+      end
         ss_updated |= ss_created | ss_destroyed
         ss_created = ss_destroyed = []
       end
@@ -100,7 +102,7 @@ module Visibility
     end
 
     def dispatch_created_ss(solar_system_id, player_ids, current_metadatas)
-      players = Player.find(player_ids)
+      players = without_locking { Player.find(player_ids).each(&:freeze) }
       row = without_locking do
         SolarSystem.select("x, y, kind, player_id").where(id: solar_system_id).
           c_select_one
@@ -121,7 +123,9 @@ module Visibility
     def dispatch_updated_ss(
       solar_system_id, player_ids, previous_metadatas, current_metadatas
     )
-      players = Player.find(player_ids).reject do |player|
+      players = without_locking do
+        Player.find(player_ids).each(&:freeze)
+      end.reject do |player|
         friendly_ids = player.friendly_ids
         alliance_ids = player.alliance_ids
 

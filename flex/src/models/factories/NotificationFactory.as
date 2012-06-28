@@ -12,6 +12,7 @@ package models.factories {
    import flash.external.ExternalInterface;
 
    import models.ModelLocator;
+   import models.notification.MNotificationEvent;
    import models.notification.Notification;
    import models.notification.NotificationType;
    import models.notification.parts.NotEnoughResources;
@@ -27,7 +28,7 @@ package models.factories {
          var oldNotif: Notification = ML.notifications.find(data.id);
          if (oldNotif != null)
          {
-            if (!Objects.containsSameData(oldNotif, data))
+            if (oldNotif.read != data.read || oldNotif.starred != data.starred)
             {
                Objects.throwStateOutOfSyncError(oldNotif, data);
             }
@@ -45,7 +46,7 @@ package models.factories {
 
                ExternalInterface.call("setUnreadNotifications", windowTitle);
             }
-            ML.notificationAlerts.addItem(notification);
+            new MNotificationEvent(notification);
          }
          var planet: MPlanet = ML.latestPlanet;
          if (notification.event == NotificationType.NOT_ENOUGH_RESOURCES

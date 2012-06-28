@@ -2,10 +2,11 @@ package controllers.market.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.Messenger;
 
    import models.market.MCMarketScreen;
    import models.market.MarketOffer;
+   import models.notification.MFaultEvent;
+   import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
@@ -47,7 +48,7 @@ package controllers.market.actions
       {
          if (cmd.parameters.amount <= 0)
          {
-            Messenger.show(Localizer.string('Market', 'message.offerGone'));
+            new MFaultEvent(Localizer.string('Market', 'message.offerGone'));
             MCMarketScreen.getInstance().publicOffers.remove(offer.id);
          }
          else

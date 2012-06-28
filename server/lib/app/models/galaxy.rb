@@ -120,42 +120,54 @@ class Galaxy < ActiveRecord::Base
   # Create player in galaxy _galaxy_id_ with Player#web_user_id, Player#name
   # and Player#trial.
   def self.create_player(galaxy_id, web_user_id, name, trial)
-    player = Player.new(
-      galaxy_id: galaxy_id, web_user_id: web_user_id, name: name, trial: trial,
-      planets_count: 1, population_cap: Building::Mothership.population(1)
-    )
-    player.save!
+    ruleset = without_locking do
+      Galaxy.select("ruleset").where(id: galaxy_id).c_select_value
+    end
 
-    Quest.start_player_quest_line(player.id)
+    raise ArgumentError, "Cannot find galaxy with ID #{galaxy_id}!" \
+      if ruleset.nil?
 
-    CallbackManager.register(
-      player, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
-      Cfg.player_inactivity_time(player.points).from_now
-    )
+    CONFIG.with_set_scope(ruleset) do
+      player = Player.new(
+        galaxy_id: galaxy_id, web_user_id: web_user_id, name: name, trial: trial,
+        planets_count: 1, population_cap: Building::Mothership.population(1),
+        creds: Cfg.player_starting_creds
+      )
+      player.save!
 
-    connection.execute(%Q{
-    UPDATE `#{SolarSystem.table_name}` SET
-      kind=#{SolarSystem::KIND_NORMAL}, player_id=#{player.id}
-    WHERE kind=#{SolarSystem::KIND_POOLED} LIMIT 1
-    })
+      Quest.start_player_quest_line(player.id)
 
-    home_ss = player.home_solar_system
-    raise "We've ran out of pooled solar systems in galaxy #{galaxy_id}!" \
-      if home_ss.nil?
+      CallbackManager.register(
+        player, CallbackManager::EVENT_CHECK_INACTIVE_PLAYER,
+        Cfg.player_inactivity_time(player.points).from_now
+      )
 
-    zone = Galaxy::Zone.for_enrollment(
-      galaxy_id, Cfg.galaxy_zone_maturity_age
-    )
-    x, y = zone.free_spot_coords(galaxy_id)
-    home_ss.attach!(x, y)
+      connection.execute(%Q{
+      UPDATE `#{SolarSystem.table_name}` SET
+        kind=#{SolarSystem::KIND_NORMAL}, player_id=#{player.id}
+      WHERE kind=#{SolarSystem::KIND_POOLED} LIMIT 1
+      })
 
-    now = Time.now
-    scope = SsObject::Planet.where(solar_system_id: home_ss.id)
-    scope.update_all(last_resources_update: now)
-    scope.where("owner_changed IS NOT NULL").
-      update_all(owner_changed: now, player_id: player.id)
+      home_ss = player.home_solar_system
+      raise "We've ran out of pooled solar systems in galaxy #{galaxy_id}!" \
+        if home_ss.nil?
 
-    player
+      # Assign planet attributes so that metadata would be correct.
+      now = Time.now
+      scope = SsObject::Planet.where(solar_system_id: home_ss.id)
+      scope.update_all(last_resources_update: now)
+      scope.where("owner_changed IS NOT NULL").
+        update_all(owner_changed: now, player_id: player.id)
+
+      # Finally attach the zone.
+      zone = Galaxy::Zone.for_enrollment(
+        galaxy_id, Cfg.galaxy_zone_maturity_age
+      )
+      x, y = zone.free_spot_coords(galaxy_id)
+      home_ss.attach!(x, y)
+
+      player
+    end
   end
 
   SPAWN_SCOPE = DScope.world

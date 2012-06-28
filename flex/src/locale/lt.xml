@@ -2325,14 +2325,6 @@
       saugumą.</p>
       <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
     </message.disconnect.otherLogin>
-
-    <title.disconnect.cannotReestablish
-      value="Neįmanoma atkurti ryšio su serveriu!" />
-    <message.disconnect.cannotReestablish>
-      <p>Atsiprašome.</p>
-      <p>Buvo prarastas ryšys su serveriu ir mums nepavyko jo atkurti.</p>
-      <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
-    </message.disconnect.cannotReestablish>
     
     <title.disconnect.playerErased value="Viso gero!" />
     <message.disconnect.playerErased>
@@ -5680,6 +5672,10 @@
     <filter.clear value="Valyti" />
     <label.freeCreds value="Tu negali naudoti nemokamų kredų turguje." />
     <label.moreInfo value="Kodėl?" />
+    <toolTip.cancelCooldown>
+      <p>Tu dar negali atšaukti savo pasiūlymo, nes neseniai buvo atšauktas
+      kitas tavo pasiūlymas.</p>
+    </toolTip.cancelCooldown>
   </Market>
 
   <ResourceTransporter>
@@ -5715,10 +5711,10 @@
   <Authorization>
     <status.authorization value="Autorizuojama..."/>
     <status.login value="Jungiamasi prie serverio..."/>
-     <status.attaching>
-       Prašome palaukti, kol serveris tau sukurs nuolatinę vartotojo paskyrą.
-       Tai gali užtrukti kelias sekundes.
-     </status.attaching>
+    <status.attaching>
+      Palauk, kol serveris tave vėl prijungs prie galatikos. Tai gali
+      užtrukti kelias sekundes.
+    </status.attaching>
   </Authorization>
 
   <PlanetMapEditor>
@@ -5759,6 +5755,7 @@
      <label.ignoreFiltered value="Uždengti žinutes"/>
      <label.ignoreType value="Ignoravimo būdas:"/>
      <label.enablePlanetAnimations value="Animacijos planetoje"/>
+     <label.showWormholeIcons value="Rodyti planetų ir laivų ikonėles prie arenos vartų galaktikoje"/>
      <label.technologiesSortType
       value="Išradinėjamų technologijų rikiavimo būdas technologijų medyje:" />
      <label.techSortScientists value="Pagal mokslininkus"/>

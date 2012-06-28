@@ -1,5 +1,6 @@
-package components.map.space
+package components.map.space.galaxy
 {
+   import components.map.space.*;
    import models.player.PlayerMinimal;
 
    import mx.collections.ArrayList;

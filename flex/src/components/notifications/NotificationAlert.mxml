@@ -1,60 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
                     xmlns:s="library://ns.adobe.com/flex/spark" 
                     xmlns:mx="library://ns.adobe.com/flex/mx"
-                    width="400" minHeight="50"
+                    width="400" minHeight="84"
                     xmlns:base="components.base.*"
                     creationComplete="basecontainer2_creationCompleteHandler(event)"
-                    click="basecontainer2_clickHandler(event)">
+                    rollOver="_hovered = true" rollOut="_hovered = false">
    <fx:Script>
       <![CDATA[
-         import models.notification.Notification;
-         
+         import controllers.notifications.EventsController;
+
+         import models.notification.MEvent;
+
          import mx.events.FlexEvent;
-         
-         import org.osmf.events.TimeEvent;
-         
-         private static const MSG_SHOW_DURRATION: int = 5000;
-         
+
+         import utils.assets.AssetNames;
+
+         import utils.assets.ImagePreloader;
+
          private var hideTimer: Timer;
-         
+
+         private function get EC(): EventsController
+         {
+           return EventsController.getInstance();
+         }
+
          [Bindable]
-         public var notif: Notification;
-         
+         private var _hovered: Boolean = false;
+
+         [Bindable]
+         public var model: MEvent;
          
          protected function basecontainer2_creationCompleteHandler(event:FlexEvent):void
          {
-            hideTimer = new Timer(MSG_SHOW_DURRATION, 1);
-            hideTimer.addEventListener(TimerEvent.TIMER, hideAlert, false, 0, true);
-            hideTimer.start();
+            if (model != null && model.duration > 0)
+            {
+              hideTimer = new Timer(model.duration, 1);
+              hideTimer.addEventListener(TimerEvent.TIMER, hideAlert, false, 0, true);
+              hideTimer.start();
+            }
          }
 
-         private function hideAlert(e: TimerEvent): void
+         private function hideAlert(e: TimerEvent = null): void
          {
-            hideTimer.removeEventListener(TimerEvent.TIMER, hideAlert);
-            var idx: int = ML.notificationAlerts.getItemIndex(notif);
-            if (idx != -1)
-            {
-               ML.notificationAlerts.removeItemAt(idx);
-            }
-            hideTimer = null;
+           if (hideTimer != null)
+           {
+             hideTimer.removeEventListener(TimerEvent.TIMER, hideAlert);
+             hideTimer = null;
+           }
+           EC.removeEvent(model);
          }
-         
-         
-         protected function basecontainer2_clickHandler(event:MouseEvent):void
-         {
-            ML.notifications.show(notif.id);
-         }
+
+         private static const ICON_SIZE: int = 68;
+
+         private static const IMG: ImagePreloader = ImagePreloader.getInstance();
          
       ]]>
    </fx:Script>
-   <s:Rect alpha="0.89" radiusX="5" radiusY="5" left="0" top="0" right="0" bottom="0">
-      <s:fill>
-         <s:SolidColor color="#000000"/>
-      </s:fill>
-   </s:Rect>
-   <s:Group id="content" left="6" top="6" bottom="6" right="6">
-      <s:Label text="{notif.message}" fontSize="12" fontWeight="bold" verticalCenter="0"
-               left="0" right="0" textAlign="center"/>
+  <s:Group left="0" top="0" bottom="0"
+           click="model.clickHandler(event)">
+    <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'top_left')}"
+                   top="0" id="leftTop"/>
+    <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'center_left')}"
+                   fillMode="repeat" top="{leftTop.height}" bottom="{leftBottom.height}"/>
+    <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'bottom_left')}"
+                   bottom="0" id="leftBottom"/>
+  </s:Group>
+   <s:BitmapImage source="{model.image}" left="7" top="7"
+                  alpha="{_hovered ? 1 : model.rendererAlpha}"
+                  width="{ICON_SIZE}" height="{ICON_SIZE}"/>
+   <s:Group id="content" left="{ICON_SIZE + 12}" top="6" bottom="6" right="45"
+            click="model.clickHandler(event)">
+      <s:Label text="{model.message}" fontSize="12" fontWeight="bold" verticalCenter="0"
+               left="0" right="0" textAlign="center"
+               alpha="{_hovered ? 1 : model.rendererAlpha}"/>
    </s:Group>
-</base:BaseContainer>
+   <s:Group right="0" visible="{!_hovered}" top="0" bottom="0">
+     <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'top_right_black')}"
+                    top="0" id="blackTop"/>
+     <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'center_right_black')}"
+                    fillMode="repeat" top="{blackTop.height}" bottom="{blackBottom.height}"/>
+     <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'bottom_right_black')}"
+                    bottom="0" id="blackBottom"/>
+   </s:Group>
+  <s:Group right="0" visible="{_hovered}" top="0" bottom="0"
+           click="hideAlert()">
+    <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'top_right_red')}"
+                   top="0" id="redTop"/>
+    <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'center_right_red')}"
+                   fillMode="repeat" top="{redTop.height}" bottom="{redBottom.height}"/>
+    <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'bottom_right_red')}"
+                   bottom="0" id="redBottom"/>
+  </s:Group>
+  <s:Button skinClass="components.skins.CloseEventButtonSkin"
+                 visible="{_hovered}" right="1" verticalCenter="0"
+                 click="hideAlert()"/>
+</s:Group>

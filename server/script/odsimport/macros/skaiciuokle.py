@@ -3,12 +3,11 @@
 # For this to work, it needs to be in script path.
 #
 # Linux:
-# $ mkdir -p ~/.libreoffice/3/user/Scripts/python/
-# $ ln -s path/to/skaiciuokle.py ~/.libreoffice/3/user/Scripts/python/
+# $ mkdir -p ~/.libreoffice/3/user/Scripts/python/ && ln -s "$(readlink -f skaiciuokle.py) ~/.libreoffice/3/user/Scripts/python/
 #
 # While developing, you need to update symlink timestamp for libreoffice to
 # reload the file:
-# $ while true; do sleep 1; touch -h skaiciuokle.py; echo -n "."; done
+# $ while true; do sleep 1; touch -h ~/.libreoffice/3/user/Scripts/python/skaiciuokle.py; echo -n "."; done
 #
 
 import math

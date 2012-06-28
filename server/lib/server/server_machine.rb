@@ -2,8 +2,6 @@ module ServerMachine
   include NamedLogMessages
   include FlashPolicyHandler
 
-  REESTABLISHMENT_REGEXP = /reestablish:(\d+):(\d+):(\w+)/
-
   def to_s
     @client.nil? ? "server" : "server-#{@client}"
   end
@@ -37,14 +35,6 @@ module ServerMachine
         when "?"
           send_data("!\n")
           next
-        when REESTABLISHMENT_REGEXP
-          player_id = $1.to_i
-          last_processed_seq = $2.to_i
-          token = $3
-          Celluloid::Actor[:dispatcher].reestablish_connection!(
-            @client, player_id, last_processed_seq, token
-          )
-          next
         end
 
         debug "Received message: \"#{message}\""
@@ -65,6 +55,9 @@ module ServerMachine
         Celluloid::Actor[:dispatcher].receive_message! @client, json
       end
     end
+  rescue StreamBuffer::OverflowError
+    send_data("ERROR: buffer overflow\n")
+    close_connection_after_writing
   end
 
   def write(message)

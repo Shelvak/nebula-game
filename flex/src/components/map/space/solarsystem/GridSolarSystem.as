@@ -1,5 +1,8 @@
-package components.map.space
+package components.map.space.solarsystem
 {
+   import components.map.space.*;
+   import components.map.space.solarsystem.CMapSolarSystem;
+
    import flash.geom.Point;
    
    import models.ModelsCollection;
@@ -113,7 +116,7 @@ package components.map.space
       }
       
       
-      internal override function getAllSectors() : ArrayCollection
+      public override function getAllSectors() : ArrayCollection
       {
          var sectors:Array = new Array();
          // If we have all sectors cached (chaching is carried out by constructor), just add

@@ -119,7 +119,6 @@ package models
       {
          player.reset();
          notifications.removeAll();
-         notificationAlerts.removeAll();
          quests.removeAll();
          Collections.cleanListOfICleanables(squadrons);
          Collections.cleanListOfICleanables(routes);
@@ -141,8 +140,6 @@ package models
        * @see models.technology.TechnologiesModel
        */
       public var technologies:TechnologiesModel = new TechnologiesModel();
-      
-      public var notificationAlerts: ArrayCollection = new ArrayCollection();
       
       
       [Bindable(event="willNotChange")]

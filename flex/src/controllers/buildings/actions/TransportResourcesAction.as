@@ -8,8 +8,11 @@
 package controllers.buildings.actions {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.Messenger;
    import controllers.buildings.TransportResourcesErrorType;
+
+   import models.notification.MFaultEvent;
+
+   import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
 
@@ -38,8 +41,8 @@ package controllers.buildings.actions {
       public override function applyServerAction(cmd: CommunicationCommand): void {
          if (cmd.parameters.error == TransportResourcesErrorType.NO_TRANSPORTER)
          {
-            Messenger.show(Localizer.string('ResourceTransporter',
-               'message.noTransporter'), Messenger.MEDIUM);
+            new MFaultEvent(Localizer.string('ResourceTransporter',
+               'message.noTransporter'));
          }
       }
    }

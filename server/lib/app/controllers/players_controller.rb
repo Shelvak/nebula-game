@@ -7,8 +7,6 @@ class PlayersController < GenericController
   #
   # Return message params:
   # - success (Boolean)
-  # - reestablishment_token (String): generated token that allows you to
-  # reestablish connection.
   # - required_version (String): optional: version required for connection
   # if client is refused because of the old version.
   # - attaching (Boolean): optional: is true if player is detached and needs
@@ -31,8 +29,7 @@ class PlayersController < GenericController
          ControlManager.instance.login_authorized?(
            player, m.params['web_player_id']
          )
-        # TODO: spec
-        reestablishment_token = login m, player
+        login m, player
 
         # Config needs to be pushed right after login, or client is not able
         # to operate properly.
@@ -40,11 +37,10 @@ class PlayersController < GenericController
 
         if without_locking { player.detached? }
           push m, ACTION_ATTACH
-          respond m, success: true, attaching: true,
-            reestablishment_token: reestablishment_token
+          respond m, success: true, attaching: true
         else
           push m, ACTION_PUSH_ASSETS
-          respond m, success: true, reestablishment_token: reestablishment_token
+          respond m, success: true
         end
       else
         raise ActiveRecord::RecordNotFound

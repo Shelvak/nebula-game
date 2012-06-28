@@ -1,0 +1,17 @@
+---
+
+# For quick and dirty test game runs.
+
+speed: 40
+battleground.victory.condition: 100000000
+galaxy.player.creds.starting: 10000000
+buildings.mothership.population: 2500
+buildings.mothership.metal.generate: 10000000
+buildings.mothership.metal.store: 10000000
+buildings.mothership.energy.generate: 10000000
+buildings.mothership.energy.store: 10000000
+buildings.mothership.zetium.store: 10000000
+buildings.mothership.zetium.generate: 10000000
+buildings.research_center.scientists: 10000 * level
+ranking.points.war: ((xp_with_dead - xp) / 4 + xp) * 50
+solar_system.links.planet.weight: 1.0

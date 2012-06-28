@@ -1,7 +1,7 @@
-package components.map.space
+package components.map.space.galaxy
 {
-   import controllers.Messenger;
-
+   import controllers.notifications.EventsController;
+   import components.map.space.*;
    import models.ModelLocator;
    import models.galaxy.Galaxy;
    import models.galaxy.IVisibleGalaxyAreaClient;
@@ -10,10 +10,13 @@ package components.map.space
    import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
    import models.map.MStaticSpaceObjectsAggregator;
+   import models.notification.MPermanentEvent;
 
    import mx.collections.ArrayCollection;
 
    import spark.components.Group;
+
+   import utils.UrlNavigate;
 
    import utils.locale.Localizer;
    import utils.logging.Log;
@@ -21,16 +24,19 @@ package components.map.space
 
    public class CMapGalaxy extends CMapSpace implements IVisibleGalaxyAreaClient
    {
+      private static var eventPopUpId: int;
       /**
        * Called by <code>NavigationController</code> when galaxy map screen is shown.
        */
       public static function screenShowHandler() : void {
          const galaxy: Galaxy = ModelLocator.getInstance().latestGalaxy;
          if (galaxy != null && !galaxy.canBeExplored) {
-            Messenger.show(
-               Localizer.string("Galaxy", "message.noRadar"),
-               Messenger.VERY_LONG, 'info/galaxy'
-            );
+            function openInfo(): void {
+               UrlNavigate.getInstance().showUrl('info/galaxy');
+            }
+            eventPopUpId = new MPermanentEvent(
+               Localizer.string("Galaxy", "message.noRadar"), openInfo
+            ).id;
          }
       }
       
@@ -38,7 +44,7 @@ package components.map.space
        * Called by <code>NavigationController</code> when galaxy map screen is hidden.
        */
       public static function screenHideHandler() : void {
-         Messenger.hide();
+         EventsController.getInstance().removeEventById(eventPopUpId);
       }
 
       public static const COMP_CLASSES: StaticObjectComponentClasses =
@@ -260,7 +266,7 @@ package components.map.space
 }
 
 
-import components.map.space.CMapGalaxy;
+import components.map.space.galaxy.CMapGalaxy;
 import components.map.space.CStaticSpaceObjectsAggregator;
 
 import flash.errors.IllegalOperationError;

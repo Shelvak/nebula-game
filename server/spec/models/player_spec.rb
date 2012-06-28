@@ -958,6 +958,7 @@ describe Player do
         free_creds vip_level vip_creds vip_until vip_creds_until
         portal_without_allies trial
         planets_count bg_planets_count
+        last_market_offer_cancel
       }
       ommited_fields = fields - required_fields
       it_behaves_like "as json", Factory.create(:player), nil,
@@ -1947,6 +1948,7 @@ describe Player do
   describe "#attach!" do
     let(:player) { Factory.create(:player) }
     let(:home_solar_system) { player.home_solar_system }
+    # Needed to have a suitable zone for reattachment.
     let(:normal_solar_system) do
       Factory.create(:solar_system, :galaxy => player.galaxy, :x => 10)
     end

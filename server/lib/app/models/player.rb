@@ -210,6 +210,7 @@ class Player < ActiveRecord::Base
           alliance_id alliance_cooldown_ends_at alliance_cooldown_id
           free_creds vip_creds vip_level vip_until vip_creds_until
           planets_count bg_planets_count
+          last_market_offer_cancel
         })
         json['creds'] = creds
         json['portal_without_allies'] = portal_without_allies?
@@ -415,6 +416,12 @@ class Player < ActiveRecord::Base
     planets_count_changed? || bg_planets_count_changed?
   end
 
+  # Ensure #last_market_offer_cancel is not null. Stupid AR. Tries to insert
+  # NULL without this into a non-null column with default value.
+  before_create do
+    self.last_market_offer_cancel ||= Cfg.market_offer_cancellation_cooldown.ago
+  end
+
   # Make sure we don't get below 0 points, 
   before_save do
     POINT_ATTRIBUTES.each do |attr|
@@ -509,7 +516,7 @@ class Player < ActiveRecord::Base
   # Update player in dispatcher if it is connected so alliance ids and other
   # things would be intact.
   #
-  # Also give vicotry points to alliance if player earned them.
+  # Also give victory points to alliance if player earned them.
   #
   # This is why DataMapper is great - it keeps one object in memory for one
   # row in DB.

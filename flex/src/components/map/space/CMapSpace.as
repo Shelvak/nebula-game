@@ -60,8 +60,8 @@ package components.map.space
        */
       internal static const OBJECT_POPUP_YSHIFT:int = 20;
 
-      internal var grid:Grid;
-      internal var squadronsController:SquadronsController;
+      public var grid:Grid;
+      public var squadronsController:SquadronsController;
 
 
       /* ###################### */

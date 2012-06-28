@@ -94,12 +94,9 @@ describe PlayersController do
               end
             end
 
-            it "should respond with success and reestablishment token" do
+            it "should respond with success" do
               invoke @action, @params
-              response.should == {
-                success: true,
-                reestablishment_token: @controller.reestablishment_token
-              }
+              response.should == {success: true}
             end
           end
 
@@ -125,11 +122,7 @@ describe PlayersController do
 
             it "should respond with correct params" do
               invoke @action, @params
-              response.should == {
-                success: true,
-                attaching: true,
-                reestablishment_token: @controller.reestablishment_token
-              }
+              response.should == {success: true, attaching: true}
             end
           end
         end

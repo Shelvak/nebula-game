@@ -35,7 +35,6 @@ package controllers.players.actions
          const params: Object = cmd.parameters;
          if (params["success"]) {
             AM.loginSuccessful();
-            SI.reestablishmentToken = params["reestablishmentToken"];
             if (params["attaching"]) {
                MWaitingScreen.getInstance().visible = true;
             }

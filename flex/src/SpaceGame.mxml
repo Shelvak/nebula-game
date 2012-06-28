@@ -40,8 +40,6 @@
       <![CDATA[
       import com.developmentarc.core.utils.EventBroker;
 
-      import controllers.Messenger;
-
       import controllers.navigation.MCTopLevel;
       import controllers.screens.Screens;
       import controllers.startup.StartupManager;
@@ -49,6 +47,8 @@
       import globalevents.GlobalEvent;
 
       import models.ModelLocator;
+      import models.notification.MSuccessEvent;
+      import models.notification.MTimedEvent;
 
       import mx.events.FlexEvent;
 
@@ -71,10 +71,7 @@
          else if (event.ctrlKey && event.shiftKey
            && event.keyCode == Keyboard.INSERT) {
             System.setClipboard(ModelLocator.getInstance().debugLog);
-            Messenger.show(
-              Localizer.string("General", "message.copyToClipboardSuccessful"),
-              Messenger.MEDIUM
-            );
+            new MSuccessEvent(Localizer.string("General", "message.copyToClipboardSuccessful"));
          }
          else if (event.ctrlKey && event.keyCode == 144 /*NUMLOCK*/) {
             throw new Error("Dont you ever press ctrl+numlock again!");

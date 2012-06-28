@@ -526,13 +526,15 @@ describe Galaxy do
   end
 
   describe ".create_player" do
-    let(:galaxy) { Factory.create(:galaxy) }
+    let(:ruleset) { 'test_cp' }
+    let(:galaxy) { Factory.create(:galaxy, ruleset: ruleset) }
     let(:galaxy_id) { galaxy.id }
     let(:web_user_id) { (Player.maximum(:web_user_id) || 0) + 1 }
     let(:name) { "P-#{web_user_id}" }
     let(:trial) { true }
     let(:planets_count) { 1 }
     let(:population_cap) { Building::Mothership.population(1) }
+    let(:creds) { 5000 }
     let(:pooled_ss) do
       [
         Factory.create(:ss_pooled, galaxy: galaxy),
@@ -552,13 +554,17 @@ describe Galaxy do
     let(:player) { Galaxy.create_player(galaxy_id, web_user_id, name, trial) }
 
     before(:each) do
+      # This ensures that creds are only set if we're wrapped in appropriate
+      # ruleset.
+      CONFIG.global.add_set(ruleset, 'default')
+      CONFIG.global.store("galaxy.player.creds.starting", ruleset, creds)
       other_ss
       home_ss
     end
 
-    %w{galaxy_id web_user_id name trial planets_count population_cap}.each do
-      |attr|
-
+    %w{
+      galaxy_id web_user_id name trial planets_count population_cap creds
+    }.each do |attr|
       it "should set Player##{attr}" do
         player.send(attr).should == send(attr)
       end
@@ -608,6 +614,22 @@ describe Galaxy do
       zone.should_receive(:free_spot_coords).with(galaxy_id).
         and_return([3, 4])
       [player.home_solar_system.x, player.home_solar_system.y].should == [3, 4]
+    end
+
+    it "should dispatch created with appropriate metadata" do
+      Factory.create(:planet, solar_system: home_ss, owner_changed: 2.days.ago)
+      viewer = Factory.create(:fge, galaxy: galaxy,
+        rectangle: Rectangle.new(-100, -100, 100, 100))
+
+      SPEC_EVENT_HANDLER.clear_events!
+      player
+      event, kind, reason = SPEC_EVENT_HANDLER.events.find do
+        |f_event, f_kind, f_reason|
+        f_event.is_a?(Event::FowChange::SsCreated)
+      end
+
+      event.metadatas[viewer.player_id][:enemies_with_planets].
+        should_not be_blank
     end
 
     describe "planets" do

@@ -12,10 +12,9 @@ package controllers.players.actions
     */
    public class DisconnectAction extends CommunicationAction
    {
-      private static const REESTABLISHING: String = 'reestablishing';
       override public function applyServerAction(cmd:CommunicationCommand) : void {
          var reason:String = cmd.parameters.reason;
-         if (reason == null || reason == REESTABLISHING)
+         if (reason == null)
             return;
          reason = StringUtil.underscoreToCamelCaseFirstLower(reason);
          ConnectionManager.getInstance().serverWillDisconnect(reason);

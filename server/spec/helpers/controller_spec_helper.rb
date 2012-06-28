@@ -20,12 +20,6 @@ module ControllerSpecHelper
         @response = params
       end
 
-      def login(*args)
-        @reestablishment_token = super(*args)
-      end
-
-      def reestablishment_token; @reestablishment_token; end
-
       def pushed; @pushed ||= []; end
       def pushed?(action, params)
         pushed.include?([action, params.stringify_keys])
