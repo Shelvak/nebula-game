@@ -578,6 +578,8 @@ assets:
         energy_large.png:                300x300_energy.png
         zetium_large.png:                300x300_zetium.png
         creds_large.png:                 300x300_creds.png
+        all_units_large.png:             Autoload_all_units.png
+        all_resources_large.png:         Autoload_all_res.png
         heading_line.png:                Line.png
         heading_line_end.png:            Line_end.png
         apocalypse.png:                  Endofdays0.png
@@ -697,6 +699,8 @@ assets:
         scont_button_left.png:      Load_button_left.png
         scont_button_center.png:    Load_button_center.png
         scont_button_right.png:     Load_button_right.png
+        active_container.png:       Autoload_box_blue.png
+        inactive_container.png:     Autoload_box_red.png
 
       "defensive_portal_screen":
         table_top_with_area.png:         Portal_top_table_top.png

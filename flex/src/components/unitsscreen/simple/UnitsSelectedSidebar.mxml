@@ -123,6 +123,16 @@
                <s:Button label="{getText('label.all')}" click="selectAll()"/>
                <s:Button label="{getText('label.none')}" click="selectNone()"/>
             </base:Panel>
+
+            <base:Panel width="100%" title="TODO: Auto load">
+               <base:layout>
+                  <s:HorizontalLayout gap="10" horizontalAlign="center"/>
+               </base:layout>
+               <s:Button label="TODO: Auto load"
+                         click="NavigationController.getInstance().showAutoLoad(
+                         null, null, []
+                         )"/>
+            </base:Panel>
             
             <base:Panel width="100%" title="{getText('label.setStance')}"
                         visible="{US.selection.length > 0}">

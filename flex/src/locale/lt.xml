@@ -5233,6 +5233,7 @@
     <label.show value="Rodyti" />
     <label.deploy value="Išskleisti" />
     <label.manage value="Tvarkyti" />
+    <label.allUnits value="Visi kariai" />
     <label.withPlanets 
       value="Su {0 one[? planeta] tens[? planetų] many[? planetomis]}" />
     <label.withPlanetsOrMore>

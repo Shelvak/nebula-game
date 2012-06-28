@@ -24,6 +24,7 @@
       import components.technologytree.TechnologyTree;
       import components.unitsscreen.StorageScreen;
       import components.unitsscreen.facilities.UnitsBuild;
+      import components.unitsscreen.loadunload.CLoadUnloadMenu;
       import components.unitsscreen.loadunload.LoadUnloadScreen;
       import components.unitsscreen.simple.UnitsScreen;
 
@@ -98,6 +99,9 @@
                   break;
                case MainAreaScreens.LOAD_UNLOAD:
                   addElement(new LoadUnloadScreen());
+                  break;
+               case MainAreaScreens.AUTO_LOAD:
+                  addElement(new CLoadUnloadMenu());
                   break;
                case MainAreaScreens.HEAL:
                   addElement(new HealingScreen());
