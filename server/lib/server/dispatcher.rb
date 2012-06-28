@@ -6,8 +6,10 @@ class Dispatcher
 
   ### Connection throttling ###
 
-  # Maximum number of allowed connections to this server.
-  MAX_CONNECTIONS = 10000
+  # Maximum number of allowed connections to this server. Remember that max
+  # memory usage for server connection management is
+  # ```Dispatcher::MAX_CONNECTIONS * StreamBuffer::MAX_SIZE``` bytes.
+  MAX_CONNECTIONS = 10_000
   # Maximum number of time after which cleanup kills your connection if you
   # have no player.
   MAX_NO_AUTH_TIMEOUT = 15.seconds

@@ -55,6 +55,9 @@ module ServerMachine
         Celluloid::Actor[:dispatcher].receive_message! @client, json
       end
     end
+  rescue StreamBuffer::OverflowError
+    send_data("ERROR: buffer overflow\n")
+    close_connection_after_writing
   end
 
   def write(message)
