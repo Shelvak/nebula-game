@@ -49,7 +49,7 @@ class GenericController
       # before pushing chat|index.
       hub.register(player)
 
-      dispatcher.generate_reestablishment_token(player)
+      true
     end
 
     # Respond to clients message.
