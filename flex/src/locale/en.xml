@@ -2194,15 +2194,6 @@
       </p>
       <p>Click '{0}' to reconnect.</p>
     </message.disconnect.otherLogin>
-
-    <title.disconnect.cannotReestablish
-      value="Cannot reestablish connection!" />
-    <message.disconnect.cannotReestablish>
-      <p>Sorry.</p>
-      <p>Your connection to the server was lost and we were unable to
-      reestablish it.</p>
-      <p>Click '{0}' to reconnect.</p>
-    </message.disconnect.cannotReestablish>
     
     <title.disconnect.playerErased value="Bye bye!" />
     <message.disconnect.playerErased>

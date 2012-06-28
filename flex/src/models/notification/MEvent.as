@@ -19,6 +19,8 @@ package models.notification {
 
    public class MEvent {
 
+      public static const INACTIVE_CONTENT_ALPHA: Number = 0.4;
+
       public var id: int;
 
       [Bindable]
@@ -46,6 +48,12 @@ package models.notification {
       protected function get EC(): EventsController
       {
          return EventsController.getInstance();
+      }
+
+      [Bindable (event="WillNotChange")]
+      public function get rendererAlpha(): Number
+      {
+         return 1;
       }
 
       public function clickHandler(event:MouseEvent): void

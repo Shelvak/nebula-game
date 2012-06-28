@@ -6,6 +6,8 @@ package controllers.alliances.actions
    import controllers.CommunicationCommand;
    import controllers.alliances.AlliancesErrorType;
 
+   import models.notification.MFaultEvent;
+
    import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
@@ -29,7 +31,7 @@ package controllers.alliances.actions
       {
          if (cmd.parameters.error == AlliancesErrorType.NOT_UNIQUE)
          {
-            new MTimedEvent(Localizer.string('Alliances','label.allyExists'));
+            new MFaultEvent(Localizer.string('Alliances','label.allyExists'));
          }
          else
          {

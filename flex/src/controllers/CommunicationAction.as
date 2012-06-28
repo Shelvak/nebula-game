@@ -7,6 +7,7 @@ package controllers
    import flash.events.Event;
 
    import models.ModelLocator;
+   import models.notification.MFaultEvent;
    import models.notification.MTimedEvent;
 
    import utils.ApplicationLocker;
@@ -56,7 +57,7 @@ package controllers
        */
       public function cancel(rmo: ClientRMO, srmo: ServerRMO): void {
          appLocker.decreaseLockCounter();
-         new MTimedEvent(Localizer.string("General", "message.actionCanceled"));
+         new MFaultEvent(Localizer.string("General", "message.actionCanceled"));
       }
       
       /**

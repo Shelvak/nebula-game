@@ -442,8 +442,6 @@ package components.map.planet
       
       
       private function initBuildingPH(building: Building): void {
-         eventPopUpId = new MPermanentEvent(
-            Localizer.string('BuildingSidebar', 'pressEsc')).id;
 
          objectsLayer.passOverMouseEventsTo(this);
 
@@ -461,6 +459,8 @@ package components.map.planet
          }
          if (!_buildingMoveProcessStarted) {
             objectsLayer.deselectSelectedObject();
+            eventPopUpId = new MPermanentEvent(
+               Localizer.string('BuildingSidebar', 'pressEsc')).id;
          }
          objectsLayer.resetAllInteractiveObjectsState();
          moveObjectToMouse(_buildingPH);

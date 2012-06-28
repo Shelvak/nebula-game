@@ -2,6 +2,8 @@ package controllers.players.actions
 {
    import controllers.CommunicationAction;
 
+   import models.notification.MSuccessEvent;
+
    import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
@@ -17,7 +19,7 @@ package controllers.players.actions
       public override function result(rmo:ClientRMO):void
       {
          super.result(rmo);
-         new MTimedEvent(
+         new MSuccessEvent(
             Localizer.string('Credits','message.vipOrdered'));
       }
    }

@@ -6,6 +6,7 @@ package models.healing
    import controllers.screens.MainAreaScreens;
 
    import models.events.ScreensSwitchEvent;
+   import models.notification.MFaultEvent;
    import models.notification.MTimedEvent;
 
    import controllers.units.UnitsCommand;
@@ -285,7 +286,7 @@ package models.healing
       {
          if (!selectionClass.selectAll(onlyHealable))
          {
-            new MTimedEvent(Localizer.string('Units', 'message.noResources'));
+            new MFaultEvent(Localizer.string('Units', 'message.noResources'));
          }
          refreshPrice();
       }

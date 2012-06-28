@@ -3,6 +3,10 @@ package controllers.alliances.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
 
+   import models.notification.MFaultEvent;
+
+   import models.notification.MSuccessEvent;
+
    import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
@@ -43,9 +47,9 @@ package controllers.alliances.actions
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          if (cmd.parameters["success"])
-            new MTimedEvent(Localizer.string('Alliances', 'message.joinSuccess'));
+            new MSuccessEvent(Localizer.string('Alliances', 'message.joinSuccess'));
          else
-            new MTimedEvent(Localizer.string('Alliances', 'message.joinFail'));
+            new MFaultEvent(Localizer.string('Alliances', 'message.joinFail'));
       }
    }
 }

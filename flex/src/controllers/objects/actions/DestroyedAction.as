@@ -7,6 +7,7 @@ package controllers.objects.actions
    import controllers.screens.MainAreaScreens;
 
    import models.healing.MCHealingScreen;
+   import models.notification.MFaultEvent;
    import models.notification.MTimedEvent;
    import models.unit.MCLoadUnloadScreen;
    import models.unit.MCUnitScreen;
@@ -71,7 +72,7 @@ package controllers.objects.actions
                   {
                         if (US.hasChanges)
                         {
-                           new MTimedEvent(Localizer.string('Units', 'message.changesCanceled'));
+                           new MFaultEvent(Localizer.string('Units', 'message.changesCanceled'));
                         }
                   }
                   US.refreshScreen();

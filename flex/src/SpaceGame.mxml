@@ -47,6 +47,7 @@
       import globalevents.GlobalEvent;
 
       import models.ModelLocator;
+      import models.notification.MSuccessEvent;
       import models.notification.MTimedEvent;
 
       import mx.events.FlexEvent;
@@ -70,7 +71,7 @@
          else if (event.ctrlKey && event.shiftKey
            && event.keyCode == Keyboard.INSERT) {
             System.setClipboard(ModelLocator.getInstance().debugLog);
-            new MTimedEvent(Localizer.string("General", "message.copyToClipboardSuccessful"));
+            new MSuccessEvent(Localizer.string("General", "message.copyToClipboardSuccessful"));
          }
          else if (event.ctrlKey && event.keyCode == 144 /*NUMLOCK*/) {
             throw new Error("Dont you ever press ctrl+numlock again!");

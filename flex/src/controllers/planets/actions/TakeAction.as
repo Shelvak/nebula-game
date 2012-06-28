@@ -2,6 +2,8 @@ package controllers.planets.actions
 {
    import controllers.CommunicationAction;
 
+   import models.notification.MSuccessEvent;
+
    import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
@@ -29,7 +31,7 @@ package controllers.planets.actions
       public override function result(rmo:ClientRMO):void
       {
          super.result(rmo);
-         new MTimedEvent(Localizer.string('General', 'message.planetClaimed'));
+         new MSuccessEvent(Localizer.string('General', 'message.planetClaimed'));
       }
    }
 }

@@ -14,6 +14,7 @@ package models.unit
 
    import models.location.ILocationUser;
    import models.location.LocationType;
+   import models.notification.MFaultEvent;
    import models.notification.MTimedEvent;
    import models.player.PlayerOptions;
 
@@ -538,7 +539,7 @@ package models.unit
       {
          if (!selectionClass.selectAll())
          {
-            new MTimedEvent(Localizer.string('Units', 'message.notSelected'));
+            new MFaultEvent(Localizer.string('Units', 'message.notSelected'));
          }
          refreshVolume();
       }

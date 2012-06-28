@@ -20,6 +20,7 @@ package controllers.units
    import models.movement.MRoute;
    import models.movement.MSquadron;
    import models.movement.SquadronsList;
+   import models.notification.MSuccessEvent;
    import models.notification.MTimedEvent;
    import models.unit.MCUnitScreen;
    import models.unit.Unit;
@@ -484,7 +485,7 @@ package controllers.units
             }
             if (squad.owner == Owner.PLAYER && ordersCtrl.issuingOrders) {
                ordersCtrl.orderComplete();
-               new MTimedEvent(Localizer.string("Movement", "message.orderComplete"));
+               new MSuccessEvent(Localizer.string("Movement", "message.orderComplete"));
             }
          }
          // ALLY or PLAYER units are starting to move but we don't have that map open: create route then
