@@ -2325,14 +2325,6 @@
       saugumą.</p>
       <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
     </message.disconnect.otherLogin>
-
-    <title.disconnect.cannotReestablish
-      value="Neįmanoma atkurti ryšio su serveriu!" />
-    <message.disconnect.cannotReestablish>
-      <p>Atsiprašome.</p>
-      <p>Buvo prarastas ryšys su serveriu ir mums nepavyko jo atkurti.</p>
-      <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
-    </message.disconnect.cannotReestablish>
     
     <title.disconnect.playerErased value="Viso gero!" />
     <message.disconnect.playerErased>
