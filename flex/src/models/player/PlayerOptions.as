@@ -34,6 +34,7 @@ package models.player {
          technologiesSortType = options.technologiesSortType;
          enablePlanetAnimations = options.enablePlanetAnimations;
          showWormholeIcons = options.showWormholeIcons;
+         showInfoEvents = options.showInfoEvents;
       }
 
       private static var originalData: Object;
@@ -51,7 +52,8 @@ package models.player {
             'defaultTransporterTab': defaultTransporterTab,
             'technologiesSortType': technologiesSortType,
             'enablePlanetAnimations': enablePlanetAnimations,
-            'showWormholeIcons': showWormholeIcons
+            'showWormholeIcons': showWormholeIcons,
+            'showInfoEvents': showInfoEvents
          }
       }
 
@@ -68,6 +70,7 @@ package models.player {
          technologiesSortType = originalData.technologiesSortType;
          enablePlanetAnimations = originalData.enablePlanetAnimations;
          showWormholeIcons = originalData.showWormholeIcons;
+         showInfoEvents = originalData.showInfoEvents;
          hasChanges = false;
       }
       [Bindable]
@@ -84,7 +87,8 @@ package models.player {
          && defaultTransporterTab == originalData.defaultTransporterTab
          && technologiesSortType == originalData.technologiesSortType
          && enablePlanetAnimations == originalData.enablePlanetAnimations
-         && showWormholeIcons == originalData.showWormholeIcons);
+         && showWormholeIcons == originalData.showWormholeIcons
+         && showInfoEvents == originalData.showInfoEvents);
       }
 
       public static function addIgnoredPlayer(playerName: String): void
@@ -130,6 +134,8 @@ package models.player {
       public static var defaultTransporterTab: int;
       [Bindable]
       public static var technologiesSortType: int;
+      [Bindable]
+      public static var showInfoEvents: Boolean;
 
       /*### Map options ###*/
 

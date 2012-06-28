@@ -43,6 +43,9 @@ class PlayerOptions::Data < OptionsHash
   # Should we show metadata icons on wormholes?
   property :show_wormhole_icons, :default => true, :valid => Boolean
 
+  # Should we show info events?
+  property :show_info_events, :default => true, :valid => Boolean
+
   TRANSPORTER_TAB_RESOURCES = 0
   TRANSPORTER_TAB_UNITS = 1
 

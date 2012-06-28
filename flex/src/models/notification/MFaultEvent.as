@@ -17,7 +17,7 @@ package models.notification {
 
       public override function get image(): BitmapData
       {
-         return IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'alert');
+         return IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'fault');
       }
    }
 }

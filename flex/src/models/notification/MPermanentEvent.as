@@ -9,6 +9,8 @@ package models.notification {
    import flash.display.BitmapData;
    import flash.events.MouseEvent;
 
+   import models.player.PlayerOptions;
+
    import utils.assets.AssetNames;
 
    public class MPermanentEvent extends MEvent {
@@ -20,18 +22,13 @@ package models.notification {
       private var defaultClickHandler: Function;
 
       public function MPermanentEvent(_message: String, _clickHandler: Function = null) {
-         super(_message);
-         defaultClickHandler = _clickHandler;
+            super(_message, 0, !PlayerOptions.showInfoEvents);
+            defaultClickHandler = _clickHandler;
       }
 
       public override function get image(): BitmapData
       {
          return IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'info');
-      }
-
-      [Bindable(event="WillNotChange")]
-      override public function get rendererAlpha(): Number {
-         return INACTIVE_CONTENT_ALPHA;
       }
 
       public override function clickHandler(event: MouseEvent): void {

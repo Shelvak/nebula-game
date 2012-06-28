@@ -67,13 +67,11 @@
                    bottom="0" id="leftBottom"/>
   </s:Group>
    <s:BitmapImage source="{model.image}" left="7" top="7"
-                  alpha="{_hovered ? 1 : model.rendererAlpha}"
                   width="{ICON_SIZE}" height="{ICON_SIZE}"/>
    <s:Group id="content" left="{ICON_SIZE + 12}" top="6" bottom="6" right="45"
             click="model.clickHandler(event)">
       <s:Label text="{model.message}" fontSize="12" fontWeight="bold" verticalCenter="0"
-               left="0" right="0" textAlign="center"
-               alpha="{_hovered ? 1 : model.rendererAlpha}"/>
+               left="0" right="0" textAlign="center"/>
    </s:Group>
    <s:Group right="0" visible="{!_hovered}" top="0" bottom="0">
      <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'top_right_black')}"

@@ -112,6 +112,11 @@
                               selected="{PlayerOptions.warnBeforeUnload}"
                               click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
                               PlayerOptions.changed()"/>
+                 <s:CheckBox id="showInfoEvents"
+                             label="{getString('label.showInfoEvents')}"
+                             selected="{PlayerOptions.showInfoEvents}"
+                             click="PlayerOptions.showInfoEvents = !PlayerOptions.showInfoEvents;
+                             PlayerOptions.changed()"/>
 
                   <s:Label text="{getString('label.defaultTransporterTab')}" paddingTop="6"/>
                   <s:Group>
