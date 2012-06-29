@@ -18,4 +18,7 @@
         <s:TileLayout/>
      </s:layout>
   </s:List>
+  <s:layout>
+    <s:VerticalLayout horizontalAlign="justify"/>
+  </s:layout>
 </s:Group>
