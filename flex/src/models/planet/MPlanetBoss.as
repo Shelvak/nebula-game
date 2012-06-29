@@ -110,14 +110,56 @@ package models.planet
       }
 
       [Bindable(event="messageSpawnAbilityChange")]
+      public function get label_canSpawn(): String {
+         return _planet.nextSpawn == null
+            ? getString("message.canSpawnNow")
+            : getString("message.canSpawnIn",
+               [_planet.nextSpawn.occursInString()]);
+      }
+
+      [Bindable(event="messageSpawnAbilityChange")]
+      public function get toolTip_canSpawnIn(): String {
+         return _planet.nextSpawn == null
+            ? ''
+            : getString("toolTip.canSpawnIn",
+               [_planet.nextSpawn.occursInString()]);
+      }
+
+      [Bindable(event="messageSpawnAbilityChange")]
       public function get message_spawnAbility(): String {
-         if (canSpawnNow) {
-            return getString("message.canSpawnNow");
-         }
          if (!canSpawn) {
-            return getString("message.canNotSpawn");
+            var result: String = null;
+            if (_planet.owner != Owner.PLAYER && _planet.owner != Owner.NPC)
+            {
+               result = getString("message.canNotSpawn.player");
+            }
+            if (_planet.cooldown != null)
+            {
+               if (result == null)
+               {
+                  result = '';
+               }
+               else
+               {
+                  result += '\n';
+               }
+               result += getString("message.canNotSpawn.cooldown");
+            }
+            if ((_planetMap != null && !_planetMap.hasAggressiveGroundUnits()))
+            {
+               if (result == null)
+               {
+                  result = '';
+               }
+               else
+               {
+                  result += '\n';
+               }
+               result += getString("message.canNotSpawn.units");
+            }
+            return result;
          }
-         return getString("message.canSpawnIn", [_planet.nextSpawn.occursInString()]);
+         return null;
       }
 
 

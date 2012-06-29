@@ -607,7 +607,7 @@
     <s:layout>
       <s:VerticalLayout horizontalAlign="justify" gap="6"/>
     </s:layout>
-    <planet:CPlanetBossInfo model="{ML.latestPlanet.ssObject.boss}" showSpawnButton="true"/>
+    <planet:CPlanetBossInfo model="{ML.latestPlanet.ssObject.boss}"/>
     <s:Group height="100%">
       <base:AdvancedContainer top="0" left="0" right="0" visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}">
         <base:layout>

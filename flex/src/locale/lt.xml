@@ -5775,15 +5775,25 @@
     <label.unitsList>Iššūkio kovotojai:</label.unitsList>
     <label.spawnButton>Iškviesti</label.spawnButton>
     <message.canSpawnNow>
-      Šioje planetoje tu gali mesti ateiviams iššūkį.
+      Šioje planetoje tu gali mesti ateiviams iššūkį. Tam, kad tai padarytum
+      privalai turėti žemės karių planetoje.
     </message.canSpawnNow>
-    <message.canSpawnIn>
+    <toolTip.canSpawnIn>
       Šioje planetoje ateiviams iššūkį mesti galėsi už {0}.
+    </toolTip.canSpawnIn>
+    <message.canSpawnIn>
+      Jei turėtum žemės karių šioje planetoje, ateiviams iššūkį mesti galėtum
+      už {0}.
     </message.canSpawnIn>
-    <message.canNotSpawn>
-      Tam, kad mestum ateiviams iššūkį, planeta turi būti laisva arba
-      priklausyti tau.
-    </message.canNotSpawn>
+    <message.canNotSpawn.player>
+      ● Ši planeta turi priklausyti tau arba ateiviams.
+    </message.canNotSpawn.player>
+    <message.canNotSpawn.cooldown>
+      ● Šioje planetoje dabar yra mūšio pertrauka.
+    </message.canNotSpawn.cooldown>
+    <message.canNotSpawn.units>
+      ● Šioje planetoje tu neturi žemės karių.
+    </message.canNotSpawn.units>
   </PlanetBoss>
 
 </locale>

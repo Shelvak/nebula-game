@@ -1,40 +1,41 @@
 <?xml version="1.0"?>
 <s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:planet="components.planet.*"
          skinClass="components.skins.PanelSkin"
          title="{model.title_panel}"
          visible="{model != null}"
          includeInLayout="{model != null}">
-   <fx:Script>
-      <![CDATA[
-      import models.planet.MPlanetBoss;
+  <fx:Script>
+    <![CDATA[
+    import models.ModelLocator;
+    import models.planet.MPlanetBoss;
+
+    import utils.DateUtil;
 
 
-      [Bindable]
-      public var model: MPlanetBoss;
-
-      [Bindable]
-      public var showSpawnButton:Boolean = false;
-      ]]>
-   </fx:Script>
-   <s:layout>
-      <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
-   </s:layout>
-   <s:Group>
-      <s:Label text="{model.label_unitsList}" left="0" right="0" lineBreak="toFit"/>
-   </s:Group>
-   <s:List dataProvider="{model.units}"
-           skinClass="components.planet.CBossUnitsListSkin">
-      <s:layout>
-         <s:TileLayout/>
-      </s:layout>
-   </s:List>
-   <s:Group>
-      <s:Label text="{model.message_spawnAbility}" left="0" right="0" lineBreak="toFit"/>
-   </s:Group>
-   <s:Group visible="{showSpawnButton}" includeInLayout="{showSpawnButton}">
-      <s:Button horizontalCenter="0" enabled="{model.canSpawnNow}"
-                skinClass="components.skins.RedButtonSkin"
-                label="{model.label_spawnButton}" click="model.spawn()"/>
-   </s:Group>
+    [Bindable]
+    public var model: MPlanetBoss;
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
+  </s:layout>
+  <planet:CPlanetBossUnits model="{model}"/>
+  <s:Group visible="{model.message_spawnAbility != null}"
+          includeInLayout="{model.message_spawnAbility != null}">
+    <s:Label text="{model.message_spawnAbility}" left="0" right="0"
+             paddingTop="6"
+             styleName="unsatisfied"
+             lineBreak="toFit"/>
+  </s:Group>
+  <s:Group toolTip="{model.toolTip_canSpawnIn}">
+    <s:Button horizontalCenter="0" enabled="{model.canSpawnNow}"
+              skinClass="components.skins.RedButtonSkin"
+              label="{ModelLocator.getInstance().latestPlanet.ssObject.nextSpawn == null
+                ? model.label_spawnButton
+                : DateUtil.secondsToHumanString(
+           ModelLocator.getInstance().latestPlanet.ssObject.nextSpawn.occursIn)}"
+              click="model.spawn()"/>
+  </s:Group>
 </s:Panel>

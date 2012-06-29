@@ -429,6 +429,7 @@ package models.solarsystem
 
       private var _spawnCounter: int = 0;
       [Bindable(event="spawnCounterChange")]
+      [Optional]
       /**
        * Level of the boss-fleet to be spawned but only if this is a pulsar or battleground planet.
        */
@@ -444,6 +445,7 @@ package models.solarsystem
 
       private var _nextSpawn: MTimeEventFixedMoment = null;
       [Bindable(event="nextSpawnChange")]
+      [Optional]
       /**
        * Time until next boss can be spawned.
        */
