@@ -72,7 +72,7 @@ package config
          for each (var rawGun:Object in Config.getUnitGuns(type))
          {
             if (gunPoints[id] == null)
-               throw new Error("no gun " + id +" point for unit "+ type);
+               throw new Error("no gun index " + id + " point for unit "+ type);
             var gun:BGun = Objects.create(BGun, rawGun);
             gun.id = id;
             gun.type = StringUtil.underscoreToCamelCase(

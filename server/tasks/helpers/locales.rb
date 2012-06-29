@@ -17,8 +17,6 @@ class LocaleChecker
 
   def check
     @errors = {}
-    puts "Locale checker is BROKEN RIGHT NOW!"
-    return
     @global_keyset = Set.new
     @keys = {}
 
