@@ -278,16 +278,16 @@
     <Technology_TurretCritical value="Turret Computers" />
     <Technology_TurretAbsorption value="Turret Defense Systems" />
 
-    <Technology_NpcSpaceDamage value="NPC Ships Weapons" />
-    <Technology_NpcSpaceArmor value="NPC Ships Armor" />
-    <Technology_NpcSpaceCritical value="NPC Ships Computers" />
-    <Technology_NpcSpaceAbsorption value="NPC Ships Def. Systems" />
-    <Technology_NpcHeavyFlight value="NPC Ships Engines" />
+    <Technology_NpcSpaceDamage value="Alien Ships Weapons" />
+    <Technology_NpcSpaceArmor value="Alien Ships Armor" />
+    <Technology_NpcSpaceCritical value="Alien Ships Computers" />
+    <Technology_NpcSpaceAbsorption value="Alien Ships Def. Systems" />
+    <Technology_NpcHeavyFlight value="Alien Ships Engines" />
     <Technology_NpcLightFlight value="Space Distortion" />
-    <Technology_NpcGroundDamage value="NPC Ground Weapons" />
-    <Technology_NpcGroundArmor value="NPC Ground Armor" />
-    <Technology_NpcGroundCritical value="NPC Ground Computers" />
-    <Technology_NpcGroundAbsorption value="NPC Ground Def. Systems" />
+    <Technology_NpcGroundDamage value="Alien Ground Weapons" />
+    <Technology_NpcGroundArmor value="Alien Ground Armor" />
+    <Technology_NpcGroundCritical value="Alien Ground Computers" />
+    <Technology_NpcGroundAbsorption value="Alien Ground Def. Systems" />
 
     <Technology_DamageSpecialization value="Damage Specialization" />
     <Technology_ArmorSpecialization value="Armor Specialization" />
@@ -560,7 +560,7 @@
     <button.activateOverdrive value="Activate overdrive" />
     <button.deactivateOverdrive value="Deactivate overdrive" />
     <warning.attackNpc>
-      <p>This is an NPC building. You can destroy it by killing all the units
+      <p>This is an alien building. You can destroy it by killing all the units
         inside.</p>
     </warning.attackNpc>
   </BuildingSelectedSidebar>
@@ -1441,20 +1441,23 @@
     <message.copyToClipboardSuccessful value="Copied to clipboard" />
     <message.planetClaimed value="Planet claimed" />
     <label.cooldownEndsIn value="Next battle in"/>
+    <label.longerThenExpected
+      value="This action is taking more time than expected." />
+    <label.reestablish value="Reconnect"/>
   </General>
 
   <Errors>
-      <invalidBitmap.title>Broken bitmap</invalidBitmap.title>
-      <invalidBitmap.message>
-         <p>
-            One or more bitmaps were broken while downloading them form the
-            server and upacking afterwards.
-         </p>
-         <p>
-            Refresh the page please.
-         </p>
-      </invalidBitmap.message>
-   </Errors>
+    <invalidBitmap.title>Broken bitmap</invalidBitmap.title>
+    <invalidBitmap.message>
+      <p>
+        One or more bitmaps were broken while downloading them form the
+        server and upacking afterwards.
+      </p>
+      <p>
+        Refresh the page please.
+      </p>
+    </invalidBitmap.message>
+  </Errors>
 
   <InfoScreen>
     <title.details value="Details" />
@@ -1496,6 +1499,7 @@
     <gun.boss_heavy value="Shock Shells" />
     <gun.convoyship_light value="Photon Collider" />
     <gun.convoyship_heavy value="TR-3 Launcher" />
+    <gun.mantis_sniper value ="OSV-96 sniper rifle" />
     <armorType value="Armor type" />
     <damageInPercent value="Percentage" />
     <damage value="Damage" />
@@ -1745,12 +1749,17 @@
     </tooltip.honorCoef>
     <label.showKillReward value="Rewards"/>
     <message.orderComplete value="Fleet has been dispatched." />
-    <label.avoidNpc value="Avoid battles with NPC" />
+    <label.avoidNpc value="Avoid battles with aliens" />
     <description.avoidNpc>
-      <p>Checked: Your fleet will try to avoid any battles with NPC spaceships. This
-      will result in longer travel time if there are NPC units in your way.</p>
-      <p>Not checked: Your fleet will take the shortest route to its destination. It will
-      engage any NPC ships that are on its way.</p>
+      <p>
+        Checked: Your fleet will try to avoid any battles with stationary alien
+        spaceships. This will result in longer travel time if there are alien
+        units in your way.
+      </p>
+      <p>
+        Not checked: Your fleet will take the shortest route to its destination.
+        It will engage any stationary alien ships that are on its way.
+      </p>
     </description.avoidNpc>
 
     <speedup.message.combatCooldownInfo
@@ -2012,7 +2021,7 @@
   </Notifications>
 
   <Players>
-    <npc value="NPC" />
+    <npc value="Aliens" />
     <noAlliance value="Without alliance" />
     <alliances value="Alliances" />
     <label.inRatings value="Show in ratings" />
@@ -3423,9 +3432,8 @@
     <ClaimReward>
       <![CDATA[
       <p>You get reward for each quest you complete. You can take it by
-      navigating to the quests screen: open Nebula 44 menu at the bottom left
-      corner of the screen and click "[reference:MainMenu/label.quests]"
-      button.</p>
+      navigating to the quests screen by clicking on the quests button
+      which can be found on the left side of the screen.</p>
       <p>Then you have to find a completed quest - they are marked as yellow -
       and click on a '[reference:Quests/label.claimReward]' button</p>
       ]]>
@@ -4119,7 +4127,7 @@
     <warPointsNeeded>
       <p>You need {0} war points to research this technology but you 
       only have {1}.</p>
-      <p>You can get more war points by attacking NPCs or other players.</p>
+      <p>You can get more war points by attacking aliens or other players.</p>
     </warPointsNeeded>
     <planetsNeeded>
       <p>You need to own {0 one[? planet] many[? planets]} to be able to
@@ -4388,7 +4396,7 @@
     </GroundAbsorption.about>
     
     <NpcSpaceUpgradeTech>
-      <p>for NPC spaceships (except for [reference:Objects/Unit_ConvoyShip] class)</p>
+      <p>for alien spaceships (except for [reference:Objects/Unit_ConvoyShip] class)</p>
     </NpcSpaceUpgradeTech>
     
     <NpcSpaceDamage.name ref="Objects/Technology_NpcSpaceDamage" />
@@ -4428,7 +4436,7 @@
     </NpcLightFlight.about>
     
     <NpcGroundUpgradeTech>
-      <p>of NPC ground units.</p>
+      <p>of alien ground units.</p>
     </NpcGroundUpgradeTech>
     
     <NpcGroundDamage.name ref="Objects/Technology_NpcGroundDamage" />
@@ -5584,6 +5592,10 @@
     <filter.clear value="Clear" />
     <label.freeCreds value="You can not use free creds in the market." />
     <label.moreInfo value="Why?" />
+    <toolTip.cancelCooldown>
+      <p>You can't cancel this offer yet because you have canceled another one
+        recently.</p>
+    </toolTip.cancelCooldown>
   </Market>
 
   <ResourceTransporter>
@@ -5619,59 +5631,81 @@
   <Authorization>
     <status.authorization value="Authorizing..."/>
     <status.login value="Logging into the server..."/>
+    <status.attaching>
+      Please wait for the server to attach you to the galaxy. This may take a
+      few seconds.
+    </status.attaching>
   </Authorization>
 
   <PlanetMapEditor>
-     <label.name value="Name:"/>
-     <label.area value="Area: {0}"/>
-     <label.size value="Size:"/>
-     <label.level value="Level:"/>
-     <label.generate value="Generate"/>
-     <label.save value="Save"/>
-     <label.load value="Load"/>
-     <label.copy value="Copy"/>
-     <label.cancel value="Cancel"/>
-     <title.buildings value="Buildings"/>
-     <title.npcBuildings value="NPC Buildings"/>
-     <title.foliage value="Foliage"/>
+    <label.name value="Name:"/>
+    <label.area value="Area: {0}"/>
+    <label.size value="Size:"/>
+    <label.level value="Level:"/>
+    <label.generate value="Generate"/>
+    <label.save value="Save"/>
+    <label.load value="Load"/>
+    <label.copy value="Copy"/>
+    <label.cancel value="Cancel"/>
+    <title.buildings value="Buildings"/>
+    <title.npcBuildings value="Alien Buildings"/>
+    <title.foliage value="Foliage"/>
   </PlanetMapEditor>
 
   <PlayerOptions>
-     <title.options value="Preferences" />
-     <title.chatOptions value="Chat room options" />
-     <title.afterLoginOptions value="After login options" />
-     <title.genericOptions value="General options" />
-     <title.graphicsOptions value="Graphics options"/>
-     <label.save value="Save" />
-     <label.warnBeforeUnload value="Warn before closing game" />
-     <label.defaultTransporterTab
-       value="Tab to show first while loading or unloading transporter:" />
-     <label.transporterTabResources value="Resources" />
-     <label.transporterTabUnits value="Units" />
-     <label.showPopupsAfterLogin value="Open active popups after login" />
-     <label.openFirstPlanet value="Open first planet after login" />
-     <label.showJoinLeave value="Show join / leave messages" />
-     <label.ignoredList value="Ignored players:" />
-     <label.ignoredListEmpty value="No ignored players" />
-     <label.addIgnoredPlayer value="Add" />
-     <label.removeIgnored value="Remove"/>
-     <label.ignoreComplete value="Complete ignore"/>
-     <label.ignoreFiltered value="Show covered messages"/>
-     <label.ignoreType value="Ignore type:"/>
-     <label.enablePlanetAnimations value="Animations in planet"/>
-     <label.technologiesSortType
-       value="Sort researched technologies in technology tree:" />
-     <label.techSortScientists value="By scientists"/>
-     <label.techSortTime value="By remaining time" />
+    <title.options value="Preferences" />
+    <title.chatOptions value="Chat room options" />
+    <title.afterLoginOptions value="After login options" />
+    <title.genericOptions value="General options" />
+    <title.graphicsOptions value="Graphics options"/>
+    <label.save value="Save" />
+    <label.warnBeforeUnload value="Warn before closing game" />
+    <label.showInfoEvents>
+      Show info events in upper right corner
+    </label.showInfoEvents>
+    <label.defaultTransporterTab
+      value="Tab to show first while loading or unloading transporter:" />
+    <label.transporterTabResources value="Resources" />
+    <label.transporterTabUnits value="Units" />
+    <label.showPopupsAfterLogin value="Open active popups after login" />
+    <label.openFirstPlanet value="Open first planet after login" />
+    <label.showJoinLeave value="Show join / leave messages" />
+    <label.ignoredList value="Ignored players:" />
+    <label.ignoredListEmpty value="No ignored players" />
+    <label.addIgnoredPlayer value="Add" />
+    <label.removeIgnored value="Remove"/>
+    <label.ignoreComplete value="Complete ignore"/>
+    <label.ignoreFiltered value="Show covered messages"/>
+    <label.ignoreType value="Ignore type:"/>
+    <label.enablePlanetAnimations value="Animations in planet"/>
+    <label.showWormholeIcons value="Show planets and ships icons next to wormholes in galaxy"/>
+    <label.technologiesSortType
+     value="Sort researched technologies in technology tree:" />
+    <label.techSortScientists value="By scientists"/>
+    <label.techSortTime value="By remaining time" />
   </PlayerOptions>
 
   <PlanetBoss>
-      <title>Planet boss</title>
-      <label.unitsList>Units that will be spawned:</label.unitsList>
-      <label.spawnButton>Spawn</label.spawnButton>
-      <message.canSpawnNow>You can spawn boss to this planet.</message.canSpawnNow>
-      <message.canSpawnIn>You will be able to spawn units to this planet in {}.</message.canSpawnIn>
-      <message.canNotSpawn>The planet must owned by you or be unoccupied at all if you want to spawn a boss to it.</message.canNotSpawn>
+    <title>Ateivių iššūkis</title>
+    <label.unitsList>Iššūkio kovotojai:</label.unitsList>
+    <label.spawnButton>Iškviesti</label.spawnButton>
+    <message.canSpawnNow>
+      Šioje planetoje tu gali mesti ateiviams iššūkį.
+    </message.canSpawnNow>
+    <message.canSpawnIn>
+      Šioje planetoje ateiviams iššūkį mesti galėsi už {0}.
+    </message.canSpawnIn>
+    <message.canNotSpawn>
+      Tam, kad mestum ateiviams iššūkį, planeta turi būti laisva arba
+      priklausyti tau.
+    </message.canNotSpawn>
+    
+    <title>Planet boss</title>
+    <label.unitsList>Units that will be spawned:</label.unitsList>
+    <label.spawnButton>Spawn</label.spawnButton>
+    <message.canSpawnNow>You can spawn boss to this planet.</message.canSpawnNow>
+    <message.canSpawnIn>You will be able to spawn units to this planet in {}.</message.canSpawnIn>
+    <message.canNotSpawn>The planet must owned by you or be unoccupied at all if you want to spawn a boss to it.</message.canNotSpawn>
   </PlanetBoss>
 
 </locale>

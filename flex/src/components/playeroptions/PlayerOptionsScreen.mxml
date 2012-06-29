@@ -17,11 +17,9 @@
       import controllers.playeroptions.PlayerOptionsCommand;
       import controllers.ui.NavigationController;
 
-      import models.player.PlayerOptions;
 
       import models.player.PlayerOptions;
 
-      import mx.collections.ArrayCollection;
       import mx.events.FlexEvent;
 
       import utils.locale.Localizer;
@@ -39,8 +37,8 @@
 
       private function inpIgnoredPlayer_enterHandler(event: FlexEvent): void {
          if (inpIgnoredPlayer.text.length > 0
-                && PlayerOptions.ignoredPlayersDataProvider.getItemIndex(
-            inpIgnoredPlayer.text) == -1) {
+            && PlayerOptions.ignoredPlayersDataProvider.getItemIndex(inpIgnoredPlayer.text) == -1)
+         {
             addIgnored();
          }
       }
@@ -50,8 +48,7 @@
          inpIgnoredPlayer.text = ''
       }
 
-      private function getPopupText(prop: String,
-                                    params: Array = null): String {
+      private function getPopupText(prop: String, params: Array = null): String {
          return Localizer.string('Popups', prop, params);
       }
 
@@ -76,8 +73,13 @@
          }
       }
 
-      private function enablePlanetAnimations_clickHandler(event: MouseEvent): void {
+      private function chkPlanetAnimations_clickHandler(event: MouseEvent): void {
          PlayerOptions.enablePlanetAnimations = !PlayerOptions.enablePlanetAnimations;
+         PlayerOptions.changed();
+      }
+
+      private function chkWormholeIcons_clickHandler(event: MouseEvent): void {
+         PlayerOptions.showWormholeIcons = !PlayerOptions.showWormholeIcons;
          PlayerOptions.changed();
       }
       ]]>
@@ -110,6 +112,11 @@
                               selected="{PlayerOptions.warnBeforeUnload}"
                               click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
                               PlayerOptions.changed()"/>
+                 <s:CheckBox id="showInfoEvents"
+                             label="{getString('label.showInfoEvents')}"
+                             selected="{PlayerOptions.showInfoEvents}"
+                             click="PlayerOptions.showInfoEvents = !PlayerOptions.showInfoEvents;
+                             PlayerOptions.changed()"/>
 
                   <s:Label text="{getString('label.defaultTransporterTab')}" paddingTop="6"/>
                   <s:Group>
@@ -233,10 +240,12 @@
                <base:Heading1 text="{getString('title.graphicsOptions')}"/>
                <s:Group>
                   <s:layout><fx:VerticalSectionLayout/></s:layout>
-                  <s:CheckBox id="enablePlanetAnimations"
-                              label="{getString('label.enablePlanetAnimations')}"
+                  <s:CheckBox label="{getString('label.enablePlanetAnimations')}"
                               selected="{PlayerOptions.enablePlanetAnimations}"
-                              click="enablePlanetAnimations_clickHandler(event)"/>
+                              click="chkPlanetAnimations_clickHandler(event)"/>
+                  <s:CheckBox label="{getString('label.showWormholeIcons')}"
+                              selected="{PlayerOptions.showWormholeIcons}"
+                              click="chkWormholeIcons_clickHandler(event)"/>
                </s:Group>
                <s:Group>
                   <s:Button skinClass="components.skins.GreenButtonSkin"

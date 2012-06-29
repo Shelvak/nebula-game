@@ -1,9 +1,9 @@
-class Event::FowChange::SsDestroyed < Event::FowChange
+class Event::FowChange::SsDestroyed < Event::FowChange::SolarSystem
   attr_reader :metadata
 
   def initialize(solar_system_id, player_ids)
-    @metadata = SolarSystemMetadata.destroyed(solar_system_id)
     @player_ids = player_ids
+    @metadata = SolarSystemMetadata.destroyed(solar_system_id)
   end
 
   def to_s
@@ -18,28 +18,11 @@ class Event::FowChange::SsDestroyed < Event::FowChange
       @metadata == other.metadata
   end
 
-  # TODO: spec
+  # Return event for _solar_system_id_ where every observer except _player_id_
+  # is notified.
   def self.all_except(solar_system_id, player_id)
-    player_ids = FowSsEntry.
-      select("player_id, alliance_id").
-      where(:solar_system_id => solar_system_id).
-      c_select_all.inject(Set.new) do |set, row|
-        set.add(row['player_id']) if row['player_id']
-        set.merge(Alliance.find(row['alliance_id']).member_ids) \
-          if row['alliance_id']
-        set
-    end
+    player_ids = ::SolarSystem.observer_player_ids(solar_system_id)
     player_ids.delete(player_id)
-
-    new(solar_system_id, player_ids)
-  end
-
-  # TODO: spec
-  def self.by_player_and_ally(solar_system_id, player_id, alliance_id)
-    player_ids = Set.new
-    player_ids.add(player_id) unless player_id.nil?
-    player_ids.merge(Alliance.find(alliance_id).member_ids) \
-      unless alliance_id.nil?
 
     new(solar_system_id, player_ids)
   end

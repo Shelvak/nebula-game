@@ -5,7 +5,7 @@ package controllers.players.actions
    import controllers.connection.ConnectionManager;
    
    import utils.StringUtil;
-   
+
    
    /**
     * Shows appropriate popupup when user is about to be disconnected by the server.

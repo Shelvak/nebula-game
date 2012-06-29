@@ -7,9 +7,9 @@ describe FowGalaxyEntry do
     end
 
     it "should return conditions joined by OR" do
-      fge1 = Factory.create(:fge_player, :x => 0, :x_end => 3,
+      fge1 = Factory.create(:fge, :x => 0, :x_end => 3,
         :y => 0, :y_end => 6)
-      fge2 = Factory.create(:fge_player, :x => -3, :x_end => 3,
+      fge2 = Factory.create(:fge, :x => -3, :x_end => 3,
         :y => -2, :y_end => 6, :galaxy => fge1.galaxy)
 
       FowGalaxyEntry.conditions([fge1, fge2]).should == \
@@ -58,7 +58,7 @@ describe FowGalaxyEntry do
       ["bottom-right", [-10, 10, -30, 30], [-10, 10]],
     ].each do |corner, rectangle, coords|
       it "should get by #{corner} corner" do
-        model = Factory.create :fge_player,
+        model = Factory.create :fge,
           :rectangle => Rectangle.new(*rectangle)
         FowGalaxyEntry.by_coords(*coords).scoped_by_galaxy_id(
           model.galaxy_id).first.should == model
@@ -67,7 +67,7 @@ describe FowGalaxyEntry do
   end
 
   describe "as json" do
-    it_behaves_like "as json", Factory.create(:fge_player), nil,
+    it_behaves_like "as json", Factory.create(:fge), nil,
                     %w{x y x_end y_end},
                     %w{id player_id alliance_id counter}
   end
@@ -106,7 +106,112 @@ describe FowGalaxyEntry do
       end
     end
 
-    it_behaves_like "fow entry"
+    describe ".for" do
+      describe "player is not in alliance" do
+        it "should return player entries" do
+          increase[player]
+          klass.for(player).sort.should == lookup.call.all.sort
+        end
+      end
+
+      describe "player is in alliance" do
+        it "should return player & alliance entries" do
+          increase[player_w_alliance]
+          klass.for(player_w_alliance).sort.should == lookup.call.all.sort
+        end
+      end
+    end
+
+    describe ".increase" do
+      it "should fire event if created" do
+        should_fire_event(
+          Event::FowChange.new(player_w_alliance, alliance),
+          EventBroker::FOW_CHANGE, event_reason
+        ) do
+          increase[player_w_alliance]
+        end
+      end
+
+      it "should return true if created" do
+        increase[player].should be_true
+      end
+
+      it "should not fire event if updated" do
+        increase[player]
+        should_not_fire_event(
+          Event::FowChange.new(player_w_alliance, alliance),
+          EventBroker::FOW_CHANGE, event_reason
+        ) do
+          increase[player]
+        end
+      end
+
+      it "should return false if updated" do
+        increase[player]
+        increase[player].should be_false
+      end
+
+      it "should create new record if one doesn't exist" do
+        increase[player]
+        lookup.call(:player_id => player.id).first.counter.should == 1
+      end
+
+      it "should work without alliance too" do
+        increase[player]
+      end
+
+      it "should update existing record if one exists" do
+        increase[player]
+        increase[player, 2]
+
+        lookup.call(:player_id => player.id).first.counter.should == 3
+      end
+    end
+
+    describe ".decrease" do
+      describe "without alliance" do
+        before(:each) do
+          increase[player, 2]
+        end
+
+        it "should decrement counter" do
+          decrease[player]
+          lookup.call(:player_id => player.id).first.counter.should == 1
+        end
+
+        it "should return true if destroyed" do
+          decrease[player, 2].should be_true
+        end
+
+        it "should not fire event if updated" do
+          should_not_fire_event(
+            Event::FowChange.new(player, nil),
+            EventBroker::FOW_CHANGE, event_reason
+          ) do
+            decrease[player]
+          end
+        end
+
+        it "should return false if updated" do
+          decrease[player].should be_false
+        end
+      end
+
+      describe "with alliance" do
+        before(:each) do
+          increase[player_w_alliance, 2]
+        end
+
+        it "should work" do
+          decrease[player_w_alliance]
+        end
+
+        it "should delete player rows" do
+          decrease[player_w_alliance, 2]
+          lookup.call(:player_id => player_w_alliance.id).should_not exist
+        end
+      end
+    end
 
     it "should fire event if destroyed" do
       increase[player]
@@ -126,88 +231,6 @@ describe FowGalaxyEntry do
       end
 
       counters
-    end
-
-    describe ".assimilate_player" do
-      let(:rect1) { Rectangle.new(0, 0, 4, 4) }
-      let(:rect2) { Rectangle.new(0, 0, 3, 3) }
-      let(:rect3) { Rectangle.new(0, 0, 2, 2) }
-
-      let(:player1) { player_w_alliance }
-      let(:player2) { Factory.create(:player, :galaxy => player1.galaxy) }
-
-      before(:each) do
-        # Alliance 1
-        FowGalaxyEntry.increase(rect1, player1)
-        FowGalaxyEntry.increase(rect2, player1)
-
-        # Player 2
-        FowGalaxyEntry.increase(rect2, player2)
-        FowGalaxyEntry.increase(rect3, player2)
-      end
-
-      it "should add all player entries to alliance pool" do
-        FowGalaxyEntry.assimilate_player(alliance, player2)
-
-        count_for_alliance(alliance.id).should == {
-          rect1 => 1,
-          rect2 => 2,
-          rect3 => 1
-        }
-      end
-
-      it "should fire event" do
-        should_fire_event(
-          Event::FowChange.new(player2, alliance),
-          EventBroker::FOW_CHANGE, event_reason
-        ) do
-          FowGalaxyEntry.assimilate_player(alliance, player2)
-        end
-      end
-    end
-
-    describe ".throw_out_player" do
-      let(:rect1) { Rectangle.new(0, 0, 4, 4) }
-      let(:rect2) { Rectangle.new(0, 0, 3, 3) }
-      let(:rect3) { Rectangle.new(0, 0, 2, 2) }
-
-      let(:player1) { player_w_alliance }
-      let(:player2) { Factory.create(:player, :galaxy => player1.galaxy) }
-
-      before(:each) do
-        # Alliance SS
-        Factory.create(:fge_player, :rectangle => rect1,
-          :alliance => alliance, :counter => 1)
-        Factory.create(:fge_player, :rectangle => rect2,
-          :alliance => alliance, :counter => 2)
-        Factory.create(:fge_player, :rectangle => rect3,
-          :alliance => alliance, :counter => 1)
-
-        # P2 SS
-        Factory.create(:fge_player, :rectangle => rect2,
-          :player => player2, :counter => 1)
-        Factory.create(:fge_player, :rectangle => rect3,
-          :player => player2, :counter => 1)
-      end
-
-      it "should remove all player entries from alliance pool" do
-        FowGalaxyEntry.throw_out_player(alliance, player2)
-
-        count_for_alliance(alliance.id).should == {
-          rect1 => 1,
-          rect2 => 1
-        }
-      end
-
-      it "should fire event" do
-        should_fire_event(
-          Event::FowChange.new(player2, alliance),
-          EventBroker::FOW_CHANGE,
-          EventBroker::REASON_GALAXY_ENTRY
-        ) do
-          FowGalaxyEntry.throw_out_player(alliance, player2)
-        end
-      end
     end
   end
 end

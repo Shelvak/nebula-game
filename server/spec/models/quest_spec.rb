@@ -48,27 +48,26 @@ describe Quest do
     end
 
     it "should include their objectives" do
-      @result.find do |quest_hash|
-        quest_hash[:quest] == @quest1.as_json
-      end[:objectives].map do |objective_hash|
-        objective_hash[:objective]
-      end.should == [@obj1.as_json, @obj2.as_json]
+      @result.find { |quest_hash| quest_hash[:quest] == @quest1.as_json }[
+        :objectives
+      ].map { |objective_hash| objective_hash[:objective] }.
+        should == [@obj1.as_json, @obj2.as_json]
     end
 
     it "should include objective progresses" do
-      @result.find do |quest_hash|
-        quest_hash[:quest] == @quest1.as_json
-      end[:objectives].find do |objective_hash|
-        objective_hash[:objective] == @obj1.as_json
-      end[:progress].should == @objp1.as_json
+      @result.find { |quest_hash| quest_hash[:quest] == @quest1.as_json }[
+        :objectives
+      ].find { |objective_hash| objective_hash[:objective] == @obj1.as_json }[
+        :progress
+      ].should == @objp1.as_json
     end
 
     it "should be nil where objective has been finished" do
-      @result.find do |quest_hash|
-        quest_hash[:quest] == @quest1.as_json
-      end[:objectives].find do |objective_hash|
-        objective_hash[:objective] == @obj2.as_json
-      end[:progress].should == nil.as_json
+      @result.find { |quest_hash| quest_hash[:quest] == @quest1.as_json }[
+        :objectives
+      ].find { |objective_hash| objective_hash[:objective] == @obj2.as_json }[
+        :progress
+      ].should == nil.as_json
     end
 
     it "should not return not started quests" do
@@ -134,6 +133,69 @@ describe Quest do
       lambda do
         Quest.get_achievement(0)
       end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  describe ".start_player_quest_line" do
+    let(:parent_quest) { Factory.create(:quest, parent: nil) }
+    let(:parent_qp_scope) do
+      QuestProgress.where(player_id: player.id, quest_id: parent_quest.id)
+    end
+    let(:parent_objective) { Factory.create(:objective, quest: parent_quest) }
+    let(:parent_op_scope) do
+      ObjectiveProgress.
+        where(player_id: player.id, objective_id: parent_objective.id)
+    end
+    let(:child_quest) { Factory.create(:quest, parent: parent_quest) }
+    let(:child_qp_scope) do
+      QuestProgress.where(player_id: player.id, quest_id: child_quest.id)
+    end
+    let(:child_objective) { Factory.create(:objective, quest: child_quest) }
+    let(:child_op_scope) do
+      ObjectiveProgress.
+        where(player_id: player.id, objective_id: child_objective.id)
+    end
+    let(:player) { Factory.create(:player) }
+
+    before(:each) { parent_objective; child_objective }
+
+    it "should create QuestProgress for parent quest" do
+      lambda do
+        Quest.start_player_quest_line(player.id)
+      end.should change(parent_qp_scope, :count).from(0).to(1)
+    end
+
+    it "should set QuestProgress#status to started" do
+      Quest.start_player_quest_line(player.id)
+      parent_qp_scope.first.status.should == QuestProgress::STATUS_STARTED
+    end
+
+    it "should set QuestProgress#completed to 0" do
+      Quest.start_player_quest_line(player.id)
+      parent_qp_scope.first.completed.should == 0
+    end
+
+    it "should create ObjectiveProgress for parent quest" do
+      lambda do
+        Quest.start_player_quest_line(player.id)
+      end.should change(parent_op_scope, :count).from(0).to(1)
+    end
+
+    it "should set ObjectiveProgress#completed to 0" do
+      Quest.start_player_quest_line(player.id)
+      parent_op_scope.first.completed.should == 0
+    end
+
+    it "should not create QuestProgress for child quest" do
+      lambda do
+        Quest.start_player_quest_line(player.id)
+      end.should_not change(child_qp_scope, :count).from(0)
+    end
+
+    it "should not create ObjectiveProgress for child quest" do
+      lambda do
+        Quest.start_player_quest_line(player.id)
+      end.should_not change(child_op_scope, :count).from(0)
     end
   end
 end

@@ -63,10 +63,17 @@ class SolarSystemPoint < LocationPoint
   alias :position :x
   alias :angle :y
 
-  def galaxy_id; solar_system.galaxy_id; end
+  # Ignore freeze, because we need memoizing.
+  def freeze; end
+
+  def galaxy_id
+    @galaxy_id ||= without_locking do
+      SolarSystem.where(id: @id).select("galaxy_id").c_select_value
+    end
+  end
   def galaxy; solar_system.galaxy; end
   # Returns solar system in which this point is.
-  def solar_system; SolarSystem.find(@id); end
+  def solar_system; @solar_system ||= SolarSystem.find(@id); end
   def solar_system_id; @id; end
   def zone; SolarSystem.find(@id); end
 

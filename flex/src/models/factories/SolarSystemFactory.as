@@ -19,13 +19,13 @@ package models.factories
        * @return instance of <code>SolarSystem</code> with values of properties
        * loaded from the data object.
        */
-      public static function fromObject(data:Object) : MSolarSystem {
-         if (!data) {
+      public static function fromObject(data: Object): MSolarSystem {
+         if (data == null) {
             return null;
          }
-         var ss:MSolarSystem = Objects.create(MSolarSystem, data);
+         var ss: MSolarSystem = Objects.create(MSolarSystem, data);
          if (data["metadata"] != null) {
-            ss.metadata = Objects.create(MSSMetadata, data.metadata);
+            ss.metadata = Objects.create(MSSMetadata, data["metadata"]);
          }
          return ss;
       }

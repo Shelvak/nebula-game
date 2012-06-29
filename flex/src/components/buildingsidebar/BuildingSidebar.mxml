@@ -65,9 +65,6 @@
 
 
       [Bindable]
-      private var waitingForApproval: Boolean = false;
-
-      [Bindable]
       private var _buildingFacilities: ListCollectionView = new ListCollectionView();
 
       [Bindable]
@@ -183,7 +180,6 @@
 
       private function removePending(e: GObjectEvent): void {
          EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePending);
-         waitingForApproval = false;
          checkTheDemoThing();
       }
 
@@ -261,7 +257,6 @@
                   constructorId: selectedFacility.id,
                   prepaid:       resLeft == 0}
             ).dispatch();
-            waitingForApproval = true;
          }
          else {
             new UnitsCommand(
@@ -471,7 +466,6 @@
 
       private function reset(e: GlobalEvent): void {
          EventBroker.unsubscribe(GObjectEvent.OBJECT_APPROVED, removePending);
-         waitingForApproval = false;
       }
 
       private var MA: MCMainArea = MCMainArea.getInstance();
@@ -609,6 +603,7 @@
          MCBuildingSelectedSidebar.getInstance();
       ]]>
    </fx:Script>
+<<<<<<< HEAD
    
    <base:SpinnerContainer busy="{waitingForApproval}" top="0" left="0" right="0" bottom="0" timeoutEnabled="false">
       <s:Group top="0" left="0" right="0" bottom="0">
@@ -841,4 +836,229 @@
          </base:AdvancedContainer>
       </base:Panel>
    </base:SpinnerContainer>
+=======
+
+  <base:AdvancedContainer top="0" left="0" right="0" visible="{ML.latestPlanet.ssObject.owner != Owner.PLAYER}">
+     <base:layout>
+        <s:VerticalLayout paddingLeft="6" paddingRight="6" paddingTop="6"
+                          horizontalAlign="justify"/>
+     </base:layout>
+     <base:Warning text="{getString('notYourPlanet')}"/>
+     <s:Group visible="{(ML.latestPlanet.hasAggressiveGroundUnits(Owner.ENEMY)
+              || ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
+              || ML.latestPlanet.hasBuildingsWithGuns)
+              &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
+        <s:Label text="{getString('label.planetHasEnemies')}" styleName="unsatisfied"
+                 left="0" right="0"/>
+     </s:Group>
+     <s:Group visible="{!ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
+              &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
+        <s:Label text="{getString('label.noPlayerUnits')}" styleName="unsatisfied"
+                 left="0" right="0"/>
+     </s:Group>
+     <s:Group visible="{ML.latestPlanet.ssObject.player == null
+         &amp;&amp; !ML.latestPlanet.hasAggressiveGroundUnits(Owner.ENEMY)
+         &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
+         &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
+         &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}">
+            <s:Button label="{getString('label.claimPlanet')}"
+               visible="{!ML.latestGalaxy.apocalypseHasStarted}"
+               includeInLayout="{!ML.latestGalaxy.apocalypseHasStarted}"
+               skinClass="components.skins.GreenButtonSkin"
+               click="button1_clickHandler(event)"
+               horizontalCenter="0"/>
+
+            <base:Warning width="100%" showSign="false"
+               visible="{ML.latestGalaxy.apocalypseHasStarted}"
+               includeInLayout="{ML.latestGalaxy.apocalypseHasStarted}"
+               text="{getString('warning.apocalypseClaimForbidden')}"/>
+     </s:Group>
+     <base:Warning showSign="false"
+                   visible="{deployInProgress}"
+                   text="{getString('warning.deployInAlliancePlanet')}"/>
+  </base:AdvancedContainer>
+  <base:Panel left="0" right="0" bottom="0"
+              title="{getString('infoTitle')}"
+              visible="{selectedBuilding != null &amp;&amp;
+                 (deployInProgress &amp;&amp;
+                 (armorText || energyText || constructionText)) &amp;&amp;
+                 ML.latestPlanet.ssObject.owner != Owner.PLAYER}">
+        <base:AdvancedContainer left="0" right="0">
+           <s:Label text="{getString('deployInProgress')}" fontWeight="bold"
+                    visible="{deployInProgress}"/>
+
+           <elements:BonusGroup building="{selectedBuilding}"
+                                armor="{armorText}" energy="{energyText}"
+                                construction="{constructionText}"/>
+           <base:layout>
+              <s:VerticalLayout gap="6" paddingLeft="6"/>
+           </base:layout>
+        </base:AdvancedContainer>
+     </base:Panel>
+  <s:Group top="0" left="0" right="0" bottom="0"
+           visible="{ML.latestPlanet.ssObject.owner == Owner.PLAYER}">
+     <base:Panel top="0" left="0" right="0" id="facilitiesPanel"
+                 title="{getString('facilitiesTitle')}">
+        <base:AdvancedContainer id="facilitiesContainer"
+                                left="0" right="0" top="0">
+           <s:Label id="noFacLabel" text="{getString('noFacilities')}"
+                    visible="{_buildingFacilities.length == 0}"/>
+           <s:List id="facilitiesList"
+                   itemRenderer="components.buildingsidebar.IRBuildingFacility"
+                   visible="{_buildingFacilities.length != 0}"
+                   borderVisible="false"
+                   dataProvider="{_buildingFacilities}"
+                   change="changeSelected()"
+                   creationComplete="changeSelected();
+                   facilitiesList.scroller.setStyle('horizontalScrollPolicy',
+                       ScrollPolicy.OFF)"
+                   requireSelection="true"
+                   maxHeight="150">
+              <s:layout>
+                 <s:TileLayout requestedColumnCount="{(_buildingFacilities
+                    == null || _buildingFacilities.length &lt; 2)
+                    ? 1 : 2}" columnWidth="{(_buildingFacilities
+                    == null || _buildingFacilities.length &lt; 2)
+                    ? facilitiesList.width - 2
+                    : (_buildingFacilities.length &lt; 5
+                    ? (facilitiesList.width - 2) / 2 - 4
+                    : (facilitiesList.width - 10) / 2 - 4)}"
+                    rowHeight="68"/>
+              </s:layout>
+           </s:List>
+
+           <s:Group visible="{!(!(noFacLabel.visible == false)
+                              || !(selectedFacility.constructableId != 0))}"
+                    width="100%" id="queueGroup">
+              <elements:BuildingProgressElement id="progressElement"
+                                                width="100%"
+                                                constructableModel="{selectedConstructionModel}"/>
+              <s:List id="queueList" dataProvider="{selectedFacility.constructionQueueEntries}"
+                      useVirtualLayout="false"
+                      width="100%" rollOverColor="#0f0f0f" selectionColor="#0f0f0f"
+                      dragEnabled="true" borderVisible="false" dragStart="queueList_dragStartHandler(event)"
+                      contentBackgroundAlpha="0" creationComplete="queueList_creationCompleteHandler(event)"
+                      dragComplete="queueList_dragCompleteHandler(event)"
+                      height="{selectedFacility.constructionQueueEntries.length > 0
+                      ?(selectedFacility.constructionQueueEntries.length > 4?96:50)
+                      :0}">
+                 <s:itemRenderer>
+                    <fx:Component>
+                       <s:ItemRenderer width="100%" height="44">
+                          <elements:BuildingQueryElement queryElementModel="{data}" width="100%" height="44"/>
+                       </s:ItemRenderer>
+                    </fx:Component>
+                 </s:itemRenderer>
+
+                 <s:layout>
+                    <s:TileLayout requestedColumnCount="4" verticalGap="6" horizontalGap="1"/>
+                 </s:layout>
+              </s:List>
+              <s:layout>
+                 <s:VerticalLayout paddingRight="7"/>
+              </s:layout>
+           </s:Group>
+           <base:layout>
+              <s:VerticalLayout paddingLeft="6" horizontalAlign="justify"/>
+           </base:layout>
+
+        </base:AdvancedContainer>
+     </base:Panel>
+
+
+     <base:Panel id="constructablePanel" left="0" right="0"
+                 top="{facilitiesPanel.height + 6}"
+                 bottom="{selectedBuilding != null? bonusPanel.height+6: 0 }"
+                 visible="{!noFacLabel.visible}"
+                 title="{getString('constructableTitle')}">
+        <elements:BuildingList  left="0" right="0" top="0" bottom="0" borderVisible="false"
+                                contentBackgroundAlpha="0" rollOverColor="#4f4f4f"
+                                selectionColor="#2f2f2f"
+                                id="constructable" constructableTypes="{BS.constructable}"
+                                creationComplete="constructable_creationCompleteHandler(event)"/>
+     </base:Panel>
+
+     <s:Button
+        id="deselectButton"
+        toolTip="{getString('deselectButtonText')}"
+        skinClass="components.skins.DeselectButtonSkin"
+        right="5"
+        top="{facilitiesPanel.height + 8}"
+        width="16"
+        visible="{selectedBuilding != null}"
+        height="16"
+        click="constructable.deselectBuilding()"/>
+
+     <base:Panel id="bonusPanel" left="0" right="0" bottom="0"
+                 title="{getString('infoTitle')}"
+                 visible="{selectedBuilding != null &amp;&amp;
+                 (deployInProgress || metalPrice || energyPrice || zetiumPrice || armorText ||
+                 energyText || constructionText)}">
+        <base:AdvancedContainer left="0" right="0">
+           <s:Label text="{getString('deployInProgress')}" fontWeight="bold"
+                    visible="{deployInProgress}"/>
+           <s:Group visible="{metalPrice || energyPrice || zetiumPrice}">
+              <s:Group width="100">
+                 <base:ImageAndLabel type="{ResourceType.METAL}" textToDisplay="{metalPrice}"
+                                     labelStyleName="{getMetalPrice() > ML.latestPlanet.ssObject.metal.currentStock? 'unsatisfied':null}"
+                                     toolTip="{Localizer.string('Resources', ResourceType.METAL)}"/>
+                 <base:ImageAndLabel type="{ResourceType.ZETIUM}" textToDisplay="{zetiumPrice}"
+                                     labelStyleName="{getZetiumPrice() > ML.latestPlanet.ssObject.zetium.currentStock? 'unsatisfied':null}"
+                                     toolTip="{Localizer.string('Resources', ResourceType.ZETIUM)}"/>
+                 <s:layout>
+                    <s:VerticalLayout gap="4"/>
+                 </s:layout>
+              </s:Group>
+              <s:Group width="100">
+                 <base:ImageAndLabel type="{ResourceType.ENERGY}" textToDisplay="{energyPrice}"
+                                     labelStyleName="{getEnergyPrice() > ML.latestPlanet.ssObject.energy.currentStock? 'unsatisfied':null}"
+                                     toolTip="{Localizer.string('Resources', ResourceType.ENERGY)}"/>
+                 <base:ImageAndLabel type="{ResourceType.TIME}" textToDisplay="{buildTime}"
+                                     toolTip="{getString('timeToFinish')}"/>
+                 <s:layout>
+                    <s:VerticalLayout gap="4"/>
+                 </s:layout>
+              </s:Group>
+              <s:layout>
+                 <s:HorizontalLayout/>
+              </s:layout>
+           </s:Group>
+
+           <base:AdvancedContainer width="100%">
+              <elements:BonusGroup building="{selectedBuilding}"
+                                   armor="{armorText}" energy="{energyText}"
+                                   construction="{constructionText}"/>
+              <s:Group width="100%" visible="{resLeft != 0}">
+                 <s:Label text="{Localizer.string('Resources','notEnoughResources')}" styleName="unsatisfied"
+                          left="0" right="0"/>
+              </s:Group>
+              <s:Group width="100%" visible="{resLeft > 0}">
+                 <s:Label text="{Localizer.string('Resources','enoughResourcesIn')}" width="100%" fontWeight="bold"/>
+                 <base:TimeLabel text="{getStringFromSeconds(resLeft)}" width="100%"/>
+                 <s:layout>
+                    <s:VerticalLayout paddingRight="6"/>
+                 </s:layout>
+              </s:Group>
+
+              <!--s:Label text="{Localizer.string('Resources','insufficientRate')}" visible="{resLeft == -1}"
+              styleName="unsatisfied"/-->
+              <s:Group width="100%" visible="{!enoughStorage}">
+                 <s:Label text="{
+                          missingStorageString == ''
+                             ? ''
+                             : Localizer.string('Resources','additionalStorage', [missingStorageString])
+                          }"
+                          styleName="unsatisfied" left="0" right="0"/>
+              </s:Group>
+              <base:layout>
+                 <s:VerticalLayout gap="1" paddingLeft="12"/>
+              </base:layout>
+           </base:AdvancedContainer>
+           <base:layout>
+              <s:VerticalLayout gap="6" paddingLeft="6"/>
+           </base:layout>
+        </base:AdvancedContainer>
+     </base:Panel>
+  </s:Group>
+>>>>>>> stable2
 </base:BaseContainer>

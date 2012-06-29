@@ -7,7 +7,7 @@ RSpec::Matchers.define :be_created_from_static_ss_configuration do
     if SsObject::Planet.where(ss_conditions).exists?
       planet = SsObject::Planet.where(ss_conditions).first
 
-      owned_by_player = ! planet.player_id.nil?
+      owned_by_player = ! planet.owner_changed.nil?
       @errors << "#{exp_to} have owned_by_player: #{data["owned_by_player"]
         } but it was #{owned_by_player}." \
         if owned_by_player != data["owned_by_player"]

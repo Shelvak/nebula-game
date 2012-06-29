@@ -7,8 +7,8 @@ package controllers.ui
    import components.factories.MapFactory;
    import components.map.controllers.IMapViewportController;
    import components.map.planet.PlanetMap;
-   import components.map.space.CMapGalaxy;
-   import components.map.space.CMapSolarSystem;
+   import components.map.space.galaxy.CMapGalaxy;
+   import components.map.space.solarsystem.CMapSolarSystem;
    import components.player.PlayerScreen;
    import components.resourcetransporter.MCResourceTransporter;
    import components.screens.MainAreaContainer;

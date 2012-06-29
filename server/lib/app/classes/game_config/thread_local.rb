@@ -7,6 +7,11 @@ class GameConfig::ThreadLocal
     @set_scope = GameConfig::DEFAULT_SET
   end
 
+  # Global configuration shared across threads. Do not abuse this!
+  def global
+    @global_config
+  end
+
   def [](key, set=nil)
     set ||= @set_scope
     @global_config[key, set]

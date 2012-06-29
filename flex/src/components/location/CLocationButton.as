@@ -1,11 +1,10 @@
 package components.location
 {
-   import controllers.Messenger;
-   
    import flash.events.MouseEvent;
    
    import models.location.Location;
-   
+   import models.notification.MTimedEvent;
+
    import spark.components.Button;
    
    import utils.locale.Localizer;
@@ -44,7 +43,7 @@ package components.location
          }
          else
          {
-            Messenger.show(Localizer.string("Location", "message.locationNotAvailable"), Messenger.SHORT);
+            new MTimedEvent(Localizer.string("Location", "message.locationNotAvailable"));
          }
       }
    }

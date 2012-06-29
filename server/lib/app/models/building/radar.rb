@@ -2,8 +2,10 @@ class Building::Radar < Building
   include Trait::Radar
 
   def self.for_player(player_id)
-    planet_ids = SsObject::Planet.select("id").where(:player_id => player_id).
-      c_select_values
+    planet_ids = without_locking do
+      SsObject::Planet.select("id").where(:player_id => player_id).
+        c_select_values
+    end
     where(:planet_id => planet_ids)
   end
 

@@ -21,12 +21,14 @@ class CombatLog < ActiveRecord::Base
 
   # All the data needed to play back combat replay.
   def self.replay_info(client_location, alliances, nap_rules, outcomes, log)
+    typesig binding, Hash, Hash, Hash, Hash, Hash
+
     {
-      "location" => client_location.as_json,
-      "alliances" => alliances,
-      "nap_rules" => nap_rules,
-      "outcomes" => outcomes,
-      "log" => log,
+      "location" => client_location,
+      "alliances" => alliances.as_json,
+      "nap_rules" => nap_rules.as_json,
+      "outcomes" => outcomes.as_json,
+      "log" => log.as_json,
       "config" => CONFIG.filter(REPLAY_INFO_CONFIG_REGEXP)
     }
   end
@@ -69,6 +71,6 @@ class CombatLog < ActiveRecord::Base
     log
   end
 
-  DESTROY_SCOPE = DScope.world
+  DESTROY_SCOPE = DScope.low_prio
   def self.destroy_callback(combat_log); combat_log.destroy!; end
 end

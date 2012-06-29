@@ -13,13 +13,13 @@ class MarketRate < ActiveRecord::Base
     #
     # Creates from seed values if it does not exist.
     def get(galaxy_id, from_kind, to_kind)
-      model = where(:galaxy_id => galaxy_id, :from_kind => from_kind,
-                    :to_kind => to_kind).first
+      model = where(galaxy_id: galaxy_id, from_kind: from_kind,
+                    to_kind: to_kind).first
       if model.nil?
         seed_amount, seed_rate = Cfg.market_seed(from_kind, to_kind)
-        model = new(:galaxy_id => galaxy_id, :from_kind => from_kind,
-                    :to_kind => to_kind, :from_amount => seed_amount,
-                    :to_rate => seed_rate)
+        model = new(galaxy_id: galaxy_id, from_kind: from_kind,
+                    to_kind: to_kind, from_amount: seed_amount,
+                    to_rate: seed_rate)
         model.save!
       end
 
@@ -74,19 +74,22 @@ class MarketRate < ActiveRecord::Base
 
     # Return average rate for resource pair for galaxy with ID _galaxy_id_.
     def average(galaxy_id, from_kind, to_kind)
-      get(galaxy_id, from_kind, to_kind).to_rate
+      without_locking { get(galaxy_id, from_kind, to_kind).to_rate }
     end
 
     # Return lowest rate for resource pair for galaxy with ID _galaxy_id_.
     # Returns nil if no offers exist.
     def lowest(galaxy_id, from_kind, to_kind)
-      rate = MarketOffer.select(:to_rate).where(
-        :galaxy_id => galaxy_id, :from_kind => from_kind, :to_kind => to_kind
-      ).order(:to_rate).c_select_value
+      rate = without_locking do
+        MarketOffer.select(:to_rate).where(
+          galaxy_id: galaxy_id, from_kind: from_kind, to_kind: to_kind
+        ).order(:to_rate).c_select_value
+      end
       rate.is_a?(String) ? rate.to_f : rate
     end
 
-    protected
+  protected
+
     def subtracted_model(galaxy_id, from_kind, to_kind, from_amount)
       model = get(galaxy_id, from_kind, to_kind)
       raise ArgumentError.new("Cannot subtract more than we have from #{model

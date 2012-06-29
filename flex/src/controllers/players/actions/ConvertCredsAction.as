@@ -1,7 +1,10 @@
 package controllers.players.actions
 {
    import controllers.CommunicationAction;
-   import controllers.Messenger;
+
+   import models.notification.MSuccessEvent;
+
+   import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
@@ -27,8 +30,7 @@ package controllers.players.actions
       public override function result(rmo:ClientRMO):void
       {
          super.result(rmo);
-         Messenger.show(Localizer.string('Credits', 'message.credsConverted'),
-         Messenger.MEDIUM);
+         new MSuccessEvent(Localizer.string('Credits', 'message.credsConverted'));
       }
    }
 }

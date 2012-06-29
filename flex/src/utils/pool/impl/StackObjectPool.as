@@ -1,9 +1,10 @@
 package utils.pool.impl
 {
    import mx.logging.ILogger;
-   import mx.logging.Log;
 
    import utils.Objects;
+   import utils.logging.IMethodLoggerFactory;
+   import utils.logging.Log;
    import utils.pool.BaseObjectPool;
    import utils.pool.IPoolableObjectFactory;
 
@@ -18,9 +19,7 @@ package utils.pool.impl
     */
    public class StackObjectPool extends BaseObjectPool
    {
-      private function get logger(): ILogger {
-         return Log.getLogger(Objects.getClassName(this, true));
-      }
+      private const loggerFactory: IMethodLoggerFactory = Log.getMethodLoggerFactory(StackObjectPool);
 
       private var _pool: Array;
       private var _numActive: int;
@@ -88,9 +87,7 @@ package utils.pool.impl
                _factory.activateObject(obj);
                if (!_factory.validateObject(obj)) {
                   throw new Error(
-                     "IPoolableObjectFactory.validateObject() failed "
-                        + "(returned false)"
-                  );
+                     "IPoolableObjectFactory.validateObject() failed (returned false)");
                }
             }
             catch (e: Error) {
@@ -99,10 +96,8 @@ package utils.pool.impl
                }
                // swallowed
                catch (e: Error) {
-                  logger.warn(
-                     "borrowObject(): Error destroying poolable object {0}. "
-                        + "Newly created: {1}", obj,  newlyCreated
-                  )
+                  loggerFactory.getLogger("borrowObject").warn(
+                     "Error destroying poolable object {0}. Newly created: {1}", obj,  newlyCreated);
                }
                finally {
                   obj = null;
@@ -134,6 +129,7 @@ package utils.pool.impl
        */
       public override function returnObject(obj: Object): void {
          Objects.paramNotNull("obj", obj);
+         const logger:ILogger = loggerFactory.getLogger("returnObject");
          var success: Boolean = !closed;
 
          if (!_factory.validateObject(obj)) {
@@ -145,9 +141,7 @@ package utils.pool.impl
             }
             catch (e: Error) {
                logger.warn(
-                  "returnObject(): error while passivating object {0}."
-                     + "\nError message: {1}", obj,  e.message
-               );
+                  "error while passivating object {0}.\nError message: {1}", obj,  e.message);
                success = false;
             }
          }
@@ -163,9 +157,7 @@ package utils.pool.impl
             // ignored
             catch (e: Error) {
                logger.warn(
-                  "returnObject(): Error while destroying object {0}. "
-                     + "\nError message: {1}", obj, e.message
-               );
+                  "Error while destroying object {0}. \nError message: {1}", obj, e.message);
             }
          }
       }

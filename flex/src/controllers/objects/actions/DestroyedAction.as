@@ -1,6 +1,5 @@
 package controllers.objects.actions
 {
-   import controllers.Messenger;
    import controllers.navigation.MCMainArea;
    import controllers.objects.ObjectClass;
    import controllers.objects.UpdatedReason;
@@ -8,6 +7,8 @@ package controllers.objects.actions
    import controllers.screens.MainAreaScreens;
 
    import models.healing.MCHealingScreen;
+   import models.notification.MFaultEvent;
+   import models.notification.MTimedEvent;
    import models.unit.MCLoadUnloadScreen;
    import models.unit.MCUnitScreen;
 
@@ -71,8 +72,7 @@ package controllers.objects.actions
                   {
                         if (US.hasChanges)
                         {
-                           Messenger.show(Localizer.string('Units', 'message.changesCanceled'),
-                              Messenger.MEDIUM);
+                           new MFaultEvent(Localizer.string('Units', 'message.changesCanceled'));
                         }
                   }
                   US.refreshScreen();

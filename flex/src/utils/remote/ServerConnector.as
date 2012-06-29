@@ -1,7 +1,9 @@
 package utils.remote
 {
+   import controllers.messages.MessagesProcessor;
    import controllers.messages.ResponseMessagesTracker;
    import controllers.startup.StartupInfo;
+   import controllers.startup.StartupManager;
    import controllers.startup.StartupMode;
 
    import flash.errors.IOError;
@@ -10,14 +12,17 @@ package utils.remote
    import flash.events.IOErrorEvent;
    import flash.events.ProgressEvent;
    import flash.events.SecurityErrorEvent;
-   import flash.events.TimerEvent;
+   import flash.external.ExternalInterface;
    import flash.net.Socket;
-   import flash.utils.Timer;
+
+   import models.ModelLocator;
 
    import mx.logging.ILogger;
    import mx.logging.Log;
 
    import namespaces.client_internal;
+
+   import utils.ApplicationLocker;
 
    import utils.Events;
    import utils.Objects;
@@ -73,7 +78,7 @@ package utils.remote
       }
 
       private const _timeSynchronizer:TimeSynchronizer = new TimeSynchronizer();
-      private const _socket: Socket = new Socket();
+      private var _socket: Socket = new Socket();
       private var _connecting: Boolean = false;
 
       client_internal function get lowestObservedLatency(): int {
@@ -94,12 +99,33 @@ package utils.remote
       // ############################# //
 
       private function addSocketEventHandlers(): void {
-         with (_socket) {
-            addEventListener(Event.CLOSE, socket_closeHandler);
-            addEventListener(Event.CONNECT, socket_connectHandler);
-            addEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
-            addEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
-            addEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+         if (!socketEventsRegistered)
+         {
+            with (_socket) {
+               addEventListener(Event.CLOSE, socket_closeHandler);
+               addEventListener(Event.CONNECT, socket_connectHandler);
+               addEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
+               addEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
+               if (!hasEventListener(SecurityErrorEvent.SECURITY_ERROR))
+               {
+                  addEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+               }
+               socketEventsRegistered = true;
+            }
+         }
+      }
+
+      private function removeSocketEventHandlers(): void {
+         if (socketEventsRegistered)
+         {
+            with (_socket) {
+               removeEventListener(Event.CLOSE, socket_closeHandler);
+               removeEventListener(Event.CONNECT, socket_connectHandler);
+               removeEventListener(ProgressEvent.SOCKET_DATA, socket_socketDataHandler);
+               removeEventListener(IOErrorEvent.IO_ERROR, socket_ioErrorHandler);
+               //removeEventListener(SecurityErrorEvent.SECURITY_ERROR, socket_securityErrorHandler);
+               socketEventsRegistered = false;
+            }
          }
       }
 
@@ -109,16 +135,14 @@ package utils.remote
          _buffer = "";
          _connecting = false;
          dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_ESTABLISHED);
-         startPingTimer();
       }
 
       private function socket_closeHandler(event: Event): void {
          _buffer = "";
          _connecting = false;
          if (StartupInfo.getInstance().mode != StartupMode.MAP_EDITOR) {
-            dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST)
+            dispatchServerProxyEvent(ServerProxyEvent.CONNECTION_LOST);
          }
-         killPingTimer();
       }
       
       /**
@@ -131,13 +155,10 @@ package utils.remote
          var index: int = _buffer.indexOf("\n");
          while (index != -1) {
             const msg: String = _buffer.substring(0, index);
-            if (!isPong(msg))
-            {
-               msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
-               const rmo: ServerRMO = ServerRMO.parse(msg);
-               _timeSynchronizer.synchronize(rmo);
-               _unprocessedMessages.push(rmo);
-            }
+            msgLog.logMessage(msg, " ~->| Incoming message: {0}", [msg]);
+            const rmo: ServerRMO = ServerRMO.parse(msg);
+            _timeSynchronizer.synchronize(rmo);
+            _unprocessedMessages.push(rmo);
             _buffer = _buffer.substr(index + 1);
             index = _buffer.indexOf("\n");
          }
@@ -168,7 +189,8 @@ package utils.remote
       public function get connected(): Boolean {
          return _socket.connected;
       }
-      
+
+      private var socketEventsRegistered: Boolean = false;
       
       // ######################### //
       // ### INTERFACE METHODS ### //
@@ -176,18 +198,21 @@ package utils.remote
 
       public function connect(host: String, port: int): void {
          _connecting = true;
+         if (!socketEventsRegistered)
+         {
+            addSocketEventHandlers();
+         }
          _socket.connect(host, port);
       }
 
       public function disconnect(): void {
          _connecting = false;
-         killPingTimer();
          // the method might be called event if the socket is not open
          try {
             _socket.close();
          }
             // well we can't do much about the error, can we?
-         catch (error: IOError) {
+         catch (error: Error) {
          }
       }
 
@@ -196,48 +221,15 @@ package utils.remote
          getUnprocessedMessages();
       }
 
-      private static const SEND_PING_EVERY: int = 5000;
 
-      private var pingTimer: Timer;
-
-      private function startPingTimer(): void
+      private function get ML(): ModelLocator
       {
-//         TODO: this keep alive thing failed, need to figure out something better
-//         if (pingTimer == null)
-//         {
-//            pingTimer = new Timer(SEND_PING_EVERY);
-//            pingTimer.addEventListener(TimerEvent.TIMER, ping);
-//            pingTimer.start();
-//         }
+         return ModelLocator.getInstance();
       }
 
-      private function killPingTimer(): void
+      private function get SI(): StartupInfo
       {
-         if (pingTimer != null)
-         {
-            pingTimer.removeEventListener(TimerEvent.TIMER, ping);
-            pingTimer.stop();
-            pingTimer = null;
-         }
-      }
-
-      private function ping(e: TimerEvent): void
-      {
-         if (_socket.connected) {
-            _socket.writeUTFBytes('?\n');
-         }
-      }
-
-      private function isPong(msg: String): Boolean
-      {
-         if (msg == '!')
-         {
-            return true;
-         }
-         else
-         {
-            return false;
-         }
+         return StartupInfo.getInstance();
       }
 
       public function sendMessage(rmo: ClientRMO): void {

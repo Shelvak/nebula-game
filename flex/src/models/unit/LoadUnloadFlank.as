@@ -1,10 +1,11 @@
 package models.unit
 {
-   import controllers.Messenger;
-   
+   import models.notification.MFaultEvent;
+   import models.notification.MTimedEvent;
+
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
-   
+
    import utils.locale.Localizer;
    
    public class LoadUnloadFlank extends UnitsFlank
@@ -71,8 +72,7 @@ package models.unit
          if (!LS.selectionClass.selectUnit(model, this))
          {
             model.selected = false;
-            Messenger.show(Localizer.string('Units', 'message.notSelected'), 
-               Messenger.MEDIUM);
+            new MFaultEvent(Localizer.string('Units', 'message.notSelected'));
          }
       }
       
@@ -112,8 +112,7 @@ package models.unit
       {
          if (!LS.selectionClass.selectFlank(this))
          {
-            Messenger.show(Localizer.string('Units', 'message.notSelected'), 
-               Messenger.MEDIUM);
+            new MFaultEvent(Localizer.string('Units', 'message.notSelected'));
          }
          if (dispatchEvnt)
          {
@@ -150,8 +149,7 @@ package models.unit
          }
          if (someFailed)
          {
-            Messenger.show(Localizer.string('Units', 'message.notSelected'),
-               Messenger.MEDIUM);
+            new MFaultEvent(Localizer.string('Units', 'message.notSelected'));
          }
          LS.refreshVolume();
       }

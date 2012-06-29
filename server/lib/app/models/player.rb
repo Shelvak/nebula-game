@@ -28,6 +28,8 @@ class Player < ActiveRecord::Base
   # FK :dependent => :delete_all
   has_many :notifications
   # FK :dependent => :delete_all
+  has_many :routes
+  # FK :dependent => :delete_all
   has_many :quest_progresses
   has_many :started_quests,
     :class_name => "Quest",
@@ -67,8 +69,6 @@ class Player < ActiveRecord::Base
     # For defensive portals - skip ally planets when transferring. Don't send
     # units to ally planets or receive units from them.
     4 => :portal_without_allies,
-    # This player has been detached from galaxy map.
-    5 => :detached,
     # This player is a chat moderator.
     6 => :chat_mod,
     # This is a trial user who hasn't been registered permanently.
@@ -122,9 +122,10 @@ class Player < ActiveRecord::Base
   # Return +Hash+ of {player_id => Player#minimal} pairs from ids.
   def self.minimal_from_ids(ids)
     compacted_ids = ids.compact
-    hashed = select("id, name").where(:id => compacted_ids).c_select_all.
-      each_with_object({}) do |row, hash|
-        hash[row['id']] = {"id" => row['id'], "name" => row['name']}
+    hashed = without_locking do
+      select("id, name").where(:id => compacted_ids).c_select_all
+    end.each_with_object({}) do |row, hash|
+      hash[row['id']] = {"id" => row['id'], "name" => row['name']}
     end
     # Add NPC player if it was in the ids.
     hashed[nil] = nil if ids.size != compacted_ids.size
@@ -140,8 +141,11 @@ class Player < ActiveRecord::Base
 
   # Returns +Hash+ of {id => name} pairs.
   def self.names_for(player_ids)
-    names = select("name").where(:id => player_ids).c_select_values
-    Hash[player_ids.zip(names)]
+    without_locking do
+      select("id, name").where(:id => player_ids).c_select_all
+    end.each_with_object({}) do |row, hash|
+      hash[row['id']] = row['name']
+    end
   end
 
   # Return +PlayerOptions+ for this player.
@@ -189,33 +193,40 @@ class Player < ActiveRecord::Base
   # * :mode => :minimal - for showing in minimal attributes
   #
   def as_json(options=nil)
-    if options
-      case options[:mode]
-      when :minimal
-        {"id" => id, "name" => name}
-      when nil
+    without_locking do
+      if options
+        case options[:mode]
+        when :minimal
+          {"id" => id, "name" => name}
+        when nil
+        else
+          raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
+        end
       else
-        raise ArgumentError.new("Unknown mode: #{options[:mode].inspect}!")
-      end
-    else
-      json = attributes.only(*%w{
-        id name scientists scientists_total xp
-        economy_points army_points science_points war_points
-        victory_points population population_cap
-        alliance_id alliance_cooldown_ends_at alliance_cooldown_id
-        free_creds vip_creds vip_level vip_until vip_creds_until
-        planets_count bg_planets_count
-      })
-      json['creds'] = creds
-      json['portal_without_allies'] = portal_without_allies?
-      json['trial'] = trial?
-      unless alliance.nil?
-        is_owner = id == alliance.owner_id
-        json['alliance_owner'] = is_owner
-        json['alliance_player_count'] = alliance.players.count if is_owner
-      end
+        json = attributes.only(*%w{
+          id name scientists scientists_total xp
+          economy_points army_points science_points war_points
+          victory_points population population_cap
+          alliance_id alliance_cooldown_ends_at alliance_cooldown_id
+          free_creds vip_creds vip_level vip_until vip_creds_until
+          planets_count bg_planets_count
+          last_market_offer_cancel
+        })
+        json['creds'] = creds
+        json['portal_without_allies'] = portal_without_allies?
+        json['trial'] = trial?
 
-      json
+        # Prefetch alliance to avoid NPE?
+        alliance = self.alliance
+        unless alliance.nil?
+          # alliance.owner_id fails with NPE here? Strange, huh?
+          is_owner = id == alliance.owner_id
+          json['alliance_owner'] = is_owner
+          json['alliance_player_count'] = alliance.players.count if is_owner
+        end
+
+        json
+      end
     end
   end
 
@@ -258,29 +269,31 @@ class Player < ActiveRecord::Base
   #
   def self.ratings(galaxy_id, condition=nil)
     p = table_name
-    (condition.nil? ? self : condition).
-      select(
-        RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id, last_seen"
-      ).
-      where(:galaxy_id => galaxy_id).
-      joins("LEFT JOIN #{Alliance.table_name} AS a
-        ON `#{p}`.alliance_id=a.id").
-      order("id").
-      c_select_all.
-      map do |row|
-        alliance_id = row.delete('a_id')
-        alliance_name = row.delete('a_name')
-        row['alliance'] = alliance_id \
-          ? {'id' => alliance_id, 'name' => alliance_name} \
-          : nil
-        row['last_seen'] = true \
-          if Celluloid::Actor[:dispatcher].player_connected?(row['id'])
-        row['last_seen'] = Time.parse(row['last_seen']) \
-          if row['last_seen'].is_a?(String)
-        row['death_date'] = Time.parse(row['death_date']) \
-          if row['death_date'].is_a?(String)
-        row
-      end
+    without_locking do
+      (condition.nil? ? self : condition).
+        select(
+          RATING_ATTRIBUTES_SQL + ", a.name AS a_name, a.id AS a_id, last_seen"
+        ).
+        where(:galaxy_id => galaxy_id).
+        joins(
+          "LEFT JOIN #{Alliance.table_name} AS a ON `#{p}`.alliance_id=a.id"
+        ).
+        order("id").
+        c_select_all
+    end.map do |row|
+      alliance_id = row.delete('a_id')
+      alliance_name = row.delete('a_name')
+      row['alliance'] = alliance_id \
+        ? {'id' => alliance_id, 'name' => alliance_name} \
+        : nil
+      row['last_seen'] = true \
+        if Celluloid::Actor[:dispatcher].player_connected?(row['id'])
+      row['last_seen'] = Time.parse(row['last_seen']) \
+        if row['last_seen'].is_a?(String)
+      row['death_date'] = Time.parse(row['death_date']) \
+        if row['death_date'].is_a?(String)
+      row
+    end
   end
 
   # Returns
@@ -376,7 +389,14 @@ class Player < ActiveRecord::Base
   # Returns array of player ids which are friendly to this player (self and
   # alliance members).
   def friendly_ids
-    alliance_id.nil? ? [id] : Alliance.player_ids_for(alliance_id)
+    @friendly_ids ||=
+      alliance_id.nil? ? [id] : Alliance.player_ids_for(alliance_id)
+  end
+
+  # Returns array of player ids which are in his alliance. Returns empty array
+  # if
+  def alliance_ids
+    friendly_ids - [id]
   end
 
   # Returns array of player ids which are napped to this player.
@@ -396,6 +416,12 @@ class Player < ActiveRecord::Base
     planets_count_changed? || bg_planets_count_changed?
   end
 
+  # Ensure #last_market_offer_cancel is not null. Stupid AR. Tries to insert
+  # NULL without this into a non-null column with default value.
+  before_create do
+    self.last_market_offer_cancel ||= Cfg.market_offer_cancellation_cooldown.ago
+  end
+
   # Make sure we don't get below 0 points, 
   before_save do
     POINT_ATTRIBUTES.each do |attr|
@@ -408,13 +434,13 @@ class Player < ActiveRecord::Base
           unless galaxy.dev?
         self.referral_submitted = true
       rescue ControlManager::Error => e
-        LOGGER.warn("Player referral points callback failed!\n#{e.to_log_str}")
+        LOGGER.warn("Player referral points callback failed!\n#{Exception.to_log_str(e)}")
       end
     end
 
     if victory_points_changed?
       old, new = victory_points_change
-      if galaxy.finished?
+      if without_locking { galaxy.finished? }
         # Don't change victory points after galaxy is finished.
         self.victory_points = old
       elsif ! alliance_id.nil?
@@ -426,7 +452,9 @@ class Player < ActiveRecord::Base
     if dead_changed? && dead?
       self.death_date = Time.now
       ControlManager.instance.player_death(
-        self, pure_creds + Cfg.apocalypse_survival_bonus(galaxy.apocalypse_day)
+        self, pure_creds + Cfg.apocalypse_survival_bonus(
+          without_locking { galaxy.apocalypse_day }
+        )
       )
       self.pure_creds = 0
     end
@@ -455,7 +483,7 @@ class Player < ActiveRecord::Base
   before_destroy do
     # Dispatch that home solar system is destroyed. This needs to be in
     # before_destroy so that visibilities can be gathered.
-    home_ss = home_solar_system
+    home_ss = without_locking { home_solar_system }
     if home_ss.nil?
       LOGGER.warn "No home solar system for #{self} but destroying it anyway."
     else
@@ -488,7 +516,7 @@ class Player < ActiveRecord::Base
   # Update player in dispatcher if it is connected so alliance ids and other
   # things would be intact.
   #
-  # Also give vicotry points to alliance if player earned them.
+  # Also give victory points to alliance if player earned them.
   #
   # This is why DataMapper is great - it keeps one object in memory for one
   # row in DB.
@@ -516,6 +544,43 @@ class Player < ActiveRecord::Base
     end
 
     galaxy.check_if_apocalypse_finished! if dead_changed? && dead?
+  end
+
+  # {type => klass}
+  @@unit_class_cache = Java::java.util.concurrent.ConcurrentHashMap.new
+
+  # Sets #population to its real value.
+  def recalculate_population
+    unit_counts = without_locking do
+      Unit.select("type, COUNT(*) as count").where(player_id: id).
+        group("type").c_select_all
+    end
+    cqe_counts = without_locking do
+      connection.select_all(%Q{
+SELECT cqe.constructable_type AS type, SUM(cqe.count) AS count
+FROM `#{ConstructionQueueEntry.table_name}` AS cqe
+INNER JOIN `#{Building.table_name}` AS b ON cqe.constructor_id = b.id
+INNER JOIN `#{SsObject.table_name}` AS sso ON b.planet_id = sso.id
+WHERE cqe.constructable_type LIKE 'Unit::%' AND sso.player_id=#{id.to_i} AND
+  #{ConstructionQueueEntry.prepaid_condition(:table_alias => 'cqe')}
+GROUP BY cqe.constructable_type
+      })
+    end
+
+    self.population = unit_counts.inject(0) do |sum, row|
+      type = "Unit::#{row["type"]}"
+      klass = @@unit_class_cache[type] ||= type.constantize
+      sum + klass.population * row["count"]
+    end + cqe_counts.inject(0) do |sum, row|
+      type = row["type"]
+      klass = @@unit_class_cache[type] ||= type.constantize
+      sum + klass.population * row["count"].to_i
+    end
+  end
+
+  def recalculate_population!
+    recalculate_population
+    save!
   end
 
   # Increase or decrease scientist count.
@@ -556,35 +621,41 @@ class Player < ActiveRecord::Base
 
   # Can this players home solar system be moved?
   def relocatable?
-    return false unless alliance_id.nil?
-    return false if Route.where(:player_id => id).exists?
+    without_locking do
+      return false unless alliance_id.nil?
+      return false if Route.where(:player_id => id).exists?
 
-    home_ss_id = SolarSystem.select("id").where(:player_id => id).c_select_value
-    raise "Home solar system could not be found for #{self}!" if home_ss_id.nil?
+      home_ss_id = SolarSystem.select("id").where(:player_id => id).
+        c_select_value
+      raise "Home solar system could not be found for #{self}!" \
+        if home_ss_id.nil?
 
-    return false if SsObject::Planet.where(:player_id => id).
-      where("solar_system_id!=?", home_ss_id).exists?
+      return false if SsObject::Planet.where(:player_id => id).
+        where("solar_system_id!=?", home_ss_id).exists?
 
-    home_planet_ids = SsObject::Planet.
-      select("id").
-      where(:solar_system_id => home_ss_id).
-      c_select_values
-    raise "No home planets could not be found for #{self}!" \
-      if home_planet_ids.blank?
+      home_planet_ids = SsObject::Planet.
+        select("id").
+        where(:solar_system_id => home_ss_id).
+        c_select_values
+      raise "No home planets could not be found for #{self}!" \
+        if home_planet_ids.blank?
 
-    return false if Unit.where(:player_id => id).
-      where(
-        %Q{
-        location_galaxy_id IS NOT NULL
-        OR
-        (location_solar_system_id IS NOT NULL AND location_solar_system_id != ?)
-        OR
-        (location_ss_object_id IS NOT NULL AND location_ss_object_id NOT IN (?))
-        },
-        home_ss_id, home_planet_ids
-      ).exists?
+      return false if Unit.where(:player_id => id).
+        where(
+          %Q{
+            location_galaxy_id IS NOT NULL
+            OR
+            (location_solar_system_id IS NOT NULL AND
+              location_solar_system_id != ?)
+            OR
+            (location_ss_object_id IS NOT NULL AND
+              location_ss_object_id NOT IN (?))
+          },
+          home_ss_id, home_planet_ids
+        ).exists?
 
-    true
+      true
+    end
   end
 
   # Is this player active?
@@ -643,7 +714,8 @@ class Player < ActiveRecord::Base
     zone = Galaxy::Zone.for_reattachment(galaxy_id, points)
     x, y = zone.free_spot_coords(galaxy_id)
     LOGGER.info "Reattaching #{self} to #{x},#{y}."
-    home_solar_system.attach!(x, y)
+    # Ensure we get a lock on home solar system by reloading it.
+    home_solar_system(true).attach!(x, y)
 
     register_check_activity!
     Notification.create_for_player_attached(id)
@@ -666,12 +738,16 @@ class Player < ActiveRecord::Base
       )
     end
 
-    aggressor_row = condition.where(:id => aggressor_id).c_select_one
+    aggressor_row = without_locking do
+      condition.where(:id => aggressor_id).c_select_one
+    end
     raise GameLogicError, "cannot find aggressor with id #{aggressor_id}" \
       if aggressor_row.nil?
     aggressor_points = points[aggressor_row]
 
-    defender_row = condition.where(:id => defender_id).c_select_one
+    defender_row = without_locking do
+      condition.where(:id => defender_id).c_select_one
+    end
     raise GameLogicError, "cannot find defender with id #{defender_id}" \
       if defender_row.nil?
     defender_points = points[defender_row]
@@ -689,4 +765,10 @@ class Player < ActiveRecord::Base
 
   VIP_STOP_SCOPE = DScope.world
   def self.vip_stop_callback(player); player.vip_stop!; end
+
+  # Given _player_ids_ join their ally ids to the array.
+  def self.join_alliance_ids(player_ids)
+    alliance_ids = Alliance.alliance_ids_for(player_ids)
+    player_ids | Alliance.player_ids_for(alliance_ids)
+  end
 end

@@ -5,4 +5,5 @@ import spacemule.modules.pmg.objects.SolarSystem
 
 class Pulsar extends SolarSystem(Config.pulsarSsConfig) {
   override val kind = SolarSystem.Battleground
+  override def toString = "<Pulsar "+super.toString+">"
 }

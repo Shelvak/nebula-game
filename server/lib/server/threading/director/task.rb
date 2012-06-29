@@ -9,28 +9,32 @@ class Threading::Director::Task
 
   # Creates a task, which cannot fail and crash the worker. All exceptions are
   # catched and logged.
-  def self.non_failing(description, &block)
-    new(description) do |worker_name|
+  def self.non_failing(description, short_description=nil, &block)
+    new(description, short_description) do |worker_name|
       begin
         block.call(worker_name)
       rescue Exception => e
         # Unexpected exceptions - log error, however do not crash the worker.
-        LOGGER.error "#{description} failed: #{e.to_log_str}", worker_name
+        LOGGER.error "#{description} failed: #{Exception.to_log_str(e)}",
+          worker_name
       end
     end
   end
 
-  def initialize(description, &block)
+  attr_reader :description, :short_description
+
+  def initialize(description, short_description=nil, &block)
     @description = description
+    @short_description = short_description
     @block = block
   end
 
-  # Runs this task passing it worker name. Checks out DB connection before
-  # running it.
+  # Runs this task passing it worker name.
   def run(worker_name)
-    ActiveRecord::Base.connection_pool.with_connection do
-      @block.call(worker_name)
-    end
+    Thread.current[:sql_comment] = @short_description || @description
+    @block.call(worker_name)
+  ensure
+    Thread.current[:sql_comment] = nil
   end
 
   def to_s
@@ -45,7 +49,8 @@ class Threading::Director::Task
           yield
         end
       end
-    rescue ActiveRecord::StatementInvalid, ActiveRecord::JDBCError => e
+    rescue ActiveRecord::StatementInvalid, ActiveRecord::JDBCError,
+        Java::java.sql.SQLException => e
       if current_retry >= INFO_FROM_RETRY
         innodb_info = ActiveRecord::Base.connection.
           select_one("SHOW ENGINE INNODB STATUS")["Status"]
@@ -56,23 +61,29 @@ class Threading::Director::Task
         log_method = :info
       end
 
-      if DEADLOCK_ERRORS.find { |err| e.message.include?(err) } &&
-          current_retry < MAX_RETRIES
-        current_retry += 1
+      if DEADLOCK_ERRORS.any? { |err| e.message.include?(err) }
+        if current_retry < MAX_RETRIES
+          current_retry += 1
 
-        sleep_for = SLEEP_RANGE.random_element / 1000.0
-        LOGGER.send(
-          log_method,
-          %Q{Deadlock occurred for #{log_object}, retry #{current_retry
-          }, retrying again in #{sleep_for}s: #{e.message}#{status_line}},
-          worker_name
-        )
-        sleep sleep_for
-        retry
+          sleep_for = (
+            (SLEEP_RANGE.first * current_retry)..
+            (SLEEP_RANGE.last * current_retry)
+          ).random_element / 1000.0
+          LOGGER.send(
+            log_method,
+            %Q{Deadlock occurred for #{log_object}, retry #{current_retry
+            }, retrying again in #{sleep_for}s: #{e.message}#{status_line}},
+            worker_name
+          )
+          sleep sleep_for
+          retry
+        else
+          raise e.class,
+            "Deadlock unresolvable after #{MAX_RETRIES} retries for #{log_object
+              }: #{e.message}#{status_line}"
+        end
       else
-        raise e.class,
-          "Deadlock unresolvable after #{MAX_RETRIES} retries for #{log_object
-            }: #{e.message}#{status_line}"
+        raise e
       end
     end
   end

@@ -12,47 +12,12 @@ describe Combat::LocationChecker do
     end
 
     it "should return false if there is cooldown" do
-      Cooldown.create_unless_exists(@location, 1.minute.since)
+      Cooldown.create_or_update!(@location, 1.minute.since)
       Combat::LocationChecker.check_location(@location).should be_false
     end
 
     it "should return false if there are no opposing forces" do
       Combat::LocationChecker.check_location(@location).should be_false
-    end
-
-    it "should invoke SS metadata recalc if location is ss point" do
-      ssp = SolarSystemPoint.new(@planet.solar_system_id, 0, 0)
-      check_report = Combat::CheckReport.new(
-        Combat::CheckReport::COMBAT, {}
-      )
-      Combat::LocationChecker.stub!(:check_for_enemies).and_return(check_report)
-      Combat.stub!(:run).and_return(true)
-      FowSsEntry.should_receive(:recalculate).with(ssp.id, true)
-      Combat::LocationChecker.check_location(ssp)
-    end
-
-    it "should not invoke SS metadata recalc if location is not " +
-    "a ss point" do
-      check_report = Combat::CheckReport.new(
-        Combat::CheckReport::COMBAT, {}
-      )
-      Combat::LocationChecker.stub!(:check_for_enemies).and_return(check_report)
-      Combat.stub!(:run).and_return(true)
-      FowSsEntry.should_not_receive(:recalculate)
-      Combat::LocationChecker.check_location(@planet)
-    end
-
-    it "should not invoke SS metadata recalc if no combat was ran" do
-      check_report = Combat::CheckReport.new(
-        Combat::CheckReport::COMBAT, {}
-      )
-      Combat::LocationChecker.stub!(:check_for_enemies).
-        and_return(check_report)
-      Combat.stub!(:run).and_return(nil)
-      FowSsEntry.should_not_receive(:recalculate)
-      Combat::LocationChecker.check_location(
-        SolarSystemPoint.new(@planet.solar_system_id, 0, 0)
-      )
     end
 
     it "should invoke annexer if location is planet" do

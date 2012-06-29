@@ -10,5 +10,5 @@ package spacemule.persistence
 
 trait RowObject {
   val columnsSeq: Seq[String]
-  lazy val columns: String = columnsSeq.map { "`%s`".format(_) }.mkString(", ")
+  lazy val columns: String = columnsSeq.map { "`%s`".format(_) }.mkString(",")
 }

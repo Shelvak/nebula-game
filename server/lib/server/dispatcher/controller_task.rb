@@ -2,13 +2,15 @@ module Dispatcher::ControllerTask
   class << self
     # Creates a task which is ran in one of the worker threads.
     def create(controller_class, action_method, message)
-      Threading::Director::Task.new(message.to_s) do |worker_name|
+      Threading::Director::Task.new(
+        message.to_s, message.to_short_s
+      ) do |worker_name|
         dispatcher = Celluloid::Actor[:dispatcher]
         exception = nil
 
         begin
           # Wrap our request in correct ruleset.
-          ruleset = dispatcher.storage_get(message.client, :ruleset)
+          ruleset = dispatcher.storage_get(message, :ruleset)
           ruleset ||= GameConfig::DEFAULT_SET
 
           CONFIG.with_set_scope(ruleset) do
@@ -25,12 +27,13 @@ module Dispatcher::ControllerTask
         rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid,
             ActiveRecord::RecordNotDestroyed, GameError => e
           # Expected exceptions - notify client that his action failed.
-          LOGGER.info "#{message} failed: #{e.name} - #{e.message}",
+          LOGGER.info "#{message} failed: #{e.class.to_s} - #{e.message}",
             worker_name
           exception = e
         rescue Exception => e
           # Unexpected exceptions - log error, however do not crash the worker.
-          LOGGER.error "#{message} failed: #{e.to_log_str}", worker_name
+          LOGGER.error "#{message} failed: #{Exception.to_log_str(e)}",
+            worker_name
           exception = e
         ensure
           # Confirm that our task has been successfully processed unless we are

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SparkSkin xmlns:fx="http://ns.adobe.com/mxml/2009"
              xmlns:s="library://ns.adobe.com/flex/spark"
-             xmlns:mx="library://ns.adobe.com/flex/mx"
-             xmlns:spinner="components.spinner.*"
              xmlns:base="components.base.*">
    
    <fx:Metadata>
@@ -14,6 +12,7 @@
       <s:State name="disabled"/>
       <s:State name="busy"/>
       <s:State name="timeout"/>
+      <s:State name="reconnect"/>
    </s:states>
    
    <s:layout>
@@ -23,23 +22,57 @@
    <!--- Container for content of a component. -->
    <s:Group id="contentGroup"
             top="0" bottom="0" left="0" right="0" minWidth="0" minHeight="0"
-            alpha="1" alpha.busy="0.3" alpha.timeout="0.3"/>
+            alpha="1"/>
    
    <s:Group horizontalCenter="0" verticalCenter="0"
-            visible="false" visible.busy="true" visible.timeout="true">
+            visible="false" includeInLayout="false"
+            visible.busy="true" includeInLayout.busy="true"
+            visible.timeout="true" includeInLayout.timeout="true"
+            visible.reconnect="true" includeInLayout.reconnect="true"
+            mouseEnabled="false">
       
       <s:layout>
          <s:VerticalLayout horizontalAlign="center"/>
       </s:layout>
-      
+
       <base:Spinner id="spinner"/>
       
-      <mx:ProgressBar id="progress" visible="false" visible.timeout="true"
-                      mode="manual" labelPlacement="center" height="20" width="150"
-                      label="{Math.floor (progress.value / 1000) + ' / ' +
-                             (progress.maximum / 1000) + ' s'}"/>
-         
-                  
+      <s:Label id="progress"
+         visible="false" includeInLayout="false"
+         visible.timeout="true" includeInLayout.timeout="true"
+         visible.reconnect="true" includeInLayout.reconnect="true"
+         fontSize="24" fontWeight="bold"/>
+      <s:Label text="{Localizer.bundlesSet
+                ? Localizer.string('General', 'label.longerThenExpected')
+                : '................'}"
+               fontSize="14" fontWeight="bold"
+               paddingTop="6"
+               visible="false" includeInLayout="false"
+               visible.timeout="true" includeInLayout.timeout="true"
+               visible.reconnect="true" includeInLayout.reconnect="true"
+        />
+      <s:Button skinClass="components.skins.LinkButtonSkin"
+                visible="false" includeInLayout="false"
+                visible.timeout="false" includeInLayout.timeout="false"
+                visible.reconnect="true" includeInLayout.reconnect="true"
+                label="{Localizer.bundlesSet
+                  ? Localizer.string('General', 'label.reestablish')
+                  : 'retry'}"
+                click="reconnect(event)"/>
    </s:Group>
-   
+
+  <fx:Script><![CDATA[
+     import controllers.startup.StartupManager;
+
+     import utils.locale.Localizer;
+     import utils.logging.Log;
+
+
+     private function reconnect(event: MouseEvent): void {
+        Log.getMethodLogger(SpinnerContainerSkin, "reconnect")
+           .info("Resetting due to player request.");
+        StartupManager.resetApp();
+        StartupManager.connectAndAuthorize();
+     }
+     ]]></fx:Script>
 </s:SparkSkin>

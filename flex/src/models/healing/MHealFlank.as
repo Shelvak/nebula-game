@@ -1,8 +1,5 @@
 package models.healing
 {
-   import controllers.Messenger;
-   
-   import models.ModelsCollection;
    import models.Owner;
    import models.unit.MCUnit;
    import models.unit.Unit;
@@ -10,9 +7,6 @@ package models.healing
    
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
-   import mx.states.OverrideBase;
-   
-   import utils.locale.Localizer;
    
    public class MHealFlank extends UnitsFlank
    {

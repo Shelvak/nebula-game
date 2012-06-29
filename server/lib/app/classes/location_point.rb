@@ -98,13 +98,7 @@ class LocationPoint
   end
 
   def initialize(id, type, x, y)
-    raise ArgumentError.new(
-      "id must be Fixnum, but was #{id.inspect}!"
-    ) unless id.is_a?(Fixnum)
-    raise ArgumentError.new(
-      "type must be Fixnum, but was #{type.inspect}!"
-    ) unless type.is_a?(Fixnum)
-
+    typesig binding, Fixnum, Fixnum, [NilClass, Fixnum], [NilClass, Fixnum]
     @id, @type, @x, @y = id, type, x, y
   end
 

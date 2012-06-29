@@ -9,14 +9,10 @@ module Trait
     end
 
     def self.increase_vision(zone, player)
-      # Order matters here, FowGalaxyEntry emits event!
-      FowSsEntry.increase_for_zone(zone, player, 1, false)
       FowGalaxyEntry.increase(rectangle_from_zone(zone), player)
     end
 
     def self.decrease_vision(zone, player)
-      # Order matters here, FowGalaxyEntry emits event!
-      FowSsEntry.decrease_for_zone(zone, player, 1, false)
       FowGalaxyEntry.decrease(rectangle_from_zone(zone), player)
     end
 
@@ -31,7 +27,7 @@ module Trait
       # Returns inclusive zone ([x_range, y_range]) of this radar reach.
       def radar_zone
         strength = radar_strength
-        solar_system = planet.solar_system
+        solar_system = without_locking { planet.solar_system }
         [
           (solar_system.x - strength)..(solar_system.x + strength),
           (solar_system.y - strength)..(solar_system.y + strength)

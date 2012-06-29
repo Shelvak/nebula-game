@@ -2,7 +2,12 @@ package controllers.alliances.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.Messenger;
+
+   import models.notification.MFaultEvent;
+
+   import models.notification.MSuccessEvent;
+
+   import models.notification.MTimedEvent;
 
    import utils.locale.Localizer;
    import utils.remote.rmo.ClientRMO;
@@ -42,9 +47,9 @@ package controllers.alliances.actions
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
          if (cmd.parameters["success"])
-            Messenger.show(Localizer.string('Alliances', 'message.joinSuccess'), Messenger.MEDIUM);
+            new MSuccessEvent(Localizer.string('Alliances', 'message.joinSuccess'));
          else
-            Messenger.show(Localizer.string('Alliances', 'message.joinFail'), Messenger.MEDIUM);
+            new MFaultEvent(Localizer.string('Alliances', 'message.joinFail'));
       }
    }
 }

@@ -10,6 +10,8 @@ class TechModApplier
     # have this mod.
     # 
     def apply(technologies, name)
+      typesig binding, [Array, Set], [String, Symbol]
+
       store = {}
 
       value_method = "#{name}_mod"

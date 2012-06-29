@@ -54,13 +54,11 @@ class ConstructionQueueEntry < ActiveRecord::Base
       :zetium => -zetium_cost
     )
 
-    unless player.nil?
-      player.population += population_cost
-      player.save!
-    end
+    population_cost != 0
   end
 
-  # Returns resources to constructors planet.
+  # Returns resources to constructors planet. Returns true if population should
+  # be recalculated.
   def return_resources!(count)
     raise ArgumentError.new(
       "Cannot return resources if this entry is not prepaid!"
@@ -68,17 +66,13 @@ class ConstructionQueueEntry < ActiveRecord::Base
 
     planet = constructor.planet
     metal_cost, energy_cost, zetium_cost, population_cost = get_resources(count)
-    player = get_player(planet, population_cost)
 
     planet.increase!(
       :metal => metal_cost, :energy => energy_cost,
       :zetium => zetium_cost
     )
 
-    unless player.nil?
-      player.population -= population_cost
-      player.save!
-    end
+    population_cost != 0
   end
 
   # Class of _constructable_type_.
@@ -136,11 +130,12 @@ class ConstructionQueueEntry < ActiveRecord::Base
       }, c_type: #{constructable_type}>"
   end
 
-  protected
+protected
+
   def get_player(planet, population_cost)
     player = nil
     if population_cost > 0
-      player = planet.player
+      player = without_locking { planet.player.freeze }
       raise ArgumentError.new(
         "Wanted to reduce/increase #{population_cost} population for #{count
         } of #{constructable_type} but player is nil for #{planet}!"

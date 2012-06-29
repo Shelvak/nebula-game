@@ -52,6 +52,7 @@ package controllers.startup
    import controllers.technologies.TechnologiesCommand;
    import controllers.technologies.actions.*;
    import controllers.timedupdate.MasterUpdateTrigger;
+   import controllers.ui.NavigationController;
    import controllers.units.UnitsCommand;
    import controllers.units.actions.*;
 
@@ -66,8 +67,6 @@ package controllers.startup
    import models.quest.MainQuestSlideFactory;
    import models.time.MTimeEventFixedMoment;
 
-   import mx.logging.ILogger;
-   import mx.logging.Log;
    import mx.logging.LogEventLevel;
    import mx.logging.targets.TraceTarget;
    import mx.managers.ToolTipManager;
@@ -79,19 +78,15 @@ package controllers.startup
    import utils.Objects;
    import utils.SingletonFactory;
    import utils.StringUtil;
-   import utils.execution.GameLogicExecutionManager;
    import utils.execution.JobExecutorsManager;
    import utils.logging.InMemoryTarget;
+   import utils.logging.Log;
    import utils.logging.MessagesLogger;
    import utils.remote.ServerProxyInstance;
 
 
    public final class StartupManager
    {
-      private static function get logger() : ILogger {
-         return Log.getLogger("controllers.startup.StartupManager");
-      }
-      
       private static function get ML() : ModelLocator
       {
          return ModelLocator.getInstance();
@@ -186,7 +181,8 @@ package controllers.startup
        * Resets the application: clears the state and switches login screen.
        */
       public static function resetApp() : void {
-         logger.info("-------------- APPLICATION RESET --------------");
+         Log.getMethodLogger(StartupManager, "resetApp")
+            .info("-------------- APPLICATION RESET --------------");
          StartupInfo.getInstance().initializationComplete = false;
          new GlobalEvent(GlobalEvent.APP_RESET);
          JobExecutorsManager.getInstance().stopAll();
@@ -201,6 +197,10 @@ package controllers.startup
          AllianceScreenM.getInstance().reset();
          ApplicationLocker.reset();
          MainQuestSlideFactory.getInstance().reset();
+
+         // in case there is some screen or sidebar with old state
+         // so that user won't click on any buttons while server pushes all necessary messages
+         NavigationController.getInstance().showGalaxy();
       }
       
       
@@ -407,7 +407,7 @@ package controllers.startup
          bindPair(PlayersCommand.LOGIN, new LoginAction());
          bindPair(PlayersCommand.DISCONNECT, new DisconnectAction());
          bindPair(PlayersCommand.RATINGS, new controllers.players.actions.RatingsAction());
-         bindPair(PlayersCommand.RENAME, new controllers.players.actions.RenameAction());
+         bindPair(PlayersCommand.RENAME, new RenameAction());
          bindPair(PlayersCommand.SHOW, new controllers.players.actions.ShowAction());
          bindPair(PlayersCommand.SHOW_PROFILE, new ShowProfileAction());
          bindPair(PlayersCommand.BATTLE_VPS_MULTIPLIER, new BattleVpsMultiplierAction());

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:ui="components.ui.*"
+         visible="{model.visible}"
+         includeInLayout="{model.visible}">
+   <fx:Script>
+      <![CDATA[
+      import components.map.space.*;
+
+
+      [Bindable]
+      public var model: CSolarSystemAssetsM;
+      ]]>
+   </fx:Script>
+   <s:DataGroup dataProvider="{model.dataProvider}" width="100%">
+      <s:itemRenderer>
+         <fx:Component>
+            <s:ItemRenderer autoDrawBackground="false">
+               <s:layout>
+                  <s:HorizontalLayout verticalAlign="middle"/>
+               </s:layout>
+               <s:Group toolTip="{MSingleAsset(data).tooltip}">
+                  <s:BitmapImage source="{MSingleAsset(data).icon}"/>
+               </s:Group>
+               <ui:PlayerProfileButton player="{MSingleAsset(data).player}"/>
+               <fx:Script><![CDATA[
+                  import components.map.space.*;
+                  ]]></fx:Script>
+            </s:ItemRenderer>
+         </fx:Component>
+      </s:itemRenderer>
+      <s:layout>
+         <s:VerticalLayout/>
+      </s:layout>
+   </s:DataGroup>
+</s:Group>

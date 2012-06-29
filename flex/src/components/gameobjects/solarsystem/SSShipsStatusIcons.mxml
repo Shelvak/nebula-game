@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                         xmlns:s="library://ns.adobe.com/flex/spark" 
-                        xmlns:mx="library://ns.adobe.com/flex/halo"
                         xmlns:base="components.base.*"
                         xmlns:ss="components.gameobjects.solarsystem.*">
    <fx:Binding source="solarSystem.metadata.playerShips ||
-                       solarSystem.metadata.allianceShips ||
-                       solarSystem.metadata.napShips ||
-                       solarSystem.metadata.enemyShips"
+                       solarSystem.metadata.alliesMetadata.hasShips ||
+                       solarSystem.metadata.napsMetadata.hasShips ||
+                       solarSystem.metadata.enemiesMetadata.hasShips"
                destination="visible"/>
    <fx:Script>
       <![CDATA[
@@ -17,7 +16,7 @@
 
       [Bindable]
       /**
-       * Reference to a solar system for which icon's must be dispalyed.
+       * Reference to a solar system for which icon's must be displayed.
        */
       public var solarSystem: MSolarSystem = null;
 
@@ -33,10 +32,10 @@
    <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.PLAYER_SHIPS}"
                     visible="{solarSystem.metadata.playerShips}"/>
    <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.ALLIANCE_SHIPS}"
-                    visible="{solarSystem.metadata.allianceShips}"/>
+                    visible="{solarSystem.metadata.alliesMetadata.hasShips}"/>
    <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.NAP_SHIPS}"
-                    visible="{solarSystem.metadata.napShips}"/>
+                    visible="{solarSystem.metadata.napsMetadata.hasShips}"/>
    <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.ENEMY_SHIPS}"
-                    visible="{solarSystem.metadata.enemyShips}"/>
-   
+                    visible="{solarSystem.metadata.enemiesMetadata.hasShips}"/>
+
 </base:AdvancedContainer>

@@ -19,10 +19,10 @@ links.parent.weight: 1 + 0.000001 * position
 # How much time does it take to land to the planet. Does not support formulas!
 links.planet.weight: 0.2
 
-# How much time should jump from/to regular solar system take?
+# How much time should jump from/to regular solar system take? Double!
 regular.jump.multiplier: 1.5
-# How much time should jump from/to global battleground take?
-battleground.jump.multiplier: 4
+# How much time should jump from/to global battleground take? Double!
+battleground.jump.multiplier: 4.0
 
 ### Unit spawning
 # Available strategies:
@@ -48,6 +48,13 @@ spawn.home.units:
   - [0 + counter / (spot + 55), 1 + counter / (spot + 40), Demosis, 1]
 # Spawning strategy to use
 spawn.home.strategy: outer_circle
+
+# Pooled solar system is just a home solar system not assigned to player.
+# While it is not assigned - don't spawn anything there.
+spawn.pooled.delay: [<%= 12.hours %> / speed, <%= 12.hours %> / speed]
+spawn.pooled.max_spots: 0
+spawn.pooled.units: []
+spawn.pooled.strategy: outer_circle
 
 spawn.regular.delay: [<%= 12.hours %> / speed, <%= 24.hours %> / speed]
 spawn.regular.max_spots: 5

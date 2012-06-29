@@ -27,10 +27,10 @@ class DispatcherEventHandler
   # Handles preparations for unit movement.
   def handle_movement_prepare(movement_prepare_event)
     route = movement_prepare_event.route
-    zone_route_hops = route.hops_in_current_zone
+    zone_route_hops = without_locking { route.hops_in_current_zone }
     unit_ids = movement_prepare_event.unit_ids
 
-    player = route.player
+    player = without_locking { route.player }
     friendly_player_ids = player.nil? ? [] : player.friendly_ids
 
     player_ids, filter = LocationResolver.resolve_movement(
@@ -48,6 +48,7 @@ class DispatcherEventHandler
         route_hops = [zone_route_hops[0]].compact
       end
 
+      typesig_bindless [["player_id", player_id]], Fixnum
       dispatcher.push_to_player!(
         player_id,
         UnitsController::ACTION_MOVEMENT_PREPARE,
@@ -67,7 +68,7 @@ class DispatcherEventHandler
   # TODO: spec
   def handle_movement(movement_event, reason)
     debug "Handling movement event (reason: #{reason})" do
-      player = movement_event.route.player
+      player = without_locking { movement_event.route.player }
       friendly_player_ids = player.nil? ? [] : player.friendly_ids
       next_hop = movement_event.next_hop
 
@@ -135,14 +136,14 @@ class DispatcherEventHandler
       when EventBroker::REASON_BETWEEN_ZONES
         # Movement was between zones.
         # Eagerly load collection to ensure threading safety.
-        units = movement_event.route.units
+        units = without_locking { movement_event.route.units.all }
 
         # Dispatch units that arrived at zone and their route hops for their
         # owner or alliance and only next hop otherwise.
         current_player_ids.each do |player_id|
           if friendly_player_ids.include?(player_id)
             dispatch_movement(filter, player_id, units,
-              movement_event.route.hops_in_current_zone,
+              without_locking { movement_event.route.hops_in_current_zone },
               movement_event.route.jumps_at)
           else
             dispatch_movement(filter, player_id, units,
@@ -166,6 +167,7 @@ class DispatcherEventHandler
       case reason
       when EventBroker::REASON_SS_ENTRY
         if fow_change_event.is_a?(Event::FowChange::SsDestroyed)
+          typesig_bindless [["player_id", player_id]], Fixnum
           dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_DESTROYED,
             {
@@ -175,6 +177,7 @@ class DispatcherEventHandler
           )
         elsif fow_change_event.is_a?(Event::FowChange::SsCreated)
           # Create single solar system
+          typesig_bindless [["player_id", player_id]], Fixnum
           dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_CREATED,
             {
@@ -184,6 +187,7 @@ class DispatcherEventHandler
           )
         else
           # Update single solar system
+          typesig_bindless [["player_id", player_id]], Fixnum
           dispatcher.push_to_player!(player_id,
             ObjectsController::ACTION_UPDATED,
             {
@@ -194,6 +198,7 @@ class DispatcherEventHandler
         end
       when EventBroker::REASON_GALAXY_ENTRY
         # Update galaxy map
+        typesig_bindless [["player_id", player_id]], Fixnum
         dispatcher.push_to_player!(player_id, GalaxiesController::ACTION_SHOW)
       end
     end

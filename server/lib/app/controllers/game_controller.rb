@@ -49,10 +49,7 @@ class GameController < GenericController
     # Planet map editor requires configuration but does not login to server.
     ruleset = m.player.nil? ? GameConfig::DEFAULT_SET : ruleset(m)
 
-    # Configuration tends to be huge - no need to litter logs with it.
-    LOGGER.except(:traffic_debug) do
-      respond m, :config => get_config(ruleset)
-    end
+    respond m, :config => get_config(ruleset)
   end
 
   class << self

@@ -85,7 +85,7 @@ class Notification < ActiveRecord::Base
     )
   end
 
-  DESTROY_SCOPE = DScope.world
+  DESTROY_SCOPE = DScope.low_prio
   def self.destroy_callback(notification); notification.destroy!; end
 
   def self.create_from_error(error)
@@ -256,15 +256,15 @@ class Notification < ActiveRecord::Base
     model.player_id = player_id
 
     model.params = {
-      'alliance_id' => alliance_id,
-      'alliances' => alliances,
-      'log_id' => combat_log_id,
-      'location' => location_attrs,
-      'outcome' => outcome,
-      'units' => yane_units,
-      'leveled_up' => leveled_up,
-      'statistics' => statistics,
-      'resources' => resources
+      'alliance_id' => alliance_id.as_json,
+      'alliances' => alliances.as_json,
+      'log_id' => combat_log_id.as_json,
+      'location' => location_attrs.as_json,
+      'outcome' => outcome.as_json,
+      'units' => yane_units.as_json,
+      'leveled_up' => leveled_up.as_json,
+      'statistics' => statistics.as_json,
+      'resources' => resources.as_json
     }
     model.skip_dispatch = ! push_notification
     model.save!

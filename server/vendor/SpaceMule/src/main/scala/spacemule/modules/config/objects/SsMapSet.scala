@@ -1,6 +1,9 @@
 package spacemule.modules.config.objects
 
 import spacemule.helpers.Converters._
+import spacemule.helpers.JRuby._
+import core.AnyConversions._
+import scala.{collection => sc}
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,21 +14,25 @@ import spacemule.helpers.Converters._
  */
 
 object SsMapSet {
-  def extract(data: Any) = {
-    val (configs, weights) = data.asInstanceOf[
-      Seq[Map[String, Any]]
-    ].foldLeft(
+  def extract(data: Seq[Any]) = {
+    val (configs, weights) = data.foldLeft(
       (IndexedSeq.empty[SsConfig.Data], Seq.empty[Int])
-    ) { case ((cfgs, wghts), map) =>
+    ) { case ((cfgs, wghts), rbMap) =>
+      val map = rbMap.asInstanceOf[sc.Map[String, Any]]
+
       val weight = map.get("weight") match {
-        case Some(long: Long) => long.toInt
         case None => sys.error("No 'weight' for %s".format(map))
+        case Some(weight) => try { weight.asInt }
+        catch { case e: Exception =>
+          throw core.Exceptions.extend("Error while getting 'weight'", e)
+        }
       }
-      val config = map.get("map") match {
-        case Some(data: Map[String, SsConfig.CfgMap]) => SsConfig(data)
+      val config = (map.get("map"): @unchecked) match {
         case None => sys.error("No 'map' for %s".format(map))
+        case Some(data) if (data.isInstanceOf[sc.Map[_, _]]) =>
+          SsConfig(data.asInstanceOf[sc.Map[String, AnyRef]])
       }
-      
+
       (cfgs :+ config, wghts :+ weight)
     }
 

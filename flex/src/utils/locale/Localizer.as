@@ -22,6 +22,9 @@ package utils.locale
       private static const REFERENCE_REGEXP:RegExp = /\[reference:((\w+)\/)?(.+?)\]/;
       
       private static var currentBundle: String;
+
+      [Bindable]
+      public static var bundlesSet: Boolean = false;
       
       private static function refReplace(matchedString: String,
                                          unused: String,

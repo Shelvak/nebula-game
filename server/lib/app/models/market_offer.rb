@@ -16,8 +16,8 @@ class MarketOffer < ActiveRecord::Base
   include Parts::WithLocking
 
   belongs_to :galaxy
-  belongs_to :planet, :class_name => "SsObject::Planet"
-  delegate :player, :player_id, :to => :planet
+  belongs_to :planet, class_name: "SsObject::Planet"
+  delegate :player, :player_id, to: :planet
   
   KIND_METAL = 0
   KIND_ENERGY = 1
@@ -34,7 +34,7 @@ class MarketOffer < ActiveRecord::Base
   # Maps callback manager event kind to resource kind.
   CALLBACK_MAPPINGS_FLIPPED = CALLBACK_MAPPINGS.flip
   
-  validate :on => :create do
+  validate on: :create do
     min_amount = Cfg.market_offer_min_amount
     errors.add(:from_amount, 
       "cannot be less than minimal #{min_amount}, however #{from_amount
@@ -42,7 +42,7 @@ class MarketOffer < ActiveRecord::Base
     # System offers do not belong to player, so there is no limit.
     errors.add(:base, "Maximum number of market offers reached!") \
       if ! system? && 
-      player.market_offers.size >= Cfg.market_offers_max
+      without_locking { player.market_offers.size } >= Cfg.market_offers_max
   end
   
   before_create do
@@ -72,6 +72,8 @@ class MarketOffer < ActiveRecord::Base
     low = lowest_rate.nil? \
       ? avg_rate_low_bound \
       : [avg_rate_low_bound, lowest_rate - Cfg.market_rate_min_price_offset].min
+    # Don't allow market rate to drop lower than Cfg#market_rate_min.
+    low = [low, Cfg.market_rate_min].max
     high = avg_rate * (1 + offset)
     if to_rate < low
       self.to_rate = low
@@ -83,7 +85,7 @@ class MarketOffer < ActiveRecord::Base
   end
 
   before_create do
-    model = MarketRate.get(galaxy_id, from_kind, to_kind)
+    model = without_locking { MarketRate.get(galaxy_id, from_kind, to_kind) }
     old_rate = model.to_rate
     self.cancellation_amount = from_amount
     self.cancellation_total_amount = model.from_amount
@@ -100,7 +102,7 @@ class MarketOffer < ActiveRecord::Base
     )
   end
 
-  scope :by_system, where(:planet_id => nil)
+  scope :by_system, where(planet_id: nil)
 
   # Is this offer created by system?
   def system?; planet_id.nil?; end
@@ -127,6 +129,12 @@ class MarketOffer < ActiveRecord::Base
       'to_rate' => to_rate,
       'created_at' => created_at
     }
+  end
+
+  def to_s
+    "<MarketOffer(#{id}) planet_id=#{planet_id} from_kind=#{from_kind
+      } from_amount=#{from_amount} to_kind=#{to_kind} to_rate=#{to_rate
+      } created_at=#{created_at}>"
   end
   
   # Buys _amount_ of _source_kind_ from this +Offer+ to _buyer_planet_.
@@ -178,8 +186,11 @@ class MarketOffer < ActiveRecord::Base
 
     if from_amount == 0
       # Schedule creation of new system offer.
-      CallbackManager.register(galaxy, CALLBACK_MAPPINGS[from_kind],
-        Cfg.market_bot_random_resource_cooldown_date) if system?
+      CallbackManager.register(
+        without_locking { galaxy },
+        CALLBACK_MAPPINGS[from_kind],
+        Cfg.market_bot_random_resource_cooldown_date
+      ) if system?
       destroy!
     else
       save!
@@ -205,10 +216,18 @@ class MarketOffer < ActiveRecord::Base
   
   # Cancels offer. Returns #from_amount which is left to seller.
   def cancel!
+    player = self.player
+    allow_from = Cfg.market_offer_cancellation_cooldown.ago
+    raise GameLogicError,
+      "Cannot cannot cancel #{self}: you can only cancel your next offer from #{
+      allow_from}" if player.last_market_offer_cancel > allow_from
+    player.last_market_offer_cancel = Time.now
+
     seller_source, attr = self.class.resolve_kind(self.planet, from_kind)
     seller_source.send(:"#{attr}=", seller_source.send(attr) + from_amount)
     self.class.save_obj_with_event(seller_source)
     destroy!
+    player.save!
   end
   
   # Resolves _kind_ into _source_ (+SsObject::Planet+ or +Player+ and 
@@ -230,16 +249,21 @@ class MarketOffer < ActiveRecord::Base
     t = "`#{table_name}`"
     p = "`#{Player.table_name}`"
     sso = "`#{SsObject.table_name}`"
-    
-    (conditions.blank? ? self : where(*conditions)).
-      joins("LEFT JOIN #{sso} ON #{sso}.`id` = #{t}.`planet_id` AND #{
-        sso}.`type` = '#{SsObject::Planet.to_s.demodulize}'").
-      joins("LEFT JOIN #{p} ON #{p}.`id` = #{sso}.`player_id`").
-      select("#{t}.id, #{t}.from_kind, #{t}.from_amount, #{t}.to_kind, 
-        #{t}.to_rate, #{t}.created_at, #{p}.id as player_id, 
-        #{p}.name as player_name").
-      c_select_all.map \
-    do |row|
+
+    without_locking do
+      (conditions.blank? ? self : where(*conditions)).
+        joins(
+          "LEFT JOIN #{sso} ON #{sso}.`id` = #{t}.`planet_id` AND #{
+          sso}.`type` = '#{SsObject::Planet.to_s.demodulize}'"
+        ).
+        joins("LEFT JOIN #{p} ON #{p}.`id` = #{sso}.`player_id`").
+        select(
+          "#{t}.id, #{t}.from_kind, #{t}.from_amount, #{t}.to_kind,
+          #{t}.to_rate, #{t}.created_at, #{p}.id as player_id,
+          #{p}.name as player_name"
+        ).
+        c_select_all
+    end.map do |row|
       player_id = row.delete "player_id"
       player_name = row.delete "player_name"
       row["player"] = player_id.nil? \
@@ -268,8 +292,8 @@ class MarketOffer < ActiveRecord::Base
     to_rate = avg_rate * (1 + Cfg.market_rate_offset)
     from_amount = Cfg.market_bot_random_resource(galaxy_id, resource_kind)
     
-    new(:from_amount => from_amount, :from_kind => resource_kind,
-      :to_kind => KIND_CREDS, :to_rate => to_rate, :galaxy_id => galaxy_id)
+    new(from_amount: from_amount, from_kind: resource_kind,
+      to_kind: KIND_CREDS, to_rate: to_rate, galaxy_id: galaxy_id)
   end
   
   # Save _object_ and dispatch event if is a planet.

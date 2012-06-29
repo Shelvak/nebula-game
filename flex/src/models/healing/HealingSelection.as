@@ -1,18 +1,10 @@
 package models.healing
 {
-   import controllers.Messenger;
-   import controllers.navigation.MCMainArea;
-   import controllers.navigation.Navigation;
-   import controllers.screens.MainAreaScreens;
    
    import models.building.Building;
    import models.unit.MCUnit;
-   import models.unit.Unit;
    
    import mx.collections.ArrayCollection;
-   import mx.collections.ListCollectionView;
-   
-   import utils.locale.Localizer;
    
    public class HealingSelection
    {      

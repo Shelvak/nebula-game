@@ -8,7 +8,9 @@ class Combat::LocationChecker
     # If there is no cooldown - check for any opposing forces. 
     #
     def check_location(location_point)
-      cooldown = Cooldown.in_location(location_point.location_attrs).first
+      cooldown = without_locking do
+        Cooldown.in_location(location_point.location_attrs).first
+      end
       return false if cooldown
 
       check_report = check_for_enemies(location_point)
@@ -29,18 +31,22 @@ class Combat::LocationChecker
 
     # Check each location which player owns/has units on.
     def check_player_locations(player)
-      planet_ids = SsObject::Planet.where(:player_id => player.id).
-        select("id").c_select_values
+      planet_ids = without_locking do
+        SsObject::Planet.where(:player_id => player.id).
+          select("id").c_select_values
+      end
       
-      unit_locations = Unit.
-        where(:player_id => player.id).
-        where(%Q{
-          location_galaxy_id IS NOT NULL OR
-          location_solar_system_id IS NOT NULL OR
-          location_ss_object_id IS NOT NULL
-        }).
-        select(Unit::LOCATION_COLUMNS).group(Unit::LOCATION_COLUMNS).
-        c_select_all
+      unit_locations = without_locking do
+        Unit.
+          where(:player_id => player.id).
+          where(%Q{
+            location_galaxy_id IS NOT NULL OR
+            location_solar_system_id IS NOT NULL OR
+            location_ss_object_id IS NOT NULL
+          }).
+          select(Unit::LOCATION_COLUMNS).group(Unit::LOCATION_COLUMNS).
+          c_select_all
+      end
 
       locations = Set.new
       planet_ids.each { |id| locations.add(PlanetPoint.new(id)) }
@@ -72,8 +78,7 @@ class Combat::LocationChecker
         status = Combat::CheckReport::NO_CONFLICT
       else
         # Reject single players that don't belong to alliance.
-        alliance_ids = alliances.keys.reject { |alliance_id| 
-          alliance_id < 0 }
+        alliance_ids = alliances.keys.reject { |alliance_id| alliance_id < 0 }
 
         # No alliances means war between players, so no nap rules to check.
         if alliance_ids.blank?
@@ -133,13 +138,12 @@ class Combat::LocationChecker
       units = Set.new(units)
       buildings = Set.new(buildings)
 
-      assets = Combat.run(
-        location, players, check_report.nap_rules, units, buildings
-      )
+      assets = Visibility.track_location_changes(location_point) do
+        Combat.run(
+          location, players, check_report.nap_rules, units, buildings
+        )
+      end
 
-      FowSsEntry.recalculate(location_point.id, true) \
-        if ! assets.nil? && location_point.type == Location::SOLAR_SYSTEM
-      
       assets
     end
     

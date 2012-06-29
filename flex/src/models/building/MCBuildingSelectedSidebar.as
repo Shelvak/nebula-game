@@ -11,9 +11,9 @@ package models.building
 
    import config.Config;
 
-   import utils.ApplicationLocker;
+   import controllers.notifications.EventsController;
 
-   import controllers.Messenger;
+   import models.notification.MPermanentEvent;
 
    import controllers.buildings.BuildingsCommand;
    import controllers.constructionqueues.ConstructionQueuesCommand;
@@ -24,7 +24,6 @@ package models.building
    import flash.events.Event;
 
    import flash.events.EventDispatcher;
-   import flash.events.IEventDispatcher;
    import flash.events.MouseEvent;
 
    import globalevents.GBuildingEvent;
@@ -333,6 +332,8 @@ package models.building
 
       [Bindable]
       public var constructor: Building = null;
+
+      private var eventPopUpId: int;
       
       public function set selectedBuilding(value: Building): void
       {
@@ -397,11 +398,12 @@ package models.building
                      EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshBonusTime);
                   }
                }
-               Messenger.show(Localizer.string('BuildingSelectedSidebar', 'message.pressOnEmpty'));
+               eventPopUpId = new MPermanentEvent(
+                  Localizer.string('BuildingSelectedSidebar', 'message.pressOnEmpty')).id;
             }
             else
             {
-               Messenger.hide();
+               EventsController.getInstance().removeEventById(eventPopUpId);
             }
 
             refreshPriceOrientatedProperties();

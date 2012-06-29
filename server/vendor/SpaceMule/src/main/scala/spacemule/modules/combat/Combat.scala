@@ -4,7 +4,7 @@ import scala.{collection => sc}
 import scala.collection.mutable
 import mutable.HashMap
 import spacemule.helpers.Converters._
-import spacemule.helpers.{StdErrLog => L}
+import spacemule.logging.{Log => L}
 import spacemule.modules.combat.objects._
 import spacemule.modules.combat.post_combat._
 import spacemule.modules.config.objects.Config
@@ -13,8 +13,8 @@ object Combat {
   // alliance id -> alliance name
   type AllianceNames = sc.Map[Long, String]
   // alliance id -> Set[napped alliance ids]
-  type NapRules = sc.Map[Long, Set[Long]]
-  type LoadedTroops = sc.Map[Long, Set[Troop]]
+  type NapRules = sc.Map[Long, sc.Set[Long]]
+  type LoadedTroops = sc.Map[Long, sc.Set[Troop]]
 
   object Outcome extends Enumeration {
     /**
@@ -53,12 +53,13 @@ object Combat {
     location: Location,
     isBattleground: Boolean,
     planetOwner: Option[Player],
-    players: Set[Option[Player]],
+    players: sc.Set[Option[Player]],
     allianceNames: Combat.AllianceNames,
-    napRules: NapRules, troops: Set[Troop],
+    napRules: Combat.NapRules,
+    troops: sc.Set[Troop],
     loadedTroops: Combat.LoadedTroops,
-    unloadedTroopIds: Set[Long],
-    buildings: Set[Building]
+    unloadedTroopIds: sc.Set[Long],
+    buildings: sc.Set[Building]
   ) =
     new Combat(location, isBattleground, planetOwner, players, allianceNames,
       napRules, troops, loadedTroops, unloadedTroopIds, buildings)
@@ -71,19 +72,19 @@ class Combat(
   location: Location,
   isBattleground: Boolean,
   planetOwner: Option[Player],
-  players: Set[Option[Player]],
+  players: sc.Set[Option[Player]],
   allianceNames: Combat.AllianceNames,
   napRules: Combat.NapRules,
-  troops: Set[Troop],
+  troops: sc.Set[Troop],
   loadedTroops: Combat.LoadedTroops,
-  unloadedTroopIds: Set[Long],
-  buildings: Set[Building]
+  unloadedTroopIds: sc.Set[Long],
+  buildings: sc.Set[Building]
 ) {
   // Units unloaded to ground, and those who are still kept in their
   // transporters.
   val (unloadedTroops, stillLoadedTroops) = {
-    var unloaded = Map[Long, Set[Troop]]()
-    var retained = Map[Long, Set[Troop]]()
+    var unloaded = Map[Long, sc.Set[Troop]]()
+    var retained = Map[Long, sc.Set[Troop]]()
 
     loadedTroops.foreach { case (transporterId, transporterTroops) =>
       val (transporterUnloaded, transporterRetained) =
@@ -120,8 +121,9 @@ class Combat(
   /**
    * Map of alliance id => alliance and player id => alliance id.
    */
-  val alliances = Alliances(planetOwner, players, allianceNames, napRules,
-                            combatants)
+  val alliances = Alliances(
+    planetOwner, players, allianceNames, napRules, combatants
+  )
   // Generate JSON representation before running combat because after combat all
   // HP properties will be changed.
   alliances.toMap
@@ -143,7 +145,7 @@ class Combat(
   val distributedXp = new Combat.DistributedXpMap
 
   // Launch the combat in the constructor.
-  L.debug("Running combat simulation", () => run())
+  L.block("Running combat simulation", level=L.Debug) { () => run() }
 
   // Distribute unused XP.
   distributedXp.foreach { case (player, xp) =>
@@ -177,7 +179,9 @@ class Combat(
   private def run() {
     val ticks = Config.combatRoundTicks
     ticks.times { tickIndex =>
-      L.debug("Running tick %d/%d".format(tickIndex + 1, ticks), () => {
+      L.block(
+        "Running tick %d/%d".format(tickIndex + 1, ticks), level=L.Debug
+      ) { () =>
         // Reset initiative lists if this is not the first tick
         if (tickIndex != 0) alliances.reset()
 
@@ -188,7 +192,7 @@ class Combat(
           return
         }
         else log += tick
-      })
+      }
     }
   }
 
@@ -198,57 +202,58 @@ class Combat(
   private def simulateTick(): Log.Tick = {
     val tick = new Log.Tick()
 
-    L.debug("Traversing initiatives", () =>
+    L.block("Traversing initiatives", level=L.Debug) { () =>
       alliances.traverseInitiatives { case (allianceId, combatant) =>
-          val fire = L.debug(
-            "Combatant %s from alliance id %d is shooting".format(
-              combatant, allianceId), 
-            () => shootGuns(allianceId, combatant)
-          )
+        L.block(
+          "Combatant "+combatant+" from alliance id "+allianceId+
+          " is shooting", level=L.Debug
+        ) { () =>
+          val fire = shootGuns(allianceId, combatant)
 
           if (! fire.isEmpty) tick += fire
           else L.debug("Combatant could not shoot anything.")
+        }
       }
-    )
+    }
 
     tick
   }
 
-  private def shootGuns(allianceId: Long, combatant: Combatant) = {
+  private def shootGuns(
+    allianceId: Long, combatant: Combatant
+  ): Log.Tick.Fire = {
     val fire = new Log.Tick.Fire(combatant)
 
     combatant.guns.foreach { gun =>
-      L.debug("Shooting %s".format(gun), () =>
+      L.block("Shooting "+gun, level=L.Debug) { () =>
         alliances.targetFor(allianceId, gun) match {
-          case Some(target) => {
-              val damage = gun.shoot(target)
-              // If damage is 0 then this gun is still cooling down.
-              if (damage != 0) {
-                target.hp -= damage
-                L.debug("Gun did %d damage to %s".format(damage, target))
+          case Some(target) =>
+            val damage = gun.shoot(target)
+            // If damage is 0 then this gun is still cooling down.
+            if (damage != 0) {
+              target.hp -= damage
+              L.debug("Gun did %d damage to %s".format(damage, target))
 
-                fire.hit(gun, target, damage)
+              fire.hit(gun, target, damage)
 
-                val (sourceXp, targetXp) = Statistics.xp(target, damage)
-                if (combatant.gainsXp) combatant.xp += sourceXp
-                else distributedXp.add(combatant.player, sourceXp)
+              val (sourceXp, targetXp) = Statistics.xp(target, damage)
+              if (combatant.gainsXp) combatant.xp += sourceXp
+              else distributedXp.add(combatant.player, sourceXp)
 
-                if (target.gainsXp) target.xp += targetXp
-                else distributedXp.add(target.player, targetXp)
+              if (target.gainsXp) target.xp += targetXp
+              else distributedXp.add(target.player, targetXp)
 
-                statistics.damage(combatant, target, damage, sourceXp,
-                                  targetXp)
+              statistics.damage(combatant, target, damage, sourceXp, targetXp)
 
-                // Mark target as killed if dead
-                if (target.isDead) {
-                  L.debug("Target %s is dead!".format(target))
-                  alliances.kill(combatant, target)
-                }
+              // Mark target as killed if dead
+              if (target.isDead) {
+                L.debug("Target %s is dead!".format(target))
+                alliances.kill(combatant, target)
               }
-          }
+            }
           case None => L.debug("No target for this gun!")
         }
-      )
+      }
     }
 
     fire

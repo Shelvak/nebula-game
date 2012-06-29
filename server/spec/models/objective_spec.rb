@@ -18,6 +18,10 @@ describe Objective do
       end.should change(objective_progress, :completed).by(1)
     end
 
+    it "should not fail if objective progress does not exist" do
+      @objective.class.progress(@models)
+    end
+
     it "should update objective progress for given player" do
       objective_progress = Factory.create :objective_progress,
         :objective => @objective

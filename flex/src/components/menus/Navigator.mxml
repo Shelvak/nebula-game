@@ -38,11 +38,11 @@ system and planet.
          </base:AdvancedContainer>
       </s:Group>
       
-      <s:DataGroup top="26" left="0" dataProvider="{ML.notificationAlerts}">
+      <s:DataGroup top="26" left="0" dataProvider="{EventsController.getInstance().events}">
          <s:itemRenderer>
             <fx:Component>
                <s:ItemRenderer autoDrawBackground="false">
-                  <notifications:NotificationAlert notif="{data}"/>
+                  <notifications:NotificationAlert model="{data}"/>
                </s:ItemRenderer>
             </fx:Component>
          </s:itemRenderer>
@@ -56,7 +56,8 @@ system and planet.
    
    <fx:Script>
       <![CDATA[
-      import controllers.screens.MainAreaScreens;
+     import controllers.notifications.EventsController;
+     import controllers.screens.MainAreaScreens;
       import controllers.ui.NavigationController;
 
       import mx.events.FlexEvent;

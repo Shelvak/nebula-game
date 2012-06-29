@@ -17,21 +17,15 @@ package components.movement
    import models.movement.events.MRouteEventChangeKind;
    import models.solarsystem.MSSObject;
 
-   import mx.logging.ILogger;
-   import mx.logging.Log;
-
    import spark.components.Group;
 
    import utils.Objects;
    import utils.locale.Localizer;
+   import utils.logging.Log;
 
 
    public class CRoute extends Group implements ICleanable
    {
-      private function get logger(): ILogger {
-         return Log.getLogger(Objects.getClassName(this, true));
-      }
-
       private var _grid: Grid;
 
       public function CRoute(grid: Grid) {
@@ -167,9 +161,9 @@ package components.movement
                const ssObject: MSSObject = ss.getSSObjectAt(loc.x, loc.y);
                // TODO: Not a real fix for 0001221. Find out whats going on here!
                if (ssObject == null) {
-                  logger.error(
-                     "@updateHopEndpoints() | unable to set landsAt label "
-                        + "for hop at {0}. There is no planet at that location!"
+                  Log.getMethodLogger(this, "updateHopsEndpoints").error(
+                     "Unable to set landsAt label for hop at {0}. "
+                        + "There is no planet at that location!"
                         + "\n solarSystem: {1}", loc, ss
                   );
                   return;

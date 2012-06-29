@@ -10,6 +10,17 @@ package controllers.startup
    
    public final class StartupInfo extends BaseModel
    {
+      /**
+       * Should client ignore some of server objects/chat messages during startup that would
+       * otherwise cause client to crash if handled like in normal app execution?
+       *
+       * This includes messages like objects|update or chat|join that according to the server should
+       * be processed before those objects are created or before chat is initialized and so on.
+       */
+      public static function get relaxedServerMessagesHandlingMode(): Boolean {
+         return !getInstance().initializationComplete;
+      }
+
       public static function getInstance() : StartupInfo {
          return SingletonFactory.getSingletonInstance(StartupInfo);
       }

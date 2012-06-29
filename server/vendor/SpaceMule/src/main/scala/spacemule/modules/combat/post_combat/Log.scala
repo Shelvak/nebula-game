@@ -8,7 +8,8 @@ object Log {
   /**
    * Returns ID representation for log of combatant.
    */
-  def id(combatant: Combatant) = List(combatant.id, Combatant.kind(combatant).id)
+  def id(combatant: Combatant): (Long, Int) =
+    (combatant.id, Combatant.kind(combatant).id)
 
   object Tick {
     object Fire {
@@ -23,7 +24,7 @@ object Log {
          *  target_id - same as unit_id
          *  damage - how much damage has target received
          */
-        def toData = Seq(gun.index, Log.id(target), damage)
+        def toData = (gun.index, Log.id(target), damage)
       }
     }
 

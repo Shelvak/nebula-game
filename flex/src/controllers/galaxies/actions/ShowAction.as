@@ -2,6 +2,8 @@ package controllers.galaxies.actions
 {
    import com.developmentarc.core.utils.EventBroker;
 
+   import components.player.MWaitingScreen;
+
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.planets.PlanetsCommand;
@@ -87,6 +89,7 @@ package controllers.galaxies.actions
 
       public override function applyServerAction(cmd: CommunicationCommand): void {
          StartupInfo.getInstance().initializationComplete = true;
+         MWaitingScreen.getInstance().visible = false;
          const startup: Boolean = ML.latestGalaxy == null;
          const params: Object = cmd.parameters;
          ML.player.galaxyId = params["galaxyId"];
@@ -148,9 +151,7 @@ package controllers.galaxies.actions
                               function (): void {
                                  if (_restorePlanet != 0) {
                                     const p: MSSObject =
-                                             ML.latestSSMap.getSSObjectById(
-                                                _restorePlanet
-                                             );
+                                             ML.latestSSMap.getSSObjectById(_restorePlanet);
                                     if (p != null) {
                                        NAV_CTRL.toPlanet(p);
                                     }

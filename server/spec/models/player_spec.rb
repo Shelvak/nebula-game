@@ -860,7 +860,7 @@ describe Player do
     it "should update dispatcher if player is connected" do
       @dispatcher.should_receive(:player_connected?).with(@player.id).
         and_return(true)
-      @dispatcher.should_receive(:update_player).with(@player)
+      @dispatcher.should_receive(:update_player!).with(@player)
       @player.creds += 1
       @player.save!
     end
@@ -958,6 +958,7 @@ describe Player do
         free_creds vip_level vip_creds vip_until vip_creds_until
         portal_without_allies trial
         planets_count bg_planets_count
+        last_market_offer_cancel
       }
       ommited_fields = fields - required_fields
       it_behaves_like "as json", Factory.create(:player), nil,
@@ -1104,6 +1105,87 @@ describe Player do
     end
   end
 
+  describe "#recalculate_population" do
+    let(:player) { Factory.create(:player, population: 1000) }
+    let(:planet) { Factory.create(:planet, player: player) }
+    let(:constructor) { Factory.create(:b_constructor_test, planet: planet) }
+    let(:units) do
+      # Random data that should not be taken into account
+      Factory.create!(:u_cyrix)
+      # Actual data
+      [
+        Factory.create!(:u_cyrix, player: player),
+        Factory.create!(:u_cyrix, player: player),
+        Factory.create!(:u_crow, player: player),
+        Factory.create!(:u_mule, player: player),
+        Factory.create!(:u_shocker, player: player),
+        Factory.create!(:u_zeus, player: player)
+      ]
+    end
+    let(:construction_queue_entries) do
+      # Random data that should not be taken into account
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Zeus.to_s, prepaid: true)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Zeus.to_s, prepaid: false)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Building::Barracks.to_s, prepaid: false)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Trooper.to_s, prepaid: false, constructor: constructor,
+        count: 10)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Unit::Trooper.to_s, prepaid: false, constructor: constructor,
+        count: 10)
+      Factory.create(:construction_queue_entry,
+        constructable_type: Building::MetalStorage.to_s, prepaid: true,
+        constructor: constructor, count: 10)
+      # Actual data
+      [
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Trooper.to_s,
+          prepaid: true, constructor: constructor, count: 10),
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Rhyno.to_s,
+          prepaid: true, constructor: constructor),
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Zeus.to_s,
+          prepaid: true, constructor: constructor, count: 5),
+      ]
+    end
+
+    let(:population) do
+      (
+        units.map(&:population) + construction_queue_entries.
+          map { |cqe| cqe.constructable_class.population * cqe.count }
+      ).sum
+    end
+
+    it "should recalculate population to correct value" do
+      lambda do
+        player.recalculate_population
+      end.should change(player, :population).to(population)
+    end
+
+    it "should not save record" do
+      player.recalculate_population
+      player.should_not be_saved
+    end
+  end
+
+  describe "#recalculate_population!" do
+    let(:player) { Factory.create(:player) }
+
+    it "should call #recalculate_population" do
+      player.should_receive(:recalculate_population)
+      player.recalculate_population!
+    end
+
+    it "should save record" do
+      player.recalculate_population!
+      player.should be_saved
+    end
+  end
+
   describe "#change_scientist_count!" do
     before(:each) do
       @player = Factory.create(:player)
@@ -1173,6 +1255,16 @@ describe Player do
 
     it "should not include enemy id" do
       @you.friendly_ids.should_not include(@enemy.id)
+    end
+  end
+
+  describe "#alliance_ids" do
+    let(:player) { Factory.build(:player) }
+
+    it "should return #friendly_ids without you" do
+      player.id = 2
+      player.should_receive(:friendly_ids).and_return([1,2,3,4])
+      player.alliance_ids.should == [1,3,4]
     end
   end
 
@@ -1855,11 +1947,8 @@ describe Player do
 
   describe "#attach!" do
     let(:player) { Factory.create(:player) }
-    let(:home_solar_system) do
-      home_ss = player.home_solar_system
-      Factory.create(:fse_player, :solar_system => home_ss, :player => player)
-      home_ss
-    end
+    let(:home_solar_system) { player.home_solar_system }
+    # Needed to have a suitable zone for reattachment.
     let(:normal_solar_system) do
       Factory.create(:solar_system, :galaxy => player.galaxy, :x => 10)
     end
@@ -1880,13 +1969,13 @@ describe Player do
         Galaxy::Zone.should_receive(:for_reattachment).
           with(player.galaxy_id, player.points).and_return(zone)
 
-        x, y = zone.absolute(0, 0)
+        x, y = zone.absolute(4, 2)
         zone.should_receive(:free_spot_coords).with(player.galaxy_id).
           and_return([x, y])
 
-        player.home_solar_system.should_receive(:attach!).with(x, y)
-
         player.attach!
+        home_solar_system.reload
+        [home_solar_system.x, home_solar_system.y].should == [x, y]
       end
 
       it "should register player check activity" do
@@ -1980,6 +2069,42 @@ describe Player do
         defender = player(30, 30, 30, 30, 30)
         Player.battle_vps_multiplier(aggressor.id, defender.id).should == 3
       end
+    end
+  end
+
+  describe ".join_alliance_ids" do
+    let(:alliance1) { create_alliance }
+    let(:a1_p1) { alliance1.owner }
+    let(:a1_p2) { Factory.create(:player, alliance: alliance1) }
+    let(:a1_p3) { Factory.create(:player, alliance: alliance1) }
+    let(:alliance2) { create_alliance }
+    let(:a2_p1) { alliance2.owner }
+    let(:a2_p2) { Factory.create(:player, alliance: alliance2) }
+    let(:a2_p3) { Factory.create(:player, alliance: alliance2) }
+    let(:player_ids) { [a1_p1.id, a2_p3.id] }
+    let(:alliance_player_ids) {
+      [a1_p1.id, a1_p2.id, a1_p3.id, a2_p1.id, a2_p2.id, a2_p3.id]
+    }
+    let(:non_ally) { Factory.create(:player) }
+
+    def create_allies
+      a1_p1; a1_p2; a1_p3; a2_p1; a2_p2; a2_p3
+    end
+
+    it "should join player allies" do
+      create_allies
+      Set.new(Player.join_alliance_ids(player_ids)).
+        should == Set.new(alliance_player_ids)
+    end
+
+    it "should return distinct values" do
+      ids = Player.join_alliance_ids(player_ids)
+      ids.should == ids.uniq
+    end
+
+    it "should not include nils when joining players without alliance" do
+      Player.join_alliance_ids(player_ids + [non_ally.id]).
+        should_not include(nil)
     end
   end
 end

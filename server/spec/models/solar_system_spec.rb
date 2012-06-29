@@ -59,101 +59,436 @@ describe SolarSystem do
     end
   end
 
-  describe "#orbit_count" do
-    it "should return max planet position + 1" do
-      @ss = Factory.create(:solar_system)
-      Factory.create(:planet, :solar_system => @ss, :position => 7)
-      @ss.orbit_count.should == 8
-    end
-  end
-
   describe "visibility methods" do
-    describe ".single_visible_for" do
-      before(:all) do
-        @alliance = Factory.create :alliance
-        @player = Factory.create :player, :alliance => @alliance
+    describe ".find_if_viewable_for" do
+      let(:alliance) { create_alliance }
+      let(:player) { alliance.owner }
+      let(:alliance_player) do
+        Factory.create(:player, alliance: alliance, galaxy: alliance.galaxy)
       end
+      let(:ss) { Factory.create(:solar_system, galaxy: alliance.galaxy) }
 
       it "should return SolarSystem if it's visible (player)" do
-        ss = Factory.create :solar_system, :galaxy => @player.galaxy
-        Factory.create :fse_player, :player => @player, :solar_system => ss
-        SolarSystem.find_if_visible_for(ss.id, @player).should == ss
+        Factory.create(:planet, solar_system: ss, player: player)
+        SolarSystem.find_if_viewable_for(ss.id, player).should == ss
       end
 
       it "should return SolarSystem if it's visible (alliance)" do
-        ss = Factory.create :solar_system, :galaxy => @player.galaxy
-        Factory.create :fse_alliance, :alliance => @alliance,
-          :solar_system => ss
-        SolarSystem.find_if_visible_for(ss.id, @player).should == ss
+        Factory.create(:planet, solar_system: ss, player: alliance_player)
+        SolarSystem.find_if_viewable_for(ss.id, player).should == ss
       end
 
-      it "should raise ActiveRecord::RecordNotFound if SolarSystem " +
-      "exists but is not visible" do
-        ss = Factory.create :solar_system, :galaxy => @player.galaxy
-        lambda do
-          SolarSystem.find_if_visible_for(ss.id, @player)
-        end.should raise_error(ActiveRecord::RecordNotFound)
+      describe "SolarSystem exists but is not visible" do
+        it "should raise ActiveRecord::RecordNotFound" do
+          lambda do
+            SolarSystem.find_if_viewable_for(ss.id, player)
+          end.should raise_error(ActiveRecord::RecordNotFound)
+        end
       end
 
       describe "shielded ss" do
-        before(:each) do
-          @ss = @player.home_solar_system
-          Factory.create :fse_player, :player => @player, :solar_system => @ss
-        end
-
-        it "should not allow viewing ss if it is shielded" do
-          @ss.player = Factory.create(:player)
-          @ss.save!
-
+        it "should not allow viewing alliance player home ss" do
+          ss_id = alliance_player.home_solar_system.id
+          SolarSystem.stub(:visible?).with(ss_id, player.friendly_ids).
+            and_return(true)
           lambda do
-            SolarSystem.find_if_visible_for(@ss.id, @player)
+            SolarSystem.find_if_viewable_for(ss_id, player)
           end.should raise_error(ActiveRecord::RecordNotFound)
         end
 
         it "should allow viewing ss if player is shield owner" do
+          ss_id = player.home_solar_system.id
+          SolarSystem.stub(:visible?).with(ss_id, player.friendly_ids).
+            and_return(true)
           lambda do
-            SolarSystem.find_if_visible_for(ss.id, @player)
+            SolarSystem.find_if_viewable_for(ss_id, player)
           end.should_not raise_error(ActiveRecord::RecordNotFound)
         end
       end
     end
 
     describe ".visible_for" do
+      let(:player) { Factory.create(:player) }
+      let(:friendly_ids) { player.friendly_ids }
+      let(:alliance_ids) { player.alliance_ids }
+      let(:galaxy) { player.galaxy }
+      let(:ss) { create_ss }
+      let(:md) { create_md(ss) }
+
+      def create_ss(x=0, y=0)
+        Factory.create(:solar_system, galaxy: galaxy, x: x, y: y)
+      end
+
+      def create_md(*solar_systems)
+        SolarSystem::Metadatas.new(solar_systems.map(&:id))
+      end
+
+      def ss_data(solar_system=ss, metadatas=md)
+        {
+          solar_system: solar_system,
+          metadata: metadatas.for_existing(
+            solar_system.id, player.id, friendly_ids, alliance_ids
+          )
+        }
+      end
+
+      it "should include solar systems covered by radars" do
+        fge = Factory.create(:fge, galaxy: galaxy, player: player)
+        ss = create_ss(fge.x, fge.y)
+        md = create_md(ss)
+        SolarSystem.visible_for(player).should include(ss_data(ss, md))
+      end
+
+      it "should not include solar systems not covered by radars" do
+        fge = Factory.create(:fge, galaxy: galaxy)
+        ss = create_ss(fge.x - 1, fge.y)
+        md = create_md(ss)
+        SolarSystem.visible_for(player).should_not include(ss_data(ss, md))
+      end
+
+      it "should not include solar systems covered by other player radars" do
+        fge = Factory.create(:fge, galaxy: galaxy)
+        ss = create_ss(fge.x, fge.y)
+        md = create_md(ss)
+        SolarSystem.visible_for(player).should_not include(ss_data(ss, md))
+      end
+
+      it "should not include battleground even if you have units inside" do
+        ss = Factory.create(:battleground, galaxy: galaxy)
+        Factory.create(
+          :u_crow, player: player, location: SolarSystemPoint.new(ss.id, 0, 0)
+        )
+        md = create_md(ss)
+        SolarSystem.visible_for(player).should_not include(ss_data(ss, md))
+      end
+
+      it "should not include battleground even if you have planets inside" do
+        ss = Factory.create(:battleground, galaxy: galaxy)
+        Factory.create(:planet, player: player, solar_system: ss)
+        md = create_md(ss)
+        SolarSystem.visible_for(player).should_not include(ss_data(ss, md))
+      end
+
+      it "should assign battleground metadata to wormholes" do
+        bg = Factory.create(:battleground, galaxy: galaxy)
+        Factory.create(
+          :u_crow, player: player, location: SolarSystemPoint.new(bg.id, 0, 0)
+        )
+        fge = Factory.create(:fge, galaxy: galaxy, player: player)
+        wh = Factory.create(:wormhole, galaxy: galaxy, x: fge.x, y: fge.y)
+        metadatas = create_md(bg, wh)
+
+        SolarSystem.visible_for(player).should include({
+          solar_system: wh,
+          metadata: metadatas.for_existing(
+            bg.id, player.id, friendly_ids, alliance_ids
+          )
+        })
+      end
+
+      it "should include solar systems with player units inside" do
+        Factory.create(
+          :u_crow, player: player, location: SolarSystemPoint.new(ss.id, 0, 0)
+        )
+        SolarSystem.visible_for(player).should include(ss_data)
+      end
+
+      it "should not include solar systems without player units inside" do
+        Factory.create(
+          :u_crow, location: SolarSystemPoint.new(ss.id, 0, 0)
+        )
+        SolarSystem.visible_for(player).should_not include(ss_data)
+      end
+
+      it "should include solar systems with player planets" do
+        Factory.create(:planet, solar_system: ss, player: player)
+        SolarSystem.visible_for(player).should include(ss_data)
+      end
+
+      it "should not include solar systems without player planets" do
+        Factory.create(:planet, solar_system: ss)
+        SolarSystem.visible_for(player).should_not include(ss_data)
+      end
+
+      it "should include solar systems with player units inside planets" do
+        planet = Factory.create(:planet, solar_system: ss)
+        Factory.create(:u_trooper, player: player, location: planet)
+        SolarSystem.visible_for(player).should include(ss_data)
+      end
+
+      it "should not include ss without player units inside planets" do
+        planet = Factory.create(:planet, solar_system: ss)
+        Factory.create(:u_trooper, location: planet)
+        SolarSystem.visible_for(player).should_not include(ss_data)
+      end
+    end
+
+    describe ".visible?" do
+      let(:player) { Factory.create(:player) }
+      let(:pids) { player.friendly_ids }
+      let(:galaxy) { player.galaxy }
+      let(:ss) { create_ss }
+
+      def create_ss(x=0, y=0)
+        Factory.create(:solar_system, galaxy: galaxy, x: x, y: y)
+      end
+
+      it "should return false for battleground" do
+        ss = Factory.create(:battleground, galaxy: galaxy)
+        Factory.create(
+          :u_crow, player: player, location: SolarSystemPoint.new(ss.id, 0, 0)
+        )
+        SolarSystem.visible?(ss.id, pids).should be_false
+      end
+
+      it "should return true for solar systems covered by radars" do
+        fge = Factory.create(:fge, galaxy: galaxy, player: player)
+        ss = create_ss(fge.x, fge.y)
+        SolarSystem.visible?(ss.id, pids).should be_true
+      end
+
+      it "should return false for solar systems not covered by radars" do
+        fge = Factory.create(:fge, galaxy: galaxy)
+        ss = create_ss(fge.x - 1, fge.y)
+        SolarSystem.visible?(ss.id, pids).should be_false
+      end
+
+      it "should return false for solar systems covered by other player radars" do
+        fge = Factory.create(:fge, galaxy: galaxy)
+        ss = create_ss(fge.x, fge.y)
+        SolarSystem.visible?(ss.id, pids).should be_false
+      end
+
+      it "should return true for solar systems with player units inside" do
+        Factory.create(
+          :u_crow, player: player, location: SolarSystemPoint.new(ss.id, 0, 0)
+        )
+        SolarSystem.visible?(ss.id, pids).should be_true
+      end
+
+      it "should return false for solar systems without player units inside" do
+        Factory.create(
+          :u_crow, location: SolarSystemPoint.new(ss.id, 0, 0)
+        )
+        SolarSystem.visible?(ss.id, pids).should be_false
+      end
+
+      it "should return true for solar systems with player planets" do
+        Factory.create(:planet, solar_system: ss, player: player)
+        SolarSystem.visible?(ss.id, pids).should be_true
+      end
+
+      it "should return false for solar systems without player planets" do
+        Factory.create(:planet, solar_system: ss)
+        SolarSystem.visible?(ss.id, pids).should be_false
+      end
+
+      it "should return true for ss with player units inside planets" do
+        planet = Factory.create(:planet, solar_system: ss)
+        Factory.create(:u_trooper, player: player, location: planet)
+        SolarSystem.visible?(ss.id, pids).should be_true
+      end
+
+      it "should return false for ss without player units inside planets" do
+        planet = Factory.create(:planet, solar_system: ss)
+        Factory.create(:u_trooper, location: planet)
+        SolarSystem.visible?(ss.id, pids).should be_false
+      end
+    end
+
+    describe ".observer_player_ids" do
+      let(:alliance) { create_alliance }
+      let(:galaxy) { alliance.galaxy }
+      let(:player) { alliance.owner }
+      let(:ally) do
+        Factory.create(:player, alliance: alliance, galaxy: galaxy)
+      end
+      let(:id_arr) { [player.id, ally.id] }
+      let(:id_set) { Set.new(id_arr) }
+      let(:ss) { Factory.create(:solar_system, galaxy: galaxy) }
+
       before(:each) do
-        @player = Factory.create :player
+        player; ally
       end
 
-      it "should return solar systems visible for player in galaxy" do
-        fse1 = Factory.create :fse_player, :player => @player
-        fse2 = Factory.create :fse_player, :player => @player
-        # Invisible SS
-        Factory.create :solar_system
-
-        SolarSystem.visible_for(@player).map do |e|
-          e[:solar_system].id
-        end.sort.should == [fse1.solar_system_id, fse2.solar_system_id].sort
+      it "should take solar system or id" do
+        Factory.create(:planet, solar_system: ss, player: player)
+        SolarSystem.observer_player_ids(ss).
+          should == SolarSystem.observer_player_ids(ss.id)
       end
 
-      it "should return metadata for ss'es visible for player in galaxy" do
-        @player.alliance = Factory.create :alliance
-        @player.save!
+      it "should return [] if solar system is detached" do
+        ss = Factory.create(:ss_detached, galaxy: galaxy)
+        SolarSystem.observer_player_ids(ss).should == []
+      end
+      
+      describe "FowGalaxyEntry" do
+        describe "main battleground" do
+          let(:ss) { Factory.create(:battleground, galaxy: galaxy) }
 
-        fse1_p = Factory.create :fse_player, :player => @player
-        fse2_p = Factory.create :fse_player, :player => @player
-        fse2_a = Factory.create :fse_alliance, 
-          :alliance => @player.alliance,
-          :solar_system => fse2_p.solar_system
-        fse3_a = Factory.create :fse_alliance, :alliance => @player.alliance
-        # Invisible SS
-        Factory.create :solar_system
+          it "should return player & alliance ids if player has fge" do
+            Factory.create(:fge, galaxy: galaxy, player: player)
+            Set.new(SolarSystem.observer_player_ids(ss) & id_arr).
+              should == id_set
+          end
 
-        SolarSystem.visible_for(@player).map do |e|
-          e[:metadata]
-        end.should == [
-          FowSsEntry.merge_metadata(fse1_p, nil),
-          FowSsEntry.merge_metadata(fse2_p, fse2_a),
-          FowSsEntry.merge_metadata(nil, fse3_a)
-        ]
+          it "should return player & alliance ids if alliance has fge" do
+            Factory.create(:fge, galaxy: galaxy, player: ally)
+            Set.new(SolarSystem.observer_player_ids(ss) & id_arr).
+              should == id_set
+          end
+
+          it "should not return player & alliance ids if there is no fge" do
+            (SolarSystem.observer_player_ids(ss) & id_arr).should be_blank
+          end
+        end
+
+        describe "regular SS" do
+          it "should return player & alliance ids if player has fge" do
+            Factory.create(:fge, galaxy: galaxy, player: player,
+              x: ss.x, y: ss.y, x_end: ss.x + 1, y_end: ss.y + 1)
+            Set.new(SolarSystem.observer_player_ids(ss) & id_arr).
+              should == id_set
+          end
+
+          it "should return player & alliance ids if alliance has fge" do
+            Factory.create(:fge, galaxy: galaxy, player: ally,
+              x: ss.x, y: ss.y, x_end: ss.x + 1, y_end: ss.y + 1)
+            Set.new(SolarSystem.observer_player_ids(ss) & id_arr).
+              should == id_set
+          end
+
+          it "should not return player & alliance ids if there is no fge" do
+            (SolarSystem.observer_player_ids(ss) & id_arr).should be_blank
+          end
+
+          it "should not return ids if fge does not cover ss for player" do
+            Factory.create(:fge, galaxy: galaxy, player: player,
+              x: ss.x + 1, y: ss.y + 1, x_end: ss.x + 2, y_end: ss.y + 2)
+            (SolarSystem.observer_player_ids(ss) & id_arr).should be_blank
+          end
+
+          it "should not return ids if fge does not cover ss for ally" do
+            Factory.create(:fge, galaxy: galaxy, player: ally,
+              x: ss.x + 1, y: ss.y + 1, x_end: ss.x + 2, y_end: ss.y + 2)
+            (SolarSystem.observer_player_ids(ss) & id_arr).should be_blank
+          end
+        end
+      end
+
+      describe "planet ownership" do
+        it "should return player & alliance ids if player has SSO" do
+          Factory.create(:planet, solar_system: ss, player: player)
+          Set.new(SolarSystem.observer_player_ids(ss) & id_arr).should == id_set
+        end
+
+        it "should return player & alliance ids if alliance has SSO" do
+          Factory.create(:planet, solar_system: ss, player: ally)
+          Set.new(SolarSystem.observer_player_ids(ss) & id_arr).should == id_set
+        end
+
+        it "should not return player & alliance ids if there is no owned SSO" do
+          Factory.create(:planet, solar_system: ss)
+          (SolarSystem.observer_player_ids(ss) & id_arr).should be_blank
+        end
+
+        it "should not include nil if NPC has a planet" do
+          Factory.create(:planet, solar_system: ss, player: player)
+          Factory.create(:planet, solar_system: ss, angle: 90)
+          SolarSystem.observer_player_ids(ss).should_not include(nil)
+        end
+
+        it "should not include nil if non-allied player has a planet" do
+          Factory.create(:planet, solar_system: ss, player: player)
+          Factory.create(:planet_with_player, solar_system: ss, angle: 90)
+          SolarSystem.observer_player_ids(ss).should_not include(nil)
+        end
+      end
+
+      describe "units in solar system" do
+        let(:location) { SolarSystemPoint.new(ss.id, 0, 0) }
+
+        it "should return player & alliance ids if player has SS units" do
+          Factory.create(:u_crow, location: location, player: player)
+          Set.new(SolarSystem.observer_player_ids(ss) & id_arr).
+            should == id_set
+        end
+
+        it "should return player & alliance ids if alliance has SS units" do
+          Factory.create(:u_crow, location: location, player: ally)
+          Set.new(SolarSystem.observer_player_ids(ss) & id_arr).
+            should == id_set
+        end
+
+        it "should not return ids if there is no owned SS units" do
+          Factory.create(:u_crow, location: location)
+          (SolarSystem.observer_player_ids(ss) & id_arr).should be_blank
+        end
+      end
+
+      describe "units in ss objects" do
+        let(:planet) { Factory.create(:planet, solar_system: ss) }
+
+        it "should return player & alliance ids if player has SSO units" do
+          Factory.create(:u_crow, location: planet, player: player)
+          Set.new(SolarSystem.observer_player_ids(ss) & id_arr).
+            should == id_set
+        end
+
+        it "should return player & alliance ids if alliance has SSO units" do
+          Factory.create(:u_crow, location: planet, player: ally)
+          Set.new(SolarSystem.observer_player_ids(ss) & id_arr).
+            should == id_set
+        end
+
+        it "should not return ids if there is no owned SSO units" do
+          Factory.create(:u_crow, location: planet)
+          (SolarSystem.observer_player_ids(ss) & id_arr).should be_blank
+        end
+      end
+    end
+
+    describe ".sees_wormhole?" do
+      let(:alliance) { create_alliance }
+      let(:galaxy) { alliance.galaxy }
+      let(:player) { alliance.owner }
+      let(:ally) { Factory.create(:player, alliance: alliance, galaxy: galaxy) }
+      let(:wormhole) { Factory.create(:wormhole, galaxy: galaxy) }
+      def fge(covered, player)
+        coords = covered \
+          ? {x: wormhole.x, y: wormhole.y,
+             x_end: wormhole.x + 2, y_end: wormhole.y + 2} \
+          : {x: wormhole.x + 1, y: wormhole.y,
+             x_end: wormhole.x + 2, y_end: wormhole.y + 2}
+        Factory.create(:fge, coords.merge(galaxy: galaxy, player: player))
+      end
+
+      before(:each) do
+        wormhole
+      end
+
+      it "should return true if player has wormhole covered with fge" do
+        fge(true, player)
+        SolarSystem.sees_wormhole?(player).should be_true
+      end
+
+      it "should return true if ally has wormhole covered with fge" do
+        fge(true, ally)
+        SolarSystem.sees_wormhole?(player).should be_true
+      end
+
+      it "should return false if player has fge but no coverage on WH" do
+        fge(false, player)
+        SolarSystem.sees_wormhole?(player).should be_false
+      end
+
+      it "should return false if ally has fge but no coverage on WH" do
+        fge(false, ally)
+        SolarSystem.sees_wormhole?(player).should be_false
+      end
+
+      it "should return false if player && ally has no FGEs" do
+        SolarSystem.sees_wormhole?(player).should be_false
       end
     end
   end
@@ -265,7 +600,7 @@ describe SolarSystem do
       end
 
       it "should create cooldown after spawning" do
-        Cooldown.should_receive(:create_unless_exists).and_return do |ssp, time|
+        Cooldown.should_receive(:create_or_update!).and_return do |ssp, time|
           ssp.should be_instance_of(SolarSystemPoint)
           time.should be_within(SPEC_TIME_PRECISION).
             of(Cfg.after_spawn_cooldown)
@@ -358,39 +693,15 @@ describe SolarSystem do
     end
 
     it "should fire ss destroyed event for other players" do
-      Factory.create(:fse_player, :player => player,
-                     :solar_system => solar_system)
-      Factory.create(:fse_player, :solar_system => solar_system)
+      location = SolarSystemPoint.new(solar_system.id, 0, 0)
+      Factory.create(:u_crow, player: player, location: location)
+      Factory.create(:u_crow, location: location)
+
       should_fire_event(
         Event::FowChange::SsDestroyed.all_except(solar_system.id, player.id),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
       ) { solar_system.detach! }
-    end
-
-    it "should remove other player fow ss entries" do
-      fse = Factory.create(:fse_player, :solar_system => solar_system)
-      solar_system.detach!
-      lambda do
-        fse.reload
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should remove other alliance fow ss entries" do
-      fse = Factory.create(:fse_alliance, :solar_system => solar_system)
-      solar_system.detach!
-      lambda do
-        fse.reload
-      end.should raise_error(ActiveRecord::RecordNotFound)
-    end
-
-    it "should not remove owner fow ss entry" do
-      fse = Factory.create(:fse_player, :solar_system => solar_system,
-                           :player => player)
-      solar_system.detach!
-      lambda do
-        fse.reload
-      end.should_not raise_error(ActiveRecord::RecordNotFound)
     end
 
     it "should set coordinates to nil" do
@@ -413,37 +724,14 @@ describe SolarSystem do
     let(:galaxy) { Factory.create(:galaxy) }
     let(:player) { Factory.create(:player_no_home_ss, :galaxy => galaxy) }
     let(:solar_system) do
-      Factory.create(:ss_detached, :player => player, :galaxy => galaxy)
+      Factory.create(:ss_detached, player: player, galaxy: galaxy)
     end
-    let(:fse) do
-      Factory.create(
-        :fse_player, :player => player, :solar_system => solar_system,
-        :counter => 1
-      )
+    let(:fges) do
+      [
+        Factory.create(:fge, coords.merge(galaxy: galaxy, counter: 1)),
+        Factory.create(:fge, coords.merge(galaxy: galaxy, counter: 1))
+      ]
     end
-
-    def create_fges(merged={})
-      fge_player = Factory.create(
-        :fge_player, coords.merge(merged).merge(:counter => 1)
-      )
-      fge_alliance = Factory.create(
-        :fge_alliance, coords.merge(merged).merge(:counter => 1)
-      )
-      # Second one to check counter summing values.
-      coords2 = coords.dup
-      coords2[:x] -= 1
-      Factory.create(
-        :fge_player, coords2.merge(merged).
-          merge(:player => fge_player.player, :counter => 2)
-      )
-      Factory.create(
-        :fge_alliance, coords2.merge(merged).
-          merge(:alliance => fge_alliance.alliance, :counter => 2)
-      )
-      [fge_player, fge_alliance]
-    end
-
-    before(:each) { fse() }
 
     it "should fail if it is already attached" do
       solar_system.x = x; solar_system.y = y
@@ -476,34 +764,6 @@ describe SolarSystem do
       end
     end
 
-    it "should fail if there is no owner FSE" do
-      fse.destroy!
-      lambda do
-        solar_system.attach!(x, y)
-      end.should raise_error(RuntimeError)
-    end
-
-    it "should create FSEs for players who will be able to see it" do
-      fow_galaxy_entries = create_fges(:galaxy => galaxy)
-      solar_system.attach!(x, y)
-
-      fow_galaxy_entries.each do |fge|
-        FowSsEntry.where(
-          :solar_system_id => solar_system.id, :player_id => fge.player_id,
-          :alliance_id => fge.alliance_id, :counter => 3
-        ).exists?.should be_true
-      end
-    end
-
-    it "should not create FSEs for player from other galaxy" do
-      create_fges()
-      lambda do
-        solar_system.attach!(x, y)
-      end.should_not change(
-        FowSsEntry.where(:solar_system_id => solar_system.id), :count
-      )
-    end
-
     it "should set its coordinates" do
       solar_system.attach!(x, y)
       [solar_system.x, solar_system.y].should == [x, y]
@@ -514,21 +774,38 @@ describe SolarSystem do
       solar_system.should be_saved
     end
 
-    it "should dispatch created with FSEs" do
-      entries = create_fges(:galaxy => galaxy).map do |fge|
-        FowSsEntry.new(
-          :solar_system_id => solar_system.id,
-          :counter => 3,
-          :player_id => fge.player_id,
-          :alliance_id => fge.alliance_id,
-          :enemy_planets => fse.player_planets,
-          :enemy_ships => fse.player_ships
-        )
-      end
-      player = Player.minimal(player().id)
+    it "should dispatch created if player sees it" do
+      players = fges.map(&:player)
+      player_minimal = Player.minimal(player.id)
+      metadatas = SolarSystem::Metadatas.new(solar_system.id)
+
       should_fire_event(
-        Event::FowChange::SsCreated.
-          new(solar_system.id, x, y, solar_system.kind, player, entries),
+        Event::FowChange::SsCreated.new(
+          solar_system.id, x, y, solar_system.kind, player_minimal, players,
+          metadatas
+        ),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_SS_ENTRY
+      ) do
+        solar_system.attach!(x, y)
+      end
+    end
+
+    it "should dispatch created for player if alliance member sees it" do
+      alliance = create_alliance(galaxy: galaxy)
+      viewer = alliance.owner
+      ally = Factory.create(:player, galaxy: galaxy, alliance: alliance)
+      Factory.create(:fge, coords.merge(player: ally, galaxy: galaxy))
+
+      players = [viewer, ally]
+      player_minimal = Player.minimal(player.id)
+      metadatas = SolarSystem::Metadatas.new(solar_system.id)
+
+      should_fire_event(
+        Event::FowChange::SsCreated.new(
+          solar_system.id, x, y, solar_system.kind, player_minimal, players,
+          metadatas
+        ),
         EventBroker::FOW_CHANGE,
         EventBroker::REASON_SS_ENTRY
       ) do

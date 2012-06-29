@@ -2,6 +2,8 @@ package controllers.players.actions
 {
    import application.Version;
 
+   import components.player.MWaitingScreen;
+
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
    import controllers.players.AuthorizationManager;
@@ -30,12 +32,16 @@ package controllers.players.actions
       }
       
       public override function applyServerAction(cmd:CommunicationCommand) : void {
-         if (cmd.parameters["success"]) {
+         const params: Object = cmd.parameters;
+         if (params["success"]) {
             AM.loginSuccessful();
+            if (params["attaching"]) {
+               MWaitingScreen.getInstance().visible = true;
+            }
          }
          else {
-            if (cmd.parameters["requiredVersion"]) {
-               AM.versionTooOld(cmd.parameters["requiredVersion"]);
+            if (params["requiredVersion"]) {
+               AM.versionTooOld(params["requiredVersion"]);
             }
             else {
                cancel(null, null);

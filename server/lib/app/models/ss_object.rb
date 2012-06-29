@@ -114,19 +114,4 @@ class SsObject < ActiveRecord::Base
   def self.exploration_complete_callback(planet)
     planet.finish_exploration!
   end
-
-  class << self
-    # Find planet by _id_ for _player_id_.
-    #
-    # Raise <tt>ActiveRecord::RecordNotFound</tt> if not found.
-    def find_for_player!(id, player_id)
-      planet = find(:first, :conditions => {
-        :id => id,
-        :player_id => player_id
-      })
-      raise ActiveRecord::RecordNotFound if planet.nil?
-
-      planet
-    end
-  end
 end

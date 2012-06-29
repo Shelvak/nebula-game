@@ -1,11 +1,15 @@
 package controllers.objects.actions.customcontrollers
 {
    import controllers.galaxies.GalaxiesCommand;
+   import controllers.startup.StartupInfo;
    import controllers.ui.NavigationController;
+
+   import models.galaxy.Galaxy;
 
    import models.map.MapType;
    import models.player.PlayerMinimal;
    import models.solarsystem.MSSMetadata;
+   import models.solarsystem.MSolarSystem;
    import models.solarsystem.MSolarSystem;
 
    import utils.Objects;
@@ -20,11 +24,26 @@ package controllers.objects.actions.customcontrollers
       public override function objectUpdated(objectSubclass: String,
                                              object: Object,
                                              reason: String): void {
-         const ss: MSolarSystem = ML.latestGalaxy.getSSById(object.id);
-         Objects.notNull(ss, "Solar system with id " + object["id"] + " not found.");
-         const metadata: MSSMetadata = ss.metadata;
-         Objects.update(metadata, object);
-         ML.latestGalaxy.refreshSolarSystemsWithPlayer();
+         function createMetadata(ss:MSolarSystem): void {
+            ss.metadata = Objects.create(MSSMetadata, object);
+         }
+
+         var galaxy: Galaxy = ML.latestGalaxy;
+         if (StartupInfo.relaxedServerMessagesHandlingMode && galaxy == null) {
+            return;
+         }
+         const id: int = object["id"];
+         if (galaxy.isBattleground(id)) {
+            for each (var wormhole: MSolarSystem in galaxy.wormholes) {
+               createMetadata(wormhole);
+            }
+         }
+         else {
+            const ss: MSolarSystem = galaxy.getSSById(id);
+            Objects.notNull(ss, "Solar system with id " + id + " not found.");
+            createMetadata(ss);
+            galaxy.refreshSolarSystemsWithPlayer();
+         }
       }
       
       public override function objectDestroyed(objectSubclass: String,
@@ -51,10 +70,10 @@ package controllers.objects.actions.customcontrollers
       public override function objectCreated(objectSubclass: String,
                                              object: Object,
                                              reason: String): * {
-         const ssMetadata: MSSMetadata = Objects.create(MSSMetadata, object);
+         const metadata: MSSMetadata = Objects.create(MSSMetadata, object);
          const ss: MSolarSystem = new MSolarSystem();
-         ss.id = ssMetadata.id;
-         ss.metadata = ssMetadata;
+         ss.id = metadata.id;
+         ss.metadata = metadata;
          ss.x = object["x"];
          ss.y = object["y"];
          ss.kind = object["kind"];

@@ -1,19 +1,16 @@
 package models.parts
 {
-   import config.Config;
-   
    import models.ModelLocator;
    import models.technology.Technology;
-   
-   import mx.logging.Log;
-   
-   import utils.Objects;
-   
+
+   import utils.logging.Log;
+
+
    public class Requirement
    {
       /**
        * checks if all requirements are met 
-       * @param requirements, object of requirements
+       * @param requirements object of requirements
        * @return true if valid, false otherwise
        * 
        */      
@@ -32,7 +29,7 @@ package models.parts
                THIS IS TEMPORARY AND NEEDS TO BE CHANGED
                2011.02.21
                */
-               Log.getLogger(Objects.getClassName(Requirement, true))
+               Log.getMethodLogger(Requirement, "isValid")
                   .warn("Technology {0} not found in config!", requirement);
                return false;
             }

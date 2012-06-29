@@ -102,9 +102,6 @@ describe Unit do
         # This should not increase FOW.
         Factory.build(:u_trooper, :level => 1),
       ]
-      @fse = Factory.create(:fse_player,
-        :solar_system_id => @location.solar_system_id,
-        :player => @player)
     end
 
     it "should place them in location" do
@@ -138,17 +135,9 @@ describe Unit do
       lambda do
         Unit.give_units_raw(@units, @location, @player)
         @player.reload
-      end.should change(@player, :population).by(population)
+      end.should change(@player, :population).to(population)
     end
     
-    it "should increase fow counter for space units & ! for ground units" do
-      count = @units.inject(0) { |sum, u| sum + (u.space? ? 1 : 0) }
-      lambda do
-        Unit.give_units_raw(@units, @location, @player)
-        @fse.reload
-      end.should change(@fse, :counter).by(count)
-    end
-
     it "should fire created event" do
       should_fire_event(@units, EventBroker::CREATED) do
         Unit.give_units_raw(@units, @location, @player)
@@ -192,9 +181,6 @@ describe Unit do
         Factory.create(:u_dirac, :level => 1, :location => @planet,
           :player => @player),
       ]
-      @fse = Factory.create(:fse_player,
-        :solar_system_id => @planet.solar_system_id,
-        :player => @player)
     end
 
     it "should check if all of the units are in same planet" do
@@ -277,7 +263,7 @@ describe Unit do
     lambda do
       unit.upgrade!
       player.reload
-    end.should change(player, :population).to(player.population_max)
+    end.should change(player, :population).to(Unit::TestUnit.population)
   end
 
   describe ".flank_valid?" do
@@ -390,8 +376,8 @@ describe Unit do
       Unit.delete_all_units(@units)
     end
 
-    it "should be wrapped in SsObject::Planet.changing_viewable" do
-      SsObject::Planet.should_receive(:changing_viewable).with(
+    it "should be wrapped in Visibility.track_location_changes" do
+      Visibility.should_receive(:track_location_changes).with(
         @units[0].location).and_return(true)
       Unit.delete_all_units(@units)
     end
@@ -427,15 +413,14 @@ describe Unit do
     end
 
     it "should reduce player population (with loaded units)" do
-      @p1.population = 100000
-      @p1.save!
+      @p1.recalculate_population
       p1_units = @units.accept { |unit| unit.player_id == @p1.id }
       p1_loaded_units = @loaded_units.accept { |unit| unit.player_id == @p1.id }
       lambda do
         Unit.delete_all_units(@units)
         @p1.reload
-      end.should change(@p1, :population).by(
-        - (p1_units + p1_loaded_units).map(&:population).sum)
+      end.should change(@p1, :population).
+        from((p1_units + p1_loaded_units).map(&:population).sum).to(0)
     end
 
     it "should fire destroyed" do
@@ -457,47 +442,9 @@ describe Unit do
       end
     end
 
-    it "should decrease visibility if they are in solar system" do
-      FowSsEntry.should_receive(:decrease).with(@ss.id, @p1, 3)
-      FowSsEntry.should_receive(:decrease).with(@ss.id, @p2, 2)
-      Unit.delete_all_units(@units, nil, :reason)
-    end
-
-    it "should not decrease visibility if ground units are destroyed" do
-      planet = Factory.create(:planet, :solar_system => @ss)
-      unit = Factory.create!(:u_trooper, :route => @route,
-        :location => planet, :player => @p1)
-
-      FowSsEntry.should_not_receive(:decrease)
-      Unit.delete_all_units([unit], nil, :reason)
-    end
-
     it "should not fail if npc units are involved" do
       @units[0].player = nil
       @units[0].save!
-      Unit.delete_all_units(@units, nil, :reason)
-    end
-
-    it "should decrease visibility if they are in planet" do
-      planet = Factory.create(:planet, :solar_system => @ss)
-
-      @units.each do |unit|
-        unit.location = planet
-        unit.save!
-      end
-
-      FowSsEntry.should_receive(:decrease).with(@ss.id, @p1, 3)
-      FowSsEntry.should_receive(:decrease).with(@ss.id, @p2, 2)
-      Unit.delete_all_units(@units, nil, :reason)
-    end
-
-    it "should not decrease visibility if they are not in solar system" do
-      @units.each do |unit|
-        unit.location = GalaxyPoint.new(@ss.galaxy_id, 0, 0)
-        unit.save!
-      end
-
-      FowSsEntry.should_not_receive(:decrease)
       Unit.delete_all_units(@units, nil, :reason)
     end
   end
@@ -507,9 +454,9 @@ describe Unit do
       @unit = Factory.create(:unit, :level => 1)
     end
 
-    it "should be wrapped in SsObject::Planet.changing_viewable" do
-      SsObject::Planet.should_receive(:changing_viewable).with(
-        @unit.location).and_return(true)
+    it "should be wrapped in Visibility#track_location_changes" do
+      Visibility.should_receive(:track_location_changes).with(@unit.location).
+        and_return(true)
       @unit.destroy
     end
 
@@ -519,7 +466,7 @@ describe Unit do
       lambda do
         @unit.destroy
         player.reload
-      end.should change(player, :population).by(-@unit.population)
+      end.should change(player, :population).to(0)
     end
 
     it "should still work" do
@@ -1171,41 +1118,6 @@ describe Unit do
   end
 
   describe "#on_upgrade_finished!" do
-    describe "visibility" do
-      it "should add visibility if it's level 1 (in planet)" do
-        p = Factory.create(:planet)
-        u = Factory.create(:u_crow, opts_upgrading + {:level => 0,
-            :location => p, :player => Factory.create(:player), :hp => 0})
-        FowSsEntry.should_receive(:increase).with(p.solar_system_id,
-          u.player, 1)
-        u.send(:on_upgrade_finished!)
-      end
-
-      it "should not add visibility if it's NPC" do
-        p = Factory.create(:planet)
-        u = Factory.create(:u_crow, opts_upgrading + {:level => 0,
-            :location => p, :hp => 0, :player => nil})
-        FowSsEntry.should_not_receive(:increase)
-        u.send(:on_upgrade_finished!)
-      end
-
-      it "should not add visibility if it's ground" do
-        p = Factory.create(:planet)
-        u = Factory.create(:u_trooper, opts_upgrading + {:level => 0,
-            :location => p, :player => Factory.create(:player), :hp => 0})
-        FowSsEntry.should_not_receive(:increase)
-        u.send(:on_upgrade_finished!)
-      end
-
-      it "should not add visibility if it's level > 1" do
-        p = Factory.create(:planet)
-        u = Factory.create(:u_crow, opts_upgrading + {:level => 1,
-            :location => p, :player => Factory.create(:player)})
-        FowSsEntry.should_not_receive(:increase)
-        u.send(:on_upgrade_finished!)
-      end
-    end
-
     describe "combat check after upgrade is finished" do
       let(:unit) { Factory.create!(:unit, opts_upgrading) }
 

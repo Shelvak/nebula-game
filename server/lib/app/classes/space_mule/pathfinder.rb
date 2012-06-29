@@ -9,7 +9,7 @@ module SpaceMule::Pathfinder
   def self.invoke(source, target, avoid_npc)
     avoidable_points = []
 
-    source_solar_system = source.solar_system
+    source_solar_system = without_locking { source.solar_system }
     sm_source_solar_system = nil
     if source_solar_system
       sm_source_solar_system = to_pf_solar_system(source_solar_system)
@@ -26,7 +26,7 @@ module SpaceMule::Pathfinder
       end
     end
 
-    target_solar_system = target.solar_system
+    target_solar_system = without_locking { target.solar_system }
     sm_target_solar_system = nil
     if target_solar_system
       sm_target_solar_system = to_pf_solar_system(target_solar_system)
@@ -47,8 +47,8 @@ module SpaceMule::Pathfinder
     sm_avoidable_points = avoidable_points.blank? \
       ? None : Some(avoidable_points.to_scala)
 
-    sm_source_jumpgates = Set.new.to_scala
-    sm_target_jumpgates = Set.new.to_scala
+    sm_source_jumpgates = Set.new
+    sm_target_jumpgates = Set.new
     sm_source_ss_galaxy_coords = None
     sm_target_ss_galaxy_coords = None
 
@@ -85,11 +85,11 @@ module SpaceMule::Pathfinder
     sm_target = to_pf_locatable(target, sm_target_solar_system)
 
     PfO.Finder.find(
-      sm_source, sm_source_jumpgates,
+      sm_source, sm_source_jumpgates.to_scala,
       sm_source_solar_system.nil? ? None : Some(sm_source_solar_system),
       sm_source_ss_galaxy_coords,
 
-      sm_target, sm_target_jumpgates,
+      sm_target, sm_target_jumpgates.to_scala,
       sm_target_solar_system.nil? ? None : Some(sm_target_solar_system),
       sm_target_ss_galaxy_coords,
 
@@ -134,8 +134,11 @@ module SpaceMule::Pathfinder
   # Otherwise travels as expected.
   def self.jump_coords(galaxy_id, wormhole_proximity_point, solar_system)
     if solar_system.main_battleground?
-      wormhole = Galaxy.closest_wormhole(galaxy_id,
-        wormhole_proximity_point.x, wormhole_proximity_point.y)
+      wormhole = without_locking do
+        Galaxy.closest_wormhole(
+          galaxy_id, wormhole_proximity_point.x, wormhole_proximity_point.y
+        )
+      end
       Coords.new(wormhole.x, wormhole.y)
     else
       Coords.new(solar_system.x, solar_system.y)
@@ -144,13 +147,14 @@ module SpaceMule::Pathfinder
 
   # Given PmO.SolarSystem returns Set of +PmO.SolarSystemPoint+s.
   def self.jumpgates_for(sm_solar_system)
-    points = SsObject::Jumpgate.where(:solar_system_id => sm_solar_system.id).
-      all.map do |jumpgate|
-        PfO.SolarSystemPoint.new(
-          sm_solar_system,
-          Coords.new(jumpgate.position, jumpgate.angle)
-        )
-      end
-    Set.new(points).to_scala
+    points = without_locking do
+      SsObject::Jumpgate.where(:solar_system_id => sm_solar_system.id).all
+    end.map do |jumpgate|
+      PfO.SolarSystemPoint.new(
+        sm_solar_system,
+        Coords.new(jumpgate.position, jumpgate.angle)
+      )
+    end
+    Set.new(points)
   end
 end

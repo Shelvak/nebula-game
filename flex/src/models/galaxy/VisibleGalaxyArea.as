@@ -1,7 +1,7 @@
 package models.galaxy
 {
    import components.base.viewport.IVisibleAreaTrackerClient;
-   import components.map.space.GalaxyMapCoordsTransform;
+   import components.map.space.galaxy.GalaxyMapCoordsTransform;
 
    import flash.geom.Rectangle;
 

@@ -2,12 +2,8 @@ package controllers.players.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   import controllers.Messenger;
 
    import models.movement.MSquadKillReward;
-
-   import utils.locale.Localizer;
-   import utils.remote.rmo.ClientRMO;
 
    /**
     *

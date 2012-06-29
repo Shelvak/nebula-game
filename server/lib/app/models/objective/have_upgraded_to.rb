@@ -22,6 +22,6 @@ class Objective::HaveUpgradedTo < Objective::UpgradeTo
       raise ArgumentError.new("Don't know how to handle #{key}!")
     end
 
-    finder.count
+    without_locking { finder.count }
   end
 end

@@ -3,41 +3,33 @@ package models.unit
    import components.popups.ActionConfirmationPopUp;
    import components.unitsscreen.events.UnitsScreenEvent;
 
-   import models.location.ILocationUser;
-   import models.location.LocationType;
-
-   import utils.ApplicationLocker;
    import controllers.ui.NavigationController;
    import controllers.units.OrdersController;
    import controllers.units.UnitsCommand;
-   
-   import flash.events.Event;
+
    import flash.events.EventDispatcher;
-   
-   import globalevents.GUnitsScreenEvent;
-   
+
    import models.ModelLocator;
-   import models.ModelsCollection;
+   import models.location.ILocationUser;
    import models.location.Location;
    import models.movement.MRoute;
    import models.movement.MSquadron;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
-   import mx.collections.Sort;
-   import mx.collections.SortField;
    import mx.core.FlexGlobals;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
-   
+
    import spark.components.Button;
    import spark.components.Label;
    import spark.components.ToggleButton;
-   
+
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
-   
+
+
    public class MCUnitScreen extends EventDispatcher implements ILocationUser
    {
       
@@ -226,7 +218,7 @@ package models.unit
          }
          
          groundVisible = hasGroundUnits || currentKind == UnitKind.GROUND;
-         spaceVisible = hasSpaceUnits || currentKind == UnitKind.SPACE
+         spaceVisible = hasSpaceUnits || currentKind == UnitKind.SPACE;
          moveVisible = hasMovingUnits || currentKind == UnitKind.MOVING;
          dispatchUnitsChangeEvent();
       }
@@ -252,10 +244,15 @@ package models.unit
                   return item.kind == currentKind;
                });
          }
-         else
+         else if (filteredSquadronUnits != null)
          {
             filteredUnits = filteredSquadronUnits;
             dispatchUnitsChangeEvent();
+         }
+         else
+         {
+            dispatchUnitsChangeEvent();
+            return;
          }
          
          filteredUnits.addEventListener(CollectionEvent.COLLECTION_CHANGE, refreshList);
@@ -457,7 +454,7 @@ package models.unit
 
       private function getHiddenChanged(): Array
       {
-         var changedUnits: Array = []
+         var changedUnits: Array = [];
          for each(var unit: MCUnit in transformedUnits)
          {
             if (unit.hidden == true && unit.hidden != unit.unit.hidden)

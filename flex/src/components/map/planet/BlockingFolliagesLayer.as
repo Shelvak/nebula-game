@@ -4,13 +4,14 @@ package components.map.planet
    import components.map.planet.objects.IInteractivePlanetMapObject;
    import components.map.planet.objects.IPrimitivePlanetMapObject;
 
-   import controllers.Messenger;
    import controllers.navigation.MCSidebar;
+   import controllers.notifications.EventsController;
    import controllers.screens.SidebarScreens;
 
    import models.ModelLocator;
    import models.exploration.ExplorationStatus;
    import models.folliage.BlockingFolliage;
+   import models.notification.MPermanentEvent;
 
    import mx.collections.ListCollectionView;
 
@@ -44,17 +45,18 @@ package components.map.planet
       /* ### FOLIAGE SELECTION / DESELECTION ### */
       /* ####################################### */
 
+      private var eventPopUpId: int;
+
       protected override function objectSelectedImpl(object: IInteractivePlanetMapObject): void {
          ML.selectedFoliage = BlockingFolliage(object.model);
-         Messenger.show(Localizer.string(
-            'BuildingSelectedSidebar', 'message.pressOnEmpty'
-         ));
+         eventPopUpId = new MPermanentEvent(Localizer.string('BuildingSelectedSidebar',
+            'message.pressOnEmpty')).id;
          SD.showScreen(SidebarScreens.BLOCKING_FOLLIAGE);
       }
 
       protected override function objectDeselectedImpl(object: IInteractivePlanetMapObject): void {
          ML.selectedFoliage = null;
-         Messenger.hide();
+         EventsController.getInstance().removeEventById(eventPopUpId);
          SD.showPrevious();
       }
 

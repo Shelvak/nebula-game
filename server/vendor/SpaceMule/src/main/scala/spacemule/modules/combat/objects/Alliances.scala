@@ -1,8 +1,9 @@
 package spacemule.modules.combat.objects
 
 import scala.util.Random
+import scala.{collection => sc}
 import spacemule.helpers.Converters._
-import spacemule.helpers.{StdErrLog => L}
+import spacemule.logging.Log
 import spacemule.modules.combat.Combat
 
 object Alliances {
@@ -21,10 +22,10 @@ object Alliances {
    */
   def apply(
     planetOwner: Option[Player],
-    players: Set[Option[Player]],
+    players: sc.Set[Option[Player]],
     allianceNames: Combat.AllianceNames,
     napRules: Combat.NapRules,
-    combatants: Set[Combatant]
+    combatants: sc.Set[Combatant]
   ): Alliances = {
     val notAllied: Long = 0
 
@@ -58,13 +59,15 @@ object Alliances {
 
     // Create alliance id -> alliance map wth players and combatants.
     val alliances = expanded.map { case (allianceId, plrs) =>
-        // Filter combatants that belong to this alliance.
-        val allianceCombatants = combatants.filter { c =>
-          cache(c.player) == allianceId
-        }
-        val allianceName = allianceNames.get(allianceId)
-        (allianceId -> new Alliance(allianceId, allianceName,
-                                    plrs, allianceCombatants))
+      // Filter combatants that belong to this alliance.
+      val allianceCombatants = combatants.filter { c =>
+        cache(c.player) == allianceId
+      }
+      val allianceName = allianceNames.get(allianceId)
+
+      allianceId -> new Alliance(
+        allianceId, allianceName, plrs, allianceCombatants
+      )
     }
 
     val allianceIds = alliances.keySet
@@ -142,8 +145,9 @@ class Alliances(planetOwner: Option[Player],
     }
 
     initiatives.foreach { initiative =>
-      L.debug("Taking for initiative %d".format(initiative), 
-              () => takeForInitiative(initiative))
+      Log.block("Taking for initiative "+initiative, level=Log.Debug) { () =>
+        takeForInitiative(initiative)
+      }
     }
   }
 
@@ -250,13 +254,13 @@ class Alliances(planetOwner: Option[Player],
    * Reset all initative lists keeping only alive units.
    */
   def reset() {
-    L.debug("Reseting alliance initiative lists", () => {
+    Log.block("Reseting alliance initiative lists", level=Log.Debug) { () =>
       alliancesMap.foreach {
         case (allianceId, alliance) => alliance.reset()
       }
       // Recalculate initiative numbers.
       initiatives = calculateInitiatives
-    })
+    }
   }
 
   /**

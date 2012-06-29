@@ -1,10 +1,12 @@
 class CallbackManager
   include Celluloid
   include NamedLogMessages
+  include PauseableActor
+  include SeparateConnection
 
   # Raised if callback already exists and is in future.
   class CallbackAlreadyExists < RuntimeError; end
-  
+
   # Constructable has finished upgrading.
   EVENT_UPGRADE_FINISHED = 0
   # Constructor has finished construction of constructable.
@@ -70,100 +72,100 @@ class CallbackManager
   }
 
   TAG = "callback_manager"
+  TABLE_NAME = Callback::TABLE_NAME
 
   def to_s
     TAG
   end
 
   def initialize
+    super
+    java.lang.Thread.current_thread.name = "#{TAG}-main"
+
     # Crash if dispatcher crashes, because we might have sent some messages
     # there that will never be processed if we don't restart.
     current_actor.link Actor[:dispatcher]
 
     @running = false
-    @pause = false
     run!
   end
 
   def run
-    raise "Cannot run callback manager while it is running!" if @running
+    abort RuntimeError.new(
+      "Cannot run callback manager while it is running!"
+    ) if @running
     @running = true
+    java.lang.Thread.current_thread.name = "#{TAG}-run"
 
-    # Tick first time with failed callbacks. This should not be async.
-    tick(true)
+    set_ar_connection_id!
+
+    # Reset all callbacks to fresh state. If server has been restarted there
+    # is a chance some bug was fixed and the callbacks will be ok now.
+    connection.execute(
+      "UPDATE `#{TABLE_NAME}` SET `processing`=0 WHERE `processing`!= 0"
+    )
 
     loop do
-      if @pause
-        @pause = false
-        wait :resume
-      end
-
+      check_for_pause
       sleep 1 # Wait 1 second before next tick.
       tick
     end
   end
 
-  # Pauses callback manager. Callbacks will not be
   def pause
     info "Pausing."
-    @pause = true
+    super
   end
 
   def resume
     info "Resuming."
-    signal :resume
+    super
   end
+
+private
 
   # Run every callback that is not processed and should have happened by now.
-  def tick(include_all=false)
+  def tick
     exclusive do
-      with_db_connection do
-        now = Time.now.to_s(:db)
-        conditions = include_all \
-          ? "ends_at <= '#{now}'" \
-          : "ends_at <= '#{now}' AND processing=0"
+      now = Time.now.to_s(:db)
+      # processing condition is needed so what we don't loop on failed callbacks
+      # forever. When callback is fetched, processing is incremented by 1 and if
+      # it fails, we won't fetch it again.
+      conditions = "ends_at <= '#{now}' AND processing=0"
 
-        get_callback = lambda do |last_id|
-          LOGGER.except(:debug) do
-            # Ensure we don't end up in an endless loop trying to execute same
-            # callback over and over again if it fails.
-            skip_failed = last_id.nil? ? "" : " AND id > #{last_id.to_i}"
-            sql = "WHERE #{conditions}#{skip_failed} ORDER BY ends_at"
+      get_callback = lambda do
+        LOGGER.except(:debug) do
+          sql = "WHERE #{conditions} ORDER BY ends_at"
 
-            row = self.class.get(sql, connection)
-            if row.nil?
-              nil
-            else
-              klass, obj_id = self.class.parse_row(row)
-              Callback.new(
-                row['id'], klass, obj_id, row['event'],
-                row['ruleset'], row['ends_at']
-              )
-            end
+          row = self.class.get(sql, connection)
+          if row.nil?
+            nil
+          else
+            klass, obj_id = self.class.parse_row(row)
+            Callback.new(
+              row['id'], klass, obj_id, row['event'],
+              row['ruleset'], row['ends_at']
+            )
           end
         end
+      end
 
-        # Request unprocessed entries that have hit.
-        callback = get_callback.call(nil)
+      # Request unprocessed entries that have hit.
+      callback = get_callback.call
 
-        until callback.nil?
-          info "Fetched: #{callback}"
+      until callback.nil?
+        info "Fetched: #{callback}"
 
-          # Mark this row as sent to processing.
-          connection.execute(
-            "UPDATE `callbacks` SET processing=1 WHERE id=#{callback.id}"
-          )
-          Actor[:dispatcher].callback!(callback)
+        # Mark this row as sent to processing.
+        connection.execute(
+          "UPDATE `#{TABLE_NAME}` SET processing=processing+1 WHERE id=#{
+            callback.id}"
+        )
+        Actor[:dispatcher].callback!(callback)
 
-          callback = get_callback.call(callback.id)
-        end
+        callback = get_callback.call
       end
     end
-  end
-
-  private
-  def with_db_connection(&block)
-    ActiveRecord::Base.connection_pool.with_connection(&block)
   end
 
   def connection
@@ -194,7 +196,7 @@ class CallbackManager
     def register(object, event, time, force_replace=true)
       typesig binding, ActiveRecord::Base, Fixnum, Time, Boolean
 
-      LOGGER.info("Registering event '#{TYPES[event]
+      LOGGER.debug("Registering event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
       register_impl(object, event, time, force_replace)
@@ -204,7 +206,7 @@ class CallbackManager
     def update(object, event, time)
       typesig binding, ActiveRecord::Base, Fixnum, Time
 
-      LOGGER.info("Updating event '#{TYPES[event]
+      LOGGER.debug("Updating event '#{TYPES[event]
         }' at #{time.to_s(:db)} for #{object}", TAG)
 
       register_impl(object, event, time, true)
@@ -216,7 +218,7 @@ class CallbackManager
       register(object, event, time, true)
     end
 
-    def has?(object, event, time=nil)
+    def when(object, event, time=nil)
       time_condition = case time
       when nil
         "1=1"
@@ -229,31 +231,36 @@ class CallbackManager
 
       klass, column = parse_object(object)
       check_event!(klass, event)
-      ! ActiveRecord::Base.connection.select_value(
-        "SELECT 1 FROM callbacks WHERE #{column}=#{object.id} AND event=#{event
-        } AND #{time_condition} LIMIT 1"
-      ).nil?
+      ActiveRecord::Base.connection.select_value(
+        "SELECT ends_at FROM `#{TABLE_NAME}` WHERE #{column}=#{object.id
+        } AND event=#{event} AND #{time_condition} LIMIT 1"
+      )
+    end
+
+    def has?(object, event, time=nil)
+      ! self.when(object, event, time).nil?
     end
 
     def unregister(object, event)
       typesig binding, ActiveRecord::Base, Fixnum
 
-      LOGGER.info("unregistering event '#{TYPES[event]}' for #{object}", TAG)
+      LOGGER.debug("unregistering event '#{TYPES[event]}' for #{object}", TAG)
 
       klass, column = parse_object(object)
       check_event!(klass, event)
       ActiveRecord::Base.connection.execute(
-        "DELETE FROM `callbacks` WHERE #{column}=#{object.id} AND event=#{
+        "DELETE FROM `#{TABLE_NAME}` WHERE #{column}=#{object.id} AND event=#{
         event}"
       )
     end
 
     def get(sql, connection=nil)
       connection ||= ActiveRecord::Base.connection
-      connection.select_one("SELECT * FROM callbacks #{sql} LIMIT 1")
+      connection.select_one("SELECT * FROM `#{TABLE_NAME}` #{sql} LIMIT 1")
     end
 
-    private
+  private
+
     def check_event!(klass, event)
       method = :"#{TYPES[event]}_callback"
       raise ArgumentError, "#{klass} does not respond to #{method}!" \
@@ -269,8 +276,8 @@ class CallbackManager
 
       unless force_replace
         future_row = ActiveRecord::Base.connection.select_one(
-          "SELECT id, ends_at FROM `callbacks` WHERE #{column}='#{object.id.to_i
-          }' AND event=#{event} AND ends_at > NOW() LIMIT 1"
+          "SELECT id, ends_at FROM `#{TABLE_NAME}` WHERE #{column}='#{
+          object.id.to_i}' AND event=#{event} AND ends_at > NOW() LIMIT 1"
         )
 
         raise ArgumentError, "Trying to register event #{TYPES[event]} on #{
@@ -279,7 +286,7 @@ class CallbackManager
       end
 
       ActiveRecord::Base.connection.execute(
-        "REPLACE INTO `callbacks` SET #{column}='#{object.id.to_i
+        "REPLACE INTO `#{TABLE_NAME}` SET #{column}='#{object.id.to_i
         }', ruleset='#{CONFIG.set_scope}', event=#{event
         }, ends_at='#{time.to_s(:db)}'"
       )

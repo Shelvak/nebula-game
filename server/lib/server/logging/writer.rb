@@ -23,17 +23,16 @@ class Logging::Writer
   LEVEL_ERROR = 1
   LEVEL_WARN = 2
   LEVEL_INFO = 3
-  LEVEL_TRAFFIC_DEBUG = 4
-  LEVEL_DEBUG = 5
+  LEVEL_DEBUG = 4
 
   TYPE_TO_LEVEL = {
     :fatal => LEVEL_FATAL,
     :error => LEVEL_ERROR,
     :warn => LEVEL_WARN,
     :info => LEVEL_INFO,
-    :traffic_debug => LEVEL_TRAFFIC_DEBUG,
     :debug => LEVEL_DEBUG
   }
+  LEVEL_TO_TYPE = TYPE_TO_LEVEL.flip
 
   attr_reader :level
   def level=(value)
@@ -84,10 +83,10 @@ class Logging::Writer
   # Should we write this level type to log?
   #
   # This is used by logger.
-  def write?(type)
-    synchronize do
-      @level >= TYPE_TO_LEVEL[type]
-    end
+  def write?(type_or_level)
+    level = type_or_level.is_a?(Fixnum) \
+      ? type_or_level : TYPE_TO_LEVEL[type_or_level]
+    synchronize { @level >= level }
   end
 
   private

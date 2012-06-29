@@ -8,8 +8,8 @@ JHO_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIBmYVjgKrRV3wltV7yTmBKo/Z0ENjA8Ga
 MIKISM_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAIB7B6kL0+oQ37yeMhy3MTyWfGXLtEwas9dfZH9IU5lhebIMGqz5VkdvvT/AD3nNInrGzgVc16S1H8fffKqH5YwtaRQLePWrJ1Aq/L9R+Fb9T7OWOOdHiTK6OZ2vPbYeitQzWQzJ1uUBsZpq3ddibnjv+cS37/DwbCDxZOyfkqpfXQ== Mykolas Mickus"
 HENRIKAS_PUBKEY = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQ43QAmFhlC4K7BmG1boe2CTIIGC42GPjpFrAkR2kkDCeAXNZF8PYhHcrAy3D2XCBKoA3np+esxOjG3fPbxlOJQPXQp5bMhaR8YABUc58yvrBjtKA/zZRLPf6YebaF20fil5t0TbLFoskNOrEuzRhr0IwvEbPJtXcp3zcXUl09jBFa5OP4a++d3eVHDhUllT+tM8ECZGXaN3S7jSSrf89Ifgd2L3JLu2JVXm4+xkkev1lrUjop5GD6sm2yc+AQ/tdlZMoWbmVrlYZqL5t4UfBWAWM6jRLQNrmLcSG13/rZleiDbEYIWirBQTTt8pZQZpTW6LQ6Ujd8c5R7ZdGvKH85 netyciuks@gmail.com"
 
-CLIENT_PUBKEYS = [ARTURAZ_PUBKEY, JHO_PUBKEY, MIKISM_PUBKEY]
-WEB_PUBKEYS = [ARTURAZ_PUBKEY, HENRIKAS_PUBKEY]
+CLIENT_PUBKEYS = WEB_PUBKEYS = [ARTURAZ_PUBKEY, JHO_PUBKEY, MIKISM_PUBKEY, 
+  HENRIKAS_PUBKEY]
 
 CRONTAB = %Q{
 SHELL=/bin/bash
@@ -61,14 +61,65 @@ set pastetoggle=<F3>
 }
 
 MYCNF = %Q{
+[client]
+port    = 3306
+socket    = /var/run/mysqld/mysqld.sock
+
+[mysqld_safe]
+socket    = /var/run/mysqld/mysqld.sock
+nice    = 0
+
 [mysqld]
+user    = mysql
+socket    = /var/run/mysqld/mysqld.sock
+pid-file    = /var/run/mysqld/mysqld.pid
+port    = 3306
+basedir   = /usr
+datadir   = /var/lib/mysql
+tmpdir    = /tmp
+skip-external-locking
+bind-address    = 127.0.0.1
+key_buffer    = 16M
+max_allowed_packet  = 16M
+thread_stack    = 192K
+thread_cache_size       = 8
+myisam-recover         = BACKUP
+query_cache_limit = 1M
+query_cache_size        = 16M
+
+log_error                = /var/log/mysql/error.log
+
+slow_query_log  = 1
+slow_query_log_file  = /var/log/mysql/slow.log
+long_query_time = 0.1
+expire_logs_days  = 10
+max_binlog_size         = 100M
+
+[mysqldump]
+quick
+quote-names
+max_allowed_packet  = 16M
+
+[isamchk]
+key_buffer    = 16M
+
+!includedir /etc/mysql/conf.d/
+}
+
+NEBULACNF = %Q{
+[mysqld]
+innodb_file_per_table
 innodb_rollback_on_timeout = ON
 innodb_lock_wait_timeout = 10
-innodb_file_per_table
+# http://dev.mysql.com/doc/refman/5.5/en/innodb-auto-increment-handling.html#innodb-auto-increment-configurable
+# This is needed to allow multiple LOAD DATA statements to execute parallely.
+innodb_autoinc_lock_mode = 2
+# To allow replication on lock mode 2.
+binlog_format=row
 }
 
 SRVRUNNER = %Q{#!/bin/bash
-HOME=/home/spacegame
+HOME=/home/#{USER}
 PATH=/bin/:/usr/bin:/usr/local/bin
 source /etc/profile
 source $HOME/.profile
@@ -78,16 +129,98 @@ cd $HOME/nebula-server/current/
 eval "$@"
 }
 WEBRUNNER = %Q{#!/bin/bash
-HOME=/home/spacegame
+HOME=/home/#{USER}
 PATH=/bin/:/usr/bin:/usr/local/bin
 source /etc/profile
 source $HOME/.profile
 
-cd $HOME/nebula-server/current/
+cd $HOME/web/current/www
+source ../.rvmrc
 
 eval "$@"
 }
 
+JMX_CONFIG = %Q{
+monitorRole  nebula44.mmosmrts.jmx
+controlRole  nebula44.mmosmrts.jmx
+}
+
+PHP_FPM_RUN = "/var/run/php-fpm"
+PHP_FPM_PID = "#{PHP_FPM_RUN}/master.pid"
+PHP_FPM_POOL_SOCKET = "#{PHP_FPM_RUN}/#{USER}.socket"
+
+PHP_FPM_POOL_CONF = %Q{
+[#{USER}]
+user = #{USER}
+group = #{GROUP}
+listen = #{PHP_FPM_POOL_SOCKET}
+listen.owner = www-data
+listen.group = www-data
+listen.mode = 0666
+pm = dynamic
+pm.max_children = 20
+pm.min_spare_servers = 4
+pm.max_spare_servers = 10
+pm.max_requests = 500
+chdir = /
+catch_workers_output = yes
+security.limit_extensions = .php
+}
+
+def php_fpm_vhost_conf(suffix)
+  %Q{
+    AddHandler php5-fcgi .php
+    Action php5-fcgi /php5-fcgi-#{suffix}
+    Alias /php5-fcgi-#{suffix} /home/#{USER}/php5-fcgi-#{suffix}
+    FastCgiExternalServer /home/#{USER}/php5-fcgi-#{suffix} -socket #{PHP_FPM_SOCKET} -pass-header Authorization
+  }
+end
+
+MONIT_MUNIN = %Q{
+check process munin-node with pidfile /var/run/munin/munin-node.pid
+      start program = "/etc/init.d/munin-node start"
+      stop program  = "/etc/init.d/munin-node stop"
+}
+MONIT_MYSQL = %Q{
+check process mysql with pidfile /var/run/mysqld/mysqld.pid
+      start program = "/etc/init.d/mysql start"
+      stop program  = "/etc/init.d/mysql stop"
+}
+MONIT_APACHE = %Q{
+check process apache with pidfile /var/run/apache2.pid
+      start program = "/etc/init.d/apache2 start"
+      stop program  = "/etc/init.d/apache2 stop"
+}
+
+MONIT_PHP_FPM = %Q{
+check process php-fpm with pidfile #{PHP_FPM_PID}
+      start program = "/etc/init.d/php5-fpm start"
+      stop program  = "/etc/init.d/php5-fpm stop"
+}
+
+MONIT_NEBULA_SERVER = %Q{
+check process nebula-server with pidfile /home/spacegame/nebula-server/shared/run/daemon.pid
+  start program = "/home/spacegame/bin/srvrunner lib/daemon.rb start"
+    as uid #{USER} and gid #{USER} with timeout 60 seconds
+  stop program = "/home/spacegame/bin/srvrunner lib/daemon.rb stop"
+    as uid #{USER} and gid #{USER}
+  if failed port 55345 send "?\\n" expect "!\\n" with timeout 5 seconds then restart
+}
+MONIT_DELAYED_JOB = %Q{
+check process dj_system_1
+  with pidfile /home/spacegame/web/shared/web/pids/delayed_job.production.system.1.pid
+  start program = "/home/spacegame/bin/webrunner script/delayed_job -i production.system.1 --queue=system start"
+    as uid spacegame and gid spacegame with timeout 120 seconds
+  stop program = "/home/spacegame/bin/webrunner script/delayed_job -i production.system.1 stop"
+    as uid spacegame and gid spacegame
+
+check process dj_enroll_1
+  with pidfile /home/spacegame/web/shared/web/pids/delayed_job.production.enroll.1.pid
+  start program = "/home/spacegame/bin/webrunner script/delayed_job -i production.enroll.1 --queue=enroll start"
+    as uid spacegame and gid spacegame with timeout 120 seconds
+  stop program = "/home/spacegame/bin/webrunner script/delayed_job -i production.enroll.1 stop"
+    as uid spacegame and gid spacegame
+}
 # }}}
 
 # DSL {{{
@@ -150,7 +283,7 @@ def adduser(user)
   pubkeys(user, ARTURAZ_PUBKEY)
 end
 
-def apache_vhost(vhost, path, hostname)
+def apache_vhost(vhost, path, hostname, additional="")
   File.write("/etc/apache2/sites-available/#{vhost}", %Q{
 <VirtualHost *:80>
   ServerName #{hostname}
@@ -160,6 +293,8 @@ def apache_vhost(vhost, path, hostname)
     AllowOverride All
     Options -MultiViews -Indexes
   </Directory>
+
+  #{additional}
 
   ErrorLog #{LOGS}/#{vhost}.error.log
   CustomLog #{LOGS}/#{vhost}.access.log common
@@ -235,6 +370,11 @@ def setup_apache
 ExtendedStatus On
    
 </IfModule>})
+
+  # Apache monit
+  File.write("/etc/monit/conf.d/apache", MONIT_APACHE)
+  run "/etc/init.d/monit restart"
+
   run "/etc/init.d/apache2 restart"
 
   install "liblwp-useragent-determined-perl"
@@ -246,12 +386,18 @@ ExtendedStatus On
 end
 
 def setup_php
+  run "add-apt-repository ppa:l-mierzwa/lucid-php5"
+  run "apt-get update"
   install "libmysqlclient-dev php-apc php5-fpm php5-cli php5-intl"
-  run "mkdir -p /var/run/php5-fpm"
-  socket = "/var/run/php5-fpm/fpm.sock"
-  File.modify("/etc/php5/fpm/pool.d/www.conf") do |contents|
-    contents.sub("^listen = .+$", "listen = #{socket}")
+  run "mkdir -p #{PHP_FPM_RUN}"
+  File.modify("/etc/init.d/php5-fpm") do |contents|
+    contents.sub("^PIDFILE=.+$", "PIDFILE=#{PHP_FPM_PID}")
   end
+  File.modify("/etc/php5/fpm/php-fpm.conf") do |contents|
+    contents.sub("^pid = .+$", "pid = #{PHP_FPM_PID}")
+  end
+  File.write("/etc/php5/fpm/pool.d/#{USER}.conf", PHP_FPM_POOL_CONF)
+  run "mv /etc/php5/fpm/pool.d/www.conf /etc/php5/fpm/pool.d/www.conf.example"
   
   # Fix ini files.
   Dir["/etc/php5/conf.d/*.ini"].each do |path|
@@ -268,19 +414,12 @@ def setup_php
     end
   end
 
-  run "/etc/init.d/php5-fpm reload"
-
-  File.write("/etc/apache2/conf.d/php5-fpm.conf", %Q{
-<IfModule mod_fastcgi.c>
-  AddHandler php5-fcgi .php
-  Action php5-fcgi /php5-fcgi
-  Alias /php5-fcgi /usr/lib/cgi-bin/php5-fcgi
-  FastCgiExternalServer /usr/lib/cgi-bin/php5-fcgi -socket #{socket} -pass-header Authorization
-</IfModule>
-  })
-
+  run "/etc/init.d/php5-fpm restart"
   run "a2enmod actions fastcgi alias"
   run "/etc/init.d/apache2 restart"
+
+  File.write("/etc/monit/conf.d/php-fpm", MONIT_PHP_FPM)
+  run "/etc/init.d/monit restart"
 end
 
 class String
@@ -377,7 +516,6 @@ class NilClass
   def or; yield; end
   def and; end
 end
-
 # }}}
 
 # Check if root.
@@ -415,9 +553,10 @@ if ARGV.include?("basic") # {{{
   install "dialog"
   remove "samba.*" if File.exists?("/etc/init.d/smbd")
   install "man less cron mc rubygems libjson-ruby irb gnupg wget host " +
-    "exim4 logrotate netcat ntpdate python-software-properties mutt"
+    "exim4 logrotate netcat ntpdate python-software-properties mutt monit"
   run "dpkg-reconfigure exim4-config"
-  File.ensure("/etc/exim4/exim4.conf.template", "disable_ipv6 = true\n")
+  # Not sure - it breaks some exim installations.
+  #File.ensure("/etc/exim4/exim4.conf.template", "disable_ipv6 = true\n")
   run "dpkg-reconfigure tzdata"
 
   run "apt-get dist-upgrade -y"
@@ -456,6 +595,11 @@ export JRUBY_OPTS='--server --1.9 -J-XX:+TieredCompilation'},
       io.write CRONTAB
     end
   }
+  
+  File.ensure("/etc/security/limits.d/spacegame.conf", %Q{
+spacegame  soft nofile 20000
+spacegame  hard nofile 20000
+}, "0600", "root:")
 
   File.ensure("#{HOME}/.rvmrc", %Q{rvm_trust_rvmrcs_flag=1\n}, nil, UCH)
 
@@ -483,6 +627,33 @@ export JRUBY_OPTS='--server --1.9 -J-XX:+TieredCompilation'},
       sub(/^#?PubkeyAuthentication .+$/, "PubkeyAuthentication yes")
   end
   run "/etc/init.d/ssh reload"
+
+  # Set up basic monit
+  File.write("/etc/monit/monitrc", 
+  %Q{# monit configuration file
+
+set daemon 30 with start delay 60
+
+set logfile /var/log/monit.log
+set idfile /var/run/monit/monit.id
+set statefile /var/run/monit/monit.state
+
+set mailserver localhost
+set alert arturas@nebula44.com
+set alert elsbergass@gmail.com
+
+# Allow connecting to HTTP server.
+set httpd port 2812 
+  allow arturas:nebula44.mmosmrts.monit
+  allow henrikas:operatoReady1.2.3
+
+include /etc/monit/conf.d/*
+  })
+  File.write("/etc/monit/conf.d/munin-node", MONIT_MUNIN)
+  File.modify("/etc/default/monit") do |contents|
+    contents.sub("startup=0", "startup=1")
+  end
+  run "/etc/init.d/monit restart"
   
   puts "Checking for RVM..."
   (rvm() == "").and {
@@ -492,11 +663,9 @@ export JRUBY_OPTS='--server --1.9 -J-XX:+TieredCompilation'},
     run("chmod +x #{rvminst}")
     run("#{rvminst} stable")
     File.unlink(rvminst)
-
-    File.modify(BASHRC) do |bashrc|
-      bashrc.sub!(%Q{[ -z "$PS1" ] && return}, %Q{if [ -z "$PS1" ]; then})
-      bashrc += %Q{\nfi\n\n[[ -s "/usr/local/rvm/scripts/rvm" ]] && . "/usr/local/rvm/scripts/rvm"}
-      bashrc
+  
+    %W{root #{USER} x11}.each do |user|
+      run "adduser #{user} rvm"
     end
 
     puts
@@ -512,36 +681,29 @@ if ARGV.include?("sql") # {{{
   run "gpg --keyserver  hkp://keys.gnupg.net --recv-keys 1C4CBDCDCD2EFD2A"
   run "gpg -a --export CD2EFD2A | apt-key add -"
   File.write("/etc/apt/sources.list.d/percona.list", 
-"deb http://repo.percona.com/apt precise main
-deb-src http://repo.percona.com/apt precise main")
+"deb http://repo.percona.com/apt #{DISTRO} main
+deb-src http://repo.percona.com/apt #{DISTRO} main")
   run "apt-get update"
 
   install "percona-server-server xtrabackup libcache-cache-perl libdbd-mysql-perl"
-  MYCNF_FILE = "/etc/mysql/conf.d/nebula.cnf"
-  unless File.exists?(MYCNF_FILE)
+  NEBULACNF_FILE = "/etc/mysql/conf.d/nebula.cnf"
+  unless File.exists?(NEBULACNF_FILE)
     puts "Configuring mysqld..."
-    File.write(MYCNF_FILE, MYCNF)
+    File.write(NEBULACNF_FILE, NEBULACNF)
   end
 
-  setup_apache
-  setup_php
-  install "phpmyadmin php5-mcrypt"
-  File.modify("/etc/phpmyadmin/config.inc.php") do |data|
-    # Disable advanced phpmyadmin functions.
-    data.
-      sub("$cfg['Servers'][$i]['controluser']", "// $cfg['Servers'][$i]['controluser']").
-      sub("$cfg['Servers'][$i]['controlpass']", "// $cfg['Servers'][$i]['controluser']")
-  end
+  File.write("/etc/mysql/my.cnf", MYCNF, "0644")
 
-  File.write("/etc/mysql/backup.cnf", %Q{# At least specify datadir
-[mysqld]
-datadir=/var/lib/mysql
-
-# This might be missing on some distros.
+  # This file needs empty line at EOF.
+  File.write("/etc/mysql/backup.cnf", %Q{
 !include /etc/mysql/my.cnf
-!include /etc/mysql/debian.cnf}, "0600")
+!include /etc/mysql/debian.cnf
+}, "0600")
 
   run "/etc/init.d/mysql restart"
+
+  File.write("/etc/monit/conf.d/mysql", MONIT_MYSQL)
+  run "/etc/init.d/monit restart"
 
   %w{queries threads bytes slowqueries}.each do |plugin|
     run "ln -sfv /usr/share/munin/plugins/mysql_#{plugin
@@ -573,6 +735,7 @@ innodb_lock_wait_timeout = 10})
   puts "Checking for jruby"
   rvm("list rubies").include?(JRUBY).or do
     puts "Building jruby, this will take a while..."
+    install "ant"
     rvm("install #{JRUBY} #{JRUBY_INSTALL_OPTS}")
     rvm("#{JRUBY} do gem install bundler")
   end
@@ -611,6 +774,12 @@ innodb_lock_wait_timeout = 10})
   run("ln -sf " +
     "#{HOME}/nebula-server/current/script/munin-plugins/memory " +
     "/etc/munin/plugins/nebula44_mem ")
+  run("ln -sf " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/tasks " +
+    "/etc/munin/plugins/nebula44_tasks ")
+  run("ln -sf " +
+    "#{HOME}/nebula-server/current/script/munin-plugins/pool " +
+    "/etc/munin/plugins/nebula44_pool ")
 
   # Market plugins
   resources = %w{metal energy zetium creds}
@@ -636,6 +805,11 @@ production:
   username: "#{dbuser}"
   password: "#{pass}"
 }, nil, UCH)
+
+  File.ensure("#{HOME}/config/jmx.password", JMX_CONFIG, "0600", UCH)
+
+  File.write("/etc/monit/conf.d/nebula-server", MONIT_NEBULA_SERVER)
+  run "/etc/init.d/monit restart"
 end # }}}
 
 if ARGV.include?("client") # {{{
@@ -655,9 +829,6 @@ end # }}}
 
 if ARGV.include?("web") # {{{
   pubkeys(USER, *WEB_PUBKEYS)
-  system "addgroup www-shared"
-  system "adduser www-data www-shared"
-  system "adduser #{USER} www-shared"
   
   rubyv=WEB_RUBY_VERSION # ruby version
   rubygs=WEB_RUBY_GEMSET # ruby gemset
@@ -667,14 +838,15 @@ if ARGV.include?("web") # {{{
     puts "Building #{rubyv}. This may take a while..."
     rvm "install #{rubyv}"
   end
-  File.ensure("#{HOME}/.profile", "export RAILS_ENV='production'\n", nil, UCH)
+  File.ensure("#{HOME}/.profile", "\nexport RAILS_ENV='production'\n", nil, UCH)
+  Dir.mkdir("#{HOME}/bin", nil, UCH)
+  File.write("#{HOME}/bin/webrunner", WEBRUNNER, 755, UCH)
 
   setup_apache
   setup_php
 
   # Set up web components.
   install "libmysqlclient-dev imagemagick libapache2-mod-xsendfile"
-
 
   # Enable xsendfile for avatars
   File.write("/etc/apache2/mods-available/xsendfile.conf", %Q{
@@ -748,13 +920,16 @@ PassengerPoolIdleTime #{PASSENGER_POOL_IDLE_TIME}
   def create_shared(base, *dirs)
     dirs.each do |dir|
       as(USER) { "mkdir -p #{base}/#{dir}" }
-      run "chown #{USER}:www-shared #{base}/#{dir}"
+      run "chown #{USER}: #{base}/#{dir}"
       run "chmod 775 #{base}/#{dir}"
     end
   end
 
   # Forum configuration
-  apache_vhost("nebula-forum", "#{HOME}/web/current/forum", "forum.nebula44.#{DOMAIN}")
+  apache_vhost(
+    "nebula-forum", "#{HOME}/web/current/forum", 
+    "forum.nebula44.#{DOMAIN}", php_fpm_vhost_conf("forum")
+  )
   forum_dbuser, forum_pass = create_mysql("forum")
   forum_secret = rand_pass(64)
   forum_cookie = "forum_n44_#{DOMAIN}_#{rand(10000)}"
@@ -787,7 +962,10 @@ define('DEFAULT_LANGUAGE', "#{FORUM_LANG}");
   create_shared("#{HOME}/web/shared/forum", "cache", "attachments")
 
   # WIKI configuration
-  apache_vhost("nebula-wiki", "#{HOME}/web/current/wiki", "wiki.nebula44.#{DOMAIN}")
+  apache_vhost(
+    "nebula-wiki", "#{HOME}/web/current/wiki",
+    "wiki.nebula44.#{DOMAIN}", php_fpm_vhost_conf("wiki")
+  )
   dbuser, pass = create_mysql("wiki")
   File.write("#{HOME}/config/wiki.php", %Q{<?php
 
@@ -811,7 +989,10 @@ $wgPasswordSender = "apache@wiki.$webDomain";
     "/etc/apache2/sites-enabled/nebula-web", 
     %Q{PassengerPreStart http://nebula44.#{DOMAIN}}
   )
-  apache_vhost("nebula-web-www", "#{HOME}/web/current/www-redirect", "www.nebula44.#{DOMAIN}")
+  apache_vhost(
+    "nebula-web-www", "#{HOME}/web/current/www-redirect", 
+    "www.nebula44.#{DOMAIN}", php_fpm_vhost_conf("www")
+  )
   dbuser, pass = create_mysql("web")
   File.write("#{HOME}/config/db.web.yml", %Q{---
 production: &production
@@ -879,4 +1060,7 @@ ActionMailer::Base.sendmail_settings[:arguments] = "-i"
 }
 
   run "/etc/init.d/apache2 restart"
+
+  File.write("/etc/monit/conf.d/delayed_job", MONIT_DELAYED_JOB)
+  run "/etc/init.d/monit restart"
 end # }}}

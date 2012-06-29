@@ -5,7 +5,7 @@ describe Route do
 
   describe ".by_fow_entries" do
     let(:player) { Factory.create(:player) }
-    let(:fow_entries) { [Factory.create(:fge_player, :galaxy => player.galaxy,
+    let(:fow_entries) { [Factory.create(:fge, :galaxy => player.galaxy,
                                         :player => player)] }
     let(:entry) { fow_entries[0] }
     let(:galaxy) { player.galaxy }

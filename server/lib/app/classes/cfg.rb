@@ -113,6 +113,11 @@ class Cfg
 
     def galaxy_zone_diameter; CONFIG['galaxy.zone.diameter']; end
 
+    def galaxy_zone_maturity_age; CONFIG['galaxy.zone.maturity_age']; end
+
+    # How much creds does player has on start.
+    def player_starting_creds; CONFIG['galaxy.player.creds.starting']; end
+
     def player_max_population; CONFIG['galaxy.player.population.max']; end
 
     # Returns number of seconds player is required to be last seen ago to be
@@ -167,9 +172,19 @@ class Cfg
     # Maximum number of market offers player can offer.
     def market_offers_max; CONFIG['market.offers.max']; end
 
+    # How often are you able to cancel your offers?
+    def market_offer_cancellation_cooldown
+      CONFIG.evalproperty('market.offers.cancellation_cooldown')
+    end
+
     # Returns +Float+ offset (like 0.10) for MarketOffer#to_rate deviation
     # from MarketOffer#average.
     def market_rate_offset; CONFIG['market.avg_rate.offset']; end
+
+    # Minimal value for resource pair rate.
+    def market_rate_min
+      CONFIG['market.avg_rate.min_rate']
+    end
 
     def market_rate_min_price_offset
       CONFIG['market.avg_rate.min_price.offset']
@@ -215,7 +230,7 @@ class Cfg
     # Returns resource multiplier for given galaxy. This ensures amount of
     # resources stay relevant through course of the galaxy.
     def market_bot_resource_multiplier(galaxy_id)
-      galaxy = Galaxy.find(galaxy_id)
+      galaxy = without_locking { Galaxy.find(galaxy_id) }
       [1, galaxy.current_day / market_bot_resource_day_divider].max
     end
 
@@ -354,6 +369,8 @@ class Cfg
         solar_system.player_id.nil? ? "regular" : "home"
       when SolarSystem::KIND_BATTLEGROUND
         solar_system.main_battleground? ? "battleground" : "mini_battleground"
+      when SolarSystem::KIND_POOLED
+        "pooled"
       else
         raise ArgumentError,
           "Solar system #{solar_system} with unknown kind: #{solar_system.kind}"

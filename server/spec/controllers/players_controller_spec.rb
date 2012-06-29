@@ -68,89 +68,63 @@ describe PlayersController do
           response_should_include :success => true
         end
 
-        it "should allow players to login" do
-          invoke @action, @params
-          response_should_include :success => true
-        end
-
         describe "reattachment" do
           before(:each) do
             Player.stub(:find).with(@params['server_player_id']).
               and_return(@test_player)
           end
 
-          it "should not attach player if he is not detached" do
-            @test_player.should_receive(:detached?).and_return(false)
-            @test_player.should_not_receive(:attach!)
-            invoke @action, @params
+          describe "attached" do
+            before(:each) do
+              @test_player.should_receive(:detached?).and_return(false)
+            end
+
+            it "should not push attach action" do
+              invoke @action, @params
+              should_have_not_pushed PlayersController::ACTION_ATTACH
+            end
+
+            it "should push game config & assets actions" do
+              invoke @action, @params
+              [
+                GameController::ACTION_CONFIG,
+                PlayersController::ACTION_PUSH_ASSETS
+              ].each_with_index do |action, index|
+                @controller.pushed[index].should == [action, {}]
+              end
+            end
+
+            it "should respond with success" do
+              invoke @action, @params
+              response.should == {success: true}
+            end
           end
 
-          it "should attach player if he was detached" do
-            @test_player.should_receive(:detached?).and_return(true)
-            @test_player.should_receive(:attach!)
-            invoke @action, @params
+          describe "detached" do
+            before(:each) do
+              @test_player.should_receive(:detached?).and_return(true)
+            end
+
+            it "should push game config & attach actions" do
+              invoke @action, @params
+              [
+                GameController::ACTION_CONFIG,
+                PlayersController::ACTION_ATTACH
+              ].each_with_index do |action, index|
+                @controller.pushed[index].should == [action, {}]
+              end
+            end
+
+            it "should not push assets action" do
+              invoke @action, @params
+              should_have_not_pushed PlayersController::ACTION_PUSH_ASSETS
+            end
+
+            it "should respond with correct params" do
+              invoke @action, @params
+              response.should == {success: true, attaching: true}
+            end
           end
-        end
-
-        it "should push actions" do
-          invoke @action, @params
-
-          [
-            GameController::ACTION_CONFIG,
-            PlayersController::ACTION_SHOW,
-            PlanetsController::ACTION_PLAYER_INDEX,
-            TechnologiesController::ACTION_INDEX,
-            QuestsController::ACTION_INDEX,
-            NotificationsController::ACTION_INDEX,
-            RoutesController::ACTION_INDEX,
-            PlayerOptionsController::ACTION_SHOW,
-            ChatController::ACTION_INDEX,
-            GalaxiesController::ACTION_SHOW
-          ].each_with_index do |action, index|
-            @controller.pushed[index].should == [action, {}]
-          end
-        end
-
-        it "should push announcement if it is set" do
-          ends_at = 5.minutes.from_now
-          message = "Hello!"
-          AnnouncementsController.should_receive(:get).
-            and_return([ends_at, message])
-          invoke @action, @params
-
-          @controller.pushed.should include([
-            AnnouncementsController::ACTION_NEW,
-            {'ends_at' => ends_at, 'message' => message}
-          ])
-        end
-
-        it "should not push announcement if it is not set" do
-          AnnouncementsController.should_receive(:get).
-            and_return([nil, nil])
-          invoke @action, @params
-
-          @controller.pushed.find do |action, params|
-            action == AnnouncementsController::ACTION_NEW
-          end.should be_nil
-        end
-
-        it "should push daily_bonus|show if there is a bonus available" do
-          @test_player.daily_bonus_at = 1.day.ago
-          @test_player.economy_points = Cfg.daily_bonus_start_points
-          @test_player.save!
-          invoke @action, @params
-
-          should_have_pushed DailyBonusController::ACTION_SHOW
-        end
-
-        it "should not push daily_bonus|show if there is no bonus" do
-          @test_player.daily_bonus_at = 1.day.from_now
-          @test_player.save!
-          invoke @action, @params
-
-          @controller.pushed.should_not include(
-            {'action' => DailyBonusController::ACTION_SHOW, 'params' => {}}
-          )
         end
       end
 
@@ -178,6 +152,107 @@ describe PlayersController do
   describe "logged in" do
     before(:each) do
       init_controller PlayersController, :login => true
+    end
+
+    describe "players|attach" do
+      before(:each) do
+        @action = "players|attach"
+        @params = {}
+        player.stub(:attach!)
+      end
+
+      it_behaves_like "with param options", only_push: true
+      it_should_behave_like "having controller action scope"
+
+      it "should call #attach! on player" do
+        player.should_receive(:attach!)
+        push @action, @params
+      end
+
+      it "should push assets" do
+        should_push PlayersController::ACTION_PUSH_ASSETS
+        push @action, @params
+      end
+
+      it "should respond with completed" do
+        should_respond_with completed: true
+        push @action, @params
+      end
+    end
+
+    describe "players|push_assets" do
+      before(:each) do
+        @action = "players|push_assets"
+        @params = {}
+      end
+
+      it_behaves_like "with param options", only_push: true
+      it_should_behave_like "having controller action scope"
+
+      it "should push actions" do
+        push @action, @params
+
+        [
+          PlayersController::ACTION_SHOW,
+          PlanetsController::ACTION_PLAYER_INDEX,
+          TechnologiesController::ACTION_INDEX,
+          QuestsController::ACTION_INDEX,
+          NotificationsController::ACTION_INDEX,
+          RoutesController::ACTION_INDEX,
+          PlayerOptionsController::ACTION_SHOW,
+          ChatController::ACTION_INDEX,
+          GalaxiesController::ACTION_SHOW
+        ].each_with_index do |action, index|
+          @controller.pushed[index].should == [action, {}]
+        end
+      end
+
+      it "should push announcement if it is set" do
+        ends_at = 5.minutes.from_now
+        message = "Hello!"
+        AnnouncementsController.should_receive(:get).
+          and_return([ends_at, message])
+        push @action, @params
+
+        @controller.pushed.should include([
+          AnnouncementsController::ACTION_NEW,
+          {'ends_at' => ends_at, 'message' => message}
+        ])
+      end
+
+      it "should not push announcement if it is not set" do
+        AnnouncementsController.should_receive(:get).
+          and_return([nil, nil])
+        push @action, @params
+
+        @controller.pushed.find do |action, params|
+          action == AnnouncementsController::ACTION_NEW
+        end.should be_nil
+      end
+
+      it "should push daily_bonus|show if there is a bonus available" do
+        player.daily_bonus_at = 1.day.ago
+        player.economy_points = Cfg.daily_bonus_start_points
+        player.save!
+        push @action, @params
+
+        should_have_pushed DailyBonusController::ACTION_SHOW
+      end
+
+      it "should not push daily_bonus|show if there is no bonus" do
+        player.daily_bonus_at = 1.day.from_now
+        player.save!
+        push @action, @params
+
+        @controller.pushed.should_not include(
+          {'action' => DailyBonusController::ACTION_SHOW, 'params' => {}}
+        )
+      end
+
+      it "should respond with completed" do
+        should_respond_with completed: true
+        push @action, @params
+      end
     end
 
     describe "players|show" do

@@ -22,11 +22,13 @@ namespace :db do
   desc "Establish connection to database. (rake dep)"
   task :connection => :environment do
     ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
+    @connection, @connection_id = ActiveRecord::Base.connection_pool.
+      checkout_with_id
   end
 
   desc "Migrate the database through scripts in db/migrate. Target specific " +
     "version with VERSION=x."
-  task :migrate => [:environment] do
+  task :migrate => :connection do
     puts "Migrating in #{App.env}..."
     ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
     ActiveRecord::Migrator.migrate(
@@ -40,7 +42,7 @@ namespace :db do
 
   namespace :migrate do
     desc "Reapply latest migration to DB."
-    task :reapply => :environment do
+    task :reapply => :connection do
       check_for_production!
 
       puts "Rollbacking in #{App.env}..."
@@ -50,7 +52,7 @@ namespace :db do
     end
 
     desc "Revert last migration."
-    task :revert => :environment do
+    task :revert => :connection do
       check_for_production!
 
       puts "Rollbacking in #{App.env}..."
@@ -62,7 +64,7 @@ namespace :db do
   end
 
   desc "Seed database with initial values. Use ruleset=xxx to change ruleset."
-  task :seed => :environment do
+  task :seed => :connection do
     ActiveRecord::Base.establish_connection(DB_CONFIG[App.env])
     require File.join(ROOT_DIR, 'db', 'seeds.rb')
   end
@@ -97,6 +99,8 @@ namespace :db do
       ActiveRecord::Base.establish_connection(
         config.merge('database' => nil)
       )
+      connection, connection_id = ActiveRecord::Base.connection_pool.
+        checkout_with_id
       ActiveRecord::Base.connection.create_database(config['database'],
         :charset => @charset,
         :collation => @collation
@@ -113,7 +117,7 @@ namespace :db do
   end
 
   desc 'Drops the database.'
-  task :drop => [:environment] do
+  task :drop => :connection do
     check_for_production!
 
     each_unique_db_config do |config|
@@ -142,8 +146,19 @@ namespace :db do
 
   namespace :test do
     desc "Clone database from current environment"
-    task :clone => :environment do
-      ActiveRecord::Cloner.clone_db(DB_CONFIG[App.env], DB_CONFIG['test'])
+    task :clone => :connection do
+      # Replace enums to varchars because we create lots of custom subclasses in
+      # tests.
+      replace_type = lambda do |sql|
+        sql.sub(/`type` enum\(.+?\)/i, '`type` varchar(255)')
+      end
+
+      ActiveRecord::Cloner.clone_db(
+        DB_CONFIG[App.env], DB_CONFIG['test'],
+        units: [replace_type],
+        buildings: [replace_type],
+        technologies: [replace_type],
+      )
     end
   end
 end

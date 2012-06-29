@@ -11,6 +11,7 @@ zeus_cannon
 dart_laser
 boss_light boss_heavy
 convoyship_heavy convoyship_light
+mantis_sniper
 } %>
 <% terrain_types = {
   0 => 'earth',
@@ -630,6 +631,22 @@ assets:
       "healing":
         indicator.png:              Building_heal_bar.png
 
+      "events":
+        top_right_black.png:      Event_msg_close_black_top.png
+        center_right_black.png:   Event_msg_close_black_center.png
+        bottom_right_black.png:   Event_msg_close_black_bottom.png
+        top_right_red.png:        Event_msg_close_red_top.png
+        center_right_red.png:     Event_msg_close_red_center.png
+        bottom_right_red.png:     Event_msg_close_red_bottom.png
+        top_left.png:             Event_msg_close_top.png
+        center_left.png:          Event_msg_close_center.png
+        bottom_left.png:          Event_msg_close_bottom.png
+        close.png:                Event_msg_close_x.png
+        notification.png:         Event_msg_picture1.png
+        alert.png:                Event_msg_picture2.png
+        info.png:                 Event_msg_picture3.png
+        fault.png:                Event_msg_picture4.png
+
       "ss_navigator":
         bottom_left.png:            Snavig_bottom_left.png
         center_left.png:            Snavig_center_left.png
@@ -799,6 +816,13 @@ assets:
         button_up.png:     Register_up.png
         button_over.png:   Register_over.png
         button_blink.png:  Register_up2.png
+
+      "quests_button":
+        button_up_reward.png: Quests_claim_up.png
+        button_up.png:     Quests_all_up.png
+        button_over_reward.png: Quests_claim_over.png
+        button_over.png:   Quests_all_over.png
+        button_blink.png:  Quests_claim_up2.png
 
       "announcements":
         button_up.png:        Shutdown_button_up.png
@@ -1183,6 +1207,8 @@ assets:
         OreTile.jpg:                Tutorial_OreTile.jpg
         BgBattles.jpg: Lt_tutorial_BgBattles.jpg
         BossShip.jpg: Lt_tutorial_BossShip.jpg
+        ClaimReward.jpg:         ClaimReward.jpg
+        ClaimRewardRC.jpg:         ClaimRewardRC.jpg
         EcoTier2.jpg: Lt_tutorial_EcoTier2.jpg
         GalaxyBattles.jpg: Lt_tutorial_GalaxyBattles.jpg
         Pulsars.jpg: Lt_tutorial_Pulsars.jpg
@@ -1191,10 +1217,6 @@ assets:
         ZetiumTile.jpg: Lt_tutorial_ZetiumTile.jpg
         lt_BuildingSidebar.jpg:     Lt_tutorial_BuildingSidebar.jpg
         en_BuildingSidebar.jpg:     En_tutorial_BuildingSidebar.jpg
-        lt_ClaimReward.jpg:         Lt_tutorial_ClaimReward.jpg
-        en_ClaimReward.jpg:         En_tutorial_ClaimReward.jpg
-        lt_ClaimRewardRC.jpg:         Lt_tutorial_ClaimRewardRC.jpg
-        en_ClaimRewardRC.jpg:         En_tutorial_ClaimRewardRC.jpg
         lt_ArmorTiles.jpg: Lt_tutorial_ArmorTiles.jpg
         en_ArmorTiles.jpg: En_tutorial_ArmorTiles.jpg
         lt_AttackButton.jpg: Lt_tutorial_AttackButton.jpg

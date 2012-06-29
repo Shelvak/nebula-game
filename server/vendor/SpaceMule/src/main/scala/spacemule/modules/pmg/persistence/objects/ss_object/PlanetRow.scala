@@ -20,10 +20,6 @@ case class PlanetRow(
     range.start + (range.end - range.start) * areaPercentage / 100
   }
   override val terrain = planet.map.terrain
-  // Lazy because we might not know player id on construction time.
-  override lazy val playerId =
-    if (planet.ownedByPlayer) solarSystemRow.playerRow.get.id.toString
-    else DB.loadInFileNull
   override val name = planet.planetName(
     (System.currentTimeMillis() % 100000).toInt
   )

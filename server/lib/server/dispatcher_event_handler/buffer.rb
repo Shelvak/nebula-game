@@ -5,7 +5,8 @@
 class DispatcherEventHandler::Buffer < BasicObject
   include ::Singleton
 
-  HANDLE = :dispatcher_event_handler_buffer
+  HANDLE_BUFFER = :dispatcher_event_handler_buffer
+  HANDLE_WRAPPED = :dispatcher_event_handler_buffer_wrapped
   TAG = "deh_buffer"
 
   def method_missing(*args)
@@ -21,26 +22,47 @@ class DispatcherEventHandler::Buffer < BasicObject
   alias :push_to_player! :push_to_player
 
   def wrap
-    ::LOGGER.debug "Entering wrapped block.", TAG
-    buffer.clear
-
-    ret_val = yield
-
-    ::LOGGER.debug "Commiting buffer of #{buffer.size} entries.", TAG
-
-    buffer.each do |args|
-      dispatcher.push_to_player!(*args)
+    if wrapped?
+      first_wrap = false
+      ::LOGGER.debug "Already in wrapped block, dive in.", TAG
+    else
+      ::LOGGER.debug "Entering wrapped block.", TAG
+      buffer.clear
+      first_wrap = true
+      self.wrapped = true
     end
 
-    ret_val
+    yield
+  ensure
+    if first_wrap
+      ::LOGGER.debug "Commiting buffer of #{buffer.size} entries.", TAG
+      ::LOGGER.debug "BUFFER: #{buffer.inspect}.", TAG
+
+      buffer.each do |args|
+        dispatcher.push_to_player!(*args)
+      end
+
+      self.wrapped = nil
+    else
+      ::LOGGER.debug "Still in wrapped block, dive out.", TAG
+    end
   end
 
-  private
+private
+
   def dispatcher
     ::Celluloid::Actor[:dispatcher]
   end
 
   def buffer
-    ::Thread.current[HANDLE] ||= []
+    ::Thread.current[HANDLE_BUFFER] ||= []
+  end
+
+  def wrapped=(value)
+    ::Thread.current[HANDLE_WRAPPED] = value
+  end
+
+  def wrapped?
+    ::Thread.current[HANDLE_WRAPPED]
   end
 end

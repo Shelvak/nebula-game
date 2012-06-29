@@ -34,7 +34,7 @@ module ServerMachine
           return
         when "?"
           send_data("!\n")
-          return
+          next
         end
 
         debug "Received message: \"#{message}\""
@@ -55,6 +55,9 @@ module ServerMachine
         Celluloid::Actor[:dispatcher].receive_message! @client, json
       end
     end
+  rescue StreamBuffer::OverflowError
+    send_data("ERROR: buffer overflow\n")
+    close_connection_after_writing
   end
 
   def write(message)
@@ -66,7 +69,7 @@ module ServerMachine
       end
     rescue Exception => e
       error "Failed while serializing message:\n\n#{
-        message.inspect}\n\n#{e.to_log_str}", to_s
+        message.inspect}\n\n#{Exception.to_log_str(e)}", to_s
       close_connection_after_writing
       return
     end

@@ -181,6 +181,11 @@ package utils.assets
        * Path to the folder where achievement images reside.
        */
       public static const ACHIEVEMENT_IMAGE_FOLDER: String = IMAGE_FOLDER + "achievements/";
+
+      /**
+       * Path to the folder where events images reside.
+       */
+      public static const EVENTS_IMAGE_FOLDER:String = UI_IMAGES_FOLDER + "events/";
       
       /**
        * Path to the folder where notification images reside.
@@ -238,6 +243,7 @@ package utils.assets
       public static const LEFT_HIDABLE_MENU_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "left_hidable_menu/";
       public static const ANNOUNCEMENTS_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "announcements/";
       public static const DAILY_BONUS_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "daily_bonus/";
+      public static const QUESTS_BUTTON_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "quests_button/";
       public static const MAIN_QUEST_IMAGES_FOLDER:String = UI_IMAGES_FOLDER + "main_quest/";
       
       

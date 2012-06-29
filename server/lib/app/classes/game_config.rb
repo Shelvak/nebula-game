@@ -75,8 +75,13 @@ class GameConfig
     # 60.seconds returns not pure Fixnum, but Duration object...
     formula = formula.to_f if formula.is_a?(ActiveSupport::Duration)
 
-    FormulaCalc.calc(
-      formula, params.map_values { |key, value| value.to_f }.to_scala
-    )
+    # Convert to scala map before passing it off to FormulaCalc, because our
+    # generics-loving code really wants scala map. Also not much copying here
+    # and RubyHash passing gets all weird, so meh.
+    params = params.each_with_object(
+      Java::scala.collection.mutable.HashMap.new
+    ) { |(key, value), map| map.update(key.to_s, value.to_f) }
+
+    FormulaCalc.calc(formula, params)
   end
 end

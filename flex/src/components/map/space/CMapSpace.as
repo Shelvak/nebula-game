@@ -4,11 +4,11 @@ package components.map.space
    import components.base.viewport.events.ViewportEvent;
    import components.map.CMap;
    import components.movement.CRoute;
-   import components.movement.speedup.CSpeedControlPopup;
-   import components.movement.speedup.CSpeedControlPopupM;
    import components.movement.CSquadronMapIcon;
    import components.movement.CSquadronPopup;
    import components.movement.CTargetLocationPopup;
+   import components.movement.speedup.CSpeedControlPopup;
+   import components.movement.speedup.CSpeedControlPopupM;
 
    import controllers.timedupdate.IUpdateTriggerTemporary;
    import controllers.timedupdate.TemporaryUpdateTrigger;
@@ -29,7 +29,6 @@ package components.map.space
    import mx.collections.ArrayCollection;
    import mx.events.FlexEvent;
    import mx.logging.ILogger;
-   import mx.logging.Log;
 
    import spark.components.Group;
    import spark.layouts.HorizontalAlign;
@@ -40,6 +39,7 @@ package components.map.space
    import utils.Objects;
    import utils.assets.AssetNames;
    import utils.components.DisplayListUtil;
+   import utils.logging.Log;
 
 
    public class CMapSpace extends CMap
@@ -60,13 +60,8 @@ package components.map.space
        */
       internal static const OBJECT_POPUP_YSHIFT:int = 20;
 
-      private function get logger(): ILogger {
-         return Log.getLogger(Objects.getClassName(this, true));
-      }
-
-
-      internal var grid:Grid;
-      internal var squadronsController:SquadronsController;
+      public var grid:Grid;
+      public var squadronsController:SquadronsController;
 
 
       /* ###################### */
@@ -685,6 +680,8 @@ package components.map.space
       }
 
       private function ordersController_uicmdShowSpeedUpPopupHandler(event: OrdersControllerEvent): void {
+         const logger: ILogger =
+            Log.getMethodLogger(this, "ordersController_uicmdShowSpeedUpPopupHandler");
          // Now this should be impossible, but in practice it sometimes happens:
          // http://forum.nebula44.lt/topic/1544/siunciant-laivus/
          // Judging from the log, this can't happen in the map which is open
@@ -695,15 +692,11 @@ package components.map.space
          if (targetLocationPopup == null) {
             if (f_cleanupCalled) {
                logger.warn(
-                  "@ordersController_uicmdShowSpeedUpPopupHandler(): "
-                     + "cleanup() has already been called but listener "
+                  "cleanup() has already been called but listener "
                      + "has not been removed from OrdersController!"
                );
             }
-            logger.warn(
-               "@ordersController_uicmdShowSpeedUpPopupHandler(): "
-                  + "targetLocationPopup is null, returning."
-            );
+            logger.warn("targetLocationPopup is null, returning.");
             return;
          }
          /**

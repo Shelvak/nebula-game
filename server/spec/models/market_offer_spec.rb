@@ -9,7 +9,7 @@ describe MarketOffer do
         with_config_values('market.offers.max' => 1) do
           player = Factory.create(:market_offer).player
           offer = Factory.build(:market_offer, 
-            :planet => Factory.create(:planet, :player => player))
+            planet: Factory.create(:planet, player: player))
           offer.should_not be_valid
         end
       end
@@ -17,7 +17,7 @@ describe MarketOffer do
       it "should not fail on update" do
         player = Factory.create(:market_offer).player
         offer = Factory.create(:market_offer, 
-          :planet => Factory.create(:planet, :player => player))
+          planet: Factory.create(:planet, player: player))
         with_config_values('market.offers.max' => 1) do
           offer.should be_valid
         end
@@ -27,7 +27,7 @@ describe MarketOffer do
     describe "when #from_amount is below minimal amount" do
       it "should fail if creating a record" do
         Factory.build(:market_offer, 
-          :from_amount => Cfg.market_offer_min_amount - 1).
+          from_amount: Cfg.market_offer_min_amount - 1).
           should_not be_valid
       end
       
@@ -40,7 +40,7 @@ describe MarketOffer do
     
     describe "#to_rate adjustment to fit avg. market rate" do
       it "should adjust it if it's too low" do
-        offer = Factory.build(:market_offer, :to_rate => 1)
+        offer = Factory.build(:market_offer, to_rate: 1)
         MarketRate.stub!(:average).
           with(offer.player.galaxy_id, offer.from_kind, offer.to_kind).
           and_return(7)
@@ -49,7 +49,7 @@ describe MarketOffer do
       end
 
       it "should adjust it if it's too big" do
-        offer = Factory.build(:market_offer, :to_rate => 10)
+        offer = Factory.build(:market_offer, to_rate: 10)
         MarketRate.stub!(:average).
           with(offer.player.galaxy_id, offer.from_kind, offer.to_kind).
           and_return(7)
@@ -66,31 +66,44 @@ describe MarketOffer do
       it "should do it if avg. rate bound is higher than lowest price" do
         MarketRate.stub!(:average).with(galaxy.id, from_kind, to_kind).
           and_return(2)
-        Factory.create(:market_offer, :galaxy => galaxy,
-          :from_kind => from_kind, :to_kind => to_kind, :to_rate => 2)
+        Factory.create(:market_offer, galaxy: galaxy,
+          from_kind: from_kind, to_kind: to_kind, to_rate: 2)
 
         MarketRate.stub!(:average).with(galaxy.id, from_kind, to_kind).
           and_return(7)
-        low_avg_bound = 7 * (1 - Cfg.market_rate_offset)
 
-        offer = Factory.create(:market_offer, :galaxy => galaxy,
-          :from_kind => from_kind, :to_kind => to_kind, :to_rate => 1)
+        offer = Factory.create(:market_offer, galaxy: galaxy,
+          from_kind: from_kind, to_kind: to_kind, to_rate: 1)
         offer.to_rate.should == 2 - Cfg.market_rate_min_price_offset
       end
 
       it "should not do it if avg. rate bound is lower than lowest price" do
         MarketRate.stub!(:average).with(galaxy.id, from_kind, to_kind).
           and_return(10)
-        Factory.create(:market_offer, :galaxy => galaxy,
-          :from_kind => from_kind, :to_kind => to_kind, :to_rate => 10)
+        Factory.create(:market_offer, galaxy: galaxy,
+          from_kind: from_kind, to_kind: to_kind, to_rate: 10)
 
         MarketRate.stub!(:average).with(galaxy.id, from_kind, to_kind).
           and_return(2)
         low_avg_bound = 2 * (1 - Cfg.market_rate_offset)
 
-        offer = Factory.create(:market_offer, :galaxy => galaxy,
-          :from_kind => from_kind, :to_kind => to_kind, :to_rate => 1)
+        offer = Factory.create(:market_offer, galaxy: galaxy,
+          from_kind: from_kind, to_kind: to_kind, to_rate: 1)
         offer.to_rate.should == low_avg_bound
+      end
+    end
+
+    describe "#to_rate adjustment to be bigger than min rate" do
+      let(:galaxy) { Factory.create(:galaxy) }
+      let(:from_kind) { MarketOffer::KIND_METAL }
+      let(:to_kind) { MarketOffer::KIND_ENERGY }
+
+      it "should do it if #to_rate is lower than min rate" do
+        MarketRate.stub!(:average).with(galaxy.id, from_kind, to_kind).
+          and_return(Cfg.market_rate_min)
+        offer = Factory.create(:market_offer, galaxy: galaxy,
+          from_kind: from_kind, to_kind: to_kind, to_rate: 0)
+        offer.to_rate.should == Cfg.market_rate_min
       end
     end
   end
@@ -100,8 +113,8 @@ describe MarketOffer do
     let(:from_kind) { MarketOffer::KIND_METAL }
     let(:to_kind) { MarketOffer::KIND_ZETIUM }
     let(:offer) do
-      offer = Factory.build(:market_offer, :galaxy => galaxy,
-        :from_kind => from_kind, :to_kind => to_kind)
+      offer = Factory.build(:market_offer, galaxy: galaxy,
+        from_kind: from_kind, to_kind: to_kind)
       offer.to_rate = MarketRate.average(galaxy.id, from_kind, to_kind) *
         (1.0 + Cfg.market_rate_offset)
       offer
@@ -155,8 +168,8 @@ describe MarketOffer do
 
     
     it "should not fail with system offer" do
-      model = Factory.create(:market_offer, :galaxy => Factory.create(:galaxy),
-                             :planet => nil)
+      model = Factory.create(:market_offer, galaxy: Factory.create(:galaxy),
+                             planet: nil)
       model.as_json['player'].should be_nil
     end
   end
@@ -215,8 +228,8 @@ describe MarketOffer do
       describe "for resources" do
         before(:each) do
           @offer = Factory.create(:market_offer, 
-            :from_kind => MarketOffer::KIND_METAL,
-            :to_kind => MarketOffer::KIND_ZETIUM)
+            from_kind: MarketOffer::KIND_METAL,
+            to_kind: MarketOffer::KIND_ZETIUM)
           @seller_planet = @offer.planet
 
           @to_amount = (@offer.from_amount * @offer.to_rate).ceil
@@ -257,14 +270,14 @@ describe MarketOffer do
       describe "for creds" do
         before(:each) do
           @offer = Factory.create(:market_offer, 
-            :from_kind => MarketOffer::KIND_METAL,
-            :to_kind => MarketOffer::KIND_CREDS)
+            from_kind: MarketOffer::KIND_METAL,
+            to_kind: MarketOffer::KIND_CREDS)
           @seller_planet = @offer.planet
           @seller = @offer.player
 
           @to_amount = (@offer.from_amount * @offer.to_rate).ceil
-          @buyer = Factory.create(:player, :creds => @to_amount + 1000)
-          @buyer_planet = Factory.create(:planet, :player => @buyer)
+          @buyer = Factory.create(:player, creds: @to_amount + 1000)
+          @buyer_planet = Factory.create(:planet, player: @buyer)
         end
 
         it "should fail if buyer does not have enough creds" do
@@ -342,8 +355,8 @@ describe MarketOffer do
       describe "for resources" do
         before(:each) do
           @offer = Factory.create(:market_offer, 
-            :from_kind => MarketOffer::KIND_CREDS,
-            :to_kind => MarketOffer::KIND_ZETIUM)
+            from_kind: MarketOffer::KIND_CREDS,
+            to_kind: MarketOffer::KIND_ZETIUM)
           @seller_planet = @offer.planet
 
           @to_amount = (@offer.from_amount * @offer.to_rate).ceil
@@ -390,8 +403,8 @@ describe MarketOffer do
     describe "general" do
       before(:each) do
         @offer = Factory.create(:market_offer, 
-          :from_kind => MarketOffer::KIND_METAL,
-          :to_kind => MarketOffer::KIND_ZETIUM)
+          from_kind: MarketOffer::KIND_METAL,
+          to_kind: MarketOffer::KIND_ZETIUM)
         @seller_planet = @offer.planet
         
         @to_amount = (@offer.from_amount * @offer.to_rate).ceil
@@ -526,22 +539,37 @@ describe MarketOffer do
   end
   
   describe "#cancel!" do
-    before(:each) do
-      @offer = Factory.create(:market_offer, 
-        :from_kind => MarketOffer::KIND_ENERGY)
+    let(:offer) do
+      Factory.create(:market_offer, from_kind: MarketOffer::KIND_ENERGY)
+    end
+    
+    it "should fail if last cancellation was soon enough" do
+      offer.player.last_market_offer_cancel = (
+        Cfg.market_offer_cancellation_cooldown - 10
+      ).ago
+      offer.player.save!
+
+      lambda do
+        offer.cancel!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should set Player#last_market_offer_cancel" do
+      offer.cancel!
+      offer.player.reload.last_market_offer_cancel.
+        should be_within(SPEC_TIME_PRECISION).of(Time.now)
     end
     
     it "should return from_amount to the planet" do
-      planet = @offer.planet
+      planet = offer.planet
       lambda do
-        @offer.cancel!
+        offer.cancel!
         planet.reload
-      end.should change(planet, :energy).by(@offer.from_amount)
+      end.should change(planet, :energy).by(offer.from_amount)
     end
     
     it "should return from_amount to player if creds" do
-      offer = Factory.create(:market_offer,
-                             :from_kind => MarketOffer::KIND_CREDS)
+      offer = Factory.create(:market_offer, from_kind: MarketOffer::KIND_CREDS)
 
       player = offer.player
       lambda do
@@ -551,16 +579,16 @@ describe MarketOffer do
     end
 
     it "should dispatch changed with planet" do
-      should_fire_event(@offer.planet, EventBroker::CHANGED, 
+      should_fire_event(offer.planet, EventBroker::CHANGED, 
           EventBroker::REASON_OWNER_PROP_CHANGE) do
-        @offer.cancel!
+        offer.cancel!
       end
     end
     
     it "should destroy the offer" do
-      @offer.cancel!
+      offer.cancel!
       lambda do
-        @offer.reload
+        offer.reload
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
   end
@@ -584,8 +612,8 @@ describe MarketOffer do
       planet = Factory.create(:planet_with_player)
       
       offers = [
-        Factory.create(:market_offer, :planet => planet),
-        Factory.create(:market_offer, :planet => planet),
+        Factory.create(:market_offer, planet: planet),
+        Factory.create(:market_offer, planet: planet),
         Factory.create(:market_offer),
       ]
       
@@ -599,7 +627,7 @@ describe MarketOffer do
     it "should return offers from NPC planets" do
       planet = Factory.create(:planet_with_player)      
       # We must create an offer from planet with player.
-      offer = Factory.create(:market_offer, :planet => planet)
+      offer = Factory.create(:market_offer, planet: planet)
       planet.player = nil
       planet.save!
       
@@ -609,8 +637,8 @@ describe MarketOffer do
     end
     
     it "should return system offers" do    
-      offer = Factory.create(:market_offer, :planet => nil, 
-        :galaxy_id => Factory.create(:galaxy).id)
+      offer = Factory.create(:market_offer, planet: nil, 
+        galaxy_id: Factory.create(:galaxy).id)
       fetched = MarketOffer.
         fast_offers("`#{MarketOffer.table_name}`.`id`=?", offer.id)
       fetched[0].should equal_to_hash(offer.as_json)

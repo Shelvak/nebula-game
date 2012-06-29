@@ -1,12 +1,26 @@
 class Threading::Director
+  class TaskInfo < Struct.new(:description, :start_time)
+    def initialize(description)
+      super(description, Time.now)
+    end
+
+    # Return elapsed time from task start in milliseconds.
+    def elapsed(now=Time.now)
+      ((now - start_time) * 1000).round
+    end
+  end
+
   include NamedLogMessages
   include Celluloid
 
   def initialize(name, pool)
     @name = name
     Actor[to_s] = current_actor
+    java.lang.Thread.current_thread.name = "#{to_s}-main"
 
     @workers = {}
+    # {name => TaskInfo}
+    @worker_tasks = {}
     @free_workers = Java::java.util.LinkedList.new
     @task_queue = Java::java.util.LinkedList.new
 
@@ -23,39 +37,47 @@ class Threading::Director
   end
 
   def inspect
-    "<#{self.class} workers=#{@workers.size}>"
+    "<#{self.class} workers=#{@workers.size} enqueued=#{enqueued_tasks}>"
   end
 
   def to_s
-    "director-#{@name}"
+    "director_#{@name}"
+  end
+
+  def enqueued_tasks
+    @task_queue.size
   end
 
   def work(task)
     typesig binding, Threading::Director::Task
 
-    info "Got work: #{task}"
-    worker = reserve_worker
-    if worker.nil?
-      info "No free workers, enqueueing: #{task}"
+    debug "Got work: #{task}"
+    entry = reserve_worker
+    if entry.nil?
+      debug "No free workers, enqueueing: #{task}"
       @task_queue << task
     else
-      worker.work!(task)
+      debug "Dispatching to #{entry.name}: #{task}"
+      @worker_tasks[entry.name] = TaskInfo.new(task.short_description)
+      entry.worker.work!(task)
     end
 
     report
   end
 
   def done(name)
-    info "*** #{name} is done working ***"
+    debug "*** #{name} is done working ***"
 
     entry = @workers[name]
 
     unless @task_queue.blank?
       task = @task_queue.remove_first
-      info "Taking task from queue: #{task}"
+      debug "Taking task from queue: #{task}"
+      @worker_tasks[entry.name] = TaskInfo.new(task.short_description)
       entry.worker.work!(task)
     else
-      info "Returning #{name} to pool."
+      debug "Returning #{name} to pool."
+      @worker_tasks.delete entry.name
       @free_workers << entry
     end
 
@@ -69,13 +91,17 @@ class Threading::Director
   private
 
   def report
-    info "free workers: #{@free_workers.size} enqueued tasks: #{
-      @task_queue.size}"
+    now = Time.now
+    current = @worker_tasks.map do |name, task_info|
+      "#{name} => #{task_info.description} (#{task_info.elapsed(now)}ms)"
+    end.join(", ")
+
+    info "free workers: #{@free_workers.size}, enqueued tasks: #{
+      @task_queue.size}, current: {#{current}}"
   end
 
   def reserve_worker
     return if @free_workers.blank?
-    entry = @free_workers.remove_first
-    entry.worker
+    @free_workers.remove_first
   end
 end

@@ -7,12 +7,9 @@ require 'pathname'
 NAMES = [
   ["current", "Currently logged in"],
   ["in_1d", "Logged in 1d"],
-  ["in_2d", "Logged in 2d"],
   ["in_3d", "Logged in 3d"],
-  ["in_4d", "Logged in 4d"],
-  ["in_5d", "Logged in 5d"],
-  ["in_6d", "Logged in 6d"],
   ["in_7d", "Logged in 7d"],
+  ["in_14d", "Logged in 14d"],
   ["total", "Total no. of players"]
 ]
 

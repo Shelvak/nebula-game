@@ -106,9 +106,9 @@ class Unit < ActiveRecord::Base
     end
   end
 
-  # Wraps standard #destroy in SsObject::Planet#changing_viewable.
+  # Wraps standard #destroy in Visibility#track_location_changes.
   def destroy
-    SsObject::Planet.changing_viewable(location) do
+    Visibility.track_location_changes(location) do
       super
     end
   end
@@ -173,14 +173,15 @@ class Unit < ActiveRecord::Base
     else
       check_upgrade!
 
+      xp_needed = self.xp_needed
+
       if xp >= xp_needed
         self.xp -= xp_needed
         self.level += 1
       else
-        raise GameLogicError.new(
-          "#{xp_needed} xp was required to upgrade, but only #{xp
-            } provided!"
-        )
+        raise GameLogicError,
+          "#{xp_needed} xp was required to upgrade from level #{level} to #{
+          level + 1}, but only #{xp} provided for #{self}!"
       end
     end
   end
@@ -234,19 +235,8 @@ class Unit < ActiveRecord::Base
   protected
   def on_upgrade_just_finished_after_save
     super
-    # Sometimes unit can be built without player, e.g. when planet was
-    # conquered by NPC during building time. Then we should not increase
-    # visibility.
-    if level == 1
-      if space? && ! player.nil?
-        location_id = location.type == Location::SS_OBJECT \
-          ? location.object.solar_system_id : location.id
-        FowSsEntry.increase(location_id, player, 1)
-      end
-
-      # If the unit was just built check its location for combat.
-      Combat::LocationChecker.check_location(location) if can_fight?
-    end
+    # If the unit was just built check its location for combat.
+    Combat::LocationChecker.check_location(location) if level == 1 && can_fight?
   end
 
   before_save :upgrade_through_xp
@@ -255,8 +245,9 @@ class Unit < ActiveRecord::Base
     if number > 0
       number.times { upgrade }
       # Notify quest event handler about upgrade.
-      QUEST_EVENT_HANDLER.fire(self, EventBroker::CHANGED,
-        EventBroker::REASON_UPGRADE_FINISHED)
+      QUEST_EVENT_HANDLER.fire(
+        self, EventBroker::CHANGED, EventBroker::REASON_UPGRADE_FINISHED
+      )
     end
 
     true
@@ -277,6 +268,9 @@ class Unit < ActiveRecord::Base
   def on_upgrade_reduce_resources
     super
     player = self.player
+    player.recalculate_population
+    # Manually increase population after recalculation, because this is called
+    # in before_save.
     player.population += population
     player.save!
   end
@@ -284,7 +278,7 @@ class Unit < ActiveRecord::Base
   after_destroy do
     player = self.player
     if player
-      player.population -= population
+      player.recalculate_population
       player.save!
     end
   end
@@ -446,15 +440,16 @@ class Unit < ActiveRecord::Base
     # Types are underscored and counts are Fixnum.
     #
     def units_for_moving(unit_ids, player_id, location)
-      where(location.location_attrs).
-        where(:player_id => player_id, :id => unit_ids).
-        select("`type`, COUNT(*) as `count`").
-        group("`type`").
-        c_select_all.
-        inject({}) do |units, row|
-          units[row['type']] = row['count'].to_i
-          units
-        end
+      without_locking do
+        where(location.location_attrs).
+          where(:player_id => player_id, :id => unit_ids).
+          select("`type`, COUNT(*) as `count`").
+          group("`type`").
+          c_select_all
+      end.each_with_object({}) do |row, units|
+        units[row['type']] = row['count'].to_i
+        units
+      end
     end
 
     # Generates sql for setting location to given +LocationPoint+.
@@ -492,47 +487,37 @@ class Unit < ActiveRecord::Base
       grouped_units = units.group_to_hash { |unit| unit.player_id }
       grouped_units.delete(nil)
 
-      player_cache = {}
+      location = units[0].location
+      Visibility.track_location_changes(location) do
+        # Calculate army points before actual units are destroyed to still
+        # get transported units.
+        army_points = grouped_units.each_with_object({}) do
+          |(player_id, player_units), hash|
 
-      # Remove army points when losing units.
-      grouped_units.each do |player_id, player_units|
-        loaded_units = []
-        player_units.each do |unit|
-          loaded_units += unit.units if unit.stored > 0
+          points = 0
+          player_units.each do |unit|
+            points += unit.points_on_destroy
+            points += unit.units.all.sum(&:points_on_destroy) if unit.stored > 0
+          end
+          hash[player_id] = points
         end
 
-        points = (player_units + loaded_units).map(&:points_on_destroy).sum
-        population = (player_units + loaded_units).map(&:population).sum
-        player_cache[player_id] = Player.find(player_id)
-        player_cache[player_id].population -= population
-        change_player_points(
-          player_cache[player_id],
-          points_attribute,
-          - points
-        )
-      end
-
-      location = units[0].location
-      SsObject::Planet.changing_viewable(location) do
         unit_ids = units.map(&:id)
         # Delete units and other units inside those units.
         where(:id => unit_ids).delete_all
+
+        # Remove army points & recalculate population when losing units.
+        # We need to recalculate population after deletion from DB.
+        grouped_units.keys.each do |player_id|
+          points = army_points[player_id]
+          player = Player.find(player_id)
+          player.recalculate_population
+          change_player_points(player, points_attribute, -points)
+        end
+
         eb_units = killed_by.nil? ? units : CombatArray.new(units, killed_by)
 
         EventBroker.fire(eb_units, EventBroker::DESTROYED, reason)
-
-        if location.type == Location::SOLAR_SYSTEM ||
-            location.type == Location::SS_OBJECT
-          location_id = location.type == Location::SOLAR_SYSTEM \
-            ? location.id : location.object.solar_system_id
-
-          grouped_units.each do |player_id, player_units|
-            unit_count = player_units.reject { |unit| ! unit.space? }.size
-            FowSsEntry.decrease(
-              location_id, player_cache[player_id], unit_count
-            ) unless unit_count == 0
-          end
-        end
 
         true
       end
@@ -593,31 +578,25 @@ class Unit < ActiveRecord::Base
     #
     # Units is a collection of unsaved +Unit+ objects.
     def give_units_raw(units, location, player)
-      fse_counter = 0
       points = UnitPointsCounter.new
-      population = 0
 
       units.each do |unit|
         points.add_unit(unit)
-        population += unit.population
-        fse_counter += 1 if unit.space?
         unit.player = player
         unit.location = location
         unit.skip_validate_technologies = true
       end
 
+      save_all_units(units, nil, EventBroker::CREATED)
+
       if player
         points.increase(player)
-        player.population += population
+        player.recalculate_population
         player.save!
 
-        FowSsEntry.increase(
-          location.solar_system_id, player, fse_counter
-        ) if fse_counter > 0 && location.is_a?(SsObject::Planet)
         Objective::HaveUpgradedTo.progress(units, strict: false)
       end
 
-      save_all_units(units, nil, EventBroker::CREATED)
       # Use units[0].location because location can be planet and
       # LocationChecker expects LocationPoint.
       Combat::LocationChecker.check_location(units[0].location) \

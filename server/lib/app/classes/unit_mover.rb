@@ -73,7 +73,9 @@ class UnitMover
       decreases = player_id.nil? \
         ? {} \
         : TechModApplier.apply(
-          TechTracker.query_active(player_id, TechTracker::SPEED),
+          without_locking {
+            TechTracker.query_active(player_id, TechTracker::SPEED).all
+          },
           TechTracker::SPEED
         )
 

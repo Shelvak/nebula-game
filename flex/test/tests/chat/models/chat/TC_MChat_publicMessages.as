@@ -2,28 +2,30 @@ package tests.chat.models.chat
 {
    import asmock.framework.Expect;
    import asmock.framework.SetupResult;
-   
+
+   import controllers.startup.StartupInfo;
+
    import ext.hamcrest.object.equals;
-   
+
    import models.chat.MChatChannelPublic;
    import models.chat.MChatMember;
    import models.chat.MChatMessage;
-   
+
    import org.hamcrest.assertThat;
-   
-   
+
+
    public class TC_MChat_publicMessages extends TC_BaseMChat
    {
       public function TC_MChat_publicMessages()
       {
          super();
-      };
+      }
       
       
       public override function classesToMock() : Array
       {
          return super.classesToMock().concat(MChatChannelPublic);
-      };
+      }
       
       
       private var channelGalaxy:MChatChannelPublic;
@@ -34,12 +36,13 @@ package tests.chat.models.chat
       public override function setUp() : void
       {
          super.setUp();
+         StartupInfo.getInstance().initializationComplete = true;
          channelGalaxy = MChatChannelPublic(mockRepository.createDynamic(MChatChannelPublic, ["galaxy"]));
          SetupResult.forCall(channelGalaxy.name).returnValue("galaxy");
          message = MChatMessage(chat.messagePool.borrowObject());
          message.channel = "galaxy";
          message.message = "Lets blow something up!";
-      };
+      }
       
       
       [After]
@@ -48,7 +51,7 @@ package tests.chat.models.chat
          super.tearDown();
          channelGalaxy = null;
          message = null;
-      };
+      }
       
       
       [Test]
@@ -71,6 +74,6 @@ package tests.chat.models.chat
          chat.channelJoin("galaxy", member);
          chat.receivePublicMessage(message);
          mockRepository.verifyAll();
-      };
+      }
    }
 }

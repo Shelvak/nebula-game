@@ -213,9 +213,21 @@ module Parts::Constructor
     # the resources back.
     def cancel_constructable!
       raise GameLogicError.new("Constructor isn't working!") unless working?
-      constructable.cancel!(true)
-      CallbackManager.unregister(self,
-        CallbackManager::EVENT_CONSTRUCTION_FINISHED)
+      if constructable.nil?
+        # Weird bug: building is working, but no constructable is set...
+        # #<Building::Barracks id: 141753, planet_id: 18296, x: 11, y: 13,
+        # armor_mod: 0, constructor_mod: 0, energy_mod: 0, level: 2, type:
+        # "Barracks", upgrade_ends_at: nil, x_end: 13, y_end: 15, state: 2,
+        # pause_remainder: nil, construction_mod: 0, cooldown_ends_at: nil,
+        # hp_percentage: 1.0, flags: 2, constructable_building_id: nil,
+        # constructable_unit_id: nil, batch_id: "">
+        LOGGER.warn "#{self} is working, but does not have constructable!"
+      else
+        constructable.cancel!(true)
+      end
+      CallbackManager.unregister(
+        self, CallbackManager::EVENT_CONSTRUCTION_FINISHED
+      )
       on_construction_finished!(false)
     end
 
@@ -248,7 +260,7 @@ module Parts::Constructor
       free_slots += 1 unless working?
       raise GameLogicError,
         "Tried to construct #{count} entries, but only #{free_slots
-        } are available!" if count > free_slots
+        } free slots are available!" if count > free_slots
 
       if working?
         enqueue!(type, prepaid, count, params)
@@ -315,7 +327,6 @@ module Parts::Constructor
 
       units = []
       total_time = 0
-      population = 0
       # Cannot explode data into (array, time) because time is a primitive
       # value ant we need to increment it.
       construction_queue_entries.each do |entry|
@@ -337,7 +348,6 @@ module Parts::Constructor
 
           units << model
           total_time += model.upgrade_time(1)
-          population += model.population
         end
       end
 
@@ -351,13 +361,12 @@ module Parts::Constructor
         "Needed #{cost} creds, but player only had #{player.creds}!" \
         if cost > player.creds
 
-      # TODO: s2_par - modify deh_buffer to discard events on failure.
+      # Clear entries because they will be included into population otherwise.
+      ConstructionQueue.clear(id, false)
 
-      player.population -= population # Unit.give_units_raw will increase pop.
       player.creds -= cost
       Unit.give_units_raw(units, planet, player) # This also saves player
 
-      ConstructionQueue.clear(id, false)
       # Reload queue entries after clearing.
       construction_queue_entries(true)
       on_construction_finished!
@@ -381,9 +390,14 @@ module Parts::Constructor
       # We might not need to finish constructable if it was cancelled.
       if finish_constructable
         constructable = self.constructable
-        before_finishing_constructable(constructable)
-        # Call #on_upgrade_finished! because we have no callback registered.
-        constructable.send(:on_upgrade_finished!)
+        if constructable.nil?
+          # TODO: actually find out why this shit is happening.
+          LOGGER.info("Whoa, constructable is nil\n\nfor #{self.inspect}!")
+        else
+          before_finishing_constructable(constructable)
+          # Call #on_upgrade_finished! because we have no callback registered.
+          constructable.send(:on_upgrade_finished!)
+        end
       end
 
       begin

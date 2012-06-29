@@ -18,7 +18,7 @@ case class BuildingRow(planetRow: SSObjectRow, building: Building)
 extends Row with LocationRow {
   val companion = BuildingRow
 
-  lazy val valuesSeq = List(
+  protected[this] def valuesImpl = List(
     building.name,
     planetRow.id,
     building.x,

@@ -5,11 +5,14 @@
 
 package spacemule.modules.config.objects
 
+import scala.{collection => sc}
 import spacemule.helpers.Converters._
-import collection.mutable.ListBuffer
+import core.AnyConversions._
 import spacemule.modules.pmg.objects.Troop
 
 object UnitsEntry {
+  type Data = sc.Seq[sc.Seq[Any]]
+
   /**
    * Extract data from dynamicly typed data store:
    *
@@ -18,16 +21,13 @@ object UnitsEntry {
       ...
     ]
    */
-  def extract(entries: Any): Seq[UnitsEntry] = {
-    entries.asInstanceOf[Seq[IndexedSeq[Any]]].map { entryArray =>
+  def extract(entries: Data): Seq[UnitsEntry] = {
+    entries.map { entryArray =>
       new UnitsEntry(
-        entryArray(1).asInstanceOf[String].camelcase,
-        entryArray(0).asInstanceOf[Long].toInt,
-        entryArray(2).asInstanceOf[Long].toInt,
-        entryArray(3) match {
-          case l: Long => l.toDouble
-          case d: Double => d
-        }
+        entryArray(1).toString.camelcase,
+        entryArray(0).asDouble.round.toInt,
+        entryArray(2).asInt,
+        entryArray(3).asDouble
       )
     }
   }

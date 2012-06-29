@@ -43,15 +43,19 @@ class ClientLocation < LocationPoint
     when Location::GALAXY
       # Do nothing
     when Location::SOLAR_SYSTEM
-      @kind = SolarSystem.where(:id => @id).select("kind").c_select_value
+      @kind = without_locking do
+        SolarSystem.where(:id => @id).select("kind").c_select_value
+      end
 
       raise ArgumentError.new("SolarSystem #{@id} does not exist!") \
         if @kind.nil?
     when Location::SS_OBJECT
-      row = SsObject.
-        select("name, terrain, solar_system_id, player_id, position, angle").
-        where(:id => @id).
-        c_select_one
+      row = without_locking do
+        SsObject.
+          select("name, terrain, solar_system_id, player_id, position, angle").
+          where(:id => @id).
+          c_select_one
+      end
 
       raise ArgumentError.new("SsObject #{@id} does not exist!") if row.nil?
 

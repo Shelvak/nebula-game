@@ -6,32 +6,23 @@ class FowGalaxyEntry < ActiveRecord::Base
 
   # FK :dependent => :destroy_all
   belongs_to :galaxy
+  # FK :dependent => :destroy_all
+  belongs_to :player
 
-  include Parts::FowEntry
+  # TODO: spec
+  scope :for, lambda { |player| where(:player_id => player.friendly_ids) }
 
   # Retrieve +FowGalaxyEntry+ by given coordinates.
-  scope :by_coords, Proc.new { |x, y|
-    {
-      :conditions => [
-        "(? BETWEEN x AND x_end) AND (? BETWEEN y AND y_end)",
-        x, y
-      ]
-    }
+  scope :by_coords, lambda { |x, y|
+    where("(? BETWEEN x AND x_end) AND (? BETWEEN y AND y_end)", x, y)
   }
 
   composed_of :rectangle, :mapping => Rectangle::MAPPING
 
-  validate do
-    errors.add :base, "Either player or alliance id must be set." \
-      if alliance_id.nil? && player_id.nil?
-  end
-
   def inspect
-    "<FowGalaxyEntry id: #{id}, galaxy_id: #{galaxy_id}, #{
-      alliance_id \
-        ? "aid: #{alliance_id.inspect}" \
-        : "pid: #{player_id.inspect}"
-    }, rect: [#{x}, #{y}] => [#{x_end}, #{y_end}], counter: #{counter}>"
+    "<FowGalaxyEntry id: #{id}, galaxy_id: #{galaxy_id
+    }, pid: #{player_id.inspect}, rect: [#{x}, #{y}] => [#{x_end}, #{y_end
+    }], counter: #{counter}>"
   end
 
   def as_json(options=nil)
@@ -39,104 +30,27 @@ class FowGalaxyEntry < ActiveRecord::Base
   end
 
   class << self
-    # Returns +Player+ ids for +GalaxyPoint+ in +Galaxy+ at coordinates 
+    # Returns +Player+ ids for +GalaxyPoint+ in +Galaxy+ at coordinates
     # x, y.
+    #
+    # TODO: spec
     def observer_player_ids(galaxy_id, x, y)
-      super(
-        sanitize_sql_for_conditions([
-          "galaxy_id=? AND (? BETWEEN x AND x_end) AND
-            (? BETWEEN y AND y_end)",
-          galaxy_id, x, y
-        ])
-      )
+      # Player ids that see that spot.
+      player_ids = without_locking do
+        select("DISTINCT(`player_id`)").
+          where(galaxy_id: galaxy_id).
+          where("? BETWEEN `x` AND `x_end`", x).
+          where("? BETWEEN `y` AND `y_end`", y).
+          c_select_values
+      end
+
+      Player.join_alliance_ids(player_ids)
     end
 
     # Returns if given spot is visible.
     # TODO: spec
     def visible?(player, x, y)
-      self.for(player).by_coords(x, y).first.nil? ? false : true
-    end
-
-    # Creation/deletion
-
-    # Create or update row for given zone with _kind_ => _id_ and
-    # increase counter by _increasement_. See #update_record for return
-    # value.
-    #
-    # _kind_ can be either 'player_id' or 'alliance_id'.
-    #
-    def increase_for_kind(rectangle, galaxy_id, kind, id, incrementation=1)
-      check_params = {
-        :x => rectangle.x,
-        :x_end => rectangle.x_end,
-        :y => rectangle.y,
-        :y_end => rectangle.y_end,
-        kind => id
-      }
-      create_params = check_params.merge(:galaxy_id => galaxy_id)
-
-      update_record(check_params, create_params, incrementation)
-    end
-
-    # Create an entry for _player_ at zone _rectangle_. Increase counter
-    # by _increment_.
-    #
-    # This also creates entry for +Alliance+ if _player_ is in one.
-    def increase(rectangle, player, increment=1)
-      status = increase_for_kind(
-        rectangle, player.galaxy_id, 'player_id', player.id, increment
-      )
-      increase_for_kind(
-        rectangle, player.galaxy_id, 'alliance_id',
-        player.alliance_id, increment
-      ) unless player.alliance_id.nil?
-
-      should_dispatch = status == :created || status == :destroyed
-
-      # Dispatch event to send new vision to players.
-      dispatch_changed(player) if should_dispatch
-
-      should_dispatch
-    end
-    
-    # Dispatches changed for galaxy map, which updates whole galaxy map in
-    # client.
-    def dispatch_changed(player, alliance=nil)
-      EventBroker.fire(
-        Event::FowChange.new(player, alliance || player.alliance),
-        EventBroker::FOW_CHANGE,
-        EventBroker::REASON_GALAXY_ENTRY
-      )
-    end
-
-    # Deletes entry for _player_ at zone _rectangle_. Also removes entry
-    # for +Alliance+ if _player_ is in one.
-    def decrease(rectangle, player, decrement=1)
-      # Decrement counter
-      increase(rectangle, player, -decrement)
-    end
-
-    # Assimilate or throw out player
-    #
-    # Multiply _counter_ by _modifier_ before adding.
-    def change_player(alliance_id, player_id, modifier)
-      where(:player_id => player_id).all.each do |entry|
-        increase_for_kind(entry.rectangle, entry.galaxy_id,
-          'alliance_id', alliance_id,
-          entry.counter * modifier)
-      end
-    end
-
-    # Add all entries currently belonging to player to alliance pool.
-    def assimilate_player(alliance, player)
-      change_player(alliance.id, player.id, 1)
-      dispatch_changed(player, alliance)
-    end
-
-    # Remove all player entries from alliance pool.
-    def throw_out_player(alliance, player)
-      change_player(alliance.id, player.id, -1)
-      dispatch_changed(player, alliance)
+      without_locking { self.for(player).by_coords(x, y).exists? }
     end
 
     # Returns SQL for conditions that limits things on table identified by
@@ -164,6 +78,90 @@ class FowGalaxyEntry < ActiveRecord::Base
           ]
         )
       end.join(" OR ")
+    end
+
+    # Creation/deletion
+
+    # Create an entry for _player_ at zone _rectangle_. Increase counter
+    # by _increment_.
+    #
+    # This also creates entry for +Alliance+ if _player_ is in one.
+    def increase(rectangle, player, increment=1)
+      typesig binding, Rectangle, Player, Fixnum
+
+      status = increase_impl(
+        rectangle, player.galaxy_id, player.id, increment
+      )
+
+      should_dispatch = status == :created || status == :destroyed
+
+      # Dispatch event to send new vision to players.
+      dispatch_changed(player) if should_dispatch
+
+      should_dispatch
+    end
+
+    # Deletes entry for _player_ at zone _rectangle_. Also removes entry
+    # for +Alliance+ if _player_ is in one.
+    def decrease(rectangle, player, decrement=1)
+      # Decrement counter
+      increase(rectangle, player, -decrement)
+    end
+    
+    # Dispatches changed for galaxy map, which updates whole galaxy map in
+    # client.
+    def dispatch_changed(player, alliance=nil)
+      typesig binding, Player, [NilClass, Alliance]
+
+      EventBroker.fire(
+        Event::FowChange.new(player, alliance || player.alliance),
+        EventBroker::FOW_CHANGE,
+        EventBroker::REASON_GALAXY_ENTRY
+      )
+    end
+
+  private
+
+    # Create or update row for given zone and
+    # increase counter by _incrementation_.
+    #
+    # Returns :created if record was created.
+    # Returns :updated if record was updated.
+    # Returns :destroyed if record was destroyed.
+    # Returns false if nothing was done.
+    #
+    def increase_impl(rectangle, galaxy_id, player_id, incrementation=1)
+      params = {
+        galaxy_id: galaxy_id, player_id: player_id,
+        x: rectangle.x, x_end: rectangle.x_end,
+        y: rectangle.y, y_end: rectangle.y_end,
+      }
+
+      count = select("`counter`").where(params).c_select_value
+
+      if count.nil?
+        return false if incrementation < 0
+
+        # Record does not exist, create it
+        params[:counter] = incrementation
+        connection.execute("INSERT INTO `#{table_name}` SET #{
+          sanitize_sql_for_assignment(params)}")
+
+        :created
+      else
+        value = count.to_i + incrementation
+        if value > 0
+          # Just update value
+          where(params).update_all("`counter`=#{value}")
+
+          :updated
+        else
+          # Destroy record
+          where(params).delete_all
+
+          :destroyed
+        end
+      end
     end
   end
 end

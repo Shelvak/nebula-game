@@ -65,7 +65,7 @@ class DispatcherEventHandler::ObjectResolver
             solar_system(object.solar_system_id)
           end
         when ConstructionQueueEntry
-          planet_owner_only(object.constructor.planet)
+          planet_owner_only(without_locking { object.constructor.planet })
         when Notification, ClientQuest, QuestProgress, ObjectiveProgress,
              Technology
           player(object.player_id)

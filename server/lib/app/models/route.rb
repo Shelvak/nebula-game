@@ -94,7 +94,7 @@ class Route < ActiveRecord::Base
   def hops_in_current_zone
     case current.type
     when Location::GALAXY, Location::SOLAR_SYSTEM
-      hops_in_zone(current.object.zone)
+      hops_in_zone(without_locking { current.object.zone })
     else
       # Other zones does not have route hops
       []
