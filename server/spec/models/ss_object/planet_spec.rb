@@ -747,13 +747,26 @@ describe SsObject::Planet do
     end
     
     describe "with :view" do
-      it_behaves_like "as json", Factory.create(:planet), {:view => true},
-        %w{},
-        %w{next_raid_at raid_arg energy_diminish_registered
-          metal metal_generation_rate metal_usage_rate metal_storage
-          energy energy_generation_rate energy_usage_rate energy_storage
-          zetium zetium_generation_rate zetium_usage_rate zetium_storage
-          last_resources_update}
+      describe "NPC planet" do
+        it_behaves_like "as json", Factory.create(:planet), {:view => true},
+          %w{
+            metal metal_generation_rate metal_usage_rate metal_storage
+            energy energy_generation_rate energy_usage_rate energy_storage
+            zetium zetium_generation_rate zetium_usage_rate zetium_storage
+            last_resources_update},
+          %w{next_raid_at raid_arg energy_diminish_registered}
+      end
+
+      describe "player planet" do
+        it_behaves_like "as json", Factory.create(:planet_with_player),
+          {:view => true},
+          %w{},
+          %w{next_raid_at raid_arg energy_diminish_registered
+            metal metal_generation_rate metal_usage_rate metal_storage
+            energy energy_generation_rate energy_usage_rate energy_storage
+            zetium zetium_generation_rate zetium_usage_rate zetium_storage
+            last_resources_update}
+      end
     end
 
     describe "with :owner" do

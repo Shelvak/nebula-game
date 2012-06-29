@@ -116,6 +116,8 @@ class SsObject::Planet < SsObject
         if options[:owner]
       additional_attributes = additional_attributes | VIEW_ATTRIBUTES \
         if options[:view]
+      additional_attributes = additional_attributes | RESOURCE_ATTRIBUTES \
+        if options[:view] && player_id.nil?
       additional_attributes = additional_attributes | INDEX_ATTRIBUTES \
         if options[:index]
 
