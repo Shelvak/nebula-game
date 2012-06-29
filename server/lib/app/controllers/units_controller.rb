@@ -427,10 +427,10 @@ class UnitsController < GenericController
 
       # Check if we can load/unload things.
       raise GameLogicError.new(
-        "Cannot load resources from planet: not planet owner!"
+        "Cannot load resources from planet: not planet owner && planet not NPC!"
       ) if (
         params['metal'] > 0 || params['energy'] > 0 || params['zetium'] > 0
-      ) && planet.player_id != m.player.id
+      ) && ! (planet.player_id == m.player.id || planet.player_id.nil?)
 
       # Adjust how much we are unloading and in case we are unloading too much
       # reduce how much we're unloading to prevent resource loss.
