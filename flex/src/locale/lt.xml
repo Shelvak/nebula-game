@@ -1630,7 +1630,7 @@
     <gun.boss_heavy value="Šoko sviediniai" />
     <gun.convoyship_light value="Fotonų greitintuvas" />
     <gun.convoyship_heavy value="TR-3 leistuvas" />
-    <gun.mantis_sniper value ="OSV-96 Snaiperinis Šautuvas" />
+    <gun.mantis_sniper value ="OSV-96 snaiperinis šautuvas" />
     <armorType value="Šarvų tipas" />
     <damageInPercent value="Procentai" />
     <damage value="Žala" />
