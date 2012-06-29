@@ -5656,7 +5656,7 @@
     <label.save value="Save" />
     <label.warnBeforeUnload value="Warn before closing game" />
     <label.showInfoEvents>
-      Show info events in upper right corner.
+      Show info events in upper right corner
     </label.showInfoEvents>
     <label.defaultTransporterTab
       value="Tab to show first while loading or unloading transporter:" />
