@@ -407,6 +407,7 @@ class Cfg
     end
 
     ### ss_object.yml ###
+
     def asteroid_wreckage_next_spawn
       CONFIG.eval_rangerand("ss_object.asteroid.wreckage.time.spawn")
     end
@@ -444,7 +445,7 @@ class Cfg
     end
 
     def planet_boss_spawn_random_delay_date(solar_system)
-      solar_system_spawn_random_delay(solar_system).seconds.from_now
+      planet_boss_spawn_random_delay(solar_system).seconds.from_now
     end
   end
 end

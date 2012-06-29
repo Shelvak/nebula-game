@@ -279,32 +279,31 @@ class SsObject::Planet < SsObject
     Objective::RepairHp.progress(player, damaged_hp)
   end
 
-  def spawn!
-    raise GameLogicError.new(
-      "Planet must be a battleground"
-    ) unless self.solar_system.battleground?
+  def spawn_boss!
+    raise GameLogicError, "Planet must be in a battleground!" \
+      unless solar_system.battleground?
 
     cooldown = self.cooldown
-    raise GameLogicError.new(
-      "Cannot spawn while planet has a cooldown"
-    ) if cooldown.present? && cooldown > Time.now
+    raise GameLogicError,
+      "Cannot spawn while planet has a cooldown! (until #{cooldown})" \
+      unless cooldown.nil?
 
-    raise GameLogicError.new(
-      "You cannot spawn until #next_spawn_at expires"
-    ) if self.next_spawn.present? && self.next_spawn > Time.now
+    raise GameLogicError,
+      "You cannot spawn until #next_spawn expires at #{next_spawn}" \
+      if next_spawn.present? && next_spawn > Time.now
 
     units = UnitBuilder.from_random_ranges(
-      Cfg.planet_boss_spawn_definition(self.solar_system),
+      Cfg.planet_boss_spawn_definition(solar_system),
       location_point, nil, spawn_counter, 1
     )
     Unit.save_all_units(units, nil, EventBroker::CREATED)
 
     self.spawn_counter += 1
-    self.next_spawn = Cfg.planet_boss_spawn_random_delay_date(self.solar_system)
+    self.next_spawn = Cfg.planet_boss_spawn_random_delay_date(solar_system)
     self.save!
 
     EventBroker.fire(self, EventBroker::CHANGED)
-    Combat::LocationChecker.check_location(self.location)
+    Combat::LocationChecker.check_location(location_point)
   end
 
 private

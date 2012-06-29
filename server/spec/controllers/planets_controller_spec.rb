@@ -499,16 +499,24 @@ describe PlanetsController do
     end
   end
 
-  describe "planets|take" do
-    let(:npc_planet) { Factory.create(:planet, :player => nil) }
-    let(:owner_planet) { Factory.create(:planet, :player => player) }
+  describe "planets|bg_spawn" do
+    let(:solar_system) { Factory.create(:battleground) }
+    let(:npc_planet) do
+      Factory.create(:planet, player: nil, solar_system: solar_system,
+        position: 0)
+    end
+    let(:owner_planet) do
+      Factory.create(:planet, player: player, solar_system: solar_system,
+        position: 1)
+    end
     let(:other_planet) do
-      Factory.create(:planet, :player => Factory.create(:player))
+      Factory.create(:planet_with_player, solar_system: solar_system,
+        position: 2)
     end
 
     before(:each) do
       @action = 'planets|bg_spawn'
-      @params = { 'id' => owner_planet.id }
+      @params = {'id' => owner_planet.id}
     end
 
     it "should fail if player doesn't have ground units in the planet" do
@@ -517,13 +525,19 @@ describe PlanetsController do
       end.should raise_error(GameLogicError)
     end
 
-    it "should fail if ground units cannot fight" do
+    it "should fail if your ground units cannot fight" do
       # level 0 unit
-      Factory.create(:unit, :player => player, :level => 0,
-              :location => owner_planet)
+      Factory.create(:u_trooper, opts_upgrading + {
+        player: player, location: owner_planet, level: 0
+      })
       # hidden unit
-      Factory.create(:unit, :player => player, :level => 1,
-        :location => owner_planet, :hidden => true)
+      Factory.create(:u_trooper, player: player, location: owner_planet,
+        hidden: true)
+      # Other player fighting unit
+      Factory.create(:u_trooper, player: Factory.create(:player),
+        location: owner_planet)
+      # NPC player fighting unit
+      Factory.create(:u_trooper, location: owner_planet)
 
       lambda do
         invoke @action, @params
@@ -534,11 +548,8 @@ describe PlanetsController do
       before(:each) do
         # player unit in each type of planet
         [npc_planet, owner_planet, other_planet].each do |planet|
-          Factory.create(:unit, :player => player, :level => 1,
-            :location => planet)
+          Factory.create(:u_trooper, player: player, location: planet)
         end
-
-        SsObject::Planet.any_instance.stub(:spawn!)
       end
 
       it "should fail if planet belongs to other player" do
@@ -560,10 +571,15 @@ describe PlanetsController do
       end
 
       it "should call spawn" do
-        SsObject::Planet.stub(:find).and_return(owner_planet)
-        owner_planet.should_receive(:spawn!)
+        SsObject::Planet.should_receive(:find).with(owner_planet.id).
+          and_return(owner_planet)
+        owner_planet.should_receive(:spawn_boss!)
 
-        invoke @action, @params.merge('id' => owner_planet.id)
+        invoke @action, @params
+      end
+
+      it "should work" do
+        invoke @action, @params
       end
     end
   end

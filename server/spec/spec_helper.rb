@@ -118,6 +118,10 @@ if $SPEC_INITIALIZED.nil?
     #
     # If _return_method_call_value_ is set to true, it returns
     # [method_call_value, block_value] instead of just block_value.
+    #
+    # If _return_method_call_value_ is set to Proc, it calls that proc with
+    # method_call_calue.
+    #
     def should_execute(method_name, args=nil,
         return_method_call_value=false)
       # Save old method
@@ -132,6 +136,11 @@ if $SPEC_INITIALIZED.nil?
           define_method(method_name) do |*call_args|
             method_ran = args.nil? ? true : args == call_args
             method_call_value = old_method.call(*call_args)
+            if return_method_call_value.is_a?(Proc)
+              return_method_call_value.call(method_call_value)
+              return_method_call_value = false
+            end
+            method_call_value
           end
         end
 

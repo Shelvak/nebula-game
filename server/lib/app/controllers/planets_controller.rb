@@ -295,26 +295,35 @@ class PlanetsController < GenericController
     planet.save!
   end
 
+  # Spawn NPC planet boss into battleground/pulsar planet. You must have at
+  # least one ground unit, the planet must be owned by NPC or you.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the planet you want to spawn to
+  #
+  # Response: None
+  #
   ACTION_BG_SPAWN = 'planets|bg_spawn'
 
   BG_SPAWN_OPTIONS = logged_in + required(:id => Fixnum)
   BG_SPAWN_SCOPE = scope.world
   def self.bg_spawn_action(m)
     has_ground_units = Unit.where(
-      :location_ss_object_id => m.params['id'],
-      :player_id => m.player.id
+      location_ss_object_id: m.params['id'],
+      player_id: m.player.id
     ).combat.any?(&:ground?)
 
     raise GameLogicError.new(
-      "Player must have available ground units to spawn a boss"
+      "You must have combat ground units in planet to spawn its boss"
     ) unless has_ground_units
 
     planet = SsObject::Planet.find(m.params['id'])
-    if planet.player_id.present? && planet.player_id != m.player.id
-      raise GameLogicError.new(
-        "Player must own the planet or it has to belong to NPC")
-    end
+    raise GameLogicError,
+      "You must own the planet or it has to belong to NPC" \
+      unless planet.player_id == m.player.id || planet.player_id.nil?
 
-    planet.spawn!
+    planet.spawn_boss!
   end
 end

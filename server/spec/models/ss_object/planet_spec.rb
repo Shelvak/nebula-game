@@ -1367,78 +1367,93 @@ describe SsObject::Planet do
     end
   end
 
-  describe "#spawn!" do
-    let(:planet) do
-      Factory.create(:planet, solar_system: Factory.create(:battleground))
-    end
+  describe "#spawn_boss!" do
+    let(:solar_system) { Factory.create(:battleground) }
+    let(:planet) { Factory.create(:planet, solar_system: solar_system) }
     let(:non_battleground) { Factory.create(:planet) }
 
     it "should fail if planet isn't a battleground" do
       lambda do
-        non_battleground.spawn!
+        non_battleground.spawn_boss!
       end.should raise_error(GameLogicError)
     end
 
     it "should fail if planet has a cooldown" do
       Factory.create(:cooldown, location: planet.location_point)
       lambda do
-        planet.spawn!
+        planet.spawn_boss!
       end.should raise_error(GameLogicError)
     end
 
-    it "should fail if next_spawn date is in future" do
-      planet.next_spawn = Time.now + 10.days
-      planet.save!
+    it "should fail if #next_spawn date is in future" do
+      planet.next_spawn = 10.days.from_now
       lambda do
-        planet.spawn!
+        planet.spawn_boss!
       end.should raise_error(GameLogicError)
     end
 
-    it "should pass if next spawn is null" do
+    it "should pass if #next_spawn is null" do
       lambda do
-        planet.spawn!
+        planet.spawn_boss!
       end.should_not raise_error
     end
 
-    it "should pass if next spawn is in past" do
-      planet.next_spawn = Time.now - 10.days
-      planet.save!
+    it "should pass if #next_spawn is in past" do
+      planet.next_spawn = 10.days.ago
       lambda do
-        planet.spawn!
+        planet.spawn_boss!
       end.should_not raise_error
     end
 
-    it "should create units" do
-      lambda do
-        planet.spawn!
-      end.should change(Unit.where(:location_ss_object_id => planet.id), :count)
+    it "should call units builder && Unit.save_all_units" do
+      UnitBuilder.should_execute(
+        :from_random_ranges,
+        [
+          Cfg.planet_boss_spawn_definition(solar_system), planet.location_point,
+          nil, planet.spawn_counter, 1
+        ],
+        lambda do |units|
+          Unit.should_receive(:save_all_units).
+            with(units, nil, EventBroker::CREATED)
+        end
+      ) { planet.spawn_boss! }
+    end
+
+    it "should create units in source location" do
+      planet.spawn_boss!
+      check_spawned_units_by_random_definition(
+        Cfg.planet_boss_spawn_definition(solar_system),
+        planet.location_point, nil, planet.spawn_counter, 1
+      )
     end
 
     it "should increase #spawn_counter" do
       lambda do
-        planet.spawn!
+        planet.spawn_boss!
       end.should change(planet, :spawn_counter).by(1)
     end
 
     it "should set #next_spawn" do
-      planet.spawn!
-      planet.next_spawn.should be > Time.now
+      time = 15.minutes.from_now
+      Cfg.should_receive(:planet_boss_spawn_random_delay_date).
+        with(solar_system).and_return(time)
+      planet.spawn_boss!
+      planet.next_spawn.should == time
     end
 
     it "should fire changed on planet" do
-      EventBroker.should_receive(:fire).with(
-        instance_of(SsObject::Planet),
-        EventBroker::CHANGED
-      )
-
-      planet.spawn!
+      should_fire_event(planet, EventBroker::CHANGED) do
+        planet.spawn_boss!
+      end
     end
 
-    it "should check planet for combat" do
+    it "should check planet for combat after spawning units" do
       Combat::LocationChecker.should_receive(:check_location).
-        with(planet.location).once
+        with(planet.location_point).once.and_return do |location_point|
+          Unit.in_location(location_point).should exist
+        end
 
-      planet.spawn!
+      planet.spawn_boss!
     end
   end
 end
