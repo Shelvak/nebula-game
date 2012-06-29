@@ -5633,45 +5633,47 @@
   </Authorization>
 
   <PlanetMapEditor>
-     <label.name value="Name:"/>
-     <label.area value="Area: {0}"/>
-     <label.size value="Size:"/>
-     <label.level value="Level:"/>
-     <label.generate value="Generate"/>
-     <label.save value="Save"/>
-     <label.load value="Load"/>
-     <label.copy value="Copy"/>
-     <label.cancel value="Cancel"/>
-     <title.buildings value="Buildings"/>
-     <title.npcBuildings value="NPC Buildings"/>
-     <title.foliage value="Foliage"/>
+    <label.name value="Name:"/>
+    <label.area value="Area: {0}"/>
+    <label.size value="Size:"/>
+    <label.level value="Level:"/>
+    <label.generate value="Generate"/>
+    <label.save value="Save"/>
+    <label.load value="Load"/>
+    <label.copy value="Copy"/>
+    <label.cancel value="Cancel"/>
+    <title.buildings value="Buildings"/>
+    <title.npcBuildings value="NPC Buildings"/>
+    <title.foliage value="Foliage"/>
   </PlanetMapEditor>
 
   <PlayerOptions>
-     <title.options value="Preferences" />
-     <title.chatOptions value="Chat room options" />
-     <title.afterLoginOptions value="After login options" />
-     <title.genericOptions value="General options" />
-     <title.graphicsOptions value="Graphics options"/>
-     <label.save value="Save" />
-     <label.warnBeforeUnload value="Warn before closing game" />
-     <label.showInfoEvents value="Show info events" />
-     <label.defaultTransporterTab
-       value="Tab to show first while loading or unloading transporter:" />
-     <label.transporterTabResources value="Resources" />
-     <label.transporterTabUnits value="Units" />
-     <label.showPopupsAfterLogin value="Open active popups after login" />
-     <label.openFirstPlanet value="Open first planet after login" />
-     <label.showJoinLeave value="Show join / leave messages" />
-     <label.ignoredList value="Ignored players:" />
-     <label.ignoredListEmpty value="No ignored players" />
-     <label.addIgnoredPlayer value="Add" />
-     <label.removeIgnored value="Remove"/>
-     <label.ignoreComplete value="Complete ignore"/>
-     <label.ignoreFiltered value="Show covered messages"/>
-     <label.ignoreType value="Ignore type:"/>
-     <label.enablePlanetAnimations value="Animations in planet"/>
-     <label.showWormholeIcons value="Show planets and ships icons next to wormholes in galaxy"/>
+    <title.options value="Preferences" />
+    <title.chatOptions value="Chat room options" />
+    <title.afterLoginOptions value="After login options" />
+    <title.genericOptions value="General options" />
+    <title.graphicsOptions value="Graphics options"/>
+    <label.save value="Save" />
+    <label.warnBeforeUnload value="Warn before closing game" />
+    <label.showInfoEvents>
+      Show info events in upper right corner.
+    </label.showInfoEvents>
+    <label.defaultTransporterTab
+      value="Tab to show first while loading or unloading transporter:" />
+    <label.transporterTabResources value="Resources" />
+    <label.transporterTabUnits value="Units" />
+    <label.showPopupsAfterLogin value="Open active popups after login" />
+    <label.openFirstPlanet value="Open first planet after login" />
+    <label.showJoinLeave value="Show join / leave messages" />
+    <label.ignoredList value="Ignored players:" />
+    <label.ignoredListEmpty value="No ignored players" />
+    <label.addIgnoredPlayer value="Add" />
+    <label.removeIgnored value="Remove"/>
+    <label.ignoreComplete value="Complete ignore"/>
+    <label.ignoreFiltered value="Show covered messages"/>
+    <label.ignoreType value="Ignore type:"/>
+    <label.enablePlanetAnimations value="Animations in planet"/>
+    <label.showWormholeIcons value="Show planets and ships icons next to wormholes in galaxy"/>
     <label.technologiesSortType
      value="Sort researched technologies in technology tree:" />
     <label.techSortScientists value="By scientists"/>

@@ -5718,49 +5718,51 @@
   </Authorization>
 
   <PlanetMapEditor>
-     <label.name value="Vardas:"/>
-     <label.area value="Plotas: {0}"/>
-     <label.size value="Dydis:"/>
-     <label.level value="Lygis:"/>
-     <label.generate value="Generuoti"/>
-     <label.save value="Išsaugoti"/>
-     <label.load value="Įkelti"/>
-     <label.copy value="Kopijuoti"/>
-     <label.cancel value="Atšaukti"/>
-     <title.buildings value="Pastatai"/>
-     <title.npcBuildings value="Ateivių pastatai"/>
-     <title.foliage value="Kalnai"/>
+    <label.name value="Vardas:"/>
+    <label.area value="Plotas: {0}"/>
+    <label.size value="Dydis:"/>
+    <label.level value="Lygis:"/>
+    <label.generate value="Generuoti"/>
+    <label.save value="Išsaugoti"/>
+    <label.load value="Įkelti"/>
+    <label.copy value="Kopijuoti"/>
+    <label.cancel value="Atšaukti"/>
+    <title.buildings value="Pastatai"/>
+    <title.npcBuildings value="Ateivių pastatai"/>
+    <title.foliage value="Kalnai"/>
   </PlanetMapEditor>
 
   <PlayerOptions>
-     <title.options value="Nustatymai" />
-     <title.chatOptions value="Pokalbių kambario nustatymai" />
-     <title.afterLoginOptions value="Prisijungimo nustatymai" />
-     <title.genericOptions value="Pagrindiniai nustatymai" />
-     <title.graphicsOptions value="Grafikos nustatymai"/>
-     <label.save value="Išsaugoti" />
-     <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
-     <label.showInfoEvents value="Rodyti informacinius pranešimus" />
-     <label.defaultTransporterTab
-       value="Skyrius, kurį atidaryti visų pirma, kraunant į transporterį ar iš jo:" />
-     <label.transporterTabResources value="Resursai" />
-     <label.transporterTabUnits value="Kariai" />
-     <label.showPopupsAfterLogin value="Atidaryti iššokančius langus prisijungus" />
-     <label.openFirstPlanet value="Automatiškai atidaryti pirmąją planetą" />
-     <label.showJoinLeave value="Rodyti prisijungimo / atsijungimo pranešimus" />
-     <label.ignoredList value="Ignoruojami žaidėjai:" />
-     <label.ignoredListEmpty value="Nėra ignoruojamų žaidėjų" />
-     <label.addIgnoredPlayer value="Pridėti" />
-     <label.removeIgnored value="Šalinti"/>
-     <label.ignoreComplete value="Pilnai ignoruoti"/>
-     <label.ignoreFiltered value="Uždengti žinutes"/>
-     <label.ignoreType value="Ignoravimo būdas:"/>
-     <label.enablePlanetAnimations value="Animacijos planetoje"/>
-     <label.showWormholeIcons value="Rodyti planetų ir laivų ikonėles prie arenos vartų galaktikoje"/>
-     <label.technologiesSortType
+    <title.options value="Nustatymai" />
+    <title.chatOptions value="Pokalbių kambario nustatymai" />
+    <title.afterLoginOptions value="Prisijungimo nustatymai" />
+    <title.genericOptions value="Pagrindiniai nustatymai" />
+    <title.graphicsOptions value="Grafikos nustatymai"/>
+    <label.save value="Išsaugoti" />
+    <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
+    <label.showInfoEvents>
+      Rodyti informacinius pranešimus kairiame viršutiniame kampe.
+    </label.showInfoEvents>
+    <label.defaultTransporterTab
+      value="Skyrius, kurį atidaryti visų pirma, kraunant į transporterį ar iš jo:" />
+    <label.transporterTabResources value="Resursai" />
+    <label.transporterTabUnits value="Kariai" />
+    <label.showPopupsAfterLogin value="Atidaryti iššokančius langus prisijungus" />
+    <label.openFirstPlanet value="Automatiškai atidaryti pirmąją planetą" />
+    <label.showJoinLeave value="Rodyti prisijungimo / atsijungimo pranešimus" />
+    <label.ignoredList value="Ignoruojami žaidėjai:" />
+    <label.ignoredListEmpty value="Nėra ignoruojamų žaidėjų" />
+    <label.addIgnoredPlayer value="Pridėti" />
+    <label.removeIgnored value="Šalinti"/>
+    <label.ignoreComplete value="Pilnai ignoruoti"/>
+    <label.ignoreFiltered value="Uždengti žinutes"/>
+    <label.ignoreType value="Ignoravimo būdas:"/>
+    <label.enablePlanetAnimations value="Animacijos planetoje"/>
+    <label.showWormholeIcons value="Rodyti planetų ir laivų ikonėles prie arenos vartų galaktikoje"/>
+    <label.technologiesSortType
       value="Išradinėjamų technologijų rikiavimo būdas technologijų medyje:" />
-     <label.techSortScientists value="Pagal mokslininkus"/>
-     <label.techSortTime value="Pagal likusį laiką" />
+    <label.techSortScientists value="Pagal mokslininkus"/>
+    <label.techSortTime value="Pagal likusį laiką" />
   </PlayerOptions>
 
 </locale>
