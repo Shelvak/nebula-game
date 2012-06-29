@@ -5,7 +5,7 @@
          xmlns:planet="components.planet.*"
          xmlns:solarsystem="components.map.space.solarsystem.*"
          implements="components.map.space.ICStaticSpaceObjectInfo">
-   <fx:Binding source="MSSObject(staticObject).boss" destination="boss"/>
+   <fx:Binding source="MSSObject(_staticObject).boss" destination="boss"/>
    <fx:Script>
       <![CDATA[
       import models.map.IMStaticSpaceObject;
@@ -16,6 +16,7 @@
       [Bindable]
       private var boss: MPlanetBoss;
 
+      [Bindable]
       private var _staticObject: IMStaticSpaceObject;
       [Bindable]
       public function set staticObject(value: IMStaticSpaceObject): void {
