@@ -315,10 +315,24 @@ describe Parts::Transportation do
         end
       end
 
-      it "should fire changed for planet" do
-        should_fire_event(@planet, EventBroker::CHANGED,
-            EventBroker::REASON_OWNER_PROP_CHANGE) do
-          @transporter.transfer_resources!(1, 1, 1)
+      describe "if planet belongs to player" do
+        before(:each) do
+          @planet.update_row! player_id: @transporter.player_id
+        end
+
+        it "should fire changed for planet with owner prop change reason" do
+          should_fire_event(@planet, EventBroker::CHANGED,
+              EventBroker::REASON_OWNER_PROP_CHANGE) do
+            @transporter.transfer_resources!(1, 1, 1)
+          end
+        end
+      end
+
+      describe "if planet belongs to NPC" do
+        it "should fire changed for planet without any reason" do
+          should_fire_event(@planet, EventBroker::CHANGED) do
+            @transporter.transfer_resources!(1, 1, 1)
+          end
         end
       end
 
@@ -422,10 +436,24 @@ describe Parts::Transportation do
         end
       end
 
-      it "should fire changed for planet" do
-        should_fire_event(@planet, EventBroker::CHANGED,
-            EventBroker::REASON_OWNER_PROP_CHANGE) do
-          @transporter.transfer_resources!(-1, -1, -1)
+      describe "if planet belongs to player" do
+        before(:each) do
+          @planet.update_row! player_id: @transporter.player_id
+        end
+
+        it "should fire changed for planet" do
+          should_fire_event(@planet, EventBroker::CHANGED,
+              EventBroker::REASON_OWNER_PROP_CHANGE) do
+            @transporter.transfer_resources!(-1, -1, -1)
+          end
+        end
+      end
+
+      describe "if planet belongs to NPC" do
+        it "should fire changed for planet" do
+          should_fire_event(@planet, EventBroker::CHANGED) do
+            @transporter.transfer_resources!(-1, -1, -1)
+          end
         end
       end
 

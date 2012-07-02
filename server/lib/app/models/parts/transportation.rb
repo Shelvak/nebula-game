@@ -158,7 +158,9 @@ module Parts::Transportation
       EventBroker.fire(self, EventBroker::CHANGED)
       # Only fire changed for those which does not notify themselves.
       EventBroker.fire(
-        location, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
+        location, EventBroker::CHANGED,
+        # Dispatch global update if planet is owner by NPC.
+        location.player_id.nil? ? nil : EventBroker::REASON_OWNER_PROP_CHANGE
       ) if location.is_a?(SsObject::Planet)
     end
 
