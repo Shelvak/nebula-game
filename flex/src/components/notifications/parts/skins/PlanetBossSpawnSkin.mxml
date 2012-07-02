@@ -6,8 +6,11 @@
       [HostComponent("components.notifications.parts.IRPlanetBossSpawn")]
    </fx:Metadata>
    <location:MiniLocationComp id="location"/>
-   <s:Label id="lblContent" textAlign="left" lineBreak="toFit"/>
+   <s:Group width="100%">
+     <s:Label id="lblContent" left="6" right="0" textAlign="left"
+              lineBreak="toFit"/>
+   </s:Group>
    <s:layout>
-     <s:VerticalLayout horizontalAlign="justify"/>
+     <s:VerticalLayout gap="12"/>
    </s:layout>
 </s:Skin>

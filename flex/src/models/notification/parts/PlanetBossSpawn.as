@@ -46,7 +46,8 @@ package models.notification.parts
 
       public function get content() : String
       {
-         return Localizer.string('Notifications', 'label.planetBossSpawn');
+         return Localizer.string('Notifications', 'label.planetBossSpawn',
+                     [spawner.name]);
       }
    }
 }
