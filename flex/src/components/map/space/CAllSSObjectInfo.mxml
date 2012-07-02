@@ -30,5 +30,5 @@
       <s:VerticalLayout horizontalAlign="justify"/>
    </s:layout>
    <solarsystem:CSSObjectInfo staticObject="{staticObject}"/>
-   <planet:CPlanetBossInfo model="{boss}"/>
+   <planet:CPlanetBossInfoInSS model="{boss}"/>
 </s:Group>

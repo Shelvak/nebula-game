@@ -458,6 +458,7 @@ package controllers.startup
          bindPair(PlanetsCommand.FINISH_EXPLORATION, new FinishExplorationAction());
          bindPair(PlanetsCommand.REMOVE_FOLIAGE, new RemoveFoliageAction());
          bindPair(PlanetsCommand.PORTAL_UNITS, new PortalUnitsAction());
+         bindPair(PlanetsCommand.BG_SPAWN, new BgSpawnAction());
       }
       private static function bindAnnouncementsCommands() : void {
          bindPair(AnnouncementsCommand.NEW, new controllers.announcements.actions.NewAction());
