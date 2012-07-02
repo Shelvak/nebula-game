@@ -30,9 +30,11 @@ package components.notifications.parts
       protected override function commitProperties() : void {
          super.commitProperties();
          if (f_NotificationPartChange)
+         {
             var part:AllyReinitiateCombat = AllyReinitiateCombat(notificationPart);
             lblContent.text = part.content;
             location.location = part.location;
+         }
          f_NotificationPartChange = false;
       }
    }
