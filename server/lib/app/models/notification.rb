@@ -16,6 +16,7 @@
 # * Notification#create_for_alliance_owner_changed
 # * Notification#create_for_technologies_changed
 # * Notification#create_for_player_attached
+# * Notification#create_for_ally_planet_boss_spawn
 #
 class Notification < ActiveRecord::Base
   DScope = Dispatcher::Scope
@@ -67,6 +68,8 @@ class Notification < ActiveRecord::Base
   EVENT_TECHNOLOGIES_CHANGED = 14
   # Player has been attached to the galaxy.
   EVENT_PLAYER_ATTACHED = 15
+  # Alliance member has spawned boss in your planet.
+  EVENT_ALLY_PLANET_BOSS_SPAWN = 16
 
   serialize :params, JSON
   default_scope order("`read` ASC, `created_at` DESC")
@@ -561,6 +564,30 @@ class Notification < ActiveRecord::Base
     # Skip dispatch because this notification is created when player is logging
     # in, before initialization.
     model.skip_dispatch = true
+    model.save!
+
+    model
+  end
+
+  # EVENT_ALLY_PLANET_BOSS_SPAWN = 16
+  #
+  # params => {
+  #   # Player who spawned planet boss into your planet.
+  #   :spawner => Player#as_json(mode: :minimal),
+  #   # Planet to which the boss was spawned too.
+  #   :planet => ClientLocation#as_json
+  # }
+  def self.create_for_ally_planet_boss_spawn(planet, spawner)
+    typesig binding, SsObject::Planet, Player
+
+    model = new(
+      :event => EVENT_ALLY_PLANET_BOSS_SPAWN,
+      :player_id => planet.player_id,
+      :params => {
+        :spawner => spawner.as_json(mode: :minimal),
+        :planet => planet.client_location.as_json
+      }
+    )
     model.save!
 
     model

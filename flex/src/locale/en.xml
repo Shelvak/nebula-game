@@ -75,6 +75,9 @@
     <Unit_Gnawer value="Gnawer" />
     <Unit_Gnawer-p8d value="{0 one[Gnawer] many[? Gnawers]}" />
 
+    <Unit_Worg value="Worg" />
+    <Unit_Worg-p8d value="{0 one[Worg] many[? Worgs]}" />
+
     <!-- NPC space units -->
     
     <Unit_Dirac value="Dirac" />
@@ -1411,14 +1414,14 @@
     </tooltip.apocalypse.notStarted>
     <!--
     {0}: date string
-    {1}: current apocalypose day
+    {1}: current apocalypse day
     {2}: how many creds will you get
     -->
     <tooltip.apocalypse.started>
       <p>Apocalypse has started at {0}.<br/><br/></p>
       <p>
         It is now {1} apocalypse day. You will get
-        {2 one[one cred] many[? creds]} after losing your last planet.
+        {2 one[one cred] many[? creds]} if you lose your last planet today.
         <br/><br/>
       </p>
       <p>[reference:tooltip.apocalypse.common]</p>
@@ -5231,6 +5234,18 @@
       </p>
     </Gnawer.about>
 
+    <Worg.name ref="Objects/Unit_Worg" />
+    <Worg.about>
+      <p>
+        Inhuman war machine driven by fury. Those who oppose it must face
+        great firepower and almost impenetrable shields. Be cautious and prepare
+        to use overwhelming force to drive it to its grave.
+      </p>
+      <p>
+        Will you dare to challenge it?
+      </p>
+    </Worg.about>
+
     <Dirac.name ref="Objects/Unit_Dirac" />
     <Dirac.about>
       <p>
@@ -5695,35 +5710,26 @@
   </PlayerOptions>
 
   <PlanetBoss>
-    <title>Ateivių iššūkis</title>
-    <label.unitsList>Iššūkio kovotojai:</label.unitsList>
-    <label.spawnButton>Iškviesti</label.spawnButton>
-    <message.canSpawnNow>
-      Šioje planetoje tu gali mesti ateiviams iššūkį.
-    </message.canSpawnNow>
-    <toolTip.canSpawnIn>
-      Šioje planetoje ateiviams iššūkį mesti galėsi už {0}.
-    </toolTip.canSpawnIn>
-    <message.canSpawnIn>
-      Jei turėtum žemės karių šioje planetoje, ateiviams iššūkį mesti galėtum
-      už:
-    </message.canSpawnIn>
-    <message.canNotSpawn.player>
-      ● Ši planeta turi priklausyti tau arba ateiviams.
-    </message.canNotSpawn.player>
-    <message.canNotSpawn.cooldown>
-      ● Šioje planetoje dabar yra mūšio pertrauka.
-    </message.canNotSpawn.cooldown>
-    <message.canNotSpawn.units>
-      ● Šioje planetoje tu neturi žemės karių.
-    </message.canNotSpawn.units>
-    
     <title>Planet boss</title>
-    <label.unitsList>Units that will be spawned:</label.unitsList>
+    <label.unitsList>
+      Units that will be spawned:
+    </label.unitsList>
+    <message.canSpawnNow>
+      You can spawn boss to this planet.
+    </message.canSpawnNow>
+    <message.canSpawnIn>
+      If you had ground units in this planet, you could spawn boss to it in:
+    </message.canSpawnIn>
     <label.spawnButton>Spawn</label.spawnButton>
-    <message.canSpawnNow>You can spawn boss to this planet.</message.canSpawnNow>
-    <message.canSpawnIn>You will be able to spawn units to this planet in {}.</message.canSpawnIn>
-    <message.canNotSpawn>The planet must owned by you or be unoccupied at all if you want to spawn a boss to it.</message.canNotSpawn>
+    <message.canNotSpawn.player>
+      ● Either you or NPC must own this planet.
+    </message.canNotSpawn.player>
+    <message.canNotSpawn.noGroundUnits>
+      ● You don't have any ground units in this planet.
+    </message.canNotSpawn.noGroundUnits>
+    <message.canNotSpawn.napOrEnemyUnits>
+      ● There are enemy or NAP troops in this planet.
+    </message.canNotSpawn.napOrEnemyUnits>
   </PlanetBoss>
 
 </locale>
