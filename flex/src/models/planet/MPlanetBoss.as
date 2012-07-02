@@ -109,12 +109,25 @@ package models.planet
          return canSpawn && _planet.nextSpawn == null;
       }
 
+      [Bindable(event="canSpawnNowChange")]
+      public function get spawnCooldownActive(): Boolean
+      {
+         return _planet.nextSpawn != null;
+      }
+
       [Bindable(event="messageSpawnAbilityChange")]
+      public function get occursInString(): String
+      {
+         return _planet.nextSpawn == null
+            ? null
+            : _planet.nextSpawn.occursInString();
+      }
+
+      [Bindable(event="canSpawnNowChange")]
       public function get label_canSpawn(): String {
          return _planet.nextSpawn == null
             ? getString("message.canSpawnNow")
-            : getString("message.canSpawnIn",
-               [_planet.nextSpawn.occursInString()]);
+            : getString("message.canSpawnIn");
       }
 
       [Bindable(event="messageSpawnAbilityChange")]
