@@ -1411,14 +1411,14 @@
     </tooltip.apocalypse.notStarted>
     <!--
     {0}: date string
-    {1}: current apocalypose day
+    {1}: current apocalypse day
     {2}: how many creds will you get
     -->
     <tooltip.apocalypse.started>
       <p>Apocalypse has started at {0}.<br/><br/></p>
       <p>
         It is now {1} apocalypse day. You will get
-        {2 one[one cred] many[? creds]} after losing your last planet.
+        {2 one[one cred] many[? creds]} if you lose your last planet today.
         <br/><br/>
       </p>
       <p>[reference:tooltip.apocalypse.common]</p>

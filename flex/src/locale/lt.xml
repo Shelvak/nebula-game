@@ -1545,14 +1545,15 @@
     </tooltip.apocalypse.notStarted>
     <!--
     {0}: date string
-    {1}: current apocalypose day
+    {1}: current apocalypse day
     {2}: how many creds will you get
     -->
     <tooltip.apocalypse.started>
       <p>Apokalipsė prasidėjo {0}.<br/><br/></p>
       <p>
-        Dabar yra {1} apokalipsės diena. Praradęs paskutinę savo planetą
-        tu gausi {2 one[? kredą] 1sts[? kredą] tens[? kredų] many[? kredus]}.
+        Dabar yra {1} apokalipsės diena. Šią dieną praradęs paskutinę savo
+        planetą tu gausi {2 one[? kredą] 1sts[? kredą] tens[? kredų]
+        many[? kredus]}.
         <br/><br/>
       </p>
       <p>[reference:tooltip.apocalypse.common]</p>
