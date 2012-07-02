@@ -689,7 +689,7 @@ describe Notification do
     end
   end
 
-  describe ".create_for_technologies_changed" do
+  describe ".create_for_ally_planet_boss_spawn" do
     before(:all) do
       @planet = Factory.create(:planet_with_player)
       @player_id = @planet.player_id
@@ -706,6 +706,32 @@ describe Notification do
       Notification.send(
         @method, *@args
       ).params['spawner'].should == @spawner.as_json(mode: :minimal)
+    end
+
+    it "should have :planet" do
+      Notification.send(
+        @method, *@args
+      ).params['planet'].should == @planet.client_location.as_json
+    end
+  end
+
+  describe ".create_for_ally_planet_reinitiate_combat" do
+    before(:all) do
+      @planet = Factory.create(:planet_with_player)
+      @player_id = @planet.player_id
+      @reinitiator = Factory.create(:player)
+
+      @event = Notification::EVENT_ALLY_PLANET_REINITIATE_COMBAT
+      @method = :create_for_ally_planet_reinitiate_combat
+      @args = [@planet, @reinitiator]
+    end
+
+    it_behaves_like "create for"
+
+    it "should have :reinitiator" do
+      Notification.send(
+        @method, *@args
+      ).params['reinitiator'].should == @reinitiator.as_json(mode: :minimal)
     end
 
     it "should have :planet" do
