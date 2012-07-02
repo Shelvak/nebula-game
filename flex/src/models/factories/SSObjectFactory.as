@@ -28,7 +28,7 @@ package models.factories
             type:String, getResource: Function, setResource: Function
          ) : void
          {
-            var resource:Resource = new Resource();
+            var resource:Resource = new Resource(type, object.owner);
             resource.type = type;
             if (data[type] == null)
             {

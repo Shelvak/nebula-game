@@ -154,7 +154,8 @@ package models.unit
                                && (_unit.owner == Owner.PLAYER)
                                && _unit.location.type == LocationType.SS_OBJECT;
                   }
-               )
+               ),
+               planet.ssObject.owner
             );
          }
          else {
@@ -171,7 +172,8 @@ package models.unit
                            && (unitToOpen != null)
                            && (_unit.location.id == unitToOpen.id);
                      }
-                  )
+                  ),
+               planet.ssObject.owner
             );
          }
          unitToOpen = null;

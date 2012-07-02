@@ -52,6 +52,11 @@ package models.unit
    
    public class MCLoadUnloadScreen extends EventDispatcher implements ILocationUser
    {
+      public static function planetResourcesLoadable(pOwner: int): Boolean {
+         // TODO uncomment this when exp protection will be implemented
+         return (pOwner == Owner.PLAYER || pOwner == Owner.NPC);// || pOwner == Owner.UNDEFINED);
+      }
+
       public function MCLoadUnloadScreen()
       {
          super();
@@ -111,7 +116,7 @@ package models.unit
       private var prepared: Boolean = false;
       
       public function prepare(sUnits: ListCollectionView, sLocation: *,
-                              sTarget: *): void
+                              sTarget: *, planetOwner: int): void
       {
          prepared = true;
          location = sLocation;
@@ -145,7 +150,7 @@ package models.unit
          }
          if ((location is Unit &&
                (transporter.metal > 0 || transporter.energy > 0 || transporter.zetium > 0))
-            || (location is Location && Location(location).player.id == ML.player.id))
+            || (location is Location && planetResourcesLoadable(planetOwner)))
          {
             resourcesVisible = true;
          }
