@@ -1890,6 +1890,15 @@
       <p>Buildings deactivated due to insufficient energy.</p>
     </message.buildingsDeactivated>
 
+    <!--TODO: translate this -->
+    <title.planetBossSpawn value="Ateiviams mestas iššūkis" />
+    <message.planetBossSpawn>
+      <p>Tavo planetoje buvo mestas iššūkis ateiviams.</p>
+    </message.planetBossSpawn>
+    <label.planetBossSpawn>
+      <p>Žaidėjas {0} metė iššūki ateiviams tavo planetoje.</p>
+    </label.planetBossSpawn>
+
     <title.explorationFinished value="Exploration finished" />
     <message.explorationFinished value="Exploration finished in planet {0}" />
 

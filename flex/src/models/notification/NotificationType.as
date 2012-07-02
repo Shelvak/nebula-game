@@ -17,5 +17,6 @@ package models.notification
       public static const ALLIANCE_OWNER_CHANGED: int = 13;
       public static const TECHNOLOGIES_CHANGED: int = 14;
       public static const PLAYER_ATTACHED: int = 15;
+      public static const ALLY_PLANET_BOSS_SPAWN: int = 16;
    }
 }
