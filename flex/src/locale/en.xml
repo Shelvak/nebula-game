@@ -5694,7 +5694,7 @@
       You can spawn boss to this planet.
     </message.canSpawnNow>
     <message.canSpawnIn>
-      If you had ground units in this planet, you could spawn boss to it in {0}.
+      If you had ground units in this planet, you could spawn boss to it in:
     </message.canSpawnIn>
     <label.spawnButton>Spawn</label.spawnButton>
     <message.canNotSpawn.player>

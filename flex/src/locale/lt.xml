@@ -5783,7 +5783,7 @@
     </toolTip.canSpawnIn>
     <message.canSpawnIn>
       Jei turėtum žemės karių šioje planetoje, ateiviams iššūkį mesti galėtum
-      už {0}.
+      už:
     </message.canSpawnIn>
     <message.canNotSpawn.player>
       ● Ši planeta turi priklausyti tau arba ateiviams.
