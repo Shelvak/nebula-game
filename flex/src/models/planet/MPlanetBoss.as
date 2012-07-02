@@ -111,9 +111,7 @@ package models.planet
 
       [Bindable(event="messageSpawnAbilityChange")]
       public function get label_canSpawn(): String {
-         if (_planet == null)
-            return '';
-         return _planet.nextSpawn == null || _planet.nextSpawn.hasOccurred
+         return _planet.nextSpawn == null
             ? getString("message.canSpawnNow")
             : getString("message.canSpawnIn",
                [_planet.nextSpawn.occursInString()]);
@@ -121,8 +119,6 @@ package models.planet
 
       [Bindable(event="messageSpawnAbilityChange")]
       public function get toolTip_canSpawnIn(): String {
-         if (_planet == null)
-            return '';
          return _planet.nextSpawn == null
             ? ''
             : getString("toolTip.canSpawnIn",
