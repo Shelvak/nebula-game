@@ -17,6 +17,7 @@
 # * Notification#create_for_technologies_changed
 # * Notification#create_for_player_attached
 # * Notification#create_for_ally_planet_boss_spawn
+# * Notification#create_for_ally_planet_reinitiate_combat
 #
 class Notification < ActiveRecord::Base
   DScope = Dispatcher::Scope
@@ -70,6 +71,8 @@ class Notification < ActiveRecord::Base
   EVENT_PLAYER_ATTACHED = 15
   # Alliance member has spawned boss in your planet.
   EVENT_ALLY_PLANET_BOSS_SPAWN = 16
+  # Alliance member has reinitiated combat in your planet.
+  EVENT_ALLY_PLANET_REINITIATE_COMBAT = 17
 
   serialize :params, JSON
   default_scope order("`read` ASC, `created_at` DESC")
@@ -585,6 +588,30 @@ class Notification < ActiveRecord::Base
       :player_id => planet.player_id,
       :params => {
         :spawner => spawner.as_json(mode: :minimal),
+        :planet => planet.client_location.as_json
+      }
+    )
+    model.save!
+
+    model
+  end
+
+  # EVENT_ALLY_PLANET_REINITIATE_COMBAT = 17
+  #
+  # params => {
+  #   # Player who reinitiated combat in your planet.
+  #   :reinitiator => Player#as_json(mode: :minimal),
+  #   # Planet in which combat was reinitiated.
+  #   :planet => ClientLocation#as_json
+  # }
+  def self.create_for_ally_planet_reinitiate_combat(planet, reinitiator)
+    typesig binding, SsObject::Planet, Player
+
+    model = new(
+      :event => EVENT_ALLY_PLANET_REINITIATE_COMBAT,
+      :player_id => planet.player_id,
+      :params => {
+        :reinitiator => reinitiator.as_json(mode: :minimal),
         :planet => planet.client_location.as_json
       }
     )
