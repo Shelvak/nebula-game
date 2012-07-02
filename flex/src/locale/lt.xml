@@ -2040,6 +2040,14 @@
       <p>Žaidėjas {0} metė iššūki ateiviams tavo planetoje.</p>
     </label.planetBossSpawn>
 
+    <title.allyReinitiateCombat value="Mūšio pertrauka buvo nutraukta" />
+    <message.allyReinitiateCombat>
+      <p>Tavo planetoje sąjungininkas nutraukė mūšio pertrauką.</p>
+    </message.allyReinitiateCombat>
+    <label.allyReinitiateCombat>
+      <p>Tavo sąjungininkas {0} nutraukė mūšio pertrauką tavo planetoje.</p>
+    </label.allyReinitiateCombat>
+
     <title.explorationFinished value="Ekspedicija grįžo" />
     <message.explorationFinished 
       value="Planetoje {0} tyrinėjimai baigti" />

@@ -3,7 +3,7 @@
         xmlns:s="library://ns.adobe.com/flex/spark"
         xmlns:location="components.location.*">
    <fx:Metadata>
-      [HostComponent("components.notifications.parts.IRPlanetBossSpawn")]
+      [HostComponent("components.notifications.parts.IRAllyReinitiateCombat")]
    </fx:Metadata>
    <location:MiniLocationComp id="location"/>
    <s:Label id="lblContent" textAlign="left" lineBreak="toFit"/>

@@ -1902,6 +1902,14 @@
       <p>Žaidėjas {0} metė iššūki ateiviams tavo planetoje.</p>
     </label.planetBossSpawn>
 
+    <title.allyReinitiateCombat value="Combat cooldown was canceled" />
+    <message.allyReinitiateCombat>
+      <p>Combat cooldown was canceled in one of your planets.</p>
+    </message.allyReinitiateCombat>
+    <label.allyReinitiateCombat>
+      <p>Your alliance member {0} canceled cooldown in one of your planets.</p>
+    </label.allyReinitiateCombat>
+
     <title.explorationFinished value="Exploration finished" />
     <message.explorationFinished value="Exploration finished in planet {0}" />
 

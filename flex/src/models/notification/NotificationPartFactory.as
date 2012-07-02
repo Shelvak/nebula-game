@@ -29,6 +29,7 @@ package models.notification
       TYPE_TO_CLASS[NotificationType.TECHNOLOGIES_CHANGED] = TechnologiesChanged;
       TYPE_TO_CLASS[NotificationType.PLAYER_ATTACHED] = PlayerAttached;
       TYPE_TO_CLASS[NotificationType.ALLY_PLANET_BOSS_SPAWN] = PlanetBossSpawn;
+      TYPE_TO_CLASS[NotificationType.ALLY_PLANET_REINITIATE_COMBAT] = AllyReinitiateCombat;
       
       /**
        * Creates concrete instance of <code>INotificationPart</code> and returns it.
