@@ -7,6 +7,8 @@ package models.planet
 
    import flash.events.EventDispatcher;
 
+   import flashx.textLayout.property.NumberWithEnumProperty;
+
    import models.Owner;
    import models.events.BaseModelEvent;
    import models.planet.events.MPlanetBossEvent;
@@ -100,8 +102,10 @@ package models.planet
       [Bindable(event="canSpawnChange")]
       public function get canSpawn(): Boolean {
          return (_planet.owner == Owner.PLAYER || _planet.owner == Owner.NPC)
-            && _planet.cooldown == null
-            && (_planetMap == null || _planetMap.hasAggressiveGroundUnits());
+            && (_planetMap == null ||
+                   _planetMap.hasAggressiveGroundUnits()
+               && !_planetMap.hasActiveUnits(Owner.ENEMY)
+               && !_planetMap.hasActiveUnits(Owner.NAP));
       }
 
       [Bindable(event="canSpawnNowChange")]
@@ -109,12 +113,25 @@ package models.planet
          return canSpawn && _planet.nextSpawn == null;
       }
 
+      [Bindable(event="canSpawnNowChange")]
+      public function get spawnCooldownActive(): Boolean
+      {
+         return _planet.nextSpawn != null;
+      }
+
       [Bindable(event="messageSpawnAbilityChange")]
+      public function get occursInString(): String
+      {
+         return _planet.nextSpawn == null
+            ? null
+            : _planet.nextSpawn.occursInString();
+      }
+
+      [Bindable(event="canSpawnNowChange")]
       public function get label_canSpawn(): String {
          return _planet.nextSpawn == null
             ? getString("message.canSpawnNow")
-            : getString("message.canSpawnIn",
-               [_planet.nextSpawn.occursInString()]);
+            : getString("message.canSpawnIn");
       }
 
       [Bindable(event="messageSpawnAbilityChange")]
@@ -128,34 +145,22 @@ package models.planet
       [Bindable(event="messageSpawnAbilityChange")]
       public function get message_spawnAbility(): String {
          if (!canSpawn) {
-            var result: String = null;
-            if (_planet.owner != Owner.PLAYER && _planet.owner != Owner.NPC)
-            {
-               result = getString("message.canNotSpawn.player");
+
+            var result: String = "";
+            function appendResult(key: String): void {
+               result += (result.length == 0 ? "" : "\n") + getString("message.canNotSpawn." + key);
             }
-            if (_planet.cooldown != null)
-            {
-               if (result == null)
-               {
-                  result = '';
-               }
-               else
-               {
-                  result += '\n';
-               }
-               result += getString("message.canNotSpawn.cooldown");
+
+            if (_planet.owner != Owner.PLAYER && _planet.owner != Owner.NPC) {
+               appendResult("player");
             }
-            if ((_planetMap != null && !_planetMap.hasAggressiveGroundUnits()))
-            {
-               if (result == null)
-               {
-                  result = '';
+            if (_planetMap != null) {
+               if (!_planetMap.hasAggressiveGroundUnits()) {
+                  appendResult("noGroundUnits");
                }
-               else
-               {
-                  result += '\n';
+               if (_planetMap.hasActiveUnits(Owner.ENEMY) || _planetMap.hasActiveUnits(Owner.NAP)) {
+                  appendResult("napOrEnemyUnits");
                }
-               result += getString("message.canNotSpawn.units");
             }
             return result;
          }

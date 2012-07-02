@@ -5801,17 +5801,17 @@
     </toolTip.canSpawnIn>
     <message.canSpawnIn>
       Jei turėtum žemės karių šioje planetoje, ateiviams iššūkį mesti galėtum
-      už {0}.
+      už:
     </message.canSpawnIn>
     <message.canNotSpawn.player>
       ● Ši planeta turi priklausyti tau arba ateiviams.
     </message.canNotSpawn.player>
-    <message.canNotSpawn.cooldown>
-      ● Šioje planetoje dabar yra mūšio pertrauka.
-    </message.canNotSpawn.cooldown>
-    <message.canNotSpawn.units>
+    <message.canNotSpawn.noGroundUnits>
       ● Šioje planetoje tu neturi žemės karių.
-    </message.canNotSpawn.units>
+    </message.canNotSpawn.noGroundUnits>
+    <message.canNotSpawn.napOrEnemyUnits>
+      ● Šioje planetoje yra priešo arba NP karių.
+    </message.canNotSpawn.napOrEnemyUnits>
   </PlanetBoss>
 
 </locale>
