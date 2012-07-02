@@ -1093,9 +1093,7 @@ package models.solarsystem
                cooldown = null;
             }
          }
-         raidTime = nextRaidEvent != null
-                       ? nextRaidEvent.occursInString()
-                       : null;
+         raidTime = nextRaidEvent != null ? nextRaidEvent.occursInString() : null;
          dispatchUpdateEvent();
       }
 
