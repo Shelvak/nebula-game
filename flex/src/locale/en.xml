@@ -75,6 +75,9 @@
     <Unit_Gnawer value="Gnawer" />
     <Unit_Gnawer-p8d value="{0 one[Gnawer] many[? Gnawers]}" />
 
+    <Unit_Worg value="Worg" />
+    <Unit_Worg-p8d value="{0 one[Worg] many[? Worgs]}" />
+
     <!-- NPC space units -->
     
     <Unit_Dirac value="Dirac" />
@@ -5221,6 +5224,18 @@
         massive cannons offer versatility against infantry or tanks. 
       </p>
     </Gnawer.about>
+
+    <Worg.name ref="Objects/Unit_Worg" />
+    <Worg.about>
+      <p>
+        Inhuman war machine driven by fury. Those who oppose it must face
+        great firepower and almost impenetrable shields. Be cautious and prepare
+        to use overwhelming force to drive it to its grave.
+      </p>
+      <p>
+        Will you dare to challenge it?
+      </p>
+    </Worg.about>
 
     <Dirac.name ref="Objects/Unit_Dirac" />
     <Dirac.about>

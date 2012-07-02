@@ -96,6 +96,10 @@
     <Unit_Gnawer-what value="{0 one[kankintoją] 1sts[? kankintoją] tens[? kankintojų] many[? kankintojus]}" />
     <Unit_Gnawer-whos value="{0 one[kankintojo] 1sts[? kankintojo] tens[? kankintojų] many[? kankintojų]}" />
 
+    <Unit_Worg value="Vorgas" />
+    <Unit_Worg-what value="{0 one[vorgą] 1sts[? vorgą] tens[? vorgų] many[? vorgus]}" />
+    <Unit_Worg-whos value="{0 one[vorgo] 1sts[? vorgo] tens[? vorgų] many[? vorgų]}" />
+
     <!-- NPC kosmoso unitai -->
     
     <Unit_Dirac value="Dirakas" />
@@ -5341,6 +5345,19 @@
       ribas. Stori šarvai ir galingos patrankos padaro juos ypač tvirtais 
       kariais.</p>
     </Gnawer.about>
+
+    <Worg.name ref="Objects/Unit_Worg" />
+    <Worg.about>
+      <p>
+        Nežmoniškai stipri ateivių karo mašina. Vargas tiems, kurie išdrys stoti
+        jai skersai kelio. Masyvios žemės bei oro patrankos tiesiog šluoja
+        priešo karius, o sluoksniuoti zetiumo šarvai, rodos, nepraleidžia nei
+        vienos kulkos.
+      </p>
+      <p>
+        Ar išdrįsi mesti jam iššūkį?
+      </p>
+    </Worg.about>
 
     <Dirac.name ref="Objects/Unit_Dirac" />
     <Dirac.about>
