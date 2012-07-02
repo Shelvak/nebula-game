@@ -688,4 +688,30 @@ describe Notification do
         should == 0
     end
   end
+
+  describe ".create_for_technologies_changed" do
+    before(:all) do
+      @planet = Factory.create(:planet_with_player)
+      @player_id = @planet.player_id
+      @spawner = Factory.create(:player)
+
+      @event = Notification::EVENT_ALLY_PLANET_BOSS_SPAWN
+      @method = :create_for_ally_planet_boss_spawn
+      @args = [@planet, @spawner]
+    end
+
+    it_behaves_like "create for"
+
+    it "should have :spawner" do
+      Notification.send(
+        @method, *@args
+      ).params['spawner'].should == @spawner.as_json(mode: :minimal)
+    end
+
+    it "should have :planet" do
+      Notification.send(
+        @method, *@args
+      ).params['planet'].should == @planet.client_location.as_json
+    end
+  end
 end
