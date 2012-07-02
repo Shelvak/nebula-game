@@ -41,7 +41,8 @@ package models.notification.parts
 
       public function get message() : String
       {
-         return Localizer.string("Notifications", "message.planetBossSpawn");
+         return Localizer.string("Notifications", "message.planetBossSpawn",
+                     [location.name]);
       }
 
       public function get content() : String

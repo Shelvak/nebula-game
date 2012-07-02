@@ -1896,7 +1896,7 @@
     <!--TODO: translate this -->
     <title.planetBossSpawn value="Ateiviams mestas iššūkis" />
     <message.planetBossSpawn>
-      <p>Tavo planetoje buvo mestas iššūkis ateiviams.</p>
+      <p>Tavo planetoje {0} buvo mestas iššūkis ateiviams</p>
     </message.planetBossSpawn>
     <label.planetBossSpawn>
       <p>Žaidėjas {0} metė iššūki ateiviams tavo planetoje.</p>
@@ -1904,7 +1904,7 @@
 
     <title.allyReinitiateCombat value="Combat cooldown was canceled" />
     <message.allyReinitiateCombat>
-      <p>Combat cooldown was canceled in one of your planets.</p>
+      <p>Combat cooldown was canceled in your planet {0}</p>
     </message.allyReinitiateCombat>
     <label.allyReinitiateCombat>
       <p>Your alliance member {0} canceled cooldown in one of your planets.</p>

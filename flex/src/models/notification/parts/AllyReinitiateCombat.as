@@ -41,7 +41,8 @@ package models.notification.parts
 
       public function get message() : String
       {
-         return Localizer.string("Notifications", "message.allyReinitiateCombat");
+         return Localizer.string("Notifications", "message.allyReinitiateCombat",
+            [location.name]);
       }
 
       public function get content() : String

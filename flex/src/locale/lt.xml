@@ -2034,7 +2034,7 @@
 
     <title.planetBossSpawn value="Ateiviams mestas iššūkis" />
     <message.planetBossSpawn>
-      <p>Tavo planetoje buvo mestas iššūkis ateiviams.</p>
+      <p>Tavo planetoje {0} buvo mestas iššūkis ateiviams</p>
     </message.planetBossSpawn>
     <label.planetBossSpawn>
       <p>Žaidėjas {0} metė iššūki ateiviams tavo planetoje.</p>
@@ -2042,7 +2042,7 @@
 
     <title.allyReinitiateCombat value="Mūšio pertrauka buvo nutraukta" />
     <message.allyReinitiateCombat>
-      <p>Tavo planetoje sąjungininkas nutraukė mūšio pertrauką.</p>
+      <p>Tavo planetoje {0} sąjungininkas nutraukė mūšio pertrauką</p>
     </message.allyReinitiateCombat>
     <label.allyReinitiateCombat>
       <p>Tavo sąjungininkas {0} nutraukė mūšio pertrauką tavo planetoje.</p>
