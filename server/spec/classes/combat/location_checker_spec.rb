@@ -185,6 +185,13 @@ describe Combat::LocationChecker do
         Combat::LocationChecker.check_location(@location).should be_true
       end
 
+      it "should return true if there is cooldown but we're ignoring it" do
+        Cooldown.create_or_update!(@location, 1.minute.since)
+        Combat::LocationChecker.check_location(
+          @location, check_for_cooldown: false
+        ).should be_true
+      end
+
       it "should invoke annexer if location is planet" do
         check_report = Combat::CheckReport.new(
           Combat::CheckReport::COMBAT, {}

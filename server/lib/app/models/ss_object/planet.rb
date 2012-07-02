@@ -281,14 +281,11 @@ class SsObject::Planet < SsObject
     Objective::RepairHp.progress(player, damaged_hp)
   end
 
+  # Spawns boss in a battleground planet. Increases #spawn_counter and sets new
+  # #next_spawn. Checks for combat in that location. Ignores cooldowns.
   def spawn_boss!
     raise GameLogicError, "Planet must be in a battleground!" \
-      unless solar_system.battleground?
-
-    cooldown = self.cooldown
-    raise GameLogicError,
-      "Cannot spawn while planet has a cooldown! (until #{cooldown})" \
-      unless cooldown.nil?
+      unless without_locking { solar_system.battleground? }
 
     raise GameLogicError,
       "You cannot spawn until #next_spawn expires at #{next_spawn}" \
@@ -305,7 +302,9 @@ class SsObject::Planet < SsObject
     self.save!
 
     EventBroker.fire(self, EventBroker::CHANGED)
-    Combat::LocationChecker.check_location(location_point)
+    Combat::LocationChecker.check_location(
+      location_point, check_for_cooldown: false
+    )
   end
 
 private

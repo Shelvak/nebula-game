@@ -20,6 +20,14 @@ describe SsObject::Planet do
     end
   end
 
+  describe "#cooldown" do
+    it "should return Cooldown#ends_at" do
+      planet = Factory.create(:planet)
+      cooldown = Factory.create(:cooldown, location: planet)
+      planet.cooldown.should == cooldown.ends_at
+    end
+  end
+
   describe "#next_raid_at=" do
     let(:planet) { Factory.create(:planet) }
 
@@ -1391,13 +1399,6 @@ describe SsObject::Planet do
       end.should raise_error(GameLogicError)
     end
 
-    it "should fail if planet has a cooldown" do
-      Factory.create(:cooldown, location: planet.location_point)
-      lambda do
-        planet.spawn_boss!
-      end.should raise_error(GameLogicError)
-    end
-
     it "should fail if #next_spawn date is in future" do
       planet.next_spawn = 10.days.from_now
       lambda do
@@ -1462,9 +1463,8 @@ describe SsObject::Planet do
 
     it "should check planet for combat after spawning units" do
       Combat::LocationChecker.should_receive(:check_location).
-        with(planet.location_point).once.and_return do |location_point|
-          Unit.in_location(location_point).should exist
-        end
+        with(planet.location_point, check_for_cooldown: false).once.
+        and_return { |loc_point| Unit.in_location(loc_point).should exist }
 
       planet.spawn_boss!
     end

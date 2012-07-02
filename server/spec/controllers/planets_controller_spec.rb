@@ -501,6 +501,7 @@ describe PlanetsController do
 
   describe "planets|bg_spawn" do
     let(:solar_system) { Factory.create(:battleground) }
+    let(:alliance) { create_alliance }
     let(:npc_planet) do
       Factory.create(:planet, player: nil, solar_system: solar_system,
         position: 0)
@@ -509,14 +510,22 @@ describe PlanetsController do
       Factory.create(:planet, player: player, solar_system: solar_system,
         position: 1)
     end
-    let(:other_planet) do
+    let(:ally_planet) do
+      Factory.create(:planet, player: alliance.owner,
+        solar_system: solar_system, position: 1, angle: 90)
+    end
+    let(:enemy_planet) do
       Factory.create(:planet_with_player, solar_system: solar_system,
         position: 2)
     end
+    let(:planet) { owner_planet }
 
     before(:each) do
+      player.alliance = alliance
+      player.save!
+
       @action = 'planets|bg_spawn'
-      @params = {'id' => owner_planet.id}
+      @params = {'id' => planet.id}
     end
 
     it "should fail if player doesn't have ground units in the planet" do
@@ -528,16 +537,16 @@ describe PlanetsController do
     it "should fail if your ground units cannot fight" do
       # level 0 unit
       Factory.create(:u_trooper, opts_upgrading + {
-        player: player, location: owner_planet, level: 0
+        player: player, location: planet, level: 0
       })
       # hidden unit
-      Factory.create(:u_trooper, player: player, location: owner_planet,
+      Factory.create(:u_trooper, player: player, location: planet,
         hidden: true)
-      # Other player fighting unit
+      # Enemy fighting unit
       Factory.create(:u_trooper, player: Factory.create(:player),
-        location: owner_planet)
-      # NPC player fighting unit
-      Factory.create(:u_trooper, location: owner_planet)
+        location: planet)
+      # NPC fighting unit
+      Factory.create(:u_trooper, location: planet)
 
       lambda do
         invoke @action, @params
@@ -547,15 +556,41 @@ describe PlanetsController do
     describe "has units" do
       before(:each) do
         # player unit in each type of planet
-        [npc_planet, owner_planet, other_planet].each do |planet|
+        [npc_planet, owner_planet, ally_planet, enemy_planet].each do |planet|
           Factory.create(:u_trooper, player: player, location: planet)
         end
       end
 
-      it "should fail if planet belongs to other player" do
+      it "should not fail if there are NPC units in planet" do
+        Factory.create(:u_trooper, player: nil, location: planet)
+        invoke @action, @params
+      end
+
+      it "should not fail if there are ally units in planet" do
+        Factory.create(:u_trooper, player: alliance.owner, location: planet)
+        invoke @action, @params
+      end
+
+      it "should fail if there are enemy units in planet" do
+        Factory.create(:u_trooper, player: enemy_planet.player,
+          location: planet)
         lambda do
-          invoke @action, @params.merge('id' => other_planet.id)
+          invoke @action, @params
         end.should raise_error(GameLogicError)
+      end
+
+      it "should fail if there are nap units in planet"
+
+      it "should fail if planet belongs to enemy" do
+        lambda do
+          invoke @action, @params.merge('id' => enemy_planet.id)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should fail if planet belongs to nap"
+
+      it "should pass if planet belongs to ally" do
+        invoke @action, @params.merge('id' => ally_planet.id)
       end
 
       it "should pass if planet belongs to current player" do
@@ -570,6 +605,22 @@ describe PlanetsController do
         end.should_not raise_error
       end
 
+      it "should create notification if its an ally planet" do
+        Notification.should_receive(:create_for_ally_planet_boss_spawn).
+          with(ally_planet, player)
+        invoke @action, @params.merge('id' => ally_planet.id)
+      end
+
+      it "should not create notification if its your planet" do
+        Notification.should_not_receive(:create_for_ally_planet_boss_spawn)
+        invoke @action, @params.merge('id' => owner_planet.id)
+      end
+
+      it "should not create notification if its a NPC planet" do
+        Notification.should_not_receive(:create_for_ally_planet_boss_spawn)
+        invoke @action, @params.merge('id' => npc_planet.id)
+      end
+
       it "should call spawn" do
         SsObject::Planet.should_receive(:find).with(owner_planet.id).
           and_return(owner_planet)
@@ -581,6 +632,142 @@ describe PlanetsController do
       it "should work" do
         invoke @action, @params
       end
+    end
+  end
+
+  describe "planets|reinitiate_combat" do
+    let(:owned_planet) { prepared Factory.create(:planet, player: player) }
+    let(:enemy_planet) { prepared Factory.create(:planet_with_player) }
+    let(:npc_planet) { prepared Factory.create(:planet) }
+    let(:alliance) { create_alliance }
+    let(:ally) { Factory.create(:player, alliance: alliance) }
+    let(:ally_planet) do
+      player.alliance = alliance
+      player.save!
+      prepared Factory.create(:planet, player: ally)
+    end
+    let(:planet) { owned_planet }
+
+    def with_your_unit(planet)
+      @your_unit = Factory.create(:u_gnat, location: planet, player: player)
+      planet
+    end
+    # Non-combat your unit
+    def with_nc_your_unit(planet)
+      @nc_your_unit = Factory.create!(:u_mdh, location: planet, player: player)
+      planet
+    end
+    def with_npc_unit(planet)
+      @npc_unit = Factory.create(:u_gnat, location: planet, player: nil)
+      planet
+    end
+    # Non-combat NPC unit
+    def with_nc_npc_unit(planet)
+      @nc_npc_unit = Factory.create!(:u_mdh, location: planet, player: nil)
+      planet
+    end
+    def prepared(planet)
+      with_your_unit(with_npc_unit(planet))
+    end
+
+    before(:each) do
+      @action = "planets|reinitiate_combat"
+      @params = {'id' => planet.id}
+    end
+
+    it "should pass if planet is owned by player" do
+      invoke @action, @params.merge('id' => owned_planet.id)
+    end
+
+    it "should pass if planet is owned by npc" do
+      invoke @action, @params.merge('id' => npc_planet.id)
+    end
+
+    it "should pass if planet is owned by ally" do
+      invoke @action, @params.merge('id' => ally_planet.id)
+    end
+
+    it "should fail if planet is owned by enemy" do
+      lambda do
+        invoke @action, @params.merge('id' => enemy_planet.id)
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if planet is owned by nap"
+
+    it "should fail if planet doesn't have at least one NPC unit" do
+      planet
+      @npc_unit.destroy!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    describe "if there are no player combat units" do
+      it "should pass if planet is owned by player" do
+        owned_planet; @your_unit.destroy!
+        invoke @action, @params.merge('id' => owned_planet.id)
+      end
+
+      it "should fail if planet is owned by npc" do
+        npc_planet; @your_unit.destroy!
+        lambda do
+          invoke @action, @params.merge('id' => npc_planet.id)
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should fail if planet is owned by ally" do
+        ally_planet; @your_unit.destroy!
+        lambda do
+          invoke @action, @params.merge('id' => ally_planet.id)
+        end.should raise_error(GameLogicError)
+      end
+    end
+
+    describe "if there are player combat units" do
+      it "should pass if planet is owned by player" do
+        invoke @action, @params.merge('id' => owned_planet.id)
+      end
+
+      it "should pass if planet is owned by npc" do
+        invoke @action, @params.merge('id' => npc_planet.id)
+      end
+
+      it "should pass if planet is owned by ally" do
+        invoke @action, @params.merge('id' => ally_planet.id)
+      end
+    end
+
+    it "should fail if there are enemy units in planet" do
+      Factory.create(:u_gnat, player: Factory.create(:player), location: planet)
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if there are nap units in planet"
+
+    it "should not create notification if its your planet" do
+      Notification.should_not_receive(:create_for_ally_planet_reinitiate_combat)
+      invoke @action, @params.merge('id' => owned_planet.id)
+    end
+
+    it "should not create notification if its a NPC planet" do
+      Notification.should_not_receive(:create_for_ally_planet_reinitiate_combat)
+      invoke @action, @params.merge('id' => npc_planet.id)
+    end
+
+    it "should create notification if its an ally planet" do
+      Notification.should_receive(:create_for_ally_planet_reinitiate_combat).
+        with(ally_planet, player)
+      invoke @action, @params.merge('id' => ally_planet.id)
+    end
+
+    it "should check planet for conflicts ignoring cooldowns" do
+      Combat::LocationChecker.should_receive(:check_location).with(
+        planet.location_point, check_for_cooldown: false
+      )
+      invoke @action, @params
     end
   end
 end
