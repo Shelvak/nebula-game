@@ -32,6 +32,7 @@ package tests.planetboss
 
       [Before]
       public function setUp(): void {
+         DateUtil.now = 0;
          galaxy = new Galaxy();
          galaxy.battlegroundId = 100;
          ModelLocator.getInstance().latestGalaxy = galaxy;

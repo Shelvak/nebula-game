@@ -5686,35 +5686,26 @@
   </PlayerOptions>
 
   <PlanetBoss>
-    <title>Ateivių iššūkis</title>
-    <label.unitsList>Iššūkio kovotojai:</label.unitsList>
-    <label.spawnButton>Iškviesti</label.spawnButton>
-    <message.canSpawnNow>
-      Šioje planetoje tu gali mesti ateiviams iššūkį.
-    </message.canSpawnNow>
-    <toolTip.canSpawnIn>
-      Šioje planetoje ateiviams iššūkį mesti galėsi už {0}.
-    </toolTip.canSpawnIn>
-    <message.canSpawnIn>
-      Jei turėtum žemės karių šioje planetoje, ateiviams iššūkį mesti galėtum
-      už {0}.
-    </message.canSpawnIn>
-    <message.canNotSpawn.player>
-      ● Ši planeta turi priklausyti tau arba ateiviams.
-    </message.canNotSpawn.player>
-    <message.canNotSpawn.cooldown>
-      ● Šioje planetoje dabar yra mūšio pertrauka.
-    </message.canNotSpawn.cooldown>
-    <message.canNotSpawn.units>
-      ● Šioje planetoje tu neturi žemės karių.
-    </message.canNotSpawn.units>
-    
     <title>Planet boss</title>
-    <label.unitsList>Units that will be spawned:</label.unitsList>
+    <label.unitsList>
+      Units that will be spawned:
+    </label.unitsList>
+    <message.canSpawnNow>
+      You can spawn boss to this planet.
+    </message.canSpawnNow>
+    <message.canSpawnIn>
+      If you had ground units in this planet, you could spawn boss to it in {0}.
+    </message.canSpawnIn>
     <label.spawnButton>Spawn</label.spawnButton>
-    <message.canSpawnNow>You can spawn boss to this planet.</message.canSpawnNow>
-    <message.canSpawnIn>You will be able to spawn units to this planet in {}.</message.canSpawnIn>
-    <message.canNotSpawn>The planet must owned by you or be unoccupied at all if you want to spawn a boss to it.</message.canNotSpawn>
+    <message.canNotSpawn.player>
+      ● Either you or NPC must own this planet.
+    </message.canNotSpawn.player>
+    <message.canNotSpawn.noGroundUnits>
+      ● You don't have any ground units in this planet.
+    </message.canNotSpawn.noGroundUnits>
+    <message.canNotSpawn.napOrEnemyUnits>
+      ● There are enemy or NAP troops in this planet.
+    </message.canNotSpawn.napOrEnemyUnits>
   </PlanetBoss>
 
 </locale>
