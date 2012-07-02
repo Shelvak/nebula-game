@@ -5820,7 +5820,7 @@
       už:
     </message.canSpawnIn>
     <message.canNotSpawn.player>
-      ● Ši planeta turi priklausyti tau arba ateiviams.
+      ● Ši planeta turi priklausyti tau, tavo sąjungininkams arba ateiviams.
     </message.canNotSpawn.player>
     <message.canNotSpawn.noGroundUnits>
       ● Šioje planetoje tu neturi žemės karių.

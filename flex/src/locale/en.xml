@@ -5730,7 +5730,7 @@
     </message.canSpawnIn>
     <label.spawnButton>Spawn</label.spawnButton>
     <message.canNotSpawn.player>
-      ● Either you or NPC must own this planet.
+      ● Either you, your alliance or NPC must own this planet.
     </message.canNotSpawn.player>
     <message.canNotSpawn.noGroundUnits>
       ● You don't have any ground units in this planet.

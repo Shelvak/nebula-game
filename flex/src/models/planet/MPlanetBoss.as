@@ -101,7 +101,8 @@ package models.planet
 
       [Bindable(event="canSpawnChange")]
       public function get canSpawn(): Boolean {
-         return (_planet.owner == Owner.PLAYER || _planet.owner == Owner.NPC)
+         return (_planet.owner == Owner.PLAYER || _planet.owner == Owner.NPC
+            || _planet.owner == Owner.ALLY)
             && (_planetMap == null ||
                    _planetMap.hasAggressiveGroundUnits()
                && !_planetMap.hasActiveUnits(Owner.ENEMY)
@@ -151,7 +152,8 @@ package models.planet
                result += (result.length == 0 ? "" : "\n") + getString("message.canNotSpawn." + key);
             }
 
-            if (_planet.owner != Owner.PLAYER && _planet.owner != Owner.NPC) {
+            if (_planet.owner != Owner.PLAYER && _planet.owner != Owner.NPC
+               && _planet.owner == Owner.ALLY) {
                appendResult("player");
             }
             if (_planetMap != null) {
