@@ -20,6 +20,8 @@ package models.planet
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
 
+   import utils.ArrayUtil;
+
    import utils.Events;
    import utils.Objects;
    import utils.StringUtil;
@@ -86,17 +88,19 @@ package models.planet
       }
 
       private function parseBossUnits(configUnits: Array): Array {
-         const unitEntries: Array = new Array();
+         const unitEntries: Object = new Object();
          const counterParam: Object = {"counter": _planet.spawnCounter};
          for each (var entryData: Array in configUnits) {
-            unitEntries.push(new RaidingUnitEntry(
-               entryData[2],
+            const type: String = entryData[2];
+            const existingEntry: RaidingUnitEntry = unitEntries[type];
+            const newEntry: RaidingUnitEntry = new RaidingUnitEntry(
+               type,
                StringUtil.evalFormula(entryData[0], counterParam),
                StringUtil.evalFormula(entryData[1], counterParam),
-               0.5
-            ));
+               0.5);
+            unitEntries[type] = existingEntry != null ? existingEntry.add(newEntry) : newEntry;
          }
-         return unitEntries;
+         return ArrayUtil.fromObject(unitEntries, true);
       }
 
       [Bindable(event="canSpawnChange")]
@@ -115,14 +119,12 @@ package models.planet
       }
 
       [Bindable(event="canSpawnNowChange")]
-      public function get spawnCooldownActive(): Boolean
-      {
+      public function get spawnCooldownActive(): Boolean {
          return _planet.nextSpawn != null;
       }
 
       [Bindable(event="messageSpawnAbilityChange")]
-      public function get occursInString(): String
-      {
+      public function get occursInString(): String {
          return _planet.nextSpawn == null
             ? null
             : _planet.nextSpawn.occursInString();

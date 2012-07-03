@@ -6,6 +6,7 @@ package tests.planetboss
 
    import org.hamcrest.assertThat;
    import org.hamcrest.core.not;
+   import org.hamcrest.core.throws;
    import org.hamcrest.object.notNullValue;
 
 
@@ -30,6 +31,26 @@ package tests.planetboss
          assertThat(
             "equals if all properties are the same",
             sample, equals (entry("Trooper", 1, 5, 1))
+         );
+      }
+
+      [Test]
+      public function add(): void {
+         assertThat(
+            "should throw error if adding entries of different types of units",
+            function(): void { entry("Trooper", 1, 5, 1) .add (entry("Gnat", 1, 5, 1)) },
+            throws (Error)
+         );
+         assertThat(
+            "should throw error if adding entries with different probabilities",
+            function(): void { entry("Trooper", 1, 5, 1) .add (entry("Gnat", 1, 5, 0.5)) },
+            throws (Error)
+         );
+
+         assertThat(
+            "should add from and to values",
+            entry("Trooper", 1, 5, 1) .add (entry("Trooper", 1, 5, 1)),
+            equals (entry("Trooper", 2, 10, 1))
          );
       }
 

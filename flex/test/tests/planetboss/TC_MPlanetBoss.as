@@ -51,6 +51,7 @@ package tests.planetboss
          Config.setConfig({
             "ssObject.spawn.miniBattleground.units": [
                ["20 + 1 * counter / 4", "30 + 4 * counter / 2", "Gnat", 0],
+               ["20 + 1 * counter / 4", "30 + 4 * counter / 2", "Gnat", 1],
                ["5 + 1 * counter / 2", "15 + 3 * counter / 5", "Glancer", 1]],
             "ssObject.spawn.battleground.units": [
                ["10 + 1 * counter / 4", "20 + 4 * counter / 2", "Azure", 0],
@@ -93,8 +94,8 @@ package tests.planetboss
          assertThat(
             "should use formulas for mini-battleground",
             boss.units, array(
-               equals (new RaidingUnitEntry("Gnat", 20, 30, 0.5)),
-               equals (new RaidingUnitEntry("Glancer", 5, 15, 0.5))
+               equals (new RaidingUnitEntry("Glancer", 5, 15, 0.5)),
+               equals (new RaidingUnitEntry("Gnat", 40, 60, 0.5))
             )
          );
 
