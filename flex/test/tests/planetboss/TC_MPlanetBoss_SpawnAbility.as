@@ -78,8 +78,10 @@ package tests.planetboss
          assertThat( "can spawn if planet belongs to player", boss.canSpawn, isTrue() );
          planet.owner = Owner.NPC;
          assertThat( "can spawn if planet belongs to NPC", boss.canSpawn, isTrue() );
-
          planet.owner = Owner.ALLY;
+         assertThat( "can spawn if planet belongs to ALLY", boss.canSpawn, isTrue() );
+
+         planet.owner = Owner.NAP;
          assertThat( "can't spawn boss if does not belongs to player or NPC", boss.canSpawn, isFalse() );
 
          planet.owner = Owner.NPC;
@@ -126,7 +128,7 @@ package tests.planetboss
 
       [Test]
       public function canSpawnNow(): void {
-         planet.owner = Owner.ALLY;
+         planet.owner = Owner.NAP;
          assertThat(
             "can't spawn now if canSpawn is false",
             boss.canSpawnNow, isFalse()

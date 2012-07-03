@@ -120,7 +120,7 @@ package tests.planetboss
             )
          );
 
-         planet.owner = Owner.ALLY;
+         planet.owner = Owner.NAP;
          assertThat(
             "should do nothing if canSpawnNow is false",
             boss.spawn,
