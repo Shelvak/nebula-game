@@ -5806,28 +5806,30 @@
 
   <PlanetBoss>
     <title>Ateivių iššūkis</title>
-    <label.unitsList>Iššūkio kovotojai:</label.unitsList>
+    <label.unitsList>Iššūkio kovotojai</label.unitsList>
     <label.spawnButton>Iškviesti</label.spawnButton>
     <message.canSpawnNow>
-      Šioje planetoje tu gali mesti ateiviams iššūkį. Tam, kad tai padarytum
-      privalai turėti žemės karių planetoje.
+      <p>Šioje planetoje tu gali mesti ateiviams iššūkį.</p>
+      <p>
+        Tam, kad tai padarytum privalai turėti kovinių žemės karių planetoje.
+      </p>
     </message.canSpawnNow>
     <toolTip.canSpawnIn>
-      Šioje planetoje ateiviams iššūkį mesti galėsi už {0}.
+      Šioje planetoje, turėdamas kovinių žemės karių, ateiviams iššūkį mesti
+      galėsi už {0}.
     </toolTip.canSpawnIn>
     <message.canSpawnIn>
-      Jei turėtum žemės karių šioje planetoje, ateiviams iššūkį mesti galėtum
-      už:
+      Jei turėtum kovinių žemės karių šioje planetoje, ateiviams iššūkį mesti
+      galėtum už:
     </message.canSpawnIn>
     <message.canNotSpawn.player>
       ● Ši planeta turi priklausyti tau, tavo sąjungininkams arba ateiviams.
     </message.canNotSpawn.player>
     <message.canNotSpawn.noGroundUnits>
-      ● Šioje planetoje tu neturi žemės karių.
+      ● Šioje planetoje tu neturi kovinių žemės karių.
     </message.canNotSpawn.noGroundUnits>
     <message.canNotSpawn.napOrEnemyUnits>
       ● Šioje planetoje yra priešo arba NP karių.
     </message.canNotSpawn.napOrEnemyUnits>
   </PlanetBoss>
-
 </locale>

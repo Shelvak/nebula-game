@@ -5718,26 +5718,29 @@
   </PlayerOptions>
 
   <PlanetBoss>
-    <title>Planet boss</title>
-    <label.unitsList>
-      Units that will be spawned:
-    </label.unitsList>
+    <title>Alien Challenge</title>
+    <label.unitsList>Challenged aliens</label.unitsList>
     <message.canSpawnNow>
-      You can spawn boss to this planet.
+      <p>You can challenge aliens on this planet.</p>
+      <p>You must have at least one combative ground unit here to do it.</p>
     </message.canSpawnNow>
+    <toolTip.canSpawnIn>
+      You will be able to challenge aliens in this planet after {0}. Combative
+      ground troops are required for challenge.
+    </toolTip.canSpawnIn>
     <message.canSpawnIn>
-      If you had ground units in this planet, you could spawn boss to it in:
+      If you had at least one combative ground unit, you could challenge planet
+      aliens in:
     </message.canSpawnIn>
-    <label.spawnButton>Spawn</label.spawnButton>
+    <label.spawnButton>Challenge</label.spawnButton>
     <message.canNotSpawn.player>
-      ● Either you, your alliance or NPC must own this planet.
+      ● This planet must be owned by either you, your alliance or aliens.
     </message.canNotSpawn.player>
     <message.canNotSpawn.noGroundUnits>
-      ● You don't have any ground units in this planet.
+      ● You need to have any combative ground units in this planet.
     </message.canNotSpawn.noGroundUnits>
     <message.canNotSpawn.napOrEnemyUnits>
       ● There are enemy or NAP troops in this planet.
     </message.canNotSpawn.napOrEnemyUnits>
   </PlanetBoss>
-
 </locale>
