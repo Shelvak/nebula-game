@@ -35,8 +35,7 @@ package controllers.planets.actions
       }
 
       public function toString(): String {
-         return new ObjectStringBuilder(this)
-            .addProp("planetId").finish();
+         return new ObjectStringBuilder(this).addProp("planetId").finish();
       }
    }
 }

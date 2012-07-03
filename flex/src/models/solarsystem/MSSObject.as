@@ -928,19 +928,20 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set metalRateBoostEndsAt(value:Date) : void {
-         if (metal == null)
+      public function set metalRateBoostEndsAt(value: Date): void {
+         if (metal == null) {
             metal = new Resource(ResourceType.METAL, owner);
+         }
          metal.boost.rateBoostEndsAt = value;
          metal.boost.refreshBoosts();
       }
-      
-      public function get metalRateBoostEndsAt() : Date {
-         if (metal == null)
+      public function get metalRateBoostEndsAt(): Date {
+         if (metal == null) {
             metal = new Resource(ResourceType.METAL, owner);
+         }
          return metal.boost.rateBoostEndsAt;
       }
-      
+
       [Bindable]
       [Optional]
       /**

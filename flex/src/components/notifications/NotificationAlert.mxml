@@ -57,6 +57,7 @@
          
       ]]>
    </fx:Script>
+  <!--
   <s:Group left="0" top="0" bottom="0"
            click="model.clickHandler(event)">
     <s:BitmapImage source="{IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'top_left')}"
@@ -93,4 +94,5 @@
   <s:Button skinClass="components.skins.CloseEventButtonSkin"
                  visible="{_hovered}" right="1" verticalCenter="0"
                  click="hideAlert()"/>
+                 -->
 </s:Group>

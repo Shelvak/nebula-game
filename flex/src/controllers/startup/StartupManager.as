@@ -459,6 +459,7 @@ package controllers.startup
          bindPair(PlanetsCommand.REMOVE_FOLIAGE, new RemoveFoliageAction());
          bindPair(PlanetsCommand.PORTAL_UNITS, new PortalUnitsAction());
          bindPair(PlanetsCommand.BG_SPAWN, new BgSpawnAction());
+         bindPair(PlanetsCommand.REINITIATE_COMBAT, new ReinitiateCombatAction());
       }
       private static function bindAnnouncementsCommands() : void {
          bindPair(AnnouncementsCommand.NEW, new controllers.announcements.actions.NewAction());
