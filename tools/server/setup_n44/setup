@@ -176,6 +176,11 @@ def php_fpm_vhost_conf(suffix)
   }
 end
 
+MONIT_EXIM = %Q{
+check process exim4 with pidfile /var/run/exim4/exim.pid
+      start program = "/etc/init.d/exim4 start"
+      stop program  = "/etc/init.d/exim4 stop"
+}
 MONIT_MUNIN = %Q{
 check process munin-node with pidfile /var/run/munin/munin-node.pid
       start program = "/etc/init.d/munin-node start"
@@ -650,6 +655,7 @@ set httpd port 2812
 include /etc/monit/conf.d/*
   })
   File.write("/etc/monit/conf.d/munin-node", MONIT_MUNIN)
+  File.write("/etc/monit/conf.d/exim4", MONIT_EXIM)
   File.modify("/etc/default/monit") do |contents|
     contents.sub("startup=0", "startup=1")
   end

@@ -5,13 +5,18 @@ class Combat::LocationChecker
     # At first check cooldowns table - if the cooldown is still on we cannot
     # initiate any battles there.
     #
-    # If there is no cooldown - check for any opposing forces. 
+    # If there is no cooldown - check for any opposing forces.
     #
-    def check_location(location_point)
-      cooldown = without_locking do
-        Cooldown.in_location(location_point.location_attrs).first
-      end
-      return false if cooldown
+    # Additional options can be passed:
+    # - :check_for_cooldown => Boolean (default: true)
+    #
+    def check_location(location_point, options={})
+      options.reverse_merge!(check_for_cooldown: true)
+      options.assert_valid_keys(:check_for_cooldown)
+
+      return false if options[:check_for_cooldown] && without_locking {
+        Cooldown.in_location(location_point.location_attrs).exists?
+      }
 
       check_report = check_for_enemies(location_point)
       assets = nil

@@ -35,6 +35,7 @@
       import models.location.LocationType;
       import models.planet.MPlanet;
       import models.player.PlayerOptions;
+      import models.unit.MCLoadUnloadScreen;
       import models.unit.MCUnit;
       import models.unit.Unit;
       import models.unit.UnitKind;
@@ -156,18 +157,14 @@
                       || (!ML.latestPlanet)
                       || (model.unit.owner != Owner.PLAYER)
                       || (!ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER)
-                      &amp;&amp; (ML.latestPlanet.ssObject.owner == 
-                      Owner.ALLY))
-                      || (ML.latestPlanet.ssObject.owner == Owner.ENEMY))}"
+                        &amp;&amp; !MCLoadUnloadScreen.planetResourcesLoadable(ML.latestPlanet.ssObject.owner)))}"
                       toolTip="{Localizer.string('Units', 'label.load')}"
                       skinClass="components.skins.LoadButtonSkin"/>
             <s:Button id="unload" click="ML.units.showUnit(false, model.unit)"
                       visible="{!(model.unit.stored == 0 
                       || !model.unit.location.isSSObject
                       || (model.unit.owner != Owner.PLAYER)
-                      || (!ML.latestPlanet)
-                      || (!((ML.latestPlanet.ssObject.owner == Owner.PLAYER)
-                      || (ML.latestPlanet.ssObject.owner == Owner.ALLY))))}"
+                      || (!ML.latestPlanet))}"
                       toolTip="{Localizer.string('Units', 'label.unload')}"
                       skinClass="components.skins.UnloadButtonSkin"/>
          </base:AdvancedContainer>

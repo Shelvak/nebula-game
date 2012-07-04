@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark">
+  <fx:Script>
+     <![CDATA[
+    import models.planet.MPlanetBoss;
+
+    [Bindable]
+     public var model: MPlanetBoss;
+     ]]>
+  </fx:Script>
+  <s:Group>
+     <s:Label text="{model.label_unitsList}" left="0" right="0" lineBreak="toFit"/>
+  </s:Group>
+  <s:List dataProvider="{model.units}"
+          skinClass="components.planet.CBossUnitsListSkin">
+     <s:layout>
+        <s:TileLayout/>
+     </s:layout>
+  </s:List>
+  <s:layout>
+    <s:VerticalLayout horizontalAlign="justify"/>
+  </s:layout>
+</s:Group>

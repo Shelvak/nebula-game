@@ -104,7 +104,9 @@ class SsObject::Planet < SsObject
       "name" => name,
       "terrain" => terrain,
       "width" => width,
-      "height" => height
+      "height" => height,
+      "spawn_counter" => spawn_counter,
+      "next_spawn" => next_spawn
     }
     if options
       options.assert_valid_keys :owner, :view, :perspective, :index
@@ -114,6 +116,8 @@ class SsObject::Planet < SsObject
         if options[:owner]
       additional_attributes = additional_attributes | VIEW_ATTRIBUTES \
         if options[:view]
+      additional_attributes = additional_attributes | RESOURCE_ATTRIBUTES \
+        if options[:view] && player_id.nil?
       additional_attributes = additional_attributes | INDEX_ATTRIBUTES \
         if options[:index]
 
@@ -275,6 +279,32 @@ class SsObject::Planet < SsObject
       self, EventBroker::CHANGED, EventBroker::REASON_OWNER_PROP_CHANGE
     )
     Objective::RepairHp.progress(player, damaged_hp)
+  end
+
+  # Spawns boss in a battleground planet. Increases #spawn_counter and sets new
+  # #next_spawn. Checks for combat in that location. Ignores cooldowns.
+  def spawn_boss!
+    raise GameLogicError, "Planet must be in a battleground!" \
+      unless without_locking { solar_system.battleground? }
+
+    raise GameLogicError,
+      "You cannot spawn until #next_spawn expires at #{next_spawn}" \
+      if next_spawn.present? && next_spawn > Time.now
+
+    units = UnitBuilder.from_random_ranges(
+      Cfg.planet_boss_spawn_definition(solar_system),
+      location_point, nil, spawn_counter, 1
+    )
+    Unit.save_all_units(units, nil, EventBroker::CREATED)
+
+    self.spawn_counter += 1
+    self.next_spawn = Cfg.planet_boss_spawn_random_delay_date(solar_system)
+    self.save!
+
+    EventBroker.fire(self, EventBroker::CHANGED)
+    Combat::LocationChecker.check_location(
+      location_point, check_for_cooldown: false
+    )
   end
 
 private

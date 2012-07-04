@@ -96,6 +96,10 @@
     <Unit_Gnawer-what value="{0 one[kankintoją] 1sts[? kankintoją] tens[? kankintojų] many[? kankintojus]}" />
     <Unit_Gnawer-whos value="{0 one[kankintojo] 1sts[? kankintojo] tens[? kankintojų] many[? kankintojų]}" />
 
+    <Unit_Worg value="Vorgas" />
+    <Unit_Worg-what value="{0 one[vorgą] 1sts[? vorgą] tens[? vorgų] many[? vorgus]}" />
+    <Unit_Worg-whos value="{0 one[vorgo] 1sts[? vorgo] tens[? vorgų] many[? vorgų]}" />
+
     <!-- NPC kosmoso unitai -->
     
     <Unit_Dirac value="Dirakas" />
@@ -1545,14 +1549,15 @@
     </tooltip.apocalypse.notStarted>
     <!--
     {0}: date string
-    {1}: current apocalypose day
+    {1}: current apocalypse day
     {2}: how many creds will you get
     -->
     <tooltip.apocalypse.started>
       <p>Apokalipsė prasidėjo {0}.<br/><br/></p>
       <p>
-        Dabar yra {1} apokalipsės diena. Praradęs paskutinę savo planetą
-        tu gausi {2 one[? kredą] 1sts[? kredą] tens[? kredų] many[? kredus]}.
+        Dabar yra {1} apokalipsės diena. Šią dieną praradęs paskutinę savo
+        planetą tu gausi {2 one[? kredą] 1sts[? kredą] tens[? kredų]
+        many[? kredus]}.
         <br/><br/>
       </p>
       <p>[reference:tooltip.apocalypse.common]</p>
@@ -1630,7 +1635,7 @@
     <gun.boss_heavy value="Šoko sviediniai" />
     <gun.convoyship_light value="Fotonų greitintuvas" />
     <gun.convoyship_heavy value="TR-3 leistuvas" />
-    <gun.mantis_sniper value ="OSV-96 Snaiperinis Šautuvas" />
+    <gun.mantis_sniper value ="OSV-96 snaiperinis šautuvas" />
     <armorType value="Šarvų tipas" />
     <damageInPercent value="Procentai" />
     <damage value="Žala" />
@@ -1882,10 +1887,15 @@
     <message.orderComplete value="Laivai sėkmingai išsiųsti." />
     <label.avoidNpc value="Vengti mūšių su ateiviais" />
     <description.avoidNpc>
-      <p>Pažymėta: tavo laivynas stengsis išvengti nebūtinų mūšių su ateivių laivais,
-      todėl jis gali užtrukti ilgiau, jeigu tavo kelyje stovi ateiviai.</p>
-      <p>Nepažymėta: tavo laivynas skris greičiausiu maršrutu ir kausis su ateiviais 
-      esančiais jo kelyje.</p>
+      <p>
+        Pažymėta: tavo laivynas stengsis išvengti nebūtinų mūšių su stovinčiais
+        ateivių laivais, todėl jis gali užtrukti ilgiau, jeigu tavo kelyje
+        stovi ateiviai.
+      </p>
+      <p>
+        Nepažymėta: tavo laivynas skris greičiausiu maršrutu ir kausis su
+        stovinčiais ateivių laivais esančiais jo kelyje.
+      </p>
     </description.avoidNpc>
 
     <speedup.message.combatCooldownInfo
@@ -2021,6 +2031,22 @@
     <message.buildingsDeactivated>
       <p>Kai kurie pastatai buvo išjungti dėl energijos stygiaus.</p>
     </message.buildingsDeactivated>
+
+    <title.planetBossSpawn value="Ateiviams mestas iššūkis" />
+    <message.planetBossSpawn>
+      <p>Tavo planetoje {0} buvo mestas iššūkis ateiviams</p>
+    </message.planetBossSpawn>
+    <label.planetBossSpawn>
+      <p>Žaidėjas {0} metė iššūki ateiviams tavo planetoje.</p>
+    </label.planetBossSpawn>
+
+    <title.allyReinitiateCombat value="Mūšio pertrauka buvo nutraukta" />
+    <message.allyReinitiateCombat>
+      <p>Tavo planetoje {0} sąjungininkas nutraukė mūšio pertrauką</p>
+    </message.allyReinitiateCombat>
+    <label.allyReinitiateCombat>
+      <p>Tavo sąjungininkas {0} nutraukė mūšio pertrauką tavo planetoje.</p>
+    </label.allyReinitiateCombat>
 
     <title.explorationFinished value="Ekspedicija grįžo" />
     <message.explorationFinished 
@@ -5337,6 +5363,19 @@
       kariais.</p>
     </Gnawer.about>
 
+    <Worg.name ref="Objects/Unit_Worg" />
+    <Worg.about>
+      <p>
+        Nežmoniškai stipri ateivių karo mašina. Vargas tiems, kurie išdrys stoti
+        jai skersai kelio. Masyvios žemės bei oro patrankos tiesiog šluoja
+        priešo karius, o sluoksniuoti zetiumo šarvai, rodos, nepraleidžia nei
+        vienos kulkos.
+      </p>
+      <p>
+        Ar išdrįsi mesti jam iššūkį?
+      </p>
+    </Worg.about>
+
     <Dirac.name ref="Objects/Unit_Dirac" />
     <Dirac.about>
       <p>Šie greiti laivai buvo statomi kaip priešakinių puolamųjų linijų 
@@ -5719,49 +5758,77 @@
   </Authorization>
 
   <PlanetMapEditor>
-     <label.name value="Vardas:"/>
-     <label.area value="Plotas: {0}"/>
-     <label.size value="Dydis:"/>
-     <label.level value="Lygis:"/>
-     <label.generate value="Generuoti"/>
-     <label.save value="Išsaugoti"/>
-     <label.load value="Įkelti"/>
-     <label.copy value="Kopijuoti"/>
-     <label.cancel value="Atšaukti"/>
-     <title.buildings value="Pastatai"/>
-     <title.npcBuildings value="Ateivių pastatai"/>
-     <title.foliage value="Kalnai"/>
+    <label.name value="Vardas:"/>
+    <label.area value="Plotas: {0}"/>
+    <label.size value="Dydis:"/>
+    <label.level value="Lygis:"/>
+    <label.generate value="Generuoti"/>
+    <label.save value="Išsaugoti"/>
+    <label.load value="Įkelti"/>
+    <label.copy value="Kopijuoti"/>
+    <label.cancel value="Atšaukti"/>
+    <title.buildings value="Pastatai"/>
+    <title.npcBuildings value="Ateivių pastatai"/>
+    <title.foliage value="Kalnai"/>
   </PlanetMapEditor>
 
   <PlayerOptions>
-     <title.options value="Nustatymai" />
-     <title.chatOptions value="Pokalbių kambario nustatymai" />
-     <title.afterLoginOptions value="Prisijungimo nustatymai" />
-     <title.genericOptions value="Pagrindiniai nustatymai" />
-     <title.graphicsOptions value="Grafikos nustatymai"/>
-     <label.save value="Išsaugoti" />
-     <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
-     <label.showInfoEvents value="Rodyti informacinius pranešimus" />
-     <label.defaultTransporterTab
-       value="Skyrius, kurį atidaryti visų pirma, kraunant į transporterį ar iš jo:" />
-     <label.transporterTabResources value="Resursai" />
-     <label.transporterTabUnits value="Kariai" />
-     <label.showPopupsAfterLogin value="Atidaryti iššokančius langus prisijungus" />
-     <label.openFirstPlanet value="Automatiškai atidaryti pirmąją planetą" />
-     <label.showJoinLeave value="Rodyti prisijungimo / atsijungimo pranešimus" />
-     <label.ignoredList value="Ignoruojami žaidėjai:" />
-     <label.ignoredListEmpty value="Nėra ignoruojamų žaidėjų" />
-     <label.addIgnoredPlayer value="Pridėti" />
-     <label.removeIgnored value="Šalinti"/>
-     <label.ignoreComplete value="Pilnai ignoruoti"/>
-     <label.ignoreFiltered value="Uždengti žinutes"/>
-     <label.ignoreType value="Ignoravimo būdas:"/>
-     <label.enablePlanetAnimations value="Animacijos planetoje"/>
-     <label.showWormholeIcons value="Rodyti planetų ir laivų ikonėles prie arenos vartų galaktikoje"/>
-     <label.technologiesSortType
+    <title.options value="Nustatymai" />
+    <title.chatOptions value="Pokalbių kambario nustatymai" />
+    <title.afterLoginOptions value="Prisijungimo nustatymai" />
+    <title.genericOptions value="Pagrindiniai nustatymai" />
+    <title.graphicsOptions value="Grafikos nustatymai"/>
+    <label.save value="Išsaugoti" />
+    <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
+    <label.showInfoEvents>
+      Rodyti informacinius pranešimus kairiame viršutiniame kampe
+    </label.showInfoEvents>
+    <label.defaultTransporterTab
+      value="Skyrius, kurį atidaryti visų pirma, kraunant į transporterį ar iš jo:" />
+    <label.transporterTabResources value="Resursai" />
+    <label.transporterTabUnits value="Kariai" />
+    <label.showPopupsAfterLogin value="Atidaryti iššokančius langus prisijungus" />
+    <label.openFirstPlanet value="Automatiškai atidaryti pirmąją planetą" />
+    <label.showJoinLeave value="Rodyti prisijungimo / atsijungimo pranešimus" />
+    <label.ignoredList value="Ignoruojami žaidėjai:" />
+    <label.ignoredListEmpty value="Nėra ignoruojamų žaidėjų" />
+    <label.addIgnoredPlayer value="Pridėti" />
+    <label.removeIgnored value="Šalinti"/>
+    <label.ignoreComplete value="Pilnai ignoruoti"/>
+    <label.ignoreFiltered value="Uždengti žinutes"/>
+    <label.ignoreType value="Ignoravimo būdas:"/>
+    <label.enablePlanetAnimations value="Animacijos planetoje"/>
+    <label.showWormholeIcons value="Rodyti planetų ir laivų ikonėles prie arenos vartų galaktikoje"/>
+    <label.technologiesSortType
       value="Išradinėjamų technologijų rikiavimo būdas technologijų medyje:" />
-     <label.techSortScientists value="Pagal mokslininkus"/>
-     <label.techSortTime value="Pagal likusį laiką" />
+    <label.techSortScientists value="Pagal mokslininkus"/>
+    <label.techSortTime value="Pagal likusį laiką" />
   </PlayerOptions>
+
+  <PlanetBoss>
+    <title>Ateivių iššūkis</title>
+    <label.unitsList>Iššūkio kovotojai:</label.unitsList>
+    <label.spawnButton>Iškviesti</label.spawnButton>
+    <message.canSpawnNow>
+      Šioje planetoje tu gali mesti ateiviams iššūkį. Tam, kad tai padarytum
+      privalai turėti žemės karių planetoje.
+    </message.canSpawnNow>
+    <toolTip.canSpawnIn>
+      Šioje planetoje ateiviams iššūkį mesti galėsi už {0}.
+    </toolTip.canSpawnIn>
+    <message.canSpawnIn>
+      Jei turėtum žemės karių šioje planetoje, ateiviams iššūkį mesti galėtum
+      už:
+    </message.canSpawnIn>
+    <message.canNotSpawn.player>
+      ● Ši planeta turi priklausyti tau, tavo sąjungininkams arba ateiviams.
+    </message.canNotSpawn.player>
+    <message.canNotSpawn.noGroundUnits>
+      ● Šioje planetoje tu neturi žemės karių.
+    </message.canNotSpawn.noGroundUnits>
+    <message.canNotSpawn.napOrEnemyUnits>
+      ● Šioje planetoje yra priešo arba NP karių.
+    </message.canNotSpawn.napOrEnemyUnits>
+  </PlanetBoss>
 
 </locale>

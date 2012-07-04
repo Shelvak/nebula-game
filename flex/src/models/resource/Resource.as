@@ -4,6 +4,7 @@ package models.resource
    
    import models.BaseModel;
    import models.ModelLocator;
+   import models.Owner;
    import models.Reward;
    import models.building.Building;
    import models.parts.Upgradable;
@@ -291,15 +292,21 @@ package models.resource
       [Bindable (event="resourceStorageChanged")]
       public function get maxStock(): Number
       {
-         return _maxStock * ModelLocator.getInstance().resourcesMods.getStorageMod(type)
-            * boost.getStorageBoost();
+         return _maxStock *
+            (owner == Owner.PLAYER
+               ? ModelLocator.getInstance().resourcesMods.getStorageMod(type)
+               : 1
+            ) * boost.getStorageBoost();
       }
       
       [Bindable (event="resourceRateChanged")]
       public function get rate(): Number
       {
-         return _generationRate * ModelLocator.getInstance().resourcesMods.getRateMod(type)
-            * boost.getRateBoost() - _usageRate;
+         return _generationRate *
+            (owner == Owner.PLAYER
+               ? ModelLocator.getInstance().resourcesMods.getRateMod(type)
+               : 1
+            ) * boost.getRateBoost() - _usageRate;
       }
       
       public function set maxStock(value: Number): void
@@ -319,10 +326,12 @@ package models.resource
          _generationRate = value;
          dispatchRateChangeEvent();
       }
+
+      public var owner: int;
       
-      
-      public function Resource(name: String = ""):void{
+      public function Resource(name: String, planetOwner: int){
          type = name;
+         owner = planetOwner;
       }
       
       public function set currentStock(value: Number): void

@@ -13,6 +13,8 @@ package models
       public static const ALLY:int = 1;
       public static const NAP:int = 2;
       public static const ENEMY:int = 3;
+      /* used in planet boss to check if there is other player (non npc) units */
+      public static const ENEMY_PLAYER:int = 30;
       
       /**
        * All types of owners except for <code>UNDEFINED</code> in the following

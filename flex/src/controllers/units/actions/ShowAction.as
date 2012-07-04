@@ -36,7 +36,7 @@ package controllers.units.actions
          ML.units.enableAutoUpdate();
          if (ML.latestPlanet)
          {
-            ML.latestPlanet.dispatchUnitRefreshEvent();
+            ML.latestPlanet.invalidateUnitCachesAndDispatchEvent();
          }
          new GUnitEvent(GUnitEvent.UNITS_SHOWN);
       }

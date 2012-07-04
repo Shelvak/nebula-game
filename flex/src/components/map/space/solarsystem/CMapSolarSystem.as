@@ -102,7 +102,7 @@ package components.map.space.solarsystem
             MMapSpace.STATIC_OBJECT_COOLDOWN, CCooldown, CCooldownInfo
          );
          classes.addComponents(
-            MMapSpace.STATIC_OBJECT_NATURAL, CSSObject, CSSObjectInfo
+            MMapSpace.STATIC_OBJECT_NATURAL, CSSObject, CAllSSObjectInfo
          );
          classes.addComponents(
             MMapSpace.STATIC_OBJECT_WRECKAGE, CWreckage, CWreckageInfo

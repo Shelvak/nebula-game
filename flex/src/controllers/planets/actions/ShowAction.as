@@ -154,7 +154,7 @@ package controllers.planets.actions
                SQUADS_CTRL.attachJumpsAtToHostileSquads(
                   planet.squadrons, params["nonFriendlyJumpsAt"]
                );
-               planet.dispatchUnitRefreshEvent();
+               planet.invalidateUnitCachesAndDispatchEvent();
             })
             .addSubJob(
             function (): void {

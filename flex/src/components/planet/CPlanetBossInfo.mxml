@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:planet="components.planet.*"
+         skinClass="components.skins.PanelSkin"
+         title="{model.title_panel}"
+         visible="{model != null}"
+         includeInLayout="{model != null}">
+  <fx:Binding source="ModelLocator.getInstance().latestPlanet.ssObject.nextSpawn"
+              destination="nextSpawn"/>
+  <fx:Script>
+    <![CDATA[
+    import models.ModelLocator;
+    import models.planet.MPlanetBoss;
+    import models.time.MTimeEventFixedMoment;
+
+    import utils.DateUtil;
+
+
+    [Bindable]
+    public var model: MPlanetBoss;
+
+    [Bindable]
+    private var nextSpawn: MTimeEventFixedMoment;
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
+  </s:layout>
+  <planet:CPlanetBossUnits model="{model}"/>
+  <s:Group visible="{!model.canSpawn}" includeInLayout="{!model.canSpawn}">
+    <s:Label text="{model.message_spawnAbility}" left="0" right="0"
+             paddingTop="6"
+             styleName="unsatisfied"
+             lineBreak="toFit"/>
+  </s:Group>
+  <s:Group toolTip="{model.toolTip_canSpawnIn}">
+    <s:Button horizontalCenter="0" enabled="{model.canSpawnNow}"
+              skinClass="components.skins.RedButtonSkin"
+              label="{nextSpawn == null ? model.label_spawnButton : nextSpawn.occursInString(0)}"
+              click="model.spawn()"/>
+  </s:Group>
+</s:Panel>

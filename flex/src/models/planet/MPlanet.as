@@ -821,7 +821,8 @@ package models.planet
                      return unit.level > 0 && unit.kind == UnitKind.GROUND
                         && (!unit.hidden || hiddenCounts)
                         && (owner == -1 || owner == unit.owner
-                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
+                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC)
+                        || (owner == Owner.ENEMY_PLAYER && unit.owner == Owner.ENEMY));
                   }
                ) != null);
          }
@@ -843,7 +844,8 @@ package models.planet
                      && (!unit.hidden || hiddenCounts)
                      && (owner == -1
                         || owner == unit.owner
-                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
+                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC)
+                        || (owner == Owner.ENEMY_PLAYER && unit.owner == Owner.ENEMY));
                   }
                ) != null);
          }
@@ -1191,10 +1193,10 @@ package models.planet
       /**
        * Determines if any buildings in given building's area exist.
        * 
-       * @param building Building to be examinded.
+       * @param building Building to be examined.
        * 
        * @return <code>true</code> if there are at least one building in the
-       * area of the given bulding or <code>false</code> otherwise.
+       * area of the given building or <code>false</code> otherwise.
        */
       public function buildingsAroundExist(building:Building) : Boolean
       {
@@ -1518,13 +1520,13 @@ package models.planet
       /* ### EVENTS DISPATCHING METHODS ### */
       /* ################################## */
 
-      public function dispatchUnitRefreshEvent(): void {
-         if (!f_cleanupStarted &&
-                !f_cleanupComplete &&
-                hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED)) {
-            hasUnitsCache = {};
-            activeUnitsCountCache = {};
-            aggressiveGroundUnitsCache = {};
+      public function invalidateUnitCachesAndDispatchEvent(): void {
+         hasUnitsCache = {};
+         activeUnitsCountCache = {};
+         aggressiveGroundUnitsCache = {};
+         if (!f_cleanupStarted
+               && !f_cleanupComplete
+               && hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_REFRESH_NEEDED));
          }
       }

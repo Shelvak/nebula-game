@@ -61,6 +61,11 @@ package controllers.planets
        */
       public static const BG_SPAWN: String = "planets|bg_spawn";
 
+      /**
+       * @see controllers.planets.actions.ReinitiateCombatAction
+       */
+      public static const REINITIATE_COMBAT: String = "planets|reinitiate_combat";
+
 
       public function PlanetsCommand(type: String,
                                      parameters: Object = null,

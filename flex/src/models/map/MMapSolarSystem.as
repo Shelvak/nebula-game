@@ -1,5 +1,6 @@
 package models.map
 {
+   import models.BaseModel;
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationMinimalSolarSystem;
@@ -109,6 +110,11 @@ package models.map
        */
       override public function get cached(): Boolean {
          return _solarSystem.cached;
+      }
+
+      override public function update(): void {
+         updateList(naturalObjects);
+         super.update();
       }
 
       /* ########################### */

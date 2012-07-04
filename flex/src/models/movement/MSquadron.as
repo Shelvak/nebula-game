@@ -111,7 +111,7 @@ package models.movement
                }
                units.enableAutoUpdate();
                if(Unit(units.getItemAt(0)).location.isSSObject && ML.latestPlanet != null) {
-                  ML.latestPlanet.dispatchUnitRefreshEvent();
+                  ML.latestPlanet.invalidateUnitCachesAndDispatchEvent();
                }
             }
             super.id = value;
@@ -460,7 +460,7 @@ package models.movement
             // If units navigate from or to planet we need to refresh some getters
             if ((loc.isSSObject || fromPlanet) && ML.latestPlanet != null) {
                ML.latestPlanet.units.refresh();
-               ML.latestPlanet.dispatchUnitRefreshEvent();
+               ML.latestPlanet.invalidateUnitCachesAndDispatchEvent();
             }
          }
          return currentHop;

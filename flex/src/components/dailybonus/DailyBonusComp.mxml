@@ -7,83 +7,73 @@
          removedFromStage="removedFromStageHandler(event)">
    <fx:Script>
       <![CDATA[
-         import com.developmentarc.core.utils.EventBroker;
-         
-         import components.gameobjects.planet.IRPlayerPlanet;
-         
-         import globalevents.GlobalEvent;
-         
-         import models.ModelLocator;
-         import models.Reward;
-         import models.resource.Resource;
-         import models.resource.ResourceType;
-         import models.solarsystem.MSSObject;
-         
-         import mx.collections.ArrayCollection;
-         
-         import spark.components.Button;
-         import spark.events.IndexChangeEvent;
-         
-         import utils.StringUtil;
-         import utils.assets.AssetNames;
-         import utils.assets.ImagePreloader;
-         import utils.locale.Localizer;
-         
-         public function set reward(value: Reward): void
-         {
-            bonus = value;
-            refreshNotFitting();
-         }
-         
-         [Bindable]
-         private var bonus: Reward;
-         
-         [Bindable]
-         private var notFitting: String = null;
-         
-         private function refreshNotFitting(e: GlobalEvent = null): void
-         {
-            if (planetSelector)
-            {
-               var planet:MSSObject = MSSObject(planetSelector.selectedItem);
-               notFitting = Resource.getNotFittingReward(planet, bonus);
-            }
-            else
-            {
-               notFitting = null;
-            }
-         }
-         
-         protected function addedToStageHandler(event:Event):void
-         {
-            EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshNotFitting);
-         }
-         
-         
-         protected function removedFromStageHandler(event:Event):void
-         {
-            EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshNotFitting);
-         }
-         
-         
-         protected function planetSelector_changeHandler(event:IndexChangeEvent):void
-         {
-            refreshNotFitting();
-         }
+      import com.developmentarc.core.utils.EventBroker;
 
-         protected function datagroup1_clickHandler(event:MouseEvent):void
-         {
-            if (event.target is Button)
-            {
-               dispatchCloseEvent();
-            }
-         }
-         
-         private function dispatchCloseEvent(): void
-         {
-            dispatchEvent(new DailyBonusEvent(DailyBonusEvent.CLOSE_PANEL));
-         }
+      import components.planet.IRPlayerPlanet;
 
+      import globalevents.GlobalEvent;
+
+      import models.ModelLocator;
+      import models.Reward;
+      import models.resource.Resource;
+      import models.resource.ResourceType;
+      import models.solarsystem.MSSObject;
+
+      import mx.collections.ArrayCollection;
+
+      import spark.components.Button;
+      import spark.events.IndexChangeEvent;
+
+      import utils.StringUtil;
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+      import utils.locale.Localizer;
+
+
+      public function set reward(value: Reward): void {
+         bonus = value;
+         refreshNotFitting();
+      }
+
+      [Bindable]
+      private var bonus: Reward;
+
+      [Bindable]
+      private var notFitting: String = null;
+
+      private function refreshNotFitting(e: GlobalEvent = null): void {
+         if (planetSelector) {
+            var planet: MSSObject = MSSObject(planetSelector.selectedItem);
+            notFitting = Resource.getNotFittingReward(planet, bonus);
+         }
+         else {
+            notFitting = null;
+         }
+      }
+
+      protected function addedToStageHandler(event: Event): void {
+         EventBroker.subscribe(GlobalEvent.TIMED_UPDATE, refreshNotFitting);
+      }
+
+
+      protected function removedFromStageHandler(event: Event): void {
+         EventBroker.unsubscribe(GlobalEvent.TIMED_UPDATE, refreshNotFitting);
+      }
+
+
+      protected function planetSelector_changeHandler(event: IndexChangeEvent): void {
+         refreshNotFitting();
+      }
+
+      protected function datagroup1_clickHandler(event: MouseEvent): void {
+         if (event.target is Button) {
+            dispatchCloseEvent();
+         }
+      }
+
+      private function dispatchCloseEvent(): void {
+         dispatchEvent(new DailyBonusEvent(DailyBonusEvent.CLOSE_PANEL));
+      }
       ]]>
    </fx:Script>
    <s:Group maxWidth="300">
@@ -137,7 +127,7 @@
             <s:Label text="{Localizer.string('Quests', 'label.choosePlanet')}" styleName="h3"/>
             <base:PlanetSelector id="planetSelector" minWidth="180" 
                dataProvider="{ModelLocator.getInstance().player.planets}"
-               itemRenderer="components.gameobjects.planet.IRPlayerPlanet"
+               itemRenderer="components.planet.IRPlayerPlanet"
                change="planetSelector_changeHandler(event)"/>
             <s:layout>
                <s:HorizontalLayout horizontalAlign="center"/>

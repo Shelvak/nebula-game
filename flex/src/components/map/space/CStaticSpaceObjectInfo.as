@@ -1,32 +1,20 @@
 package components.map.space
 {
    import components.base.Panel;
-   
+
    import models.map.IMStaticSpaceObject;
-   
-   
-   public class CStaticSpaceObjectInfo extends Panel
+
+
+   public class CStaticSpaceObjectInfo extends Panel implements ICStaticSpaceObjectInfo
    {
-      public function CStaticSpaceObjectInfo()
-      {
-         super();
-      }
-      
-      
-      private var _staticObject:IMStaticSpaceObject;
+      private var _staticObject: IMStaticSpaceObject;
       [Bindable]
-      public function set staticObject(value:IMStaticSpaceObject) : void
-      {
-         if (_staticObject != value)
-         {
+      public function set staticObject(value: IMStaticSpaceObject): void {
+         if (_staticObject != value) {
             _staticObject = value;
          }
       }
-      /**
-       * @private
-       */
-      public function get staticObject() : IMStaticSpaceObject
-      {
+      public function get staticObject(): IMStaticSpaceObject {
          return _staticObject;
       }
    }
