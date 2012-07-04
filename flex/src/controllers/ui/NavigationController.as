@@ -550,7 +550,7 @@ package controllers.ui
          showNonMapScreen(_screenProperties[MainAreaScreens.LOAD_UNLOAD]);
       }
 
-      public function showAutoLoad(location: *, target: *, transporters: Array): void
+      public function showAutoLoad(location: *, target: *, transporters: ArrayCollection): void
       {
          MCAutoLoad.getInstance().prepare(transporters, location, target);
          showNonMapScreen(_screenProperties[MainAreaScreens.AUTO_LOAD]);

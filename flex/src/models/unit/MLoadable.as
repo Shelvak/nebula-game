@@ -7,6 +7,7 @@
  */
 package models.unit {
    import flash.display.BitmapData;
+   import flash.events.MouseEvent;
 
    public class MLoadable {
       public function MLoadable() {
@@ -18,6 +19,11 @@ package models.unit {
       public function get label(): String
       {
          return count.toString();
+      }
+
+      public function clickHandler(e: MouseEvent): void
+      {
+         throw new Error("This method is abstract!");
       }
 
       public function get image(): BitmapData

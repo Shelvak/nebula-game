@@ -14,6 +14,7 @@ package models.unit {
 
    import models.location.ILocationUser;
    import models.location.Location;
+   import models.location.LocationType;
    import models.resource.ResourceType;
    import models.solarsystem.MSSObject;
 
@@ -64,12 +65,12 @@ package models.unit {
          return ModelLocator.getInstance();
       }
 
-      public function prepare(_transporters: Array, sLocation: *,
+      public function prepare(_transporters: ArrayCollection, sLocation: *,
                                sTarget: *): void
       {
          location = sLocation;
          target = sTarget;
-         transporters = new ArrayCollection(_transporters);
+         transporters = _transporters;
          resetScreen();
       }
 
@@ -85,9 +86,9 @@ package models.unit {
          temp.addItem(metal);
          temp.addItem(energy);
          temp.addItem(zetium);
-         temp.addItem(allUnits);
-         if (target == null)
+         if (target == null && Location(location).type == LocationType.SS_OBJECT)
          {
+            temp.addItem(allUnits);
             var ssObject: MSSObject = ML.latestPlanet.ssObject;
             metal.count = ssObject.metal.currentStock;
             energy.count = ssObject.energy.currentStock;
@@ -104,9 +105,18 @@ package models.unit {
                temp.addItem(loadable);
             }
          }
+         else if (target == null)
+         {
+            //TODO: Loading everything from space sector
+         }
+         else if (location == null && Location(target).type == LocationType.SS_OBJECT)
+         {
+            temp.addItem(allUnits);
+            //TODO: Unloading everything to ss object
+         }
          else
          {
-
+            //TODO: Unloading everything to space sector
          }
          loadables = temp;
       }

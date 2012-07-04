@@ -124,14 +124,15 @@
                <s:Button label="{getText('label.none')}" click="selectNone()"/>
             </base:Panel>
 
-            <base:Panel width="100%" title="TODO: Auto load">
-               <base:layout>
-                  <s:HorizontalLayout gap="10" horizontalAlign="center"/>
-               </base:layout>
-               <s:Button label="TODO: Auto load"
-                         click="NavigationController.getInstance().showAutoLoad(
-                         null, null, []
-                         )"/>
+            <base:Panel width="100%" title="{getText('label.autoLoad')}"
+              visible="{US.selectedTransporters.length > 0}">
+              <base:layout>
+                 <s:HorizontalLayout gap="10" horizontalAlign="center"/>
+              </base:layout>
+              <s:Button label="{getText('label.openAutoLoad')}"
+                        click="NavigationController.getInstance().showAutoLoad(
+                          US.location, null, US.selectedTransporters
+                        )"/>
             </base:Panel>
             
             <base:Panel width="100%" title="{getText('label.setStance')}"

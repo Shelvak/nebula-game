@@ -531,6 +531,7 @@ package models.unit
       }
       
       private var cachedSelection: ArrayCollection = null;
+      private var cachedTransporters: ArrayCollection = null;
       
       [Bindable (event="selectionChange")]
       public function get selection(): ArrayCollection
@@ -549,6 +550,25 @@ package models.unit
          }
          cachedSelection = new ArrayCollection(_selection);
          return cachedSelection;
+      }
+
+      [Bindable (event="selectionChange")]
+      public function get selectedTransporters(): ArrayCollection
+      {
+         if (cachedTransporters)
+         {
+            return cachedTransporters;
+         }
+         var _selection: Array = [];
+         for each (var unit: MCUnit in selection)
+         {
+            if (ML.technologies.getUnitStorage(unit.unit.type, unit.unit.level) > 0)
+            {
+               _selection.push(unit.unit);
+            }
+         }
+         cachedTransporters = new ArrayCollection(_selection);
+         return cachedTransporters;
       }
       
       [Bindable]
@@ -987,6 +1007,7 @@ package models.unit
       public function dispatchSelectionChangeEvent(): void
       {
          cachedSelection = null;
+         cachedTransporters = null;
          if (hasEventListener(UnitsScreenEvent.SELECTION_CHANGE))
          {
             dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.SELECTION_CHANGE));
