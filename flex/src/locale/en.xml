@@ -5740,4 +5740,12 @@
     </message.canNotSpawn.napOrEnemyUnits>
   </PlanetBoss>
 
+  <PlanetCooldown>
+    <label.reinitiateButton>Reinitiate</label.reinitiateButton>
+    <message.noNpc>No NPC units</message.noNpc>
+    <message.enemyOrNapPlanet>ENEMY or NAP planet</message.enemyOrNapPlanet>
+    <message.enemyOrNapUnit>ENEMY or NAP unit</message.enemyOrNapUnit>
+    <message.noPlayerUnit>no PLAYER unit</message.noPlayerUnit>
+  </PlanetCooldown>
+
 </locale>

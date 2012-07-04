@@ -25,6 +25,7 @@ package models.planet
    import models.map.MapType;
    import models.planet.events.MPlanetEvent;
    import models.solarsystem.MSSObject;
+   import models.solarsystem.events.MSSObjectEvent;
    import models.tile.Tile;
    import models.tile.TileKind;
    import models.time.IMTimeEvent;
@@ -86,6 +87,8 @@ package models.planet
 
       public function MPlanet(ssObject: MSSObject) {
          _ssObject = ssObject;
+         _ssObject.addEventListener(
+            MSSObjectEvent.COOLDOWN_CHANGE, ssObject_cooldownChangeHandler, false, 0, true);
          super();
          _zIndexCalculator = new ZIndexCalculator(this);
          _foliageAnimator = new PlanetFolliagesAnimator();
@@ -213,8 +216,11 @@ package models.planet
        */
       public override function cleanup(): void {
          f_cleanupStarted = true;
+         cooldown = null;
          if (_ssObject != null) {
             _ssObject.cleanup();
+            _ssObject.removeEventListener(
+               MSSObjectEvent.COOLDOWN_CHANGE, ssObject_cooldownChangeHandler, false);
             _ssObject = null;
          }
          if (_zIndexCalculator != null) {
@@ -291,6 +297,34 @@ package models.planet
        */
       public function get ssObject(): MSSObject {
          return _ssObject;
+      }
+
+      private function ssObject_cooldownChangeHandler(event: MSSObjectEvent): void {
+         if (_ssObject != null) {
+            if (_ssObject.cooldown != null) {
+               cooldown = new MPlanetCooldown(_ssObject.cooldown, this);
+            }
+            else {
+               cooldown = null;
+            }
+         }
+         else {
+            cooldown = null
+         }
+      }
+
+      private var _cooldown: MPlanetCooldown = null;
+      [Bindable]
+      public function set cooldown(value: MPlanetCooldown): void {
+         if (_cooldown != value) {
+            if (_cooldown != null) {
+               _cooldown.cleanup();
+            }
+            _cooldown = value;
+         }
+      }
+      public function get cooldown(): MPlanetCooldown {
+         return _cooldown;
       }
 
       [Bindable(event="flagDestructionPendingSet")]
@@ -782,7 +816,7 @@ package models.planet
       private var hasUnitsCache: Object = {};
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveUnits(owner: int = -1, kind: String = null,
+      public function hasActiveUnits(owner: int = Owner.UNDEFINED, kind: String = null,
                                      hiddenCounts: Boolean = true): Boolean
       {
          if (hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts] == null)
@@ -809,7 +843,7 @@ package models.planet
       
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveGroundUnits(owner: int = -1,
+      public function hasActiveGroundUnits(owner: int = Owner.UNDEFINED,
                                            hiddenCounts: Boolean = true): Boolean
       {
          if (hasUnitsCache[owner + '|' + UnitKind.GROUND + '|' + hiddenCounts] == null)
@@ -820,7 +854,7 @@ package models.planet
                   {
                      return unit.level > 0 && unit.kind == UnitKind.GROUND
                         && (!unit.hidden || hiddenCounts)
-                        && (owner == -1 || owner == unit.owner
+                        && (owner == Owner.UNDEFINED || owner == unit.owner
                         || (owner == Owner.ENEMY && unit.owner == Owner.NPC)
                         || (owner == Owner.ENEMY_PLAYER && unit.owner == Owner.ENEMY));
                   }
@@ -831,7 +865,7 @@ package models.planet
       
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveSpaceUnits(owner: int = -1,
+      public function hasActiveSpaceUnits(owner: int = Owner.UNDEFINED,
                                           hiddenCounts: Boolean = true): Boolean
       {
          if (hasUnitsCache[owner + '|' + UnitKind.SPACE + '|' + hiddenCounts] == null)
@@ -842,7 +876,7 @@ package models.planet
                   {
                      return unit.level > 0 && unit.kind == UnitKind.SPACE
                      && (!unit.hidden || hiddenCounts)
-                     && (owner == -1
+                     && (owner == Owner.UNDEFINED
                         || owner == unit.owner
                         || (owner == Owner.ENEMY && unit.owner == Owner.NPC)
                         || (owner == Owner.ENEMY_PLAYER && unit.owner == Owner.ENEMY));

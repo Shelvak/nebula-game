@@ -7,8 +7,6 @@ package models.planet
 
    import flash.events.EventDispatcher;
 
-   import flashx.textLayout.property.NumberWithEnumProperty;
-
    import models.Owner;
    import models.events.BaseModelEvent;
    import models.planet.events.MPlanetBossEvent;
@@ -21,7 +19,6 @@ package models.planet
    import mx.collections.IList;
 
    import utils.ArrayUtil;
-
    import utils.Events;
    import utils.Objects;
    import utils.StringUtil;
