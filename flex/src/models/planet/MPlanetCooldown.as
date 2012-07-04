@@ -48,15 +48,15 @@ package models.planet
       }
 
       private function get hostileUnitPresent(): Boolean {
-         return _planet.hasActiveUnits(Owner.ENEMY_PLAYER) || _planet.hasActiveUnits(Owner.NAP);
+         return _planet.hasActiveUnits([Owner.ENEMY, Owner.NAP]);
       }
 
       private function get npcUnitPresent(): Boolean {
-         return _planet.hasActiveUnits(Owner.NPC);
+         return _planet.hasActiveUnits([Owner.NPC]);
       }
 
       private function get playerUnitPresent(): Boolean {
-         return _planet.hasActiveUnits(Owner.PLAYER);
+         return _planet.hasActiveUnits([Owner.PLAYER]);
       }
 
       private function get ownerIsAllyOrNPC(): Boolean {

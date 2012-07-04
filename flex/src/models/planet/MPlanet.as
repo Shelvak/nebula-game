@@ -814,76 +814,87 @@ package models.planet
 
       /* units cache */
       private var hasUnitsCache: Object = {};
+
+      private static function getOwnerHex(owners: Array): String
+      {
+         var ownerHex: String = '';
+         for each (var own: int in owners)
+         {
+            ownerHex += (own + '|');
+         }
+         return ownerHex;
+      }
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveUnits(owner: int = Owner.UNDEFINED, kind: String = null,
+      public function hasActiveUnits(owners: Array, kind: String = null,
                                      hiddenCounts: Boolean = true): Boolean
       {
-         if (hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts] == null)
+         var ownerHex: String = getOwnerHex(owners);
+         if (hasUnitsCache[ownerHex + '|' + kind + '|' + hiddenCounts] == null)
          {
             if (kind == UnitKind.SPACE)
             {
-               hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts] =
-                  hasActiveSpaceUnits(owner, hiddenCounts);
+               hasUnitsCache[ownerHex + '|' + kind + '|' + hiddenCounts] =
+                  hasActiveSpaceUnits(owners, hiddenCounts);
             }
             else if (kind == UnitKind.GROUND)
             {
-               hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts] =
-                  hasActiveGroundUnits(owner, hiddenCounts);
+               hasUnitsCache[ownerHex + '|' + kind + '|' + hiddenCounts] =
+                  hasActiveGroundUnits(owners, hiddenCounts);
             }
             else
             {
-               hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts] =
-                  (hasActiveGroundUnits(owner, hiddenCounts)
-                     || hasActiveSpaceUnits(owner, hiddenCounts));
+               hasUnitsCache[ownerHex + '|' + kind + '|' + hiddenCounts] =
+                  (hasActiveGroundUnits(owners, hiddenCounts)
+                     || hasActiveSpaceUnits(owners, hiddenCounts));
             }
          }
-         return hasUnitsCache[owner + '|' + kind + '|' + hiddenCounts];
+         return hasUnitsCache[ownerHex + '|' + kind + '|' + hiddenCounts];
+      }
+
+      private function hasActiveKindUnitsImpl(owners: Array, kind: String,
+                                                 hiddenCounts: Boolean = true)
+      {
+         var ownerHex: String = getOwnerHex(owners);
+         if (hasUnitsCache[ownerHex + '|' + kind + '|' + hiddenCounts] == null)
+         {
+            hasUnitsCache[ownerHex + '|' + kind + '|' + hiddenCounts] =
+               (Collections.findFirst(units,
+                  function(unit:Unit) : Boolean
+                  {
+                     if (unit.level > 0
+                        && unit.kind == kind
+                        && (!unit.hidden || hiddenCounts))
+                     {
+                        for each (var owner: int in owners)
+                        {
+                           if (owner == Owner.UNDEFINED
+                              || owner == unit.owner)
+                           {
+                              return true;
+                           }
+                        }
+                     }
+                     return false;
+                  }
+               ) != null);
+         }
+         return hasUnitsCache[ownerHex + '|' + kind + '|' + hiddenCounts];
       }
       
-      
       [Bindable(event="unitRefresh")]
-      public function hasActiveGroundUnits(owner: int = Owner.UNDEFINED,
+      public function hasActiveGroundUnits(owners: Array,
                                            hiddenCounts: Boolean = true): Boolean
       {
-         if (hasUnitsCache[owner + '|' + UnitKind.GROUND + '|' + hiddenCounts] == null)
-         {
-            hasUnitsCache[owner + '|' + UnitKind.GROUND + '|' + hiddenCounts] =
-               (Collections.findFirst(units,
-                  function(unit:Unit) : Boolean
-                  {
-                     return unit.level > 0 && unit.kind == UnitKind.GROUND
-                        && (!unit.hidden || hiddenCounts)
-                        && (owner == Owner.UNDEFINED || owner == unit.owner
-                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC)
-                        || (owner == Owner.ENEMY_PLAYER && unit.owner == Owner.ENEMY));
-                  }
-               ) != null);
-         }
-         return hasUnitsCache[owner + '|' + UnitKind.GROUND + '|' + hiddenCounts];
+         return hasActiveKindUnitsImpl(owners, UnitKind.GROUND, hiddenCounts);
       }
       
       
       [Bindable(event="unitRefresh")]
-      public function hasActiveSpaceUnits(owner: int = Owner.UNDEFINED,
+      public function hasActiveSpaceUnits(owners: Array,
                                           hiddenCounts: Boolean = true): Boolean
       {
-         if (hasUnitsCache[owner + '|' + UnitKind.SPACE + '|' + hiddenCounts] == null)
-         {
-            hasUnitsCache[owner + '|' + UnitKind.SPACE + '|' + hiddenCounts] =
-               (Collections.findFirst(units,
-                  function(unit:Unit) : Boolean
-                  {
-                     return unit.level > 0 && unit.kind == UnitKind.SPACE
-                     && (!unit.hidden || hiddenCounts)
-                     && (owner == Owner.UNDEFINED
-                        || owner == unit.owner
-                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC)
-                        || (owner == Owner.ENEMY_PLAYER && unit.owner == Owner.ENEMY));
-                  }
-               ) != null);
-         }
-         return hasUnitsCache[owner + '|' + UnitKind.SPACE + '|' + hiddenCounts];
+         return hasActiveKindUnitsImpl(owners, UnitKind.SPACE, hiddenCounts);
       }
       
       
