@@ -10,7 +10,8 @@
      ]]>
   </fx:Script>
   <s:Group>
-     <s:Label text="{model.label_unitsList}" left="0" right="0" lineBreak="toFit"/>
+     <s:Label text="{model.label_unitsList}" left="0" right="0"
+        lineBreak="toFit" textAlign="center" fontWeight="bold" />
   </s:Group>
   <s:List dataProvider="{model.units}"
           skinClass="components.planet.CBossUnitsListSkin">

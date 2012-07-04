@@ -8,7 +8,7 @@ LOCALE = "en" # Your locale.
 MUNIN_MASTER = "188.40.91.110" # thor.nebula44.com
 
 ### Server Configuration ###
-JRUBY = '1.6.7-head'
+JRUBY = 'jruby-head-n16'
 JRUBY_INSTALL_OPTS = "--branch jruby-1_6"
 
 ### Client Configuration ###
