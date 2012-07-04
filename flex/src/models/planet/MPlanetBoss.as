@@ -109,7 +109,7 @@ package models.planet
             || _planet.owner == Owner.ALLY)
             && (_planetMap == null ||
                    _planetMap.hasAggressiveGroundUnits()
-               && !_planetMap.hasActiveUnits(Owner.ENEMY)
+               && !_planetMap.hasActiveUnits(Owner.ENEMY_PLAYER)
                && !_planetMap.hasActiveUnits(Owner.NAP));
       }
 
@@ -162,7 +162,7 @@ package models.planet
                if (!_planetMap.hasAggressiveGroundUnits()) {
                   appendResult("noGroundUnits");
                }
-               if (_planetMap.hasActiveUnits(Owner.ENEMY) || _planetMap.hasActiveUnits(Owner.NAP)) {
+               if (_planetMap.hasActiveUnits(Owner.ENEMY_PLAYER) || _planetMap.hasActiveUnits(Owner.NAP)) {
                   appendResult("napOrEnemyUnits");
                }
             }

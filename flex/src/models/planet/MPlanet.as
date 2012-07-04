@@ -821,7 +821,8 @@ package models.planet
                      return unit.level > 0 && unit.kind == UnitKind.GROUND
                         && (!unit.hidden || hiddenCounts)
                         && (owner == -1 || owner == unit.owner
-                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
+                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC)
+                        || (owner == Owner.ENEMY_PLAYER && unit.owner == Owner.ENEMY));
                   }
                ) != null);
          }
@@ -843,7 +844,8 @@ package models.planet
                      && (!unit.hidden || hiddenCounts)
                      && (owner == -1
                         || owner == unit.owner
-                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC));
+                        || (owner == Owner.ENEMY && unit.owner == Owner.NPC)
+                        || (owner == Owner.ENEMY_PLAYER && unit.owner == Owner.ENEMY));
                   }
                ) != null);
          }
