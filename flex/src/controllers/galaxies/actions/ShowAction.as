@@ -235,7 +235,10 @@ package controllers.galaxies.actions
                return ss.player != null && ss.player.equals(ML.player);
             }
          );
-         moveToSS(galaxy, ss.id);
+         // May be null if player has lost his home solar system during apocalypse
+         if (ss != null) {
+            moveToSS(galaxy, ss.id);
+         }
       }
 
       private function moveToSS(galaxy: Galaxy, id: int): void {
