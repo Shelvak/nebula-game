@@ -5656,6 +5656,7 @@
      <title.graphicsOptions value="Graphics options"/>
      <label.save value="Save" />
      <label.warnBeforeUnload value="Warn before closing game" />
+     <label.showInfoEvents value="Show info events" />
      <label.defaultTransporterTab
        value="Tab to show first while loading or unloading transporter:" />
      <label.transporterTabResources value="Resources" />

@@ -19,8 +19,6 @@ package models.notification {
 
    public class MEvent {
 
-      public static const INACTIVE_CONTENT_ALPHA: Number = 0.4;
-
       public var id: int;
 
       [Bindable]
@@ -50,18 +48,16 @@ package models.notification {
          return EventsController.getInstance();
       }
 
-      [Bindable (event="WillNotChange")]
-      public function get rendererAlpha(): Number
-      {
-         return 1;
-      }
-
       public function clickHandler(event:MouseEvent): void
       {
          //override this function to implement any action
       }
 
-      public function MEvent(_message: String, _duration: int = 0) {
+      public function MEvent(_message: String, _duration: int = 0, skip: Boolean = false) {
+         if (skip)
+         {
+            return;
+         }
          message = _message;
          duration = _duration;
          id = EC.addEvent(this);

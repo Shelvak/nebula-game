@@ -15,11 +15,6 @@ package models.notification {
          super(_message, _clickHandler);
       }
 
-      [Bindable(event="WillNotChange")]
-      override public function get rendererAlpha(): Number {
-         return INACTIVE_CONTENT_ALPHA;
-      }
-
       public override function get image(): BitmapData
       {
          return IMG.getImage(AssetNames.EVENTS_IMAGE_FOLDER + 'alert');

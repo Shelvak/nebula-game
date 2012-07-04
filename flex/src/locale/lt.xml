@@ -5741,6 +5741,7 @@
      <title.graphicsOptions value="Grafikos nustatymai"/>
      <label.save value="Išsaugoti" />
      <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
+     <label.showInfoEvents value="Rodyti informacinius pranešimus" />
      <label.defaultTransporterTab
        value="Skyrius, kurį atidaryti visų pirma, kraunant į transporterį ar iš jo:" />
      <label.transporterTabResources value="Resursai" />
