@@ -152,7 +152,7 @@ PHP_FPM_POOL_SOCKET = "#{PHP_FPM_RUN}/#{USER}.socket"
 PHP_FPM_POOL_CONF = %Q{
 [#{USER}]
 user = #{USER}
-group = #{GROUP}
+group = #{USER}
 listen = #{PHP_FPM_POOL_SOCKET}
 listen.owner = www-data
 listen.group = www-data
@@ -673,6 +673,8 @@ include /etc/monit/conf.d/*
     %W{root #{USER} x11}.each do |user|
       run "adduser #{user} rvm"
     end
+
+    File.ensure(BASHRC, "\n. /usr/local/rvm/scripts/rvm\n")
 
     puts
     puts "RVM installed and it needs to be loaded."
