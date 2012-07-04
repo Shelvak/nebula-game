@@ -11,8 +11,7 @@ package components.planetmapeditor
       public var tileKind: int;
       public var terrainType: int;
       
-      public function IRTileKindM(tileKind:int,
-                                  terrainType:int = TerrainType.GRASS) {
+      public function IRTileKindM(tileKind:int, terrainType:int = TerrainType.GRASS) {
          this.tileKind = tileKind;
          this.terrainType = terrainType;
       }
