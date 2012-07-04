@@ -89,6 +89,9 @@ package models.planet
          _ssObject = ssObject;
          _ssObject.addEventListener(
             MSSObjectEvent.COOLDOWN_CHANGE, ssObject_cooldownChangeHandler, false, 0, true);
+         if (_ssObject.cooldown != null) {
+            cooldown = new MPlanetCooldown(_ssObject.cooldown, this);
+         }
          super();
          _zIndexCalculator = new ZIndexCalculator(this);
          _foliageAnimator = new PlanetFolliagesAnimator();
@@ -314,7 +317,6 @@ package models.planet
       }
 
       private var _cooldown: MPlanetCooldown = null;
-      [Bindable]
       public function set cooldown(value: MPlanetCooldown): void {
          if (_cooldown != value) {
             if (_cooldown != null) {

@@ -1,10 +1,14 @@
 package models.planet
 {
+   import components.popups.ActionConfirmationPopUp;
+
    import controllers.planets.PlanetsCommand;
    import controllers.planets.actions.ReinitiateCombatAction;
    import controllers.planets.actions.ReinitiateCombatActionParams;
 
    import flash.events.EventDispatcher;
+
+   import flashx.textLayout.formats.LineBreak;
 
    import interfaces.ICleanable;
 
@@ -15,6 +19,10 @@ package models.planet
    import models.planet.events.MPlanetEvent;
    import models.solarsystem.MSSObject;
    import models.solarsystem.events.MSSObjectEvent;
+
+   import spark.components.Button;
+
+   import spark.components.Label;
 
    import utils.EventBridge;
 
@@ -82,6 +90,32 @@ package models.planet
          }
       }
 
+      public function askForConfirmationAndReinitiateCombat(): void {
+         const popup:ActionConfirmationPopUp = new ActionConfirmationPopUp();
+         popup.minWidth = 250;
+         popup.maxWidth = 300;
+         popup.minHeight = 160;
+         popup.title = getString("popup.title");
+         popup.cancelButtonLabel = getString("popup.label.cancelButton");
+         popup.cancelButtonEnabled = true;
+         popup.cancelButtonVisible = true;
+         popup.closeOnCancel = true;
+         popup.confirmButtonLabel = getString("popup.label.confirmButton");
+         popup.confirmButtonEnabled = true;
+         popup.confirmButtonVisible = true;
+         popup.closeOnConfirm = true;
+         popup.confirmButtonClickHandler = function (button: Button): void {
+            reinitiateCombat();
+         }
+         const label: Label = new Label();
+         label.text = getString("popup.message.confirm");
+         label.left = 0;
+         label.right = 0;
+         label.setStyle("lineBreak", LineBreak.TO_FIT);
+         popup.addElement(label);
+         popup.show();
+      }
+
       [Bindable(event=MPlanetCooldownEvent.CAN_REINITIATE_COMBAT_CHANGE)]
       public function get message_reinitiationRestrictions(): String {
          if (canReinitiateCombat) {
@@ -98,13 +132,20 @@ package models.planet
          return messages.join("\n");
       }
 
+      // TODO: write test for this
+      [Bindable(event=MPlanetCooldownEvent.CAN_REINITIATE_COMBAT_CHANGE)]
+      public function get tooltip_reinitiateButton(): String {
+         if (canReinitiateCombat) {
+            return getString("message.canReinitiate");
+         }
+         else {
+            return getString("message.cannotReinitiate") + "\n" + message_reinitiationRestrictions;
+         }
+      }
+
       public function cleanup(): void {
          _ssObjectEventBridge.cleanup();
          _planetEventBridge.cleanup();
-      }
-
-      public function get label_reinitiateButton(): String {
-         return getString("label.reinitiateButton");
       }
 
       private function getString(property: String): String {

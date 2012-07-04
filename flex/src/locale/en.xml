@@ -5745,11 +5745,16 @@
   </PlanetBoss>
 
   <PlanetCooldown>
-    <label.reinitiateButton>Reinitiate</label.reinitiateButton>
-    <message.noNpc>No NPC units</message.noNpc>
-    <message.enemyOrNapPlanet>ENEMY or NAP planet</message.enemyOrNapPlanet>
-    <message.enemyOrNapUnit>ENEMY or NAP unit</message.enemyOrNapUnit>
-    <message.noPlayerUnit>no PLAYER unit</message.noPlayerUnit>
+    <message.canReinitiate>You can reinitiate combat in this planet</message.canReinitiate>
+    <message.cannotReinitiate>You could reinitiate combat if:</message.cannotReinitiate>
+    <message.noNpc>At least one alien unit were present in this planet</message.noNpc>
+    <message.enemyOrNapPlanet>This planet did not belong to enemy or NAP player</message.enemyOrNapPlanet>
+    <message.enemyOrNapUnit>No enemy and NAP units were present in this planet</message.enemyOrNapUnit>
+    <message.noPlayerUnit>You had at least one combat unit in this planet</message.noPlayerUnit>
+    <popup.title>Reinitiate battle?</popup.title>
+    <popup.label.cancelButton>Cancel</popup.label.cancelButton>
+    <popup.label.confirmButton>Confirm</popup.label.confirmButton>
+    <popup.message.confirm>Are you sure you want to skip the cooldown and reinitiate the battle?</popup.message.confirm>
   </PlanetCooldown>
 
 </locale>

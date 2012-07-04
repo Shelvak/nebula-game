@@ -238,9 +238,9 @@ package tests.planetcooldown
             containsStrings("ENEMY or NAP planet", "ENEMY or NAP unit", "No NPC unit"));
       }
 
-      /* ##################################### */
-      /* ### METADATA, EVENTS, STATIC TEXT ### */
-      /* ##################################### */
+      /* ######################## */
+      /* ### METADATA, EVENTS ### */
+      /* ######################## */
 
       [Test]
       public function metadata(): void {
@@ -265,12 +265,6 @@ package tests.planetcooldown
          assertThat(
             "changing planet units",
             planet.invalidateUnitCachesAndDispatchEvent, causesEvent());
-      }
-
-      [Test]
-      public function staticText(): void {
-         assertThat(
-            "label_reinitiateButton", cooldown.label_reinitiateButton, equals ("Reinitiate"));
       }
 
 
