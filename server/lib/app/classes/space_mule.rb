@@ -16,13 +16,11 @@ class SpaceMule
 
   # Fill created galaxy with battleground solar system and ensure it has free
   # zones and home solar systems.
-  def fill_galaxy(galaxy, free_zones, free_home_ss)
-    typesig binding, Galaxy, Fixnum, Fixnum
+  def fill_galaxy(galaxy)
+    typesig binding, Galaxy
 
     CONFIG.with_set_scope(galaxy.ruleset) do
-      Pmg.Runner.fill_galaxy(
-        galaxy.id, galaxy.ruleset, free_zones, free_home_ss
-      )
+      Pmg.Runner.fill_galaxy(galaxy.id, galaxy.ruleset)
     end
   end
 

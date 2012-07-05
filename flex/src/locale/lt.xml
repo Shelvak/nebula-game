@@ -5832,4 +5832,32 @@
       ● Šioje planetoje yra priešo arba NP karių.
     </message.canNotSpawn.napOrEnemyUnits>
   </PlanetBoss>
+
+  <PlanetCooldown>
+    <message.canReinitiate>
+      Tu gali praleisti pertrauką ir kautis su ateiviais iš karto.
+    </message.canReinitiate>
+    <message.cannotReinitiate>
+      Tu galėtum praleisti pertrauką ir kautis su ateiviais iš karto, jeigu:
+    </message.cannotReinitiate>
+    <message.noNpc>
+      ● Planetoje būtų bent vienas ateivių karys.
+    </message.noNpc>
+    <message.enemyOrNapPlanet>
+      ● Planeta nepriklausytų priešui arba NP nariui.
+    </message.enemyOrNapPlanet>
+    <message.enemyOrNapUnit>
+      ● Planetoje nebūtų priešų arba NP karių.
+    </message.enemyOrNapUnit>
+    <message.noPlayerUnit>
+      ● Planetoje būtų bent vienas tavo karys.
+    </message.noPlayerUnit>
+    <popup.title>Kautis su ateiviais?</popup.title>
+    <popup.label.cancelButton>Ne</popup.label.cancelButton>
+    <popup.label.confirmButton>Taip</popup.label.confirmButton>
+    <popup.message.confirm>
+      Ar esi tikras, jog nori praleisti pertrauką ir kautis su ateiviais?
+    </popup.message.confirm>
+  </PlanetCooldown>
+
 </locale>

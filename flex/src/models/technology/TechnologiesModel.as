@@ -37,6 +37,7 @@ package models.technology
          _buildingRepairTechnology = null;
          coordsHash = null;
          techsHash = null;
+         _initialized = false;
       }
       
       public function createAllTechnologies(): void
@@ -49,6 +50,12 @@ package models.technology
          createTechnology(tech);
          new GTechnologiesEvent(GTechnologiesEvent.TECHNOLOGIES_CREATED);
          startConstructions();
+         _initialized = true;
+      }
+
+      private var _initialized: Boolean = false;
+      public function get initialized(): Boolean {
+         return _initialized;
       }
       
       private function startConstructions(): void

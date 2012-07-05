@@ -5743,4 +5743,32 @@
       ● There are enemy or NAP troops in this planet.
     </message.canNotSpawn.napOrEnemyUnits>
   </PlanetBoss>
+
+  <PlanetCooldown>
+    <message.canReinitiate>
+      You can skip cooldown and reinitiate combat in this planet.
+    </message.canReinitiate>
+    <message.cannotReinitiate>
+      You could skip cooldown and reinitiate combat if:
+    </message.cannotReinitiate>
+    <message.noNpc>
+      ● At least one alien unit was present in this planet.
+    </message.noNpc>
+    <message.enemyOrNapPlanet>
+      ● This planet did not belong to enemy or NAP player.
+    </message.enemyOrNapPlanet>
+    <message.enemyOrNapUnit>
+      ● No enemy and NAP units were present in this planet.
+    </message.enemyOrNapUnit>
+    <message.noPlayerUnit>
+      ● You had at least one combat unit in this planet.
+    </message.noPlayerUnit>
+    <popup.title>Reinitiate combat?</popup.title>
+    <popup.label.cancelButton>Cancel</popup.label.cancelButton>
+    <popup.label.confirmButton>Confirm</popup.label.confirmButton>
+    <popup.message.confirm>
+      Are you sure you want to skip the cooldown and reinitiate combat?
+    </popup.message.confirm>
+  </PlanetCooldown>
+
 </locale>

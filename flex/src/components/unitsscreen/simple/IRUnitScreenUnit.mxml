@@ -214,6 +214,8 @@
          }
       }
 
+      private static const PLAYER_OWNER: Array = [Owner.PLAYER];
+
       ]]>
    </fx:Script>
    <s:Group id="contGroup" width="100" height="76">
@@ -247,16 +249,16 @@
                      || (!model.unit.location.isSSObject)
                      || (!ML.latestPlanet)
                      || (model.unit.owner != Owner.PLAYER)
-                     || (!ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER)
+                     || (!ML.latestPlanet.hasActiveGroundUnits(PLAYER_OWNER)
                      &amp;&amp; !MCLoadUnloadScreen.planetResourcesLoadable(ML.latestPlanet.ssObject.owner))
                      )}"
                      toolTip="{(!MCLoadUnloadScreen.planetResourcesLoadable(ML.latestPlanet.ssObject.owner)
-                     &amp;&amp; !ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER))
+                     &amp;&amp; !ML.latestPlanet.hasActiveGroundUnits(PLAYER_OWNER))
                      ? Localizer.string('Units', 'tooltip.nothingToLoad')
                      : Localizer.string('Units', 'label.load')}">
                <s:Button click="ML.units.showUnit(true, model.unit)"
                          enabled="{!(!MCLoadUnloadScreen.planetResourcesLoadable(ML.latestPlanet.ssObject.owner)
-                         &amp;&amp; !ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER))}"
+                         &amp;&amp; !ML.latestPlanet.hasActiveGroundUnits(PLAYER_OWNER))}"
                          skinClass="components.skins.LoadButtonSkin"/>
             </s:Group>
             <!-- UNLOAD -->

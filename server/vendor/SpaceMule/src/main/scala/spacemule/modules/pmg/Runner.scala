@@ -9,30 +9,17 @@ case class PoolStatsResult(freeZones: Int, freeHomeSs: Int)
 
 object Runner {
   /**
-   * Fills just created galaxy with objects.
+   * Fills just created galaxy with necessary objects.
    *
-   * Creates battleground, given number of free zones and given number of pooled
-   * home systems.
+   * Currently it only creates battleground solar system.
    *
    * @param galaxyId
    * @param ruleset
-   * @param freeZoneCount
-   * @param freeHomeSsCount
    */
-  def fillGalaxy(
-    galaxyId: Int, ruleset: String, freeZoneCount: Int, freeHomeSsCount: Int
-  ) {
+  def fillGalaxy(galaxyId: Int, ruleset: String) {
     Manager.initDates()
     val galaxy = new Galaxy(galaxyId, ruleset)
-
     Log.block("Creating battleground") { () => galaxy.createBattleground() }
-    Log.block("Ensuring "+freeZoneCount+" free zones") { () =>
-      galaxy.ensureFreeZones(freeZoneCount)
-    }
-    Log.block("Ensuring "+freeHomeSsCount+" free home ss") { () =>
-      galaxy.ensureFreeHomeSystems(freeHomeSsCount)
-    }
-
     Log.block("Saving galaxy") { () => Manager.save(galaxy) }
   }
 

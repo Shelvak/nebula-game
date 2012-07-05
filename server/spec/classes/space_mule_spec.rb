@@ -24,12 +24,10 @@ describe SpaceMule do
 
   describe "#fill_galaxy" do
     let(:galaxy) { Factory.create(:galaxy) }
-    let(:free_zones) { 2 }
-    let(:free_home_ss) { 2 }
 
     before(:all) do
       @launch_time = Time.now
-      @mule.fill_galaxy(galaxy, free_zones, free_home_ss)
+      @mule.fill_galaxy(galaxy)
     end
 
     describe "battleground ss" do
@@ -60,180 +58,21 @@ describe SpaceMule do
         )
       end
     end
-
-    describe "wormholes" do
-      before(:all) do
-        @wormholes = SolarSystem.where(
-          :galaxy_id => galaxy.id,
-          :kind => SolarSystem::KIND_WORMHOLE
-        )
-      end
-
-      it "should create wormholes in area" do
-        @wormholes.
-          should have_correct_relative_coordinates('galaxy.wormholes.positions')
-      end
-
-      it "should not register spawn callback" do
-        @wormholes.each do |wormhole|
-          wormhole.should_not have_callback(CallbackManager::EVENT_SPAWN)
-        end
-      end
-    end
-
-    describe "mini battlegrounds" do
-      before(:all) do
-        @pulsars = SolarSystem.
-          where("x IS NOT NULL AND y IS NOT NULL").
-          where(
-            :galaxy_id => galaxy.id,
-            :kind => SolarSystem::KIND_BATTLEGROUND
-          )
-      end
-
-      it "should create them in area" do
-        @pulsars.should have_correct_relative_coordinates(
-                          'galaxy.mini_battlegrounds.positions'
-                        )
-      end
-
-      it "should have spawn callbacks registered" do
-        @pulsars.each do |pulsar|
-          pulsar.
-            should have_callback(CallbackManager::EVENT_SPAWN, @launch_time)
-        end
-      end
-
-      it "should be created from static configuration" do
-        @pulsars.each do |pulsar|
-          pulsar.should be_created_from_static_ss_configuration(
-                       CONFIG['solar_system.map.pulsar'][0]['map'],
-                       @launch_time
-                     )
-        end
-      end
-    end
-
-    describe "home solar systems" do
-      let(:condition) do
-        SolarSystem.where(galaxy_id: galaxy.id, kind: SolarSystem::KIND_POOLED)
-      end
-
-      before(:all) do
-        @solar_systems = condition.all
-      end
-
-      it "should create pooled home ss" do
-        condition.count.should == free_home_ss
-      end
-
-      it "should register callback for spawn" do
-        @solar_systems.each do |solar_system|
-          solar_system.should have_callback(
-            CallbackManager::EVENT_SPAWN, @launch_time
-          )
-        end
-      end
-
-      it "should be created from static configuration" do
-        @solar_systems.each do |solar_system|
-          solar_system.should be_created_from_static_ss_configuration(
-            CONFIG['solar_system.map.home'][0]['map'],
-            @launch_time
-          )
-        end
-      end
-    end
-
-    describe "free solar systems" do
-      before(:all) do
-        @solar_systems = SolarSystem.where(
-          :galaxy_id => galaxy.id, :kind => SolarSystem::KIND_NORMAL
-        ).where("player_id IS NULL").all
-      end
-
-      it "should create them in area" do
-        @solar_systems.should have_correct_relative_coordinates(
-                          'galaxy.free_systems.positions'
-                        )
-      end
-
-      it "should register callback for spawn" do
-        @solar_systems.each do |ss|
-          ss.should have_callback(CallbackManager::EVENT_SPAWN, @launch_time)
-        end
-      end
-
-      it "should be created from static configuration" do
-        @solar_systems.each do |ss|
-          ss.should be_created_from_static_ss_configuration(
-                      CONFIG['solar_system.map.free'][0]['map'],
-                      @launch_time
-                    )
-        end
-      end
-    end
-
-    describe "in planets" do
-      before(:all) do
-        ss_ids = SolarSystem.where(:galaxy_id => galaxy.id).map(&:id)
-        @planets = @models =
-          SsObject::Planet.where(:solar_system_id => ss_ids).all
-      end
-
-      it "should not place any tiles offmap" do
-        @planets.each { |planet| planet.should_not have_offmap(Tile) }
-      end
-
-      it "should not place any folliages offmap" do
-        @planets.each { |planet| planet.should_not have_offmap(Folliage) }
-      end
-
-      it "should not place any buildings offmap" do
-        @planets.each { |planet| planet.should_not have_offmap(Building) }
-      end
-
-      it "should not place any folliages on buildings" do
-        @planets.each do |planet|
-          planet.should_not have_folliages_on(Building)
-        end
-      end
-
-      it "should have all player buildings activated" do
-        @planets.each do |planet|
-          planet.buildings.each do |building|
-            building.should be_active unless building.npc?
-          end
-        end
-      end
-
-      it "should not have any empty npc buildings" do
-        @planets.each do |planet|
-          planet.should_not have_blank_npc_buildings
-        end
-      end
-
-      it "should have #next_raid_at set" do
-        @planets.map(&:next_raid_at).should_not include(nil)
-      end
-
-      it "should have callbacks registered for #next_raid_at" do
-        @planets.each do |planet|
-          planet.should have_callback(
-            CallbackManager::EVENT_RAID, planet.next_raid_at
-          )
-        end
-      end
-    end
-
   end
 
   describe "#ensure_pool & #pool_stats" do
+    let(:free_zones) { 2 }
+    let(:free_home_ss) { 2 }
     let(:galaxy) do
-      Factory.create(:galaxy, pool_free_zones: 3, pool_free_home_ss: 5)
+      Factory.create(
+        :galaxy, pool_free_zones: free_zones, pool_free_home_ss: free_home_ss
+      )
     end
 
     it "should ensure that pool is regenerated (with iteration limits)" do
+      galaxy.pool_free_zones = 3
+      galaxy.pool_free_home_ss = 5
+
       result = lambda do
         res = @mule.pool_stats(galaxy.id)
         [res.free_zones, res.free_home_ss]
@@ -244,8 +83,183 @@ describe SpaceMule do
       end.should change(result, :call).from([0, 0]).to([1, 1])
 
       lambda do
-        @mule.ensure_pool(galaxy, 10, 10)
-      end.should change(result, :call).from([1, 1]).to([3, 5])
+        @mule.ensure_pool(
+          galaxy, galaxy.pool_free_zones + 10, galaxy.pool_free_home_ss + 10
+        )
+      end.should change(result, :call).from([1, 1]).
+        to([galaxy.pool_free_zones, galaxy.pool_free_home_ss])
+    end
+
+    describe "solar system creation" do
+      before(:all) do
+        @launch_time = Time.now
+        @mule.ensure_pool(galaxy, free_zones, free_home_ss)
+      end
+
+      describe "wormholes" do
+        before(:all) do
+          @wormholes = SolarSystem.where(
+            :galaxy_id => galaxy.id,
+            :kind => SolarSystem::KIND_WORMHOLE
+          )
+        end
+
+        it "should create wormholes in area" do
+          @wormholes.
+            should have_correct_relative_coordinates('galaxy.wormholes.positions')
+        end
+
+        it "should not register spawn callback" do
+          @wormholes.each do |wormhole|
+            wormhole.should_not have_callback(CallbackManager::EVENT_SPAWN)
+          end
+        end
+      end
+
+      describe "mini battlegrounds" do
+        before(:all) do
+          @pulsars = SolarSystem.
+            where("x IS NOT NULL AND y IS NOT NULL").
+            where(
+              :galaxy_id => galaxy.id,
+              :kind => SolarSystem::KIND_BATTLEGROUND
+            )
+        end
+
+        it "should create them in area" do
+          @pulsars.should have_correct_relative_coordinates(
+                            'galaxy.mini_battlegrounds.positions'
+                          )
+        end
+
+        it "should have spawn callbacks registered" do
+          @pulsars.each do |pulsar|
+            pulsar.
+              should have_callback(CallbackManager::EVENT_SPAWN, @launch_time)
+          end
+        end
+
+        it "should be created from static configuration" do
+          @pulsars.each do |pulsar|
+            pulsar.should be_created_from_static_ss_configuration(
+                         CONFIG['solar_system.map.pulsar'][0]['map'],
+                         @launch_time
+                       )
+          end
+        end
+      end
+
+      describe "home solar systems" do
+        let(:condition) do
+          SolarSystem.where(galaxy_id: galaxy.id, kind: SolarSystem::KIND_POOLED)
+        end
+
+        before(:all) do
+          @solar_systems = condition.all
+        end
+
+        it "should create pooled home ss" do
+          condition.count.should == free_home_ss
+        end
+
+        it "should register callback for spawn" do
+          @solar_systems.each do |solar_system|
+            solar_system.should have_callback(
+              CallbackManager::EVENT_SPAWN, @launch_time
+            )
+          end
+        end
+
+        it "should be created from static configuration" do
+          @solar_systems.each do |solar_system|
+            solar_system.should be_created_from_static_ss_configuration(
+              CONFIG['solar_system.map.home'][0]['map'],
+              @launch_time
+            )
+          end
+        end
+      end
+
+      describe "free solar systems" do
+        before(:all) do
+          @solar_systems = SolarSystem.where(
+            :galaxy_id => galaxy.id, :kind => SolarSystem::KIND_NORMAL
+          ).where("player_id IS NULL").all
+        end
+
+        it "should create them in area" do
+          @solar_systems.should have_correct_relative_coordinates(
+                            'galaxy.free_systems.positions'
+                          )
+        end
+
+        it "should register callback for spawn" do
+          @solar_systems.each do |ss|
+            ss.should have_callback(CallbackManager::EVENT_SPAWN, @launch_time)
+          end
+        end
+
+        it "should be created from static configuration" do
+          @solar_systems.each do |ss|
+            ss.should be_created_from_static_ss_configuration(
+                        CONFIG['solar_system.map.free'][0]['map'],
+                        @launch_time
+                      )
+          end
+        end
+      end
+
+      describe "in planets" do
+        before(:all) do
+          ss_ids = SolarSystem.where(:galaxy_id => galaxy.id).map(&:id)
+          @planets = @models =
+            SsObject::Planet.where(:solar_system_id => ss_ids).all
+        end
+
+        it "should not place any tiles offmap" do
+          @planets.each { |planet| planet.should_not have_offmap(Tile) }
+        end
+
+        it "should not place any folliages offmap" do
+          @planets.each { |planet| planet.should_not have_offmap(Folliage) }
+        end
+
+        it "should not place any buildings offmap" do
+          @planets.each { |planet| planet.should_not have_offmap(Building) }
+        end
+
+        it "should not place any folliages on buildings" do
+          @planets.each do |planet|
+            planet.should_not have_folliages_on(Building)
+          end
+        end
+
+        it "should have all player buildings activated" do
+          @planets.each do |planet|
+            planet.buildings.each do |building|
+              building.should be_active unless building.npc?
+            end
+          end
+        end
+
+        it "should not have any empty npc buildings" do
+          @planets.each do |planet|
+            planet.should_not have_blank_npc_buildings
+          end
+        end
+
+        it "should have #next_raid_at set" do
+          @planets.map(&:next_raid_at).should_not include(nil)
+        end
+
+        it "should have callbacks registered for #next_raid_at" do
+          @planets.each do |planet|
+            planet.should have_callback(
+              CallbackManager::EVENT_RAID, planet.next_raid_at
+            )
+          end
+        end
+      end
     end
   end
 

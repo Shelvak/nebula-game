@@ -471,13 +471,11 @@ package models.building
          }
       }
 
-      private function refreshBuiltPart(e: GlobalEvent): void
-      {
+      private function refreshBuiltPart(e: GlobalEvent): void {
          //if server did not sent updated message or client did not yet received it avoid NPE
-         if (constructableObject != null)
-         {
+         if (constructableObject != null && constructableObject.upgradePart != null) {
             constructableBuiltPart = Upgradable(
-                    constructableObject.upgradePart).upgradeProgress;
+               constructableObject.upgradePart).upgradeProgress;
          }
       }
 

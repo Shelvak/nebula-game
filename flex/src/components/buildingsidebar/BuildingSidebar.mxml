@@ -598,6 +598,16 @@
        return Localizer.string('BuildingSidebar', prop, args);
     }
 
+    private static function getEnemyAndNpc(): Array
+    {
+      return [Owner.ENEMY, Owner.NPC];
+    }
+
+    private static function getArray(owner: int): Array
+    {
+      return [owner];
+    }
+
     [Bindable]
     private var BS: MCBuildingSelectedSidebar =
        MCBuildingSelectedSidebar.getInstance();
@@ -615,22 +625,22 @@
                           horizontalAlign="justify"/>
         </base:layout>
         <base:Warning text="{getString('notYourPlanet')}"/>
-        <s:Group visible="{(ML.latestPlanet.hasAggressiveGroundUnits(Owner.ENEMY)
-              || ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
+        <s:Group visible="{(ML.latestPlanet.hasActiveUnits(getEnemyAndNpc(),
+                  UnitKind.SPACE, false)
               || ML.latestPlanet.hasBuildingsWithGuns)
               &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
           <s:Label text="{getString('label.planetHasEnemies')}" styleName="unsatisfied"
                  left="0" right="0"/>
         </s:Group>
-        <s:Group visible="{!ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
+        <s:Group visible="{!ML.latestPlanet.hasActiveUnits(getArray(Owner.PLAYER))
               &amp;&amp; ML.latestPlanet.ssObject.owner != Owner.ALLY}">
           <s:Label text="{getString('label.noPlayerUnits')}" styleName="unsatisfied"
                  left="0" right="0"/>
         </s:Group>
         <s:Group visible="{ML.latestPlanet.ssObject.player == null
          &amp;&amp; !ML.latestPlanet.hasAggressiveGroundUnits(Owner.ENEMY)
-         &amp;&amp; !ML.latestPlanet.hasActiveUnits(Owner.ENEMY, UnitKind.SPACE, false)
-         &amp;&amp; ML.latestPlanet.hasActiveUnits(Owner.PLAYER)
+         &amp;&amp; !ML.latestPlanet.hasActiveUnits(getEnemyAndNpc(), UnitKind.SPACE, false)
+         &amp;&amp; ML.latestPlanet.hasActiveUnits(getArray(Owner.PLAYER))
          &amp;&amp; !ML.latestPlanet.hasBuildingsWithGuns}">
            <s:Button label="{getString('label.claimPlanet')}"
                visible="{!ML.latestGalaxy.apocalypseHasStarted}"

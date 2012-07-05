@@ -7,8 +7,6 @@ package models.planet
 
    import flash.events.EventDispatcher;
 
-   import flashx.textLayout.property.NumberWithEnumProperty;
-
    import models.Owner;
    import models.events.BaseModelEvent;
    import models.planet.events.MPlanetBossEvent;
@@ -21,7 +19,6 @@ package models.planet
    import mx.collections.IList;
 
    import utils.ArrayUtil;
-
    import utils.Events;
    import utils.Objects;
    import utils.StringUtil;
@@ -109,8 +106,7 @@ package models.planet
             || _planet.owner == Owner.ALLY)
             && (_planetMap == null ||
                    _planetMap.hasAggressiveGroundUnits()
-               && !_planetMap.hasActiveUnits(Owner.ENEMY_PLAYER)
-               && !_planetMap.hasActiveUnits(Owner.NAP));
+               && !_planetMap.hasActiveUnits([Owner.ENEMY, Owner.NAP]));
       }
 
       [Bindable(event="canSpawnNowChange")]
@@ -162,7 +158,7 @@ package models.planet
                if (!_planetMap.hasAggressiveGroundUnits()) {
                   appendResult("noGroundUnits");
                }
-               if (_planetMap.hasActiveUnits(Owner.ENEMY_PLAYER) || _planetMap.hasActiveUnits(Owner.NAP)) {
+               if (_planetMap.hasActiveUnits([Owner.ENEMY, Owner.NAP])) {
                   appendResult("napOrEnemyUnits");
                }
             }

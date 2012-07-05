@@ -3,6 +3,12 @@ require File.expand_path(
 )
 
 describe Cfg do
+  describe ".next_convoy_time" do
+    it "should not fail if there are no wormholes in galaxy" do
+      Cfg.next_convoy_time(0)
+    end
+  end
+
   describe ".foliage_removal_cost" do
     it "should return rounded number" do
       with_config_values(
