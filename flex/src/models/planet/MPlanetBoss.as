@@ -161,28 +161,27 @@ package models.planet
 
       [Bindable(event="messageSpawnAbilityChange")]
       public function get message_spawnAbility(): String {
-         if (!canSpawn) {
-
-            var result: String = "";
-            function appendResult(key: String): void {
-               result += (result.length == 0 ? "" : "\n") + getString("message.canNotSpawn." + key);
-            }
-
-            if (_planet.owner != Owner.PLAYER && _planet.owner != Owner.NPC
-               && _planet.owner == Owner.ALLY) {
-               appendResult("player");
-            }
-            if (_planetMap != null) {
-               if (!_planetMap.hasAggressiveGroundUnits()) {
-                  appendResult("noGroundUnits");
-               }
-               if (_planetMap.hasActiveUnits([Owner.ENEMY, Owner.NAP])) {
-                  appendResult("napOrEnemyUnits");
-               }
-            }
-            return result;
+         if (canSpawn) {
+            return "";
          }
-         return null;
+         const messages: Array = new Array();
+         function addMessage(key: String): void {
+            messages.push(getString("message.canNotSpawn." + key));
+         }
+         if (_planet.owner != Owner.PLAYER
+               && _planet.owner != Owner.NPC
+               && _planet.owner == Owner.ALLY) {
+            addMessage("player");
+         }
+         if (_planetMap != null) {
+            if (!_planetMap.hasAggressiveGroundUnits()) {
+               addMessage("noGroundUnits");
+            }
+            if (_planetMap.hasActiveUnits([Owner.ENEMY, Owner.NAP])) {
+               addMessage("napOrEnemyUnits");
+            }
+         }
+         return messages.join("\n");
       }
 
 
