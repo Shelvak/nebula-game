@@ -24,6 +24,7 @@ package models.solarsystem
    import models.location.LocationType;
    import models.map.IMStaticSpaceObject;
    import models.map.MMapSpace;
+   import models.planet.MPlanetBoss;
    import models.player.PlayerMinimal;
    import models.resource.Resource;
    import models.resource.ResourceType;
@@ -42,22 +43,16 @@ package models.solarsystem
 
    /**
     * Dispatched when player who owns this solar system object has changed.
-    * 
-    * @eventType models.solarsystem.events.MSSObjectEvent.PLAYER_CHANGE
     */
    [Event(name="playerChange", type="models.solarsystem.events.MSSObjectEvent")]
    
    /**
     * Dispatched when <code>owner</code> property changes.
-    * 
-    * @eventType models.solarsystem.events.MSSObjectEvent.OWNER_CHANGE
     */
    [Event(name="ownerChange", type="models.solarsystem.events.MSSObjectEvent")]
    
    /**
     * Dispatched when <code>cooldown</code> property changes.
-    * 
-    * @eventType models.solarsystem.events.MSSObjectEvent.COOLDOWN_CHANGE
     */
    [Event(
       name="cooldownChange",
@@ -68,6 +63,20 @@ package models.solarsystem
     */
    [Event(
       name="terrainChange",
+      type="models.solarsystem.events.MSSObjectEvent")]
+
+   /**
+    * Dispatched when <code>spawnCounter</code> property changes.
+    */
+   [Event(
+      name="spawnCounterChange",
+      type="models.solarsystem.events.MSSObjectEvent")]
+
+   /**
+    * Dispatched when <code>nextSpawn</code> property changes.
+    */
+   [Event(
+      name="nextSpawnChange",
       type="models.solarsystem.events.MSSObjectEvent")]
 
    /* when MSsObject gets updated, metal, energy and zetium properties gets overwritten.
@@ -412,6 +421,58 @@ package models.solarsystem
       public function get componentHeight() : int {
          return IMAGE_HEIGHT * size / 100;
       }
+
+
+      /* ################## */
+      /* ### BOSS SPAWN ### */
+      /* ################## */
+
+      private var _spawnCounter: int = 0;
+      [Bindable(event="spawnCounterChange")]
+      [Optional]
+      /**
+       * Level of the boss-fleet to be spawned but only if this is a pulsar or battleground planet.
+       */
+      public function set spawnCounter(value: int): void {
+         if (_spawnCounter != value) {
+            _spawnCounter = value;
+            dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.SPAWN_COUNTER_CHANGE);
+         }
+      }
+      public function get spawnCounter(): int {
+         return _spawnCounter;
+      }
+
+      private var _nextSpawn: MTimeEventFixedMoment = null;
+      [Bindable(event="nextSpawnChange")]
+      [Optional]
+      /**
+       * Time until next boss can be spawned.
+       */
+      public function set nextSpawn(nextSpawn: MTimeEventFixedMoment): void {
+         if (_nextSpawn != nextSpawn) {
+            _nextSpawn = nextSpawn;
+            dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.NEXT_SPAWN_CHANGE);
+         }
+      }
+      public function get nextSpawn(): MTimeEventFixedMoment {
+         return _nextSpawn;
+      }
+
+      private var _bossCreated: Boolean = false;
+      private var _boss: MPlanetBoss = null;
+      /**
+       * A special object for handling spawning of boss. May be <code>null</code>.
+       */
+      public function get boss(): MPlanetBoss {
+         if (!_bossCreated) {
+            _bossCreated = true;
+            if (isPlanet && (inBattleground || inMiniBattleground)) {
+               _boss = new MPlanetBoss(this);
+            }
+         }
+         return _boss;
+      }
       
       
       /* ################ */
@@ -515,6 +576,18 @@ package models.solarsystem
       public function set owner(value: int): void {
          if (_owner != value) {
             _owner = value;
+            if (metal)
+            {
+               metal.owner = _owner;
+            }
+            if (energy)
+            {
+               energy.owner = _owner;
+            }
+            if (zetium)
+            {
+               zetium.owner = _owner;
+            }
             dispatchSimpleEvent(MSSObjectEvent, MSSObjectEvent.OWNER_CHANGE);
             dispatchPropertyUpdateEvent(prop_name::owner, _owner);
             dispatchPropertyUpdateEvent(prop_name::isOwned, isOwned);
@@ -855,19 +928,20 @@ package models.solarsystem
        * [Bindable]<br/>
        * [Optional]</i></p>
        */
-      public function set metalRateBoostEndsAt(value:Date) : void {
-         if (metal == null)
-            metal = new Resource();
+      public function set metalRateBoostEndsAt(value: Date): void {
+         if (metal == null) {
+            metal = new Resource(ResourceType.METAL, owner);
+         }
          metal.boost.rateBoostEndsAt = value;
          metal.boost.refreshBoosts();
       }
-      
-      public function get metalRateBoostEndsAt() : Date {
-         if (metal == null)
-            metal = new Resource();
+      public function get metalRateBoostEndsAt(): Date {
+         if (metal == null) {
+            metal = new Resource(ResourceType.METAL, owner);
+         }
          return metal.boost.rateBoostEndsAt;
       }
-      
+
       [Bindable]
       [Optional]
       /**
@@ -879,7 +953,7 @@ package models.solarsystem
        */
       public function set energyRateBoostEndsAt(value:Date) : void {
          if (energy == null) {
-            energy = new Resource();
+            energy = new Resource(ResourceType.ENERGY, owner);
          }
          energy.boost.rateBoostEndsAt = value;
          energy.boost.refreshBoosts();
@@ -887,7 +961,7 @@ package models.solarsystem
       
       public function get energyRateBoostEndsAt() : Date {
          if (energy == null)
-            energy = new Resource();
+            energy = new Resource(ResourceType.ENERGY, owner);
          return energy.boost.rateBoostEndsAt;
       }
       
@@ -902,14 +976,14 @@ package models.solarsystem
        */
       public function set zetiumRateBoostEndsAt(value:Date) : void {
          if (zetium == null)
-            zetium = new Resource();
+            zetium = new Resource(ResourceType.ZETIUM, owner);
          zetium.boost.rateBoostEndsAt = value;
          zetium.boost.refreshBoosts();
       }
       
       public function get zetiumRateBoostEndsAt() : Date {
          if (zetium == null)
-            zetium = new Resource();
+            zetium = new Resource(ResourceType.ZETIUM, owner);
          return zetium.boost.rateBoostEndsAt;
       }
       
@@ -924,14 +998,14 @@ package models.solarsystem
        */
       public function set metalStorageBoostEndsAt(value:Date) : void {
          if (metal == null)
-            metal = new Resource();
+            metal = new Resource(ResourceType.METAL, owner);
          metal.boost.storageBoostEndsAt = value;
          metal.boost.refreshBoosts();
       }
       
       public function get metalStorageBoostEndsAt() : Date {
          if (metal == null)
-            metal = new Resource();
+            metal = new Resource(ResourceType.METAL, owner);
          return metal.boost.storageBoostEndsAt;
       }
       
@@ -946,14 +1020,14 @@ package models.solarsystem
        */
       public function set energyStorageBoostEndsAt(value:Date) : void {
          if (energy == null)
-            energy = new Resource();
+            energy = new Resource(ResourceType.ENERGY, owner);
          energy.boost.storageBoostEndsAt = value;
          energy.boost.refreshBoosts();
       }
       
       public function get energyStorageBoostEndsAt() : Date {
          if (energy == null)
-            energy = new Resource();
+            energy = new Resource(ResourceType.ENERGY, owner);
          return energy.boost.storageBoostEndsAt;
       }
       
@@ -968,14 +1042,14 @@ package models.solarsystem
        */
       public function set zetiumStorageBoostEndsAt(value:Date) : void {
          if (zetium == null)
-            zetium = new Resource();
+            zetium = new Resource(ResourceType.ZETIUM, owner);
          zetium.boost.storageBoostEndsAt = value;
          zetium.boost.refreshBoosts();
       }
       
       public function get zetiumStorageBoostEndsAt() : Date {
          if (zetium == null)
-            zetium = new Resource();
+            zetium = new Resource(ResourceType.ZETIUM, owner);
          return zetium.boost.storageBoostEndsAt;
       }
       
@@ -1008,15 +1082,19 @@ package models.solarsystem
          recalculateResources();
          updateItem(nextRaidEvent);
          updateItem(explorationEndEvent);
+         if (nextSpawn != null) {
+            nextSpawn.update();
+            if (nextSpawn.hasOccurred) {
+               nextSpawn = null;
+            }
+         }
          if (cooldown != null) {
             cooldown.update();
             if (cooldown.endsEvent.hasOccurred) {
                cooldown = null;
             }
          }
-         raidTime = nextRaidEvent != null
-                       ? nextRaidEvent.occursInString()
-                       : null;
+         raidTime = nextRaidEvent != null ? nextRaidEvent.occursInString() : null;
          dispatchUpdateEvent();
       }
 
@@ -1024,6 +1102,7 @@ package models.solarsystem
          resetChangeFlagsOf(nextRaidEvent);
          resetChangeFlagsOf(explorationEndEvent);
          resetChangeFlagsOf(cooldown);
+         resetChangeFlagsOf(nextSpawn);
       }
    }
 }

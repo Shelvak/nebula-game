@@ -75,6 +75,9 @@
     <Unit_Gnawer value="Gnawer" />
     <Unit_Gnawer-p8d value="{0 one[Gnawer] many[? Gnawers]}" />
 
+    <Unit_Worg value="Worg" />
+    <Unit_Worg-p8d value="{0 one[Worg] many[? Worgs]}" />
+
     <!-- NPC space units -->
     
     <Unit_Dirac value="Dirac" />
@@ -278,16 +281,16 @@
     <Technology_TurretCritical value="Turret Computers" />
     <Technology_TurretAbsorption value="Turret Defense Systems" />
 
-    <Technology_NpcSpaceDamage value="NPC Ships Weapons" />
-    <Technology_NpcSpaceArmor value="NPC Ships Armor" />
-    <Technology_NpcSpaceCritical value="NPC Ships Computers" />
-    <Technology_NpcSpaceAbsorption value="NPC Ships Def. Systems" />
-    <Technology_NpcHeavyFlight value="NPC Ships Engines" />
+    <Technology_NpcSpaceDamage value="Alien Ships Weapons" />
+    <Technology_NpcSpaceArmor value="Alien Ships Armor" />
+    <Technology_NpcSpaceCritical value="Alien Ships Computers" />
+    <Technology_NpcSpaceAbsorption value="Alien Ships Def. Systems" />
+    <Technology_NpcHeavyFlight value="Alien Ships Engines" />
     <Technology_NpcLightFlight value="Space Distortion" />
-    <Technology_NpcGroundDamage value="NPC Ground Weapons" />
-    <Technology_NpcGroundArmor value="NPC Ground Armor" />
-    <Technology_NpcGroundCritical value="NPC Ground Computers" />
-    <Technology_NpcGroundAbsorption value="NPC Ground Def. Systems" />
+    <Technology_NpcGroundDamage value="Alien Ground Weapons" />
+    <Technology_NpcGroundArmor value="Alien Ground Armor" />
+    <Technology_NpcGroundCritical value="Alien Ground Computers" />
+    <Technology_NpcGroundAbsorption value="Alien Ground Def. Systems" />
 
     <Technology_DamageSpecialization value="Damage Specialization" />
     <Technology_ArmorSpecialization value="Armor Specialization" />
@@ -560,7 +563,7 @@
     <button.activateOverdrive value="Activate overdrive" />
     <button.deactivateOverdrive value="Deactivate overdrive" />
     <warning.attackNpc>
-      <p>This is an NPC building. You can destroy it by killing all the units
+      <p>This is an alien building. You can destroy it by killing all the units
         inside.</p>
     </warning.attackNpc>
   </BuildingSelectedSidebar>
@@ -1411,14 +1414,14 @@
     </tooltip.apocalypse.notStarted>
     <!--
     {0}: date string
-    {1}: current apocalypose day
+    {1}: current apocalypse day
     {2}: how many creds will you get
     -->
     <tooltip.apocalypse.started>
       <p>Apocalypse has started at {0}.<br/><br/></p>
       <p>
         It is now {1} apocalypse day. You will get
-        {2 one[one cred] many[? creds]} after losing your last planet.
+        {2 one[one cred] many[? creds]} if you lose your last planet today.
         <br/><br/>
       </p>
       <p>[reference:tooltip.apocalypse.common]</p>
@@ -1499,7 +1502,7 @@
     <gun.boss_heavy value="Shock Shells" />
     <gun.convoyship_light value="Photon Collider" />
     <gun.convoyship_heavy value="TR-3 Launcher" />
-    <gun.mantis_sniper value ="OSV-96 sniper rifle" />
+    <gun.mantis_sniper value ="OSV-96 Sniper Rifle" />
     <armorType value="Armor type" />
     <damageInPercent value="Percentage" />
     <damage value="Damage" />
@@ -1749,12 +1752,17 @@
     </tooltip.honorCoef>
     <label.showKillReward value="Rewards"/>
     <message.orderComplete value="Fleet has been dispatched." />
-    <label.avoidNpc value="Avoid battles with NPC" />
+    <label.avoidNpc value="Avoid battles with aliens" />
     <description.avoidNpc>
-      <p>Checked: Your fleet will try to avoid any battles with NPC spaceships. This
-      will result in longer travel time if there are NPC units in your way.</p>
-      <p>Not checked: Your fleet will take the shortest route to its destination. It will
-      engage any NPC ships that are on its way.</p>
+      <p>
+        Checked: Your fleet will try to avoid any battles with stationary alien
+        spaceships. This will result in longer travel time if there are alien
+        units in your way.
+      </p>
+      <p>
+        Not checked: Your fleet will take the shortest route to its destination.
+        It will engage any stationary alien ships that are on its way.
+      </p>
     </description.avoidNpc>
 
     <speedup.message.combatCooldownInfo
@@ -1884,6 +1892,23 @@
     <message.buildingsDeactivated>
       <p>Buildings deactivated due to insufficient energy.</p>
     </message.buildingsDeactivated>
+
+    <!--TODO: translate this -->
+    <title.planetBossSpawn value="Ateiviams mestas iššūkis" />
+    <message.planetBossSpawn>
+      <p>Tavo planetoje {0} buvo mestas iššūkis ateiviams</p>
+    </message.planetBossSpawn>
+    <label.planetBossSpawn>
+      <p>Žaidėjas {0} metė iššūki ateiviams tavo planetoje.</p>
+    </label.planetBossSpawn>
+
+    <title.allyReinitiateCombat value="Combat cooldown was canceled" />
+    <message.allyReinitiateCombat>
+      <p>Combat cooldown was canceled in your planet {0}</p>
+    </message.allyReinitiateCombat>
+    <label.allyReinitiateCombat>
+      <p>Your alliance member {0} canceled cooldown in one of your planets.</p>
+    </label.allyReinitiateCombat>
 
     <title.explorationFinished value="Exploration finished" />
     <message.explorationFinished value="Exploration finished in planet {0}" />
@@ -2016,7 +2041,7 @@
   </Notifications>
 
   <Players>
-    <npc value="NPC" />
+    <npc value="Aliens" />
     <noAlliance value="Without alliance" />
     <alliances value="Alliances" />
     <label.inRatings value="Show in ratings" />
@@ -4122,7 +4147,7 @@
     <warPointsNeeded>
       <p>You need {0} war points to research this technology but you 
       only have {1}.</p>
-      <p>You can get more war points by attacking NPCs or other players.</p>
+      <p>You can get more war points by attacking aliens or other players.</p>
     </warPointsNeeded>
     <planetsNeeded>
       <p>You need to own {0 one[? planet] many[? planets]} to be able to
@@ -4391,7 +4416,7 @@
     </GroundAbsorption.about>
     
     <NpcSpaceUpgradeTech>
-      <p>for NPC spaceships (except for [reference:Objects/Unit_ConvoyShip] class)</p>
+      <p>for alien spaceships (except for [reference:Objects/Unit_ConvoyShip] class)</p>
     </NpcSpaceUpgradeTech>
     
     <NpcSpaceDamage.name ref="Objects/Technology_NpcSpaceDamage" />
@@ -4431,7 +4456,7 @@
     </NpcLightFlight.about>
     
     <NpcGroundUpgradeTech>
-      <p>of NPC ground units.</p>
+      <p>of alien ground units.</p>
     </NpcGroundUpgradeTech>
     
     <NpcGroundDamage.name ref="Objects/Technology_NpcGroundDamage" />
@@ -5217,6 +5242,18 @@
       </p>
     </Gnawer.about>
 
+    <Worg.name ref="Objects/Unit_Worg" />
+    <Worg.about>
+      <p>
+        Inhuman war machine driven by fury. Those who oppose it must face
+        great firepower and almost impenetrable shields. Be cautious and prepare
+        to use overwhelming force to drive it to its grave.
+      </p>
+      <p>
+        Will you dare to challenge it?
+      </p>
+    </Worg.about>
+
     <Dirac.name ref="Objects/Unit_Dirac" />
     <Dirac.about>
       <p>
@@ -5643,7 +5680,7 @@
     <label.copy value="Copy"/>
     <label.cancel value="Cancel"/>
     <title.buildings value="Buildings"/>
-    <title.npcBuildings value="NPC Buildings"/>
+    <title.npcBuildings value="Alien Buildings"/>
     <title.foliage value="Foliage"/>
   </PlanetMapEditor>
 
@@ -5680,4 +5717,30 @@
     <label.techSortTime value="By remaining time" />
   </PlayerOptions>
 
+  <PlanetBoss>
+    <title>Alien Challenge</title>
+    <label.unitsList>Challenged aliens</label.unitsList>
+    <message.canSpawnNow>
+      <p>You can challenge aliens on this planet.</p>
+      <p>You must have at least one combative ground unit here to do it.</p>
+    </message.canSpawnNow>
+    <toolTip.canSpawnIn>
+      You will be able to challenge aliens in this planet after {0}. Combative
+      ground troops are required for challenge.
+    </toolTip.canSpawnIn>
+    <message.canSpawnIn>
+      If you had at least one combative ground unit, you could challenge planet
+      aliens in:
+    </message.canSpawnIn>
+    <label.spawnButton>Challenge</label.spawnButton>
+    <message.canNotSpawn.player>
+      ● This planet must be owned by either you, your alliance or aliens.
+    </message.canNotSpawn.player>
+    <message.canNotSpawn.noGroundUnits>
+      ● You need to have any combative ground units in this planet.
+    </message.canNotSpawn.noGroundUnits>
+    <message.canNotSpawn.napOrEnemyUnits>
+      ● There are enemy or NAP troops in this planet.
+    </message.canNotSpawn.napOrEnemyUnits>
+  </PlanetBoss>
 </locale>

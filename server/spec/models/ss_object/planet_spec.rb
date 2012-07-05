@@ -20,6 +20,14 @@ describe SsObject::Planet do
     end
   end
 
+  describe "#cooldown" do
+    it "should return Cooldown#ends_at" do
+      planet = Factory.create(:planet)
+      cooldown = Factory.create(:cooldown, location: planet)
+      planet.cooldown.should == cooldown.ends_at
+    end
+  end
+
   describe "#next_raid_at=" do
     let(:planet) { Factory.create(:planet) }
 
@@ -736,7 +744,7 @@ describe SsObject::Planet do
 
     describe "without options" do
       it_behaves_like "as json", Factory.create(:planet), nil,
-        %w{name terrain width height},
+        %w{name terrain width height spawn_counter next_spawn},
         %w{metal metal_generation_rate metal_usage_rate metal_storage
           energy energy_generation_rate energy_usage_rate energy_storage
           zetium zetium_generation_rate metal_usage_rate zetium_storage
@@ -747,13 +755,26 @@ describe SsObject::Planet do
     end
     
     describe "with :view" do
-      it_behaves_like "as json", Factory.create(:planet), {:view => true},
-        %w{},
-        %w{next_raid_at raid_arg energy_diminish_registered
-          metal metal_generation_rate metal_usage_rate metal_storage
-          energy energy_generation_rate energy_usage_rate energy_storage
-          zetium zetium_generation_rate zetium_usage_rate zetium_storage
-          last_resources_update}
+      describe "NPC planet" do
+        it_behaves_like "as json", Factory.create(:planet), {:view => true},
+          %w{
+            metal metal_generation_rate metal_usage_rate metal_storage
+            energy energy_generation_rate energy_usage_rate energy_storage
+            zetium zetium_generation_rate zetium_usage_rate zetium_storage
+            last_resources_update},
+          %w{next_raid_at raid_arg energy_diminish_registered}
+      end
+
+      describe "player planet" do
+        it_behaves_like "as json", Factory.create(:planet_with_player),
+          {:view => true},
+          %w{},
+          %w{next_raid_at raid_arg energy_diminish_registered
+            metal metal_generation_rate metal_usage_rate metal_storage
+            energy energy_generation_rate energy_usage_rate energy_storage
+            zetium zetium_generation_rate zetium_usage_rate zetium_storage
+            last_resources_update}
+      end
     end
 
     describe "with :owner" do
@@ -1364,6 +1385,88 @@ describe SsObject::Planet do
             CONFIG['creds.planet.resources.boost']
         end
       end
+    end
+  end
+
+  describe "#spawn_boss!" do
+    let(:solar_system) { Factory.create(:battleground) }
+    let(:planet) { Factory.create(:planet, solar_system: solar_system) }
+    let(:non_battleground) { Factory.create(:planet) }
+
+    it "should fail if planet isn't a battleground" do
+      lambda do
+        non_battleground.spawn_boss!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if #next_spawn date is in future" do
+      planet.next_spawn = 10.days.from_now
+      lambda do
+        planet.spawn_boss!
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should pass if #next_spawn is null" do
+      lambda do
+        planet.spawn_boss!
+      end.should_not raise_error
+    end
+
+    it "should pass if #next_spawn is in past" do
+      planet.next_spawn = 10.days.ago
+      lambda do
+        planet.spawn_boss!
+      end.should_not raise_error
+    end
+
+    it "should call units builder && Unit.save_all_units" do
+      UnitBuilder.should_execute(
+        :from_random_ranges,
+        [
+          Cfg.planet_boss_spawn_definition(solar_system), planet.location_point,
+          nil, planet.spawn_counter, 1
+        ],
+        lambda do |units|
+          Unit.should_receive(:save_all_units).
+            with(units, nil, EventBroker::CREATED)
+        end
+      ) { planet.spawn_boss! }
+    end
+
+    it "should create units in source location" do
+      planet.spawn_boss!
+      check_spawned_units_by_random_definition(
+        Cfg.planet_boss_spawn_definition(solar_system),
+        planet.location_point, nil, planet.spawn_counter, 1
+      )
+    end
+
+    it "should increase #spawn_counter" do
+      lambda do
+        planet.spawn_boss!
+      end.should change(planet, :spawn_counter).by(1)
+    end
+
+    it "should set #next_spawn" do
+      time = 15.minutes.from_now
+      Cfg.should_receive(:planet_boss_spawn_random_delay_date).
+        with(solar_system).and_return(time)
+      planet.spawn_boss!
+      planet.next_spawn.should == time
+    end
+
+    it "should fire changed on planet" do
+      should_fire_event(planet, EventBroker::CHANGED) do
+        planet.spawn_boss!
+      end
+    end
+
+    it "should check planet for combat after spawning units" do
+      Combat::LocationChecker.should_receive(:check_location).
+        with(planet.location_point, check_for_cooldown: false).once.
+        and_return { |loc_point| Unit.in_location(loc_point).should exist }
+
+      planet.spawn_boss!
     end
   end
 end

@@ -152,7 +152,7 @@ PHP_FPM_POOL_SOCKET = "#{PHP_FPM_RUN}/#{USER}.socket"
 PHP_FPM_POOL_CONF = %Q{
 [#{USER}]
 user = #{USER}
-group = #{GROUP}
+group = #{USER}
 listen = #{PHP_FPM_POOL_SOCKET}
 listen.owner = www-data
 listen.group = www-data
@@ -176,6 +176,11 @@ def php_fpm_vhost_conf(suffix)
   }
 end
 
+MONIT_EXIM = %Q{
+check process exim4 with pidfile /var/run/exim4/exim.pid
+      start program = "/etc/init.d/exim4 start"
+      stop program  = "/etc/init.d/exim4 stop"
+}
 MONIT_MUNIN = %Q{
 check process munin-node with pidfile /var/run/munin/munin-node.pid
       start program = "/etc/init.d/munin-node start"
@@ -238,8 +243,8 @@ def install(cmd); run "apt-get install -y #{cmd}"; end
 def as(user); run %Q{su -l #{user} -c "#{yield.gsub('"', '\\"')}"}; end
 def rvm_str(command=""); %Q{bash -c "source #{BASHRC} && rvm #{command}"}; end
 def rvm(command=""); `#{rvm_str(command)}`; end
-def rvmuse(version, command="")
-  rvm("use #{version} > /dev/null && #{command}")
+def rvmdo(version, command="")
+  rvm("#{version} do #{command}")
 end
 
 PASS_CHARS = "1234567890-=qwertyuiop[]asdfghjkl;zxcvbnm,./~!@#^%&*()_+QWERTYUIOP{}ASDFGHJKLZXCVBNM<>?"
@@ -650,6 +655,7 @@ set httpd port 2812
 include /etc/monit/conf.d/*
   })
   File.write("/etc/monit/conf.d/munin-node", MONIT_MUNIN)
+  File.write("/etc/monit/conf.d/exim4", MONIT_EXIM)
   File.modify("/etc/default/monit") do |contents|
     contents.sub("startup=0", "startup=1")
   end
@@ -667,6 +673,8 @@ include /etc/monit/conf.d/*
     %W{root #{USER} x11}.each do |user|
       run "adduser #{user} rvm"
     end
+
+    File.ensure(BASHRC, "\n. /usr/local/rvm/scripts/rvm\n")
 
     puts
     puts "RVM installed and it needs to be loaded."
@@ -858,19 +866,19 @@ XSendFileAllowAbove on
   run "a2enmod rewrite xsendfile expires headers"
 
   rvm "use --create #{rvms}"
-  (rvmuse(rvms, "which bundle") == "").and {
-    rvmuse(rvms, "gem install bundler --no-rdoc --no-ri")
+  (rvmdo(rvms, "which bundle") == "").and {
+    rvmdo(rvms, "gem install bundler --no-rdoc --no-ri")
   }
-  (rvmuse(rvms, "which passenger-install-apache2-module") == "").and {
+  (rvmdo(rvms, "which passenger-install-apache2-module") == "").and {
     # Passenger build deps
     install "libcurl4-openssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev"
-    rvmuse(rvms, "gem install passenger --no-rdoc --no-ri")
+    rvmdo(rvms, "gem install passenger --no-rdoc --no-ri")
   }
 
   passenger_load = "/etc/apache2/mods-available/passenger.load"
   unless passenger_load.exists?
     puts "Installing passenger apache2 module..."
-    rvmuse(rvms, "passenger-install-apache2-module -a")
+    rvmdo(rvms, "passenger-install-apache2-module -a")
     passenger_dir = Dir["/usr/local/rvm/gems/#{rubyv}-*@#{rubygs}/gems/passenger-*"][0]
     if passenger_dir.nil?
       puts "Passenger install failed!"
@@ -905,7 +913,7 @@ PassengerPoolIdleTime #{PASSENGER_POOL_IDLE_TIME}
 #  end
 #
 #  puts "COMPILING!"
-#  rvmuse(rvms, "gem install mysql2 --version='~>0.2.6' --no-rdoc --no-ri")
+#  rvmdo(rvms, "gem install mysql2 --version='~>0.2.6' --no-rdoc --no-ri")
 #
 #  puts "RESTORING"
 #  Dir["/usr/lib/libmysqlclient*.so"].each do |f|

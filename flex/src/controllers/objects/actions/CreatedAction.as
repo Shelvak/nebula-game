@@ -41,7 +41,7 @@ package controllers.objects.actions
                SquadronsController.getInstance().createSquadronsForUnits(unitsCreated, map);
             }
             if (ML.latestPlanet != null) {
-               ML.latestPlanet.dispatchUnitRefreshEvent();
+               ML.latestPlanet.invalidateUnitCachesAndDispatchEvent();
             }
          }
          else {

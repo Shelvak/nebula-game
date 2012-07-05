@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:planet="components.planet.*" xmlns:base="components.base.*"
+         skinClass="components.skins.PanelSkin"
+         title="{model.title_panel}"
+         visible="{model != null}"
+         includeInLayout="{model != null}">
+  <fx:Script>
+    <![CDATA[
+   import models.planet.MPlanetBoss;
+
+   [Bindable]
+    public var model: MPlanetBoss;
+
+    ]]>
+  </fx:Script>
+  <s:layout>
+    <s:VerticalLayout horizontalAlign="justify" paddingLeft="6" paddingRight="6"/>
+  </s:layout>
+  <s:Group>
+    <s:Label text="{model.label_canSpawn}" left="0" right="0" lineBreak="toFit"
+       paddingBottom="6"/>
+  </s:Group>
+  <base:TimeLabel text="{model.occursInString}" paddingBottom="6"
+    visible="{model.spawnCooldownActive}"
+    includeInLayout="{model.spawnCooldownActive}"/>
+  <planet:CPlanetBossUnits model="{model}"/>
+</s:Panel>

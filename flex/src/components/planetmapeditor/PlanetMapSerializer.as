@@ -160,7 +160,7 @@ public final class PlanetMapSerializer
          }
          return StringUtil.substitute(
             'terrain: <%= Terrain::{0} %>\n' +
-            'name: "{1}-%d"\n' +
+            'name: "{1}-%s"\n' +
             '# {2}x{3} (area {4})\n' +
             'map:\n{5}',
             TerrainType.getName(planet.ssObject.terrain, true),
@@ -195,7 +195,7 @@ public final class PlanetMapSerializer
          }
 
          try {
-            ssObject.name = /name: "(.+?)(-%d)?"/.exec(newRows[1])[1];
+            ssObject.name = /name: "(.+?)(-%s)?"/.exec(newRows[1])[1];
          }
          catch (e: Error) {
             Alert.show("Error parsing name, setting to default!\n" +

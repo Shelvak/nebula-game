@@ -294,4 +294,105 @@ class PlanetsController < GenericController
     planet.player = m.player
     planet.save!
   end
+
+  # Spawn NPC planet boss into battleground/pulsar planet. You must have at
+  # least one ground unit, the planet must be owned by NPC or you and there
+  # cannot be any enemy/nap units there. Cooldown can be present, it will be
+  # updated if combat ends up in a tie.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - id (Fixnum): ID of the planet you want to spawn to
+  #
+  # Response: None
+  #
+  ACTION_BG_SPAWN = 'planets|bg_spawn'
+
+  BG_SPAWN_OPTIONS = logged_in + required(:id => Fixnum)
+  BG_SPAWN_SCOPE = scope.world
+  def self.bg_spawn_action(m)
+    planet = get_planet(m.params['id'], m.player.friendly_ids)
+
+    raise GameLogicError.new(
+      "You must have combat ground units in planet to spawn its boss"
+    ) unless without_locking {
+      Unit.where(location_ss_object_id: m.params['id']).
+        where(player_id: m.player.id).combat.any?(&:ground?)
+    }
+
+    check_for_enemy_or_nap_units!(m.params['id'], m.player.friendly_ids)
+
+    Notification.create_for_ally_planet_boss_spawn(planet, m.player) \
+      if planet.player_id != m.player.id && ! planet.player_id.nil?
+
+    planet.spawn_boss!
+  end
+
+  # Reinitiate combat in planet.
+  #
+  # If a cooldown exists in a planet you can ignore its effects and start
+  # another combat. This only applies if only forces in planet are you, your
+  # allies and NPCs.
+  #
+  # There must be at least one NPC to reinitiate combat.
+  #
+  # Invocation: by player
+  #
+  # Parameters:
+  # - id (Fixnum): planet ID.
+  #
+  # Response: None
+  #
+  ACTION_REINITIATE_COMBAT = 'planets|reinitiate_combat'
+
+  REINITIATE_COMBAT_OPTIONS = logged_in + required(:id => Fixnum)
+  REINITIATE_COMBAT_SCOPE = scope.world
+  def self.reinitiate_combat_action(m)
+    planet = get_planet(m.params['id'], m.player.friendly_ids)
+
+    raise GameLogicError.new(
+      "There must be at least one combat NPC unit in the planet"
+    ) unless without_locking {
+      Unit.where(location_ss_object_id: planet.id, player_id: nil).combat.
+        exists?
+    }
+
+    raise GameLogicError.new(
+      "You must have combat units in planet or planet must belong to you"
+    ) unless planet.player_id == m.player.id || without_locking {
+      Unit.where(location_ss_object_id: m.params['id']).
+        where(player_id: m.player.id).combat.exists?
+    }
+
+    check_for_enemy_or_nap_units!(m.params['id'], m.player.friendly_ids)
+
+    Notification.create_for_ally_planet_reinitiate_combat(planet, m.player) \
+      if planet.player_id != m.player.id && ! planet.player_id.nil?
+
+    Combat::LocationChecker.check_location(
+      planet.location_point, check_for_cooldown: false
+    )
+  end
+
+  class << self
+  private
+    def check_for_enemy_or_nap_units!(planet_id, friendly_ids)
+      raise GameLogicError.new(
+        "There cannot be any enemy/nap units in planet"
+      ) if without_locking {
+        Unit.where(location_ss_object_id: planet_id).where(
+          "player_id NOT IN (?) AND player_id IS NOT NULL", friendly_ids
+        ).exists?
+      }
+    end
+
+    def get_planet(planet_id, friendly_ids)
+      planet = SsObject::Planet.find(planet_id)
+      raise GameLogicError,
+        "Planet must be owned by friendly player or NPC" \
+        unless (friendly_ids + [nil]).include?(planet.player_id)
+      planet
+    end
+  end
 end

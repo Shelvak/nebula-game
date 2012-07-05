@@ -109,3 +109,6 @@ Factory.define :u_mantis, :parent => :unit_built,
 
 Factory.define :u_convoy_ship, :parent => :unit_built,
 :class => Unit::ConvoyShip do |m|; end
+
+Factory.define :u_worg, :parent => :unit_built,
+:class => Unit::Worg do |m|; end

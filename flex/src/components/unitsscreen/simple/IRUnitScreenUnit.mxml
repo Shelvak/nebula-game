@@ -38,6 +38,7 @@
       import models.location.LocationType;
       import models.planet.MPlanet;
       import models.player.PlayerOptions;
+      import models.unit.MCLoadUnloadScreen;
       import models.unit.MCUnit;
       import models.unit.MCUnitScreen;
       import models.unit.Unit;
@@ -213,10 +214,6 @@
          }
       }
 
-      private function planetResourcesLoadable(pOwner: int): Boolean {
-         // TODO uncomment this when exp protection will be implemented
-         return (pOwner == Owner.PLAYER);// || pOwner == Owner.UNDEFINED);
-      }
       ]]>
    </fx:Script>
    <s:Group id="contGroup" width="100" height="76">
@@ -251,14 +248,14 @@
                      || (!ML.latestPlanet)
                      || (model.unit.owner != Owner.PLAYER)
                      || (!ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER)
-                     &amp;&amp; !planetResourcesLoadable(ML.latestPlanet.ssObject.owner))
+                     &amp;&amp; !MCLoadUnloadScreen.planetResourcesLoadable(ML.latestPlanet.ssObject.owner))
                      )}"
-                     toolTip="{(!planetResourcesLoadable(ML.latestPlanet.ssObject.owner)
+                     toolTip="{(!MCLoadUnloadScreen.planetResourcesLoadable(ML.latestPlanet.ssObject.owner)
                      &amp;&amp; !ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER))
                      ? Localizer.string('Units', 'tooltip.nothingToLoad')
                      : Localizer.string('Units', 'label.load')}">
                <s:Button click="ML.units.showUnit(true, model.unit)"
-                         enabled="{!(!planetResourcesLoadable(ML.latestPlanet.ssObject.owner)
+                         enabled="{!(!MCLoadUnloadScreen.planetResourcesLoadable(ML.latestPlanet.ssObject.owner)
                          &amp;&amp; !ML.latestPlanet.hasActiveGroundUnits(Owner.PLAYER))}"
                          skinClass="components.skins.LoadButtonSkin"/>
             </s:Group>

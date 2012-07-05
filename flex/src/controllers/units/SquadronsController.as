@@ -143,7 +143,7 @@ package controllers.units
             // If units navigate from planet we need to refresh some getters
             if (ML.latestPlanet != null && fromPlanet) {
                ML.latestPlanet.units.refresh();
-               ML.latestPlanet.dispatchUnitRefreshEvent();
+               ML.latestPlanet.invalidateUnitCachesAndDispatchEvent();
             }
          }
          return squad != null;
@@ -453,7 +453,7 @@ package controllers.units
                unit.squadronId = squad.id;
             }
             if (unit.location.isSSObject) {
-               ML.latestPlanet.dispatchUnitRefreshEvent();
+               ML.latestPlanet.invalidateUnitCachesAndDispatchEvent();
             }
             units.enableAutoUpdate();
             if (squad.isFriendly) {

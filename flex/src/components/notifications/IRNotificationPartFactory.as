@@ -1,7 +1,8 @@
 package components.notifications
 {
    import components.notifications.parts.*;
-   
+   import components.notifications.parts.IRPlanetBossSpawn;
+
    import models.notification.NotificationType;
 
    
@@ -27,6 +28,8 @@ package components.notifications
       TYPE_TO_CLASS[NotificationType.ALLIANCE_OWNER_CHANGED] = IRAllianceOwnerChanged;
       TYPE_TO_CLASS[NotificationType.TECHNOLOGIES_CHANGED] = IRTechnologiesChanged;
       TYPE_TO_CLASS[NotificationType.PLAYER_ATTACHED] = IRPlayerAttached;
+      TYPE_TO_CLASS[NotificationType.ALLY_PLANET_BOSS_SPAWN] = IRPlanetBossSpawn;
+      TYPE_TO_CLASS[NotificationType.ALLY_PLANET_REINITIATE_COMBAT] = IRAllyReinitiateCombat;
       
       
       /**

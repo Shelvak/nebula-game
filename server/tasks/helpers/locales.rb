@@ -17,8 +17,6 @@ class LocaleChecker
 
   def check
     @errors = {}
-    puts "Locale checker is BROKEN RIGHT NOW!"
-    return
     @global_keyset = Set.new
     @keys = {}
 
@@ -39,9 +37,7 @@ class LocaleChecker
 
       puts "Checking #{fname}"
       contents = File.read(fpath)
-      puts contents.encoding
       contents = XmlSimple.xml_in(contents)
-      puts "LOL"
       contents.each do |bundle_name, bundle_contents|
         if bundle_contents.size > 1
           errors.push "More than one bundle with name #{bundle_name} found!"

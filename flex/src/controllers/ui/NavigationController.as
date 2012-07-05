@@ -538,9 +538,11 @@ package controllers.ui
          showNonMapScreen(_screenProperties[MainAreaScreens.STORAGE]);
       }
       
-      public function showLoadUnload(location: *, target: *, units: ListCollectionView): void
+      public function showLoadUnload(location: *, target: *,
+                                     units: ListCollectionView,
+                                     planetOwner: int): void
       {
-         MCLoadUnloadScreen.getInstance().prepare(units, location, target);
+         MCLoadUnloadScreen.getInstance().prepare(units, location, target, planetOwner);
          showNonMapScreen(_screenProperties[MainAreaScreens.LOAD_UNLOAD]);
       }
       

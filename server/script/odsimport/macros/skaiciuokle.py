@@ -2,8 +2,10 @@
 #
 # For this to work, it needs to be in script path.
 #
-# Linux:
-# $ mkdir -p ~/.libreoffice/3/user/Scripts/python/ && ln -s "$(readlink -f skaiciuokle.py) ~/.libreoffice/3/user/Scripts/python/
+# Ubuntu <=12.04:
+# $ mkdir -p ~/.libreoffice/3/user/Scripts/python/ && ln -s "$(readlink -f skaiciuokle.py)" ~/.libreoffice/3/user/Scripts/python/
+# Ubuntu >=12.04:
+# $ mkdir -p ~/.config/libreoffice/3/user/Scripts/python/ && ln -s "$(readlink -f skaiciuokle.py)" ~/.config/libreoffice/3/user/Scripts/python/
 #
 # While developing, you need to update symlink timestamp for libreoffice to
 # reload the file:

@@ -28,6 +28,7 @@ bars and so on.
       import models.Owner;
       import models.map.MapType;
       import models.planet.MPlanet;
+      import models.planet.MPlanetCooldown;
       import models.quest.MMainQuestLine;
       import models.solarsystem.MSSObject;
       import models.tips.MTipScreen;
@@ -82,12 +83,20 @@ bars and so on.
                ssObject.nextRaidEvent
             }"/>
          <s:Group>
+            <s:layout><s:HorizontalLayout verticalAlign="justify"/></s:layout>
+         <s:Group>
             <ui:IconWithLabel id="icoPlanetCooldown" toolTip="{Localizer.string('General', 'label.cooldownEndsIn')}"
                               icon="{IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + 'cooldown_large')}"
                               text="{ssObject.cooldown.endsEvent.occursInString()}"
                               visible="{ML.activeMapType == MapType.PLANET &amp;&amp;
                                         ssObject.cooldown != null}"
                               left="0" right="0" top="0" bottom="4"/>
+         </s:Group>
+            <!-- TODO: this is just a skeleton for testing -->
+            <s:Button
+               label="Reinitiate"
+               visible="{ML.activeMapType == MapType.PLANET}"
+               click="new MPlanetCooldown(ssObject.cooldown, ML.latestPlanet).reinitiateCombat()"/>
          </s:Group>
       </base:AdvancedContainer>
       <cchat:CChatOpenChanButtons right="0" bottom="0"/>

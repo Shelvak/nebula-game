@@ -25,6 +25,7 @@ flex/assets/*
 flex/src/assets/*
 flex/catalyst
 flex/temp
+flex/Test.mxml
 # Preprocessed flex sources
 flex/src-pp
 # Test flex apps

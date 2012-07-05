@@ -2,9 +2,10 @@ package controllers.planets.actions
 {
    import utils.Objects;
 
+
    /**
     * Aggregates parameters of <code>controllers.planets.actions.FinishExplorationAction</code> client command.
-    * 
+    *
     * @see #FinishExplorationActionParams()
     * @see #planetId
     */
@@ -12,19 +13,17 @@ package controllers.planets.actions
    {
       /**
        * See documentation of corresponding variables for information about parameters.
-       * 
+       *
        * @see #planetId
        */
-      public function FinishExplorationActionParams(planetId:int) {
-         if (planetId <= 0)
-            throw new ArgumentError("[param planetId] must be greater than 0 but was " + planetId);
-         this.planetId = planetId;
+      public function FinishExplorationActionParams(planetId: int) {
+         this.planetId = Objects.paramIsId("planetId", planetId);
       }
-      
+
       /**
        * Id of the planet to instantly finish exploration in.
        * <p><b>Required. Greater than 0.</b></p>
        */
-      public var planetId:int;
+      public var planetId: int;
    }
 }
