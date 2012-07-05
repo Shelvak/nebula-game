@@ -556,7 +556,8 @@ if ARGV.include?("basic") # {{{
 
   run "apt-get update"
   install "dialog"
-  remove "samba.*" if File.exists?("/etc/init.d/smbd")
+  # Remove unnecessary packages.
+  remove "samba.* sendmail.* bind9"
   install "man less cron mc rubygems libjson-ruby irb gnupg wget host " +
     "exim4 logrotate netcat ntpdate python-software-properties mutt monit"
   run "dpkg-reconfigure exim4-config"
@@ -765,7 +766,6 @@ innodb_lock_wait_timeout = 10})
 }
 
   puts "Adding server launcher to cron"
-  cron "* * *  * *   $HOME/bin/srvrunner lib/daemon.rb start-silent"
   cron "@hourly   $HOME/bin/srvrunner script/dump_galaxy.rb $HOME/web/current/www/public/galaxies/ >/dev/null 2>&1"
 
   # Linking munin
