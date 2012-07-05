@@ -52,6 +52,10 @@ end
 puts "Given args: #{args.inspect}"
 
 require File.expand_path(File.dirname(__FILE__) + '/../lib/initializer')
+log_writer_config = Logging::Writer.instance.config
+log_writer_config.outputs << ConsoleOutput.new(STDOUT) \
+  unless log_writer_config.outputs.any? { |o| o.is_a?(ConsoleOutput) }
+Logging::Writer.instance.config = log_writer_config
 Logging::Writer.instance.level = Logging::Writer::LEVEL_INFO
 
 if args[:id].nil?
