@@ -29,9 +29,8 @@ describe Cooldown do
 
   describe ".create_or_update!" do
     let(:galaxy) { Factory.create(:galaxy) }
-    let(:x) { -20 }
-    let(:y) { -14 }
-    let(:location) { GalaxyPoint.new(galaxy.id, x, y) }
+    let(:solar_system) { Factory.create(:solar_system, galaxy: galaxy) }
+    let(:planet) { Factory.create(:planet, solar_system: solar_system) }
     let(:expires_at) { 5.minutes.from_now }
     let(:model) { Cooldown.create_or_update!(location, expires_at) }
 
@@ -58,45 +57,69 @@ describe Cooldown do
       end
     end
 
-    describe "record does not exist" do
-      it_should_behave_like "updated record"
-    end
-
-    describe "record already exists" do
-      describe "#ends_at is in the past" do
-        before(:each) do
-          Cooldown.create_or_update!(location, expires_at - 2.minutes)
-        end
-
+    shared_examples_for "spec" do
+      describe "record does not exist" do
         it_should_behave_like "updated record"
       end
 
-      describe "#ends_at is in the future" do
-        let(:old_time) { expires_at + 2.minutes }
-        let(:old_model) do
-          Cooldown.create_or_update!(location, old_time)
+      describe "record already exists" do
+        describe "#ends_at is in the past" do
+          before(:each) do
+            Cooldown.create_or_update!(location, expires_at - 2.minutes)
+          end
+
+          it_should_behave_like "updated record"
         end
 
-        before(:each) { old_model }
+        describe "#ends_at is in the future" do
+          let(:old_time) { expires_at + 2.minutes }
+          let(:old_model) do
+            Cooldown.create_or_update!(location, old_time)
+          end
 
-        it_should_behave_like "correct record"
+          before(:each) { old_model }
 
-        it "should return same record" do
-          model.should == old_model
-        end
+          it_should_behave_like "correct record"
 
-        it "should not update #ends_at" do
-          lambda do
-            model
-            old_model.reload
-          end.should_not change(old_model, :ends_at)
-        end
+          it "should return same record" do
+            model.should == old_model
+          end
 
-        it "should still have old callback" do
-          model.
-            should have_callback(CallbackManager::EVENT_DESTROY, old_time)
+          it "should not update #ends_at" do
+            lambda do
+              model
+              old_model.reload
+            end.should_not change(old_model, :ends_at)
+          end
+
+          it "should still have old callback" do
+            model.
+              should have_callback(CallbackManager::EVENT_DESTROY, old_time)
+          end
         end
       end
+    end
+
+    describe "in galaxy" do
+      let(:x) { -20 }
+      let(:y) { -14 }
+      let(:location) { GalaxyPoint.new(galaxy.id, x, y) }
+
+      it_should_behave_like "spec"
+    end
+
+    describe "in solar system" do
+      let(:position) { 1 }
+      let(:angle) { 90 }
+      let(:location) { SolarSystemPoint.new(solar_system.id, position, angle) }
+
+      it_should_behave_like "spec"
+    end
+
+    describe "in planet" do
+      let(:location) { LocationPoint.planet(planet.id) }
+
+      it_should_behave_like "spec"
     end
   end
 
