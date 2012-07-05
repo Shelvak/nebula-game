@@ -116,6 +116,16 @@ module Dev
       current_web_user_id = Player.maximum(:web_user_id) + 1
       player = Player.find(player_id)
 
+      # Ensure we have enough solar systems.
+      galaxy = player.galaxy
+      galaxy.pool_free_zones = (
+        player_count.to_f / Cfg.galaxy_zone_max_player_count
+      ).ceil
+      galaxy.pool_free_home_ss = player_count
+      SpaceMule.instance.ensure_pool(
+        galaxy, galaxy.pool_free_zones, galaxy.pool_free_home_ss
+      )
+
       player_count.times do |i|
         name = "p-#{current_pid + i}"
         web_user_id = current_web_user_id + i

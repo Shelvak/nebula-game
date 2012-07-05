@@ -79,7 +79,8 @@ if run?("galaxy")
   Counter.new(scope, "Galaxy").each do |galaxy|
     unless CallbackManager.has?(galaxy, CallbackManager::EVENT_SPAWN)
       CallbackManager.register(
-        galaxy, CallbackManager::EVENT_SPAWN, Cfg.next_convoy_time
+        galaxy, CallbackManager::EVENT_SPAWN,
+        Cfg.next_convoy_time(galaxy.wormhole_count)
       )
     end
 
