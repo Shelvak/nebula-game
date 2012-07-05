@@ -1,5 +1,7 @@
 package controllers.objects.actions.customcontrollers
 {
+   import controllers.startup.StartupInfo;
+
    import models.objectives.QuestObjective;
    import models.quest.Quest;
    import models.quest.events.QuestEvent;
@@ -8,20 +10,33 @@ package controllers.objects.actions.customcontrollers
    import utils.logging.Log;
 
 
-   public class ObjectiveProgressController extends BaseObjectController
+   public final class ObjectiveProgressController extends BaseObjectController
    {
       public function ObjectiveProgressController() {
          super();
       }
-      
-      
-      public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
+
+
+      public override function objectUpdated(
+         objectSubclass: String, object: Object, reason: String): void
+      {
          object = PropertiesTransformer.objectToCamelCase(object);
-         var pQuest:Quest = ML.quests.findQuestByObjective(object.objectiveId);
-         if (pQuest == null)
-            throw new Error("Quest with objective id " + object.objectiveId + " was not found");
-         var objective:QuestObjective = pQuest.objectives.find(object.objectiveId);
-         objective.completed = object.completed;
+         var objectiveId: int = object["objectiveId"];
+         var pQuest: Quest = ML.quests.findQuestByObjective(objectiveId);
+         if (pQuest == null) {
+            if (StartupInfo.relaxedServerMessagesHandlingMode) {
+               Log.getMethodLogger(this, "objectUpdated").warn(
+                  "Server wanted to update progress of a quest {0} but it was not found. "
+                     + "Ignoring because application has not been fully initialized.",
+                  objectiveId);
+               return;
+            }
+            else {
+               throw new Error("Quest with objective id " + objectiveId + " was not found");
+            }
+         }
+         var objective: QuestObjective = pQuest.objectives.find(objectiveId);
+         objective.completed = object["completed"];
          pQuest.dispatchEvent(new QuestEvent(QuestEvent.STATUS_CHANGE));
       }
 
