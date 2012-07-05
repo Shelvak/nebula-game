@@ -1893,13 +1893,12 @@
       <p>Buildings deactivated due to insufficient energy.</p>
     </message.buildingsDeactivated>
 
-    <!--TODO: translate this -->
-    <title.planetBossSpawn value="Ateiviams mestas iššūkis" />
+    <title.planetBossSpawn value="Alien challenged" />
     <message.planetBossSpawn>
-      <p>Tavo planetoje {0} buvo mestas iššūkis ateiviams</p>
+      <p>An alien has been challenged in your planet {0}</p>
     </message.planetBossSpawn>
     <label.planetBossSpawn>
-      <p>Žaidėjas {0} metė iššūki ateiviams tavo planetoje.</p>
+      <p>Player {0} has challenged an alien in your planet.</p>
     </label.planetBossSpawn>
 
     <title.allyReinitiateCombat value="Combat cooldown was canceled" />
