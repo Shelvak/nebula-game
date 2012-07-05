@@ -5,6 +5,22 @@ package utils
    import interfaces.ICleanable;
 
 
+   /**
+    * A class that lets you simplify simple events (events without data) dispatching.
+    * In particular objects of this class may be used to listen to any events on a
+    * <b>source</b> object and dispatch another simple events from <b>target</b>
+    * object. To create one or more such "bridges" between <b>source</b> and
+    * <b>target</b> you should do the following:
+    * <pre>
+    *    var bridge: EventBridge = new EventBridge(source, target);
+    *    bridge.onEvents(["sourceEvent1", "sourceEvent2", ...])
+    *          .dispatchSimple(EventClass, ["targetEvent1", "targetEvent2", ...]);
+    *    bridge.onEvents(["sourceEventX, "sourceEventY", ...).dispatchSimple(...);
+    *    ...</pre>
+    * As soon as you don't need the bridge (i.e. you don't need to listen to events on
+    * <b>source</b> and dispatch other events form <b>target</b>) you must call
+    * <code>bridge.cleanup()</code> method.
+    */
    public final class EventBridge implements ICleanable
    {
       private const _bridges: Array = new Array();
@@ -16,10 +32,21 @@ package utils
          this._target = target;
       }
 
+      /**
+       * @param sourceEvents list of events to listen to | <b>Not null. Not empty.</b>
+       */
       public function onEvents(sourceEvents: Array): SingleBridge {
+         Objects.paramNotNull("sourceEvents", sourceEvents);
+         if (sourceEvents.length == 0) {
+            throw new ArgumentError("[param sourceEvents] must have at least one event");
+         }
          return new SingleBridge(this, _source, _target, sourceEvents);
       }
 
+      /**
+       * You must call this when you don't need the instance anymore to unregister all
+       * event listeners from <b>source</b>.
+       */
       public function cleanup(): void {
          for each (var bridge: SingleBridge in _bridges) {
             bridge.cleanup();
@@ -36,6 +63,7 @@ import interfaces.ICleanable;
 
 import utils.EventBridge;
 import utils.Events;
+import utils.Objects;
 
 
 final class SingleBridge implements ICleanable
@@ -55,7 +83,18 @@ final class SingleBridge implements ICleanable
       this._sourceEvents = sourceEvents;
    }
 
+   /**
+    * @param targetEventClass Class of event objects to be dispatched
+    *    | <b>Not null. Simple event class.</b>
+    * @param targetEvents A list of events to be dispatched
+    *    | <b>Not null. Not empty.</b>
+    */
    public function dispatchSimple(targetEventClass: Class, targetEvents: Array): EventBridge {
+      Objects.paramNotNull("targetEventClass", targetEventClass);
+      Objects.paramNotNull("targetEvents", targetEvents);
+      if (targetEvents.length == 0) {
+         throw new ArgumentError("[param targetEvents] must have at least one event");
+      }
       for each (var sourceEvent: String in _sourceEvents) {
          createDispatcher(sourceEvent, targetEventClass, targetEvents);
       }
