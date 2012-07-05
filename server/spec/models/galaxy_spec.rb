@@ -427,29 +427,29 @@ describe Galaxy do
       it_should_behave_like "convoy spawn"
     end
 
-    #describe "galaxy with < 2 wormholes" do
-    #  it "should do nothing" do
-    #    galaxy.spawn_convoy!.should be_nil
-    #    Unit.where(:galaxy_id => galaxy.id).count.should == 0
-    #  end
-    #end
-    #
-    #describe "galaxy with >= 2 wormholes" do
-    #  let(:wh1) do
-    #    Factory.create(:wormhole, :galaxy => galaxy, :x => -10, :y => 20)
-    #  end
-    #  let(:wh2) do
-    #    Factory.create(:wormhole, :galaxy => galaxy, :x => -30, :y => -10)
-    #  end
-    #  let(:points) do
-    #    wh1p = wh1.galaxy_point
-    #    wh2p = wh2.galaxy_point
-    #    [[wh1p, wh2p], [wh2p, wh1p]]
-    #  end
-    #  let(:route) { points; galaxy.spawn_convoy! }
-    #
-    #  it_should_behave_like "convoy spawn"
-    #end
+    describe "galaxy with < 2 wormholes" do
+      it "should do nothing" do
+        galaxy.spawn_convoy!.should be_nil
+        Unit.where(location_galaxy_id: galaxy.id).count.should == 0
+      end
+    end
+
+    describe "galaxy with >= 2 wormholes" do
+      let(:wh1) do
+        Factory.create(:wormhole, :galaxy => galaxy, :x => -10, :y => 20)
+      end
+      let(:wh2) do
+        Factory.create(:wormhole, :galaxy => galaxy, :x => -30, :y => -10)
+      end
+      let(:points) do
+        wh1p = wh1.galaxy_point
+        wh2p = wh2.galaxy_point
+        [[wh1p, wh2p], [wh2p, wh1p]]
+      end
+      let(:route) { points; galaxy.spawn_convoy! }
+
+      it_should_behave_like "convoy spawn"
+    end
   end
 
   describe ".create_galaxy" do
@@ -471,6 +471,16 @@ describe Galaxy do
         ruleset, callback_url, pool_free_zones
       ).pool_free_home_ss.
         should == pool_free_zones * Cfg.galaxy_zone_max_player_count
+    end
+
+    it "should obey rulesets" do
+      ruleset = "test_cg"
+      CONFIG.global.add_set(ruleset, 'default')
+      CONFIG.global.store("galaxy.zone.players", ruleset, 10)
+      Galaxy.create_galaxy(
+        ruleset, callback_url, pool_free_zones
+      ).pool_free_home_ss.should == pool_free_zones *
+        CONFIG.with_set_scope(ruleset) { Cfg.galaxy_zone_max_player_count }
     end
 
     %w{

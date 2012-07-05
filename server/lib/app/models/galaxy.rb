@@ -92,22 +92,24 @@ class Galaxy < ActiveRecord::Base
   )
     typesig binding, String, String, Fixnum, [NilClass, Fixnum]
 
-    pool_free_home_ss ||= pool_free_zones * Cfg.galaxy_zone_max_player_count
+    CONFIG.with_set_scope(ruleset) do
+      pool_free_home_ss ||= pool_free_zones * Cfg.galaxy_zone_max_player_count
 
-    galaxy = new(
-      ruleset: ruleset, callback_url: callback_url,
-      pool_free_zones: pool_free_zones, pool_free_home_ss: pool_free_home_ss
-    )
-    galaxy.save!
+      galaxy = new(
+        ruleset: ruleset, callback_url: callback_url,
+        pool_free_zones: pool_free_zones, pool_free_home_ss: pool_free_home_ss
+      )
+      galaxy.save!
 
-    SpaceMule.instance.fill_galaxy(galaxy)
+      SpaceMule.instance.fill_galaxy(galaxy)
 
-    spawn_callback(galaxy)
-    create_metal_system_offer_callback(galaxy)
-    create_energy_system_offer_callback(galaxy)
-    create_zetium_system_offer_callback(galaxy)
+      spawn_callback(galaxy)
+      create_metal_system_offer_callback(galaxy)
+      create_energy_system_offer_callback(galaxy)
+      create_zetium_system_offer_callback(galaxy)
 
-    galaxy
+      galaxy
+    end
   end
 
   # Create player in galaxy _galaxy_id_ with Player#web_user_id, Player#name
