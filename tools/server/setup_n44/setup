@@ -822,14 +822,7 @@ end # }}}
 
 if ARGV.include?("client") # {{{
   pubkeys(USER, *CLIENT_PUBKEYS)
-  install "apache2"
-  File.modify("/etc/apache2/apache2.conf") do |content|
-    content.sub(/^Timeout\s+\d+$/, "Timeout 15").
-      sub(/^StartServers\s+\d+$/, "StartServers 10").
-      sub(/^MinSpareServers\s+\d+$/, "MinSpareServers 10").
-      sub(/^MaxSpareServers\s+\d+$/, "MaxSpareServers 20").
-      sub(/^MaxClients\s+\d+$/, "MaxClients 120")
-  end
+  setup_apache
   run "a2enmod expires headers"
   Dir.mkdir "#{HOME}/nebula-client", nil, UCH
   apache_vhost("nebula-client", "#{HOME}/nebula-client/current", CLIENT_HOSTNAME)
