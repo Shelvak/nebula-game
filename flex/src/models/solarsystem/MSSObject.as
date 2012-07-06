@@ -144,6 +144,10 @@ package models.solarsystem
 
       public function cleanup(): void {
          unregisterOtherEventHandlers();
+         if (_boss != null) {
+            _boss.cleanup();
+            _boss = null;
+         }
       }
       
       
