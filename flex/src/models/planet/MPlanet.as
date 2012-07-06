@@ -1549,9 +1549,7 @@ package models.planet
       public function selectObject(object: MPlanetObject): void {
          Objects.paramNotNull("object", object);
          if (hasEventListener(MPlanetEvent.UICMD_SELECT_OBJECT)) {
-            dispatchEvent(
-               new MPlanetEvent(MPlanetEvent.UICMD_SELECT_OBJECT, object)
-            );
+            dispatchEvent(new MPlanetEvent(MPlanetEvent.UICMD_SELECT_OBJECT, object));
          }
       }
 
@@ -1564,23 +1562,17 @@ package models.planet
          hasUnitsCache = {};
          activeUnitsCountCache = {};
          aggressiveGroundUnitsCache = {};
-         if (!f_cleanupStarted
-               && !f_cleanupComplete
-               && hasEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED)) {
+         if (!f_cleanupStarted && !f_cleanupComplete) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_REFRESH_NEEDED));
          }
       }
 
       public function dispatchBuildingUpgradedEvent(): void {
-         if (hasEventListener(MPlanetEvent.BUILDING_UPGRADED)) {
-            dispatchEvent(new MPlanetEvent(MPlanetEvent.BUILDING_UPGRADED));
-         }
+         dispatchThisEvent(MPlanetEvent.BUILDING_UPGRADED);
       }
 
       public function dispatchBuildingUpdatedEvent(): void {
-         if (hasEventListener(MPlanetEvent.BUILDING_UPDATED)) {
-            dispatchEvent(new MPlanetEvent(MPlanetEvent.BUILDING_UPDATED));
-         }
+         dispatchThisEvent(MPlanetEvent.BUILDING_UPDATED);
       }
 
       private var _suppressObjectAddEvent: Boolean = false;
@@ -1595,6 +1587,10 @@ package models.planet
          if (hasEventListener(MPlanetEvent.OBJECT_REMOVE)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.OBJECT_REMOVE, object));
          }
+      }
+
+      private function dispatchThisEvent(event: String): void {
+         dispatchSimpleEvent(MPlanetEvent, event);
       }
    }
 }
