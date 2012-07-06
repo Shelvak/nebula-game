@@ -464,7 +464,7 @@ package models.planet
             const yTo: int = to(range.yEnd, height);
             for (var x: int = xFrom; x <= xTo; x++) {
                for (var y: int = yFrom; y <= yTo; y++) {
-                  callback.call(null, x,  y);
+                  callback.call(null, x, y);
                }
             }
          }
@@ -855,24 +855,17 @@ package models.planet
       }
 
       private function hasActiveKindUnitsImpl(owners: Array, kind: String,
-                                                 hiddenCounts: Boolean = true)
+                                                 hiddenCounts: Boolean = true): Boolean
       {
          var ownerHex: String = getOwnerHex(owners);
          if (hasUnitsCache[ownerHex + '|' + kind + '|' + hiddenCounts] == null)
          {
             hasUnitsCache[ownerHex + '|' + kind + '|' + hiddenCounts] =
                (Collections.findFirst(units,
-                  function(unit:Unit) : Boolean
-                  {
-                     if (unit.level > 0
-                        && unit.kind == kind
-                        && (!unit.hidden || hiddenCounts))
-                     {
-                        for each (var owner: int in owners)
-                        {
-                           if (owner == Owner.UNDEFINED
-                              || owner == unit.owner)
-                           {
+                  function (unit: Unit): Boolean {
+                     if (unit.level > 0 && unit.kind == kind && (!unit.hidden || hiddenCounts)) {
+                        for each (var owner: int in owners) {
+                           if (owner == Owner.UNDEFINED || owner == unit.owner) {
                               return true;
                            }
                         }
