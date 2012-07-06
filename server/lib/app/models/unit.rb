@@ -39,8 +39,8 @@ class Unit < ActiveRecord::Base
 
   # Return Array of String unit types that do not participate in combat.
   def self.non_combat_types(clear_cache=false)
-    @@non_combat_types = nil if clear_cache
-    return @@non_combat_types unless @@non_combat_types.nil?
+    @non_combat_types = nil if clear_cache
+    return @non_combat_types unless @non_combat_types.nil?
 
     types = []
     CONFIG.each_matching(GUNS_REGEXP) do |key, guns|
@@ -51,7 +51,7 @@ class Unit < ActiveRecord::Base
       is_ground = kind == :ground
       types.push underscore_key.camelcase if guns.blank? && is_ground
     end
-    @@non_combat_types = types
+    @non_combat_types = types
   end
 
   belongs_to :player
