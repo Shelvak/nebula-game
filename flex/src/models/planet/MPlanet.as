@@ -1563,7 +1563,7 @@ package models.planet
          activeUnitsCountCache = {};
          aggressiveGroundUnitsCache = {};
          if (!f_cleanupStarted && !f_cleanupComplete) {
-            dispatchEvent(new MPlanetEvent(MPlanetEvent.UNIT_REFRESH_NEEDED));
+            dispatchThisEvent(MPlanetEvent.UNIT_REFRESH_NEEDED);
          }
       }
 
@@ -1577,8 +1577,7 @@ package models.planet
 
       private var _suppressObjectAddEvent: Boolean = false;
       private function dispatchObjectAddEvent(object: MPlanetObject): void {
-         if (!_suppressObjectAddEvent
-                && hasEventListener(MPlanetEvent.OBJECT_ADD)) {
+         if (!_suppressObjectAddEvent && hasEventListener(MPlanetEvent.OBJECT_ADD)) {
             dispatchEvent(new MPlanetEvent(MPlanetEvent.OBJECT_ADD, object));
          }
       }
