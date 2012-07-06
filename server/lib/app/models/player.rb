@@ -547,10 +547,11 @@ class Player < ActiveRecord::Base
   end
 
   # {type => klass}
-  @@unit_class_cache = Java::java.util.concurrent.ConcurrentHashMap.new
+  @@class_cache = Java::java.util.concurrent.ConcurrentHashMap.new
 
-  # Sets #population to its real value.
+  # Sets #population and #population_cap to their real values.
   def recalculate_population
+    # Calculate #population.
     unit_counts = without_locking do
       Unit.select("type, COUNT(*) as count").where(player_id: id).
         group("type").c_select_all
@@ -569,12 +570,29 @@ GROUP BY cqe.constructable_type
 
     self.population = unit_counts.inject(0) do |sum, row|
       type = "Unit::#{row["type"]}"
-      klass = @@unit_class_cache[type] ||= type.constantize
+      klass = @@class_cache[type] ||= type.constantize
       sum + klass.population * row["count"]
     end + cqe_counts.inject(0) do |sum, row|
       type = row["type"]
-      klass = @@unit_class_cache[type] ||= type.constantize
+      klass = @@class_cache[type] ||= type.constantize
       sum + klass.population * row["count"].to_i
+    end
+
+    # Calculate #population_cap
+    owned_planet_ids = without_locking do
+      SsObject::Planet.select("id").where(player_id: id).c_select_values
+    end
+    types = Building.population_types
+
+    self.population_cap = without_locking do
+      Building.where(
+        planet_id: owned_planet_ids, type: types, state: Building::STATE_ACTIVE
+      ).select("type, level, COUNT(*) as count").group("type, level").
+        c_select_all
+    end.inject(0) do |sum, row|
+      type = "Building::#{row["type"]}"
+      klass = @@class_cache[type] ||= type.constantize
+      sum + klass.population(row['level'].to_i) * row['count'].to_i
     end
   end
 
