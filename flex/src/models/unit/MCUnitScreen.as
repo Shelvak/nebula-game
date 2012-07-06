@@ -25,6 +25,7 @@ package models.unit
    import spark.components.Label;
    import spark.components.ToggleButton;
 
+   import utils.Events;
    import utils.SingletonFactory;
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
@@ -105,16 +106,12 @@ package models.unit
       
       [Bindable]
       public var currentKind: String = UnitKind.GROUND;
-      
+
+
       /* ################# */
       /* #### Filters #### */
       /* ################# */
-      
-      private function filterGround(item: MCUnit): Boolean
-      {
-         return item.unit.kind == UnitKind.GROUND;
-      }
-      
+
       private function updateIfNeeded(e: CollectionEvent): void
       {
          if (e.kind == CollectionEventKind.ADD || e.kind == CollectionEventKind.REMOVE
@@ -962,35 +959,28 @@ package models.unit
                dispatchUnitsChangeEvent);
          }
       }
-      
+
+
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
       
-      public function dispatchFormationChangeEvent(): void
-      {
-         if (hasEventListener(UnitsScreenEvent.FORMATION_CHANGE))
-         {
-            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.FORMATION_CHANGE));
-         }
+      public function dispatchFormationChangeEvent(): void {
+         dispatchThisEvent(UnitsScreenEvent.FORMATION_CHANGE);
       }
-      
-      private function dispatchUnitsChangeEvent(): void
-      {
+
+      private function dispatchUnitsChangeEvent(): void {
          unitsHasChanged = false;
-         if (hasEventListener(UnitsScreenEvent.UNIT_COUNT_CHANGE))
-         {
-            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.UNIT_COUNT_CHANGE));
-         }
+         dispatchThisEvent(UnitsScreenEvent.UNIT_COUNT_CHANGE);
       }
-      
-      public function dispatchSelectionChangeEvent(): void
-      {
+
+      public function dispatchSelectionChangeEvent(): void {
          cachedSelection = null;
-         if (hasEventListener(UnitsScreenEvent.SELECTION_CHANGE))
-         {
-            dispatchEvent(new UnitsScreenEvent(UnitsScreenEvent.SELECTION_CHANGE));
-         }
+         dispatchThisEvent(UnitsScreenEvent.SELECTION_CHANGE);
+      }
+
+      private function dispatchThisEvent(event: String): void {
+         Events.dispatchSimpleEvent(this, UnitsScreenEvent, event);
       }
       
    }

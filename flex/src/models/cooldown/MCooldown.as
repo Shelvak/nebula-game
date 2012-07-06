@@ -89,7 +89,7 @@ package models.cooldown
          return new ObjectStringBuilder(this)
             .addProp("id")
             .addProp("currentLocation")
-            .addProp("endsAt").finish();
+            .addProp("endsEvent").finish();
       }
 
       public override function equals(o: Object): Boolean {

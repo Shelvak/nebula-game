@@ -35,7 +35,7 @@ package models.planet
       /**
        * Recalculates <code>zIndex</code> value for each object on the planet. You can call this method
        * as many times as you want however bare in mind that this operation might be expensive in terms
-       * of performance, espacially for large maps.
+       * of performance, especially for large maps.
        */
       public function calculateZIndex() : void
       {

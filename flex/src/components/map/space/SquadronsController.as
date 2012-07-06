@@ -214,7 +214,9 @@ package components.map.space
             if (_selectedSquadC && _selectedSquadC.currentLocation.equals(to)) {
                selectSquadron(_selectedSquadC);
             }
-            if (squadM.isHostile || to.equals(squadM.route.currentLocation)) {
+            if (squadM.isHostile
+                  || squadM.route == null
+                  || to.equals(squadM.route.currentLocation)) {
                squadM.pending = false;
             }
          }

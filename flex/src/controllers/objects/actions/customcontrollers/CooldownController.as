@@ -16,19 +16,17 @@ package controllers.objects.actions.customcontrollers
          super();
       }
 
-      public override function objectCreated(objectSubclass:String,
-                                             object:Object,
-                                             reason:String) : * {
-         var location:LocationMinimal =
-                Objects.create(LocationMinimal, object.location);
+      public override function objectCreated(
+         objectSubclass: String, object: Object, reason: String): *
+      {
+         const location: LocationMinimal = Objects.create(LocationMinimal, object.location);
          
          // don't need cooldowns for other objects than maps
-         if (!location.isObserved)
+         if (!location.isObserved) {
             return;
-         
-         var cooldown:MCooldown = location.isSSObject
-                                     ? new MCooldown()
-                                     : new MCooldownSpace();
+         }
+
+         const cooldown: MCooldown = location.isSSObject ? new MCooldown() : new MCooldownSpace();
          cooldown.id = object["id"];
          cooldown.currentLocation = location;
          cooldown.endsEvent.occursAt = DateUtil.parseServerDTF(object.endsAt);
@@ -36,8 +34,7 @@ package controllers.objects.actions.customcontrollers
             ML.latestPlanet.ssObject.cooldown = cooldown;
          }
          else {
-            var map: MMapSpace = MMapSpace(location.isGalaxy ? ML.latestGalaxy
-                                              : ML.latestSSMap);
+            const map: MMapSpace = MMapSpace(location.isGalaxy ? ML.latestGalaxy : ML.latestSSMap);
             // Server often sends objects|created with a cooldown in the same location just
             // before a few seconds it is about to be removed by the client
             map.removeObject(cooldown, true);
@@ -47,7 +44,9 @@ package controllers.objects.actions.customcontrollers
          return cooldown;
       }
 
-      public override function objectUpdated(objectSubclass:String, object:Object, reason:String) : void {
+      public override function objectUpdated(
+         objectSubclass: String, object: Object, reason: String): void
+      {
          objectCreated(objectSubclass, object, reason);
       }
    }
