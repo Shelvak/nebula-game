@@ -466,15 +466,15 @@ describe Technology do
       ["pulsars", "pulsars.required", :pulsars_required]
     ].each do |type, config_key, method|
       describe "##{method}" do
-        it "should use next technology level" do
+        it "should use current technology level" do
           with_config_values(
             "technologies.test_technology.#{config_key}" => "level"
-          ) { Factory.build(:technology, :level => 2).send(method).should == 3 }
+          ) { Factory.build(:technology, :level => 2).send(method).should == 2 }
         end
 
         it "should round returned value" do
           with_config_values(
-            "technologies.test_technology.#{config_key}" => "0.33 * level"
+            "technologies.test_technology.#{config_key}" => "0.66 * level"
           ) { Factory.build(:technology, :level => 1).send(method).should == 1 }
         end
 
@@ -518,18 +518,26 @@ describe Technology do
   end
 
   describe "#planets_requirement_met?" do
-    let(:technology) { Factory.build(:technology) }
+    let(:technology) { Factory.build(:technology, level: 3) }
     let(:player) { technology.player }
-    let(:level) { 3 }
 
     it "should return true if #check_planets! does not raise exception" do
-      technology.stub(:check_planets!)
+      technology.should_receive(:check_planets!).
+        with(technology.level, player)
       technology.planets_requirement_met?(player).should be_true
     end
 
     it "should return false if #check_planets! raises exception" do
-      technology.stub(:check_planets!).and_raise(GameLogicError)
+      technology.should_receive(:check_planets!).
+        with(technology.level, player).and_raise(GameLogicError)
       technology.planets_requirement_met?(player).should be_false
+    end
+
+    it "should return check for level+1 if technology is upgrading" do
+      technology.should_receive(:check_planets!).
+        with(technology.level + 1, player)
+      opts_upgrading.apply technology
+      technology.planets_requirement_met?(player)
     end
   end
 
