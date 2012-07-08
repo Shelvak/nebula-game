@@ -1186,6 +1186,8 @@ describe Player do
         # Building that is in NPC planet.
         Factory.create(:b_housing, opts_active + {planet: planet_npc})
         [
+          Factory.create(:b_headquarters, opts_working +
+            {planet: planet1, x: 20}),
           Factory.create(:b_housing, opts_active +
             {planet: planet1, x: 0, level: 3}),
           # Grouping by type & level.
