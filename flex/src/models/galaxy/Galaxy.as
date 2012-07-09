@@ -47,7 +47,7 @@ package models.galaxy
    
    public class Galaxy extends MMapSpace
    {
-      private var _fowMatrixBuilder: FOWMatrixBuilder;
+      private var _fowMatrixBuilder: FOWMatrix;
       
       public function Galaxy() {
          super();
@@ -221,12 +221,17 @@ package models.galaxy
          return _fowMatrixBuilder.matrixHasVisibleTiles;
       }
       
-      public function get fowMatrix() : Vector.<Vector.<Boolean>> {
-         return _fowMatrixBuilder.getMatrix();
+      public function get fowBorders(): Vector.<FOWBorderElement> {
+         return _fowMatrixBuilder.getFOWBorderList();
       }
       
       public function setFOWEntries(fowEntries:Vector.<MapArea>, units:IList) : void {
-         _fowMatrixBuilder = new FOWMatrixBuilder(fowEntries, naturalObjects, units);
+         const solarSystemLocations: Array = naturalObjects.toArray().map(
+            function (ss: MSolarSystem, index: int, array: Array): LocationMinimal {
+               return ss.currentLocation;
+            }
+         );
+         _fowMatrixBuilder = new FOWMatrix(id, fowEntries, solarSystemLocations, units);
       }
       
       /**
@@ -313,7 +318,7 @@ package models.galaxy
             var x:int = location.x + offset.x;
             var y:int = location.y + offset.y;
             if (x >= 0 && x < bounds.width && y >= 0 && y < bounds.height)
-               return fowMatrix[x][y];
+               return _fowMatrixBuilder.locationIsVisible(x, y);
          }
          return false;
       }
