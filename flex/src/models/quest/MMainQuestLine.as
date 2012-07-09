@@ -100,18 +100,6 @@ package models.quest
          }
       }
 
-//      private var _isOpen: Boolean = false;
-//      [Bindable(event="isOpenChange")]
-//      public function get isOpen(): Boolean {
-//         return _isOpen;
-//      }
-//      private function setIsOpen(value:Boolean) : void {
-//         if (_isOpen != value) {
-//            _isOpen = value;
-//            dispatchMQLEvent(MMainQuestLineEvent.IS_OPEN_CHANGE);
-//         }
-//      }
-
       private function quests_countersUpdatedHandler(event:QuestCollectionEvent): void {
          dispatchMQLEvent(MMainQuestLineEvent.SHOW_BUTTON_CHANGE);
       }
