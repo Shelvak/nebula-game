@@ -13,12 +13,11 @@ package controllers.objects.actions.customcontrollers
          super();
       }
 
-      public override function objectCreated(objectSubclass: String,
-                                             object: Object,
-                                             reason: String): * {
+      public override function objectCreated(
+         objectSubclass: String, object: Object, reason: String): *
+      {
          var wreckOld: MWreckage = null;
-         function isEqualTo(item: MWreckage): Boolean
-         {
+         function isEqualTo(item: MWreckage): Boolean {
             return item.id == object.id;
          }
          if (ML.latestGalaxy != null) {
@@ -28,13 +27,37 @@ package controllers.objects.actions.customcontrollers
             wreckOld = Collections.findFirst(ML.latestSSMap.wreckages, isEqualTo);
          }
          if (wreckOld != null) {
-            if (!Objects.containsSameData(wreckOld, object))
-            {
+            if (!Objects.containsSameData(wreckOld, object)) {
                Objects.throwStateOutOfSyncError(wreckOld, object);
             }
             return wreckOld;
          }
 
+         return createWreckage(object);
+      }
+
+      public override function objectUpdated(
+         objectSubclass: String, object: Object, reason: String): void
+      {
+         var wreckOld: MWreckage = null;
+         function isEqualTo(item: MWreckage): Boolean {
+            return item.id == object.id;
+         }
+         if (ML.latestGalaxy != null) {
+            wreckOld = Collections.findFirst(ML.latestGalaxy.wreckages, isEqualTo);
+         }
+         if (ML.latestSSMap != null && wreckOld == null) {
+            wreckOld = Collections.findFirst(ML.latestSSMap.wreckages, isEqualTo);
+         }
+         if (wreckOld == null) {
+            createWreckage(object);
+         }
+         else {
+            Objects.update(wreckOld, object);
+         }
+      }
+
+      private function createWreckage(object: Object): MWreckage {
          var wreck: MWreckage = Objects.create(MWreckage, object);
          if (wreck.currentLocation.isObserved) {
             if (wreck.currentLocation.type == LocationType.SOLAR_SYSTEM) {
@@ -47,32 +70,9 @@ package controllers.objects.actions.customcontrollers
          return wreck;
       }
 
-      public override function objectUpdated(objectSubclass: String,
-                                             object: Object,
-                                             reason: String): void {
-         var wreckOld: MWreckage = null;
-         function isEqualTo(item: MWreckage): Boolean
-         {
-            return item.id == object.id;
-         }
-         if (ML.latestGalaxy != null) {
-            wreckOld = Collections.findFirst(ML.latestGalaxy.wreckages, isEqualTo);
-         }
-         if (ML.latestSSMap != null && wreckOld == null) {
-            wreckOld = Collections.findFirst(ML.latestSSMap.wreckages, isEqualTo);
-         }
-         if (wreckOld == null) {
-            throw new Error(
-               "Can't update wreckage with id: " + object.id + ": the object "
-                  + "was not found"
-            );
-         }
-         Objects.update(wreckOld, object);
-      }
-
-      public override function objectDestroyed(objectSubclass: String,
-                                               objectId: int,
-                                               reason: String): void {
+      public override function objectDestroyed(
+         objectSubclass: String, objectId: int, reason: String): void
+      {
          var wreckSample: MWreckage = new MWreckage();
          wreckSample.id = objectId;
          var wreckRemoved: MWreckage = null;
