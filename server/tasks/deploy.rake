@@ -181,7 +181,7 @@ class DeployHelpers; class << self
   def exec_server(ssh, cmd, use_bundler=true)
     cmd = "bundle exec #{cmd}" if use_bundler
 
-    ssh.exec!("source $HOME/.profile > /dev/null && cd #{
+    ssh.exec!("source /etc/profile && source $HOME/.profile && cd #{
       DEPLOY_CONFIG_SERVER_CURRENT
     } && #{cmd}")
   end
