@@ -61,6 +61,7 @@ class Technology < ActiveRecord::Base
     player ||= without_locking do
       Player.select("planets_count, bg_planets_count").find(player_id).freeze
     end
+    level ||= self.level
 
     req_planets = planets_required(level)
     has_planets = player.planets_count
@@ -68,15 +69,16 @@ class Technology < ActiveRecord::Base
     has_pulsars = player.bg_planets_count
 
     raise GameLogicError.new(
-      "Player does not have enough planets/pulsars! #{req_planets
-      } planets and #{req_pulsars} pulsars are required, but player only has #{
-      has_planets} planets and #{has_pulsars} pulsars!"
+      "Player does not have enough planets/pulsars for #{inspect}! #{req_planets
+      } planets and #{req_pulsars} pulsars are required on level #{level
+      }, but player only has #{has_planets} planets and #{has_pulsars} pulsars!"
     ) if has_planets < req_planets || has_pulsars < req_pulsars
   end
 
-  # Check if player has met planets requirements for this technology.
+  # Check if player has met planets requirements for this technology. If this
+  # technology is being upgraded then we check for level + 1, instead of level.
   def planets_requirement_met?(player)
-    check_planets!(level, player)
+    check_planets!(upgrading? ? level + 1 : level, player)
     true
   rescue GameLogicError
     false
@@ -173,7 +175,7 @@ class Technology < ActiveRecord::Base
   end
 
   def planets_required(level=nil)
-    self.class.planets_required(level || self.level + 1)
+    self.class.planets_required(level || self.level)
   end
 
   def self.planets_required(level)
@@ -181,7 +183,7 @@ class Technology < ActiveRecord::Base
   end
 
   def pulsars_required(level=nil)
-    self.class.pulsars_required(level || self.level + 1)
+    self.class.pulsars_required(level || self.level)
   end
 
   def self.pulsars_required(level)

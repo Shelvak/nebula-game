@@ -588,7 +588,7 @@ GROUP BY cqe.constructable_type
       # Be sure working headquarters are also counted in.
       Building.where(planet_id: owned_planet_ids, type: types).
         where("state != ?", Building::STATE_INACTIVE).
-        .select("type, level, COUNT(*) as count").group("type, level").
+        select("type, level, COUNT(*) as count").group("type, level").
         c_select_all
     end.inject(0) do |sum, row|
       type = "Building::#{row["type"]}"
