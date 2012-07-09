@@ -143,6 +143,101 @@ describe GalaxiesController do
     end
   end
 
+  describe "galaxies|map" do
+    let(:galaxy) { player.galaxy }
+    let(:alliance) do
+      alliance = create_alliance(galaxy: galaxy)
+      player.alliance = alliance
+      player.save!
+      alliance
+    end
+    let(:ally) { alliance.owner }
+
+    before(:each) do
+      @action = "galaxies|map"
+      @params = {}
+    end
+
+    it "should return your home solar system" do
+      ss = player.home_solar_system
+      invoke @action, @params
+      response_should_include(your_home: [ss.x, ss.y])
+    end
+
+    it "should return alliance home solar systems" do
+      ss1 = ally.home_solar_system
+      ss2 = Factory.create(:home_ss, y: 20,
+        player: Factory.create(:player, alliance: alliance), galaxy: galaxy,)
+      invoke @action, @params
+      response_should_include(alliance_home: [[ss1.x, ss1.y], [ss2.x, ss2.y]])
+    end
+
+    it "should return nap home solar systems"
+
+    it "should return enemy home solar systems" do
+      ss1 = Factory.create(:home_ss, player: Factory.create(:player),
+        galaxy: galaxy)
+      ss2 = Factory.create(:home_ss, player: Factory.create(:player),
+        galaxy: galaxy, y: 40)
+      invoke @action, @params
+      response_should_include(enemy_home: [[ss1.x, ss1.y], [ss2.x, ss2.y]])
+    end
+
+    it "should return regular solar systems" do
+      ss1 = Factory.create(:solar_system, galaxy: galaxy)
+      ss2 = Factory.create(:solar_system, galaxy: galaxy, y: 30)
+      invoke @action, @params
+      response_should_include(regular: [[ss1.x, ss1.y], [ss2.x, ss2.y]])
+    end
+
+    it "should return pulsar solar systems" do
+      ss1 = Factory.create(:mini_battleground, galaxy: galaxy)
+      ss2 = Factory.create(:mini_battleground, galaxy: galaxy, y: 30)
+      invoke @action, @params
+      response_should_include(pulsar: [[ss1.x, ss1.y], [ss2.x, ss2.y]])
+    end
+
+    it "should return wormholes" do
+      ss1 = Factory.create(:wormhole, galaxy: galaxy)
+      ss2 = Factory.create(:wormhole, galaxy: galaxy, y: 30)
+      invoke @action, @params
+      response_should_include(wormhole: [[ss1.x, ss1.y], [ss2.x, ss2.y]])
+    end
+
+    it "should not return battleground" do
+      Factory.create(:battleground, galaxy: galaxy)
+      invoke @action, @params
+      response.each do |key, val|
+        case val
+        when Array then val.should_not include([nil, nil])
+        else val.should_not == [nil, nil]
+        end
+      end
+    end
+
+    it "should not return detached home solar systems" do
+      Factory.create(:ss_detached, galaxy: galaxy)
+      invoke @action, @params
+      response.each do |key, val|
+        case val
+        when Array then val.should_not include([nil, nil])
+        else val.should_not == [nil, nil]
+        end
+      end
+    end
+
+    it "should not return pooled solar systems" do
+      Factory.create(:ss_pooled, galaxy: galaxy)
+      invoke @action, @params
+      response.each do |key, val|
+        case val
+        when Array then val.should_not include([nil, nil])
+        else val.should_not == [nil, nil]
+        end
+      end
+    end
+  end
+
   describe "galaxies|apocalypse" do
     before(:each) do
       @action = "galaxies|apocalypse"
