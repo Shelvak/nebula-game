@@ -52,6 +52,7 @@
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLY_RATINGS}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLIANCE}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.CHAT}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ENTIRE_GALAXY}"/>
       <menus:LeftHidableMenu left="0" top="{this.height * 0.2}"/>
    </s:Group>
    
@@ -74,4 +75,5 @@
          <screen:SidebarScreenContainer screenName="{SidebarScreens.MARKET}"/>
       </s:Group>
    </s:SkinnableContainer>
+
 </base:BaseContainer>

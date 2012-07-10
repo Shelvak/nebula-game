@@ -214,6 +214,9 @@ package controllers.ui
             MChat.getInstance().screenShowHandler,
             MChat.getInstance().screenHideHandler
          );
+         _screenProperties[MainAreaScreens.ENTIRE_GALAXY] = new ScreenProperties(
+            MainAreaScreens.ENTIRE_GALAXY, null, false
+         );
          
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
          addEventListener(MapLoadEvent.LOAD, this_mapLoadHandler);
@@ -741,6 +744,10 @@ package controllers.ui
       
       public function showChat() : void {
          showNonMapScreen(_screenProperties[MainAreaScreens.CHAT]);
+      }
+
+      public function showEntireGalaxy(): void {
+         showNonMapScreen(_screenProperties[MainAreaScreens.ENTIRE_GALAXY]);
       }
       
       
