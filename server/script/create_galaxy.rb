@@ -14,7 +14,7 @@ Where arguments are:
     ruleset:ruleset callback_url:url pool_zones:count pool_home_ss:count
 
     Example:
-      ruby create_galaxy.rb ruleset:default callback_url:nebula44.lt \\
+      jruby create_galaxy.rb ruleset:default callback_url:nebula44.lt \\
       pool_zones:100 pool_home_ss:5000
 
   If you're ensuring pool on existing galaxy:
@@ -25,7 +25,7 @@ Where arguments are:
 
   You can also combine these two modes into one.
     Example:
-      ruby create_galaxy.rb ruleset:default callback_url:nebula44.lt \\
+      jruby create_galaxy.rb ruleset:default callback_url:nebula44.lt \\
       pool_zones:100 pool_home_ss:5000 zones:500 home_ss:50000
 
   This will firstly create new galaxy with given pool arguments, then
@@ -37,6 +37,22 @@ Where arguments are:
 end
 
 help("No arguments given") if ARGV.size == 0
+require 'java'
+max_mem = java.lang.Runtime.runtime.max_memory
+if max_mem < 1024 * 1024 * 1024
+  puts %Q{
+*** Warning! This script uses a lot of memory! ***
+
+Currently max heap size is: #{max_mem / 1024 / 1024} MB.
+
+You should at least give it 1GB of memory. You can do that
+by launching it like:
+
+  jruby -J-Xmx1500m create_galaxy.rb ...
+}.strip
+  puts
+  exit 2
+end
 
 args = ARGV.inject({}) do |hash, arg|
   key, value = arg.split(":", 2)

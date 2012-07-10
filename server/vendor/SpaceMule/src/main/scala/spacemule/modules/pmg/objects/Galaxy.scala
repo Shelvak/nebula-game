@@ -138,7 +138,7 @@ class Galaxy(val id: Int, val ruleset: String) {
     val free = this.freeZones
     val toCreate = count - free
     if (toCreate <= 0) {
-      Log.info(count + " zones are free, no new zones needed to create.")
+      Log.info(free + " zones are free, no new zones needed to create.")
       return 0
     }
 

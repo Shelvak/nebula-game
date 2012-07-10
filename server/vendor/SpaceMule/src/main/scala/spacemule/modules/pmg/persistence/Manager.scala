@@ -104,25 +104,6 @@ SolarSystem.Pooled.id
     selectPooled()
   }
 
-//  private def loadQuests(): Seq[Int] = {
-//    Log.block("Loading quests", level=Log.Debug) { () =>
-//      DB.getCol[Int](
-//        "SELECT `id` FROM `%s` WHERE `parent_id` IS NULL".format(QuestsTable)
-//      )
-//    }
-//  }
-//
-//  private def loadObjectives(): Seq[Int] = {
-//    Log.block("Loading objectives", level=Log.Debug) { () =>
-//      if (startQuestIds.isEmpty) Seq[Int]()
-//      else DB.getCol[Int](
-//        "SELECT `id` FROM `%s` WHERE `quest_id` IN (%s)".format(
-//          ObjectivesTable, startQuestIds.mkString(",")
-//        )
-//      )
-//    }
-//  }
-
   def save[T](beforeSave: () => T): T = {
     buffers.clear()
     currentDateTime = DB.date(new Date())
@@ -131,7 +112,8 @@ SolarSystem.Pooled.id
     val retVal = beforeSave()
 
     Log.block("Saving buffers", level=Log.Debug) { () => buffers.save() }
-    
+
+    buffers.clear()
     retVal
   }
 

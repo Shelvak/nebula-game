@@ -133,6 +133,34 @@ describe SsObject::Planet::OwnerChangeHandler do
                               :pulsars
       end
     end
+
+    it "should pause techs that fail planets req. before trying to upd them" do
+      with_config_values(
+        'buildings.research_center.scientists' => '100 * level',
+        'technologies.test_technology.scientists.min' => 200,
+        'technologies.test_technology.planets.required' => 2
+      ) do
+        main_planet = Factory.create(:planet, player: @old)
+        big_rc = Factory.create(:b_research_center, opts_active + {
+          planet: main_planet, level: 2
+        })
+        small_rc = Factory.create(:b_research_center, opts_active + {
+          planet: @planet, level: 1
+        })
+        tech = Factory.create(
+          :technology, opts_upgrading + {
+            level: 0, scientists: 250, player: @old
+          }
+        )
+        @old.planets_count = 2
+        @old.scientists_total = big_rc.scientists + small_rc.scientists
+        @old.scientists = @old.scientists_total - tech.scientists
+        @old.save!
+        @handler.handle!
+        tech.reload
+        tech.should be_paused
+      end
+    end
   end
 
   describe "points" do
@@ -282,46 +310,6 @@ describe SsObject::Planet::OwnerChangeHandler do
     end
   end
 
-  describe "prepaid constructor queue entries" do
-    let(:constructor) do
-      Factory.create(:b_constructor_test, opts_working + {:planet => @planet})
-    end
-    let(:prepaid_entries) do
-      [
-        ConstructionQueue.push(constructor.id, Unit::Trooper.to_s, true, 5),
-        ConstructionQueue.push(constructor.id, Unit::Azure.to_s, true, 5)
-      ]
-    end
-    let(:population) do
-      prepaid_entries.map { |e| e.constructable_class.population * e.count }.
-        sum
-    end
-
-    before(:each) do
-      ConstructionQueue.push(constructor.id, Unit::Azure.to_s, false, 5)
-      self.prepaid_entries
-      @old.recalculate_population
-      @new.recalculate_population
-      # We need to actually update planet player id, to transfer ownership of
-      # CQEs.
-      @planet.update_row! player_id: @new.id
-    end
-
-    it "should free population for old player" do
-      lambda do
-        @handler.handle!
-        @old.reload
-      end.should change(@old, :population).by(- population)
-    end
-
-    it "should take population for new player" do
-      lambda do
-        @handler.handle!
-        @new.reload
-      end.should change(@new, :population).by(population)
-    end
-  end
-
   describe "market offers where #from_kind is creds" do
     before(:each) do
       @offers = [
@@ -455,36 +443,6 @@ describe SsObject::Planet::OwnerChangeHandler do
     end
   end
 
-  describe "population_max" do
-    before(:each) do
-      @housing = Factory.create(:b_housing, opts_active + {planet: @planet})
-      @old.reload
-      @attr = :population_max
-      @change = @housing.population
-    end
-
-    describe "building active" do
-      it_behaves_like "transfering attribute"
-    end
-
-    describe "inactive building" do
-      before(:each) do
-        @housing.deactivate!
-      end
-
-      it_behaves_like "not transfering attribute"
-    end
-
-    describe "working building" do
-      before(:each) do
-        @housing.state = Building::STATE_WORKING
-        @housing.save!
-      end
-
-      it_behaves_like "transfering attribute"
-    end
-  end
-
   describe "exploration" do
     it "should stop exploration if exploring" do
       @planet.stub!(:exploring?).and_return(true)
@@ -507,22 +465,6 @@ describe SsObject::Planet::OwnerChangeHandler do
         @handler.handle!
         building.reload
       end.should change(building, :cooldown_ends_at)
-    end
-  end
-
-  describe "battleground planets" do
-    before(:each) do
-      @planet.solar_system = Factory.create(:battleground)
-      @handler.handle!
-    end
-
-    it "should give units in that planet" do
-      Unit.should_receive(:give_units).with(
-        CONFIG['battleground.planet.bonus'],
-        @planet,
-        @new
-      )
-      @handler.handle!
     end
   end
 end
