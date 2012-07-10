@@ -79,7 +79,7 @@
    </fx:Script>
    
    <!--- Styled container for menu buttons. -->
-   <s:SkinnableContainer left="0" bottom="{btnStart.height - 30}" id="menuItems"
+   <s:SkinnableContainer left="0" bottom="34" id="menuItems"
                          enabled="false"
                          skinClass="components.menus.skins.MainMenuItemsSkin"
                          click="toggleStartButton(event)">
