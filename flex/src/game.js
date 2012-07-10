@@ -379,7 +379,7 @@ function versionTooOld(requiredVersion, currentVersion) {
 
 // Called when player successfully logs in into server.
 function loginSuccessful() {
-  _gaq.push(['_trackPageview', '/play/game/success']);
+  _gaq.push(['_trackPageview', '/play/' + playerType+ '/game/login']);
 }
 
 // Ensure player does not close the game accidentally.
@@ -408,7 +408,10 @@ if (
     ! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId) &&
     ! defined(planetMapEditor)
   ) {
-  _gaq.push(['_setAccount', gaAccountId], ['_trackPageview']);
+  _gaq.push(
+    ['_setAccount', gaAccountId],
+    ['_trackPageview', '/play/' + playerType + '/game/opened']
+  );
   include("http://www.google-analytics.com/ga.js", 'async="true"');
 }
 // }}}
