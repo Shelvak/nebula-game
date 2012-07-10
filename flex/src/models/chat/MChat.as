@@ -164,8 +164,7 @@ package models.chat
          return _messagePool;
       }
 
-      private const _silenced: MTimeEventFixedMoment =
-                       new MTimeEventFixedMoment();
+      private const _silenced: MTimeEventFixedMoment = new MTimeEventFixedMoment();
       public function get silenced(): MTimeEventFixedMoment {
          return _silenced;
       }

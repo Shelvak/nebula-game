@@ -56,7 +56,8 @@ package tests.maps
       public function initialization() : void {
          galaxy = new Galaxy();
          client = new ClientMock();
-         area = new VisibleGalaxyArea(galaxy, client, new GalaxyMapCoordsTransform(galaxy));
+         area = new VisibleGalaxyArea(
+            galaxy, client, new GalaxyMapCoordsTransform(galaxy.fowMatrix));
          assertThat( "visibleArea", area.visibleArea, nullValue() );
       }
       
@@ -504,7 +505,8 @@ package tests.maps
             new ArrayCollection()
          );
          client = new ClientMock();
-         area = new VisibleGalaxyArea(galaxy, client, new GalaxyMapCoordsTransform(galaxy));
+         area = new VisibleGalaxyArea(
+            galaxy, client, new GalaxyMapCoordsTransform(galaxy.fowMatrix));
          
          var visibleScreenArea:Rectangle = new Rectangle(
             2 * SECTOR_W, 2 * SECTOR_H,
@@ -570,7 +572,8 @@ package tests.maps
          galaxy = new Galaxy();
          galaxy.setFOWEntries(Vector.<MapArea>([visibleArea]), new ArrayCollection());
          client = new ClientMock();
-         area = new VisibleGalaxyArea(galaxy, client, new GalaxyMapCoordsTransform(galaxy));
+         area = new VisibleGalaxyArea(
+            galaxy, client, new GalaxyMapCoordsTransform(galaxy.fowMatrix));
       }
       
       private function solarSystem(id:int, x:int, y:int) : MSolarSystem {
