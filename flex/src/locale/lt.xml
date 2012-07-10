@@ -1833,6 +1833,7 @@
     <label.wiki value="Wiki"/>
     <label.tips value="Patarimai"/>
     <label.inviteFriend value="Pakviesk draugą"/>
+    <label.entireGalaxy value="Visa galaktika"/>
     <tooltip.version value="Žaidimo versija" />
     <panelWidth value="95" />
   </MainMenu>

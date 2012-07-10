@@ -338,7 +338,6 @@
          linesAdded++;
          vLine.yPos = yFromPos;
          vLine.xPos = lf;
-         ;
          vLine.hght = yToPos - yFromPos;
          vLine.wdth = -1;
          linesHash.addLine(vLine, to);

@@ -29,7 +29,7 @@ package components.map
     * Base class for all maps. A map is not ordinary Flex component and
     * therefore does not follow Flex components lifecycle. Map is drawn,
     * measured and all objects are created when instance is created. Three
-    * protected methods must be overriden in order this works properly:
+    * protected methods must be overridden in order this works properly:
     * <code>getBackground()</code>, <code>getSize()</code> and
     * <code>createObjects()</code> (read documentation of these methods for more
     * information). The methods are called in the order they have been
@@ -75,7 +75,7 @@ package components.map
        * means you have implemented it in your own way).
        * 
        * @return a point that defines size of the map: <code>x</code> is width of the map and
-       * <code>y</code> is height. Default implemetation returns <code>width</code> and
+       * <code>y</code> is height. Default implementation returns <code>width</code> and
        * <code>height</code> properties values of <code>getBackground()</code>.
        */
       public function getSize(): Point {

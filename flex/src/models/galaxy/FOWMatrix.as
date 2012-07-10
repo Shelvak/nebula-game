@@ -10,7 +10,7 @@ package models.galaxy
    import mx.collections.IList;
 
 
-   internal class FOWMatrix
+   public class FOWMatrix
    {
       private static const INVISIBLE_BORDER_SIZE: int = 2;
 
@@ -126,11 +126,15 @@ package models.galaxy
                   _fowBorderList.push(new FOWBorderElement(
                      new LocationMinimal(LocationType.GALAXY, _galaxyId, x, y),
                      matrix[xx - 1][yy], matrix[xx + 1][yy],
-                     matrix[xx][yy - 1], matrix[xx][yy + 1]
+                     matrix[xx][yy + 1], matrix[xx][yy - 1]
                   ));
                }
             }
          }
+      }
+
+      public function getFowEntries(): Vector.<MapArea> {
+         return _fowEntries;
       }
 
       private var _offset:Point;

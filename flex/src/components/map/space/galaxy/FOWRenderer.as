@@ -39,9 +39,9 @@ package components.map.space.galaxy
          var matrixLeft:Matrix = matrixRight.clone();
          matrixLeft.rotate(MathUtil.degreesToRadians(180));
          var matrixTop:Matrix = matrixRight.clone();
-         matrixTop.rotate(MathUtil.degreesToRadians(90));
+         matrixTop.rotate(MathUtil.degreesToRadians(-90));
          var matrixBottom:Matrix = matrixRight.clone();
-         matrixBottom.rotate(MathUtil.degreesToRadians(-90));
+         matrixBottom.rotate(MathUtil.degreesToRadians(90));
          _graphics.clear();
          for each (var element:FOWBorderElement in _galaxy.fowBorders) {
             var coords: Point = _grid.getSectorRealCoordinates(element.location);

@@ -27,9 +27,6 @@ package components.factories
    import utils.assets.ImagePreloader;
    
    
-   /**
-    * Lets easily create different type maps. 
-    */   
    public class MapFactory
    {
       private static function getImage(name:String) : BitmapData {
@@ -70,7 +67,7 @@ package components.factories
             new VisibleAreaTracker(
                new VisibleGalaxyArea(
                   galaxy, map,
-                  new GalaxyMapCoordsTransform(galaxy)
+                  new GalaxyMapCoordsTransform(galaxy.fowMatrix)
                )
             )
          );

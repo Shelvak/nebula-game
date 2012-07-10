@@ -47,7 +47,7 @@ package models.galaxy
    
    public class Galaxy extends MMapSpace
    {
-      private var _fowMatrixBuilder: FOWMatrix;
+      private var _fowMatrix: FOWMatrix;
       
       public function Galaxy() {
          super();
@@ -200,29 +200,37 @@ package models.galaxy
       public function get hasWormholes() : Boolean {
          return _wormholes.length > 0;
       }
-      
+
+      public function get fowEntries(): Vector.<MapArea> {
+         return _fowMatrix.getFowEntries();
+      }
+
       [Bindable(event="resize")]
       public function get bounds() : MapArea {
-         return _fowMatrixBuilder.getBounds();
+         return _fowMatrix.getBounds();
       }
       
       [Bindable(event="resize")]
       public function get visibleBounds() : MapArea {
-         return _fowMatrixBuilder.getVisibleBounds();
+         return _fowMatrix.getVisibleBounds();
       }
       
       [Bindable(event="resize")]
       public function get offset() : Point {
-         return _fowMatrixBuilder.getCoordsOffset();
+         return _fowMatrix.getCoordsOffset();
       }
       
       [Bindable(event="resize")]
       public function get canBeExplored() : Boolean {
-         return _fowMatrixBuilder.matrixHasVisibleTiles;
+         return _fowMatrix.matrixHasVisibleTiles;
       }
       
       public function get fowBorders(): Vector.<FOWBorderElement> {
-         return _fowMatrixBuilder.getFOWBorderList();
+         return _fowMatrix.getFOWBorderList();
+      }
+
+      public function get fowMatrix(): FOWMatrix {
+         return _fowMatrix;
       }
       
       public function setFOWEntries(fowEntries:Vector.<MapArea>, units:IList) : void {
@@ -231,7 +239,7 @@ package models.galaxy
                return ss.currentLocation;
             }
          );
-         _fowMatrixBuilder = new FOWMatrix(id, fowEntries, solarSystemLocations, units);
+         _fowMatrix = new FOWMatrix(id, fowEntries, solarSystemLocations, units);
       }
       
       /**
@@ -281,7 +289,7 @@ package models.galaxy
                      !locationIsVisible(location)
                         && hasEventListener(GalaxyEvent.NEW_VISIBLE_LOCATION);
             addObject(ss);
-            _fowMatrixBuilder.rebuild();
+            _fowMatrix.rebuild();
             if (dispatchNewVisibleLocation) {
                dispatchEvent(
                   new GalaxyEvent(GalaxyEvent.NEW_VISIBLE_LOCATION, location)
@@ -318,7 +326,7 @@ package models.galaxy
             var x:int = location.x + offset.x;
             var y:int = location.y + offset.y;
             if (x >= 0 && x < bounds.width && y >= 0 && y < bounds.height)
-               return _fowMatrixBuilder.locationIsVisible(x, y);
+               return _fowMatrix.locationIsVisible(x, y);
          }
          return false;
       }

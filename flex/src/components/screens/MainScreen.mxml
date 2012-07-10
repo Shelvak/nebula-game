@@ -13,7 +13,8 @@ bars and so on.
                     xmlns:raid="components.raid.*"
                     xmlns:cchat="components.chat.*"
                     xmlns:paging="components.base.paging.*"
-                    xmlns:player="components.player.*" xmlns:planet="components.planet.*"
+                    xmlns:player="components.player.*"
+                    xmlns:planet="components.planet.*"
                     width="100%"
                     height="100%"
                     mouseEnabled="false"
@@ -27,14 +28,12 @@ bars and so on.
       import models.Owner;
       import models.map.MapType;
       import models.planet.MPlanet;
-      import models.planet.MPlanetCooldown;
       import models.quest.MMainQuestLine;
       import models.solarsystem.MSSObject;
       import models.tips.MTipScreen;
 
       import utils.DateUtil;
-      import utils.assets.AssetNames;
-      import utils.locale.Localizer;
+
 
       [Bindable]
       private var ssObject: MSSObject;

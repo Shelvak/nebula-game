@@ -438,8 +438,8 @@ package controllers.startup
       private static function bindGalaxiesCommands() : void
       {
          bindPair(GalaxiesCommand.SHOW, new controllers.galaxies.actions.ShowAction());
-         bindPair(GalaxiesCommand.APOCALYPSE,
-                 new ApocalypseAction());
+         bindPair(GalaxiesCommand.APOCALYPSE, new ApocalypseAction());
+         bindPair(GalaxiesCommand.MAP, new MapAction());
       }
       private static function bindSolarSystemsCommands() : void
       {

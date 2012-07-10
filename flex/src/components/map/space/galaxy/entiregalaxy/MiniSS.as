@@ -1,0 +1,15 @@
+package components.map.space.galaxy.entiregalaxy
+{
+   public class MiniSS
+   {
+      public var type: String;
+      public var x: int;
+      public var y: int;
+
+      public function MiniSS(coords: Array, type: String) {
+         this.x = coords[0];
+         this.y = coords[1];
+         this.type = type;
+      }
+   }
+}

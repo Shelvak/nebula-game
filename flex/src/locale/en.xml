@@ -1700,6 +1700,7 @@
     <label.wiki value="Wiki"/>
     <label.tips value="Tips"/>
     <label.inviteFriend value="Invite a friend"/>
+    <label.entireGalaxy value="Entire galaxy"/>
     <tooltip.version value="Game version" />
     <panelWidth value="85" />
   </MainMenu>
