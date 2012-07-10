@@ -53,6 +53,65 @@ class GalaxiesController < GenericController
     end
   end
 
+  # Returns whole galaxy map.
+  #
+  # Invocation: by client.
+  #
+  # Parameters: None
+  #
+  # Response:
+  # - your_home (Array): [x, y] - your home solar system
+  # - alliance_home (Array): [[x, y], ...] - alliance home solar systems
+  # - nap_home (Array): [[x, y], ...] - nap home solar systems
+  # - enemy_home (Array): [[x, y], ...] - enemy home solar systems
+  # - regular (Array): [[x, y], ...] - regular solar systems
+  # - pulsar (Array): [[x, y], ...] - pulsars
+  # - wormhole (Array): [[x, y], ...] - wormholes
+  # }
+  #
+  ACTION_MAP = 'galaxies|map'
+
+  MAP_OPTIONS = logged_in
+  MAP_SCOPE = scope.world
+
+  def self.map_action(m)
+    without_locking do
+      resolver = StatusResolver.new(m.player)
+
+      solar_systems = SolarSystem.select("x, y, player_id, kind").
+        where(galaxy_id: m.player.galaxy_id).
+        where("x IS NOT NULL AND y IS NOT NULL").c_select_all.
+        each_with_object({
+          your_home: nil, alliance_home: [], nap_home: [], enemy_home: [],
+          regular: [], pulsar: [], wormhole: []
+        }) do |row, hash|
+          type =
+            case row['kind']
+            when SolarSystem::KIND_WORMHOLE then :wormhole
+            when SolarSystem::KIND_BATTLEGROUND then :pulsar
+            else case status = resolver.status(row['player_id'])
+                 when StatusResolver::YOU   then :your_home
+                 when StatusResolver::ALLY  then :alliance_home
+                 when StatusResolver::NAP   then :nap_home
+                 when StatusResolver::ENEMY then :enemy_home
+                 when StatusResolver::NPC   then :regular
+                 else raise "Unknown resolver status (#{status}) for #{
+                   row.inspect}"
+                 end
+            end
+
+          coords = [row['x'], row['y']]
+          if type == :your_home
+            hash[:your_home] = coords
+          else
+            hash[type] << coords
+          end
+      end
+
+      respond m, solar_systems
+    end
+  end
+
   # Notifies client that the apocalypse has started.
   #
   # Invocation: by server
