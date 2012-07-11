@@ -4,6 +4,7 @@
    xmlns:fx="http://ns.adobe.com/mxml/2009"
    xmlns:viewport="components.base.viewport.*"
    xmlns:galaxy="components.map.space.galaxy.entiregalaxy.*"
+   xmlns:controllers="components.map.controllers.*"
    left="0" right="0" top="0" bottom="0"
    paddingVertical="200" paddingHorizontal="200">
 
@@ -44,10 +45,12 @@
    </fx:Script>
 
    <viewport:content>
-      <galaxy:CEntireGalaxy id="map" model="{MEntireGalaxyScreen.getInstance().model}"/>
+      <galaxy:CEntireGalaxy
+         id="map" model="{MEntireGalaxyScreen.getInstance().model}" viewport="{this}"/>
    </viewport:content>
    <viewport:overlay>
       <s:Group>
+         <controllers:ViewportZoomController viewport="{this}"/>
          <s:SkinnableContainer bottom="2" right="2" fontWeight="bold"
                                skinClass="components.map.space.galaxy.entiregalaxy.LegendSkin">
             <s:layout>

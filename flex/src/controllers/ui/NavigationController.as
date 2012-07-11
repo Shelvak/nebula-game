@@ -854,7 +854,7 @@ package controllers.ui
          
          var viewport:ViewportZoomable = MapFactory.getViewportWithMap(map);
          var controller:IMapViewportController = MapFactory.getViewportController(map);
-         controller.setViewport(viewport);
+         controller.viewport = viewport;
          if (completeHandler != null) {
             var content:Group = viewport.content;
             function content_creationCompleteHandler(event:FlexEvent) : void {

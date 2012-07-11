@@ -17,8 +17,8 @@
 
       private var _viewport: Viewport;
 
-      public function setViewport(viewport: Viewport): void {
-         _viewport = viewport;
+      public function set viewport(value: Viewport): void {
+         _viewport = value;
          initializeControllers();
       }
 
@@ -42,7 +42,7 @@
 
       private function initializeControllers(): void {
          if (zoom != null) {
-            zoom.setViewport(_viewport);
+            zoom.viewport = _viewport;
          }
          if (watchedObjects != null && watchedObjects.model == null) {
             var solarSystem:MMapSolarSystem = ML.latestSSMap;
