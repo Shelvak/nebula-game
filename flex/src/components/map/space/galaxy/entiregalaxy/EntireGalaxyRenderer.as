@@ -12,8 +12,8 @@ package components.map.space.galaxy.entiregalaxy
 
    public final class EntireGalaxyRenderer
    {
-      public static const SECTOR_SIZE: uint = 24;   // pixels
-      public static const GAP_SIZE: uint = 24;      // pixels
+      internal static const SECTOR_SIZE: uint = 8;   // pixels
+      internal static const GAP_SIZE: uint = 4;      // pixels
 
       private var _solarSystems: Array;
       private var _fowMatrix: FOWMatrix;
@@ -91,31 +91,5 @@ package components.map.space.galaxy.entiregalaxy
             fill(px + SECTOR_SIZE, py, GAP_SIZE,    GAP_SIZE);
          }
       }
-   }
-}
-
-
-import components.map.space.galaxy.entiregalaxy.MiniSSType;
-
-import models.Owner;
-import models.OwnerColor;
-
-
-internal final class Colors
-{
-   public static const BACKGROUND_COLOR: uint = 0x000000;
-   public static const BORDER_COLOR: uint = 0xFF0000;
-
-   private static const SS_COLORS: Object = new Object();
-   SS_COLORS[MiniSSType.PLAYER_HOME] = OwnerColor.getColor(Owner.PLAYER);
-   SS_COLORS[MiniSSType.ALLIANCE_HOME] = OwnerColor.getColor(Owner.ALLY);
-   SS_COLORS[MiniSSType.NAP_HOME] = OwnerColor.getColor(Owner.NAP);
-   SS_COLORS[MiniSSType.ENEMY_HOME] = OwnerColor.getColor(Owner.ENEMY);
-   SS_COLORS[MiniSSType.REGULAR] = 0xFFFFFF;
-   SS_COLORS[MiniSSType.PULSAR] = 0xFFFFFF;
-   SS_COLORS[MiniSSType.WORMHOLE] = 0xFFFFFF;
-
-   public static function getMiniSSColor(type: String): uint {
-      return SS_COLORS[type];
    }
 }

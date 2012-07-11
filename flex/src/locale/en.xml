@@ -5771,4 +5771,17 @@
     </popup.message.confirm>
   </PlanetCooldown>
 
+  <EntireGalaxy>
+    <title>Legend</title>
+    <border>Visible zone</border>
+    <yourHome>Home system</yourHome>
+    <allianceHome>Ally home system</allianceHome>
+    <napHome>NAP home system</napHome>
+    <enemyHome>Enemy home system</enemyHome>
+    <regular>Regular system</regular>
+    <pulsar>Pulsar</pulsar>
+    <wormhole>Wormhole</wormhole>
+    <mouseCoordinates.title>Coordinates</mouseCoordinates.title>
+  </EntireGalaxy>
+
 </locale>

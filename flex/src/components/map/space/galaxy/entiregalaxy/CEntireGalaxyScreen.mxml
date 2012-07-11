@@ -4,15 +4,70 @@
    xmlns:fx="http://ns.adobe.com/mxml/2009"
    xmlns:viewport="components.base.viewport.*"
    xmlns:galaxy="components.map.space.galaxy.entiregalaxy.*"
-   left="0" right="0" top="0" bottom="0">
+   left="0" right="0" top="0" bottom="0"
+   paddingVertical="200" paddingHorizontal="200">
+
+   <fx:Style>
+      .title {
+         font-size: 14;
+         text-align: center;
+         padding-bottom: 8;
+      }
+   </fx:Style>
+
+   <fx:Script>
+      <![CDATA[
+      import mx.collections.ArrayList;
+
+      import utils.locale.Localizer;
+
+
+      private var legendEntries: ArrayList = new ArrayList([
+         new LegendEntry(Colors.BORDER_COLOR, getString("border")),
+         ssEntry(MiniSSType.PLAYER_HOME),
+         ssEntry(MiniSSType.ALLIANCE_HOME),
+         ssEntry(MiniSSType.NAP_HOME),
+         ssEntry(MiniSSType.ENEMY_HOME),
+         ssEntry(MiniSSType.REGULAR),
+         ssEntry(MiniSSType.PULSAR),
+         ssEntry(MiniSSType.WORMHOLE)
+      ]);
+
+      private function ssEntry(ssType: String): LegendEntry {
+         return new LegendEntry(Colors.getMiniSSColor(ssType), getString(ssType));
+      }
+
+      private function getString(property: String): String {
+         return Localizer.string("EntireGalaxy", property);
+      }
+      ]]>
+   </fx:Script>
 
    <viewport:content>
       <galaxy:CEntireGalaxy id="map" model="{MEntireGalaxyScreen.getInstance().model}"/>
    </viewport:content>
    <viewport:overlay>
       <s:Group>
-         <s:Label right="0" top="0" paddingTop="10" paddingRight="10" textAlign="right"
-                  text="{map.logicalMouseX + ':' + map.logicalMouseY}"/>
+         <s:SkinnableContainer bottom="2" right="2" fontWeight="bold"
+                               skinClass="components.map.space.galaxy.entiregalaxy.LegendSkin">
+            <s:layout>
+               <s:VerticalLayout horizontalAlign="contentJustify"/>
+            </s:layout>
+            <s:Label text="{getString('title')}" styleName="title"/>
+            <s:DataGroup
+               itemRenderer="components.map.space.galaxy.entiregalaxy.LegendEntryRenderer"
+               dataProvider="{legendEntries}">
+               <s:layout>
+                  <s:VerticalLayout gap="4"/>
+               </s:layout>
+            </s:DataGroup>
+            <s:Label
+               styleName="title" paddingTop="10"
+               text="{getString('mouseCoordinates.title')}"/>
+            <s:Label
+               textAlign="center" fontSize="14"
+               text="{map.logicalMouseX + ' : ' + map.logicalMouseY}"/>
+         </s:SkinnableContainer>
       </s:Group>
    </viewport:overlay>
 

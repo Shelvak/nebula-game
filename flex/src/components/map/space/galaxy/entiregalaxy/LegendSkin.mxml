@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<s:Skin
+   xmlns:fx="http://ns.adobe.com/mxml/2009"
+   xmlns:s="library://ns.adobe.com/flex/spark"
+   xmlns:controllers="components.map.controllers.*">
+
+   <s:states>
+      <s:State name="disabled"/>
+      <s:State name="normal"/>
+   </s:states>
+
+   <fx:Metadata>
+      [HostComponent("spark.components.SkinnableContainer")]
+   </fx:Metadata>
+
+   <controllers:MapObjectsListArtwork/>
+   <s:Group id="contentGroup" left="84" top="30" right="4" bottom="4"/>
+
+</s:Skin>

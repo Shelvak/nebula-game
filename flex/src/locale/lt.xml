@@ -5861,4 +5861,17 @@
     </popup.message.confirm>
   </PlanetCooldown>
 
+  <EntireGalaxy>
+    <title>Legenda</title>
+    <border>Matomumo ribos</border>
+    <yourHome>Namų sistema</yourHome>
+    <allianceHome>Sąjungos namų sist.</allianceHome>
+    <napHome>NP namų sistema</napHome>
+    <enemyHome>Priešo namų sitema</enemyHome>
+    <regular>Paprasta sistema</regular>
+    <pulsar>Pulsaras</pulsar>
+    <wormhole>Arenos vartai</wormhole>
+    <mouseCoordinates.title>Koordinatės</mouseCoordinates.title>
+  </EntireGalaxy>
+
 </locale>
