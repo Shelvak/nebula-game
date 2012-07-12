@@ -106,7 +106,7 @@ package models.quest
 
       [Bindable(event="showButtonChange")]
       public function get showButton(): Boolean {
-         return _quests.hasUncompletedMainQuest;
+         return hasUncompletedMainQuest();
       }
 
 

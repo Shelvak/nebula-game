@@ -2,25 +2,25 @@ package components.map.space.galaxy.entiregalaxy
 {
    import com.developmentarc.core.utils.EventBroker;
 
+   import components.base.viewport.ViewportZoomable;
    import components.map.BaseMapCoordsTransform;
 
    import flash.display.BitmapData;
+
    import flash.events.MouseEvent;
+   import flash.geom.Point;
 
    import globalevents.GlobalEvent;
 
    import interfaces.ICleanable;
 
    import models.galaxy.FOWMatrix;
-
    import models.galaxy.MEntireGalaxy;
 
    import mx.graphics.BitmapFillMode;
-   import mx.graphics.SolidColor;
 
    import spark.components.Group;
    import spark.primitives.BitmapImage;
-   import spark.primitives.Rect;
 
 
    public class CEntireGalaxy extends Group implements ICleanable
@@ -39,6 +39,11 @@ package components.map.space.galaxy.entiregalaxy
          EventBroker.unsubscribe(GlobalEvent.APP_RESET, global_appResetHandler);
          removeEventListener(MouseEvent.MOUSE_MOVE, this_mouseMoveHandler);
          removeAllElements();
+      }
+
+      private var _viewport: ViewportZoomable;
+      public function set viewport(value: ViewportZoomable): void {
+         _viewport = value;
       }
 
       private var _coordsTransform: BaseMapCoordsTransform;
@@ -84,7 +89,13 @@ package components.map.space.galaxy.entiregalaxy
                _coordsTransform = new CoordsTransform(fowMatrix.getCoordsOffset());
                _coordsTransform.logicalWidth = fowMatrix.getBounds().width;
                _coordsTransform.logicalHeight = fowMatrix.getBounds().height;
-               _image.source = new EntireGalaxyRenderer(_model).bitmap;
+               const bitmap: BitmapData = new EntireGalaxyRenderer(_model).bitmap;
+               _image.source = bitmap
+               width = bitmap.width;
+               height = bitmap.height;
+               const playerHome: MiniSS = _model.playerHomeSS;
+               _viewport.moveContentTo(
+                  _coordsTransform.logicalToReal(new Point(playerHome.x,  playerHome.y)));
             }
          }
          f_modelChanged = false;

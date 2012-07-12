@@ -13,7 +13,8 @@ package tests.maps
    import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
-   
+   import mx.collections.ArrayList;
+
    import org.hamcrest.Matcher;
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
@@ -55,6 +56,7 @@ package tests.maps
       [Test]
       public function initialization() : void {
          galaxy = new Galaxy();
+         galaxy.setFOWEntries(new Vector.<MapArea>(), new ArrayList());
          client = new ClientMock();
          area = new VisibleGalaxyArea(
             galaxy, client, new GalaxyMapCoordsTransform(galaxy.fowMatrix));

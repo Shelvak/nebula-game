@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
                     xmlns:s="library://ns.adobe.com/flex/spark" 
-                    xmlns:mx="library://ns.adobe.com/flex/halo"
                     xmlns:base="components.base.*"
                     implements="components.map.controllers.IMapViewportController">
    <fx:Script>
@@ -9,21 +8,15 @@
          import components.base.viewport.Viewport;
          import components.base.viewport.ViewportZoomable;
          
-         import utils.locale.Localizer;
          import utils.assets.AssetNames;
-         
-         
-         private var _viewport:ViewportZoomable = null;
-         
-         
-         public function setViewport(viewport:Viewport) : void
-         {
-            _viewport = ViewportZoomable(viewport);
+
+
+         private var _viewport: ViewportZoomable = null;
+         public function set viewport(value: Viewport): void {
+            _viewport = ViewportZoomable(value);
          }
-         
-         
-         public function cleanup() : void
-         {
+
+         public function cleanup(): void {
             _viewport = null
          }
       ]]>

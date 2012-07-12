@@ -2,9 +2,10 @@ package models.galaxy
 {
    import components.map.space.galaxy.entiregalaxy.MiniSS;
 
+   import flash.events.EventDispatcher;
+
    import models.location.LocationMinimal;
    import models.location.LocationType;
-
    import models.map.MapArea;
 
    import mx.collections.ArrayList;
@@ -12,13 +13,17 @@ package models.galaxy
    import utils.Objects;
 
 
-   public class MEntireGalaxy
+   public class MEntireGalaxy extends EventDispatcher
    {
       private var _fowMatrix: FOWMatrix;
       private var _solarSystems: Array;
+      private var _playerHomeSS: MiniSS;
 
-      public function MEntireGalaxy(fowEntries: Vector.<MapArea>, solarSystems: Array) {
+      public function MEntireGalaxy(
+         fowEntries: Vector.<MapArea>, solarSystems: Array, playerHomeSS: MiniSS)
+      {
          Objects.paramNotNull("fowEntries", fowEntries);
+         _playerHomeSS = Objects.paramNotNull("playerHomeSS", playerHomeSS);
          _solarSystems = Objects.paramNotNull("solarSystems", solarSystems);
          const locations:Array = solarSystems.map(
             function (ss: MiniSS, index: int, array: Array): LocationMinimal {
@@ -33,6 +38,10 @@ package models.galaxy
 
       public function get solarSystems(): Array {
          return _solarSystems;
+      }
+
+      public function get playerHomeSS(): MiniSS {
+         return _playerHomeSS;
       }
    }
 }

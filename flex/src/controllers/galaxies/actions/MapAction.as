@@ -18,6 +18,8 @@ package controllers.galaxies.actions
    {
       override public function applyServerAction(cmd: CommunicationCommand): void {
          const params: Object = cmd.parameters;
+         const playerHomeSS: MiniSS =
+            new MiniSS(params[MiniSSType.PLAYER_HOME], MiniSSType.PLAYER_HOME);
          params[MiniSSType.PLAYER_HOME] = new Array(params[MiniSSType.PLAYER_HOME]);
 
          const solarSystems: Array = new Array();
@@ -30,7 +32,7 @@ package controllers.galaxies.actions
             });
 
          const screen: MEntireGalaxyScreen = MEntireGalaxyScreen.getInstance();
-         screen.model = new MEntireGalaxy(ML.latestGalaxy.fowEntries, solarSystems);
+         screen.model = new MEntireGalaxy(ML.latestGalaxy.fowEntries, solarSystems, playerHomeSS);
          screen.show();
       }
    }
