@@ -50,7 +50,7 @@ package controllers
       /**
        * Override this if your action needs to roll back your actions when a
        * request failed due to some error. If you do override this method,
-       * call <code>super.cancel()</code> if you wan't player to see default
+       * call <code>super.cancel()</code> if you want player to see default
        * message when such situation arises.
        * 
        * @see IResponder#cancel()
