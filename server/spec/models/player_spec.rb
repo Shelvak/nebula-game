@@ -1017,16 +1017,45 @@ describe Player do
   describe "#overpopulation_mod" do
     describe "normally populated" do
       it "should return 1" do
-        Factory.build(:player, :population => 10).overpopulation_mod.
-          should == 1
+        Factory.build(:player, population: 10, population_cap: 50).
+          overpopulation_mod.should == 1
       end
     end
-    
+
+    describe "pop = max" do
+      it "should return 1" do
+        Factory.build(:player, population: 50, population_cap: 50).
+          overpopulation_mod.should == 1
+      end
+    end
+
     describe "overpopulated" do
       it "should return ratio" do
-        Factory.build(:player, :population => 35, :population_cap => 10).
+        Factory.build(:player, population: 35, population_cap: 10).
           overpopulation_mod.should == (10.0 / 35)
       end
+
+      it "should return Player::OVERPOPULATION_MOD_MIN if max is 0" do
+        Factory.build(:player, population: 35, population_cap: 0).
+          overpopulation_mod.should == Player::OVERPOPULATION_MOD_MIN
+      end
+    end
+  end
+
+  describe "#overpopulated?" do
+    it "should return false if pop < cap" do
+      Factory.build(:player, population: 5, population_cap: 10).
+        should_not be_overpopulated
+    end
+
+    it "should return false if pop == cap" do
+      Factory.build(:player, population: 10, population_cap: 10).
+        should_not be_overpopulated
+    end
+
+    it "should return true if pop > cap" do
+      Factory.build(:player, population: 15, population_cap: 10).
+        should be_overpopulated
     end
   end
   
