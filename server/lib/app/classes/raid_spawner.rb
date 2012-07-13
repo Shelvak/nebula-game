@@ -90,13 +90,13 @@ private
     raid_arg = apocalypse? ? apocalypse_raid_arg : @planet.raid_arg
 
     params = {'arg' => raid_arg}
-    calc = lambda do |formula|
+    calc = lambda do |formula, round=true|
       begin
         value = CONFIG.safe_eval(formula, params)
         # If we went to complex numbers, that means we did something strange and
         # the result is bad.
         return 0 if value.is_a?(Complex)
-        [0, value.round].max
+        [0, round ? value.round : value].max
       rescue FloatDomainError; 0; end
     end
 
@@ -108,7 +108,8 @@ private
 
       from = calc[from_formula]
       to = calc[to_formula]
-      chance = [calc[chance_formula], 1.0].min
+      # Do NOT round chance, as it is in [0, 1] range.
+      chance = [calc[chance_formula, false], 1.0].min
 
       # Add the minimum.
       from.times do
