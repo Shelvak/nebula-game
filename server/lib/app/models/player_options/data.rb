@@ -43,14 +43,18 @@ class PlayerOptions::Data < OptionsHash
   # Should we show metadata icons on wormholes?
   property :show_wormhole_icons, :default => true, :valid => Boolean
 
+  # Time to show fault/success events.
+  property :action_event_time, :default => 10, :valid => lambda { |val|
+    (1..30).cover?(val)
+  }
+
+  # Time to show notification events.
+  property :notification_event_time, :default => 3, :valid => lambda { |val|
+    (1..30).cover?(val)
+  }
+
   # Should we show info events?
   property :show_info_events, :default => true, :valid => Boolean
-
-  # Time to show fault/success events
-  property :action_event_time, :default => 10, :valid => Integer
-
-  # Time to show notification events
-  property :notification_event_time, :default => 3, :valid => Integer
 
   TRANSPORTER_TAB_RESOURCES = 0
   TRANSPORTER_TAB_UNITS = 1
