@@ -78,6 +78,9 @@ class Player < ActiveRecord::Base
     :check_for_column => false
   )
 
+  # Minimal overpopulation mod. Needed when #population_max is 0.
+  OVERPOPULATION_MOD_MIN = 0.00001
+
   # Given +Array+ with +Player+ ids returns a +Hash+ where players are
   # grouped by alliance ids. Players who are not in alliance get negative
   # alliance ids, starting from -1.
@@ -329,13 +332,14 @@ class Player < ActiveRecord::Base
   # Returns value (0..1] for combat mods. If player is overpopulated this
   # value will be < 1, else it will be 1.0.
   def overpopulation_mod
-    overpopulated? ? population_max.to_f / population : 1.0
+    overpopulated? \
+      ? [population_max.to_f / population, OVERPOPULATION_MOD_MIN].max : 1.0
   end
 
   def population_free; population_max - population; end
 
   def overpopulated?
-    population >= population_max
+    population > population_max
   end
 
   # Check if alliance cooldown has expired for alliance with _alliance_id_ or

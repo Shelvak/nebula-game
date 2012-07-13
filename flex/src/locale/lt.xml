@@ -5780,9 +5780,11 @@
     <title.graphicsOptions value="Grafikos nustatymai"/>
     <label.save value="Išsaugoti" />
     <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
-    <label.showInfoEvents>
-      Rodyti informacinius pranešimus kairiame viršutiniame kampe
-    </label.showInfoEvents>
+    <label.eventsOptions
+      value="Pranešimų kairiajame viršutiniame kampe rodymas:"/>
+    <label.actionEventTime value="Įvykiams:"/>
+    <label.notificationEventTime value="Žinutėms:"/>
+    <label.showInfoEvents value="Informaciniai:"/>
     <label.defaultTransporterTab
       value="Skyrius, kurį atidaryti visų pirma, kraunant į transporterį ar iš jo:" />
     <label.transporterTabResources value="Resursai" />

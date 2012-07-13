@@ -3,7 +3,8 @@
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:screens="components.screens.*"
          xmlns:base="components.base.*"
-         width="100%" height="100%">
+         width="100%" height="100%"
+  creationComplete="creationCompleteHandler(event)">
    <fx:Library>
       <fx:Definition name="VerticalSectionLayout">
          <s:VerticalLayout horizontalAlign="justify" gap="10"
@@ -12,77 +13,83 @@
    </fx:Library>
    <fx:Script>
       <![CDATA[
-      import components.popups.ActionConfirmationPopUp;
+     import components.popups.ActionConfirmationPopUp;
 
-      import controllers.playeroptions.PlayerOptionsCommand;
-      import controllers.ui.NavigationController;
-
-
-      import models.player.PlayerOptions;
-
-      import mx.events.FlexEvent;
-
-      import utils.locale.Localizer;
+     import controllers.playeroptions.PlayerOptionsCommand;
+     import controllers.ui.NavigationController;
 
 
-      private var NC: NavigationController = NavigationController.getInstance();
+     import models.player.PlayerOptions;
 
-      private function getString(prop: String): String {
-         return Localizer.string('PlayerOptions', prop);
-      }
+     import mx.core.LayoutDirection;
 
-      private function saveClickHandler(e: MouseEvent): void {
-         new PlayerOptionsCommand(PlayerOptionsCommand.SET).dispatch();
-      }
+     import mx.events.FlexEvent;
 
-      private function inpIgnoredPlayer_enterHandler(event: FlexEvent): void {
-         if (inpIgnoredPlayer.text.length > 0
-            && PlayerOptions.ignoredPlayersDataProvider.getItemIndex(inpIgnoredPlayer.text) == -1)
-         {
-            addIgnored();
-         }
-      }
+     import utils.locale.Localizer;
 
-      private function addIgnored(): void {
-         PlayerOptions.addIgnoredPlayer(inpIgnoredPlayer.text);
-         inpIgnoredPlayer.text = ''
-      }
 
-      private function getPopupText(prop: String, params: Array = null): String {
-         return Localizer.string('Popups', prop, params);
-      }
+     private var NC: NavigationController = NavigationController.getInstance();
 
-      private function screenCloseButton1_clickHandler(event: MouseEvent): void {
-         if (!PlayerOptions.hasChanges) {
-            NC.showPreviousScreen();
-         }
-         else {
-            var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
-            popUp.confirmButtonLabel = getPopupText('label.yes');
-            popUp.cancelButtonLabel = getPopupText('label.no');
-            var lbl: Label = new Label();
-            lbl.minWidth = 300;
-            lbl.text = getPopupText('message.cancelPlayerOptions');
-            popUp.addElement(lbl);
-            popUp.title = getPopupText('title.cancelPlayerOptions');
-            popUp.confirmButtonClickHandler = function (button: Button = null): void {
-               PlayerOptions.cancelChanges();
-               NC.showPreviousScreen();
-            };
-            popUp.show();
-         }
-      }
+     private function getString(prop: String): String {
+       return Localizer.string('PlayerOptions', prop);
+     }
 
-      private function chkPlanetAnimations_clickHandler(event: MouseEvent): void {
-         PlayerOptions.enablePlanetAnimations = !PlayerOptions.enablePlanetAnimations;
-         PlayerOptions.changed();
-      }
+     private function saveClickHandler(e: MouseEvent): void {
+       new PlayerOptionsCommand(PlayerOptionsCommand.SET).dispatch();
+     }
 
-      private function chkWormholeIcons_clickHandler(event: MouseEvent): void {
-         PlayerOptions.showWormholeIcons = !PlayerOptions.showWormholeIcons;
-         PlayerOptions.changed();
-      }
-      ]]>
+     private function inpIgnoredPlayer_enterHandler(event: FlexEvent): void {
+       if (inpIgnoredPlayer.text.length > 0
+         && PlayerOptions.ignoredPlayersDataProvider.getItemIndex(inpIgnoredPlayer.text) == -1) {
+         addIgnored();
+       }
+     }
+
+     private function addIgnored(): void {
+       PlayerOptions.addIgnoredPlayer(inpIgnoredPlayer.text);
+       inpIgnoredPlayer.text = ''
+     }
+
+     private function getPopupText(prop: String, params: Array = null): String {
+       return Localizer.string('Popups', prop, params);
+     }
+
+     private function screenCloseButton1_clickHandler(event: MouseEvent): void {
+       if (!PlayerOptions.hasChanges) {
+         NC.showPreviousScreen();
+       }
+       else {
+         var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
+         popUp.confirmButtonLabel = getPopupText('label.yes');
+         popUp.cancelButtonLabel = getPopupText('label.no');
+         var lbl: Label = new Label();
+         lbl.minWidth = 300;
+         lbl.text = getPopupText('message.cancelPlayerOptions');
+         popUp.addElement(lbl);
+         popUp.title = getPopupText('title.cancelPlayerOptions');
+         popUp.confirmButtonClickHandler = function (button: Button = null): void {
+           PlayerOptions.cancelChanges();
+           NC.showPreviousScreen();
+         };
+         popUp.show();
+       }
+     }
+
+     private function chkPlanetAnimations_clickHandler(event: MouseEvent): void {
+       PlayerOptions.enablePlanetAnimations = !PlayerOptions.enablePlanetAnimations;
+       PlayerOptions.changed();
+     }
+
+     private function chkWormholeIcons_clickHandler(event: MouseEvent): void {
+       PlayerOptions.showWormholeIcons = !PlayerOptions.showWormholeIcons;
+       PlayerOptions.changed();
+     }
+
+     private function creationCompleteHandler(event: FlexEvent): void {
+       actionEventsTime.textDisplay.editable = false;
+       notificationEventsTime.textDisplay.editable = false;
+     }
+     ]]>
    </fx:Script>
    <fx:Declarations>
      <s:RadioButtonGroup id="ignoreType" selectedValue="{PlayerOptions.chatIgnoreType}"
@@ -112,12 +119,48 @@
                               selected="{PlayerOptions.warnBeforeUnload}"
                               click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
                               PlayerOptions.changed()"/>
-                 <s:CheckBox id="showInfoEvents"
-                             label="{getString('label.showInfoEvents')}"
-                             selected="{PlayerOptions.showInfoEvents}"
-                             click="PlayerOptions.showInfoEvents = !PlayerOptions.showInfoEvents;
-                             PlayerOptions.changed()"/>
+                  <s:Label text="{getString('label.eventsOptions')}"/>
+                  <s:Group>
+                     <s:layout>
+                       <s:HorizontalLayout verticalAlign="middle" paddingLeft="15"/>
+                     </s:layout>
+                     <s:Label text="{getString('label.actionEventTime')}"/>
+                     <s:NumericStepper id="actionEventsTime"
+                                    value="{PlayerOptions.actionEventTime}"
+                                    change="
+                                      PlayerOptions.actionEventTime = actionEventsTime.value;
+                                      PlayerOptions.changed()
+                                    "
+                                    minimum="{PlayerOptions.MIN_EVENT_SHOW_TIME}"
+                                    focusEnabled="false" snapInterval="1"
 
+                                    maximum="{PlayerOptions.MAX_EVENT_SHOW_TIME}"
+                                    width="50" textAlign="right"/>
+                     <s:Label text="{Localizer.string('General', 'second.short')}"
+                              paddingRight="10"/>
+
+
+                     <s:Label text="{getString('label.notificationEventTime')}"/>
+                     <s:NumericStepper id="notificationEventsTime"
+                                   value="{PlayerOptions.notificationEventTime}"
+                                   change="
+                                     PlayerOptions.notificationEventTime = notificationEventsTime.value;
+                                     PlayerOptions.changed()
+                                   "
+                                   minimum="{PlayerOptions.MIN_EVENT_SHOW_TIME}"
+                                   focusEnabled="false" snapInterval="1"
+                                   maximum="{PlayerOptions.MAX_EVENT_SHOW_TIME}"
+                                   width="50" textAlign="right"/>
+                     <s:Label text="{Localizer.string('General', 'second.short')}"
+                              paddingRight="10"/>
+
+                     <s:CheckBox id="showInfoEvents"
+                                label="{getString('label.showInfoEvents')}"
+                                selected="{PlayerOptions.showInfoEvents}"
+                                click="PlayerOptions.showInfoEvents = !PlayerOptions.showInfoEvents;
+                                PlayerOptions.changed()"
+                                layoutDirection="{LayoutDirection.RTL}"/>
+                  </s:Group>
                   <s:Label text="{getString('label.defaultTransporterTab')}" paddingTop="6"/>
                   <s:Group>
                     <s:RadioButton id="transporterResources" group="{defaultTransporterTab}"

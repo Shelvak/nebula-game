@@ -5692,9 +5692,10 @@
     <title.graphicsOptions value="Graphics options"/>
     <label.save value="Save" />
     <label.warnBeforeUnload value="Warn before closing game" />
-    <label.showInfoEvents>
-      Show info events in upper right corner
-    </label.showInfoEvents>
+    <label.eventsOptions value="Show top-left notification bubbles:"/>
+    <label.notificationEventTime value="Notification:"/>
+    <label.actionEventTime value="Event:"/>
+    <label.showInfoEvents value="Info:"/>
     <label.defaultTransporterTab
       value="Tab to show first while loading or unloading transporter:" />
     <label.transporterTabResources value="Resources" />
