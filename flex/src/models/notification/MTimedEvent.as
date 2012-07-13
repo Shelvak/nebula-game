@@ -9,18 +9,18 @@ package models.notification {
    import flash.display.BitmapData;
    import flash.events.MouseEvent;
 
+   import models.player.PlayerOptions;
+
    import utils.assets.AssetNames;
 
    public class MTimedEvent extends MEvent {
-
-      private static const DURATION: int = 10000;
 
       public var notif: Notification;
 
       private var defaultClickHandler: Function;
 
       public function MTimedEvent(_message: String, _clickHandler: Function = null) {
-         super(_message, DURATION);
+         super(_message, PlayerOptions.actionEventTime * 1000);
          defaultClickHandler = _clickHandler;
       }
 
