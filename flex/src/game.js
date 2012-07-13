@@ -226,6 +226,12 @@ function missingParam(name) {
   window.alert("Missing query parameter: " + name);
 }
 
+// Is google analytics enabled?
+function gaEnabled() {
+  return ! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId) &&
+    ! defined(planetMapEditor);
+}
+
 // Returns game options for the Flash Client.
 //
 // If it returns null, client should stop initialization.
@@ -379,7 +385,8 @@ function versionTooOld(requiredVersion, currentVersion) {
 
 // Called when player successfully logs in into server.
 function loginSuccessful() {
-  _gaq.push(['_trackPageview', '/play/' + playerType+ '/game/login']);
+  if (gaEnabled())
+    _gaq.push(['_trackPageview', '/play/' + playerType+ '/game/login']);
 }
 
 // Ensure player does not close the game accidentally.
@@ -404,10 +411,7 @@ function getCombatLogUrl(combatLogId, playerId) { // {{{
 
 // Setup google analytics {{{
 var _gaq = _gaq || [];
-if (
-    ! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId) &&
-    ! defined(planetMapEditor)
-  ) {
+if (gaEnabled()) {
   _gaq.push(
     ['_setAccount', gaAccountId],
     ['_trackPageview', '/play/' + playerType + '/game/opened']
