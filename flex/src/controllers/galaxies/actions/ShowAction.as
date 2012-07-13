@@ -27,14 +27,11 @@ package controllers.galaxies.actions
    import models.player.PlayerOptions;
    import models.quest.MMainQuestLine;
    import models.solarsystem.MSSObject;
-   import models.solarsystem.MSSObject;
-   import models.solarsystem.MSolarSystem;
    import models.solarsystem.MSolarSystem;
    import models.time.MTimeEventFixedMoment;
 
    import mx.collections.ArrayCollection;
    import mx.collections.IList;
-   import mx.collections.ListCollectionView;
 
    import utils.Objects;
    import utils.datastructures.Collections;
@@ -76,6 +73,7 @@ package controllers.galaxies.actions
          super();
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
       }
+
 
       private var _restoreView: Boolean = false;
       private var _restorePlanet: int = 0;

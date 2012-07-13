@@ -2,6 +2,7 @@ package controllers.solarsystems.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.solarsystems.SolarSystemsCommand;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
 
@@ -59,10 +60,6 @@ package controllers.solarsystems.actions
          return NavigationController.getInstance();
       }
       
-      public function ShowAction()
-      {
-         super();
-      }
 
       // Should applyServerAction() create only the map or also switch screen?
       private var f_createMapOnly:Boolean = false;
@@ -74,7 +71,9 @@ package controllers.solarsystems.actions
       override public function applyClientAction(cmd:CommunicationCommand) : void {
          var params:ShowActionParams = ShowActionParams(cmd.parameters);
          f_createMapOnly = params.createMapOnly;
-         sendMessage(new ClientRMO({"id": params.solarSystemId}));
+         sendMessage(new ClientRMO(
+            {"id": params.solarSystemId},
+            null, null, SolarSystemsCommand.SHOW));
       }
 
       override public function applyServerAction(cmd: CommunicationCommand): void {

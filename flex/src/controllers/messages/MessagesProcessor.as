@@ -3,6 +3,8 @@ package controllers.messages
    import controllers.CommunicationCommand;
    import controllers.startup.StartupInfo;
 
+   import utils.Objects;
+
    import utils.SingletonFactory;
    import utils.execution.GameLogicExecutionManager;
    import utils.logging.MessagesLogger;
@@ -37,7 +39,6 @@ package controllers.messages
 
       private var _bufferOutOfOrder: Vector.<ServerRMO>;
       private var _bufferInOrder: RMOSequence;
-      private var _nextSequenceNumber: int;
 
       public function MessagesProcessor() {
          reset();
@@ -46,7 +47,28 @@ package controllers.messages
       public function reset(): void {
          _bufferOutOfOrder = new Vector.<ServerRMO>();
          _bufferInOrder = new RMOSequence();
+
+         _skipSequenceNumbers = new SequenceNumbersToSkip();
          _nextSequenceNumber = 0;
+
+         clearWaitForAction();
+      }
+
+      private var _skipSequenceNumbers: SequenceNumbersToSkip;
+      private var _nextSequenceNumber: int;
+      private function get shouldSkipNextSequenceNumber(): Boolean {
+         return _skipSequenceNumbers.has(_nextSequenceNumber);
+      }
+
+      private var _waitForAction: String;
+      private function get waitingForAction(): Boolean {
+         return _waitForAction != null;
+      }
+      private function clearWaitForAction(): void {
+         _waitForAction = null;
+      }
+      private function setWaitForAction(value: String): void {
+         _waitForAction = Objects.paramNotEmpty("value", value);
       }
 
       /**
@@ -60,42 +82,55 @@ package controllers.messages
          const messages: Vector.<ServerRMO> = serverProxy.getUnprocessedMessages();
          if (messages != null) {
             for each (var rmo: ServerRMO in messages) {
-               if (rmo.inSequence) {
-                  _bufferInOrder.insert(rmo);
+               if (waitingForAction && _waitForAction == rmo.action) {
+                  _skipSequenceNumbers.put(rmo.sequenceNumber);
+                  clearWaitForAction();
+                  processMessage(rmo);
                }
                else {
-                  _bufferOutOfOrder.push(rmo);
+                  if (rmo.inSequence) {
+                     _bufferInOrder.insert(rmo);
+                  }
+                  else {
+                     _bufferOutOfOrder.push(rmo);
+                  }
                }
             }
          }
-         processBuffers(count);
+         if (!waitingForAction) {
+            processBuffers(count);
+         }
       }
 
       private function get canProcessInOrder(): Boolean {
-         return _bufferInOrder.hasItems
-                   && _bufferInOrder.firstNumber == _nextSequenceNumber;
+         return _bufferInOrder.hasItems && _bufferInOrder.firstNumber == _nextSequenceNumber;
       }
       
       private function get canProcessOutOfOrder(): Boolean {
-         return _bufferOutOfOrder.length > 0
-                   && StartupInfo.getInstance().initializationComplete;
+         return _bufferOutOfOrder.length > 0 && StartupInfo.getInstance().initializationComplete;
       }
 
       private function processBuffers(count: uint): void {
          const executionManager: GameLogicExecutionManager
-                           = GameLogicExecutionManager.getInstance();
+            = GameLogicExecutionManager.getInstance();
          var processed: uint = 0;
          while (executionManager.executionEnabled
-                   && (canProcessInOrder || canProcessOutOfOrder)
+                   && (canProcessInOrder || canProcessOutOfOrder || shouldSkipNextSequenceNumber)
                    && (count == 0 || processed < count)) {
-            if (canProcessInOrder) {
+            if (shouldSkipNextSequenceNumber) {
+               _skipSequenceNumbers.remove(_nextSequenceNumber);
                _nextSequenceNumber++;
-               processMessage(_bufferInOrder.removeFirst());
             }
             else {
-               processMessage(_bufferOutOfOrder.shift());
+               if (canProcessInOrder) {
+                  _nextSequenceNumber++;
+                  processMessage(_bufferInOrder.removeFirst());
+               }
+               else {
+                  processMessage(_bufferOutOfOrder.shift());
+               }
+               processed++;
             }
-            processed++;
          }
       }
 
@@ -120,6 +155,10 @@ package controllers.messages
        * Sends a message to the server via <code>IServerProxy</code>.
        */
       public function sendMessage(rmo: ClientRMO): void {
+         const waitFor: String = rmo.waitForAction;
+         if (waitFor != null) {
+            setWaitForAction(waitFor);
+         }
          respMsgTracker.addRMO(rmo);
          serverProxy.sendMessage(rmo);
       }
@@ -155,5 +194,23 @@ class RMOSequence
 
    public function get firstNumber(): int {
       return _list[0].sequenceNumber;
+   }
+}
+
+
+class SequenceNumbersToSkip
+{
+   private const _numbers: Object = new Object();
+
+   public function put(seqNum: int): void {
+      _numbers[seqNum] = true;
+   }
+
+   public function has(seqNum: int): Boolean {
+      return _numbers[seqNum] === true;
+   }
+
+   public function remove(seqNum: int): void {
+      delete _numbers[seqNum];
    }
 }

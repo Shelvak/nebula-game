@@ -18,7 +18,7 @@ package controllers.units.actions
     * Client <<-- Server:</br>
     * <ul>
     *    <li><code>route</code> - route data as described above</li>
-    *    <li><code>unitIds</code> - ids of units that are beeing moved</li>
+    *    <li><code>unitIds</code> - ids of units that are being moved</li>
     *    <li><code>routeHops</code> - route hops in units current location</li>
     * </ul>
     * </p>
