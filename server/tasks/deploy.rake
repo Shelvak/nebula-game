@@ -4,7 +4,7 @@ PROJECT_ROOT = File.expand_path(
   File.join(File.dirname(__FILE__), '..', '..'))
 CLIENT_TARGET = File.join(PROJECT_ROOT, 'flex', 'target', 'dist')
 
-STABLE_BRANCH = "stable2"
+STABLE_BRANCH = "master"
 STABLE_LT_SERVERS = ["nexar.nebula44.lt", "worg.nebula44.lt"]
 STABLE_COM_SERVERS = ["spudder.nebula44.com"]
 
