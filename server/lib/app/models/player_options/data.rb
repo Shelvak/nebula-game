@@ -46,6 +46,12 @@ class PlayerOptions::Data < OptionsHash
   # Should we show info events?
   property :show_info_events, :default => true, :valid => Boolean
 
+  # Time to show fault/success events
+  property :action_event_time, :default => 10, :valid => Integer
+
+  # Time to show notification events
+  property :notification_event_time, :default => 3, :valid => Integer
+
   TRANSPORTER_TAB_RESOURCES = 0
   TRANSPORTER_TAB_UNITS = 1
 
