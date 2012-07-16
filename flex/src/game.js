@@ -572,8 +572,21 @@ function onNoteSubmit() {
   return false;
 }
 
+// Setup one.lt top bar shown
+function setupOneLtBar() {
+  $("body").prepend("<div id='eads_menu_1'></div>");
+  var eads = document.createElement('script');
+  eads.type = 'text/javascript';
+  eads.async = true;
+  eads.src = 'http://ib.eads.lt/public/menu/get/?id=1';
+  $("body").append(eads);
+}
+
 // Load our swf {{{
 $(document).ready(function() {
+  // One.lt top banner.
+  if (urlParams["one_lt"] == "true") setupOneLtBar();
+
   var flashvars = {};
   var params = {};
   params.quality = "high";
