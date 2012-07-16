@@ -582,7 +582,6 @@ assets:
         all_resources_large.png:         Autoload_all_res.png
         heading_line.png:                Line.png
         heading_line_end.png:            Line_end.png
-        apocalypse.png:                  Endofdays0.png
         gradient_line_left.png:          Line_res_transporter_left.png
         gradient_line_center.png:        Line_res_transporter_center.png
         gradient_line_right.png:         Line_res_transporter_right.png
@@ -816,6 +815,11 @@ assets:
         button_up.png:  Dailybonus_up.png
         button_over.png:  Dailybonus_over.png
         button_blink.png:  Dailybonus_up2.png
+
+      "apocalypse":
+        button_up.png:  Apocalypse_up.png
+        button_over.png:  Apocalypse_over.png
+        button_blink.png:  Apocalypse_up2.png
 
       "registration":
         register_icon.png: Register_icon.png

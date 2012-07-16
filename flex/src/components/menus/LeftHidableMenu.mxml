@@ -8,11 +8,13 @@
          visible="{ML.quests.currentTotal > 0
          || ML.player.dailyBonus != null
          || MQL.showButton
-         || announcementButton.visible}">
+         || announcementButton.visible
+         || (ML.latestGalaxy != null &amp;&amp; ML.latestGalaxy.apocalypseActive)}">
    <fx:Script>
       <![CDATA[
       import components.dailybonus.DailyBonusComp;
       import components.dailybonus.DailyBonusEvent;
+      import components.galaxy.ApocalypseToolTip;
       import components.popups.ActionConfirmationPopUp;
 
       import controllers.dailybonus.DailyBonusCommand;
@@ -21,6 +23,10 @@
       import models.ModelLocator;
       import models.quest.MMainQuestLine;
       import models.solarsystem.MSSObject;
+
+      import mx.events.ToolTipEvent;
+
+      import utils.UrlNavigate;
 
       import utils.locale.Localizer;
 
@@ -81,6 +87,10 @@
             NavigationController.getInstance().showQuests();
          }
       }
+
+      private function apocalypse_toolTipCreateHandler(event: ToolTipEvent): void {
+         event.toolTip = new ApocalypseToolTip();
+      }
       ]]>
    </fx:Script>
    <s:states>
@@ -126,6 +136,14 @@
       <base:layout>
          <s:VerticalLayout gap="10" horizontalAlign="left"/>
       </base:layout>
+      <s:Button
+         skinClass="components.skins.ApocalypseButtonSkin"
+         toolTipCreate="apocalypse_toolTipCreateHandler(event)"
+         toolTip="This is needed for tooltip create to work"
+         click="UrlNavigate.getInstance().openApocalypseInfo()"
+         visible="{ML.latestGalaxy != null
+         &amp;&amp; ML.latestGalaxy.apocalypseActive}"/>
+
       <registerrequired:RegisterButton/>
       <s:Button
          skinClass="components.skins.DailyBonusButtonSkin"

@@ -5,7 +5,6 @@ system and planet.
 -->
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
                     xmlns:s="library://ns.adobe.com/flex/spark"
-                    xmlns:galaxy="components.galaxy.*"
                     xmlns:mnu="components.menus.*"
                     xmlns:base="components.base.*"
                     xmlns:notifications="components.notifications.*"
@@ -34,7 +33,6 @@ system and planet.
                                  visible="{ML.latestPlanet != null}"
                                  imageData="{ML.latestPlanet.ssObject.imageData}"
                                  label="{ML.latestPlanet.ssObject.name}"/>
-            <galaxy:ApocalypseIcon/>
          </base:AdvancedContainer>
       </s:Group>
       
