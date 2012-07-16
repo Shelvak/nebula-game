@@ -587,11 +587,6 @@ function onNoteSubmit() {
   return false;
 }
 
-// Show lightbox with trial registration form.
-function openTrialRegistration() {
-  // TODO: implement.
-}
-
 // Setup one.lt top bar shown
 function setupOneLtBar() {
   $("body").prepend("<div id='eads_menu_1' style='height: 40px'></div>");
@@ -605,6 +600,20 @@ function setupOneLtBar() {
     "right: 0px;' />"
   );
 }
+
+function openTrialRegistration() {
+  $("#trial_register").load("http://n44.lh", function() {
+      var container = $(this);
+      container.dialog({
+          modal: true
+      })
+      .find("form").submit(function() {
+          container.dialog("close");
+          return false;
+      });
+  });
+}
+
 
 // Load our swf {{{
 $(document).ready(function() {
