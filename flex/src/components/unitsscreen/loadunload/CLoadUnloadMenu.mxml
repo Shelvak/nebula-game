@@ -2,7 +2,6 @@
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
                     xmlns:s="library://ns.adobe.com/flex/spark"
                     xmlns:base="components.base.*"
-                    xmlns:unitsscreen="components.unitsscreen.*"
                     xmlns:screens="components.screens.*"
                     width="100%" height="100%">
    <fx:Script>
@@ -22,29 +21,31 @@
          private var AL: MCAutoLoad = MCAutoLoad.getInstance();
       ]]>
    </fx:Script>
-   <base:layout>
-      <s:VerticalLayout gap="0" horizontalAlign="center"/>
-   </base:layout>
-   <s:Group>
+   <s:Group left="0" right="0" top="0" bottom="0">
      <s:layout>
-       <s:HorizontalLayout horizontalAlign="center"/>
+        <s:VerticalLayout gap="0" horizontalAlign="center"/>
      </s:layout>
-     <s:Button label="{getString('tab.load')}"/>
-     <s:Button label="{getString('tab.unload')}"/>
-   </s:Group>
-   <base:Panel skinClass="components.skins.LargePanelSkin"
-     title="{getString('label.autoLoad')}">
-     <base:layout>
-       <s:VerticalLayout horizontalAlign="justify"/>
-     </base:layout>
-     <s:Label paddingBottom="6" text="{getString('label.clickToTransfer')}"/>
-     <s:DataGroup dataProvider="{AL.loadables}" width="100%"
-                  itemRenderer="components.unitsscreen.loadunload.CLoadUnloadPriority">
+     <s:Group>
        <s:layout>
-         <s:TileLayout/>
+         <s:HorizontalLayout horizontalAlign="center"/>
        </s:layout>
-     </s:DataGroup>
-   </base:Panel>
+       <s:Button label="{getString('tab.load')}"/>
+       <s:Button label="{getString('tab.unload')}"/>
+     </s:Group>
+     <base:Panel skinClass="components.skins.LargePanelSkin"
+       title="{getString('label.autoLoad')}">
+       <base:layout>
+         <s:VerticalLayout horizontalAlign="justify"/>
+       </base:layout>
+       <s:Label paddingBottom="6" text="{getString('label.clickToTransfer')}"/>
+       <s:DataGroup dataProvider="{AL.loadables}" width="100%"
+                    itemRenderer="components.unitsscreen.loadunload.CLoadUnloadPriority">
+         <s:layout>
+           <s:TileLayout/>
+         </s:layout>
+       </s:DataGroup>
+     </base:Panel>
+   </s:Group>
    <screens:ScreenCloseButton right="0" bottom="0"
                               click="NavigationController.getInstance().showPreviousScreen()"
                               label="{getString('label.close')}"/>

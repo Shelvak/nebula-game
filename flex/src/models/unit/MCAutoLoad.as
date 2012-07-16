@@ -6,6 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 package models.unit {
+   import config.Config;
+
    import flash.events.EventDispatcher;
 
    import models.ModelLocator;
@@ -23,6 +25,7 @@ package models.unit {
 
    import utils.ModelUtil;
    import utils.SingletonFactory;
+   import utils.datastructures.Collections;
 
    public class MCAutoLoad extends EventDispatcher implements ILocationUser{
       public function MCAutoLoad() {
@@ -119,6 +122,25 @@ package models.unit {
             //TODO: Unloading everything to space sector
          }
          loadables = temp;
+      }
+
+      public function loadUnits(type: String): void
+      {
+         var units: ListCollectionView = ML.latestPlanet.getActiveUnits(
+            Owner.PLAYER, UnitKind.GROUND);
+         var typeUnits: ListCollectionView = Collections.filter(units,
+            function(unit: Unit): Boolean
+            {
+               return unit.type == type;
+            }
+         );
+         var unitVolume: int = Config.getUnitVolume(type);
+         var totalVolume: int = unitVolume * typeUnits.length;
+         var allTransportersTried: Boolean = false;
+         while (totalVolume > 0 && !allTransportersTried)
+         {
+
+         }
       }
 
    }

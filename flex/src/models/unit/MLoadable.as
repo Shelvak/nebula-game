@@ -21,6 +21,11 @@ package models.unit {
          return count.toString();
       }
 
+      protected function get AL(): MCAutoLoad
+      {
+         return MCAutoLoad.getInstance();
+      }
+
       public function clickHandler(e: MouseEvent): void
       {
          throw new Error("This method is abstract!");

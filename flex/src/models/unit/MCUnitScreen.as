@@ -557,11 +557,12 @@ package models.unit
             return cachedTransporters;
          }
          var _selection: Array = [];
-         for each (var unit: MCUnit in selection)
+
+         for each (var unit: Unit in selection)
          {
-            if (ML.technologies.getUnitStorage(unit.unit.type, unit.unit.level) > 0)
+            if (ML.technologies.getUnitStorage(unit.type, unit.level) > 0)
             {
-               _selection.push(unit.unit);
+               _selection.push(unit);
             }
          }
          cachedTransporters = new ArrayCollection(_selection);

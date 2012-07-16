@@ -6,7 +6,10 @@
  * To change this template use File | Settings | File Templates.
  */
 package models.unit {
+   import config.Config;
+
    import flash.display.BitmapData;
+   import flash.events.MouseEvent;
 
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
@@ -16,6 +19,10 @@ package models.unit {
          super();
          count = _count;
          type = _type;
+      }
+
+      public override function clickHandler(e: MouseEvent): void {
+         AL.loadUnits(type);
       }
 
       private var type: String;
