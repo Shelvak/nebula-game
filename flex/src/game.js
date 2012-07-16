@@ -574,12 +574,16 @@ function onNoteSubmit() {
 
 // Setup one.lt top bar shown
 function setupOneLtBar() {
-  $("body").prepend("<div id='eads_menu_1'></div>");
+  $("body").prepend("<div id='eads_menu_1' style='height: 40px'></div>");
   var eads = document.createElement('script');
   eads.type = 'text/javascript';
   eads.async = true;
   eads.src = 'http://ib.eads.lt/public/menu/get/?id=1';
   $("body").append(eads);
+  $("#flashContent").wrap(
+    "<div style='position: absolute; top: 40px; bottom: 0px; left: 0px; " +
+    "right: 0px;' />"
+  );
 }
 
 // Load our swf {{{
