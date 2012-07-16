@@ -587,6 +587,10 @@ function onNoteSubmit() {
   return false;
 }
 
+function isOneLt() {
+  return urlParams["one_lt"] == "true";
+}
+
 // Setup one.lt top bar shown
 function setupOneLtBar() {
   $("body").prepend("<div id='eads_menu_1' style='height: 40px'></div>");
@@ -600,9 +604,12 @@ function setupOneLtBar() {
     "right: 0px;' />"
   );
 }
+function hideOneLtBar() { $("#eads_menu_1").hide(); }
+function showOneLtBar() { $("#eads_menu_1").show(); }
 
 // Called by client to open trial registration form.
 function openTrialRegistration() {
+  if (isOneLt()) hideOneLtBar();
   $("#trial_register iframe").
     attr("src", 'http://' + webHost + '/trial/register');
   $("#trial_register img").attr("src", assetsUrl + "images/close_button.png");
@@ -614,12 +621,13 @@ function openTrialRegistration() {
 function closeTrialRegistration() {
   $("#trial_register").hide();
   $("#trial_register iframe").attr("src", '');
+  if (isOneLt()) showOneLtBar();
 }
 
 // Load our swf {{{
 $(document).ready(function() {
   // One.lt top banner.
-  if (urlParams["one_lt"] == "true") setupOneLtBar();
+  if (isOneLt()) setupOneLtBar();
 
   var flashvars = {};
   var params = {};
