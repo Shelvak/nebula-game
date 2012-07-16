@@ -8,6 +8,8 @@
 package models.unit {
    import config.Config;
 
+   import controllers.units.UnitsCommand;
+
    import flash.events.EventDispatcher;
 
    import models.ModelLocator;
@@ -124,6 +126,14 @@ package models.unit {
          loadables = temp;
       }
 
+      public function unloadUnits(type: String): void
+      {
+         for each (var transporter: Unit in transporters)
+         {
+            
+         }
+      }
+
       public function loadUnits(type: String): void
       {
          var units: ListCollectionView = ML.latestPlanet.getActiveUnits(
@@ -136,10 +146,31 @@ package models.unit {
          );
          var unitVolume: int = Config.getUnitVolume(type);
          var totalVolume: int = unitVolume * typeUnits.length;
-         var allTransportersTried: Boolean = false;
-         while (totalVolume > 0 && !allTransportersTried)
+         var currentIndex: int = 0;
+         var currentLoadable: int = 0;
+         while (totalVolume > 0 && currentIndex < transporters.length)
          {
-
+            var transporter: Unit = Unit(transporters.getItemAt(currentIndex));
+            var freeSpace: int = ML.technologies.getUnitStorage(transporter.type,
+               transporter.level) - transporter.stored;
+            var unitsToLoad: Array = [];
+            while (freeSpace >= unitVolume && totalVolume > 0)
+            {
+               var lUnit: Unit = Unit(typeUnits.getItemAt(currentLoadable));
+               unitsToLoad.push(lUnit.id);
+               currentLoadable++;
+               freeSpace -= unitVolume;
+               totalVolume -= unitVolume;
+            }
+            if (unitsToLoad.length > 0)
+            {
+               new UnitsCommand(UnitsCommand.LOAD,
+                  {
+                     transporterId: transporter.id,
+                     unitIds: unitsToLoad
+                  }).dispatch();
+            }
+            currentIndex++;
          }
       }
 
