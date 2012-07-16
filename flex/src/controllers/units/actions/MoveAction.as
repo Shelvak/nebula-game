@@ -21,20 +21,13 @@ package controllers.units.actions
     */
    public class MoveAction extends CommunicationAction
    {
-      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
+      private const ORDERS_CTRL: OrdersController = OrdersController.getInstance();
       
-      
-      public function MoveAction()
-      {
-         super();
-      }
-      
-      
-      public override function applyClientAction(cmd:CommunicationCommand) : void
-      {
-         var params:MoveActionParams = MoveActionParams(cmd.parameters);
-         var locSource:LocationMinimal = params.sourceLocation;
-         var locTarget:LocationMinimal = params.targetLocation;
+
+      public override function applyClientAction(cmd: CommunicationCommand): void {
+         const params: MoveActionParams = MoveActionParams(cmd.parameters);
+         const locSource: LocationMinimal = params.sourceLocation;
+         const locTarget: LocationMinimal = params.targetLocation;
          
          sendMessage(new ClientRMO({
             "unitIds": params.unitIds,
@@ -50,10 +43,8 @@ package controllers.units.actions
             "speedModifier": params.speedModifier
          }, params.squadron));
       }
-      
-      
-      public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void
-      {
+
+      public override function cancel(rmo: ClientRMO, srmo: ServerRMO): void {
          super.cancel(rmo, srmo);
          ORDERS_CTRL.cancelOrder();
       }

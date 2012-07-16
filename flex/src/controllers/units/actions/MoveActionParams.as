@@ -27,28 +27,24 @@ package controllers.units.actions
        * @see #speedModifier
        * @see #squadron
        */
-      public function MoveActionParams(unitIds:Array,
-                                       sourceLocation:LocationMinimal,
-                                       targetLocation:LocationMinimal,
-                                       avoidNpc:Boolean,
-                                       speedModifier:Number,
-                                       squadron:MSquadron)
+      public function MoveActionParams(
+         unitIds: Array, sourceLocation: LocationMinimal, targetLocation: LocationMinimal,
+         avoidNpc: Boolean, speedModifier: Number, squadron: MSquadron)
       {
          super(unitIds, sourceLocation, targetLocation, avoidNpc);
          this.speedModifier = speedModifier;
+         this.squadron = squadron;
       }
-      
-      
+
       /**
        * If this is less than 1, units will move faster than default speed and player will have to
        * pay for this with credits. <b>Required.</b>
        */
-      public var speedModifier:Number;
-      
-      
+      public var speedModifier: Number;
+
       /**
-       * Squadron that units with give IDs are. <b>Optional.</b> 
+       * Squadron that units with give IDs are. <b>Optional.</b>
        */
-      public var squadron:MSquadron;
+      public var squadron: MSquadron;
    }
 }

@@ -31,21 +31,13 @@ package controllers.units.actions
     */
    public class MoveMetaAction extends CommunicationAction
    {
-      private function get ORDERS_CTRL() : OrdersController
-      {
-         return OrdersController.getInstance();
-      }
+      private const ORDERS_CTRL: OrdersController = OrdersController.getInstance();
 
-      public function MoveMetaAction()
-      {
-         super();
-      }
-      
-      public override function applyClientAction(cmd:CommunicationCommand) : void
-      {
-         var params:MoveMetaActionParams = MoveMetaActionParams(cmd.parameters);
-         var locSource:LocationMinimal = params.sourceLocation;
-         var locTarget:LocationMinimal = params.targetLocation;
+
+      public override function applyClientAction(cmd: CommunicationCommand): void {
+         const params: MoveMetaActionParams = MoveMetaActionParams(cmd.parameters);
+         const locSource: LocationMinimal = params.sourceLocation;
+         const locTarget: LocationMinimal = params.targetLocation;
          
          sendMessage(new ClientRMO({
             "unitIds": params.unitIds,
@@ -60,21 +52,17 @@ package controllers.units.actions
             "avoidNpc": params.avoidNpc
          }));
       }
-      
-      
-      public override function applyServerAction(cmd:CommunicationCommand) : void
-      {
+
+      public override function applyServerAction(cmd: CommunicationCommand): void {
          ORDERS_CTRL.showSpeedUpPopup(
-            DateUtil.parseServerDTF(cmd.parameters.arrivalDate).time,
-            cmd.parameters.hopCount
+            DateUtil.parseServerDTF(cmd.parameters["arrivalDate"]).time,
+            cmd.parameters["hopCount"]
          );
       }
-      
-      
-      public override function cancel(rmo:ClientRMO, srmo: ServerRMO) : void
-      {
-         ORDERS_CTRL.cancelOrder();
+
+      public override function cancel(rmo: ClientRMO, srmo: ServerRMO): void {
          super.cancel(rmo, srmo);
+         ORDERS_CTRL.cancelOrder();
       }
    }
 }

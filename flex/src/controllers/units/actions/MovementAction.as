@@ -38,25 +38,19 @@ package controllers.units.actions
    public class MovementAction extends CommunicationAction
    {
       private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
-      
-      
-      public function MovementAction() {
-         super();
-      }
-      
-      
-      public override function applyServerAction(cmd:CommunicationCommand) : void
-      {
+
+
+      public override function applyServerAction(cmd: CommunicationCommand): void {
          if (!StartupInfo.getInstance().initializationComplete) {
             Log.getMethodLogger(this, "applyServerAction")
                .warn("Message received before application had been initialized. Ignoring.");
             return;
          }
-         var params:Object = cmd.parameters;
-         var units:Array = params["units"];
-         var players:Object = params["players"];
-         var routeHops:Array = params["routeHops"];
-         var jumpsAt:String = params["jumpsAt"];
+         const params: Object = cmd.parameters;
+         const units: Array = params["units"];
+         const players: Object = params["players"];
+         const routeHops: Array = params["routeHops"];
+         const jumpsAt: String = params["jumpsAt"];
          // we have received next hop for hostile squad
          if (units.length == 0) {
             SQUADS_CTRL.addHopToSquadron(Objects.create(MHop, routeHops[0]));

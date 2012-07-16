@@ -57,10 +57,10 @@ package controllers.units
       private static const MOVE_EFFECT_DURATION: int = // milliseconds
                               components.map.space.SquadronsController
                                  .MOVE_EFFECT_DURATION;
-      private var ML: ModelLocator = ModelLocator.getInstance();
-      private var SQUADS: SquadronsList = ML.squadrons;
-      private var ROUTES: ModelsCollection = ML.routes;
-      private var UNITS: ModelsCollection = ML.units;
+      private const ML: ModelLocator = ModelLocator.getInstance();
+      private const SQUADS: SquadronsList = ML.squadrons;
+      private const ROUTES: ModelsCollection = ML.routes;
+      private const UNITS: ModelsCollection = ML.units;
 
       private const loggerFactory: IMethodLoggerFactory = Log.getMethodLoggerFactory("MOVEMENT");
       
