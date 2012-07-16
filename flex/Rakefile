@@ -27,8 +27,8 @@ namespace :build do
   html_files = %W{
     #{src_dir}/index.template.html
     #{src_dir}/game.js
-    #{src_dir}/jquery-1.6.4.min.js
-    #{src_dir}/swfobject-2.2.js
+    #{html_extras_dir}/jquery-1.6.4.min.js
+    #{html_extras_dir}/swfobject-2.2.js
     #{html_extras_dir}/favicon.ico
     #{html_extras_dir}/playerProductInstall.swf
   }

@@ -464,7 +464,7 @@ function clientNotResponding() {
   var strings = locales.clientNotResponding;
   $("#client-not-responding h2").html(strings.title(locale));
   $("#client-not-responding-message").html(strings.message(locale).join("<br/>"));
-   $("#client-not-responding a").html(strings.reload(locale));
+  $("#client-not-responding a").html(strings.reload(locale));
   $("#client-not-responding").show();
 
   var secondsToWait = 10;
