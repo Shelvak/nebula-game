@@ -19,7 +19,7 @@ package tests._old.utils.remote.rmo
 	   
 	   
 	   [Test]
-	   public function parseRecievedMessage () :void
+	   public function parseReceivedMessage () :void
 	   {
          var rmo: ServerRMO = ServerRMO.parse (
             '{' + 
@@ -58,7 +58,7 @@ package tests._old.utils.remote.rmo
 	   
 	   
 	   [Test]
-	   public function parseRecievedResponse () :void
+	   public function parseReceivedResponse () :void
 	   {
          var rmo: ServerRMO = ServerRMO.parse (
             '{' +
@@ -107,11 +107,11 @@ package tests._old.utils.remote.rmo
          var pattern: RegExp = /^[0-9]+$/;
          var rmo: ClientRMO = new ClientRMO (
             {username: "MikisM", password: "MikisM87"},
-            null, null, null, "player|login"
+            null, null, null, null, "player|login"
          );
          
          assertNotNull (
-            "id should be generated when ClientRMO isntace is created",
+            "id should be generated when ClientRMO instance is created",
             rmo.id
          );
          assertTrue (
@@ -177,7 +177,7 @@ package tests._old.utils.remote.rmo
       
       
       [Test]
-      public function mathingRMOsWhenMatch () :void
+      public function matchingRMOsWhenMatch () :void
       {
          var clientRMO: ClientRMO = new ClientRMO (null, null, null);
          var serverRMO: ServerRMO = new ServerRMO ();
@@ -204,19 +204,19 @@ package tests._old.utils.remote.rmo
       {
          var rmo: ClientRMO = new ClientRMO (
             {userName: "MikisM", password: "MikisM87"},
-            null, null, null, "player|login"
+            null, null, null, null, "player|login"
          );
          
          var data: Object = JSON.decode (rmo.toJSON ());
          
-         // Checking immediate properties existance
-         testPropertyExistance(data, "id");
-         testPropertyExistance(data, "action");
-         testPropertyExistance(data, "params");
+         // Checking immediate properties existence
+         testPropertyExistence(data, "id");
+         testPropertyExistence(data, "action");
+         testPropertyExistence(data, "params");
          
-         // Checking parameters existance
-         testPropertyExistance(data.params, "user_name");
-         testPropertyExistance(data.params, "password");
+         // Checking parameters existence
+         testPropertyExistence(data.params, "user_name");
+         testPropertyExistence(data.params, "password");
          
          // Checking immediate properties values
          assertEquals("action should be the same", "player|login", data.action);
@@ -227,7 +227,7 @@ package tests._old.utils.remote.rmo
       }
       
       
-      private function testPropertyExistance (obj: Object, prop: String): void
+      private function testPropertyExistence (obj: Object, prop: String): void
       {
          assertNotNull (prop + " should exist", obj[prop]);
       }
