@@ -61,6 +61,8 @@
          display: block;
       }
    </style>
+  <link rel="stylesheet"
+        href="jquery-ui/css/ui-lightness/jquery-ui-1.8.21.custom.css">
 
    <script type="text/javascript">//<![CDATA[
 function defined(argument) { return argument != undefined; }
@@ -113,6 +115,7 @@ function include(jsName, additional) {
 
 include("swfobject-2.2.js");
 include("jquery-1.6.4.min.js");
+include("jquery-ui/js/jquery-ui-1.8.21.custom.min.js");
 var gameJs = fp.binDebug ? "game.js" : "game-${gamejs.checksum}.js";
 include(gameJs);
         //]]</script>
@@ -157,6 +160,8 @@ include(gameJs);
        <p id="time-until-reload"></p>
        <a href="javascript:window.refresh()"></a>
     </div>
+
+    <div id="trial_register"></div>
 
     </body>
 </html>
