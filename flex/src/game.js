@@ -572,6 +572,11 @@ function onNoteSubmit() {
   return false;
 }
 
+// Show lightbox with trial registration form.
+function openTrialRegistration() {
+  // TODO: implement.
+}
+
 // Setup one.lt top bar shown
 function setupOneLtBar() {
   $("body").prepend("<div id='eads_menu_1' style='height: 40px'></div>");
