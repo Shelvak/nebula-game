@@ -39,8 +39,13 @@ class Logging::Writer
     synchronize { @level = value }
   end
 
+  def config
+    synchronize { @config }
+  end
+
   def config=(config)
     synchronize do
+      @config = config
       @level = TYPE_TO_LEVEL[config.level]
       @outputs = config.outputs
       @callbacks = config.callbacks

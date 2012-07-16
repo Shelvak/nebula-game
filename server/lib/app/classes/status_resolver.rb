@@ -75,25 +75,20 @@ class StatusResolver
 
   # Retrieve player ids that are in your alliance.
   def get_alliance
-    if @player.alliance_id
-      @alliance_player_ids = ActiveRecord::Base.connection.select_values(
-        "SELECT id FROM `#{Player.table_name
-          }` WHERE `alliance_id`=#{@player.alliance_id.to_i}"
-      ).map(&:to_i)
-    else
-      @alliance_player_ids = []
-    end
+    @alliance_player_ids = @player.alliance_ids
   end
 
   def get_naps
     if @player.alliance_id
       rules = Nap.get_rules([@player.alliance_id])
       unless rules[@player.alliance_id].blank?
-        @nap_player_ids = Player.
-          select('id').
-          where(:alliance_id => rules[@player.alliance_id].map(&:to_i)).
-          c_select_values.
-          map(&:to_i)
+        @nap_player_ids = without_locking do
+          Player.
+            select('id').
+            where(alliance_id: rules[@player.alliance_id].map(&:to_i)).
+            c_select_values.
+            map(&:to_i)
+        end
 
         return @nap_player_ids
       end

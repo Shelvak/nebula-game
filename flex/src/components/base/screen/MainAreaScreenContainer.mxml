@@ -13,6 +13,7 @@
       import components.healing.HealingScreen;
       import components.infoscreen.InfoScreen;
       import components.map.controllers.IMapViewportController;
+      import components.map.space.galaxy.entiregalaxy.CEntireGalaxyScreen;
       import components.market.MarketScreen;
       import components.notifications.NotificationsScreen;
       import components.player.PlayerScreen;
@@ -144,6 +145,9 @@
                   break;
                case MainAreaScreens.CHAT:
                   addElement(new CChat());
+                  break;
+               case MainAreaScreens.ENTIRE_GALAXY:
+                  addElement(new CEntireGalaxyScreen());
                   break;
             }
          }

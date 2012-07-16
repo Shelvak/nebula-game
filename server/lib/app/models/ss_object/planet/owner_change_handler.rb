@@ -7,19 +7,30 @@ class SsObject::Planet::OwnerChangeHandler
   end
 
   def handle!
+    # Transfers units, needs to be before #handle_population.
+    handle_units!
+
+    # Recalculates population for players.
     handle_population
+    # Needs to be before #handle_scientists! and #handle_technologies! because
+    # they count on proper #planets_count and #bg_planets_count.
+    handle_planet_counts
+    handle_points
+    # Changes Player, but does not save him.
+    handle_market_offers!
+    # Save players for subsequent operations.
+    save_players!
+
     handle_building_cooldowns!
     handle_radars!
-    handle_scientists!
-    handle_market_offers!
-    handle_units!
-    handle_explorations!
-    handle_points!
-    handle_objectives!
-    handle_planet_counts!
+    # Needs to be before #handle_scientists! because we need to pause
+    # technologies which do not meet their planetary requirements anymore.
     handle_technologies!
-
-    save_players!
+    # Transfers scientists and updates scientist counts.
+    handle_scientists!
+    handle_explorations!
+    # Depends on #handle_planet_counts.
+    handle_objectives!
 
     EventBroker.fire(
       @planet, EventBroker::CHANGED, EventBroker::REASON_OWNER_CHANGED
@@ -39,15 +50,8 @@ private
   end
 
   def handle_population
-    max_population_count = 0
-    buildings.each do |building|
-      if ! building.inactive? && building.respond_to?(:population)
-        max_population_count += building.population
-      end
-    end
-
-    @old_player.population_cap -= max_population_count if @old_player
-    @new_player.population_cap += max_population_count if @new_player
+    @old_player.recalculate_population if @old_player
+    @new_player.recalculate_population if @new_player
   end
 
   def handle_building_cooldowns!
@@ -101,7 +105,7 @@ private
   end
 
   # Transfer all points to new player.
-  def handle_points!
+  def handle_points
     points = buildings.reject(&:npc?).each_with_object({}) do |building, hash|
       points_attribute = building.points_attribute
       hash[points_attribute] ||= 0
@@ -136,14 +140,9 @@ private
     end
   end
 
-  def handle_planet_counts!
-    solar_system = @planet.solar_system
+  def handle_planet_counts
+    solar_system = without_locking { @planet.solar_system }
     if solar_system.battleground?
-      if @new_player
-        Unit.give_units(
-          CONFIG['battleground.planet.bonus'], @planet, @new_player
-        )
-      end
       @old_player.bg_planets_count -= 1 if @old_player
       @new_player.bg_planets_count += 1 if @new_player
     else
@@ -186,11 +185,6 @@ private
   end
 
   def save_players!
-    # Do this finally, because they depend on actual in-DB units and
-    # construction queue entries.
-    @old_player.recalculate_population if @old_player
-    @new_player.recalculate_population if @new_player
-
     @old_player.save! if @old_player && @old_player.changed?
     @new_player.save! if @new_player && @new_player.changed?
   end

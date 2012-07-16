@@ -11,6 +11,7 @@
       import components.alliance.AllianceScreenM;
 
       import controllers.alliances.AlliancesCommand;
+      import controllers.galaxies.GalaxiesCommand;
       import controllers.players.PlayersCommand;
       import controllers.ui.NavigationController;
       import controllers.units.UnitsCommand;
@@ -66,8 +67,7 @@
                                                                          return item.owner == Owner.ALLY;
                                                                       });
 
-      private function getBtnUnitsLabel(allSquads: int,
-                                        allySquads: int): String {
+      private function getBtnUnitsLabel(allSquads: int, allySquads: int): String {
          return Localizer.string("MainMenu", "label.units",
                                  [allSquads - allySquads, allySquads])
       }
@@ -75,11 +75,15 @@
       private function getImage(name: String): BitmapData {
          return IMG.getImage(AssetNames.START_MENU_FOLDER + name);
       }
+
+      private function btnEntireGalaxy_clickHandler(event: MouseEvent): void {
+         new GalaxiesCommand(GalaxiesCommand.MAP).dispatch();
+      }
       ]]>
    </fx:Script>
    
    <!--- Styled container for menu buttons. -->
-   <s:SkinnableContainer left="0" bottom="{btnStart.height - 30}" id="menuItems"
+   <s:SkinnableContainer left="0" bottom="34" id="menuItems"
                          enabled="false"
                          skinClass="components.menus.skins.MainMenuItemsSkin"
                          click="toggleStartButton(event)">
@@ -97,6 +101,12 @@
                       left="22" right="0" top="5" bottom="5"
                       label="{Localizer.string('MainMenu', 'label.vip')}"
                       skinClass="components.skins.CreditButtonSkin"/>
+         </s:Group>
+         <s:Group width="100%">
+            <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
+            <s:Button id="btnEntireGalaxy" click="btnEntireGalaxy_clickHandler(event)"
+                      left="22" right="0" top="5" bottom="5"
+                      label="{Localizer.string('MainMenu', 'label.entireGalaxy')}"/>
          </s:Group>
          <!--- Button for viewing alliance screen. -->
          <s:Group width="100%">

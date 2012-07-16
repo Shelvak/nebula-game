@@ -164,8 +164,7 @@ package models.chat
          return _messagePool;
       }
 
-      private const _silenced: MTimeEventFixedMoment =
-                       new MTimeEventFixedMoment();
+      private const _silenced: MTimeEventFixedMoment = new MTimeEventFixedMoment();
       public function get silenced(): MTimeEventFixedMoment {
          return _silenced;
       }
@@ -420,7 +419,9 @@ package models.chat
             return;
          }
          if (_visible) {
-            _selectedChannel.visible = false;
+            if (_selectedChannel != null) {
+               _selectedChannel.visible = false;
+            }
             toSelect.visible = true;
             if (toSelect.isPublic) {
                if (MChatChannelPublic(toSelect).isAlliance) {
@@ -458,18 +459,20 @@ package models.chat
       public function set visible(value:Boolean) : void {
          if (_visible != value) {
             _visible = value;
-            selectedChannel.visible = value;
-            if (_visible) {
-               if (selectedChannel.isPublic) {
-                  if (MChatChannelPublic(selectedChannel).isAlliance) {
-                     updateNumUnreadAllianceMessages();
+            if (selectedChannel != null) {
+               selectedChannel.visible = value;
+               if (_visible) {
+                  if (selectedChannel.isPublic) {
+                     if (MChatChannelPublic(selectedChannel).isAlliance) {
+                        updateNumUnreadAllianceMessages();
+                     }
+                     else {
+                        setHasUnreadMainMsg(false);
+                     }
                   }
                   else {
-                     setHasUnreadMainMsg(false);
+                     updateNumPrivateMessages();
                   }
-               }
-               else {
-                  updateNumPrivateMessages();
                }
             }
             dispatchChatEvent(MChatEvent.VISIBLE_CHANGE);

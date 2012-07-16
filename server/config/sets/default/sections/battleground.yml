@@ -2,15 +2,6 @@
 # How much victory points you need to win the game?
 victory.condition: 500000
 
-# Bonus for planet occupation.
-# [type, count]
-planet.bonus:
-  - [thor, 1]
-  - [dirac, 2]
-  - [spudder, 1]
-  - [glancer, 1]
-  - [gnat, 3]
-
 # Battles which happen in battleground against other players give
 # VPs to players.
 battle.victory_points: (damage_dealt_to_space * 0.25 + damage_dealt_to_ground) * 0.006

@@ -318,12 +318,6 @@ private
 
   # Update things if player changed.
   #
-  # * Update FOW SS Entries to ensure that we see SS with our planets there
-  # even if there are no radar coverage.
-  # * Update constructors that are building units to make sure that the
-  # units now belong to new player.
-  # * Transfer scientists to new player.
-  #
   # This must be done after saving this planet so all updates
   # (like planets|player_index) would have the most recent data from DB.
   after_update :if => Proc.new { |r| r.player_id_changed? } do

@@ -35,7 +35,7 @@ player.referral.points_needed: 150000
 apocalypse.quiet_time: <%= 6.days %> / speed
 # How much creds you get for each day survived in apocalypse. Days are counted
 # from 1.
-apocalypse.survival_bonus: days * 2000
+apocalypse.survival_bonus: days * 4000
 
 # All positions are relative to zone and not overridable in other sets!
 #

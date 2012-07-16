@@ -8,6 +8,8 @@ package models.planet
    import models.resource.events.ResourcesEvent;
    
    import utils.DateUtil;
+   import utils.Events;
+
 
    public class MBoost extends EventDispatcher
    {
@@ -104,21 +106,13 @@ package models.planet
        * Time when resource storage boost will end.
        */
       public var storageBoostEndsAt:Date = null;
-      
-      private function dispatchStorageBoostChangeEvent(): void
-      {
-         if (hasEventListener(ResourcesEvent.STORAGE_BOOST_CHANGED))
-         {
-            dispatchEvent(new ResourcesEvent(ResourcesEvent.STORAGE_BOOST_CHANGED));
-         }
+
+      private function dispatchStorageBoostChangeEvent(): void {
+         Events.dispatchSimpleEvent(this, ResourcesEvent, ResourcesEvent.STORAGE_BOOST_CHANGED);
       }
       
-      private function dispatchRateBoostChangeEvent(): void
-      {
-         if (hasEventListener(ResourcesEvent.RATE_BOOST_CHANGED))
-         {
-            dispatchEvent(new ResourcesEvent(ResourcesEvent.RATE_BOOST_CHANGED));
-         }
+      private function dispatchRateBoostChangeEvent(): void {
+         Events.dispatchSimpleEvent(this, ResourcesEvent, ResourcesEvent.RATE_BOOST_CHANGED);
       }
    }
 }

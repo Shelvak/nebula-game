@@ -1017,16 +1017,45 @@ describe Player do
   describe "#overpopulation_mod" do
     describe "normally populated" do
       it "should return 1" do
-        Factory.build(:player, :population => 10).overpopulation_mod.
-          should == 1
+        Factory.build(:player, population: 10, population_cap: 50).
+          overpopulation_mod.should == 1
       end
     end
-    
+
+    describe "pop = max" do
+      it "should return 1" do
+        Factory.build(:player, population: 50, population_cap: 50).
+          overpopulation_mod.should == 1
+      end
+    end
+
     describe "overpopulated" do
       it "should return ratio" do
-        Factory.build(:player, :population => 35, :population_cap => 10).
+        Factory.build(:player, population: 35, population_cap: 10).
           overpopulation_mod.should == (10.0 / 35)
       end
+
+      it "should return Player::OVERPOPULATION_MOD_MIN if max is 0" do
+        Factory.build(:player, population: 35, population_cap: 0).
+          overpopulation_mod.should == Player::OVERPOPULATION_MOD_MIN
+      end
+    end
+  end
+
+  describe "#overpopulated?" do
+    it "should return false if pop < cap" do
+      Factory.build(:player, population: 5, population_cap: 10).
+        should_not be_overpopulated
+    end
+
+    it "should return false if pop == cap" do
+      Factory.build(:player, population: 10, population_cap: 10).
+        should_not be_overpopulated
+    end
+
+    it "should return true if pop > cap" do
+      Factory.build(:player, population: 15, population_cap: 10).
+        should be_overpopulated
     end
   end
   
@@ -1106,64 +1135,112 @@ describe Player do
   end
 
   describe "#recalculate_population" do
-    let(:player) { Factory.create(:player, population: 1000) }
-    let(:planet) { Factory.create(:planet, player: player) }
-    let(:constructor) { Factory.create(:b_constructor_test, planet: planet) }
-    let(:units) do
-      # Random data that should not be taken into account
-      Factory.create!(:u_cyrix)
-      # Actual data
-      [
-        Factory.create!(:u_cyrix, player: player),
-        Factory.create!(:u_cyrix, player: player),
-        Factory.create!(:u_crow, player: player),
-        Factory.create!(:u_mule, player: player),
-        Factory.create!(:u_shocker, player: player),
-        Factory.create!(:u_zeus, player: player)
-      ]
-    end
-    let(:construction_queue_entries) do
-      # Random data that should not be taken into account
-      Factory.create(:construction_queue_entry,
-        constructable_type: Unit::Zeus.to_s, prepaid: true)
-      Factory.create(:construction_queue_entry,
-        constructable_type: Unit::Zeus.to_s, prepaid: false)
-      Factory.create(:construction_queue_entry,
-        constructable_type: Building::Barracks.to_s, prepaid: false)
-      Factory.create(:construction_queue_entry,
-        constructable_type: Unit::Trooper.to_s, prepaid: false, constructor: constructor,
-        count: 10)
-      Factory.create(:construction_queue_entry,
-        constructable_type: Unit::Trooper.to_s, prepaid: false, constructor: constructor,
-        count: 10)
-      Factory.create(:construction_queue_entry,
-        constructable_type: Building::MetalStorage.to_s, prepaid: true,
-        constructor: constructor, count: 10)
-      # Actual data
-      [
-        Factory.create(:construction_queue_entry,
-          constructable_type: Unit::Trooper.to_s,
-          prepaid: true, constructor: constructor, count: 10),
-        Factory.create(:construction_queue_entry,
-          constructable_type: Unit::Rhyno.to_s,
-          prepaid: true, constructor: constructor),
-        Factory.create(:construction_queue_entry,
-          constructable_type: Unit::Zeus.to_s,
-          prepaid: true, constructor: constructor, count: 5),
-      ]
+    let(:player) do
+      Factory.create(:player, population: 1000, population_cap: 2500)
     end
 
-    let(:population) do
-      (
-        units.map(&:population) + construction_queue_entries.
-          map { |cqe| cqe.constructable_class.population * cqe.count }
-      ).sum
+    describe "#population" do
+      let(:planet) { Factory.create(:planet, player: player) }
+      let(:constructor) { Factory.create(:b_constructor_test, planet: planet) }
+      let(:units) do
+        # Random data that should not be taken into account
+        Factory.create!(:u_cyrix)
+        # Actual data
+        [
+          Factory.create!(:u_cyrix, player: player),
+          Factory.create!(:u_cyrix, player: player),
+          Factory.create!(:u_crow, player: player),
+          Factory.create!(:u_mule, player: player),
+          Factory.create!(:u_shocker, player: player),
+          Factory.create!(:u_zeus, player: player)
+        ]
+      end
+      let(:construction_queue_entries) do
+        # Random data that should not be taken into account
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Zeus.to_s, prepaid: true)
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Zeus.to_s, prepaid: false)
+        Factory.create(:construction_queue_entry,
+          constructable_type: Building::Barracks.to_s, prepaid: false)
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Trooper.to_s, prepaid: false, constructor: constructor,
+          count: 10)
+        Factory.create(:construction_queue_entry,
+          constructable_type: Unit::Trooper.to_s, prepaid: false, constructor: constructor,
+          count: 10)
+        Factory.create(:construction_queue_entry,
+          constructable_type: Building::MetalStorage.to_s, prepaid: true,
+          constructor: constructor, count: 10)
+        # Actual data
+        [
+          Factory.create(:construction_queue_entry,
+            constructable_type: Unit::Trooper.to_s,
+            prepaid: true, constructor: constructor, count: 10),
+          Factory.create(:construction_queue_entry,
+            constructable_type: Unit::Rhyno.to_s,
+            prepaid: true, constructor: constructor),
+          Factory.create(:construction_queue_entry,
+            constructable_type: Unit::Zeus.to_s,
+            prepaid: true, constructor: constructor, count: 5),
+        ]
+      end
+
+      let(:population) do
+        (
+          units.map(&:population) + construction_queue_entries.
+            map { |cqe| cqe.constructable_class.population * cqe.count }
+        ).sum
+      end
+
+      it "should recalculate #population to correct value" do
+        lambda do
+          player.recalculate_population
+        end.should change(player, :population).to(population)
+      end
     end
 
-    it "should recalculate population to correct value" do
-      lambda do
-        player.recalculate_population
-      end.should change(player, :population).to(population)
+    describe "#population_cap" do
+      let(:planet1) { Factory.create(:planet, player: player) }
+      let(:planet2) { Factory.create(:planet, player: player) }
+      let(:planet_other) { Factory.create(:planet_with_player) }
+      let(:planet_npc) { Factory.create(:planet) }
+      let(:buildings) do
+        # Inactive building.
+        Factory.create(:b_housing, opts_inactive + {planet: planet1, x: 30})
+        # Building that doesn't give population.
+        Factory.create(:b_barracks, opts_active + {planet: planet1, x: 40})
+        # Building that is in other player planet.
+        Factory.create(:b_housing, opts_active + {planet: planet_other})
+        # Building that is in NPC planet.
+        Factory.create(:b_housing, opts_active + {planet: planet_npc})
+        [
+          Factory.create(:b_headquarters, opts_working +
+            {planet: planet1, x: 20}),
+          Factory.create(:b_housing, opts_active +
+            {planet: planet1, x: 0, level: 3}),
+          # Grouping by type & level.
+          Factory.create(:b_housing, opts_active +
+            {planet: planet1, y: 10, level: 3}),
+          Factory.create(:b_housing, opts_active +
+            {planet: planet1, x: 10, level: 5}),
+          Factory.create(:b_mothership, opts_active +
+            {planet: planet2, x: 0, level: 1}),
+          Factory.create(:b_housing, opts_active +
+            {planet: planet2, x: 10, level: 2}),
+        ]
+      end
+      let(:population_cap) do
+        buildings.inject(0) do |sum, building|
+          sum + building.population
+        end
+      end
+
+      it "should recalculate #population_cap to correct value" do
+        lambda do
+          player.recalculate_population
+        end.should change(player, :population_cap).to(population_cap)
+      end
     end
 
     it "should not save record" do

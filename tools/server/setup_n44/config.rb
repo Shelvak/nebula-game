@@ -5,10 +5,10 @@ USER = "spacegame"
 DOMAIN = "com" # In what ending does your domain end
 HOSTNAME = "worg.nebula44.#{DOMAIN}"
 LOCALE = "en" # Your locale.
-MUNIN_MASTER = "188.40.91.110" # thor.nebula44.com
+MUNIN_MASTER = "193.219.158.73" # thor.nebula44.com
 
 ### Server Configuration ###
-JRUBY = '1.6.7-head'
+JRUBY = 'jruby-head-n16'
 JRUBY_INSTALL_OPTS = "--branch jruby-1_6"
 
 ### Client Configuration ###

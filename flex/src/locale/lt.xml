@@ -1833,6 +1833,7 @@
     <label.wiki value="Wiki"/>
     <label.tips value="Patarimai"/>
     <label.inviteFriend value="Pakviesk draugą"/>
+    <label.entireGalaxy value="Visa galaktika"/>
     <tooltip.version value="Žaidimo versija" />
     <panelWidth value="95" />
   </MainMenu>
@@ -5789,9 +5790,11 @@
     <title.graphicsOptions value="Grafikos nustatymai"/>
     <label.save value="Išsaugoti" />
     <label.warnBeforeUnload value="Perspėti prieš uždarant langą" />
-    <label.showInfoEvents>
-      Rodyti informacinius pranešimus kairiame viršutiniame kampe
-    </label.showInfoEvents>
+    <label.eventsOptions
+      value="Pranešimų kairiajame viršutiniame kampe rodymas:"/>
+    <label.actionEventTime value="Įvykiams:"/>
+    <label.notificationEventTime value="Žinutėms:"/>
+    <label.showInfoEvents value="Informaciniai:"/>
     <label.defaultTransporterTab
       value="Skyrius, kurį atidaryti visų pirma, kraunant į transporterį ar iš jo:" />
     <label.transporterTabResources value="Resursai" />
@@ -5816,28 +5819,71 @@
 
   <PlanetBoss>
     <title>Ateivių iššūkis</title>
-    <label.unitsList>Iššūkio kovotojai:</label.unitsList>
+    <label.unitsList>Iššūkio kovotojai</label.unitsList>
     <label.spawnButton>Iškviesti</label.spawnButton>
     <message.canSpawnNow>
-      Šioje planetoje tu gali mesti ateiviams iššūkį. Tam, kad tai padarytum
-      privalai turėti žemės karių planetoje.
+      <p>Šioje planetoje tu gali mesti ateiviams iššūkį.</p>
+      <p>
+        Tam, kad tai padarytum privalai turėti kovinių žemės karių planetoje.
+      </p>
     </message.canSpawnNow>
     <toolTip.canSpawnIn>
-      Šioje planetoje ateiviams iššūkį mesti galėsi už {0}.
+      Šioje planetoje, turėdamas kovinių žemės karių, ateiviams iššūkį mesti
+      galėsi už {0}.
     </toolTip.canSpawnIn>
     <message.canSpawnIn>
-      Jei turėtum žemės karių šioje planetoje, ateiviams iššūkį mesti galėtum
-      už:
+      Jei turėtum kovinių žemės karių šioje planetoje, ateiviams iššūkį mesti
+      galėtum už:
     </message.canSpawnIn>
     <message.canNotSpawn.player>
       ● Ši planeta turi priklausyti tau, tavo sąjungininkams arba ateiviams.
     </message.canNotSpawn.player>
     <message.canNotSpawn.noGroundUnits>
-      ● Šioje planetoje tu neturi žemės karių.
+      ● Šioje planetoje tu neturi kovinių žemės karių.
     </message.canNotSpawn.noGroundUnits>
     <message.canNotSpawn.napOrEnemyUnits>
       ● Šioje planetoje yra priešo arba NP karių.
     </message.canNotSpawn.napOrEnemyUnits>
   </PlanetBoss>
+
+  <PlanetCooldown>
+    <message.canReinitiate>
+      Tu gali praleisti pertrauką ir kautis su ateiviais iš karto.
+    </message.canReinitiate>
+    <message.cannotReinitiate>
+      Tu galėtum praleisti pertrauką ir kautis su ateiviais iš karto, jeigu:
+    </message.cannotReinitiate>
+    <message.noNpc>
+      ● Planetoje būtų bent vienas ateivių karys.
+    </message.noNpc>
+    <message.enemyOrNapPlanet>
+      ● Planeta nepriklausytų priešui arba NP nariui.
+    </message.enemyOrNapPlanet>
+    <message.enemyOrNapUnit>
+      ● Planetoje nebūtų priešų arba NP karių.
+    </message.enemyOrNapUnit>
+    <message.noPlayerUnit>
+      ● Planetoje būtų bent vienas tavo karys.
+    </message.noPlayerUnit>
+    <popup.title>Kautis su ateiviais?</popup.title>
+    <popup.label.cancelButton>Ne</popup.label.cancelButton>
+    <popup.label.confirmButton>Taip</popup.label.confirmButton>
+    <popup.message.confirm>
+      Ar esi tikras, jog nori praleisti pertrauką ir kautis su ateiviais?
+    </popup.message.confirm>
+  </PlanetCooldown>
+
+  <EntireGalaxy>
+    <title>Legenda</title>
+    <border>Matomumo ribos</border>
+    <yourHome>Namų sistema</yourHome>
+    <allianceHome>Sąjungos namų sist.</allianceHome>
+    <napHome>NP namų sistema</napHome>
+    <enemyHome>Priešo namų sitema</enemyHome>
+    <regular>Paprasta sistema</regular>
+    <pulsar>Pulsaras</pulsar>
+    <wormhole>Arenos vartai</wormhole>
+    <mouseCoordinates.title>Koordinatės</mouseCoordinates.title>
+  </EntireGalaxy>
 
 </locale>

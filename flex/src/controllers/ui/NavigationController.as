@@ -218,6 +218,9 @@ package controllers.ui
             MChat.getInstance().screenShowHandler,
             MChat.getInstance().screenHideHandler
          );
+         _screenProperties[MainAreaScreens.ENTIRE_GALAXY] = new ScreenProperties(
+            MainAreaScreens.ENTIRE_GALAXY, null, false
+         );
          
          EventBroker.subscribe(GlobalEvent.APP_RESET, global_appResetHandler);
          addEventListener(MapLoadEvent.LOAD, this_mapLoadHandler);
@@ -752,6 +755,10 @@ package controllers.ui
       public function showChat() : void {
          showNonMapScreen(_screenProperties[MainAreaScreens.CHAT]);
       }
+
+      public function showEntireGalaxy(): void {
+         showNonMapScreen(_screenProperties[MainAreaScreens.ENTIRE_GALAXY]);
+      }
       
       
       /* ############### */
@@ -857,7 +864,7 @@ package controllers.ui
          
          var viewport:ViewportZoomable = MapFactory.getViewportWithMap(map);
          var controller:IMapViewportController = MapFactory.getViewportController(map);
-         controller.setViewport(viewport);
+         controller.viewport = viewport;
          if (completeHandler != null) {
             var content:Group = viewport.content;
             function content_creationCompleteHandler(event:FlexEvent) : void {

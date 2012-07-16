@@ -152,7 +152,7 @@ PHP_FPM_POOL_SOCKET = "#{PHP_FPM_RUN}/#{USER}.socket"
 PHP_FPM_POOL_CONF = %Q{
 [#{USER}]
 user = #{USER}
-group = #{GROUP}
+group = #{USER}
 listen = #{PHP_FPM_POOL_SOCKET}
 listen.owner = www-data
 listen.group = www-data
@@ -240,11 +240,16 @@ def run(cmd)
 end
 def remove(cmd); run "apt-get remove -y --purge #{cmd}"; end
 def install(cmd); run "apt-get install -y #{cmd}"; end
+def debs(dir, packages)
+  base = File.join(File.expand_path(File.dirname(__FILE__)), "debs", DISTRO, dir)
+  files = packages.map { |p| %Q{"#{File.join(base, p)}"} }.join(" ")
+  run "dpkg -i #{files}"
+end
 def as(user); run %Q{su -l #{user} -c "#{yield.gsub('"', '\\"')}"}; end
 def rvm_str(command=""); %Q{bash -c "source #{BASHRC} && rvm #{command}"}; end
 def rvm(command=""); `#{rvm_str(command)}`; end
-def rvmuse(version, command="")
-  rvm("use #{version} > /dev/null && #{command}")
+def rvmdo(version, command="")
+  rvm("#{version} do #{command}")
 end
 
 PASS_CHARS = "1234567890-=qwertyuiop[]asdfghjkl;zxcvbnm,./~!@#^%&*()_+QWERTYUIOP{}ASDFGHJKLZXCVBNM<>?"
@@ -556,7 +561,8 @@ if ARGV.include?("basic") # {{{
 
   run "apt-get update"
   install "dialog"
-  remove "samba.*" if File.exists?("/etc/init.d/smbd")
+  # Remove unnecessary packages.
+  remove "samba.* sendmail.* bind9"
   install "man less cron mc rubygems libjson-ruby irb gnupg wget host " +
     "exim4 logrotate netcat ntpdate python-software-properties mutt monit"
   run "dpkg-reconfigure exim4-config"
@@ -674,6 +680,8 @@ include /etc/monit/conf.d/*
       run "adduser #{user} rvm"
     end
 
+    File.ensure(BASHRC, "\n. /usr/local/rvm/scripts/rvm\n")
+
     puts
     puts "RVM installed and it needs to be loaded."
     puts
@@ -763,7 +771,6 @@ innodb_lock_wait_timeout = 10})
 }
 
   puts "Adding server launcher to cron"
-  cron "* * *  * *   $HOME/bin/srvrunner lib/daemon.rb start-silent"
   cron "@hourly   $HOME/bin/srvrunner script/dump_galaxy.rb $HOME/web/current/www/public/galaxies/ >/dev/null 2>&1"
 
   # Linking munin
@@ -820,14 +827,7 @@ end # }}}
 
 if ARGV.include?("client") # {{{
   pubkeys(USER, *CLIENT_PUBKEYS)
-  install "apache2"
-  File.modify("/etc/apache2/apache2.conf") do |content|
-    content.sub(/^Timeout\s+\d+$/, "Timeout 15").
-      sub(/^StartServers\s+\d+$/, "StartServers 10").
-      sub(/^MinSpareServers\s+\d+$/, "MinSpareServers 10").
-      sub(/^MaxSpareServers\s+\d+$/, "MaxSpareServers 20").
-      sub(/^MaxClients\s+\d+$/, "MaxClients 120")
-  end
+  setup_apache
   run "a2enmod expires headers"
   Dir.mkdir "#{HOME}/nebula-client", nil, UCH
   apache_vhost("nebula-client", "#{HOME}/nebula-client/current", CLIENT_HOSTNAME)
@@ -852,7 +852,14 @@ if ARGV.include?("web") # {{{
   setup_php
 
   # Set up web components.
-  install "libmysqlclient-dev imagemagick libapache2-mod-xsendfile"
+  install "libmysqlclient-dev libapache2-mod-xsendfile"
+  # At least 1.3.16 needed to support +repage.
+  # Built without openmp and libjbig
+  debs "graphicsmagick-1.3.16", %w{
+    graphicsmagick_1.3.16-1_i386 
+    graphicsmagick-imagemagick-compat_1.3.16-1_all
+    libgraphicsmagick3_1.3.16-1_i386
+  }
 
   # Enable xsendfile for avatars
   File.write("/etc/apache2/mods-available/xsendfile.conf", %Q{
@@ -864,19 +871,19 @@ XSendFileAllowAbove on
   run "a2enmod rewrite xsendfile expires headers"
 
   rvm "use --create #{rvms}"
-  (rvmuse(rvms, "which bundle") == "").and {
-    rvmuse(rvms, "gem install bundler --no-rdoc --no-ri")
+  (rvmdo(rvms, "which bundle") == "").and {
+    rvmdo(rvms, "gem install bundler --no-rdoc --no-ri")
   }
-  (rvmuse(rvms, "which passenger-install-apache2-module") == "").and {
+  (rvmdo(rvms, "which passenger-install-apache2-module") == "").and {
     # Passenger build deps
     install "libcurl4-openssl-dev apache2-prefork-dev libapr1-dev libaprutil1-dev"
-    rvmuse(rvms, "gem install passenger --no-rdoc --no-ri")
+    rvmdo(rvms, "gem install passenger --no-rdoc --no-ri")
   }
 
   passenger_load = "/etc/apache2/mods-available/passenger.load"
   unless passenger_load.exists?
     puts "Installing passenger apache2 module..."
-    rvmuse(rvms, "passenger-install-apache2-module -a")
+    rvmdo(rvms, "passenger-install-apache2-module -a")
     passenger_dir = Dir["/usr/local/rvm/gems/#{rubyv}-*@#{rubygs}/gems/passenger-*"][0]
     if passenger_dir.nil?
       puts "Passenger install failed!"
@@ -897,29 +904,29 @@ PassengerPoolIdleTime #{PASSENGER_POOL_IDLE_TIME}
     run "a2enmod passenger"
   end
 
-#  # Install mysql2 gem... Must do tricks to avoid .so conflicts.
-#  puts 'mysql2 gem tricks... ENGAGE!'
-#  puts "BACKUPING"
-#  Dir["/usr/lib/libmysqlclient*.so"].each do |f|
-#    run("mv -vf #{f} #{f}~")
-#  end
-#
-#  puts "SUBSTITUTING"
-#  Dir["/usr/lib/libmysqlclient*.so.18"].each do |f|
-#    name = f.sub(/\.18$/, '')
-#    run("ln -sfv #{f} #{name}")
-#  end
-#
-#  puts "COMPILING!"
-#  rvmuse(rvms, "gem install mysql2 --version='~>0.2.6' --no-rdoc --no-ri")
-#
-#  puts "RESTORING"
-#  Dir["/usr/lib/libmysqlclient*.so"].each do |f|
-#    run("rm -vf #{f}")
-#    run("mv -vf #{f}~ #{f}")
-#  end
-#
-#  puts "Shazam! mysql2 is installed and linked against libmysqlclient18"
+  # Install mysql2 gem... Must do tricks to avoid .so conflicts.
+  puts 'mysql2 gem tricks... ENGAGE!'
+  puts "BACKUPING"
+  Dir["/usr/lib/libmysqlclient*.so"].each do |f|
+    run("mv -vf #{f} #{f}~")
+  end
+
+  puts "SUBSTITUTING"
+  Dir["/usr/lib/libmysqlclient*.so.18"].each do |f|
+    name = f.sub(/\.18$/, '')
+    run("ln -sfv #{f} #{name}")
+  end
+
+  puts "COMPILING!"
+  rvmdo(rvms, "gem install mysql2 --version='~>0.2.6' --no-rdoc --no-ri")
+
+  puts "RESTORING"
+  Dir["/usr/lib/libmysqlclient*.so"].each do |f|
+    run("rm -vf #{f}")
+    run("mv -vf #{f}~ #{f}")
+  end
+
+  puts "Shazam! mysql2 is installed and linked against libmysqlclient18"
 
   as(USER) { rvm_str("rvmrc trust #{HOME}/web/current/.rvmrc") }
 

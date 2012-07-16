@@ -7,7 +7,9 @@
    <fx:Script>
       <![CDATA[
          import config.Config;
-         
+
+         import models.Owner;
+
          import models.map.MapType;
          import models.resource.ResourceType;
          import models.unit.UnitKind;
@@ -17,6 +19,11 @@
          private function getString(prop: String, params: Array = null): String
          {
             return Localizer.string('Units', prop, params);
+         }
+
+         private static function getArray(owner: int): Array
+         {
+           return [owner];
          }
       ]]>
    </fx:Script>      
@@ -51,12 +58,12 @@
      }" />
    <menus:KindUnitsMenu id="space" kind="{UnitKind.SPACE}" visible="{!((width &lt; (space.width + ground.width))
                         || (ML.activeMapType != MapType.PLANET) 
-                        || (!ML.latestPlanet.hasActiveSpaceUnits()))}"/>
+                        || (!ML.latestPlanet.hasActiveSpaceUnits(getArray(Owner.UNDEFINED))))}"/>
    <menus:KindUnitsMenu id="ground" kind="{width &lt; (space.width + ground.width)?null:UnitKind.GROUND}"
                         visible="{ML.activeMapType == MapType.PLANET &amp;&amp; 
-                        (ML.latestPlanet.hasActiveGroundUnits() || 
+                        (ML.latestPlanet.hasActiveGroundUnits(getArray(Owner.UNDEFINED)) ||
                         (width &lt; (space.width + ground.width) &amp;&amp;
-                        ML.latestPlanet.hasActiveUnits()))}"/>
+                        ML.latestPlanet.hasActiveUnits(getArray(Owner.UNDEFINED))))}"/>
    <base:layout>
       <s:HorizontalLayout gap="-3" horizontalAlign="right"/>
    </base:layout>

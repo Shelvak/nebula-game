@@ -10,6 +10,7 @@ package models.unit
    import models.tile.TerrainType;
    
    import utils.ModelUtil;
+   import utils.ObjectStringBuilder;
    import utils.StringUtil;
    import utils.assets.AssetNames;
    
@@ -23,7 +24,7 @@ package models.unit
          _type = StringUtil.underscoreToCamelCase(type);
          _count = count;
          this.level = level;
-      };
+      }
       
       
       private var _type:String = null;
@@ -68,7 +69,7 @@ package models.unit
       public var level:int = 0;
       
       
-      private var _terrainType:int
+      private var _terrainType:int;
       [Bindable(event="willNotChange")]
       /**
        * Image of terrain of a planet this building is located. Irrelevant for units and
@@ -135,9 +136,10 @@ package models.unit
       }
       
       
-      public override function toString() : String
-      {
-         return "[class: " + className + ", type: " + type + ", count: " + count + "]";
+      public override function toString() : String {
+         return new ObjectStringBuilder(this)
+            .addProp("type")
+            .addProp("count").finish();
       }
    }
 }

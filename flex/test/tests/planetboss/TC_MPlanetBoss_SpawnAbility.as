@@ -4,9 +4,10 @@ package tests.planetboss
 
    import ext.hamcrest.object.equals;
 
+   import factories.newActiveUnit;
+
    import models.ModelLocator;
    import models.Owner;
-   import models.cooldown.MCooldown;
    import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationType;
@@ -117,13 +118,8 @@ package tests.planetboss
       }
 
       private function newUnit(id: int, owner: int, type: String): Unit {
-         const unit: Unit = new Unit();
-         unit.id = id;
-         unit.level = 1;
-         unit.location = new LocationMinimal(LocationType.SS_OBJECT, planet.id);
-         unit.owner = owner;
-         unit.type = type;
-         return unit;
+         return newActiveUnit(
+            id, owner, type, new LocationMinimal(LocationType.SS_OBJECT, planet.id));
       }
 
       [Test]

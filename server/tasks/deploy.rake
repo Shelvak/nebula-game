@@ -4,8 +4,8 @@ PROJECT_ROOT = File.expand_path(
   File.join(File.dirname(__FILE__), '..', '..'))
 CLIENT_TARGET = File.join(PROJECT_ROOT, 'flex', 'target', 'dist')
 
-STABLE_BRANCH = "stable2"
-STABLE_LT_SERVERS = ["nexar.nebula44.lt"]
+STABLE_BRANCH = "master"
+STABLE_LT_SERVERS = ["nexar.nebula44.lt", "worg.nebula44.lt"]
 STABLE_COM_SERVERS = ["spudder.nebula44.com"]
 
 DEPLOY_CONFIG = {
@@ -60,7 +60,7 @@ DEPLOY_CONFIG = {
         File.join("script", "deploy_gems.sh"),
         File.join("script", "log_analyzer.rb"),
         File.join("script", "render_winners.rb"),
-        File.join("script", "ensure_pool.rb"),
+        File.join("script", "create_galaxy.rb"),
         File.join("script", "munin-plugins"),
         File.join("script", "fixes"),
         File.join("vendor", "plugins"),
@@ -181,7 +181,7 @@ class DeployHelpers; class << self
   def exec_server(ssh, cmd, use_bundler=true)
     cmd = "bundle exec #{cmd}" if use_bundler
 
-    ssh.exec!("source $HOME/.profile > /dev/null && cd #{
+    ssh.exec!("source /etc/profile && source $HOME/.profile && cd #{
       DEPLOY_CONFIG_SERVER_CURRENT
     } && #{cmd}")
   end

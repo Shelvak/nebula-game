@@ -92,7 +92,9 @@ class SsObject < ActiveRecord::Base
     self.class.to_s.demodulize.underscore.to_sym
   end
 
-  SPAWN_SCOPE = DScope.world
+  # Don't let waves of resource spawns in asteroid overwhelm world director.
+  # Use low_prio!
+  SPAWN_SCOPE = DScope.low_prio
   def self.spawn_callback(asteroid); asteroid.spawn_resources!; end
 
   ENERGY_DIMINISHED_SCOPE = DScope.world

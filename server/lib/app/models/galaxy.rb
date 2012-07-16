@@ -82,39 +82,34 @@ class Galaxy < ActiveRecord::Base
   # @param [String] ruleset Ruleset for this new galaxy.
   # @param [String] callback_url URL for events that should be posted back to
   # web.
-  # @param [Fixnum] free_zones Number of ensured free zones in the galaxy at the
-  # time of its creation.
   # @param [Fixnum] pool_free_zones Number of ensured free zones in the galaxy
   # when the pooler runs.
-  # @param [Fixnum] free_home_ss Number of ensured free home solar systems in
-  # the galaxy at the time of its creation.
   # @param [Fixnum] pool_free_home_ss Number of ensured free home solar systems
   # when the pooler runs.
   # @return [Galaxy] Newly created galaxy.
   def self.create_galaxy(
-    ruleset, callback_url, free_zones, pool_free_zones, free_home_ss=nil,
-    pool_free_home_ss=nil
+    ruleset, callback_url, pool_free_zones, pool_free_home_ss=nil
   )
-    typesig binding, String, String, Fixnum, Fixnum,
-      [NilClass, Fixnum], [NilClass, Fixnum]
+    typesig binding, String, String, Fixnum, [NilClass, Fixnum]
 
-    free_home_ss ||= free_zones * Cfg.galaxy_zone_max_player_count
-    pool_free_home_ss ||= pool_free_zones * Cfg.galaxy_zone_max_player_count
+    CONFIG.with_set_scope(ruleset) do
+      pool_free_home_ss ||= pool_free_zones * Cfg.galaxy_zone_max_player_count
 
-    galaxy = new(
-      ruleset: ruleset, callback_url: callback_url,
-      pool_free_zones: pool_free_zones, pool_free_home_ss: pool_free_home_ss
-    )
-    galaxy.save!
+      galaxy = new(
+        ruleset: ruleset, callback_url: callback_url,
+        pool_free_zones: pool_free_zones, pool_free_home_ss: pool_free_home_ss
+      )
+      galaxy.save!
 
-    SpaceMule.instance.fill_galaxy(galaxy, free_zones, free_home_ss)
+      SpaceMule.instance.fill_galaxy(galaxy)
 
-    spawn_callback(galaxy)
-    create_metal_system_offer_callback(galaxy)
-    create_energy_system_offer_callback(galaxy)
-    create_zetium_system_offer_callback(galaxy)
+      spawn_callback(galaxy)
+      create_metal_system_offer_callback(galaxy)
+      create_energy_system_offer_callback(galaxy)
+      create_zetium_system_offer_callback(galaxy)
 
-    galaxy
+      galaxy
+    end
   end
 
   # Create player in galaxy _galaxy_id_ with Player#web_user_id, Player#name

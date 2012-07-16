@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:space="components.map.space.*"
          xmlns:planet="components.planet.*"
          xmlns:solarsystem="components.map.space.solarsystem.*"
          implements="components.map.space.ICStaticSpaceObjectInfo">

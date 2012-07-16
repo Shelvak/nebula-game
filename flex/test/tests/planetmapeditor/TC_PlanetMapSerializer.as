@@ -70,7 +70,7 @@ package tests.planetmapeditor
             "empty map of 4x4 size",
             serialize(newPlanet(4, 4)), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
-               'name: "P-%d"\n' +
+               'name: "P-%s"\n' +
                '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -89,7 +89,7 @@ package tests.planetmapeditor
             "4x4 map with 2x2 building of level 2 at (1; 1)",
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
-               'name: "P-%d"\n' +
+               'name: "P-%s"\n' +
                '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -108,7 +108,7 @@ package tests.planetmapeditor
             "4x4 map with 2x2 building of level 10 at (1; 1)",
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
-               'name: "P-%d"\n' +
+               'name: "P-%s"\n' +
                '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -130,7 +130,7 @@ package tests.planetmapeditor
             "4x4 map with 2x2 TITAN field at (1; 1)",
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
-               'name: "P-%d"\n' +
+               'name: "P-%s"\n' +
                '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -153,7 +153,7 @@ package tests.planetmapeditor
                "NOXRIUM at (1; 1), (2; 1), (2; 2)",
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
-               'name: "P-%d"\n' +
+               'name: "P-%s"\n' +
                '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -175,7 +175,7 @@ package tests.planetmapeditor
             "7x4 map with NPC extractor at (1; 1) and player extractor at (1; 4)",
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
-               'name: "P-%d"\n' +
+               'name: "P-%s"\n' +
                '# 7x4 (area 28)\n' +
                'map:\n' +
                '  - ". . . . . . . "\n' +
@@ -194,7 +194,7 @@ package tests.planetmapeditor
             "4x4 map with GEOTHERMAL spot at (1; 1)",
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
-               'name: "P-%d"\n' +
+               'name: "P-%s"\n' +
                '# 4x4 (area 16)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -213,7 +213,7 @@ package tests.planetmapeditor
             "4x5 map with 2x3 foliage at (1; 1)",
             serialize(planet), equals (
                'terrain: <%= Terrain::EARTH %>\n' +
-               'name: "P-%d"\n' +
+               'name: "P-%s"\n' +
                '# 4x5 (area 20)\n' +
                'map:\n' +
                '  - ". . . . "\n' +
@@ -242,7 +242,7 @@ package tests.planetmapeditor
             '  - ". . . . "'
          );
          assertThat( "terrain", planet.ssObject.terrain, equals (TerrainType.DESERT) );
-         assertThat( "name", planet.ssObject.name, equals ("Test") );
+         assertThat( "name", planet.ssObject.name, equals ("Test-%d") );
          assertThat( "width", planet.width, equals (4) );
          assertThat( "height", planet.height, equals (4));
          assertThat( "no objects", planet.objects, emptyArray() );
@@ -261,7 +261,7 @@ package tests.planetmapeditor
       public function deserialize_mapWithOneResourceTile(): void {
          const planet: MPlanet = deserialize(
             'terrain: <%= Terrain::EARTH %>\n' +
-            'name: "P-%d"\n' +
+            'name: "P-%s"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
             '  - ". ----. "\n' +
@@ -294,7 +294,7 @@ package tests.planetmapeditor
       public function deserialize_mapWithNoxriumField(): void {
          const planet: MPlanet = deserialize(
             'terrain: <%= Terrain::EARTH %>\n' +
-            'name: "P-%d"\n' +
+            'name: "P-%s"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
             '  - ". . . . "\n' +
@@ -320,7 +320,7 @@ package tests.planetmapeditor
       public function deserialize_mapWithFoliage(): void {
          const planet: MPlanet = deserialize(
             'terrain: <%= Terrain::EARTH %>\n' +
-            'name: "P-%d"\n' +
+            'name: "P-%s"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
             '  - ". ----. "\n' +
@@ -343,7 +343,7 @@ package tests.planetmapeditor
       public function deserialize_mapWithBuilding(): void {
          const planet: MPlanet = deserialize(
             'terrain: <%= Terrain::EARTH %>\n' +
-            'name: "P-%d"\n' +
+            'name: "P-%s"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
             '  - ". ----. "\n' +
@@ -367,7 +367,7 @@ package tests.planetmapeditor
       public function deserialize_mapWithExtractor(): void {
          const planet: MPlanet = deserialize(
             'terrain: <%= Terrain::EARTH %>\n' +
-            'name: "P-%d"\n' +
+            'name: "P-%s"\n' +
             'map:\n' +
             '  - ". . . . "\n' +
             '  - ". ----. "\n' +
@@ -402,7 +402,7 @@ package tests.planetmapeditor
       public function deserialize_mapWithBuildingAndNonRegularTilesUnderIt(): void {
          const planet: MPlanet = deserialize(
             'terrain: <%= Terrain::EARTH %>\n' +
-            'name: "P-%d"\n' +
+            'name: "P-%s"\n' +
             'map:\n' +
             '  - ". # # # . . "\n' +
             '  - ". # # # . . "\n' +

@@ -9,16 +9,16 @@ package models.notification {
    import flash.display.BitmapData;
    import flash.events.MouseEvent;
 
+   import models.player.PlayerOptions;
+
    import utils.assets.AssetNames;
 
    public class MNotificationEvent extends MEvent {
 
-      private static const DURATION: int = 3000;
-
       public var notif: Notification;
 
       public function MNotificationEvent(_notif: Notification) {
-         super(_notif.message, DURATION);
+         super(_notif.message, PlayerOptions.notificationEventTime * 1000);
          notif = _notif;
       }
 

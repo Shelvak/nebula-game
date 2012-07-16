@@ -1700,6 +1700,7 @@
     <label.wiki value="Wiki"/>
     <label.tips value="Tips"/>
     <label.inviteFriend value="Invite a friend"/>
+    <label.entireGalaxy value="Entire galaxy"/>
     <tooltip.version value="Game version" />
     <panelWidth value="85" />
   </MainMenu>
@@ -1893,13 +1894,12 @@
       <p>Buildings deactivated due to insufficient energy.</p>
     </message.buildingsDeactivated>
 
-    <!--TODO: translate this -->
-    <title.planetBossSpawn value="Ateiviams mestas iššūkis" />
+    <title.planetBossSpawn value="Alien challenged" />
     <message.planetBossSpawn>
-      <p>Tavo planetoje {0} buvo mestas iššūkis ateiviams</p>
+      <p>An alien has been challenged in your planet {0}</p>
     </message.planetBossSpawn>
     <label.planetBossSpawn>
-      <p>Žaidėjas {0} metė iššūki ateiviams tavo planetoje.</p>
+      <p>Player {0} has challenged an alien in your planet.</p>
     </label.planetBossSpawn>
 
     <title.allyReinitiateCombat value="Combat cooldown was canceled" />
@@ -5701,9 +5701,10 @@
     <title.graphicsOptions value="Graphics options"/>
     <label.save value="Save" />
     <label.warnBeforeUnload value="Warn before closing game" />
-    <label.showInfoEvents>
-      Show info events in upper right corner
-    </label.showInfoEvents>
+    <label.eventsOptions value="Show top-left notification bubbles:"/>
+    <label.notificationEventTime value="Notification:"/>
+    <label.actionEventTime value="Event:"/>
+    <label.showInfoEvents value="Info:"/>
     <label.defaultTransporterTab
       value="Tab to show first while loading or unloading transporter:" />
     <label.transporterTabResources value="Resources" />
@@ -5727,26 +5728,70 @@
   </PlayerOptions>
 
   <PlanetBoss>
-    <title>Planet boss</title>
-    <label.unitsList>
-      Units that will be spawned:
-    </label.unitsList>
+    <title>Alien Challenge</title>
+    <label.unitsList>Challenged aliens</label.unitsList>
     <message.canSpawnNow>
-      You can spawn boss to this planet.
+      <p>You can challenge aliens on this planet.</p>
+      <p>You must have at least one combative ground unit here to do it.</p>
     </message.canSpawnNow>
+    <toolTip.canSpawnIn>
+      You will be able to challenge aliens in this planet after {0}. Combative
+      ground troops are required for challenge.
+    </toolTip.canSpawnIn>
     <message.canSpawnIn>
-      If you had ground units in this planet, you could spawn boss to it in:
+      If you had at least one combative ground unit, you could challenge planet
+      aliens in:
     </message.canSpawnIn>
-    <label.spawnButton>Spawn</label.spawnButton>
+    <label.spawnButton>Challenge</label.spawnButton>
     <message.canNotSpawn.player>
-      ● Either you, your alliance or NPC must own this planet.
+      ● This planet must be owned by either you, your alliance or aliens.
     </message.canNotSpawn.player>
     <message.canNotSpawn.noGroundUnits>
-      ● You don't have any ground units in this planet.
+      ● You need to have any combative ground units in this planet.
     </message.canNotSpawn.noGroundUnits>
     <message.canNotSpawn.napOrEnemyUnits>
       ● There are enemy or NAP troops in this planet.
     </message.canNotSpawn.napOrEnemyUnits>
   </PlanetBoss>
+
+  <PlanetCooldown>
+    <message.canReinitiate>
+      You can skip cooldown and reinitiate combat in this planet.
+    </message.canReinitiate>
+    <message.cannotReinitiate>
+      You could skip cooldown and reinitiate combat if:
+    </message.cannotReinitiate>
+    <message.noNpc>
+      ● At least one alien unit was present in this planet.
+    </message.noNpc>
+    <message.enemyOrNapPlanet>
+      ● This planet did not belong to enemy or NAP player.
+    </message.enemyOrNapPlanet>
+    <message.enemyOrNapUnit>
+      ● No enemy and NAP units were present in this planet.
+    </message.enemyOrNapUnit>
+    <message.noPlayerUnit>
+      ● You had at least one combat unit in this planet.
+    </message.noPlayerUnit>
+    <popup.title>Reinitiate combat?</popup.title>
+    <popup.label.cancelButton>Cancel</popup.label.cancelButton>
+    <popup.label.confirmButton>Confirm</popup.label.confirmButton>
+    <popup.message.confirm>
+      Are you sure you want to skip the cooldown and reinitiate combat?
+    </popup.message.confirm>
+  </PlanetCooldown>
+
+  <EntireGalaxy>
+    <title>Legend</title>
+    <border>Visible zone</border>
+    <yourHome>Home system</yourHome>
+    <allianceHome>Ally home system</allianceHome>
+    <napHome>NAP home system</napHome>
+    <enemyHome>Enemy home system</enemyHome>
+    <regular>Regular system</regular>
+    <pulsar>Pulsar</pulsar>
+    <wormhole>Wormhole</wormhole>
+    <mouseCoordinates.title>Coordinates</mouseCoordinates.title>
+  </EntireGalaxy>
 
 </locale>

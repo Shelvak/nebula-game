@@ -33,7 +33,7 @@ package components.map.space.galaxy
          super(map);
          _map = map;
          _galaxy = map.getGalaxy();
-         _coordsTransform = new GalaxyMapCoordsTransform(_galaxy);
+         _coordsTransform = new GalaxyMapCoordsTransform(_galaxy.fowMatrix);
       }
       
       /**

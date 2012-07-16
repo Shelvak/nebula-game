@@ -155,6 +155,9 @@ class Cfg
     def next_convoy_time(wormholes)
       typesig binding, Fixnum
 
+      # Do not fail with division by 0.
+      wormholes = 1 if wormholes == 0
+
       CONFIG.evalproperty(
         'galaxy.convoy.time', 'wormholes' => wormholes
       ).from_now

@@ -1,15 +1,12 @@
 package models.unit
 {
-   import config.Config;
-
    import controllers.objects.ObjectClass;
 
    import flash.display.BitmapData;
-   
+
    import models.BaseModel;
    import models.Owner;
    import models.building.Building;
-   import models.location.Location;
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.parts.IUpgradableModel;
@@ -19,20 +16,20 @@ package models.unit
    import models.player.PlayerMinimal;
    import models.resource.Resource;
    import models.unit.events.UnitEvent;
-   
+
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
    import mx.collections.Sort;
    import mx.collections.SortField;
 
    import utils.DateUtil;
-
+   import utils.ObjectStringBuilder;
    import utils.assets.AssetNames;
    import utils.assets.ImagePreloader;
    import utils.datastructures.Collections;
    import utils.locale.Localizer;
-   
-   
+
+
    [Bindable]
    public class Unit extends BaseModel implements IUpgradableModel
    {
@@ -173,7 +170,7 @@ package models.unit
          {
             LS.dispatchRefreshMaxStorageEvent();
          }
-         dispatchMetalChangeEvent()
+         dispatchThisEvent(UnitEvent.METAL_CHANGE);
       }
 
       public function get metal(): uint
@@ -191,7 +188,7 @@ package models.unit
          {
             LS.dispatchRefreshMaxStorageEvent();
          }
-         dispatchEnergyChangeEvent();
+         dispatchThisEvent(UnitEvent.ENERGY_CHANGE);
       }
 
       public function get energy(): uint
@@ -209,7 +206,7 @@ package models.unit
          {
             LS.dispatchRefreshMaxStorageEvent();
          }
-         dispatchZetiumChangeEvent()
+         dispatchThisEvent(UnitEvent.ZETIUM_CHANGE);
       }
 
       public function get zetium(): uint
@@ -263,7 +260,7 @@ package models.unit
             {
                LS.dispatchRefreshMaxStorageEvent();
             }
-            dispatchStoredChangeEvent();
+            dispatchThisEvent(UnitEvent.STORED_CHANGE);
          }
       }
       
@@ -304,7 +301,7 @@ package models.unit
       public function Unit()
       {
          _upgradePart = new UnitUpgradable(this);
-      };
+      }
       
       
       /**
@@ -340,7 +337,7 @@ package models.unit
       public function get description(): String
       {
          return Localizer.string('Units', type + '.about');
-      };
+      }
       
       
       public function getInfoData(): Object{
@@ -373,7 +370,9 @@ package models.unit
          var oldSquadronId:int = _squadronId;
          var oldIsMoving:Boolean = isMoving;
          _squadronId = value;
-         dispatchSquadronIdChangeEvent(oldSquadronId);
+         if (hasEventListener(UnitEvent.SQUADRON_ID_CHANGE)) {
+            dispatchEvent(new UnitEvent(UnitEvent.SQUADRON_ID_CHANGE, oldSquadronId));
+         }
          dispatchPropertyUpdateEvent("squadronId", value, oldSquadronId);
          dispatchPropertyUpdateEvent("isMoving", isMoving, oldIsMoving);
       }
@@ -460,7 +459,7 @@ package models.unit
       public function set stance(value: int): void
       {
          _stance = value;
-         dispatchStanceChangeEvent();
+         dispatchThisEvent(UnitEvent.STANCE_CHANGE);
          dispatchPropertyUpdateEvent("stance", value);
       }
       /**
@@ -495,62 +494,19 @@ package models.unit
       {
          return imageData.height;
       }
-      
-      private function dispatchSquadronIdChangeEvent(oldSquadronId:int) : void
-      {
-         if (hasEventListener(UnitEvent.SQUADRON_ID_CHANGE))
-         {
-            dispatchEvent(new UnitEvent(UnitEvent.SQUADRON_ID_CHANGE, oldSquadronId));
-         }
-      }
-      
-      
-      private function dispatchStanceChangeEvent() : void
-      {
-         if (hasEventListener(UnitEvent.STANCE_CHANGE))
-         {
-            dispatchEvent(new UnitEvent(UnitEvent.STANCE_CHANGE));
-         }
+
+      private function dispatchThisEvent(event: String): void {
+         dispatchSimpleEvent(UnitEvent, event);
       }
 
-      private function dispatchStoredChangeEvent() : void
-      {
-         if (hasEventListener(UnitEvent.STORED_CHANGE))
-         {
-            dispatchEvent(new UnitEvent(UnitEvent.STORED_CHANGE));
-         }
-      }
-
-      private function dispatchMetalChangeEvent() : void
-      {
-         if (hasEventListener(UnitEvent.METAL_CHANGE))
-         {
-            dispatchEvent(new UnitEvent(UnitEvent.METAL_CHANGE));
-         }
-      }
-
-      private function dispatchEnergyChangeEvent() : void
-      {
-         if (hasEventListener(UnitEvent.ENERGY_CHANGE))
-         {
-            dispatchEvent(new UnitEvent(UnitEvent.ENERGY_CHANGE));
-         }
-      }
-
-      private function dispatchZetiumChangeEvent() : void
-      {
-         if (hasEventListener(UnitEvent.ZETIUM_CHANGE))
-         {
-            dispatchEvent(new UnitEvent(UnitEvent.ZETIUM_CHANGE));
-         }
-      }
-      
-      
-      public override function toString() : String
-      {
-         return "[class: " + className + ", id: " + id + ", type: " + type +
-            ", squadronId: " + squadronId + ", owner: " + owner +
-            ", playerId: " + playerId + ", location: " + location + "]";
+      public override function toString() : String {
+         return new ObjectStringBuilder(this)
+            .addProp("id")
+            .addProp("type")
+            .addProp("squadronId")
+            .addProp("owner")
+            .addProp("playerId")
+            .addProp("location").finish();
       }
       
    }

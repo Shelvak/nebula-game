@@ -7,7 +7,7 @@ package models.planet
 
    import flash.events.EventDispatcher;
 
-   import flashx.textLayout.property.NumberWithEnumProperty;
+   import interfaces.ICleanable;
 
    import models.Owner;
    import models.events.BaseModelEvent;
@@ -21,7 +21,7 @@ package models.planet
    import mx.collections.IList;
 
    import utils.ArrayUtil;
-
+   import utils.EventBridge;
    import utils.Events;
    import utils.Objects;
    import utils.StringUtil;
@@ -33,40 +33,55 @@ package models.planet
    [Event(name="canSpawnNowChange", type="models.solarsystem.events.MSSObjectEvent")]
    [Event(name="messageSpawnAbilityChange", type="models.solarsystem.events.MSSObjectEvent")]
 
-   public class MPlanetBoss extends EventDispatcher
+   public class MPlanetBoss extends EventDispatcher implements ICleanable
    {
+      private const allSpawnChangeEvents: Array = [
+         MPlanetBossEvent.CAN_SPAWN_CHANGE,
+         MPlanetBossEvent.CAN_SPAWN_NOW_CHANGE,
+         MPlanetBossEvent.MESSAGE_SPAWN_ABILITY_CHANGE];
+
+      private var _planetEventBridge: EventBridge;
       private var _planet: MSSObject;
 
       public function MPlanetBoss(planet: MSSObject) {
          _planet = Objects.paramNotNull("planet", planet);
-         _planet.addEventListener(
-            MSSObjectEvent.COOLDOWN_CHANGE, planet_cooldownChangeHandler, false, 0, true);
-         _planet.addEventListener(
-            MSSObjectEvent.OWNER_CHANGE, planet_ownerChangeHandler, false, 0, true);
-         _planet.addEventListener(
-            MSSObjectEvent.SPAWN_COUNTER_CHANGE, planet_spawnCounterChangeHandler, false, 0, true);
-         _planet.addEventListener(
-            MSSObjectEvent.NEXT_SPAWN_CHANGE, planet_nextSpawnChangeHandler, false, 0, true);
-         _planet.addEventListener(
-            BaseModelEvent.UPDATE, planet_updateHandler, false, 0, true);
+         _planetEventBridge = new EventBridge(_planet, this)
+            .onEvents([MSSObjectEvent.COOLDOWN_CHANGE, MSSObjectEvent.OWNER_CHANGE])
+               .dispatchSimple(MPlanetBossEvent, allSpawnChangeEvents)
+            .onEvents([MSSObjectEvent.SPAWN_COUNTER_CHANGE])
+               .dispatchSimple(MPlanetBossEvent, [MPlanetBossEvent.UNITS_CHANGE])
+            .onEvents([MSSObjectEvent.NEXT_SPAWN_CHANGE])
+               .dispatchSimple(MPlanetBossEvent, [
+                  MPlanetBossEvent.CAN_SPAWN_NOW_CHANGE,
+                  MPlanetBossEvent.MESSAGE_SPAWN_ABILITY_CHANGE])
+            .onEvents([BaseModelEvent.UPDATE])
+               .dispatchSimple(MPlanetBossEvent, [MPlanetBossEvent.MESSAGE_SPAWN_ABILITY_CHANGE]);
       }
 
+      public function cleanup(): void {
+         _planetEventBridge.cleanup();
+         _planetMap = null;
+      }
+
+      private var _planetMapEventBridge: EventBridge;
       private var _planetMap: MPlanet;
       public function set planetMap(value: MPlanet): void {
          if (_planetMap != value) {
             if (_planetMap != null) {
-               _planetMap.removeEventListener(
-                  MPlanetEvent.UNIT_REFRESH_NEEDED, planet_unitsRefreshHandler, false);
+               _planetEventBridge.cleanup();
             }
             _planetMap = value;
             if (_planetMap != null) {
-               _planetMap.addEventListener(
-                  MPlanetEvent.UNIT_REFRESH_NEEDED, planet_unitsRefreshHandler, false, 0, true);
+               _planetMapEventBridge = new EventBridge(_planetMap, this)
+                  .onEvents([MPlanetEvent.UNIT_REFRESH_NEEDED])
+                     .dispatchSimple(MPlanetBossEvent, allSpawnChangeEvents);
             }
-            dispatchAllSpawnEvents();
+            // dispatch events for binding to work
+            for each (var event: String in allSpawnChangeEvents) {
+               Events.dispatchSimpleEvent(this, MPlanetBossEvent, event);
+            }
          }
       }
-
       public function get planetMap(): MPlanet {
          return _planetMap;
       }
@@ -109,8 +124,7 @@ package models.planet
             || _planet.owner == Owner.ALLY)
             && (_planetMap == null ||
                    _planetMap.hasAggressiveGroundUnits()
-               && !_planetMap.hasActiveUnits(Owner.ENEMY_PLAYER)
-               && !_planetMap.hasActiveUnits(Owner.NAP));
+               && !_planetMap.hasActiveUnits([Owner.ENEMY, Owner.NAP]));
       }
 
       [Bindable(event="canSpawnNowChange")]
@@ -147,67 +161,27 @@ package models.planet
 
       [Bindable(event="messageSpawnAbilityChange")]
       public function get message_spawnAbility(): String {
-         if (!canSpawn) {
-
-            var result: String = "";
-            function appendResult(key: String): void {
-               result += (result.length == 0 ? "" : "\n") + getString("message.canNotSpawn." + key);
-            }
-
-            if (_planet.owner != Owner.PLAYER && _planet.owner != Owner.NPC
-               && _planet.owner == Owner.ALLY) {
-               appendResult("player");
-            }
-            if (_planetMap != null) {
-               if (!_planetMap.hasAggressiveGroundUnits()) {
-                  appendResult("noGroundUnits");
-               }
-               if (_planetMap.hasActiveUnits(Owner.ENEMY_PLAYER) || _planetMap.hasActiveUnits(Owner.NAP)) {
-                  appendResult("napOrEnemyUnits");
-               }
-            }
-            return result;
+         if (canSpawn) {
+            return "";
          }
-         return null;
-      }
-
-
-      /* ############## */
-      /* ### EVENTS ### */
-      /* ############## */
-
-      private function planet_updateHandler(event: BaseModelEvent): void {
-         dispatchThisEvent(MPlanetBossEvent.MESSAGE_SPAWN_ABILITY_CHANGE);
-      }
-
-      private function planet_unitsRefreshHandler(event: MPlanetEvent): void {
-         dispatchAllSpawnEvents();
-      }
-
-      private function planet_spawnCounterChangeHandler(event: MSSObjectEvent): void {
-         dispatchThisEvent(MPlanetBossEvent.UNITS_CHANGE);
-      }
-
-      private function planet_nextSpawnChangeHandler(event: MSSObjectEvent): void {
-         dispatchThisEvent(MPlanetBossEvent.CAN_SPAWN_NOW_CHANGE);
-         dispatchThisEvent(MPlanetBossEvent.MESSAGE_SPAWN_ABILITY_CHANGE);
-      }
-
-      private function planet_ownerChangeHandler(event: MSSObjectEvent): void {
-         dispatchThisEvent(MPlanetBossEvent.CAN_SPAWN_CHANGE);
-         planet_nextSpawnChangeHandler(null);
-      }
-
-      private function planet_cooldownChangeHandler(event: MSSObjectEvent): void {
-         dispatchAllSpawnEvents();
-      }
-
-      private function dispatchAllSpawnEvents(): void {
-         planet_ownerChangeHandler(null);
-      }
-
-      private function dispatchThisEvent(type: String): void {
-         Events.dispatchSimpleEvent(this, MPlanetBossEvent, type);
+         const messages: Array = new Array();
+         function addMessage(key: String): void {
+            messages.push(getString("message.canNotSpawn." + key));
+         }
+         if (_planet.owner != Owner.PLAYER
+               && _planet.owner != Owner.NPC
+               && _planet.owner == Owner.ALLY) {
+            addMessage("player");
+         }
+         if (_planetMap != null) {
+            if (!_planetMap.hasAggressiveGroundUnits()) {
+               addMessage("noGroundUnits");
+            }
+            if (_planetMap.hasActiveUnits([Owner.ENEMY, Owner.NAP])) {
+               addMessage("napOrEnemyUnits");
+            }
+         }
+         return messages.join("\n");
       }
 
 

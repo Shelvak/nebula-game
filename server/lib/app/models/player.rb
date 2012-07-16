@@ -78,6 +78,9 @@ class Player < ActiveRecord::Base
     :check_for_column => false
   )
 
+  # Minimal overpopulation mod. Needed when #population_max is 0.
+  OVERPOPULATION_MOD_MIN = 0.00001
+
   # Given +Array+ with +Player+ ids returns a +Hash+ where players are
   # grouped by alliance ids. Players who are not in alliance get negative
   # alliance ids, starting from -1.
@@ -329,13 +332,14 @@ class Player < ActiveRecord::Base
   # Returns value (0..1] for combat mods. If player is overpopulated this
   # value will be < 1, else it will be 1.0.
   def overpopulation_mod
-    overpopulated? ? population_max.to_f / population : 1.0
+    overpopulated? \
+      ? [population_max.to_f / population, OVERPOPULATION_MOD_MIN].max : 1.0
   end
 
   def population_free; population_max - population; end
 
   def overpopulated?
-    population >= population_max
+    population > population_max
   end
 
   # Check if alliance cooldown has expired for alliance with _alliance_id_ or
@@ -547,10 +551,11 @@ class Player < ActiveRecord::Base
   end
 
   # {type => klass}
-  @@unit_class_cache = Java::java.util.concurrent.ConcurrentHashMap.new
+  @@class_cache = Java::java.util.concurrent.ConcurrentHashMap.new
 
-  # Sets #population to its real value.
+  # Sets #population and #population_cap to their real values.
   def recalculate_population
+    # Calculate #population.
     unit_counts = without_locking do
       Unit.select("type, COUNT(*) as count").where(player_id: id).
         group("type").c_select_all
@@ -569,12 +574,30 @@ GROUP BY cqe.constructable_type
 
     self.population = unit_counts.inject(0) do |sum, row|
       type = "Unit::#{row["type"]}"
-      klass = @@unit_class_cache[type] ||= type.constantize
+      klass = @@class_cache[type] ||= type.constantize
       sum + klass.population * row["count"]
     end + cqe_counts.inject(0) do |sum, row|
       type = row["type"]
-      klass = @@unit_class_cache[type] ||= type.constantize
+      klass = @@class_cache[type] ||= type.constantize
       sum + klass.population * row["count"].to_i
+    end
+
+    # Calculate #population_cap
+    owned_planet_ids = without_locking do
+      SsObject::Planet.select("id").where(player_id: id).c_select_values
+    end
+    types = Building.population_types
+
+    self.population_cap = without_locking do
+      # Be sure working headquarters are also counted in.
+      Building.where(planet_id: owned_planet_ids, type: types).
+        where("state != ?", Building::STATE_INACTIVE).
+        select("type, level, COUNT(*) as count").group("type, level").
+        c_select_all
+    end.inject(0) do |sum, row|
+      type = "Building::#{row["type"]}"
+      klass = @@class_cache[type] ||= type.constantize
+      sum + klass.population(row['level'].to_i) * row['count'].to_i
     end
   end
 

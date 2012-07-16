@@ -81,6 +81,12 @@ class Player(
   // value will be < 1, else it will be 1.0.
   val overpopulation: Double = Player.DefaultOverpopulation
 ) {
+  require(
+    overpopulation > 0 && overpopulation <= 1,
+    "overpopulation must be (0..1] for " + toString + ", but it was " +
+    overpopulation
+  )
+
   override def equals(other: Any) = other match {
     case player: Player => id == player.id
     case _ => false

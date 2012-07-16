@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<s:Group
+   xmlns:fx="http://ns.adobe.com/mxml/2009"
+   xmlns:s="library://ns.adobe.com/flex/spark"
+   left="0" right="0" top="0" bottom="0">
+
+   <fx:Script>
+      <![CDATA[
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
+
+
+      private function getImage(name:String): BitmapData {
+         return ImagePreloader.getInstance().getImage(AssetNames.SS_NAVIGATOR_FOLDER + name);
+      }
+      ]]>
+   </fx:Script>
+
+   <s:BitmapImage top="0" left="0" id="topLeft"
+                  source="{getImage('top_left')}"/>
+   <s:BitmapImage top="0" right="0" id="topRight"
+                  source="{getImage('top_right')}"/>
+   <s:BitmapImage top="0" left="{topLeft.width}" right="{topRight.width}"
+                  fillMode="repeat"
+                  source="{getImage('top_center')}"/>
+   <s:BitmapImage bottom="0" left="0" id="bottomLeft"
+                  source="{getImage('bottom_left')}"/>
+   <s:BitmapImage left="0" top="{topLeft.height}" bottom="{bottomLeft.height}"
+                  fillMode="repeat"
+                  source="{getImage('center_left')}"/>
+
+   <!-- fill -->
+   <!--- Defines the background appearance of the list-based component. -->
+   <s:Rect id="background" left="{topLeft.width}" right="0" top="{topLeft.height}"
+           bottom="0" >
+      <s:fill>
+         <!--- Defines the color of the background. The default color is 0xFFFFFF. -->
+         <s:SolidColor id="bgFill" color="0x000000" />
+      </s:fill>
+   </s:Rect>
+</s:Group>

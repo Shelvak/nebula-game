@@ -13,6 +13,9 @@ package models.player {
       public static const TECH_SORT_TYPE_SCIENTISTS: int = 0;
       public static const TECH_SORT_TYPE_TIME: int = 1;
 
+      public static const MIN_EVENT_SHOW_TIME: int = 1;
+      public static const MAX_EVENT_SHOW_TIME: int = 30;
+
       public static function loadOptions (options: Object, justRefreshOriginalData: Boolean = false): void
       {
          originalData = options;
@@ -35,6 +38,8 @@ package models.player {
          enablePlanetAnimations = options.enablePlanetAnimations;
          showWormholeIcons = options.showWormholeIcons;
          showInfoEvents = options.showInfoEvents;
+         actionEventTime = options.actionEventTime;
+         notificationEventTime = options.notificationEventTime;
       }
 
       private static var originalData: Object;
@@ -53,7 +58,9 @@ package models.player {
             'technologiesSortType': technologiesSortType,
             'enablePlanetAnimations': enablePlanetAnimations,
             'showWormholeIcons': showWormholeIcons,
-            'showInfoEvents': showInfoEvents
+            'showInfoEvents': showInfoEvents,
+            'actionEventTime': actionEventTime,
+            'notificationEventTime': notificationEventTime
          }
       }
 
@@ -71,6 +78,8 @@ package models.player {
          enablePlanetAnimations = originalData.enablePlanetAnimations;
          showWormholeIcons = originalData.showWormholeIcons;
          showInfoEvents = originalData.showInfoEvents;
+         actionEventTime = originalData.actionEventTime;
+         notificationEventTime = originalData.notificationEventTime;
          hasChanges = false;
       }
       [Bindable]
@@ -88,7 +97,9 @@ package models.player {
          && technologiesSortType == originalData.technologiesSortType
          && enablePlanetAnimations == originalData.enablePlanetAnimations
          && showWormholeIcons == originalData.showWormholeIcons
-         && showInfoEvents == originalData.showInfoEvents);
+         && showInfoEvents == originalData.showInfoEvents
+         && actionEventTime == originalData.actionEventTime
+         && notificationEventTime == originalData.notificationEventTime);
       }
 
       public static function addIgnoredPlayer(playerName: String): void
@@ -136,6 +147,10 @@ package models.player {
       public static var technologiesSortType: int;
       [Bindable]
       public static var showInfoEvents: Boolean;
+      [Bindable]
+      public static var actionEventTime: int;
+      [Bindable]
+      public static var notificationEventTime: int;
 
       /*### Map options ###*/
 

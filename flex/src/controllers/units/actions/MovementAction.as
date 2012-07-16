@@ -2,6 +2,7 @@ package controllers.units.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.startup.StartupInfo;
    import controllers.units.SquadronsController;
    
    import models.factories.UnitFactory;
@@ -10,8 +11,9 @@ package controllers.units.actions
    import mx.collections.ArrayCollection;
    
    import utils.Objects;
-   
-   
+   import utils.logging.Log;
+
+
    /**
     * Updates moving squadron
     * 
@@ -45,6 +47,11 @@ package controllers.units.actions
       
       public override function applyServerAction(cmd:CommunicationCommand) : void
       {
+         if (!StartupInfo.getInstance().initializationComplete) {
+            Log.getMethodLogger(this, "applyServerAction")
+               .warn("Message received before application had been initialized. Ignoring.");
+            return;
+         }
          var params:Object = cmd.parameters;
          var units:Array = params["units"];
          var players:Object = params["players"];

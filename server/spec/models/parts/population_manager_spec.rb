@@ -22,6 +22,19 @@ describe Building::PopulationManagerPartTest do
     end
   end
 
+  describe ".population_types" do
+    it "should return Array of camelcased types" do
+      types = []
+      CONFIG.each_matching(Parts::PopulationManager::POPULATION_REGEXP) do
+        |key, population|
+
+        type = key.split(".")[1].camelcase
+        types << type
+      end
+      Building::PopulationManagerPartTest.population_types.should == types
+    end
+  end
+
   describe "building" do
     before(:each) do
       @player = Factory.create(:player)
@@ -32,6 +45,7 @@ describe Building::PopulationManagerPartTest do
 
     describe "#on_activation" do
       before(:each) do
+        @player.update_row! population_cap: 0
         opts_inactive.apply(@building)
       end
       
@@ -52,6 +66,7 @@ describe Building::PopulationManagerPartTest do
 
     describe "#on_deactivate" do
       before(:each) do
+        @player.update_row! population_cap: @building.population
         opts_active.apply(@building)
       end
       

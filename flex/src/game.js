@@ -226,6 +226,12 @@ function missingParam(name) {
   window.alert("Missing query parameter: " + name);
 }
 
+// Is google analytics enabled?
+function gaEnabled() {
+  return ! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId) &&
+    ! defined(planetMapEditor);
+}
+
 // Returns game options for the Flash Client.
 //
 // If it returns null, client should stop initialization.
@@ -379,7 +385,8 @@ function versionTooOld(requiredVersion, currentVersion) {
 
 // Called when player successfully logs in into server.
 function loginSuccessful() {
-  _gaq.push(['_trackPageview', '/play/game/success']);
+  if (gaEnabled())
+    _gaq.push(['_trackPageview', '/play/' + playerType+ '/game/login']);
 }
 
 // Ensure player does not close the game accidentally.
@@ -404,11 +411,11 @@ function getCombatLogUrl(combatLogId, playerId) { // {{{
 
 // Setup google analytics {{{
 var _gaq = _gaq || [];
-if (
-    ! inLocalComputer() && ! inDeveloperMode() && ! defined(combatLogId) &&
-    ! defined(planetMapEditor)
-  ) {
-  _gaq.push(['_setAccount', gaAccountId], ['_trackPageview']);
+if (gaEnabled()) {
+  _gaq.push(
+    ['_setAccount', gaAccountId],
+    ['_trackPageview', '/play/' + playerType + '/game/opened']
+  );
   include("http://www.google-analytics.com/ga.js", 'async="true"');
 }
 // }}}
@@ -565,8 +572,25 @@ function onNoteSubmit() {
   return false;
 }
 
+// Setup one.lt top bar shown
+function setupOneLtBar() {
+  $("body").prepend("<div id='eads_menu_1' style='height: 40px'></div>");
+  var eads = document.createElement('script');
+  eads.type = 'text/javascript';
+  eads.async = true;
+  eads.src = 'http://ib.eads.lt/public/menu/get/?id=1';
+  $("body").append(eads);
+  $("#flashContent").wrap(
+    "<div style='position: absolute; top: 40px; bottom: 0px; left: 0px; " +
+    "right: 0px;' />"
+  );
+}
+
 // Load our swf {{{
 $(document).ready(function() {
+  // One.lt top banner.
+  if (urlParams["one_lt"] == "true") setupOneLtBar();
+
   var flashvars = {};
   var params = {};
   params.quality = "high";

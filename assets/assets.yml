@@ -624,6 +624,8 @@ assets:
         overdrive.png: Overdrive.png
         hide.png: Hide_icon.png
         unhide.png: Unhide_icon.png
+        reinitiate_combat_up.png: Shutdown_up.png
+        reinitiate_combat_down.png: Shutdown_down.png
 
       "player_screen":
         left.png:                   Pinfo_left.png

@@ -13,7 +13,8 @@ package tests.maps
    import models.solarsystem.MSolarSystem;
    
    import mx.collections.ArrayCollection;
-   
+   import mx.collections.ArrayList;
+
    import org.hamcrest.Matcher;
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
@@ -55,8 +56,10 @@ package tests.maps
       [Test]
       public function initialization() : void {
          galaxy = new Galaxy();
+         galaxy.setFOWEntries(new Vector.<MapArea>(), new ArrayList());
          client = new ClientMock();
-         area = new VisibleGalaxyArea(galaxy, client, new GalaxyMapCoordsTransform(galaxy));
+         area = new VisibleGalaxyArea(
+            galaxy, client, new GalaxyMapCoordsTransform(galaxy.fowMatrix));
          assertThat( "visibleArea", area.visibleArea, nullValue() );
       }
       
@@ -504,7 +507,8 @@ package tests.maps
             new ArrayCollection()
          );
          client = new ClientMock();
-         area = new VisibleGalaxyArea(galaxy, client, new GalaxyMapCoordsTransform(galaxy));
+         area = new VisibleGalaxyArea(
+            galaxy, client, new GalaxyMapCoordsTransform(galaxy.fowMatrix));
          
          var visibleScreenArea:Rectangle = new Rectangle(
             2 * SECTOR_W, 2 * SECTOR_H,
@@ -570,7 +574,8 @@ package tests.maps
          galaxy = new Galaxy();
          galaxy.setFOWEntries(Vector.<MapArea>([visibleArea]), new ArrayCollection());
          client = new ClientMock();
-         area = new VisibleGalaxyArea(galaxy, client, new GalaxyMapCoordsTransform(galaxy));
+         area = new VisibleGalaxyArea(
+            galaxy, client, new GalaxyMapCoordsTransform(galaxy.fowMatrix));
       }
       
       private function solarSystem(id:int, x:int, y:int) : MSolarSystem {

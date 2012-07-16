@@ -225,7 +225,8 @@ package utils.datastructures
                );
             }
             else {
-               loggerFactory.getLogger("removeFirst").warn("Object not found, could not remove");
+               loggerFactory.getLogger("removeFirst")
+                  .warn("Object not found, could not remove (using testFunction)");
             }
             return null;
          }
@@ -254,8 +255,8 @@ package utils.datastructures
                throw new Error("Could not find an item equal to " + example);
             }
             else {
-               loggerFactory.getLogger("removeFirstEqualTo").warn(
-                  "Object not found, could not remove");
+               loggerFactory.getLogger("removeFirstEqualTo")
+                  .warn("Object " + example + " not found, could not remove");
             }
             return null;
          }
