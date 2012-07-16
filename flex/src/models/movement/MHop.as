@@ -7,7 +7,10 @@ package models.movement
    import models.location.Location;
    import models.location.LocationMinimal;
    import models.time.MTimeEventFixedMoment;
-   
+
+   import utils.ObjectStringBuilder;
+
+
    public class MHop extends BaseModel implements ILocationUser, IUpdatable
    {
       [Required]
@@ -25,8 +28,7 @@ package models.movement
        *
        * @default null
        */
-      public const arrivalEvent: MTimeEventFixedMoment =
-                            new MTimeEventFixedMoment();
+      public const arrivalEvent: MTimeEventFixedMoment = new MTimeEventFixedMoment();
 
       [Optional(alias="jumpsAt")]
       /**
@@ -68,41 +70,34 @@ package models.movement
       /* ################## */
 
       public function update(): void {
-         arrivalEvent.update();
-         if (jumpEvent != null) {
-            jumpEvent.update();
-         }
+         updateItem(arrivalEvent);
+         updateItem(jumpEvent);
          dispatchUpdateEvent();
       }
 
       public function resetChangeFlags(): void {
-         arrivalEvent.resetChangeFlags();
-         if (jumpEvent != null) {
-            jumpEvent.resetChangeFlags()
-         }
+         resetChangeFlagsOf(arrivalEvent);
+         resetChangeFlagsOf(jumpEvent);
       }
       
       
       /* ########################### */
       /* ### BaseModel OVERRIDES ### */
       /* ########################### */
-      
-      public override function equals(o:Object) : Boolean {
-         if (o is MHop) {
-            var hop:MHop = MHop(o);
-            return hop == this
-                      || hop.routeId == routeId
-                            && hop.location.equals(location);
-         }
-         return false;
+
+      public override function equals(o: Object): Boolean {
+         const another: MHop = o as MHop;
+         return another != null
+            && another.routeId == this.routeId
+            && another.location.equals(this.location);
       }
-      
-      public override function toString() : String {
-         return "[class: " + className
-                   + ", routeId: " + routeId
-                   + ", arrivesAt: " + arrivalEvent.occursAt
-                   + ", index: " + index
-                   + ", location: " + location + "]";
+
+      public override function toString(): String {
+         return new ObjectStringBuilder(this)
+            .addProp("routeId")
+            .addProp("arrivalEvent")
+            .addProp("index")
+            .addProp("location").finish();
       }
    }
 }
