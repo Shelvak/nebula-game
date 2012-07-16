@@ -1035,7 +1035,10 @@ FORUM_API_KEY = "#{forum_secret}"
 FORUM_COOKIE_NAME = "#{forum_cookie}"
 WIKI_URI = 'http://wiki.nebula44.#{DOMAIN}/wiki'
 NEWS_FORUM_ID = 2
-GA_ACCOUNT_ID = "#{GA_ACCOUNT_ID}"
+# [tracker name, account id, inclusion condition]
+GA_ACCOUNT_IDS = [
+  ["n44", "#{GA_ACCOUNT_ID}", lambda { |request| true }]
+]
 
 # This is used in application controller.
 LOCALE = :#{LOCALE}

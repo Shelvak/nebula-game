@@ -383,10 +383,23 @@ function versionTooOld(requiredVersion, currentVersion) {
   window.location.reload();
 }
 
+// Yield name and id to given f for each google analytics account.
+function eachGaAccount(f) {
+  $.each(gaAccountIds, function(index, account) {
+    var name = account[0];
+    var id = account[1];
+    f(name, id);
+  });
+}
+
 // Called when player successfully logs in into server.
 function loginSuccessful() {
   if (gaEnabled())
-    _gaq.push(['_trackPageview', '/play/' + playerType+ '/game/login']);
+    eachGaAccount(function(name, id) {
+      _gaq.push(
+        [name + '._trackPageview', '/play/' + playerType + '/game/login']
+      );
+    });
 }
 
 // Ensure player does not close the game accidentally.
@@ -412,10 +425,12 @@ function getCombatLogUrl(combatLogId, playerId) { // {{{
 // Setup google analytics {{{
 var _gaq = _gaq || [];
 if (gaEnabled()) {
-  _gaq.push(
-    ['_setAccount', gaAccountId],
-    ['_trackPageview', '/play/' + playerType + '/game/opened']
-  );
+  eachGaAccount(function(name, id) {
+    _gaq.push(
+      [name + '._setAccount', id],
+      [name + '._trackPageview', '/play/' + playerType + '/game/opened']
+    );
+  });
   include("http://www.google-analytics.com/ga.js", 'async="true"');
 }
 // }}}
