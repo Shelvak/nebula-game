@@ -42,6 +42,38 @@
          display: block;
       }
 
+      #trial_register {
+        display: none;
+        z-index: 1000;
+        position: absolute;
+        top: 0px; bottom: 0px; left: 0px; right: 0px;
+        background: url("images/background.jpeg");
+      }
+
+      #trial_register div {
+        text-align: right;
+        margin: 20px auto 0 auto;
+        width: 960px;
+      }
+
+      #trial_register iframe {
+        display: block;
+        margin: auto;
+        width: 960px; height: 80%;
+        border: 1px solid gray;
+      }
+
+      .alpha40 {
+      	/* Fallback for web browsers that doesn't support RGBa */
+      	background: rgb(0, 0, 0);
+      	/* RGBa with 0.6 opacity */
+      	background: rgba(0, 0, 0, 0.4);
+      	/* For IE 5.5 - 7*/
+      	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000, endColorstr=#66000000);
+      	/* For IE 8*/
+      	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000, endColorstr=#66000000)";
+      }
+
       #client-not-responding {
          padding-top: 150px;
          text-align: center;
@@ -61,8 +93,6 @@
          display: block;
       }
    </style>
-  <link rel="stylesheet"
-        href="jquery-ui/css/ui-lightness/jquery-ui-1.8.21.custom.css">
 
    <script type="text/javascript">//<![CDATA[
 function defined(argument) { return argument != undefined; }
@@ -115,7 +145,6 @@ function include(jsName, additional) {
 
 include("swfobject-2.2.js");
 include("jquery-1.6.4.min.js");
-include("jquery-ui/js/jquery-ui-1.8.21.custom.min.js");
 var gameJs = fp.binDebug ? "game.js" : "game-${gamejs.checksum}.js";
 include(gameJs);
         //]]</script>
@@ -161,7 +190,12 @@ include(gameJs);
        <a href="javascript:window.refresh()"></a>
     </div>
 
-    <div id="trial_register"></div>
+    <div id="trial_register">
+      <div class="alpha40"><a href="javascript:closeTrialRegistration()">
+        <img src="images/close_button.png" />
+      </a></div>
+      <iframe></iframe>
+    </div>
 
     </body>
 </html>

@@ -601,19 +601,17 @@ function setupOneLtBar() {
   );
 }
 
+// Called by client to open trial registration form.
 function openTrialRegistration() {
-  $("#trial_register").load("http://n44.lh", function() {
-      var container = $(this);
-      container.dialog({
-          modal: true
-      })
-      .find("form").submit(function() {
-          container.dialog("close");
-          return false;
-      });
-  });
+  $("#trial_register iframe").
+    attr("src", 'http://' + webHost + '/trial/register');
+  $("#trial_register").show();
 }
 
+function closeTrialRegistration() {
+  $("#trial_register").hide();
+  $("#trial_register iframe").attr("src", '');
+}
 
 // Load our swf {{{
 $(document).ready(function() {
