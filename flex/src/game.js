@@ -619,13 +619,20 @@ function openTrialRegistration() {
   $("#trial_register").css(
     "background", "url('" + assetsUrl + "images/background.jpeg')"
   ).show();
+
+  // Stupid hack for IE, that things that leaving iframe equals leaving site.
+  // You can't even put this in closeTrialRegistration(), because SOMEHOW IE
+  // manages to run onbeforeunload handler even before .hide() is called!
+  window.oldBeforeUnloadHandler = window.onbeforeunload;
+  window.onbeforeunload = null;
 }
 
 function closeTrialRegistration() {
   $("object").css("visibility", "visible");
   $("#trial_register").hide();
-  $("#trial_register iframe").attr("src", '');
   if (isOneLt()) showOneLtBar();
+  window.onbeforeunload = window.oldBeforeUnloadHandler;
+  window.oldBeforeUnloadHandler = null;
 }
 
 // Load our swf {{{
