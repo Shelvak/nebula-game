@@ -47,19 +47,18 @@
         z-index: 1000;
         position: absolute;
         top: 0px; bottom: 0px; left: 0px; right: 0px;
-        background: url("images/background.jpeg");
       }
 
       #trial_register div {
         text-align: right;
         margin: 20px auto 0 auto;
-        width: 960px;
+        width: 700px;
       }
 
       #trial_register iframe {
         display: block;
         margin: auto;
-        width: 960px; height: 80%;
+        width: 700px; height: 80%;
         border: 1px solid gray;
       }
 
@@ -192,7 +191,7 @@ include(gameJs);
 
     <div id="trial_register">
       <div class="alpha40"><a href="javascript:closeTrialRegistration()">
-        <img src="images/close_button.png" />
+        <img /> <!-- src set by JS, because of assetsUrl -->
       </a></div>
       <iframe></iframe>
     </div>

@@ -605,7 +605,10 @@ function setupOneLtBar() {
 function openTrialRegistration() {
   $("#trial_register iframe").
     attr("src", 'http://' + webHost + '/trial/register');
-  $("#trial_register").show();
+  $("#trial_register img").attr("src", assetsUrl + "images/close_button.png");
+  $("#trial_register").css(
+    "background", "url('" + assetsUrl + "images/background.jpeg')"
+  ).show();
 }
 
 function closeTrialRegistration() {
