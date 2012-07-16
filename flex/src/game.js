@@ -610,6 +610,9 @@ function showOneLtBar() { $("#eads_menu_1").show(); }
 // Called by client to open trial registration form.
 function openTrialRegistration() {
   if (isOneLt()) hideOneLtBar();
+  // Opera hack to hide flash, otherwise it shows instead of background and we
+  // cannot use display: none, because that unloads the client.
+  $("object").css("visibility", "hidden");
   $("#trial_register iframe").
     attr("src", 'http://' + webHost + '/trial/register');
   $("#trial_register img").attr("src", assetsUrl + "images/close_button.png");
@@ -619,6 +622,7 @@ function openTrialRegistration() {
 }
 
 function closeTrialRegistration() {
+  $("object").css("visibility", "visible");
   $("#trial_register").hide();
   $("#trial_register iframe").attr("src", '');
   if (isOneLt()) showOneLtBar();
