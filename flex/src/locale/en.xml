@@ -1618,6 +1618,22 @@
       You can heal your own and alliances units together. Just select your units,
       switch to alliances tab, select allies units and click "Heal".
     </tip.12>
+    <tip.13>
+      You can click on a nick in chat log to quickly reply to him in same
+      channel.
+    </tip.13>
+    <tip.14>
+      Did you know that by holding SHIFT key you can select/deselect multiple
+      units at once?
+    </tip.14>
+    <tip.15>
+      Did you know that by holding CTRL key you can select/deselect all
+      units of same kind in one click?
+    </tip.15>
+    <tip.16>
+      You can autocomplete player names in chat by typing in few first letters
+      and pressing TAB.
+    </tip.16>
   </Tips>
 
   <Location>
