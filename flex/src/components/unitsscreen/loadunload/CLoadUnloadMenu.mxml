@@ -41,7 +41,9 @@
                    label="{getString('tab.unload')}" click="AL.switchState()"
                           enabled="{AL.state == MCAutoLoad.STATE_LOADING}"/>
        </s:Group>
-       <base:Heading1/>
+       <base:Heading1 text="{AL.state == MCAutoLoad.STATE_LOADING
+          ? getString('tab.load')
+          : getString('tab.unload')}"/>
        <s:Label paddingBottom="6" paddingTop="6" text="{getString('label.clickToTransfer')}"/>
        <s:DataGroup dataProvider="{AL.loadables}" width="100%"
                     itemRenderer="components.unitsscreen.loadunload.CLoadUnloadPriority">

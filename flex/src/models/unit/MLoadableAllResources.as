@@ -22,6 +22,19 @@ package models.unit {
          return null;
       }
 
+      public function set anyResourceEnabled(value: Boolean): void
+      {
+         _anyResourceEnabled = value;
+         dispatchCountChangeEvent();
+      }
+
+      private var _anyResourceEnabled: Boolean;
+
+      [Bindable(event="loadableCountChange")]
+      override public function get enabled(): Boolean {
+         return _anyResourceEnabled;
+      }
+
       public override function get image(): BitmapData
       {
          return ImagePreloader.getInstance().getImage(

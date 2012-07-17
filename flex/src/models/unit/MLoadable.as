@@ -12,9 +12,14 @@ package models.unit {
 
    import models.unit.events.UnitEvent;
 
+   import utils.locale.Localizer;
+
    public class MLoadable extends EventDispatcher {
       public function MLoadable() {
+         super();
       }
+
+      public static const PLANET_STORAGE: int = -1;
 
       public function set count(value: int): void
       {
@@ -62,12 +67,31 @@ package models.unit {
          return 0;
       }
 
-      private function dispatchCountChangeEvent(): void
+      [Bindable (event="loadableCountChange")]
+      public function get toolTip(): String
+      {
+         return enabled
+            ? ""
+            : (count > 0
+               ? Localizer.string('Units', 'tooltip.autoLoadWontFit')
+               : ""
+            );
+      }
+
+      protected function dispatchCountChangeEvent(): void
       {
          if (hasEventListener(UnitEvent.LOADABLE_COUNT_CHANGE))
          {
             dispatchEvent(new UnitEvent(UnitEvent.LOADABLE_COUNT_CHANGE));
          }
+      }
+
+      protected var maxVolume: int;
+
+      public function setMaxVolume(value: int): void
+      {
+         maxVolume = value;
+         dispatchCountChangeEvent();
       }
    }
 }

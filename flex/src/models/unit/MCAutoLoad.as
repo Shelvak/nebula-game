@@ -25,6 +25,7 @@ package models.unit {
    import models.location.ILocationUser;
    import models.location.Location;
    import models.location.LocationType;
+   import models.planet.events.MPlanetEvent;
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.solarsystem.MSSObject;
@@ -151,10 +152,16 @@ package models.unit {
             allUnits.count += unit.count;
             loadables.addItem(loadable);
          }
+         updateMinVolume();
       }
 
-      private function resetScreen(): void
+      private function resetScreen(e: MPlanetEvent = null): void
       {
+         if (ML.latestPlanet != null)
+         {
+            ML.latestPlanet.removeEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
+               resetScreen);
+         }
          ML.units.removeStoredUnits();
          if (filteredWreckages != null)
          {
@@ -193,6 +200,8 @@ package models.unit {
                allUnits.count += unit.count;
                temp.addItem(loadable);
             }
+            ML.latestPlanet.addEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
+               resetScreen);
          }
          else if (target == null)
          {
@@ -246,6 +255,7 @@ package models.unit {
          }
          loadables = temp;
          refreshAllResourcesCount();
+         updateMinVolume();
       }
 
       private function refreshAllResourcesCount(): void
@@ -263,6 +273,42 @@ package models.unit {
          {
             unloadAllResources();
          }
+         updateMinVolume();
+      }
+
+      private function updateMinVolume(): void
+      {
+         var maxVolume: int = 0;
+         if (state == STATE_LOADING)
+         {
+            for each (var transporter: Unit in transporters)
+            {
+               maxVolume = Math.max(ML.technologies.getUnitStorage(
+                  transporter.type, transporter.level) - transporter.stored,
+                  maxVolume
+               );
+            }
+         }
+         else if (inPlanet)
+         {
+            maxVolume = MLoadable.PLANET_STORAGE;
+         }
+         else
+         {
+            maxVolume = int.MAX_VALUE;
+         }
+         var anyUnitEnabled: Boolean = false;
+         for each (var loadable: MLoadable in loadables)
+         {
+            loadable.setMaxVolume(maxVolume);
+            if (loadable is MLoadableUnit && MLoadableUnit(loadable).enabled)
+            {
+               anyUnitEnabled = true;
+            }
+         }
+         allResources.anyResourceEnabled =
+            metal.enabled || energy.enabled || zetium.enabled;
+         allUnits.anyUnitEnabled = anyUnitEnabled;
       }
 
       public function transferResource(type: String): void
@@ -275,6 +321,7 @@ package models.unit {
          {
             unloadResource(type);
          }
+         updateMinVolume();
       }
 
       private function loadAllResources(): void
@@ -449,12 +496,13 @@ package models.unit {
          {
             if (loadable is MLoadableUnit)
             {
-               transferUnits(MLoadableUnit(loadable).type);
+               transferUnits(MLoadableUnit(loadable).type, false);
             }
          }
+         updateMinVolume();
       }
 
-      public function transferUnits(type: String): void
+      public function transferUnits(type: String, updateVolume: Boolean = true): void
       {
          if (state == STATE_LOADING)
          {
@@ -463,6 +511,10 @@ package models.unit {
          else
          {
             unloadUnits(type);
+         }
+         if (updateVolume)
+         {
+            updateMinVolume();
          }
       }
 

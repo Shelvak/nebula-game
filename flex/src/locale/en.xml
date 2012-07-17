@@ -5083,6 +5083,8 @@
     <label.openAutoLoad value="Open"/>
     <tab.load value="Load"/>
     <tab.unload value="Unload"/>
+    <tooltip.autoLoadWontFit
+      value="You can't transfer this object due to insufficient storage."/>
 
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />

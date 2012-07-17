@@ -3,12 +3,13 @@
                 xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:components="utils.components.*"
                 autoDrawBackground="false"
+                toolTip="{model.toolTip}"
                 click="if (model.enabled)
                 {
                   model.clickHandler(event)
                 }">
   <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
-                  AssetNames.STORAGE_SCREEN_FOLDER + (model.count > 0 ? '' : 'in') +
+                  AssetNames.STORAGE_SCREEN_FOLDER + (model.enabled ? '' : 'in') +
                   'active_container')}"/>
   <s:Group width="63" height="63" horizontalCenter="0" verticalCenter="0">
     <components:CenteredBitmapImage source="{model.image}" smooth="true"

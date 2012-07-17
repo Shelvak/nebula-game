@@ -5209,6 +5209,8 @@
     <label.openAutoLoad value="Atidaryti"/>
     <tab.load value="Įkrovimas"/>
     <tab.unload value="Iškrovimas"/>
+    <tooltip.autoLoadWontFit
+      value="Šio objekto perkelti negali dėl nepakankamos talpos."/>
 
 
     <label.incomingRaiders value="Atskrendantys piratai" />
