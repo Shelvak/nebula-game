@@ -505,6 +505,10 @@ class UnitsController < GenericController
   SHOW_SCOPE = scope.world
   def self.show_action(m)
     without_locking do
+      raise GameLogicError,
+        "Cannot show multiple transporters if you're not VIP." \
+        unless m.player.vip? || m.params['unit_ids'].size <= 1
+
       transporters = Unit.where(player_id: m.player.id).
         find(m.params['unit_ids'])
 

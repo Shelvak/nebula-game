@@ -867,12 +867,16 @@ describe UnitsController do
         Factory.create(:u_with_storage, :player => player),
         Factory.create(:u_with_storage, :player => player),
       ]
-      @units = [
+      @t1_units = [
         Factory.create(:u_loadable_test, :location => @transporters[0]),
         Factory.create(:u_loadable_test, :location => @transporters[0]),
+      ]
+      @t2_units = [
         Factory.create(:u_loadable_test, :location => @transporters[1]),
       ]
+      @units = @t1_units + @t2_units
       @params = {'unit_ids' => @transporters.map(&:id)}
+      player.vip_level = 1
     end
 
     it_behaves_like "with param options", %w{unit_ids}
@@ -904,6 +908,23 @@ describe UnitsController do
     it "should return units" do
       invoke @action, @params
       response_should_include(:units => @units.map(&:as_json))
+    end
+
+    describe "non-vip" do
+      before(:each) do
+        player.vip_level = 0
+      end
+
+      it "should fail if trying to view several transporters" do
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should not fail if trying to view one transporter" do
+        invoke @action, @params.merge('unit_ids' => [@transporters[0].id])
+        response_should_include(:units => @t1_units.map(&:as_json))
+      end
     end
   end
 
