@@ -122,7 +122,9 @@ s_convoys = "Convoys"
 s_galaxy_battles = "GalaxyBattles"
 
 mex_1st_planet = 6 # 7 MEXes in planet
-mex_2nd_planet = 2 # 8 MEXes in planet
+# 1 because first planet has 7 MEXes and its pain in the ass to get a new mex
+# in second planet.
+mex_2nd_planet = 1 # 8 MEXes in planet
 mex_3rd_planet = 4
 energy_1st_planet = 8
 energy_2nd_planet = 4
