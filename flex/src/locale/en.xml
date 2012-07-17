@@ -5799,4 +5799,11 @@
     <mouseCoordinates.title>Coordinates</mouseCoordinates.title>
   </EntireGalaxy>
 
+  <HidableMenu>
+    <Announcement value="Announcement" />
+    <Register value="Registration" />
+    <DailyBonus value="Daily Bonus" />
+    <MainQuest value="Main Quest" />
+    <Quests value="Quests" />
+  </HidableMenu>
 </locale>

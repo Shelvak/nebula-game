@@ -5885,4 +5885,11 @@
     <mouseCoordinates.title>Koordinatės</mouseCoordinates.title>
   </EntireGalaxy>
 
+  <HidableMenu>
+    <Announcement value="Pranešimas" />
+    <Register value="Registracija" />
+    <DailyBonus value="Dienos prizas" />
+    <MainQuest value="Pagrindinė užduotis" />
+    <Quests value="Užduotys" />
+  </HidableMenu>
 </locale>

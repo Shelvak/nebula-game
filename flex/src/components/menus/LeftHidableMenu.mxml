@@ -144,18 +144,25 @@
          visible="{ML.latestGalaxy != null
          &amp;&amp; ML.latestGalaxy.apocalypseActive}"/>
 
-      <registerrequired:RegisterButton/>
+      <registerrequired:RegisterButton
+        toolTip="{Localizer.string('HidableMenu', 'Register')}"
+        />
       <s:Button
          skinClass="components.skins.DailyBonusButtonSkin"
+         toolTip="{Localizer.string('HidableMenu', 'DailyBonus')}"
          visible="{ML.player.dailyBonus != null}"
          click="showDailyBonus()"/>
-      <announcement:AnnouncementButton id="announcementButton"/>
+      <announcement:AnnouncementButton id="announcementButton"
+        toolTip="{Localizer.string('HidableMenu', 'Announcement')}"
+        />
       <s:Button
         skinClass="components.skins.MainQuestButtonSkin"
         id="btnTutorial" label="Tutorial" visible="{MQL.showButton}"
+        toolTip="{Localizer.string('HidableMenu', 'MainQuest')}"
         click="btnTutorial_clickHandler(event)"/>
       <s:Button
          skinClass="components.skins.QuestScreenButtonSkin"
+         toolTip="{Localizer.string('HidableMenu', 'Quests')}"
          visible="{ML.quests.currentTotal > 0}"
          click="questButton_click(event)"/>
    </base:AdvancedContainer>
