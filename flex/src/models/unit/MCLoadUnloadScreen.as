@@ -176,7 +176,8 @@ package models.unit
             {
                flanks.removeAll();
                EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-               new UnitsCommand(UnitsCommand.SHOW, location).dispatch();
+               new UnitsCommand(UnitsCommand.SHOW,
+                                {"unitIds": [location.id]}).dispatch();
             }
          }
          if (unitsGiven)
@@ -368,7 +369,8 @@ package models.unit
          {
             flanks.removeAll();
             EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-            new UnitsCommand(UnitsCommand.SHOW, location).dispatch();
+            new UnitsCommand(UnitsCommand.SHOW,
+               {"unitIds": [location.id]}).dispatch();
          }
          this[ToggleButton(event.currentTarget).name + 'Selected'] = true;
          dispatchRefreshMaxStorageEvent();

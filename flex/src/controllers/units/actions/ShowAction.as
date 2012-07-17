@@ -14,18 +14,11 @@ package controllers.units.actions
 
    /**
     * Used for getting units in other unit
-    * param_options :required => %w{unit_id}
-    * respond :units => transporter.units
+    * param_options :required => %w{unit_ids}
+    * respond :units => each (transporter.units)
     */
    public class ShowAction extends CommunicationAction
    {
-      private var transporter: Unit;
-      override public function applyClientAction(cmd:CommunicationCommand) : void
-      {
-         transporter = Unit(cmd.parameters);
-         cmd.parameters = {'unitId': transporter.id};
-         super.applyClientAction(cmd);
-      }
       
       override public function applyServerAction(cmd:CommunicationCommand) : void
       {
