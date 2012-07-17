@@ -494,21 +494,21 @@ class UnitsController < GenericController
   # Invoked: by client
   #
   # Parameters:
-  # - unit_id (Fixnum)
+  # - unit_ids (Fixnum[])
   #
   # Response:
-  # - units (Unit[]): Units container in that unit.
+  # - units (Unit[]): Units contained in those units.
   #
   ACTION_SHOW = 'units|show'
 
-  SHOW_OPTIONS = logged_in + required(:unit_id => Fixnum)
+  SHOW_OPTIONS = logged_in + required(:unit_ids => Array)
   SHOW_SCOPE = scope.world
   def self.show_action(m)
     without_locking do
-      transporter = Unit.where(:player_id => m.player.id).
-        find(m.params['unit_id'])
+      transporters = Unit.where(player_id: m.player.id).
+        find(m.params['unit_ids'])
 
-      respond m, :units => transporter.units.map(&:as_json)
+      respond m, units: transporters.map(&:units).flat_map(&:as_json)
     end
   end
 
