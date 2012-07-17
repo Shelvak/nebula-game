@@ -5077,7 +5077,9 @@
     <label.clickToTransfer>
       <p>Click on the items to transfer.</p>
     </label.clickToTransfer>
-    <label.autoLoad value="Auto transfer"/>
+    <label.autoLoad value="Mass load/unload"/>
+    <label.autoLoadOnlyVip
+      value="Mass load/unload function can only be used by VIP members"/>
     <label.openAutoLoad value="Open"/>
     <tab.load value="Load"/>
     <tab.unload value="Unload"/>

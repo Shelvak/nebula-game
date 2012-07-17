@@ -41,6 +41,12 @@ package models.unit {
          return MCAutoLoad.getInstance();
       }
 
+      [Bindable (event="loadableCountChange")]
+      public function get enabled(): Boolean
+      {
+         return count > 0;
+      }
+
       public function clickHandler(e: MouseEvent): void
       {
          throw new Error("This method is abstract!");
@@ -49,6 +55,11 @@ package models.unit {
       public function get image(): BitmapData
       {
          throw new Error("This method is abstract!");
+      }
+
+      public function get sidePadding(): int
+      {
+         return 0;
       }
 
       private function dispatchCountChangeEvent(): void

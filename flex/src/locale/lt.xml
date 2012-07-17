@@ -5201,9 +5201,11 @@
     <stance.aggressive value="Agresyvi būsena ({0}% žalos, {1}% gynybos)" />
 
     <label.clickToTransfer>
-      <p>Paspausk su pele ant tų karių, kuriuos nori perkelti.</p>
+      <p>Paspausk su pele ant tų objektų, kuriuos nori perkelti.</p>
     </label.clickToTransfer>
-    <label.autoLoad value="Automatinis perkėlimas"/>
+    <label.autoLoad value="Masinis perkėlimas"/>
+    <label.autoLoadOnlyVip
+      value="Masiniu perkėlimu gali naudotis tik VIP nariai."/>
     <label.openAutoLoad value="Atidaryti"/>
     <tab.load value="Įkrovimas"/>
     <tab.unload value="Iškrovimas"/>

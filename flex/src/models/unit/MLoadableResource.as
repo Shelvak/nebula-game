@@ -29,5 +29,10 @@ package models.unit {
       public override function clickHandler(e: MouseEvent): void {
          AL.transferResource(resourceType);
       }
+
+      public override function get sidePadding(): int
+      {
+         return 5;
+      }
    }
 }
