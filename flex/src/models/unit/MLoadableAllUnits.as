@@ -7,6 +7,7 @@
  */
 package models.unit {
    import flash.display.BitmapData;
+   import flash.events.MouseEvent;
 
    import utils.assets.AssetNames;
 
@@ -26,6 +27,10 @@ package models.unit {
       {
          return ImagePreloader.getInstance().getImage(
                 AssetNames.UI_IMAGES_FOLDER + 'all_units_large');
+      }
+
+      public override function clickHandler(e: MouseEvent): void {
+         AL.transferAllUnits();
       }
    }
 }

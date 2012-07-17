@@ -22,10 +22,10 @@ package models.unit {
       }
 
       public override function clickHandler(e: MouseEvent): void {
-         AL.loadUnits(type);
+         AL.transferUnits(type);
       }
 
-      private var type: String;
+      public var type: String;
 
       public override function get image(): BitmapData
       {
