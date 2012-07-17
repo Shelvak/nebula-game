@@ -863,34 +863,38 @@ describe UnitsController do
   describe "units|show" do
     before(:each) do
       @action = "units|show"
-      @transporter = Factory.create(:u_with_storage, :player => player)
-      @units = [
-        Factory.create(:u_loadable_test, :location => @transporter),
-        Factory.create(:u_loadable_test, :location => @transporter),
+      @transporters = [
+        Factory.create(:u_with_storage, :player => player),
+        Factory.create(:u_with_storage, :player => player),
       ]
-      @params = {'unit_id' => @transporter.id}
+      @units = [
+        Factory.create(:u_loadable_test, :location => @transporters[0]),
+        Factory.create(:u_loadable_test, :location => @transporters[0]),
+        Factory.create(:u_loadable_test, :location => @transporters[1]),
+      ]
+      @params = {'unit_ids' => @transporters.map(&:id)}
     end
 
-    it_behaves_like "with param options", %w{unit_id}
+    it_behaves_like "with param options", %w{unit_ids}
     it_should_behave_like "having controller action scope"
 
-    it "should not work if transporter belongs to ally" do
+    it "should not work if any transporter belongs to ally" do
       player.alliance = Factory.create(:alliance)
       player.save!
 
-      @transporter.player = Factory.create(
+      @transporters[0].player = Factory.create(
         :player, :alliance => player.alliance
       )
-      @transporter.save!
+      @transporters[0].save!
 
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should raise not found if transporter doesn't belong to player" do
-      @transporter.player = Factory.create(:player)
-      @transporter.save!
+    it "should raise not found if any transporter doesn't belong to player" do
+      @transporters[1].player = Factory.create(:player)
+      @transporters[1].save!
 
       lambda do
         invoke @action, @params

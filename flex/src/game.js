@@ -383,10 +383,23 @@ function versionTooOld(requiredVersion, currentVersion) {
   window.location.reload();
 }
 
+// Yield name and id to given f for each google analytics account.
+function eachGaAccount(f) {
+  $.each(gaAccountIds, function(index, account) {
+    var name = account[0];
+    var id = account[1];
+    f(name, id);
+  });
+}
+
 // Called when player successfully logs in into server.
 function loginSuccessful() {
   if (gaEnabled())
-    _gaq.push(['_trackPageview', '/play/' + playerType+ '/game/login']);
+    eachGaAccount(function(name, id) {
+      _gaq.push(
+        [name + '._trackPageview', '/play/' + playerType + '/game/login']
+      );
+    });
 }
 
 // Ensure player does not close the game accidentally.
@@ -412,10 +425,12 @@ function getCombatLogUrl(combatLogId, playerId) { // {{{
 // Setup google analytics {{{
 var _gaq = _gaq || [];
 if (gaEnabled()) {
-  _gaq.push(
-    ['_setAccount', gaAccountId],
-    ['_trackPageview', '/play/' + playerType + '/game/opened']
-  );
+  eachGaAccount(function(name, id) {
+    _gaq.push(
+      [name + '._setAccount', id],
+      [name + '._trackPageview', '/play/' + playerType + '/game/opened']
+    );
+  });
   include("http://www.google-analytics.com/ga.js", 'async="true"');
 }
 // }}}
@@ -449,7 +464,7 @@ function clientNotResponding() {
   var strings = locales.clientNotResponding;
   $("#client-not-responding h2").html(strings.title(locale));
   $("#client-not-responding-message").html(strings.message(locale).join("<br/>"));
-   $("#client-not-responding a").html(strings.reload(locale));
+  $("#client-not-responding a").html(strings.reload(locale));
   $("#client-not-responding").show();
 
   var secondsToWait = 10;
@@ -572,6 +587,10 @@ function onNoteSubmit() {
   return false;
 }
 
+function isOneLt() {
+  return urlParams["one_lt"] == "true";
+}
+
 // Setup one.lt top bar shown
 function setupOneLtBar() {
   $("body").prepend("<div id='eads_menu_1' style='height: 40px'></div>");
@@ -585,11 +604,41 @@ function setupOneLtBar() {
     "right: 0px;' />"
   );
 }
+function hideOneLtBar() { $("#eads_menu_1").hide(); }
+function showOneLtBar() { $("#eads_menu_1").show(); }
+
+// Called by client to open trial registration form.
+function openTrialRegistration() {
+  if (isOneLt()) hideOneLtBar();
+  // Opera hack to hide flash, otherwise it shows instead of background and we
+  // cannot use display: none, because that unloads the client.
+  $("object").css("visibility", "hidden");
+  $("#trial_register iframe").
+    attr("src", 'http://' + webHost + '/trial/register');
+  $("#trial_register img").attr("src", assetsUrl + "images/close_button.png");
+  $("#trial_register").css(
+    "background", "url('" + assetsUrl + "images/background.jpeg')"
+  ).show();
+
+  // Stupid hack for IE, that things that leaving iframe equals leaving site.
+  // You can't even put this in closeTrialRegistration(), because SOMEHOW IE
+  // manages to run onbeforeunload handler even before .hide() is called!
+  window.oldBeforeUnloadHandler = window.onbeforeunload;
+  window.onbeforeunload = null;
+}
+
+function closeTrialRegistration() {
+  $("object").css("visibility", "visible");
+  $("#trial_register").hide();
+  if (isOneLt()) showOneLtBar();
+  window.onbeforeunload = window.oldBeforeUnloadHandler;
+  window.oldBeforeUnloadHandler = null;
+}
 
 // Load our swf {{{
 $(document).ready(function() {
   // One.lt top banner.
-  if (urlParams["one_lt"] == "true") setupOneLtBar();
+  if (isOneLt()) setupOneLtBar();
 
   var flashvars = {};
   var params = {};

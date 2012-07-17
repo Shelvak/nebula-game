@@ -27,10 +27,11 @@ namespace :build do
   html_files = %W{
     #{src_dir}/index.template.html
     #{src_dir}/game.js
-    #{src_dir}/jquery-1.6.4.min.js
-    #{src_dir}/swfobject-2.2.js
+    #{html_extras_dir}/jquery-1.6.4.min.js
+    #{html_extras_dir}/swfobject-2.2.js
     #{html_extras_dir}/favicon.ico
     #{html_extras_dir}/playerProductInstall.swf
+    #{html_extras_dir}/images
   }
   locale_dir = "#{src_dir}/locale"
   assets_dir = "#{src_dir}/assets"
@@ -303,7 +304,7 @@ namespace :build do
 
       info "Copying html-template"
       html_files.each do |path|
-        FileUtils.cp path, dist_dir unless File.directory?(path)
+        FileUtils.cp_r path, dist_dir
       end
 
       checksums = %W{game.js #{swf_name}.swf}.inject({}) do |hash, file|
