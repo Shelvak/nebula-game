@@ -14,6 +14,8 @@ package models.unit {
 
    import flash.events.EventDispatcher;
 
+   import globalevents.GResourcesEvent;
+
    import globalevents.GUnitEvent;
 
    import models.MWreckage;
@@ -162,6 +164,8 @@ package models.unit {
             ML.latestPlanet.removeEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
                resetScreen);
          }
+         EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE,
+            updateResourcesIcons);
          ML.units.removeStoredUnits();
          if (filteredWreckages != null)
          {
@@ -207,6 +211,8 @@ package models.unit {
             }
             ML.latestPlanet.addEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
                resetScreen);
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE,
+               updateResourcesIcons);
          }
          else if (target == null)
          {
@@ -261,6 +267,22 @@ package models.unit {
          loadables = temp;
          refreshAllResourcesCount();
          updateMinVolume();
+      }
+
+      private function updateResourcesIcons(e: GResourcesEvent): void
+      {
+         if (state == STATE_LOADING && inPlanet &&
+            ML.latestPlanet != null && ML.latestPlanet.ssObject != null)
+         {
+            var ssObject: MSSObject = ML.latestPlanet.ssObject;
+            metal.count = ssObject.metal.currentStock;
+            energy.count = ssObject.energy.currentStock;
+            zetium.count = ssObject.zetium.currentStock;
+         }
+         else
+         {
+            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, updateResourcesIcons);
+         }
       }
 
       private function refreshAllResourcesCount(): void
@@ -556,12 +578,17 @@ package models.unit {
 
       private function loadUnits(type: String): void
       {
-         var units: ListCollectionView = ML.latestPlanet.getActiveUnits(
-            Owner.PLAYER, UnitKind.GROUND);
-         var typeUnits: ListCollectionView = Collections.filter(units,
+         if (ML.latestPlanet = null)
+         {
+            resetScreen();
+            return;
+         }
+         var typeUnits: ListCollectionView = Collections.filter(ML.latestPlanet.units,
             function(unit: Unit): Boolean
             {
-               return unit.type == type;
+               return unit.type == type
+                   && unit.level > 0
+                   && unit.owner == Owner.PLAYER;
             }
          );
          var unitVolume: int = Config.getUnitVolume(type);
