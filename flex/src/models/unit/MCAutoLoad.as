@@ -109,9 +109,18 @@ package models.unit {
          var wreckage: MWreckage = filteredWreckages.length > 0
             ? MWreckage(filteredWreckages.getItemAt(0))
             : null;
-         metal.count = wreckage.metal;
-         energy.count = wreckage.energy;
-         zetium.count = wreckage.zetium;
+         if (wreckage != null)
+         {
+            metal.count = wreckage.metal;
+            energy.count = wreckage.energy;
+            zetium.count = wreckage.zetium;
+         }
+         else
+         {
+            metal.count = 0;
+            energy.count = 0;
+            zetium.count = 0;
+         }
       }
 
       private var metal: MLoadableResource;
