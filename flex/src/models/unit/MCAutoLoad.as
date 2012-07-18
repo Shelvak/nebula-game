@@ -176,10 +176,15 @@ package models.unit {
          energy = new MLoadableResource(ResourceType.ENERGY);
          zetium = new MLoadableResource(ResourceType.ZETIUM);
          allUnits = new MLoadableAllUnits();
-         temp.addItem(allResources);
-         temp.addItem(metal);
-         temp.addItem(energy);
-         temp.addItem(zetium);
+         if (!(target == null && Location(location).type == LocationType.SS_OBJECT
+            && !MCLoadUnloadScreen.planetResourcesLoadable(
+            ML.latestPlanet.ssObject.owner)))
+         {
+            temp.addItem(allResources);
+            temp.addItem(metal);
+            temp.addItem(energy);
+            temp.addItem(zetium);
+         }
          if (target == null && Location(location).type == LocationType.SS_OBJECT)
          {
             // LOADING IN PLANET
