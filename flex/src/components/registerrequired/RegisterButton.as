@@ -83,6 +83,7 @@ package components.registerrequired {
 
       private function setTimer(): void
       {
+         if (timer != null) removeTimer();
          popupVisible = false;
          timer = new Timer(TIMER_DELAY, 1);
          timer.addEventListener(TimerEvent.TIMER, showPopup);
