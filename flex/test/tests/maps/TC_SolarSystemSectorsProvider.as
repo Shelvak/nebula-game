@@ -4,29 +4,30 @@ package tests.maps
    import components.map.controllers.Sector;
    import components.map.controllers.SectorShips;
    import components.map.controllers.SolarSystemSectorsProvider;
-
+   
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.object.equals;
-
+   
+   import factories.newLocation;
+   
    import models.Owner;
+   import models.location.LocationMinimal;
    import models.map.MMapSolarSystem;
    import models.movement.MHop;
    import models.movement.MSquadron;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
    import models.solarsystem.SSObjectType;
-
+   
    import mx.collections.ArrayCollection;
-
+   
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.object.instanceOf;
    import org.hamcrest.object.isTrue;
-
+   
    import testsutils.ImageUtl;
-
-   import testsutils.location.getSolarSystemLocation;
-
+   
    import utils.SingletonFactory;
    import utils.assets.AssetNames;
 
@@ -196,12 +197,15 @@ package tests.maps
       /* ### HELPERS ### */
       /* ############### */
 
-      private function getSector(position: int,
-                                 angle: int,
-                                 object: MSSObject = null,
-                                 ships:SectorShips = null): Sector {
+      private function newSSLoc(position: int, angle: int): LocationMinimal {
+         return newLocation().inSolarSystem().id(SS_ID).x(position).y(angle).GET;
+      }
+      
+      private function getSector(
+         position: int, angle: int, object: MSSObject = null, ships: SectorShips = null): Sector
+      {
          return new Sector(
-            getSolarSystemLocation(SS_ID, position, angle),
+            newSSLoc(position, angle),
             ships,
             object,
             object != null ? object.owner : Owner.UNDEFINED
@@ -224,24 +228,21 @@ package tests.maps
          return getSSObject(SSObjectType.ASTEROID, id, position, angle);
       }
 
-      private function getSquadron(id: int,
-                                   position: int,
-                                   angle: int,
-                                   owner: int): MSquadron {
-         var squad: MSquadron = new MSquadron();
+      private function getSquadron(
+         id: int, position: int, angle: int, owner: int): MSquadron
+      {
+         const squad: MSquadron = new MSquadron();
          squad.id = id;
          squad.owner = owner;
          squad.currentHop = new MHop();
-         squad.currentHop.location =
-            getSolarSystemLocation(SS_ID, position, angle);
+         squad.currentHop.location = newSSLoc(position, angle);
          return squad;
       }
 
-      private function getSSObject(type: String,
-                                   id: int,
-                                   position: int,
-                                   angle: int): MSSObject {
-         var ssObject: MSSObject = new MSSObject();
+      private function getSSObject(
+         type: String, id: int, position: int, angle: int): MSSObject
+      {
+         const ssObject: MSSObject = new MSSObject();
          ssObject.type = type;
          ssObject.id = id;
          ssObject.solarSystemId = SS_ID;

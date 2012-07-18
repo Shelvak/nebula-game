@@ -1,41 +1,36 @@
 package tests.planetcooldown
 {
    import config.Config;
-
+   
    import controllers.planets.PlanetsCommand;
    import controllers.planets.actions.ReinitiateCombatActionParams;
-
+   
    import ext.hamcrest.events.causes;
-
    import ext.hamcrest.events.causesGlobalEvent;
    import ext.hamcrest.object.definesProperties;
    import ext.hamcrest.object.equals;
    import ext.hamcrest.object.metadata.withBindableTag;
-
-   import factories.newActiveUnit;
-
+   
+   import factories.newUnit;
+   
    import models.Owner;
-
    import models.cooldown.MCooldown;
    import models.planet.MPlanet;
    import models.planet.MPlanetCooldown;
    import models.planet.events.MPlanetCooldownEvent;
    import models.solarsystem.MSSObject;
-
+   
    import org.hamcrest.Matcher;
-
    import org.hamcrest.assertThat;
-   import org.hamcrest.core.allOf;
    import org.hamcrest.core.not;
    import org.hamcrest.object.hasProperty;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
-   import org.hamcrest.text.containsString;
    import org.hamcrest.text.containsStrings;
    import org.hamcrest.text.emptyString;
-
+   
    import testsutils.LocalizerUtl;
-
+   
    import utils.DateUtil;
    import utils.SingletonFactory;
 
@@ -273,7 +268,11 @@ package tests.planetcooldown
       }
 
       private function addUnit(id: int, owner: int): void {
-         planet.units.addItem(newActiveUnit(id, owner, "Trooper", planet.getLocation(0, 0)));
+         planet.units.addItem(
+            newUnit()
+               .id(id).owner(owner).type("Trooper").level(1)
+               .location(planet.getLocation(0, 0))
+               .GET);
          planet.invalidateUnitCachesAndDispatchEvent();
       }
    }
