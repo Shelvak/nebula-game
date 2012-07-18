@@ -39,6 +39,13 @@ package models.time
          return currValue.occursAt.time == DateUtil.parseServerDTF(value).time;
       }
       
+      public function MTimeEventFixedMoment(occursAt: Date = null) {
+         super();
+         if (occursAt != null) {
+            this.occursAt = occursAt;
+         }
+      }
+      
       
       /* ################### */
       /* ### IMTimeEvent ### */

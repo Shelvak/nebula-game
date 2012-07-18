@@ -12,6 +12,11 @@ package models.time
     */
    public class MTimeEventFixedInterval extends MTimeEvent
    {
+      public function MTimeEventFixedInterval(occursIn: Number = 0) {
+         super();
+         this.occursIn = occursIn;
+      }
+      
       /* ################### */
       /* ### IMTimeEvent ### */
       /* ################### */
