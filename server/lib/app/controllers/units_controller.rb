@@ -518,13 +518,15 @@ class UnitsController < GenericController
           # If all requested resources do not fit into planet only unload
           # resources that fit.
           if value < 0
-            if -value > available
+            unloading = -value
+            if unloading > available
               # Unloading more than we can.
-              kept_resources[resource] += -value - available
+              kept_resources[resource] += unloading - available
               data[resource.to_s] = -available
+              planet_available[resource] = 0
             else
               # Unloading less, need to reduce available planet storage.
-              planet_available[resource] += value
+              planet_available[resource] -= unloading
             end
           end
         end
