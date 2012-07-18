@@ -10,6 +10,9 @@ package models.unit {
 
    import config.Config;
 
+   import controllers.navigation.MCMainArea;
+   import controllers.screens.MainAreaScreens;
+
    import controllers.units.UnitsCommand;
 
    import flash.events.EventDispatcher;
@@ -22,6 +25,7 @@ package models.unit {
 
    import models.ModelLocator;
    import models.Owner;
+   import models.events.ScreensSwitchEvent;
    import models.factories.UnitFactory;
 
    import models.location.ILocationUser;
@@ -157,6 +161,20 @@ package models.unit {
          updateMinVolume();
       }
 
+      private function removePlanetUnitsListener(e: ScreensSwitchEvent): void
+      {
+         if (MCMainArea.getInstance().currentName != MainAreaScreens.AUTO_LOAD)
+         {
+            MCMainArea.getInstance().removeEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+               removePlanetUnitsListener);
+            if (ML.latestPlanet != null)
+            {
+               ML.latestPlanet.removeEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
+                  resetScreen);
+            }
+         }
+      }
+
       private function resetScreen(e: MPlanetEvent = null): void
       {
          if (ML.latestPlanet != null)
@@ -167,6 +185,7 @@ package models.unit {
          EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE,
             updateResourcesIcons);
          ML.units.removeStoredUnits();
+         ML.units.removeStoredAfterScreenChange();
          if (filteredWreckages != null)
          {
             filteredWreckages.removeEventListener(
@@ -211,6 +230,8 @@ package models.unit {
             }
             ML.latestPlanet.addEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
                resetScreen);
+            MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+               removePlanetUnitsListener);
             EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE,
                updateResourcesIcons);
          }
@@ -247,7 +268,6 @@ package models.unit {
                zetium.count += transporter.zetium;
                transporterIds.push(transporter.id);
             }
-            ML.units.removeStoredAfterScreenChange();
             EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, addUnitLoadables);
             new UnitsCommand(UnitsCommand.SHOW,
               {"unitIds": transporterIds}).dispatch();
