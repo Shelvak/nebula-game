@@ -3,6 +3,9 @@ package models.unit
    import components.popups.ActionConfirmationPopUp;
    import components.unitsscreen.events.UnitsScreenEvent;
 
+   import controllers.navigation.MCMainArea;
+   import controllers.screens.MainAreaScreens;
+
    import controllers.ui.NavigationController;
    import controllers.units.OrdersController;
    import controllers.units.UnitsCommand;
@@ -10,6 +13,7 @@ package models.unit
    import flash.events.EventDispatcher;
 
    import models.ModelLocator;
+   import models.events.ScreensSwitchEvent;
    import models.location.ILocationUser;
    import models.location.Location;
    import models.movement.MRoute;
@@ -38,6 +42,16 @@ package models.unit
       {
          super();
          ML.additionalLocationUsers.addItem(this);
+         MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+            deselectIfNeeded);
+      }
+
+      private function deselectIfNeeded(e: ScreensSwitchEvent): void
+      {
+         if (MCMainArea.getInstance().currentName == MainAreaScreens.UNITS)
+         {
+            deselectUnits();
+         }
       }
       
       private static const MAX_FLANKS: int = 2;

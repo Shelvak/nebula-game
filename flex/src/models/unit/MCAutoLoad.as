@@ -10,9 +10,14 @@ package models.unit {
 
    import config.Config;
 
+   import controllers.navigation.MCMainArea;
+   import controllers.screens.MainAreaScreens;
+
    import controllers.units.UnitsCommand;
 
    import flash.events.EventDispatcher;
+
+   import globalevents.GResourcesEvent;
 
    import globalevents.GUnitEvent;
 
@@ -20,6 +25,7 @@ package models.unit {
 
    import models.ModelLocator;
    import models.Owner;
+   import models.events.ScreensSwitchEvent;
    import models.factories.UnitFactory;
 
    import models.location.ILocationUser;
@@ -155,6 +161,20 @@ package models.unit {
          updateMinVolume();
       }
 
+      private function removePlanetUnitsListener(e: ScreensSwitchEvent): void
+      {
+         if (MCMainArea.getInstance().currentName != MainAreaScreens.AUTO_LOAD)
+         {
+            MCMainArea.getInstance().removeEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+               removePlanetUnitsListener);
+            if (ML.latestPlanet != null)
+            {
+               ML.latestPlanet.removeEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
+                  resetScreen);
+            }
+         }
+      }
+
       private function resetScreen(e: MPlanetEvent = null): void
       {
          if (ML.latestPlanet != null)
@@ -162,7 +182,10 @@ package models.unit {
             ML.latestPlanet.removeEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
                resetScreen);
          }
+         EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE,
+            updateResourcesIcons);
          ML.units.removeStoredUnits();
+         ML.units.removeStoredAfterScreenChange();
          if (filteredWreckages != null)
          {
             filteredWreckages.removeEventListener(
@@ -176,10 +199,15 @@ package models.unit {
          energy = new MLoadableResource(ResourceType.ENERGY);
          zetium = new MLoadableResource(ResourceType.ZETIUM);
          allUnits = new MLoadableAllUnits();
-         temp.addItem(allResources);
-         temp.addItem(metal);
-         temp.addItem(energy);
-         temp.addItem(zetium);
+         if (!(target == null && Location(location).type == LocationType.SS_OBJECT
+            && !MCLoadUnloadScreen.planetResourcesLoadable(
+            ML.latestPlanet.ssObject.owner)))
+         {
+            temp.addItem(allResources);
+            temp.addItem(metal);
+            temp.addItem(energy);
+            temp.addItem(zetium);
+         }
          if (target == null && Location(location).type == LocationType.SS_OBJECT)
          {
             // LOADING IN PLANET
@@ -202,6 +230,10 @@ package models.unit {
             }
             ML.latestPlanet.addEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
                resetScreen);
+            MCMainArea.getInstance().addEventListener(ScreensSwitchEvent.SCREEN_CHANGED,
+               removePlanetUnitsListener);
+            EventBroker.subscribe(GResourcesEvent.RESOURCES_CHANGE,
+               updateResourcesIcons);
          }
          else if (target == null)
          {
@@ -236,7 +268,6 @@ package models.unit {
                zetium.count += transporter.zetium;
                transporterIds.push(transporter.id);
             }
-            ML.units.removeStoredAfterScreenChange();
             EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, addUnitLoadables);
             new UnitsCommand(UnitsCommand.SHOW,
               {"unitIds": transporterIds}).dispatch();
@@ -256,6 +287,22 @@ package models.unit {
          loadables = temp;
          refreshAllResourcesCount();
          updateMinVolume();
+      }
+
+      private function updateResourcesIcons(e: GResourcesEvent): void
+      {
+         if (state == STATE_LOADING && inPlanet &&
+            ML.latestPlanet != null && ML.latestPlanet.ssObject != null)
+         {
+            var ssObject: MSSObject = ML.latestPlanet.ssObject;
+            metal.count = ssObject.metal.currentStock;
+            energy.count = ssObject.energy.currentStock;
+            zetium.count = ssObject.zetium.currentStock;
+         }
+         else
+         {
+            EventBroker.unsubscribe(GResourcesEvent.RESOURCES_CHANGE, updateResourcesIcons);
+         }
       }
 
       private function refreshAllResourcesCount(): void
@@ -326,6 +373,8 @@ package models.unit {
 
       private function loadAllResources(): void
       {
+         var resultHash: Object = {};
+         var somethingTransfered: Boolean = false;
          for each (var transporter: Unit in transporters)
          {
             var freeSpace: int = ML.technologies.getUnitStorage(transporter.type,
@@ -349,15 +398,12 @@ package models.unit {
                   Resource.getResourcesForVolume(freeSpace - volumeReserved,
                      ResourceType.ZETIUM));
 
-               new UnitsCommand(
-                  UnitsCommand.TRANSFER_RESOURCES,
-                  {
-                     transporterId: transporter.id,
-                     metal: metalToLoad,
-                     energy: energyToLoad,
-                     zetium: zetiumToLoad
-                  }).dispatch();
-
+               resultHash[transporter.id] = {
+                  metal: metalToLoad,
+                  energy: energyToLoad,
+                  zetium: zetiumToLoad
+               };
+               somethingTransfered = true;
                metal.count -= metalToLoad;
                energy.count -= energyToLoad;
                zetium.count -= zetiumToLoad;
@@ -368,11 +414,21 @@ package models.unit {
                }
             }
          }
-         refreshAllResourcesCount();
+         if (somethingTransfered)
+         {
+            new UnitsCommand(
+               UnitsCommand.TRANSFER_RESOURCES,
+               {
+                  transporters: resultHash
+               }).dispatch();
+            refreshAllResourcesCount();
+         }
       }
 
       private function unloadResource(type: String): void
       {
+         var resultHash: Object = {};
+         var somethingTransfered: Boolean = false;
          for each (var transporter: Unit in transporters)
          {
             var ssObject: MSSObject;
@@ -389,22 +445,31 @@ package models.unit {
                   transporter[type]);
             if (amountToUnload > 0)
             {
-               new UnitsCommand(
-                  UnitsCommand.TRANSFER_RESOURCES,
-                  {
-                     transporterId: transporter.id,
-                     metal: type == ResourceType.METAL ? -1 * amountToUnload : 0,
-                     energy: type == ResourceType.ENERGY ? -1 * amountToUnload : 0,
-                     zetium: type == ResourceType.ZETIUM ? -1 * amountToUnload : 0
-                  }).dispatch();
+               resultHash[transporter.id] = {
+                  metal: type == ResourceType.METAL ? -1 * amountToUnload : 0,
+                  energy: type == ResourceType.ENERGY ? -1 * amountToUnload : 0,
+                  zetium: type == ResourceType.ZETIUM ? -1 * amountToUnload : 0
+               };
+               somethingTransfered = true;
+
                this[type].count -= amountToUnload;
-               refreshAllResourcesCount();
             }
+         }
+         if (somethingTransfered)
+         {
+            new UnitsCommand(
+               UnitsCommand.TRANSFER_RESOURCES,
+               {
+                  transporters: resultHash
+               }).dispatch();
+            refreshAllResourcesCount();
          }
       }
 
       private function unloadAllResources(): void
       {
+         var resultHash: Object = {};
+         var somethingTransfered: Boolean = false;
          for each (var transporter: Unit in transporters)
          {
             var ssObject: MSSObject;
@@ -427,19 +492,25 @@ package models.unit {
                   transporter.zetium);
             if (metalToUnload > 0 || energyToUnload > 0 || zetiumToUnload > 0)
             {
-               new UnitsCommand(
-                  UnitsCommand.TRANSFER_RESOURCES,
-                  {
-                     transporterId: transporter.id,
-                     metal: -1 * metalToUnload,
-                     energy: -1 * energyToUnload,
-                     zetium: -1 * zetiumToUnload
-                  }).dispatch();
+               resultHash[transporter.id] = {
+                  metal: -1 * metalToUnload,
+                  energy: -1 * energyToUnload,
+                  zetium: -1 * zetiumToUnload
+               };
+               somethingTransfered = true;
                metal.count -= metalToUnload;
                energy.count -= energyToUnload;
                zetium.count -= zetiumToUnload;
-               refreshAllResourcesCount();
             }
+         }
+         if (somethingTransfered)
+         {
+            new UnitsCommand(
+               UnitsCommand.TRANSFER_RESOURCES,
+               {
+                  transporters: resultHash
+               }).dispatch();
+            refreshAllResourcesCount();
          }
       }
 
@@ -450,6 +521,8 @@ package models.unit {
          {
             return;
          }
+         var resultHash: Object = {};
+         var somethingTransfered: Boolean = false;
          for each (var transporter: Unit in transporters)
          {
             var freeSpace: int = ML.technologies.getUnitStorage(transporter.type,
@@ -459,14 +532,12 @@ package models.unit {
                var amountToLoad: int = Math.min(resourceAmount,
                   Resource.getResourcesForVolume(freeSpace, type));
 
-               new UnitsCommand(
-                  UnitsCommand.TRANSFER_RESOURCES,
-                  {
-                     transporterId: transporter.id,
-                     metal: type == ResourceType.METAL ? amountToLoad : 0,
-                     energy: type == ResourceType.ENERGY ? amountToLoad : 0,
-                     zetium: type == ResourceType.ZETIUM ? amountToLoad : 0
-                  }).dispatch();
+               resultHash[transporter.id] = {
+                  metal: type == ResourceType.METAL ? amountToLoad : 0,
+                  energy: type == ResourceType.ENERGY ? amountToLoad : 0,
+                  zetium: type == ResourceType.ZETIUM ? amountToLoad : 0
+               };
+               somethingTransfered = true;
                resourceAmount -= amountToLoad;
                if (resourceAmount <= 0)
                {
@@ -475,7 +546,15 @@ package models.unit {
             }
          }
          MLoadableResource(this[type]).count = resourceAmount;
-         refreshAllResourcesCount();
+         if (somethingTransfered)
+         {
+            new UnitsCommand(
+               UnitsCommand.TRANSFER_RESOURCES,
+               {
+                  transporters: resultHash
+               }).dispatch();
+            refreshAllResourcesCount();
+         }
       }
 
       private function updateLoadableUnitCount(type: String,  count: int): void
@@ -520,6 +599,8 @@ package models.unit {
 
       private function unloadUnits(type: String): void
       {
+         var resultHash: Object = {};
+         var unloadedAny: Boolean = false;
          for each (var transporter: Unit in transporters)
          {
             var unitsToUnload: ListCollectionView = Collections.filter(ML.units,
@@ -532,37 +613,47 @@ package models.unit {
             );
             if (unitsToUnload.length > 0)
             {
+               unloadedAny = true;
                var idArray: Array = [];
                for each (var storedUnit: Unit in unitsToUnload)
                {
                   idArray.push(storedUnit.id);
                }
 
-               new UnitsCommand(UnitsCommand.UNLOAD,
-                  {
-                     transporterId: transporter.id,
-                     unitIds: idArray
-                  }).dispatch();
+               resultHash[transporter.id] = idArray;
             }
+            allUnits.count -= unitsToUnload.length;
          }
-         allUnits.count -= unitsToUnload.length;
+         if (unloadedAny)
+         {
+            new UnitsCommand(UnitsCommand.UNLOAD,
+               {
+                  unitIds: resultHash
+               }).dispatch();
+         }
          updateLoadableUnitCount(type, 0);
       }
 
       private function loadUnits(type: String): void
       {
-         var units: ListCollectionView = ML.latestPlanet.getActiveUnits(
-            Owner.PLAYER, UnitKind.GROUND);
-         var typeUnits: ListCollectionView = Collections.filter(units,
+         if (ML.latestPlanet == null)
+         {
+            resetScreen();
+            return;
+         }
+         var typeUnits: ListCollectionView = Collections.filter(ML.latestPlanet.units,
             function(unit: Unit): Boolean
             {
-               return unit.type == type;
+               return unit.type == type
+                   && unit.level > 0
+                   && unit.owner == Owner.PLAYER;
             }
          );
          var unitVolume: int = Config.getUnitVolume(type);
          var totalVolume: int = unitVolume * typeUnits.length;
          var currentIndex: int = 0;
          var currentLoadable: int = 0;
+         var resultHash: Object = {};
          while (totalVolume > 0 && currentIndex < transporters.length)
          {
             var transporter: Unit = Unit(transporters.getItemAt(currentIndex));
@@ -580,14 +671,17 @@ package models.unit {
             }
             if (unitsToLoad.length > 0)
             {
-               new UnitsCommand(UnitsCommand.LOAD,
-                  {
-                     transporterId: transporter.id,
-                     unitIds: unitsToLoad
-                  }).dispatch();
+               resultHash[transporter.id] = unitsToLoad;
                transporter.stored += (unitVolume * unitsToLoad.length);
             }
             currentIndex++;
+         }
+         if (currentLoadable > 0)
+         {
+            new UnitsCommand(UnitsCommand.LOAD,
+               {
+                  unitIds: resultHash
+               }).dispatch();
          }
          updateLoadableUnitCount(type,  typeUnits.length - currentLoadable);
       }
