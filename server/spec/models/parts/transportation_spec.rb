@@ -107,6 +107,15 @@ describe Parts::Transportation do
       end.should raise_error(GameLogicError)
     end
 
+    it "should raise error if unit is still upgrading" do
+      opts_upgrading.apply @loadable
+      @loadable.save!
+
+      lambda do
+        @transporter.load([@loadable])
+      end.should raise_error(GameLogicError)
+    end
+
     it "should raise error if there is not enough space" do
       with_config_values(
         'units.loadable_test.volume' => @transporter.storage + 1
