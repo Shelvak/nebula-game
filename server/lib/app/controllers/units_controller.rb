@@ -356,6 +356,7 @@ class UnitsController < GenericController
   ACTION_LOAD = 'units|load'
 
   LOAD_OPTIONS = logged_in + required(unit_ids: Hash)
+  #required(unit_ids: HashType(String => ArrayType(Fixnum)))
   LOAD_SCOPE = scope.world
   def self.load_action(m)
     unit_ids = m.params['unit_ids'].map_keys { |k, v| k.to_i }
@@ -395,6 +396,7 @@ class UnitsController < GenericController
   ACTION_UNLOAD = 'units|unload'
 
   UNLOAD_OPTIONS = logged_in + required(unit_ids: Hash)
+  #required(unit_ids: HashType(String => ArrayType(Fixnum)))
   UNLOAD_SCOPE = scope.world
   def self.unload_action(m)
     unit_ids = m.params['unit_ids'].map_keys { |k, v| k.to_i }
@@ -413,17 +415,30 @@ class UnitsController < GenericController
     end
   end
 
-  # Loads/unloads resources into transporter.
+  # Loads/unloads resources into transporters.
   #
-  # Transporter must be in planet, solar system point or galaxy point.
+  # Transporters must be in planet, solar system point or galaxy point. All
+  # transporters must be in same location point.
+  #
+  # !!!
+  # !!! When using multi load/unload be sure to provide same signs for each
+  # !!! resource, i.e. either all transporters must load or unload metal for
+  # !!! instance. Otherwise kept_resources will be nonsense.
+  # !!!
   #
   # Invocation: by client
   #
   # Parameters:
-  # - transporter_id (Fixnum): ID of transporter Unit.
-  # - metal (Fixnum): Amount of metal to load. Pass negative to unload.
-  # - energy (Fixnum): Amount of energy to load. Pass negative to unload.
-  # - zetium (Fixnum): Amount of zetium to load. Pass negative to unload.
+  # - transporters (Hash): Hash of {
+  #   transporter_id (String) => {
+  #     'metal' => Fixnum, 'energy' => Fixnum, 'zetium' => Fixnum
+  #   },
+  #   ...
+  # }
+  # * transporter_id (Fixnum): ID of transporter Unit.
+  # * metal (Fixnum): Amount of metal to load. Pass negative to unload.
+  # * energy (Fixnum): Amount of energy to load. Pass negative to unload.
+  # * zetium (Fixnum): Amount of zetium to load. Pass negative to unload.
   #
   # Response:
   #
@@ -436,7 +451,7 @@ class UnitsController < GenericController
   #   - zetium (Fixnum): >= 0
   #
   # Pushes:
-  # - objects|updated with transporter
+  # - objects|updated with transporters
   # If in planet:
   # - objects|updated with planet
   # If in SS or Galaxy point:
@@ -445,56 +460,82 @@ class UnitsController < GenericController
   ACTION_TRANSFER_RESOURCES = 'units|transfer_resources'
 
   TRANSFER_RESOURCES_OPTIONS = logged_in + required(
-    :transporter_id => Fixnum, :metal => Fixnum, :energy => Fixnum,
-    :zetium => Fixnum
+    transporters: Hash
+    #transporters: HashType(String => HashType(
+    #  'metal' => Fixnum, 'energy' => Fixnum, 'zetium' => Fixnum
+    #))
   )
   TRANSFER_RESOURCES_SCOPE = scope.world
   def self.transfer_resources_action(m)
     # Duplicate params so we could modify them.
     params = m.params.dup
 
-    raise GameLogicError.new(
-      "You're not trying to do anything! All resources are 0!"
-    ) if params['metal'] == 0 && params['energy'] == 0 && params['zetium'] == 0
+    transporter_data = m.params['transporters'].map_keys { |k, v| k.to_i }
+    check_transport_vip!(m.player, transporter_data)
 
-    transporter = Unit.where(:player_id => m.player.id).
-      find(params['transporter_id'])
+    raise GameLogicError.new(
+      "You're not trying to do anything! All resources for all transporters " +
+      "are 0!"
+    ) if transporter_data.all? do |transporter_id, data|
+      data['metal'] == 0 && data['energy'] == 0 && data['zetium'] == 0
+    end
+
+    transporters = get_transporters(m.player.id, transporter_data)
 
     kept_resources = Resources::TYPES.each_with_object({}) do |res, hash|
       hash[res] = 0
     end
 
-    if transporter.location.type == Location::SS_OBJECT
-      planet = transporter.location.object
+    # Find planet if needed. All transporters must be in same location.
+    if transporters.first.location.type == Location::SS_OBJECT
+      planet = transporters.first.location.object
+      # Calculate how much resources can this planet store.
+      planet_available = Resources::TYPES.each_with_object({}) do
+        |resource, available|
 
-      # Check if we can load/unload things.
-      raise GameLogicError.new(
-        "Cannot load resources from planet: not planet owner && planet not NPC!"
-      ) if (
-        params['metal'] > 0 || params['energy'] > 0 || params['zetium'] > 0
-      ) && ! (planet.player_id == m.player.id || planet.player_id.nil?)
-
-      # Adjust how much we are unloading and in case we are unloading too much
-      # reduce how much we're unloading to prevent resource loss.
-      Resources::TYPES.each do |resource|
         planet_resource = planet.send(resource)
         planet_storage = planet.send(:"#{resource}_storage_with_modifier")
-        available = (planet_storage - planet_resource).floor
-
-        # If all requested resources do not fit into planet only unload
-        # resources that fit.
-        if params[resource.to_s] < 0 && -params[resource.to_s] > available
-          kept_resources[resource] = -params[resource.to_s] - available
-          params[resource.to_s] = -available
-        end
+        available[resource] = (planet_storage - planet_resource).floor
       end
     end
 
-    transporter.transfer_resources!(
-      params['metal'], params['energy'], params['zetium']
-    ) if params['metal'] != 0 || params['energy'] != 0 || params['zetium'] != 0
+    transporters.each do |transporter|
+      data = transporter_data[transporter.id]
+      if planet
+        # Check if we can load/unload things.
+        raise GameLogicError.new(
+          "Cannot load resources from #{planet}: not planet owner && planet " +
+          "not NPC!"
+        ) if (
+          data['metal'] > 0 || data['energy'] > 0 || data['zetium'] > 0
+        ) && ! (planet.player_id == m.player.id || planet.player_id.nil?)
 
-    respond m, :kept_resources => kept_resources
+        # Adjust how much we are unloading and in case we are unloading too much
+        # reduce how much we're unloading to prevent resource loss.
+        Resources::TYPES.each do |resource|
+          available = planet_available[resource]
+          value = data[resource.to_s]
+          # If all requested resources do not fit into planet only unload
+          # resources that fit.
+          if value < 0
+            if -value > available
+              # Unloading more than we can.
+              kept_resources[resource] += -value - available
+              data[resource.to_s] = -available
+            else
+              # Unloading less, need to reduce available planet storage.
+              planet_available[resource] += value
+            end
+          end
+        end
+      end
+
+      transporter.transfer_resources!(
+        data['metal'], data['energy'], data['zetium']
+      ) if data['metal'] != 0 || data['energy'] != 0 || data['zetium'] != 0
+    end
+
+    respond m, kept_resources: kept_resources
   end
 
   # Shows units contained in other unit.
@@ -628,12 +669,22 @@ class UnitsController < GenericController
 
     def get_transporters(player_id, unit_ids)
       transporter_ids = unit_ids.keys
+
+      raise GameLogicError.new(
+        "You must use at least one transporter!"
+      ) if transporter_ids.blank?
+
       transporters = Unit.where(player_id: player_id).find(transporter_ids)
       raise ActiveRecord::RecordNotFound.new(
         "Cannot find all requested transporters, perhaps some does not " +
         "belong to player? Requested #{transporter_ids.size}, found #{
         transporters.size}."
       ) if transporters.size < transporter_ids.size
+
+      location = transporters.first.location
+      raise GameLogicError.new(
+        "All transporters should be in same location!"
+      ) if transporters.any? { |t| t.location != location }
 
       transporters
     end

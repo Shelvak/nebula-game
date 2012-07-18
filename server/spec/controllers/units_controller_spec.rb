@@ -602,6 +602,21 @@ describe UnitsController do
       end
     end
 
+    it "should fail if no transporters are used" do
+      lambda do
+        invoke @action, @params.merge('unit_ids' => {})
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if transporters are not in same location" do
+      planet = Factory.create(:planet)
+      @transporters[1].location = planet
+      @transporters[1].save!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
     it "should fail if any of the transporters does not belong to player" do
       @transporters[0].player = Factory.create(:player)
       @transporters[0].save!
@@ -683,6 +698,21 @@ describe UnitsController do
         @params['unit_ids'].delete(@transporters[0].id.to_s)
         invoke @action, @params
       end
+    end
+
+    it "should fail if no transporters are used" do
+      lambda do
+        invoke @action, @params.merge('unit_ids' => {})
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if transporters are not in same location" do
+      planet = Factory.create(:planet, player: player)
+      @transporters[1].location = planet
+      @transporters[1].save!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
     end
 
     it "should fail if some of the units are not found" do
@@ -768,13 +798,40 @@ describe UnitsController do
       @action = "units|transfer_resources"
       @planet = Factory.create(:planet, :player => player)
       set_resources(@planet, 100, 100, 100, 200, 200, 200)
-      @transporter = Factory.create(:u_with_storage, :location => @planet,
-        :player => player)
-      @params = {'transporter_id' => @transporter.id, 'metal' => 10,
-        'energy' => 10, 'zetium' => 10}
+      @transporters = [
+        Factory.create(:u_with_storage, location: @planet, player: player),
+        Factory.create(:u_with_storage, location: @planet, player: player),
+      ]
+      @params = {
+        'transporters' => {
+          @transporters[0].id.to_s => {
+            'metal' => 10, 'energy' => 10, 'zetium' => 10
+          },
+          @transporters[1].id.to_s => {
+            'metal' => 15, 'energy' => 20, 'zetium' => 20
+          }
+        }
+      }
+      player.vip_level = 1
     end
 
-    it_behaves_like "with param options", %w{transporter_id metal energy zetium}
+    def stub_transporters
+      Unit.stub_chain(:where, :find).with(@transporters.map(&:id)).
+        and_return(@transporters)
+    end
+
+    def setup_call_expectations
+      stub_transporters
+      @transporters.each do |transporter|
+        transporter.should_receive(:transfer_resources!).with(
+          @params["transporters"][transporter.id.to_s]['metal'],
+          @params["transporters"][transporter.id.to_s]['energy'],
+          @params["transporters"][transporter.id.to_s]['zetium']
+        )
+      end
+    end
+
+    it_behaves_like "with param options", %w{transporters}
     it_should_behave_like "having controller action scope"
 
     describe "loading" do
@@ -785,12 +842,23 @@ describe UnitsController do
 
     describe "unloading" do
       before(:each) do
-        @transporter.metal = @transporter.energy = @transporter.zetium = 100
-        @transporter.stored = Resources.total_volume(@transporter.metal,
-          @transporter.energy, @transporter.zetium)
-        @transporter.save!
-        @params = @params.merge('metal' => -10, 'energy' => -10,
-          'zetium' => -10)
+        @transporters.each do |transporter|
+          transporter.metal = transporter.energy = transporter.zetium = 100
+          transporter.stored = Resources.total_volume(
+            transporter.metal, transporter.energy, transporter.zetium
+          )
+          transporter.save!
+        end
+        @params = {
+          'transporters' => {
+            @transporters[0].id.to_s => {
+              'metal' => -10, 'energy' => -10, 'zetium' => -10
+            },
+            @transporters[1].id.to_s => {
+              'metal' => -15, 'energy' => -20, 'zetium' => -20
+            }
+          }
+        }
       end
 
       it_should_behave_like "checking all planet owner variations",
@@ -800,9 +868,11 @@ describe UnitsController do
       it "should not fail if planet has no storage" do
         set_resources(@planet, 100, 100, 100)
         invoke @action, @params
-        response_should_include(
-          :kept_resources => {:metal => 10, :energy => 10, :zetium => 10}
-        )
+        response_should_include(:kept_resources => {
+          metal: @transporters.sum(&:metal),
+          energy: @transporters.sum(&:energy),
+          zetium: @transporters.sum(&:zetium)
+        })
       end
 
       it "should respond with kept resources hash" do
@@ -819,25 +889,27 @@ describe UnitsController do
 
         it "should keep resources that don't fit in transporter" do
           invoke @action, @params
-          @transporter.reload
-          Resources::TYPES.map do |resource|
-            @transporter.send(resource)
-          end.should == [96, 95, 94]
+          @transporters.map do |transporter|
+            transporter.reload
+            Resources::TYPES.map do |resource|
+              transporter.send(resource)
+            end
+          end.should == [[96, 95, 94], [100, 100, 100]]
         end
 
         it "should invoke unload with adjusted values" do
-          Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
-            @transporter)
-          @transporter.should_receive(:transfer_resources!).with(-4, -5, -6)
+          stub_transporters
+          @transporters[0].should_receive(:transfer_resources!).with(-4, -5, -6)
+          @transporters[1].should_not_receive(:transfer_resources!)
           invoke @action, @params
         end
 
         it "should unload ints if planet has float storage" do
           set_resources(@planet, 100, 100, 100, 104.3, 105.2, 106.1)
 
-          Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
-            @transporter)
-          @transporter.should_receive(:transfer_resources!).with(-4, -5, -6)
+          stub_transporters
+          @transporters[0].should_receive(:transfer_resources!).with(-4, -5, -6)
+          @transporters[1].should_not_receive(:transfer_resources!)
           invoke @action, @params
         end
 
@@ -861,9 +933,41 @@ describe UnitsController do
       end
     end
 
-    it "should raise error if transporter does not belong to player" do
-      @transporter.player = Factory.create(:player)
-      @transporter.save!
+    describe "if player is not a vip" do
+      before(:each) do
+        player.vip_level = 0
+      end
+
+      it "should fail if player is not vip" do
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should not fail if only 1 transporter is used" do
+        @params['transporters'].delete(@transporters[0].id.to_s)
+        invoke @action, @params
+      end
+    end
+
+    it "should fail if no transporters are used" do
+      lambda do
+        invoke @action, @params.merge('transporters' => {})
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should fail if transporters are not in same location" do
+      planet = Factory.create(:planet, player: player)
+      @transporters[1].location = planet
+      @transporters[1].save!
+      lambda do
+        invoke @action, @params
+      end.should raise_error(GameLogicError)
+    end
+
+    it "should raise error if any transporter does not belong to player" do
+      @transporters[1].player = Factory.create(:player)
+      @transporters[1].save!
 
       lambda do
         invoke @action, @params
@@ -871,30 +975,31 @@ describe UnitsController do
     end
 
     it "should raise error if you're not trying to do anything" do
+      nothing = {'metal' => 0, 'energy' => 0, 'zetium' => 0}
       lambda do
-        invoke @action, @params.
-          merge('metal' => 0, 'energy' => 0, 'zetium' => 0)
+        invoke @action, {
+          'transporters' => {
+            @transporters[0].id.to_s => nothing,
+            @transporters[1].id.to_s => nothing
+          }
+        }
       end.should raise_error(GameLogicError)
     end
 
     it "should call #transfer_resources! on transporter" do
-      Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
-        @transporter)
-      @transporter.should_receive(:transfer_resources!).with(
-        @params['metal'], @params['energy'], @params['zetium'])
+      setup_call_expectations
       invoke @action, @params
     end
 
     it "should call #transfer_resources! on transporter (with wreckage)" do
-      @transporter.location = @planet.solar_system_point
-      @transporter.save!
+      @transporters.each do |transporter|
+        transporter.location = @planet.solar_system_point
+        transporter.save!
+      end
 
       Factory.create(:wreckage, :location => @planet.solar_system_point)
 
-      Unit.stub_chain(:where, :find).with(@transporter.id).and_return(
-        @transporter)
-      @transporter.should_receive(:transfer_resources!).with(
-        @params['metal'], @params['energy'], @params['zetium'])
+      setup_call_expectations
       invoke @action, @params
     end
 
