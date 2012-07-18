@@ -8,13 +8,17 @@ system and planet.
                     xmlns:mnu="components.menus.*"
                     xmlns:base="components.base.*"
                     xmlns:notifications="components.notifications.*"
-                    creationComplete="this_creationCompleteHandler(event)" >
+                    xmlns:menus="components.menus.*"
+                    creationComplete="this_creationCompleteHandler(event)">
    
    <s:Group id="topLeftMenu">
       <s:Group left="0" top="0" bottom="0">
          <s:layout>
             <s:HorizontalLayout horizontalAlign="left" gap="0"/>
          </s:layout>
+         <s:Group>
+           <menus:LeftHidableMenu/>
+         </s:Group>
          <notifications:NotificationsButton id="btnNotifications" name="{MainAreaScreens.NOTIFICATIONS}"/>
          <mnu:PlayerPlanetsSelector id="ddlPlayerPlanets" minWidth="100" dataProvider="{ML.player.planets}"/>
          <base:AdvancedContainer height="100%">

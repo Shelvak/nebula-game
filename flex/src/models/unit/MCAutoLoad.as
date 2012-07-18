@@ -6,11 +6,15 @@
  * To change this template use File | Settings | File Templates.
  */
 package models.unit {
+   import com.developmentarc.core.utils.EventBroker;
+
    import config.Config;
 
    import controllers.units.UnitsCommand;
 
    import flash.events.EventDispatcher;
+
+   import globalevents.GUnitEvent;
 
    import models.MWreckage;
 
@@ -21,6 +25,7 @@ package models.unit {
    import models.location.ILocationUser;
    import models.location.Location;
    import models.location.LocationType;
+   import models.planet.events.MPlanetEvent;
    import models.resource.Resource;
    import models.resource.ResourceType;
    import models.solarsystem.MSSObject;
@@ -28,10 +33,12 @@ package models.unit {
 
    import mx.collections.ArrayCollection;
    import mx.collections.ListCollectionView;
+   import mx.collections.ListCollectionView;
    import mx.events.CollectionEvent;
 
    import utils.ModelUtil;
    import utils.SingletonFactory;
+   import utils.datastructures.Collections;
    import utils.datastructures.Collections;
 
    public class MCAutoLoad extends EventDispatcher implements ILocationUser{
@@ -105,6 +112,7 @@ package models.unit {
       private var energy: MLoadableResource;
       private var zetium: MLoadableResource;
       private var allResources: MLoadableAllResources;
+      private var allUnits: MLoadableAllUnits;
 
       private var inPlanet: Boolean;
 
@@ -124,8 +132,37 @@ package models.unit {
          resetScreen();
       }
 
-      private function resetScreen(): void
+      private function addUnitLoadables(e: GUnitEvent): void
       {
+         EventBroker.unsubscribe(GUnitEvent.UNITS_SHOWN, addUnitLoadables);
+         var storedUnits: ListCollectionView = Collections.filter(ML.units,
+            function (unit: Unit): Boolean
+            {
+               return unit.location.type == LocationType.UNIT;
+            }
+         );
+
+         var cachedUnits: ArrayCollection = UnitFactory.buildCachedUnitsFromUnits(
+            storedUnits
+         );
+         for each (var unit: UnitBuildingEntry in cachedUnits)
+         {
+            var unitType: String = ModelUtil.getModelSubclass(unit.type);
+            var loadable: MLoadableUnit = new MLoadableUnit(unitType, unit.count);
+            allUnits.count += unit.count;
+            loadables.addItem(loadable);
+         }
+         updateMinVolume();
+      }
+
+      private function resetScreen(e: MPlanetEvent = null): void
+      {
+         if (ML.latestPlanet != null)
+         {
+            ML.latestPlanet.removeEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
+               resetScreen);
+         }
+         ML.units.removeStoredUnits();
          if (filteredWreckages != null)
          {
             filteredWreckages.removeEventListener(
@@ -138,7 +175,7 @@ package models.unit {
          metal = new MLoadableResource(ResourceType.METAL);
          energy = new MLoadableResource(ResourceType.ENERGY);
          zetium = new MLoadableResource(ResourceType.ZETIUM);
-         var allUnits: MLoadableAllUnits = new MLoadableAllUnits();
+         allUnits = new MLoadableAllUnits();
          temp.addItem(allResources);
          temp.addItem(metal);
          temp.addItem(energy);
@@ -163,6 +200,8 @@ package models.unit {
                allUnits.count += unit.count;
                temp.addItem(loadable);
             }
+            ML.latestPlanet.addEventListener(MPlanetEvent.UNIT_REFRESH_NEEDED,
+               resetScreen);
          }
          else if (target == null)
          {
@@ -184,16 +223,23 @@ package models.unit {
          }
          else if (location == null && Location(target).type == LocationType.SS_OBJECT)
          {
+            //Unload everything to ss Object
+            state = STATE_UNLOADING;
+            inPlanet = true;
+
             temp.addItem(allUnits);
+            var transporterIds: Array = [];
             for each (var transporter: Unit in transporters)
             {
                metal.count += transporter.metal;
                energy.count += transporter.energy;
                zetium.count += transporter.zetium;
+               transporterIds.push(transporter.id);
             }
-            //TODO: Unloading everything to ss object
-            state = STATE_UNLOADING;
-            inPlanet = true;
+            ML.units.removeStoredAfterScreenChange();
+            EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, addUnitLoadables);
+            new UnitsCommand(UnitsCommand.SHOW,
+              {"unitIds": transporterIds}).dispatch();
          }
          else
          {
@@ -209,6 +255,7 @@ package models.unit {
          }
          loadables = temp;
          refreshAllResourcesCount();
+         updateMinVolume();
       }
 
       private function refreshAllResourcesCount(): void
@@ -226,6 +273,42 @@ package models.unit {
          {
             unloadAllResources();
          }
+         updateMinVolume();
+      }
+
+      private function updateMinVolume(): void
+      {
+         var maxVolume: int = 0;
+         if (state == STATE_LOADING)
+         {
+            for each (var transporter: Unit in transporters)
+            {
+               maxVolume = Math.max(ML.technologies.getUnitStorage(
+                  transporter.type, transporter.level) - transporter.stored,
+                  maxVolume
+               );
+            }
+         }
+         else if (inPlanet)
+         {
+            maxVolume = MLoadable.PLANET_STORAGE;
+         }
+         else
+         {
+            maxVolume = int.MAX_VALUE;
+         }
+         var anyUnitEnabled: Boolean = false;
+         for each (var loadable: MLoadable in loadables)
+         {
+            loadable.setMaxVolume(maxVolume);
+            if (loadable is MLoadableUnit && MLoadableUnit(loadable).enabled)
+            {
+               anyUnitEnabled = true;
+            }
+         }
+         allResources.anyResourceEnabled =
+            metal.enabled || energy.enabled || zetium.enabled;
+         allUnits.anyUnitEnabled = anyUnitEnabled;
       }
 
       public function transferResource(type: String): void
@@ -238,6 +321,7 @@ package models.unit {
          {
             unloadResource(type);
          }
+         updateMinVolume();
       }
 
       private function loadAllResources(): void
@@ -394,18 +478,31 @@ package models.unit {
          refreshAllResourcesCount();
       }
 
+      private function updateLoadableUnitCount(type: String,  count: int): void
+      {
+         for each (var loadable: MLoadable in loadables)
+         {
+            if (loadable is MLoadableUnit && MLoadableUnit(loadable).type == type)
+            {
+               loadable.count = count;
+               return;
+            }
+         }
+      }
+
       public function transferAllUnits(): void
       {
          for each (var loadable: MLoadable in loadables)
          {
             if (loadable is MLoadableUnit)
             {
-               transferUnits(MLoadableUnit(loadable).type);
+               transferUnits(MLoadableUnit(loadable).type, false);
             }
          }
+         updateMinVolume();
       }
 
-      public function transferUnits(type: String): void
+      public function transferUnits(type: String, updateVolume: Boolean = true): void
       {
          if (state == STATE_LOADING)
          {
@@ -414,6 +511,10 @@ package models.unit {
          else
          {
             unloadUnits(type);
+         }
+         if (updateVolume)
+         {
+            updateMinVolume();
          }
       }
 
@@ -444,6 +545,8 @@ package models.unit {
                   }).dispatch();
             }
          }
+         allUnits.count -= unitsToUnload.length;
+         updateLoadableUnitCount(type, 0);
       }
 
       private function loadUnits(type: String): void
@@ -470,6 +573,7 @@ package models.unit {
             {
                var lUnit: Unit = Unit(typeUnits.getItemAt(currentLoadable));
                unitsToLoad.push(lUnit.id);
+               allUnits.count--;
                currentLoadable++;
                freeSpace -= unitVolume;
                totalVolume -= unitVolume;
@@ -481,9 +585,11 @@ package models.unit {
                      transporterId: transporter.id,
                      unitIds: unitsToLoad
                   }).dispatch();
+               transporter.stored += (unitVolume * unitsToLoad.length);
             }
             currentIndex++;
          }
+         updateLoadableUnitCount(type,  typeUnits.length - currentLoadable);
       }
 
    }

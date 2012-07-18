@@ -30,9 +30,8 @@
 
       import utils.locale.Localizer;
 
-
-      private static const ITEMS_X_HIDDEN: int = -100;
-      private static const ITEMS_X_VISIBLE: int = 0;
+      private static const ITEMS_Y_HIDDEN: int = -320;
+      private static const ITEMS_Y_VISIBLE: int = 55;
 
       private function get ML(): ModelLocator {
          return ModelLocator.getInstance();
@@ -102,7 +101,7 @@
          <s:Parallel>
             <s:Sequence target="{grpItems}">
                <s:SetAction property="visible" value="true"/>
-               <s:Move xFrom="{ITEMS_X_HIDDEN}" xTo="{ITEMS_X_VISIBLE}"/>
+               <s:Move yFrom="{ITEMS_Y_HIDDEN}" yTo="{ITEMS_Y_VISIBLE}"/>
             </s:Sequence>
             <s:SetAction target="{btnShow}" property="visible" value="false"/>
             <s:SetAction target="{btnHide}" property="visible" value="true"/>
@@ -111,7 +110,7 @@
       <s:Transition fromState="visible" toState="hidden" autoReverse="true">
          <s:Parallel>
             <s:Sequence target="{grpItems}">
-               <s:Move xFrom="{ITEMS_X_VISIBLE}" xTo="{ITEMS_X_HIDDEN}"/>
+               <s:Move yFrom="{ITEMS_Y_VISIBLE}" yTo="{ITEMS_Y_HIDDEN}"/>
                <s:SetAction property="visible" value="false"/>
             </s:Sequence>
             <s:SetAction target="{btnHide}" property="visible" value="false"/>
@@ -119,20 +118,8 @@
          </s:Parallel>
       </s:Transition>
    </s:transitions>
-   <s:Button
-      id="btnHide"
-      skinClass="components.menus.skins.LeftHidableMenuHideButtonSkin"
-      click="btnHide_clickHandler()"
-      visible.visible="true"
-      visible.hidden="false"/>
-   <s:Button
-      id="btnShow"
-      skinClass="components.menus.skins.LeftHidableMenuShowButtonSkin"
-      click="btnShow_clickHandler()"
-      visible.visible="false"
-      visible.hidden="true"/>
-   <base:AdvancedContainer id="grpItems" y="45" x="{ITEMS_X_VISIBLE}"
-      width="100" height="100">
+   <base:AdvancedContainer id="grpItems" x="0" y="{ITEMS_Y_VISIBLE}"
+      width="40" height="100">
       <base:layout>
          <s:VerticalLayout gap="10" horizontalAlign="left"/>
       </base:layout>
@@ -166,4 +153,16 @@
          visible="{ML.quests.currentTotal > 0}"
          click="questButton_click(event)"/>
    </base:AdvancedContainer>
+  <s:Button
+     id="btnHide"
+     skinClass="components.menus.skins.LeftHidableMenuHideButtonSkin"
+     click="btnHide_clickHandler()"
+     visible.visible="true"
+     visible.hidden="false"/>
+  <s:Button
+     id="btnShow"
+     skinClass="components.menus.skins.LeftHidableMenuShowButtonSkin"
+     click="btnShow_clickHandler()"
+     visible.visible="false"
+     visible.hidden="true"/>
 </s:Group>

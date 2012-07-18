@@ -9,6 +9,9 @@ package models.unit {
    import flash.display.BitmapData;
    import flash.events.MouseEvent;
 
+   import models.ModelLocator;
+   import models.resource.Resource;
+
    import utils.assets.AssetNames;
 
    import utils.assets.ImagePreloader;
@@ -28,6 +31,24 @@ package models.unit {
 
       public override function clickHandler(e: MouseEvent): void {
          AL.transferResource(resourceType);
+      }
+
+      private function get ML(): ModelLocator
+      {
+         return ModelLocator.getInstance();
+      }
+
+      [Bindable(event="loadableCountChange")]
+      override public function get enabled(): Boolean {
+         return super.enabled && (maxVolume == PLANET_STORAGE
+            ? (ML.latestPlanet.ssObject.metal.unknown ||
+                !Resource(ML.latestPlanet.ssObject[resourceType]).isFull)
+            : maxVolume > 0);
+      }
+
+      public override function get sidePadding(): int
+      {
+         return 5;
       }
    }
 }

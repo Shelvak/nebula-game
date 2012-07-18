@@ -127,12 +127,18 @@
             <base:Panel width="100%" title="{getText('label.autoLoad')}"
               visible="{US.selectedTransporters.length > 0}">
               <base:layout>
-                 <s:HorizontalLayout gap="10" horizontalAlign="center"/>
+                 <s:VerticalLayout gap="10" horizontalAlign="center"/>
               </base:layout>
-              <s:Button label="{getText('label.openAutoLoad')}"
+              <s:Button visible="{ML.player.vipLevel > 0}"
+                        includeInLayout="{ML.player.vipLevel > 0}"
+                        label="{getText('label.openAutoLoad')}"
                         click="NavigationController.getInstance().showAutoLoad(
-                          US.location, null, US.selectedTransporters
-                        )"/>
+                          US.location, null, US.selectedTransporters)"/>
+              <s:Group width="100%" visible="{ML.player.vipLevel == 0}"
+                       includeInLayout="{ML.player.vipLevel == 0}">
+                <s:Label text="{getText('label.autoLoadOnlyVip')}"
+                         left="6" right="6" color="#eec500"/>
+              </s:Group>
             </base:Panel>
             
             <base:Panel width="100%" title="{getText('label.setStance')}"

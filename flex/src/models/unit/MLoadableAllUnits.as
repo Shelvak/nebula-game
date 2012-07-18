@@ -6,6 +6,8 @@
  * To change this template use File | Settings | File Templates.
  */
 package models.unit {
+   import config.Config;
+
    import flash.display.BitmapData;
    import flash.events.MouseEvent;
 
@@ -31,6 +33,21 @@ package models.unit {
 
       public override function clickHandler(e: MouseEvent): void {
          AL.transferAllUnits();
+      }
+
+      public function set anyUnitEnabled(value: Boolean): void
+      {
+         _anyUnitEnabled = value;
+         dispatchCountChangeEvent();
+      }
+
+      private var _anyUnitEnabled: Boolean;
+
+      [Bindable(event="loadableCountChange")]
+      override public function get enabled(): Boolean {
+         return super.enabled && (maxVolume == PLANET_STORAGE
+            ? true
+            : _anyUnitEnabled);
       }
    }
 }

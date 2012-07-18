@@ -32,5 +32,12 @@ package models.unit {
          return ImagePreloader.getInstance().getImage(
             AssetNames.getUnitImageName(type));
       }
+
+      [Bindable(event="loadableCountChange")]
+      public override function get enabled(): Boolean {
+         return super.enabled && (maxVolume == PLANET_STORAGE
+            ? true
+            : Config.getUnitVolume(type) <= maxVolume);
+      }
    }
 }

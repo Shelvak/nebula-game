@@ -25,21 +25,26 @@
      <s:layout>
         <s:VerticalLayout gap="0" horizontalAlign="center"/>
      </s:layout>
-     <s:Group>
-       <s:layout>
-         <s:HorizontalLayout horizontalAlign="center"/>
-       </s:layout>
-       <s:Button label="{getString('tab.load')}" click="AL.switchState()"
-                 enabled="{AL.state == MCAutoLoad.STATE_UNLOADING}"/>
-       <s:Button label="{getString('tab.unload')}" click="AL.switchState()"
-                        enabled="{AL.state == MCAutoLoad.STATE_LOADING}"/>
-     </s:Group>
      <base:Panel skinClass="components.skins.LargePanelSkin"
-       title="{getString('label.autoLoad')}">
+       title="{getString('label.autoLoad')}" width="850">
        <base:layout>
          <s:VerticalLayout horizontalAlign="justify"/>
        </base:layout>
-       <s:Label paddingBottom="6" text="{getString('label.clickToTransfer')}"/>
+       <s:Group>
+         <s:layout>
+           <s:HorizontalLayout horizontalAlign="center" paddingBottom="12"/>
+         </s:layout>
+         <s:Button skinClass="components.skins.YellowButtonSkin"
+                   label="{getString('tab.load')}" click="AL.switchState()"
+                   enabled="{AL.state == MCAutoLoad.STATE_UNLOADING}"/>
+         <s:Button skinClass="components.skins.YellowButtonSkin"
+                   label="{getString('tab.unload')}" click="AL.switchState()"
+                          enabled="{AL.state == MCAutoLoad.STATE_LOADING}"/>
+       </s:Group>
+       <base:Heading1 text="{AL.state == MCAutoLoad.STATE_LOADING
+          ? getString('tab.load')
+          : getString('tab.unload')}"/>
+       <s:Label paddingBottom="6" paddingTop="6" text="{getString('label.clickToTransfer')}"/>
        <s:DataGroup dataProvider="{AL.loadables}" width="100%"
                     itemRenderer="components.unitsscreen.loadunload.CLoadUnloadPriority">
          <s:layout>
