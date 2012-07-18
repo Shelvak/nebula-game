@@ -336,39 +336,81 @@ class UnitsController < GenericController
     unit.deploy(planet, m.params['x'], m.params['y'])
   end
 
-  # Loads selected units to +Unit+. Loaded units and transporter must be
+  # Loads selected units to transporters. Loaded units and transporters must be
   # in same location.
+  #
+  # To use multiple transporters player must be a VIP.
   #
   # Invocation: by client
   #
   # Parameters:
-  # - unit_ids (Fixnum[]): IDs of units that are going to be loaded.
-  # - transporter_id (Fixnum): ID of transporter Unit.
+  # - unit_ids (Hash): Hash of {transporter_id => [loaded_unit_ids, ...], ...}
+  #
+  # Response: None
+  #
+  # Pushes:
+  # - objects|updated with transporters
+  # - objects|updated (reason 'loaded') with units that were loaded into
+  # transporter.
+  #
+  ACTION_LOAD = 'units|load'
+
+  LOAD_OPTIONS = logged_in + required(unit_ids: Hash)
+  LOAD_SCOPE = scope.world
+  def self.load_action(m)
+    unit_ids = m.params['unit_ids'].map_keys { |k, v| k.to_i }
+
+    check_transport_vip!(m.player, unit_ids)
+    transporters = get_transporters(m.player.id, unit_ids)
+
+    all_unit_ids = m.params['unit_ids'].values.flatten
+    units = Unit.where(player_id: m.player.id, id: all_unit_ids).all
+    raise ActiveRecord::RecordNotFound.new(
+      "Cannot find all requested units, perhaps some does not belong to" +
+        " player? Requested #{all_unit_ids.size}, found #{units.size}."
+    ) if units.size < all_unit_ids.size
+    hashed_units = units.hash_by(&:id)
+
+    transporters.each do |transporter|
+      units = unit_ids[transporter.id].map { |unit_id| hashed_units[unit_id] }
+      transporter.load(units)
+    end
+  end
+
+  # Unloads selected units to +SsObject+. Transporters must be in
+  # +SsObject::Planet+ to perform this action.
+  #
+  # Invocation: by client
+  #
+  # Parameters:
+  # - unit_ids (Hash): Hash of {transporter_id => [unloaded_unit_ids, ...], ...}
   #
   # Response: None
   #
   # Pushes:
   # - objects|updated with transporter
-  # - objects|updates (reason 'loaded') with units that were loaded into
+  # - objects|updated (reason 'unloaded') with units that were unloaded from
   # transporter.
   #
-  ACTION_LOAD = 'units|load'
+  ACTION_UNLOAD = 'units|unload'
 
-  LOAD_OPTIONS = logged_in + required(
-    :unit_ids => Array, :transporter_id => Fixnum
-  )
-  LOAD_SCOPE = scope.world
-  def self.load_action(m)
-    transporter = Unit.where(:player_id => m.player.id).
-      find(m.params['transporter_id'])
+  UNLOAD_OPTIONS = logged_in + required(unit_ids: Hash)
+  UNLOAD_SCOPE = scope.world
+  def self.unload_action(m)
+    unit_ids = m.params['unit_ids'].map_keys { |k, v| k.to_i }
 
-    units = Unit.where(:player_id => m.player.id, :id => m.params['unit_ids'])
-    raise ActiveRecord::RecordNotFound.new(
-      "Cannot find all requested units, perhaps some does not belong to" +
-        " player? Requested #{m.params['unit_ids'].size}, found #{units.size}."
-    ) if units.size < m.params['unit_ids'].size
+    check_transport_vip!(m.player, unit_ids)
+    transporters = get_transporters(m.player.id, unit_ids)
+    transporters.each do |transporter|
+      raise GameLogicError.new(
+        "To unload #{transporter} must be in planet, but was it #{
+          transporter.location_point}!"
+      ) unless transporter.location.type == Location::SS_OBJECT
 
-    transporter.load(units)
+      location = transporter.location.object
+      units = transporter.units.find(unit_ids[transporter.id])
+      transporter.unload(units, location)
+    end
   end
 
   # Loads/unloads resources into transporter.
@@ -453,40 +495,6 @@ class UnitsController < GenericController
     ) if params['metal'] != 0 || params['energy'] != 0 || params['zetium'] != 0
 
     respond m, :kept_resources => kept_resources
-  end
-
-  # Unloads selected units to +SsObject+. Transporter must be in +Planet+ to
-  # perform this action.
-  #
-  # Invocation: by client
-  #
-  # Parameters:
-  # - unit_ids (Fixnum[]): IDs of units that are going to be unloaded.
-  # - transporter_id (Fixnum): ID of transporter Unit.
-  #
-  # Response: None
-  #
-  # Pushes:
-  # - objects|updated with transporter
-  # - objects|updates (reason 'unloaded') with units that were unloaded from
-  # transporter.
-  #
-  ACTION_UNLOAD = 'units|unload'
-
-  UNLOAD_OPTIONS = logged_in +
-    required(:unit_ids => Array, :transporter_id => Fixnum)
-  UNLOAD_SCOPE = scope.world
-  def self.unload_action(m)
-    transporter = Unit.where(:player_id => m.player.id).
-      find(m.params['transporter_id'])
-    raise GameLogicError.new(
-      "To unload #{transporter} must be in planet, but was it #{
-        transporter.location_point}!"
-    ) unless transporter.location.type == Location::SS_OBJECT
-
-    location = transporter.location.object
-    units = transporter.units.find(m.params['unit_ids'])
-    transporter.unload(units, location)
   end
 
   # Shows units contained in other unit.
@@ -610,6 +618,24 @@ class UnitsController < GenericController
       ) unless Location.visible?(m.player, target)
 
       [source, target]
+    end
+
+    def check_transport_vip!(player, unit_ids)
+      raise GameLogicError,
+        "Cannot load/unload into/from multiple transporters if #{player
+        } is not VIP!" unless player.vip? || unit_ids.size <= 1
+    end
+
+    def get_transporters(player_id, unit_ids)
+      transporter_ids = unit_ids.keys
+      transporters = Unit.where(player_id: player_id).find(transporter_ids)
+      raise ActiveRecord::RecordNotFound.new(
+        "Cannot find all requested transporters, perhaps some does not " +
+        "belong to player? Requested #{transporter_ids.size}, found #{
+        transporters.size}."
+      ) if transporters.size < transporter_ids.size
+
+      transporters
     end
   end
 end

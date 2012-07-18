@@ -557,35 +557,61 @@ describe UnitsController do
     before(:each) do
       @action = "units|load"
       @planet = Factory.create(:planet)
-      @transporter = Factory.create(:u_with_storage, :location => @planet,
-        :player => player)
-      @units = [
-        Factory.create(:u_loadable_test, :location => @planet,
-          :player => player),
-        Factory.create(:u_loadable_test, :location => @planet,
-          :player => player)
+      @transporters = [
+        Factory.create(:u_with_storage, location: @planet, player: player),
+        Factory.create(:u_with_storage, location: @planet, player: player),
       ]
-      @params = {'unit_ids' => @units.map(&:id),
-        'transporter_id' => @transporter.id}
+      @t1_units = [
+        Factory.create(:u_loadable_test, location: @planet, player: player),
+        Factory.create(:u_loadable_test, location: @planet, player: player),
+      ]
+      @t2_units = [
+        Factory.create(:u_loadable_test, location: @planet, player: player),
+      ]
+      @units = @t1_units + @t2_units
+      @params = {
+        'unit_ids' => {
+          @transporters[0].id.to_s => @t1_units.map(&:id),
+          @transporters[1].id.to_s => @t2_units.map(&:id),
+        }
+      }
+      player.vip_level = 1
     end
 
-    it_behaves_like "with param options", %w{unit_ids transporter_id}
+    it_behaves_like "with param options", %w{unit_ids}
     it_should_behave_like "having controller action scope"
     
     it_should_behave_like "checking all planet owner variations",
         {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
          "nap" => false}
 
-    it "should fail if transporter does not belong to player" do
-      @transporter.player = Factory.create(:player)
-      @transporter.save!
+    describe "if player is not a vip" do
+      before(:each) do
+        player.vip_level = 0
+      end
+
+      it "should fail if player is not vip" do
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should not fail if only 1 transporter is used" do
+        @params['unit_ids'].delete(@transporters[0].id.to_s)
+        invoke @action, @params
+      end
+    end
+
+    it "should fail if any of the transporters does not belong to player" do
+      @transporters[0].player = Factory.create(:player)
+      @transporters[0].save!
 
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should fail if unit does not belong to player" do
+    it "should fail if any of the units does not belong to player" do
       @units[0].player = Factory.create(:player)
       @units[0].save!
 
@@ -594,23 +620,14 @@ describe UnitsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should raise error if transporter is not in same location" do
-      @transporter.location = Factory.create(:planet)
-      @transporter.save!
-
-      lambda do
-        invoke @action, @params
-      end.should raise_error(GameLogicError)
-    end
-    
     it "should move units" do
       invoke @action, @params
       @units.each(&:reload)
-      @units.map(&:location).should == [@transporter.location_point] * 2
-    end
-
-    it "should return true" do
-      invoke(@action, @params).should be_true
+      @units.map(&:location).should == (
+        [@transporters[0].location_point] * @t1_units.size
+      ) + (
+        [@transporters[1].location_point] * @t2_units.size
+      )
     end
   end
 
@@ -618,24 +635,55 @@ describe UnitsController do
     before(:each) do
       @action = "units|unload"
       @planet = Factory.create(:planet, :player => player)
-      @transporter = Factory.create(:u_with_storage, :location => @planet,
-        :player => player)
-      @units = [
-        Factory.create(:u_loadable_test, :location => @transporter,
-          :player => player),
-        Factory.create(:u_loadable_test, :location => @transporter,
-          :player => player),
+      @transporters = [
+        Factory.create(:u_with_storage, location: @planet, player: player),
+        Factory.create(:u_with_storage, location: @planet, player: player),
       ]
-      @params = {'unit_ids' => @units.map(&:id),
-        'transporter_id' => @transporter.id}
+      @t1_units = [
+        Factory.create(:u_loadable_test, location: @transporters[0],
+          player: player),
+        Factory.create(:u_loadable_test, location: @transporters[0],
+          player: player),
+      ]
+      @t2_units = [
+        Factory.create(:u_loadable_test, location: @transporters[1],
+          player: player),
+        Factory.create(:u_loadable_test, location: @transporters[1],
+          player: player),
+      ]
+      @units = @t1_units + @t2_units
+      @params = {
+        'unit_ids' => {
+          @transporters[0].id.to_s => @t1_units.map(&:id),
+          @transporters[1].id.to_s => @t2_units.map(&:id),
+        }
+      }
+      player.vip_level = 1
     end
 
-    it_behaves_like "with param options", %w{unit_ids transporter_id}
+    it_behaves_like "with param options", %w{unit_ids}
     it_should_behave_like "having controller action scope"
 
     it_should_behave_like "checking all planet owner variations",
         {"you" => false, "no one" => false, "enemy" => false, "ally" => false,
          "nap" => false}
+
+    describe "if player is not a vip" do
+      before(:each) do
+        player.vip_level = 0
+      end
+
+      it "should fail if player is not vip" do
+        lambda do
+          invoke @action, @params
+        end.should raise_error(GameLogicError)
+      end
+
+      it "should not fail if only 1 transporter is used" do
+        @params['unit_ids'].delete(@transporters[0].id.to_s)
+        invoke @action, @params
+      end
+    end
 
     it "should fail if some of the units are not found" do
       @units[0].destroy
@@ -645,30 +693,29 @@ describe UnitsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should not fail when unloading 1 unit and it cannot be found" do
+    it "should fail when unloading 1 unit and it cannot be found" do
       # This was an actual bug, where Unit.first.units.find([non_existant_id])
       # returned [nil]...
       @units[0].destroy
-      @params['unit_ids'].pop
+      @params['unit_ids'][@transporters[0].id.to_s].pop
 
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should fail if transporter does not belong to player" do
-      @transporter.player = Factory.create(:player)
-      @transporter.save!
+    it "should fail if any transporter does not belong to player" do
+      @transporters[0].player = Factory.create(:player)
+      @transporters[0].save!
 
       lambda do
         invoke @action, @params
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it "should fail if transporter is not in planet" do
-      @transporter.location = SolarSystemPoint.new(
-        @planet.solar_system_id, 0, 0)
-      @transporter.save!
+    it "should fail if any transporter is not in planet" do
+      @transporters[0].location = @planet.solar_system_point
+      @transporters[0].save!
 
       lambda do
         invoke @action, @params
@@ -712,11 +759,7 @@ describe UnitsController do
     it "should move units" do
       invoke @action, @params
       @units.each(&:reload)
-      @units.map(&:location).should == [@planet.location_point] * 2
-    end
-
-    it "should return true" do
-      invoke(@action, @params).should be_true
+      @units.map(&:location).should == [@planet.location_point] * @units.size
     end
   end
 

@@ -58,7 +58,7 @@ module Parts::Transportation
 
       raise GameLogicError.new(
         "Not enough storage (#{stored}/#{storage
-          }) to load all requested units (volume #{taken_volume})!"
+          }) to load all requested units into #{self} (volume #{taken_volume})!"
       ) if taken_volume > (storage - stored)
 
       self.stored += taken_volume
