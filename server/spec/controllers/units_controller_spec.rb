@@ -855,7 +855,7 @@ describe UnitsController do
               'metal' => -10, 'energy' => -10, 'zetium' => -10
             },
             @transporters[1].id.to_s => {
-              'metal' => -15, 'energy' => -20, 'zetium' => -20
+              'metal' => -15, 'energy' => -20, 'zetium' => -25
             }
           }
         }
@@ -869,9 +869,7 @@ describe UnitsController do
         set_resources(@planet, 100, 100, 100)
         invoke @action, @params
         response_should_include(:kept_resources => {
-          metal: @transporters.sum(&:metal),
-          energy: @transporters.sum(&:energy),
-          zetium: @transporters.sum(&:zetium)
+          metal: 25, energy: 30, zetium: 35
         })
       end
 
@@ -915,9 +913,9 @@ describe UnitsController do
 
         it "should respond with kept resources hash" do
           invoke @action, @params
-          response_should_include(
-            :kept_resources => {:metal => 6, :energy => 5, :zetium => 4}
-          )
+          response_should_include(:kept_resources => {
+            metal: 6 + 15, energy: 5 + 20, zetium: 4 + 25
+          })
         end
 
         it "should use planet storage with modifiers" do

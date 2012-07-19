@@ -1,15 +1,15 @@
 package utils.assets
 {
    import components.battle.BattlefieldBackgroundPart;
-
+   
    import controllers.objects.ObjectClass;
-
+   
    import models.quest.slides.SlidesConfiguration;
-
    import models.tile.FolliageTileKind;
    import models.tile.TileKind;
-
+   
    import utils.ModelUtil;
+   import utils.PropertiesTransformer;
    import utils.StringUtil;
    import utils.UrlNavigate;
 
@@ -350,6 +350,9 @@ package utils.assets
          return SS_IMAGE_FOLDER + "galaxy";
       }
       
+      public static function getMiniSSIconImageName(miniSSType: String): String {
+         return SS_IMAGE_FOLDER + "mini/" + PropertiesTransformer.propToUnderscore(miniSSType);
+      }
       
       /**
        * Builds and returns full name of a solar system image.

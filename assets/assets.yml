@@ -203,6 +203,14 @@ assets:
             wiki_name: <%= "#{type.camelcase}#{item}.png" %>
         <% end %>
         <% end %>
+      "mini":
+        your_home.png:        Entire_galaxy_home_system.png
+        alliance_home.png:    Entire_galaxy_ally_home_system.png
+        nap_home.png:         Entire_galaxy_nap_home_system.png
+        enemy_home.png:       Entire_galaxy_enemy_home_system.png
+        regular.png:          Entire_galaxy_regular_system.png
+        pulsar.png:           Entire_galaxy_pulsar.png
+        wormhole.png:         Entire_galaxy_wormhole.png
 
   "images/folliage":
     flex:

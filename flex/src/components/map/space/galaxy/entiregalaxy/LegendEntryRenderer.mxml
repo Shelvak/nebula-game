@@ -4,6 +4,10 @@
    xmlns:s="library://ns.adobe.com/flex/spark"
    autoDrawBackground="false">
 
-   <s:Label text="{LegendEntry(data).text}" color="{LegendEntry(data).color}"/>
+   <s:layout>
+      <s:HorizontalLayout gap="6" verticalAlign="middle"/>
+   </s:layout>
+   <s:BitmapImage source="{LegendEntry(data).image}"/>
+   <s:Label text="{LegendEntry(data).text}" paddingTop="3"/>
 
 </s:ItemRenderer>
