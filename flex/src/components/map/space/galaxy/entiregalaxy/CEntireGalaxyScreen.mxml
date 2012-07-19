@@ -5,6 +5,7 @@
    xmlns:viewport="components.base.viewport.*"
    xmlns:galaxy="components.map.space.galaxy.entiregalaxy.*"
    xmlns:controllers="components.map.controllers.*"
+   underlayImage="{backgroundImage}"
    left="0" right="0" top="0" bottom="0"
    paddingVertical="200" paddingHorizontal="200">
 
@@ -18,29 +19,42 @@
 
    <fx:Script>
       <![CDATA[
-      import mx.collections.ArrayList;
-
-      import utils.locale.Localizer;
-
-
-      private var legendEntries: ArrayList = new ArrayList([
-         new LegendEntry(Colors.BORDER_COLOR, getString("border")),
-         ssEntry(MiniSSType.PLAYER_HOME),
-         ssEntry(MiniSSType.ALLIANCE_HOME),
-         ssEntry(MiniSSType.NAP_HOME),
-         ssEntry(MiniSSType.ENEMY_HOME),
-         ssEntry(MiniSSType.REGULAR),
-         ssEntry(MiniSSType.PULSAR),
-         ssEntry(MiniSSType.WORMHOLE)
-      ]);
-
-      private function ssEntry(ssType: String): LegendEntry {
-         return new LegendEntry(Colors.getMiniSSColor(ssType), getString(ssType));
-      }
-
-      private function getString(property: String): String {
-         return Localizer.string("EntireGalaxy", property);
-      }
+         import mx.collections.ArrayList;
+         
+         import utils.assets.AssetNames;
+         import utils.assets.ImagePreloader;
+         import utils.locale.Localizer;
+         
+         
+         private function get backgroundImage(): BitmapData {
+            return ImagePreloader.getInstance().getImage(AssetNames.getSpaceBackgroundImageName());
+         }
+         
+         private const sectorSize: uint = EntireGalaxyRenderer.SECTOR_SIZE;
+         private const legendEntries: ArrayList = new ArrayList([
+            new LegendEntry(
+               new BitmapData(sectorSize, sectorSize, false, Colors.BORDER_COLOR),
+               getString("border")),
+            ssEntry(MiniSSType.PLAYER_HOME),
+            ssEntry(MiniSSType.ALLIANCE_HOME),
+            ssEntry(MiniSSType.NAP_HOME),
+            ssEntry(MiniSSType.ENEMY_HOME),
+            ssEntry(MiniSSType.REGULAR),
+            ssEntry(MiniSSType.PULSAR),
+            ssEntry(MiniSSType.WORMHOLE)
+         ]);
+         
+         private function ssEntry(ssType: String): LegendEntry {
+            return new LegendEntry(getImage(ssType), getString(ssType));
+         }
+         
+         private function getImage(ssType: String): BitmapData {
+            return ImagePreloader.getInstance().getImage(AssetNames.getMiniSSIconImageName(ssType));
+         }
+         
+         private function getString(property: String): String {
+            return Localizer.string("EntireGalaxy", property);
+         }
       ]]>
    </fx:Script>
 
