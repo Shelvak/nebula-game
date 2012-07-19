@@ -38,6 +38,10 @@ package factories
          return this;
       }
       
+      public function stationary(): UnitBuilder {
+         return squadronId(0);
+      }
+      
       public function type(type: String): UnitBuilder {
          _unit.type = type;
          return this;
