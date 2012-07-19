@@ -5825,5 +5825,6 @@
     <DailyBonus value="Daily Bonus" />
     <MainQuest value="Main Quest" />
     <Quests value="Quests" />
+    <tipHide value="Hide buttons" />
   </HidableMenu>
 </locale>

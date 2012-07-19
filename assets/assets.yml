@@ -810,6 +810,9 @@ assets:
         hide_button_up.png:      Bonusbar_hide_up.png 
         hide_button_over.png:    Bonusbar_hide_over.png
         hide_button_down.png:    Bonusbar_hide_down.png
+        hide_tip_left.png:       Bonus_buttons_hide_hint_left.png
+        hide_tip_center.png:     Bonus_buttons_hide_hint_center.png
+        hide_tip_right.png:      Bonus_buttons_hide_hint_right.png
 
       "daily_bonus":
         button_up.png:  Dailybonus_up.png

@@ -21,11 +21,11 @@
          }
       ]]>
    </fx:Script>
-   <s:BitmapImage top="4" left="4" source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'zoom_background')}"/>
+   <s:BitmapImage top="4" right="4" source="{IMG.getImage(AssetNames.BUTTONS_IMAGE_FOLDER + 'zoom_background')}"/>
+  <s:Button id="btnZoomIn" skinClass="components.skins.ZoomInButtonSkin"
+            top="8" right="8"
+            click="_viewport.zoomIn()"/>
    <s:Button id="btnZoomOut" skinClass="components.skins.ZoomOutButtonSkin"
-             left="8" top="8"
+             top="8" right="{btnZoomIn.width + 12}"
              click="_viewport.zoomOut()"/>
-   <s:Button id="btnZoomIn" skinClass="components.skins.ZoomInButtonSkin"
-             left="{btnZoomOut.width + 12}" top="8"
-             click="_viewport.zoomIn()"/>
 </base:BaseContainer>
