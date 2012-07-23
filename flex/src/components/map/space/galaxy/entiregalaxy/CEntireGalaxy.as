@@ -105,7 +105,7 @@ package components.map.space.galaxy.entiregalaxy
                _coordsTransform.logicalWidth = fowMatrix.getBounds().width;
                _coordsTransform.logicalHeight = fowMatrix.getBounds().height;
                const bitmap: BitmapData = new EntireGalaxyRenderer(_model).bitmap;
-               _image.source = bitmap
+               _image.source = bitmap;
                width = bitmap.width;
                height = bitmap.height;
                const playerHome: MiniSS = _model.playerHomeSS;
