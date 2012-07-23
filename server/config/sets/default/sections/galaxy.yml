@@ -77,6 +77,6 @@ convoy.speed_modifier: 6
 #
 # count numbers are inclusive.
 convoy.units:
-  - [0 + counter / 3, 5 + counter / 2, Demosis, 0]
-  - [0 + counter / 4, 1 + counter / 3, Demosis, 1]
-  - [1 + counter / 30, 3 + counter / 15, ConvoyShip, 1]
+  - [0, 5 + counter / 2, Demosis, 0]
+  - [0, 1 + counter / 3, Demosis, 1]
+  - [1, 3 + counter / 15, ConvoyShip, 1]
