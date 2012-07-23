@@ -1,28 +1,30 @@
 package tests.movement
 {
    import com.adobe.errors.IllegalStateError;
-   
+
    import config.Config;
-   
+
    import controllers.units.SquadronsController;
-   
+
    import ext.hamcrest.collection.array;
    import ext.hamcrest.collection.hasItems;
    import ext.hamcrest.date.dateEqual;
    import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
-   
+
    import factories.LocationMinimalBuilder;
+   import factories.RouteBuilder;
    import factories.SquadronBuilder;
    import factories.UnitBuilder;
    import factories.newLocation;
    import factories.newRoute;
    import factories.newSquadron;
    import factories.newUnit;
-   
+
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;
+   import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.movement.MHop;
@@ -38,11 +40,11 @@ package tests.movement
    import models.unit.Unit;
    import models.unit.UnitBuildingEntry;
    import models.unit.UnitsList;
-   
+
    import mx.collections.ArrayList;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
-   
+
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.collection.emptyArray;
@@ -54,13 +56,15 @@ package tests.movement
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
    import org.hamcrest.object.sameInstance;
-   
+
+   import testsutils.LocalizerUtl;
+
    import utils.DateUtil;
    import utils.Objects;
    import utils.SingletonFactory;
-   
-   
-   public class TC_SquadronsController
+
+
+   public final class TC_SquadronsController
    {
       private var squadsCtrl: SquadronsController;
       private var allUnits: UnitsList;
@@ -70,6 +74,8 @@ package tests.movement
 
       [Before]
       public function setUp(): void {
+         LocalizerUtl.setUp();
+         LocalizerUtl.addBundle("Players", {"npc": "NPC"});
          Config.setConfig({
             "units.trooper.guns": [0, 1],
             "units.trooper.kind": "ground",
@@ -86,6 +92,7 @@ package tests.movement
       [After]
       public function tearDown(): void {
          SingletonFactory.clearAllSingletonInstances();
+         LocalizerUtl.tearDown();
          Config.setConfig({});
       }
 
@@ -411,10 +418,10 @@ package tests.movement
          const routeData1: Object = routeData(2, 2);
          delete routeData1["player"]; routeData1["playerId"] = 2;
          
-         const routeData: Array = [routeData0, routeData1];
+         const routes: Array = [routeData0, routeData1];
          const players: Object = {"1": {"id": 1, "name": "Me"}, "2": {"id": 2, "name": "Ally"}};
          
-         squadsCtrl.recreateRoutes(routeData, players);
+         squadsCtrl.recreateRoutes(routes, players);
          
          assertThat( "should have removed all old routes and added new ones", allRoutes, arrayWithSize(2) );
          assertThat( "should have set players for both routes", allRoutes, hasItems(
@@ -426,6 +433,82 @@ package tests.movement
                notNullValue(),
                hasProperty ("id", 1)
             ));
+      }
+
+      [Test]
+      public function createSquadronsForUnits(): void {
+         const galaxyLoc: LocationMinimal = new LocationMinimal(LocationType.GALAXY, 1);
+         const galaxy: Galaxy = new Galaxy();
+         galaxy.id = 1;
+
+         function $list(... args): ArrayList {
+            return new ArrayList(args);
+         }
+
+         function $unit(): UnitBuilder {
+            return new UnitBuilder()
+               .type("Dart")
+               .player(new PlayerMinimal(1, "Test"))
+               .ownerIsPlayer()
+               .level(1)
+               .hp(100)
+               .squadronId(1)
+               .location(galaxyLoc);
+         }
+
+         squadsCtrl.createSquadronsForUnits(
+            $list(
+               $unit().id(1).type("Trooper").GET,
+               $unit().id(2).stationary().location(null).GET,
+               $unit().id(3).stationary().location(new LocationMinimal(LocationType.SS_OBJECT, 1)).GET),
+            galaxy);
+         assertThat(
+            "should skip ground, stationary units without location and stationary units in a planet",
+            allSquads, emptyArray());
+
+         const route: MRoute = new RouteBuilder().id(1).ownerIsPlayer().GET;
+         allRoutes.addItem(route);
+         squadsCtrl.createSquadronsForUnits(
+            $list(
+               $unit().id(1).squadronId(1).GET,
+               $unit().id(2).stationary().GET,
+               $unit().id(3).squadronId(2).ownerIsEnemy().GET),
+            galaxy);
+         const squad1: MSquadron = allSquads.find(1);
+         assertThat("should have created squad 1", squad1, notNullValue());
+         assertThat("should have attached route to squad 1", squad1.route, equals (route));
+         const squad0: MSquadron = allSquads.findStationary(galaxyLoc, 1);
+         assertThat("should have created stationary squad", squad0, notNullValue());
+         const squad2: MSquadron = allSquads.find(2);
+         assertThat("should have created hostile squad", squad2, notNullValue());
+         assertThat("should have created route for hostile squad", squad2.route, notNullValue());
+         assertThat("should not have added hostile route to routes list", allRoutes, arrayWithSize(1));
+      }
+
+
+      /* ####################### */
+      /* ### Complex methods ### */
+      /* ####################### */
+
+      [Ignore]
+      [Test]
+      public function executeJump(): void {
+      }
+
+      [Ignore]
+      [Test]
+      public function updateRoute(): void {
+      }
+
+      [Ignore]
+      [Test]
+      public function stopSquadron(): void {
+      }
+
+      [Ignore]
+      [Test]
+      public function startMovement(): void {
+
       }
    }
 }
