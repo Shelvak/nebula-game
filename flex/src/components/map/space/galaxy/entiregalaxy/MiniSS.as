@@ -1,6 +1,9 @@
 package components.map.space.galaxy.entiregalaxy
 {
-   public class MiniSS
+import utils.ObjectStringBuilder;
+
+
+public class MiniSS
    {
       public var type: String;
       public var x: int;
@@ -10,6 +13,13 @@ package components.map.space.galaxy.entiregalaxy
          this.x = coords[0];
          this.y = coords[1];
          this.type = type;
+      }
+
+      public function toString(): String {
+         return new ObjectStringBuilder(this)
+            .addProp("type")
+            .addProp("x")
+            .addProp("y").finish();
       }
    }
 }

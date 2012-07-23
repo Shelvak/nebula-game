@@ -15,8 +15,8 @@ package components.map.space.galaxy.entiregalaxy
 
    public final class EntireGalaxyRenderer
    {
-      internal static const SECTOR_SIZE: uint = 12;   // pixels
-      internal static const GAP_SIZE: uint = 4;       // pixels
+      public static const SECTOR_SIZE: uint = 12;   // pixels
+      public static const GAP_SIZE: uint = 4;       // pixels
 
       private var _solarSystems: Array;
       private var _fowMatrix: FOWMatrix;

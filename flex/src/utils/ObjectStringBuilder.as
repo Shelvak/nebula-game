@@ -3,17 +3,23 @@ package utils
    public class ObjectStringBuilder
    {
       private var _object: *;
-      private var _props: Array;
+      private const _values: Array = [];
 
       public function ObjectStringBuilder(object: *) {
          _object = object;
-         _props = [];
       }
 
       public function addProp(name: String): ObjectStringBuilder {
          Objects.paramNotEmpty("name", name);
-         Objects.notNull(_object, "You can't invoke this method on null or undefined object");
-         _props.push(name + ": " + valueToString(_object[name]));
+         checkObject();
+         _values.push(name + ": " + valueToString(_object[name]));
+         return this;
+      }
+      
+      public function addString(value: String): ObjectStringBuilder {
+         Objects.paramNotEmpty("value", value);
+         checkObject();
+         _values.push(value);
          return this;
       }
 
@@ -21,8 +27,10 @@ package utils
          if (_object == null) {
             return valueToString(_object);
          }
-         return "[" + (includeClassName ? "class: " + Objects.getClassName(_object) + ", " : "")
-            + _props.join(", ") + "]";
+         if (includeClassName) {
+            _values.unshift("class: " + Objects.getClassName(_object));
+         }
+         return "[" + _values.join(", ") + "]"; 
       }
 
       private function valueToString(value: *): String {
@@ -36,6 +44,10 @@ package utils
             return '"' + value + '"';
          }
          return value.toString();
+      }
+      
+      private function checkObject(): void {
+         Objects.notNull(_object, "You can't invoke this method on null or undefined object");
       }
    }
 }
