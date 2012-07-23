@@ -50,7 +50,7 @@
    </viewport:content>
    <viewport:overlay>
       <s:Group>
-         <controllers:ViewportZoomController viewport="{this}"/>
+         <controllers:ViewportZoomController viewport="{this}" right="0"/>
          <s:SkinnableContainer bottom="2" right="2" fontWeight="bold"
                                skinClass="components.map.space.galaxy.entiregalaxy.LegendSkin">
             <s:layout>
