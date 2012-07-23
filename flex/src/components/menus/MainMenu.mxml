@@ -168,7 +168,11 @@
                                left="22" right="0" top="5" bottom="5"
                                label="{Localizer.string('MainMenu', 'label.tips')}"/>
          </s:Group>
-         <s:Group width="100%">
+         <!-- TODO: fix referrals for one.lt users to use one.lt sharing. -->
+         <s:Group width="100%"
+            visible="{! ExternalInterface.call('isOneLt')}"
+            includeInLayout="{! ExternalInterface.call('isOneLt')}"
+         >
             <s:BitmapImage left="0" top="0" source="{getImage('holder')}"/>
             <s:Button id="btnInviteFriend" click="UrlNavigate.getInstance().showInviteFriendUrl()" 
                       left="22" right="0" top="5" bottom="5"

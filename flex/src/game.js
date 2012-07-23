@@ -587,6 +587,7 @@ function onNoteSubmit() {
   return false;
 }
 
+// Also called from flash.
 function isOneLt() {
   return urlParams["one_lt"] == "true";
 }
