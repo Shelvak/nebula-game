@@ -24,9 +24,11 @@ package tests.movement
    import models.ModelLocator;
    import models.ModelsCollection;
    import models.Owner;
+   import models.galaxy.FOWMatrix;
    import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationType;
+   import models.map.MapArea;
    import models.movement.MHop;
    import models.movement.MRoute;
    import models.movement.MSquadron;
@@ -48,6 +50,7 @@ package tests.movement
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.collection.emptyArray;
+   import org.hamcrest.collection.hasItem;
    import org.hamcrest.core.allOf;
    import org.hamcrest.core.not;
    import org.hamcrest.core.throws;
@@ -293,10 +296,7 @@ package tests.movement
          function $squad(): SquadronBuilder {
             return new SquadronBuilder().id(1).currentHopFrom(galaxyLoc).ownerIsPlayer();
          }
-         function $list(... items): ArrayList {
-            return new ArrayList(items);
-         }
-         
+
          assertThat(
             "should ignore ground units and units not in squad",
             function(): void {
@@ -310,7 +310,7 @@ package tests.movement
          const squadWithRoute: MSquadron = $squad().route(route).GET;
          allRoutes.addItem(route);
          allSquads.addItem(squadWithRoute);
-         squadsCtrl.destroyEmptySquadrons($list($unit().squadronId(1).GET));
+         squadsCtrl.destroyEmptySquadrons(newList($unit().squadronId(1).GET));
          assertThat(
             "should have removed empty friendly squad from squadrons list",
             allSquads, emptyArray());
@@ -322,12 +322,12 @@ package tests.movement
             squadWithRoute.route, nullValue());
          
          allSquads.addItem($squad().stationary().player(new PlayerMinimal(2, "Test")).GET);
-         squadsCtrl.destroyEmptySquadrons($list($unit().stationary().playerId(2).GET));
+         squadsCtrl.destroyEmptySquadrons(newList($unit().stationary().playerId(2).GET));
          assertThat(
             "should have removed empty stationary squad", allSquads, emptyArray());
          
          allSquads.addItem($squad().ownerIsEnemy().GET);
-         squadsCtrl.destroyEmptySquadrons($list($unit().GET));
+         squadsCtrl.destroyEmptySquadrons(newList($unit().GET));
          assertThat(
             "should have removed enemy squad", allSquads, emptyArray());
          
@@ -336,7 +336,7 @@ package tests.movement
          const unitRemoved: Unit = $unit().id(2).GET;
          allSquads.addItem(squadNotEmpty);
          allUnits.addItem(unitLeft);
-         squadsCtrl.destroyEmptySquadrons($list(unitRemoved));
+         squadsCtrl.destroyEmptySquadrons(newList(unitRemoved));
          assertThat(
             "should not have removed squadron with units left", allSquads, array (squadNotEmpty));
       }
@@ -441,12 +441,8 @@ package tests.movement
          const galaxy: Galaxy = new Galaxy();
          galaxy.id = 1;
 
-         function $list(... args): ArrayList {
-            return new ArrayList(args);
-         }
-
          function $unit(): UnitBuilder {
-            return new UnitBuilder()
+            return newUnit()
                .type("Dart")
                .player(new PlayerMinimal(1, "Test"))
                .ownerIsPlayer()
@@ -457,7 +453,7 @@ package tests.movement
          }
 
          squadsCtrl.createSquadronsForUnits(
-            $list(
+            newList(
                $unit().id(1).type("Trooper").GET,
                $unit().id(2).stationary().location(null).GET,
                $unit().id(3).stationary().location(new LocationMinimal(LocationType.SS_OBJECT, 1)).GET),
@@ -469,7 +465,7 @@ package tests.movement
          const route: MRoute = new RouteBuilder().id(1).ownerIsPlayer().GET;
          allRoutes.addItem(route);
          squadsCtrl.createSquadronsForUnits(
-            $list(
+            newList(
                $unit().id(1).squadronId(1).GET,
                $unit().id(2).stationary().GET,
                $unit().id(3).squadronId(2).ownerIsEnemy().GET),
@@ -490,9 +486,91 @@ package tests.movement
       /* ### Complex methods ### */
       /* ####################### */
 
-      [Ignore]
       [Test]
       public function executeJump(): void {
+         const galaxyLoc: LocationMinimal = new LocationMinimal(LocationType.GALAXY, 1);
+
+         function $unit(): UnitBuilder {
+            return newUnit().id(1).type("Dart").squadronId(1).location(galaxyLoc).ownerIsPlayer();
+         }
+
+         function $squad(): SquadronBuilder {
+            return newSquadron().id(1).currentHopFrom(galaxyLoc);
+         }
+
+         function cleanAll(): void {
+            allSquads.removeAll();
+            allRoutes.removeAll();
+            allUnits.removeAll();
+         }
+
+         const oldSquad: MSquadron = $squad().GET;
+         allSquads.addItem(oldSquad);
+         squadsCtrl.executeJump(newList($unit().ownerIsEnemy().GET), newList(), null);
+         assertThat(
+            "should have removed old squad with the same id",
+            allSquads, not (hasItem (oldSquad)));
+         cleanAll();
+
+         squadsCtrl.executeJump(
+            newList($unit().id(1).squadronId(1).location(newLocation().inSSObject().GET).GET),
+            newList(), null);
+         assertThat(
+            "should not create squads for units not in observable space and not in galaxy",
+            [allSquads, allUnits], array (emptyArray(), emptyArray()));
+         squadsCtrl.executeJump(
+            newList($unit().id(2).squadronId(2).location(galaxyLoc).ownerIsEnemy().GET),
+            newList(), null);
+         assertThat(
+            "should not create squads for hostile units not in observable space",
+            [allSquads, allUnits], array (emptyArray(), emptyArray()));
+         cleanAll();
+
+         modelLoc.latestGalaxy = new Galaxy();
+         const galaxy: Galaxy = modelLoc.latestGalaxy;
+         galaxy.id = 1;
+         galaxy.setFOWEntries(Vector.<MapArea>([new MapArea(0, 2, 0, 2)]), newList());
+         const enemyUnit: Unit = $unit().ownerIsEnemy().GET;
+         const enemyHop: MHop = newHop(0, 0, 0);
+         squadsCtrl.executeJump(
+            newList(enemyUnit),
+            newList(enemyHop),
+            "2000-01-03T00:00:00+03:00");
+         assertThat(
+            "should have added enemy units to global units list",
+            allUnits, array (enemyUnit));
+         const enemySquad: MSquadron = allSquads.find(1);
+         const enemyRoute: MRoute = enemySquad.route;
+         assertThat(
+            "should have created enemy squadron and added to squads list",
+            enemySquad, notNullValue());
+         assertThat(
+            "should have added hops to the squadron created",
+            enemySquad.hops, array(enemyHop));
+         assertThat("should have created route for the squadron", enemyRoute, notNullValue());
+         assertThat(
+            "route should have jumpsAt attached",
+            enemyRoute.jumpsAtEvent.occursAt,
+            dateEqual(DateUtil.parseServerDTF("2000-01-03T00:00:00+03:00")));
+         cleanAll();
+
+         const playerRoute: MRoute = newRoute().id(1).GET;
+         allRoutes.addItem(playerRoute);
+         squadsCtrl.executeJump(
+            newList($unit().location(newLoc().inGalaxy().x(5).y(5).GET).GET),
+            newList(),
+            "2000-01-03T00:00:00+03:00");
+         const playerSquad: MSquadron = allSquads.find(1);
+         assertThat(
+            "should have created player squadron and added to squads list",
+            playerSquad, notNullValue());
+         assertThat(
+            "should have attached route to player squad",
+            playerSquad.route, sameInstance (playerRoute));
+         assertThat(
+            "should have attached jumpsAt to the route",
+            playerRoute.jumpsAtEvent.occursAt,
+            dateEqual(DateUtil.parseServerDTF("2000-01-03T00:00:00+03:00")));
       }
 
       [Ignore]
@@ -508,7 +586,10 @@ package tests.movement
       [Ignore]
       [Test]
       public function startMovement(): void {
+      }
 
+      private function newList(... args): ArrayList {
+         return new ArrayList(args);
       }
    }
 }
