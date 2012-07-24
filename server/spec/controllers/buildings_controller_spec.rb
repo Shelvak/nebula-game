@@ -379,12 +379,18 @@ describe BuildingsController do
 
   describe "buildings|construct_all" do
     before(:each) do
-      player.creds += 100000
-      player.vip_level = 1
-      player.save!
-      @planet = Factory.create(:planet, :player => player)
+      @planet = Factory.create(:planet, player: player)
+      # For population
+      Factory.create(:b_housing, opts_active + {planet: @planet,
+        level: Building::Housing.max_level, y: 10})
       @constructor_opts = opts_active + {:planet => @planet}
       @building = Factory.create(:b_barracks, @constructor_opts)
+
+      player.creds += 100000
+      player.vip_level = 1
+      player.recalculate_population
+      player.save!
+
       @constructable = @building.
         construct!(Unit::Trooper.to_s, true, {}, @building.queue_max)
 
