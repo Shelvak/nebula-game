@@ -5,10 +5,16 @@ class BuildingsController < GenericController
     private
     def find_building_options; required(:id => Fixnum); end
 
-    def find_building(m)
+    def find_building(m, allow_allies=false)
       building = Building.find(m.params['id'], :include => :planet)
-      raise ActiveRecord::RecordNotFound \
-        unless building.planet.player_id == m.player.id
+
+      raise ActiveRecord::RecordNotFound,
+        "Cannot find building #{m.params['id']} in non-#{
+        allow_allies ? "friendly" : "owned"} planet #{building.planet_id}" \
+        unless (
+          allow_allies &&
+            m.player.friendly_ids.include?(building.planet.player_id)
+        ) || building.planet.player_id == m.player.id
 
       building
     end
@@ -24,7 +30,8 @@ class BuildingsController < GenericController
   # Invocation: by client
   #
   # Parameters:
-  # - id (Fixnum) - building id which we want to view.
+  # - id (Fixnum) - building id which we want to view in planet that you/ally
+  # own.
   #
   # Response:
   # - groups(Building#unit_groups) - units inside that building.
@@ -35,7 +42,7 @@ class BuildingsController < GenericController
   SHOW_GARRISON_GROUPS_SCOPE = scope.world
   def self.show_garrison_groups_action(m)
     without_locking do
-      building = find_building(m)
+      building = find_building(m, true)
       units = building.unit_groups
       respond m, :groups => units
     end
@@ -46,7 +53,8 @@ class BuildingsController < GenericController
   # Invocation: by client
   #
   # Parameters:
-  # - id (Fixnum) - building id which we want to view.
+  # - id (Fixnum) - building id which we want to view in a planet which you/ally
+  # own.
   #
   # Response:
   # - units(Unit[]) - units inside that building.
@@ -57,7 +65,7 @@ class BuildingsController < GenericController
   SHOW_GARRISON_SCOPE = scope.world
   def self.show_garrison_action(m)
     without_locking do
-      building = find_building(m)
+      building = find_building(m, true)
       units = building.units
       respond m, :units => units.map(&:as_json)
     end

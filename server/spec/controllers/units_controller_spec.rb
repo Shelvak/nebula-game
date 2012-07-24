@@ -211,6 +211,13 @@ describe UnitsController do
       end.should raise_error(ActiveRecord::RecordNotFound)
     end
 
+    it "should not raise RecordNotFound if it's ally planet" do
+      player.alliance = create_alliance; player.save!
+      @planet.update_row! player_id: player.alliance.owner_id
+
+      invoke @action, @params
+    end
+
     it "should raise RecordNotFound if the target is not npc" do
       with_config_values 'buildings.npc_solar_plant.npc' => false do
         lambda do

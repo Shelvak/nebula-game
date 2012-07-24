@@ -62,6 +62,14 @@ describe BuildingsController do
       invoke @action, @params
       response_should_include(:groups => building.unit_groups)
     end
+
+    it "should work for ally too" do
+      alliance = create_alliance
+      planet.player = alliance.owner; planet.save!
+      player.alliance = alliance; player.save!
+      invoke @action, @params
+      response_should_include(:groups => building.unit_groups)
+    end
   end
 
   describe "buildings|show_garrison" do
@@ -90,9 +98,15 @@ describe BuildingsController do
 
     it "should return units otherwise" do
       invoke @action, @params
-      response_should_include(
-        :units => @units.map(&:as_json)
-      )
+      response_should_include(units: @units.map(&:as_json))
+    end
+
+    it "should work for ally too" do
+      alliance = create_alliance
+      planet.player = alliance.owner; planet.save!
+      player.alliance = alliance; player.save!
+      invoke @action, @params
+      response_should_include(units: @units.map(&:as_json))
     end
   end
 
