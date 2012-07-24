@@ -62,6 +62,14 @@ describe BuildingsController do
       invoke @action, @params
       response_should_include(:groups => building.unit_groups)
     end
+
+    it "should work for ally too" do
+      alliance = create_alliance
+      planet.player = alliance.owner; planet.save!
+      player.alliance = alliance; player.save!
+      invoke @action, @params
+      response_should_include(:groups => building.unit_groups)
+    end
   end
 
   describe "buildings|show_garrison" do
@@ -90,9 +98,15 @@ describe BuildingsController do
 
     it "should return units otherwise" do
       invoke @action, @params
-      response_should_include(
-        :units => @units.map(&:as_json)
-      )
+      response_should_include(units: @units.map(&:as_json))
+    end
+
+    it "should work for ally too" do
+      alliance = create_alliance
+      planet.player = alliance.owner; planet.save!
+      player.alliance = alliance; player.save!
+      invoke @action, @params
+      response_should_include(units: @units.map(&:as_json))
     end
   end
 
@@ -379,12 +393,18 @@ describe BuildingsController do
 
   describe "buildings|construct_all" do
     before(:each) do
-      player.creds += 100000
-      player.vip_level = 1
-      player.save!
-      @planet = Factory.create(:planet, :player => player)
+      @planet = Factory.create(:planet, player: player)
+      # For population
+      Factory.create(:b_housing, opts_active + {planet: @planet,
+        level: Building::Housing.max_level, y: 10})
       @constructor_opts = opts_active + {:planet => @planet}
       @building = Factory.create(:b_barracks, @constructor_opts)
+
+      player.creds += 100000
+      player.vip_level = 1
+      player.recalculate_population
+      player.save!
+
       @constructable = @building.
         construct!(Unit::Trooper.to_s, true, {}, @building.queue_max)
 

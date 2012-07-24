@@ -83,7 +83,7 @@ class UnitsController < GenericController
   # Invocation: by client
   #
   # Params:
-  # - planet_id (Fixnum): id of a planet which player owns
+  # - planet_id (Fixnum): id of a planet which player/ally owns
   # - target_id (Fixnum): id of a NPC building which player wants to attack
   # - unit_ids (Fixnum[]): ids of units that should participate in
   # the battle.
@@ -102,7 +102,7 @@ class UnitsController < GenericController
     raise GameLogicError.new("unit_ids cannot be empty!") \
       if m.params['unit_ids'].blank?
 
-    planet = SsObject::Planet.where(:player_id => m.player.id).
+    planet = SsObject::Planet.where(player_id: m.player.friendly_ids).
       find(m.params['planet_id'])
     target = planet.buildings.find(m.params['target_id'])
     raise ActiveRecord::RecordNotFound.new(
@@ -120,7 +120,7 @@ class UnitsController < GenericController
       )
     end
 
-    assets = Combat.run_npc!(planet, player_units, target)
+    assets = Combat.run_npc!(planet, m.player, player_units, target)
 
     # Destroy NPC building if there are no more units there.
     if target.units.blank?
@@ -356,7 +356,7 @@ class UnitsController < GenericController
   ACTION_LOAD = 'units|load'
 
   LOAD_OPTIONS = logged_in + required(unit_ids: Hash)
-  #required(unit_ids: HashType(String => ArrayType(Fixnum)))
+  #required(unit_ids: HashType(AllKeys(String) => ArrayType(Fixnum)))
   LOAD_SCOPE = scope.world
   def self.load_action(m)
     unit_ids = m.params['unit_ids'].map_keys { |k, v| k.to_i }
@@ -396,7 +396,7 @@ class UnitsController < GenericController
   ACTION_UNLOAD = 'units|unload'
 
   UNLOAD_OPTIONS = logged_in + required(unit_ids: Hash)
-  #required(unit_ids: HashType(String => ArrayType(Fixnum)))
+  #required(unit_ids: HashType(AllKeys(String) => ArrayType(Fixnum)))
   UNLOAD_SCOPE = scope.world
   def self.unload_action(m)
     unit_ids = m.params['unit_ids'].map_keys { |k, v| k.to_i }
@@ -461,7 +461,7 @@ class UnitsController < GenericController
 
   TRANSFER_RESOURCES_OPTIONS = logged_in + required(
     transporters: Hash
-    #transporters: HashType(String => HashType(
+    #transporters: HashType(AllKeys(String) => HashType(
     #  'metal' => Fixnum, 'energy' => Fixnum, 'zetium' => Fixnum
     #))
   )
