@@ -131,21 +131,22 @@ package models.unit {
 
       private var inPlanet: Boolean;
 
-      public function switchState(): void
-      {
-         if (state == STATE_LOADING)
-         {
-            state = STATE_UNLOADING;
-         }
-         else
-         {
-            state = STATE_LOADING;
-         }
-         var temp: * = target;
-         target = location;
-         location = temp;
-         resetScreen();
-      }
+//      DEPRECATED DUE TO DESIGN AND UI CHANGES
+//      public function switchState(): void
+//      {
+//         if (state == STATE_LOADING)
+//         {
+//            state = STATE_UNLOADING;
+//         }
+//         else
+//         {
+//            state = STATE_LOADING;
+//         }
+//         var temp: * = target;
+//         target = location;
+//         location = temp;
+//         resetScreen();
+//      }
 
       private function addUnitLoadables(e: GUnitEvent): void
       {

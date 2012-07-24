@@ -5222,9 +5222,10 @@
     <label.autoLoad value="Masinis perkėlimas"/>
     <label.autoLoadOnlyVip
       value="Masiniu perkėlimu gali naudotis tik VIP nariai."/>
-    <label.openAutoLoad value="Atidaryti"/>
-    <tab.load value="Įkrovimas"/>
-    <tab.unload value="Iškrovimas"/>
+    <label.openAutoLoad.load value="Įkrovimas"/>
+    <label.openAutoLoad.unload value="Iškrovimas"/>
+    <title.autoLoad.load value="Įkrovimas"/>
+    <title.autoLoad.unload value="Iškrovimas"/>
     <tooltip.autoLoadWontFit
       value="Šio objekto perkelti negali dėl nepakankamos talpos."/>
 

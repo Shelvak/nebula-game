@@ -129,11 +129,18 @@
               <base:layout>
                  <s:VerticalLayout gap="10" horizontalAlign="center"/>
               </base:layout>
-              <s:Button visible="{ML.player.vipLevel > 0}"
-                        includeInLayout="{ML.player.vipLevel > 0}"
-                        label="{getText('label.openAutoLoad')}"
-                        click="NavigationController.getInstance().showAutoLoad(
-                          US.location, null, US.selectedTransporters)"/>
+              <s:Group visible="{ML.player.vipLevel > 0}" width="100%"
+                        includeInLayout="{ML.player.vipLevel > 0}">
+                <s:layout>
+                   <s:HorizontalLayout gap="10" horizontalAlign="center"/>
+                </s:layout>
+                <s:Button label="{getText('label.openAutoLoad.load')}"
+                          click="NavigationController.getInstance().showAutoLoad(
+                            US.location, null, US.selectedTransporters)"/>
+                <s:Button label="{getText('label.openAutoLoad.unload')}"
+                          click="NavigationController.getInstance().showAutoLoad(
+                            null, US.location, US.selectedTransporters)"/>
+              </s:Group>
               <s:Group width="100%" visible="{ML.player.vipLevel == 0}"
                        includeInLayout="{ML.player.vipLevel == 0}">
                 <s:Label text="{getText('label.autoLoadOnlyVip')}"
