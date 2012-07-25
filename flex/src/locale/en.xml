@@ -1854,8 +1854,12 @@
       <p>Battle in {0 planet[Planet] galaxy[Galaxy] ss[Solar System] 
       battleground[]} {1}{0 planet[, Owner] galaxy[] ss[] battleground[]} {2}</p>
     </message.combatLog>
-    <label.combatLog.outcome.win value="You have won!" />
-    <label.combatLog.outcome.loose value="You have lost!" />
+    <message.combatLogInBuilding>
+      <p>{0 player[Battle] ally[Alliance members battle]} in planet {1},
+        building {2}</p>
+    </message.combatLogInBuilding>
+    <label.combatLog.outcome.win value="Victory!" />
+    <label.combatLog.outcome.loose value="Defeat!" />
     <label.combatLog.outcome.tie value="Its a tie" />
     <label.combatLog.showLog value="View replay" />
     <label.combatLog.copyToClipboard value="Copy to clipboard" />

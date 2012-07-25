@@ -384,7 +384,7 @@ package models.building
             dispatchSelectedBuildingChangeEvent();
             if (_selectedBuilding != null)
             {
-               if ((ML.latestPlanet.ssObject.ownerIsAlly
+               if ((ML.latestPlanet.ssObject.ownerIsPlayer
                   || ML.latestPlanet.ssObject.ownerIsAlly)
                && _selectedBuilding.npc)
                {

@@ -260,7 +260,15 @@ package components.notifications.parts
       {
          if (location)
          {
-            location.location = combatLog.location;
+            if (combatLog.fakeNpcBuilding != null)
+            {
+               location.predefinedLocation = combatLog.location;
+               location.location = combatLog.fakeNpcBuilding;
+            }
+            else
+            {
+               location.location = combatLog.location;
+            }
          }
       }
       
