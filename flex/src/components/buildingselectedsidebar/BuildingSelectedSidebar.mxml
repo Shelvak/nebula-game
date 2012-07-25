@@ -91,6 +91,16 @@
                         <s:VerticalLayout horizontalAlign="justify"/>
                      </s:layout>
                   </s:Group>
+                  <buildingselectedsidebar:AttackNpcButtonGroup
+                     visible="{bSidebar.selectedBuilding.npc
+                       &amp;&amp; ML.latestPlanet.ssObject.ownerIsAlly}"
+                     includeInLayout="{bSidebar.selectedBuilding.npc
+                       &amp;&amp; ML.latestPlanet.ssObject.ownerIsAlly}"/>
+                  <buildingselectedsidebar:NpcUnitsBuildingSidebarComponents height="100%"
+                    visible="{bSidebar.selectedBuilding.npc
+                    &amp;&amp; ML.latestPlanet.ssObject.ownerIsAlly}"
+                    includeInLayout="{bSidebar.selectedBuilding.npc
+                    &amp;&amp; ML.latestPlanet.ssObject.ownerIsAlly}"/>
                   <base:layout>
                      <s:VerticalLayout horizontalAlign="justify" paddingLeft="10" paddingRight="10"/>
                   </base:layout>
@@ -169,22 +179,7 @@
                                         right="6"/>
                            </s:Group>
                            
-                           <base:AdvancedContainer visible="{bSidebar.selectedBuilding.npc}">
-                              <base:Warning text="{getString('warning.attackNpc')}"
-                                            width="100%" showSign="false"/>
-                              <s:Label text="{getString('noUnits')}" 
-                                       visible="{!ML.latestPlanet.hasAggressiveGroundUnits()}"
-                                       styleName="unsatisfied" fontSize="16"/>
-                              <s:Button enabled="{ML.latestPlanet.hasAggressiveGroundUnits()}"
-                                        horizontalCenter="0" 
-                                        click="bSidebar.openCurrent()"
-                                        skinClass="components.skins.RedButtonSkin"
-                                        label="{getString('attack')}"/>
-                              <base:layout>
-                                 <s:VerticalLayout horizontalAlign="center"
-                                         gap="9"/>
-                              </base:layout>
-                           </base:AdvancedContainer>
+                           <buildingselectedsidebar:AttackNpcButtonGroup/>
                            
                            <base:layout>
                               <s:VerticalLayout paddingLeft="6" horizontalAlign="justify"/>
@@ -326,33 +321,7 @@
                      </base:layout>
                   </base:Panel>
                   
-                  <s:Group height="100%" visible="{bSidebar.selectedBuilding.npc}">
-                     <s:Group id="attackTitle" height="16">
-                        <!-- Background of the title -->
-                        <s:Path alpha="0.6" data="M 0 8 L 8 0 L {attackTitle.width-1} 0 L {attackTitle.width-1} 
-                                {attackTitle.height-1} L 0 {attackTitle.height-1} Z" 
-                                winding="nonZero" top="0" left="0" right="0" bottom="0">
-                           <s:fill>
-                              <s:LinearGradient rotation="270">
-                                 <s:GradientEntry color="0x004F68" ratio="0"/>
-                                 <s:GradientEntry alpha="0.282353" color="0x00232E" ratio="1"/>
-                              </s:LinearGradient>
-                           </s:fill>
-                           <s:stroke>
-                              <s:SolidColorStroke caps="none" joints="miter" miterLimit="4" scaleMode="normal" weight="1"/>
-                           </s:stroke>
-                        </s:Path>
-                        <!--- Title of attack menu. -->
-                        <s:Label id="titleDisplay" styleName="panelTitle"
-                                 verticalCenter="0" horizontalCenter="0" 
-                                 text="{getString('attackInfo')}"/> 
-                     </s:Group>
-                     
-                     <buildingselectedsidebar:NpcUnitsList building="{bSidebar.selectedBuilding}"/>
-                     <s:layout>
-                        <s:VerticalLayout horizontalAlign="justify"/>
-                     </s:layout>  
-                  </s:Group>
+                  <buildingselectedsidebar:NpcUnitsBuildingSidebarComponents height="100%"/>
                   
                   <base:Panel title="{getString('selectedUpgradeCost')}" 
                               visible="{!(bSidebar.selectedBuilding.upgradePart.level == Config.getBuildingMaxLevel(bSidebar.selectedBuilding.type)

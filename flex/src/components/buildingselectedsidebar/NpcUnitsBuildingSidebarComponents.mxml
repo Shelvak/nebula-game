@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:buildingselectedsidebar="components.buildingselectedsidebar.*"
+         visible="{bSidebar.selectedBuilding.npc}">
+  <fx:Script><![CDATA[
+    import models.building.MCBuildingSelectedSidebar;
+
+    import utils.locale.Localizer;
+
+    [Bindable]
+    private var bSidebar: MCBuildingSelectedSidebar =
+            MCBuildingSelectedSidebar.getInstance();
+
+    private function getString(key: String, params: Array = null): String {
+       return Localizer.string('BuildingSelectedSidebar', key, params);
+    }
+    ]]></fx:Script>
+  <s:Group id="attackTitle" height="16">
+     <!-- Background of the title -->
+     <s:Path alpha="0.6" data="M 0 8 L 8 0 L {attackTitle.width-1} 0 L {attackTitle.width-1}
+             {attackTitle.height-1} L 0 {attackTitle.height-1} Z"
+             winding="nonZero" top="0" left="0" right="0" bottom="0">
+        <s:fill>
+           <s:LinearGradient rotation="270">
+              <s:GradientEntry color="0x004F68" ratio="0"/>
+              <s:GradientEntry alpha="0.282353" color="0x00232E" ratio="1"/>
+           </s:LinearGradient>
+        </s:fill>
+        <s:stroke>
+           <s:SolidColorStroke caps="none" joints="miter" miterLimit="4" scaleMode="normal" weight="1"/>
+        </s:stroke>
+     </s:Path>
+     <!--- Title of attack menu. -->
+     <s:Label id="titleDisplay" styleName="panelTitle"
+              verticalCenter="0" horizontalCenter="0"
+              text="{getString('attackInfo')}"/>
+  </s:Group>
+
+  <buildingselectedsidebar:NpcUnitsList building="{bSidebar.selectedBuilding}"/>
+  <s:layout>
+     <s:VerticalLayout horizontalAlign="justify"/>
+  </s:layout>
+</s:Group>
