@@ -1988,8 +1988,12 @@
       <p>Mūšis {0 planet[planetoje] galaxy[galaktikoje] ss[saulės sistemoje] 
       battleground[]} {1}{0 planet[, Savininkas] galaxy[] ss[] battleground[]} {2}</p>
     </message.combatLog>
-    <label.combatLog.outcome.win value="Tu laimėjai!" />
-    <label.combatLog.outcome.loose value="Tu pralaimėjai!" />
+    <message.combatLogInBuilding>
+      <p>{0 player[Mūšis] ally[Sąjungininko mūšis]} planetoje {1},
+        pastate {2}</p>
+    </message.combatLogInBuilding>
+    <label.combatLog.outcome.win value="Pergalė!" />
+    <label.combatLog.outcome.loose value="Pralaimėjimas!" />
     <label.combatLog.outcome.tie value="Lygiosios" />
     <label.combatLog.showLog value="Peržiūrėti įrašą" />
     <label.combatLog.copyToClipboard value="Kopijuoti į iškarpinę" />
