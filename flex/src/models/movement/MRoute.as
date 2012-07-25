@@ -74,21 +74,21 @@ package models.movement
       /**
        * Time (local) when this squadron will reach its destination.
        */
-      public var arrivalEvent:MTimeEventFixedMoment = null;
+      public var arrivalEvent: MTimeEventFixedMoment = null;
       
-      private var _jumpsAtEvent:MTimeEventFixedMoment = null;
+      private var _jumpsAtEvent: MTimeEventFixedMoment = null;
       [Optional(alias="jumpsAt")]
       [Bindable(event="jumpsAtChange")]
       /**
        * Time (local) when this squadron will do a jump to another map.
        */
-      public function set jumpsAtEvent(value:MTimeEventFixedMoment) : void {
+      public function set jumpsAtEvent(value: MTimeEventFixedMoment): void {
          if (_jumpsAtEvent != value) {
             _jumpsAtEvent = value;
             dispatchSimpleEvent(MRouteEvent, MRouteEvent.JUMPS_AT_CHANGE);
          }
       }
-      public function get jumpsAtEvent() : MTimeEventFixedMoment {
+      public function get jumpsAtEvent(): MTimeEventFixedMoment {
          return _jumpsAtEvent;
       }
 
@@ -96,7 +96,7 @@ package models.movement
       /**
        * Is this squadron going to jump to another map?
        */
-      public function get jumpPending() : Boolean {
+      public function get jumpPending(): Boolean {
          return _jumpsAtEvent != null;
       }
       
