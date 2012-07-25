@@ -129,7 +129,7 @@ class UnitsController < GenericController
     end
 
     notification_id = assets.notification_ids[m.player.id]
-    notification = Notification.find(notification_id)
+    notification = without_locking { Notification.find(notification_id) }
     respond m, :notification => notification.as_json
   end
 

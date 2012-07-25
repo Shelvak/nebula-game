@@ -4,8 +4,13 @@ module Combat::Integration
   OUTCOME_TIE = 2
 
   # Returns {player_id => notification_id} hash.
-  def create_notifications(response, client_location, leveled_up_units,
-      combat_log, wreckages, push_notification)
+  # @param skip_push_notifications_for [Array] Fixnum[]
+  def create_notifications(
+    response, client_location, building_type,
+    leveled_up_units, combat_log, wreckages, skip_push_notifications_for
+  )
+    client_location_as_json = client_location.as_json
+
     Hash[response['alliances'].map do |alliance_id, alliance|
       alliance['players'].map do |player|
         if player.nil?
@@ -18,13 +23,14 @@ module Combat::Integration
             alliance_id,
             response['classified_alliances'][player_id],
             combat_log.sha1_id,
-            client_location.as_json,
+            client_location_as_json,
+            building_type,
             response['outcomes'][player_id],
             response['yane'][player_id],
             leveled_up_units[player_id],
             response['statistics'][player_id],
             wreckages,
-            push_notification
+            ! skip_push_notifications_for.include?(player_id)
           )
 
           [player_id, notification.id]

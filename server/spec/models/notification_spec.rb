@@ -206,6 +206,7 @@ describe Notification do
       @player = @location.player
       @player.alliance = Factory.create(:alliance)
       @player.save!
+      @building_type = "NpcHall"
 
       @player_id = @player.id
       @alliances = "alliances"
@@ -216,9 +217,11 @@ describe Notification do
       @statistics = "statistics"
       @resources = "resources"
 
-      @args = [@player.id, @player.alliance_id, @alliances,
-        @combat_log.sha1_id, @location.client_location.as_json, @outcome,
-        @yane_units, @leveled_up, @statistics, @resources, true]
+      @args = [
+        @player.id, @player.alliance_id, @alliances, @combat_log.sha1_id,
+        @location.client_location.as_json, @building_type, @outcome,
+        @yane_units, @leveled_up, @statistics, @resources, true
+      ]
     end
 
     it_behaves_like "create for"
@@ -239,6 +242,12 @@ describe Notification do
       Notification.send(
         @method, *@args
       ).params['location'].should == @location.client_location.as_json
+    end
+
+    it "should set params['building_type']" do
+      Notification.send(
+        @method, *@args
+      ).params['building_type'].should == @building_type
     end
     
     it "should set log_id" do
@@ -280,7 +289,7 @@ describe Notification do
     end
 
     it "should not dispatch created if push_notification=false" do
-      @args[10] = false # Lots of args suck...
+      @args[11] = false # Lots of args suck...
       notification = Notification.send(@method, *@args)
       SPEC_EVENT_HANDLER.fired?(notification, EventBroker::CREATED).
         should == 0

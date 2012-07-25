@@ -3,15 +3,23 @@ module Combat::Simulation
   # required.
   #
   # Options:
-  # :cooldown (true) - should we create cooldown for that location after
-  # combat?
-  # :push_notification (true) - should we push notification after combat?
+  # :cooldown (Boolean) - should we create cooldown for that location after
+  # combat? Default: true
+  # :skip_push_notifications_for (Fixnum[]]) - player ids which should not be
+  # pushed notifications about this combat. Default: []
+  # :building_type (String|nil) - building type if attacking NPC building.
+  # Default: nil
   #
   # Returns +Combat::Assets+ object or nil if no combat happened.
   def run(location, players, nap_rules, units, buildings, options={})
     LOGGER.block("Running combat simulation in #{location.to_s}") do
-      options.reverse_merge!(:cooldown => true, :push_notification => true)
-      options.assert_valid_keys(:cooldown, :push_notification)
+      options.reverse_merge!(
+        cooldown: true, skip_push_notifications_for: [], building_type: nil
+      )
+      options.ensure_options!(required: {
+        cooldown: Boolean, skip_push_notifications_for: Array,
+        building_type: [NilClass, String]
+      })
 
       # Units which are loaded into transporters.
       loaded_units, unloaded_unit_ids = loaded_units(
@@ -90,8 +98,9 @@ module Combat::Simulation
 
     wreckages = add_wreckages(location, buildings, units)
     notification_ids = create_notifications(
-      response, client_location, filter_leveled_up(units), combat_log,
-      wreckages, options[:push_notification]
+      response, client_location, options[:building_type],
+      filter_leveled_up(units), combat_log,
+      wreckages, options[:skip_push_notifications_for]
     )
     save_players(players, response['statistics'])
     save_updated_participants(units, buildings, killed_by)

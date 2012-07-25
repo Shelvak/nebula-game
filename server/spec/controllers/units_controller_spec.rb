@@ -202,6 +202,11 @@ describe UnitsController do
                           %w{planet_id target_id unit_ids}
     it_should_behave_like "having controller action scope"
 
+    def set_ally
+      player.alliance = create_alliance; player.save!
+      @planet.update_row! player_id: player.alliance.owner_id
+    end
+
     it "should raise RecordNotFound if it's not that player planet" do
       @planet.player = Factory.create(:player)
       @planet.save!
@@ -212,9 +217,7 @@ describe UnitsController do
     end
 
     it "should not raise RecordNotFound if it's ally planet" do
-      player.alliance = create_alliance; player.save!
-      @planet.update_row! player_id: player.alliance.owner_id
-
+      set_ally
       invoke @action, @params
     end
 
@@ -255,11 +258,34 @@ describe UnitsController do
       Cooldown.where(:location_ss_object_id => @planet.id).should_not exist
     end
 
+    it "should not push notification to player" do
+      should_not_fire_event(
+        an_instance_of(Notification), EventBroker::CREATED
+      ) do
+        invoke @action, @params
+      end
+    end
+
+    it "should not push notification to player, but push to ally" do
+      set_ally
+      SPEC_EVENT_HANDLER.clear_events!
+      invoke @action, @params
+      # No pushed notification for player
+      SPEC_EVENT_HANDLER.events.any? do |(object, *_), event, reason|
+        object.is_a?(Notification) && event == EventBroker::CREATED &&
+        object.player_id == player.id
+      end.should be_false
+      # Pushed notification for ally
+      SPEC_EVENT_HANDLER.events.any? do |(object, *_), event, reason|
+        object.is_a?(Notification) && event == EventBroker::CREATED &&
+        object.player_id == @planet.player_id
+      end.should be_true
+    end
+
     it "should respond with the notification" do
       invoke @action, @params
       response_should_include(
-        :notification => Notification.where(:player_id => player.id).last.
-          as_json
+        notification: Notification.where(player_id: player.id).last.as_json
       )
     end
 

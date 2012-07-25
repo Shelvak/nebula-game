@@ -45,8 +45,8 @@ class Combat
   # Run combat in a +SsObject+ between +Player+ and NPC building.
   # Don't create cooldown and do not push notification to player.
   #
-  def self.run_npc!(planet, player, player_units, target)
-    npc_units = Unit.in_location(target.location_attrs).all
+  def self.run_npc!(planet, player, player_units, target_building)
+    npc_units = Unit.in_location(target_building.location_attrs).all
     run(
       planet,
       # If you're attacking building in alliance planet,
@@ -56,7 +56,8 @@ class Combat
       {},
       npc_units + player_units,
       [],
-      :cooldown => false, :push_notification => false
+      cooldown: false, skip_push_notifications_for: [player.id],
+      building_type: target_building.type
     )
   end
 end
