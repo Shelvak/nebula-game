@@ -59,7 +59,7 @@
       ]]>
    </fx:Script>
    
-   <ctrl:ViewportZoomController id="zoom"/>
+   <ctrl:ViewportZoomController id="zoom" right="0"/>
    <ctrl:CWatchedObjects
       id="watchedObjects"
       right="2" bottom="2"

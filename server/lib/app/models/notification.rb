@@ -200,17 +200,11 @@ class Notification < ActiveRecord::Base
   #     ...
   #   },
   #  :log_id => +String+,
-  #  # ClientLocation#as_json
-  #  :location => {
-  #    :type => Location::GALAXY || Location::SOLAR_SYSTEM ||
-  #      Location::SS_OBJECT,
-  #    :id => location_id,
-  #    :x => location_x,
-  #    :y => location_y,
-  #    :name => name,
-  #    :variation => variation,
-  #    :solar_system_id => solar_system_id
-  #  },
+  #  :location => ClientLocation#as_json,
+  #  # If combat was initiated on NPC building, :location will be planet,
+  #  # and :building_type will be some String (without "Building::"). Otherwise
+  #  # it is nil.
+  #  :building_type => nil | building type (String, e.g. NpcHall)
   #  # Combat::OUTCOME_WIN (0) || Combat::OUTCOME_LOSE (1)
   #   || Combat::OUTCOME_TIE (2) constant
   #  :outcome => outcome,
@@ -254,9 +248,11 @@ class Notification < ActiveRecord::Base
   #  }
   # }
   #
-  def self.create_for_combat(player_id, alliance_id, alliances,
-      combat_log_id, location_attrs, outcome, yane_units, leveled_up,
-      statistics, resources, push_notification)
+  def self.create_for_combat(
+    player_id, alliance_id, alliances, combat_log_id, location_attrs,
+    building_type, outcome, yane_units, leveled_up, statistics, resources,
+    push_notification
+  )
     model = new
     model.event = EVENT_COMBAT
     model.player_id = player_id
@@ -266,6 +262,7 @@ class Notification < ActiveRecord::Base
       'alliances' => alliances.as_json,
       'log_id' => combat_log_id.as_json,
       'location' => location_attrs.as_json,
+      'building_type' => building_type,
       'outcome' => outcome.as_json,
       'units' => yane_units.as_json,
       'leveled_up' => leveled_up.as_json,

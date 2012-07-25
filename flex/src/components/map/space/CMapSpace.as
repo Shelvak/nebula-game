@@ -472,8 +472,8 @@ package components.map.space
          _wreckageTooltip = new CWreckageInfo();
          _wreckageTooltip.mouseEnabled = false;
          _wreckageTooltip.mouseChildren = false;
-         _wreckageTooltip.right = 0;
-         _wreckageTooltip.top = 0;
+         _wreckageTooltip.right = 4;
+         _wreckageTooltip.top = 30;
          _wreckageTooltip.visible = false;
          _wreckageTooltip.setStyle("skinClass", CWreckageTooltipSkin);
          var overlay:Group = new Group();

@@ -42,6 +42,39 @@
          display: block;
       }
 
+      #trial_register {
+        display: none;
+        z-index: 1000;
+        position: absolute;
+        top: 0px; bottom: 0px; left: 0px; right: 0px;
+      }
+
+      #trial_register div {
+        text-align: right;
+        margin: 20px auto 0 auto;
+        width: 700px;
+      }
+
+      #trial_register div a img { border: none }
+
+      #trial_register iframe {
+        display: block;
+        margin: auto;
+        width: 700px; height: 80%;
+        border: 1px solid gray;
+      }
+
+      .alpha40 {
+      	/* Fallback for web browsers that doesn't support RGBa */
+      	background: rgb(0, 0, 0);
+      	/* RGBa with 0.6 opacity */
+      	background: rgba(0, 0, 0, 0.4);
+      	/* For IE 5.5 - 7*/
+      	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000, endColorstr=#66000000);
+      	/* For IE 8*/
+      	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#66000000, endColorstr=#66000000)";
+      }
+
       #client-not-responding {
          padding-top: 150px;
          text-align: center;
@@ -156,6 +189,13 @@ include(gameJs);
        <p id="client-not-responding-message"></p>
        <p id="time-until-reload"></p>
        <a href="javascript:window.refresh()"></a>
+    </div>
+
+    <div id="trial_register">
+      <div class="alpha40"><a href="javascript:closeTrialRegistration()">
+        <img /> <!-- src set by JS, because of assetsUrl -->
+      </a></div>
+      <iframe></iframe>
     </div>
 
     </body>

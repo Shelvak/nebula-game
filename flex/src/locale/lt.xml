@@ -1432,15 +1432,14 @@
     <warning.notEnoughVipCreds 
     value="Tu turi turėti bent {0} VIP kredus, kad galėtum juos keisti" />
     <label.additionalPrivileges value="Tu taip pat gausi šias privilegijas:"/>
-    <label.additionalPrivileges.queueBuilding
-       value="● Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus."/>
-    <label.additionalPrivileges.buildAllEntries>
-       ● Akimirksniu užbaigti visų karių ar laivų, esančių statymo eilėje,
-      gamybą (su nuolaida, palyginus su užbaigimu po vieną)!
-    </label.additionalPrivileges.buildAllEntries>
-    <label.additionalPrivileges.repairAllTurrets>
-      ● Taisyti visus planetoje esančius bokštelius vieno mygtuko paspaudimu.
-    </label.additionalPrivileges.repairAllTurrets>
+    <label.additionalPrivileges.list>
+      <p>● Dėti pastatus ir karius/laivus į eilę prieš tai nesumokėjus.</p>
+      <p>● Akimirksniu užbaigti visų karių ar laivų, esančių statymo eilėje,
+         gamybą (su nuolaida, palyginus su užbaigimu po vieną)!</p>
+      <p>● Taisyti visus planetoje esančius bokštelius vieno mygtuko
+         paspaudimu.</p>
+      <p>● Masinis transportinių laivų įkrovimas ir iškrovimas.</p>
+    </label.additionalPrivileges.list>
     <label.buildAllEntries value="Gali užbaigti šios eilės statymą akimirksniu"/>
     <!-- 0: creds for construct all,
          1: creds to pay if accelerate one by one -->
@@ -1746,6 +1745,22 @@
       Tiesiog pažymėk savo karius, pakeisk kortelę, tada pažymėk sąjungos karius
       ir spausk "Gydyti".
     </tip.12>
+    <tip.13>
+      Norėdamas greitai atsakyti žmogui kanale, paspausk ant jo vardo kanalo
+      lange.
+    </tip.13>
+    <tip.14>
+      Ar žinojai, jog laikant nuspaustą SHIFT klavišą galima pažymėti/atžymėti
+      keletą karių vienu metu?
+    </tip.14>
+    <tip.15>
+      Ar žinojai, jog laikant nuspaustą CTRL klavišą galima pažymėti/atžymėti
+      visus vieno tipo karius vienu paspaudimu?
+    </tip.15>
+    <tip.16>
+      Pokalbiuose gali suvesti kelias pirmas žaidėjo vardo raides ir paspausti
+      TAB klavišą: taip užbaigsi jo vardą.
+    </tip.16>
   </Tips>
 
   <Location>
@@ -5201,6 +5216,20 @@
     <stance.neutral value="Neutrali būsena" />
     <stance.aggressive value="Agresyvi būsena ({0}% žalos, {1}% gynybos)" />
 
+    <label.clickToTransfer>
+      <p>Paspausk su pele ant tų objektų, kuriuos nori perkelti.</p>
+    </label.clickToTransfer>
+    <label.autoLoad value="Masinis perkėlimas"/>
+    <label.autoLoadOnlyVip
+      value="Masiniu perkėlimu gali naudotis tik VIP nariai."/>
+    <label.openAutoLoad.load value="Įkrovimas"/>
+    <label.openAutoLoad.unload value="Iškrovimas"/>
+    <title.autoLoad.load value="Įkrovimas"/>
+    <title.autoLoad.unload value="Iškrovimas"/>
+    <tooltip.autoLoadWontFit
+      value="Šio objekto perkelti negali dėl nepakankamos talpos."/>
+
+
     <label.incomingRaiders value="Atskrendantys piratai" />
     <label.count value="Kiekis:" />
     <label.current value="Dabar" />
@@ -5260,6 +5289,7 @@
     <label.show value="Rodyti" />
     <label.deploy value="Išskleisti" />
     <label.manage value="Tvarkyti" />
+    <label.allUnits value="Visi kariai" />
     <label.withPlanets 
       value="Su {0 one[? planeta] tens[? planetų] many[? planetomis]}" />
     <label.withPlanetsOrMore>
@@ -5876,4 +5906,12 @@
     <mouseCoordinates.title>Koordinatės</mouseCoordinates.title>
   </EntireGalaxy>
 
+  <HidableMenu>
+    <Announcement value="Pranešimas" />
+    <Register value="Registracija" />
+    <DailyBonus value="Dienos prizas" />
+    <MainQuest value="Pagrindinė užduotis" />
+    <Quests value="Užduotys" />
+    <tipHide value="Paslėpti mygtukus" />
+  </HidableMenu>
 </locale>

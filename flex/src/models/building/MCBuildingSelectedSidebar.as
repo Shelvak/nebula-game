@@ -262,6 +262,15 @@ package models.building
       
       public function openBuilding(building: Building): void
       {
+         if (ML.latestPlanet.ssObject.ownerIsAlly
+            && building.npc)
+         {
+            if (ML.latestPlanet.getAggressiveGroundUnits().length != 0)
+            {
+               NC.showUnits(ML.latestPlanet.getAggressiveGroundUnits(),
+                  ML.latestPlanet.toLocation(), building);
+            }
+         }
          if (building.upgradePart.upgradeEndsAt != null 
             || ML.latestPlanet.ssObject.owner != Owner.PLAYER
             || building.state == Building.REPAIRING)
@@ -375,17 +384,19 @@ package models.building
             dispatchSelectedBuildingChangeEvent();
             if (_selectedBuilding != null)
             {
+               if ((ML.latestPlanet.ssObject.ownerIsAlly
+                  || ML.latestPlanet.ssObject.ownerIsAlly)
+               && _selectedBuilding.npc)
+               {
+                  new BuildingsCommand(BuildingsCommand.SHOW_GARRISON_GROUPS,
+                     _selectedBuilding).dispatch();
+               }
                if (ML.latestPlanet.ssObject.ownerIsPlayer)
                {
                   _selectedBuilding.addEventListener(
                      UpgradeEvent.LEVEL_CHANGE,
                      refreshPriceOrientatedProperties
                   );
-                  if (_selectedBuilding.npc)
-                  {
-                     new BuildingsCommand(BuildingsCommand.SHOW_GARRISON_GROUPS,
-                        _selectedBuilding).dispatch();
-                  }
                   if (_selectedBuilding.type != BuildingType.MOTHERSHIP
                      && !_selectedBuilding.npc)
                   {

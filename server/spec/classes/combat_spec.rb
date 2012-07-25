@@ -690,13 +690,19 @@ describe Combat do
           buildings { thunder :hp => 3 }
         end
         player(:planet_owner => true)
-        player = self.player(population: 1000, population_cap: 2500) do
+        player = self.player do
           units { mule(:hp => 1) { azure :count => 1 } }
         end
       end
       @player = player.player
-      @location_container = location_container
+      Factory.create(
+        :b_housing, opts_active + {
+          level: Building::Housing.max_level,
+          planet: Factory.create(:planet, player: @player)
+        }
+      )
       @player.recalculate_population
+      @location_container = location_container
       @dsl.run
     end
     
@@ -705,8 +711,9 @@ describe Combat do
     end
     
     it "should destroy thunder" do
-      Building::Thunder.where(
-        :planet_id => @location_container.location.id).first.should be_nil
+      building = Building::Thunder.
+        where(planet_id: @location_container.location.id).first
+      building.should be_nil
     end
 
     it "should not destroy azures" do

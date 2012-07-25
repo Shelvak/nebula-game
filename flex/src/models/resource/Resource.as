@@ -333,6 +333,11 @@ package models.resource
          type = name;
          owner = planetOwner;
       }
+
+      public function get isFull(): Boolean
+      {
+         return maxStock - currentStock < 1;
+      }
       
       public function set currentStock(value: Number): void
       {

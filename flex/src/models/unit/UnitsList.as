@@ -123,7 +123,8 @@ package models.unit
                      PlayerOptions.TRANSPORTER_TAB_UNITS))
          {
             EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-            new UnitsCommand(UnitsCommand.SHOW, unitToOpen).dispatch();
+            new UnitsCommand(UnitsCommand.SHOW,
+               {"unitIds": [unitToOpen.id]}).dispatch();
          }
          else {
             openUnit();

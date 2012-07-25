@@ -6,10 +6,9 @@ source "http://gems.github.com"
 gem 'activesupport', '~>3.2.0', :require => 'active_support'
 gem 'activerecord', '~>3.2.0', :require => 'active_record'
 gem 'json', '>=1.4.6', :require => "json/ext"
-gem 'activerecord-jdbcmysql-adapter', '~>1.1'
+gem 'activerecord-jdbcmysql-adapter', '~>1.2'
 gem 'flag_shih_tzu', :git => "git://github.com/arturaz/flag_shih_tzu.git"
-gem "celluloid",
-  :git => "git://github.com/celluloid/celluloid.git"
+gem "celluloid", :git => "git://github.com/celluloid/celluloid.git"
 #gem "celluloid", '~>0.10.0'
 #gem "celluloid-io", :require => "celluloid/io",
 #  :git => "git://github.com/celluloid/celluloid-io.git"

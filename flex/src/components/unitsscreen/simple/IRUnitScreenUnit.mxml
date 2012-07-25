@@ -107,7 +107,8 @@
             if (unitToOpen.stored > 0)
             {
                EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, switchToStorage);
-               new UnitsCommand(UnitsCommand.SHOW, model.unit).dispatch();
+               new UnitsCommand(UnitsCommand.SHOW,
+                 {"unitIds": [model.unit.id]}).dispatch();
             }
             else
             {

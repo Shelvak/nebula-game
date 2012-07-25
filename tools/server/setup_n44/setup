@@ -205,11 +205,14 @@ check process php-fpm with pidfile #{PHP_FPM_PID}
 
 MONIT_NEBULA_SERVER = %Q{
 check process nebula-server with pidfile /home/spacegame/nebula-server/shared/run/daemon.pid
+  # Not so long until application gets its pidfile.
   start program = "/home/spacegame/bin/srvrunner lib/daemon.rb start"
-    as uid #{USER} and gid #{USER} with timeout 60 seconds
+    as uid #{USER} and gid #{USER} with timeout 30 seconds
   stop program = "/home/spacegame/bin/srvrunner lib/daemon.rb stop"
     as uid #{USER} and gid #{USER}
-  if failed port 55345 send "?\\n" expect "!\\n" with timeout 5 seconds then restart
+  # However it can take a while until tcp server is ready.
+  if failed port 55345 send "?\n" expect "!\n" with timeout 120 seconds then restart
+  depends on mysql
 }
 MONIT_DELAYED_JOB = %Q{
 check process dj_system_1
@@ -1035,7 +1038,10 @@ FORUM_API_KEY = "#{forum_secret}"
 FORUM_COOKIE_NAME = "#{forum_cookie}"
 WIKI_URI = 'http://wiki.nebula44.#{DOMAIN}/wiki'
 NEWS_FORUM_ID = 2
-GA_ACCOUNT_ID = "#{GA_ACCOUNT_ID}"
+# [tracker name, account id, inclusion condition]
+GA_ACCOUNT_IDS = [
+  ["n44", "#{GA_ACCOUNT_ID}", lambda { |request| true }]
+]
 
 # This is used in application controller.
 LOCALE = :#{LOCALE}

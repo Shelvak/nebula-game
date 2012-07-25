@@ -1,19 +1,22 @@
 package components.map.space.galaxy.entiregalaxy
 {
    import flash.display.BitmapData;
+   import flash.geom.Point;
    import flash.geom.Rectangle;
-
+   
    import models.galaxy.FOWBorderElement;
    import models.galaxy.FOWMatrix;
    import models.galaxy.MEntireGalaxy;
-
+   
    import utils.Objects;
+   import utils.assets.AssetNames;
+   import utils.assets.ImagePreloader;
 
 
    public final class EntireGalaxyRenderer
    {
-      internal static const SECTOR_SIZE: uint = 8;   // pixels
-      internal static const GAP_SIZE: uint = 4;      // pixels
+      public static const SECTOR_SIZE: uint = 12;   // pixels
+      public static const GAP_SIZE: uint = 4;       // pixels
 
       private var _solarSystems: Array;
       private var _fowMatrix: FOWMatrix;
@@ -39,9 +42,7 @@ package components.map.space.galaxy.entiregalaxy
       private function render(): BitmapData {
          if (_bitmap == null) {
             _bitmap = new BitmapData(
-               _coordsTransform.realWidth,
-               _coordsTransform.realHeight,
-               false, Colors.BACKGROUND_COLOR);
+               _coordsTransform.realWidth, _coordsTransform.realHeight, true, uint(0));
             for each (var ss: MiniSS in _solarSystems) {
                putSolarSystem(ss);
             }
@@ -55,12 +56,9 @@ package components.map.space.galaxy.entiregalaxy
       private function putSolarSystem(ss: MiniSS): void {
          const x: int = ss.x;
          const y: int = ss.y;
-         _bitmap.fillRect(
-            new Rectangle(
-               _coordsTransform.logicalToReal_X(x, y),
-               _coordsTransform.logicalToReal_Y(x, y),
-               SECTOR_SIZE, SECTOR_SIZE),
-            Colors.getMiniSSColor(ss.type));
+         const image: BitmapData = getImage(ss.type); 
+         _bitmap.copyPixels(
+            image, image.rect, _coordsTransform.logicalToReal(new Point(x, y)), null, null, true);
       }
 
       private function putBorder(element: FOWBorderElement): void {
@@ -90,6 +88,10 @@ package components.map.space.galaxy.entiregalaxy
             fill(px,               py, SECTOR_SIZE, GAP_SIZE);
             fill(px + SECTOR_SIZE, py, GAP_SIZE,    GAP_SIZE);
          }
+      }
+      
+      private function getImage(ssType: String): BitmapData {
+         return ImagePreloader.getInstance().getImage(AssetNames.getMiniSSIconImageName(ssType));
       }
    }
 }

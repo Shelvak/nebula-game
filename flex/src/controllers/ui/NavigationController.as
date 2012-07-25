@@ -52,6 +52,7 @@ package controllers.ui
    import models.ratings.MCRatingsScreen;
    import models.solarsystem.MSSObject;
    import models.solarsystem.MSolarSystem;
+   import models.unit.MCAutoLoad;
    import models.unit.MCLoadUnloadScreen;
    import models.unit.MCUnitScreen;
    import models.unit.MCUnitsBuild;
@@ -137,6 +138,9 @@ package controllers.ui
          );
          _screenProperties[MainAreaScreens.LOAD_UNLOAD] = new ScreenProperties(
             MainAreaScreens.LOAD_UNLOAD, SidebarScreens.LOAD_UNLOAD
+         );
+         _screenProperties[MainAreaScreens.AUTO_LOAD] = new ScreenProperties(
+            MainAreaScreens.AUTO_LOAD, null, false
          );
          _screenProperties[MainAreaScreens.HEAL] = new ScreenProperties(
             MainAreaScreens.HEAL, SidebarScreens.HEAL
@@ -547,6 +551,12 @@ package controllers.ui
       {
          MCLoadUnloadScreen.getInstance().prepare(units, location, target, planetOwner);
          showNonMapScreen(_screenProperties[MainAreaScreens.LOAD_UNLOAD]);
+      }
+
+      public function showAutoLoad(location: *, target: *, transporters: ArrayCollection): void
+      {
+         MCAutoLoad.getInstance().prepare(transporters, location, target);
+         showNonMapScreen(_screenProperties[MainAreaScreens.AUTO_LOAD]);
       }
       
       public function showUnits(units:ListCollectionView, location: * = null, target: Building = null,

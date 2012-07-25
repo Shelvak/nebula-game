@@ -5,8 +5,12 @@
    xmlns:viewport="components.base.viewport.*"
    xmlns:galaxy="components.map.space.galaxy.entiregalaxy.*"
    xmlns:controllers="components.map.controllers.*"
+   underlayImage="{backgroundImage}"
+   underlayScrollSpeedRatio="0.07"
    left="0" right="0" top="0" bottom="0"
    paddingVertical="200" paddingHorizontal="200">
+
+   <fx:Binding source="MEntireGalaxyScreen.getInstance().model" destination="galaxy"/>
 
    <fx:Style>
       .title {
@@ -18,24 +22,20 @@
 
    <fx:Script>
       <![CDATA[
+      import models.galaxy.MEntireGalaxy;
+
       import mx.collections.ArrayList;
 
+      import utils.assets.AssetNames;
+      import utils.assets.ImagePreloader;
       import utils.locale.Localizer;
 
 
-      private var legendEntries: ArrayList = new ArrayList([
-         new LegendEntry(Colors.BORDER_COLOR, getString("border")),
-         ssEntry(MiniSSType.PLAYER_HOME),
-         ssEntry(MiniSSType.ALLIANCE_HOME),
-         ssEntry(MiniSSType.NAP_HOME),
-         ssEntry(MiniSSType.ENEMY_HOME),
-         ssEntry(MiniSSType.REGULAR),
-         ssEntry(MiniSSType.PULSAR),
-         ssEntry(MiniSSType.WORMHOLE)
-      ]);
+      [Bindable]
+      private var galaxy: MEntireGalaxy;
 
-      private function ssEntry(ssType: String): LegendEntry {
-         return new LegendEntry(Colors.getMiniSSColor(ssType), getString(ssType));
+      private function get backgroundImage(): BitmapData {
+         return ImagePreloader.getInstance().getImage(AssetNames.getSpaceBackgroundImageName());
       }
 
       private function getString(property: String): String {
@@ -46,11 +46,11 @@
 
    <viewport:content>
       <galaxy:CEntireGalaxy
-         id="map" model="{MEntireGalaxyScreen.getInstance().model}" viewport="{this}"/>
+         id="map" model="{galaxy}" viewport="{this}"/>
    </viewport:content>
    <viewport:overlay>
       <s:Group>
-         <controllers:ViewportZoomController viewport="{this}"/>
+         <controllers:ViewportZoomController viewport="{this}" right="0"/>
          <s:SkinnableContainer bottom="2" right="2" fontWeight="bold"
                                skinClass="components.map.space.galaxy.entiregalaxy.LegendSkin">
             <s:layout>
@@ -59,7 +59,7 @@
             <s:Label text="{getString('title')}" styleName="title"/>
             <s:DataGroup
                itemRenderer="components.map.space.galaxy.entiregalaxy.LegendEntryRenderer"
-               dataProvider="{legendEntries}">
+               dataProvider="{new ArrayList(galaxy.renderedObjectTypes)}">
                <s:layout>
                   <s:VerticalLayout gap="4"/>
                </s:layout>

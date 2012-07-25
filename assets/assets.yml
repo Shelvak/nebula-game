@@ -203,6 +203,14 @@ assets:
             wiki_name: <%= "#{type.camelcase}#{item}.png" %>
         <% end %>
         <% end %>
+      "mini":
+        your_home.png:        Entire_galaxy_home_system.png
+        alliance_home.png:    Entire_galaxy_ally_home_system.png
+        nap_home.png:         Entire_galaxy_nap_home_system.png
+        enemy_home.png:       Entire_galaxy_enemy_home_system.png
+        regular.png:          Entire_galaxy_regular_system.png
+        pulsar.png:           Entire_galaxy_pulsar.png
+        wormhole.png:         Entire_galaxy_wormhole.png
 
   "images/folliage":
     flex:
@@ -578,9 +586,10 @@ assets:
         energy_large.png:                300x300_energy.png
         zetium_large.png:                300x300_zetium.png
         creds_large.png:                 300x300_creds.png
+        all_units_large.png:             Autoload_all_units.png
+        all_resources_large.png:         Autoload_all_res.png
         heading_line.png:                Line.png
         heading_line_end.png:            Line_end.png
-        apocalypse.png:                  Endofdays0.png
         gradient_line_left.png:          Line_res_transporter_left.png
         gradient_line_center.png:        Line_res_transporter_center.png
         gradient_line_right.png:         Line_res_transporter_right.png
@@ -700,6 +709,8 @@ assets:
         scont_button_left.png:      Load_button_left.png
         scont_button_center.png:    Load_button_center.png
         scont_button_right.png:     Load_button_right.png
+        active_container.png:       Autoload_box_blue.png
+        inactive_container.png:     Autoload_box_red.png
 
       "defensive_portal_screen":
         table_top_with_area.png:         Portal_top_table_top.png
@@ -807,11 +818,19 @@ assets:
         hide_button_up.png:      Bonusbar_hide_up.png 
         hide_button_over.png:    Bonusbar_hide_over.png
         hide_button_down.png:    Bonusbar_hide_down.png
+        hide_tip_left.png:       Bonus_buttons_hide_hint_left.png
+        hide_tip_center.png:     Bonus_buttons_hide_hint_center.png
+        hide_tip_right.png:      Bonus_buttons_hide_hint_right.png
 
       "daily_bonus":
         button_up.png:  Dailybonus_up.png
         button_over.png:  Dailybonus_over.png
         button_blink.png:  Dailybonus_up2.png
+
+      "apocalypse":
+        button_up.png:  Apocalypse_up.png
+        button_over.png:  Apocalypse_over.png
+        button_blink.png:  Apocalypse_up2.png
 
       "registration":
         register_icon.png: Register_icon.png
@@ -1183,25 +1202,40 @@ assets:
   "unbundled":
     flex_unbundled:
       "images/tips":
-        <% 0.upto(10) do |tip_no| %>
-        "lt_<%= tip_no %>.png": "Tip<%= tip_no %>.png"
-        <% end %>
-        lt_10.png:            Tip_load_res.png
-        lt_11.png:            Tip_notif_star.png
-        lt_12.png:            Tip_heal.png
+        lt_0.png:             Tip0.png
         en_0.png:             Tip0.png
+        lt_1.png:             Tip1.png
         en_1.png:             En_tip_const0.png
+        lt_2.png:             Tip2.png
         en_2.png:             En_tip_info.png
+        lt_3.png:             Tip3.png
         en_3.png:             En_tip_minus_armor.png
+        lt_4.png:             Tip4.png
         en_4.png:             En_tip_plus_armor.png
+        lt_5.png:             Tip5.png
         en_5.png:             Tip5.png
+        lt_6.png:             Tip6.png
         en_6.png:             En_tip_flanks.png
+        lt_7.png:             Tip7.png
         en_7.png:             En_tip_blue_arrow.png
+        lt_8.png:             Tip8.png
         en_8.png:             En_tip_pulsars.png
+        lt_9.png:             Tip9.png
         en_9.png:             Tip9.png
+        lt_10.png:            Tip_load_res.png
         en_10.png:            En_tip_load_res.png
+        lt_11.png:            Tip_notif_star.png
         en_11.png:            En_tip_notif_star.png
+        lt_12.png:            Tip_heal.png
         en_12.png:            En_tip_heal.png
+        lt_13.png:            Lt_tip_quickname.png
+        en_13.png:            En_tip_quickname.png
+        lt_14.png:            Tip_unit_shift.png
+        en_14.png:            Tip_unit_shift.png
+        lt_15.png:            Tip_unit_ctrl.png
+        en_15.png:            Tip_unit_ctrl.png
+        lt_16.png:            Tip_name_tab.png
+        en_16.png:            Tip_name_tab.png
 
       "images/quest_screens/backgrounds":
         Quest.jpg:                  Quest_content0.jpg

@@ -176,7 +176,8 @@ package models.unit
             {
                flanks.removeAll();
                EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-               new UnitsCommand(UnitsCommand.SHOW, location).dispatch();
+               new UnitsCommand(UnitsCommand.SHOW,
+                                {"unitIds": [location.id]}).dispatch();
             }
          }
          if (unitsGiven)
@@ -368,7 +369,8 @@ package models.unit
          {
             flanks.removeAll();
             EventBroker.subscribe(GUnitEvent.UNITS_SHOWN, openUnit);
-            new UnitsCommand(UnitsCommand.SHOW, location).dispatch();
+            new UnitsCommand(UnitsCommand.SHOW,
+               {"unitIds": [location.id]}).dispatch();
          }
          this[ToggleButton(event.currentTarget).name + 'Selected'] = true;
          dispatchRefreshMaxStorageEvent();
@@ -401,24 +403,26 @@ package models.unit
       public function confirmTransfer(): void
       {
          var _selectionIds: Array = selectionIds;
+         var resultHash: Object = {};
+         var resultTransporters: Object = {};
          if (_selectionIds.length > 0)
          {
             if (target is Unit)
             {
+               resultHash[target.id] = _selectionIds;
                new UnitsCommand(
                   UnitsCommand.LOAD,
                   {
-                     transporterId: target.id,
-                     unitIds: _selectionIds
+                     unitIds: resultHash
                   }).dispatch();
             }
             else
             {
+               resultHash[location.id] = _selectionIds;
                new UnitsCommand(
                   UnitsCommand.UNLOAD,
                   {
-                     transporterId: location.id,
-                     unitIds: _selectionIds
+                     unitIds: resultHash
                   }).dispatch();
             }
          }
@@ -426,24 +430,28 @@ package models.unit
          {
             if (target is Unit)
             {
+               resultTransporters[target.id] = {
+                  metal: metalSelectedVal,
+                  energy: energySelectedVal,
+                  zetium: zetiumSelectedVal
+               };
                new UnitsCommand(
                   UnitsCommand.TRANSFER_RESOURCES,
                   {
-                     transporterId: target.id,
-                     metal: metalSelectedVal,
-                     energy: energySelectedVal,
-                     zetium: zetiumSelectedVal
+                     transporters: resultTransporters
                   }).dispatch();
             }
             else
             {
+               resultTransporters[location.id] = {
+                  metal: -1 * metalSelectedVal,
+                  energy: -1 * energySelectedVal,
+                  zetium: -1 * zetiumSelectedVal
+               };
                new UnitsCommand(
                   UnitsCommand.TRANSFER_RESOURCES,
                   {
-                     transporterId: location.id,
-                     metal: -1 * metalSelectedVal,
-                     energy: -1 * energySelectedVal,
-                     zetium: -1 * zetiumSelectedVal
+                     transporters: resultTransporters
                   }).dispatch();
             }
          }

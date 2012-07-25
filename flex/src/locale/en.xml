@@ -1289,16 +1289,21 @@
     <warning.notEnoughVipCreds 
     value="To convert VIP creds you must at least have {0} of them" />
     <label.additionalPrivileges value="You will also get these privileges:"/>
-    <label.additionalPrivileges.queueBuilding>
-      ● Adding buildings and units to construction queue without paying first.
-    </label.additionalPrivileges.queueBuilding>
-    <label.additionalPrivileges.buildAllEntries>
-      ● Instantly finishing construction of all pre-paid units in queue with
-      discounts (compared to finishing them one by one)!
-    </label.additionalPrivileges.buildAllEntries>
-    <label.additionalPrivileges.repairAllTurrets>
-      ● Repair all turrets on the planet with one click.
-    </label.additionalPrivileges.repairAllTurrets>
+    <label.additionalPrivileges.list>
+      <p>
+        ● Adding buildings and units to construction queue without paying first.
+      </p>
+      <p>
+        ● Instantly finishing construction of all pre-paid units in queue with
+        discounts (compared to finishing them one by one)!
+      </p>
+      <p>
+        ● Repair all turrets on the planet with one click.
+      </p>
+      <p>
+        ● Mass loading and unloading for transporters.
+      </p>
+    </label.additionalPrivileges.list>
     <label.buildAllEntries value="You can finish this construction queue instantly:"/>
     <!-- 0: creds for construct all,
          1: creds to pay if accelerate one by one -->
@@ -1613,6 +1618,22 @@
       You can heal your own and alliances units together. Just select your units,
       switch to alliances tab, select allies units and click "Heal".
     </tip.12>
+    <tip.13>
+      You can click on a nick in chat log to quickly reply to him in same
+      channel.
+    </tip.13>
+    <tip.14>
+      Did you know that by holding SHIFT key you can select/deselect multiple
+      units at once?
+    </tip.14>
+    <tip.15>
+      Did you know that by holding CTRL key you can select/deselect all
+      units of same kind in one click?
+    </tip.15>
+    <tip.16>
+      You can autocomplete player names in chat by typing in few first letters
+      and pressing TAB.
+    </tip.16>
   </Tips>
 
   <Location>
@@ -5069,6 +5090,19 @@
     <stance.neutral value="Neutral stance" />
     <stance.aggressive value="Aggressive stance ({0}% damage, {1}% defence)" />
 
+    <label.clickToTransfer>
+      <p>Click on the items to transfer.</p>
+    </label.clickToTransfer>
+    <label.autoLoad value="Mass load/unload"/>
+    <label.autoLoadOnlyVip
+      value="Mass load/unload function can only be used by VIP members"/>
+    <label.openAutoLoad.load value="Load"/>
+    <label.openAutoLoad.unload value="Unload"/>
+    <title.autoLoad.load value="Load"/>
+    <title.autoLoad.unload value="Unload"/>
+    <tooltip.autoLoadWontFit
+      value="You can't transfer this object due to insufficient storage."/>
+
     <label.incomingRaiders value="Incoming raiders" />
     <label.count value="Count:" />
     <label.current value="Current" />
@@ -5128,6 +5162,7 @@
     <label.show value="Show" />
     <label.deploy value="Deploy" />
     <label.manage value="Manage" />
+    <label.allUnits value="All units" />
     <label.withPlanets value="With {0 one[? planet] many[? planets]}" />
     <label.withPlanetsOrMore value="With {0} planets or more" />
     <label.afterDays value="{0 one[? day] many[? days]} after apocalypse" />
@@ -5785,4 +5820,12 @@
     <mouseCoordinates.title>Coordinates</mouseCoordinates.title>
   </EntireGalaxy>
 
+  <HidableMenu>
+    <Announcement value="Announcement" />
+    <Register value="Registration" />
+    <DailyBonus value="Daily Bonus" />
+    <MainQuest value="Main Quest" />
+    <Quests value="Quests" />
+    <tipHide value="Hide buttons" />
+  </HidableMenu>
 </locale>

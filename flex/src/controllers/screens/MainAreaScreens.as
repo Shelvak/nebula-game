@@ -25,6 +25,7 @@ package controllers.screens
       public static const PLAYER:String = "Player";
       public static const DEFENSIVE_PORTAL:String = "DefensivePortal";
       public static const RESOURCE_TRANSPORTER: String = "ResourceTransporter";
+      public static const AUTO_LOAD:String = "AutoLoad";
       public static const ENTIRE_GALAXY: String = "EntireGalaxy";
    }
 }

@@ -44,7 +44,7 @@ class PlayerOptions::Data < OptionsHash
   property :show_wormhole_icons, :default => true, :valid => Boolean
 
   # Time to show fault/success events.
-  property :action_event_time, :default => 10, :valid => lambda { |val|
+  property :action_event_time, :default => 5, :valid => lambda { |val|
     (1..30).cover?(val)
   }
 

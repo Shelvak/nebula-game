@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:components="utils.components.*"
+                autoDrawBackground="false"
+                toolTip="{model.toolTip}"
+                click="if (model.enabled)
+                {
+                  model.clickHandler(event)
+                }">
+  <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                  AssetNames.STORAGE_SCREEN_FOLDER + (model.enabled ? '' : 'in') +
+                  'active_container')}"/>
+  <s:Group width="63" height="63" horizontalCenter="0" verticalCenter="0">
+    <components:CenteredBitmapImage source="{model.image}" smooth="true"
+                                    left="{model.sidePadding}"
+                                    right="{model.sidePadding}"
+                                    top="{model.sidePadding}"
+                                    bottom="{model.sidePadding}"/>
+    <s:Group bottom="0" right="0" visible="{model.label != null}">
+      <s:Rect left="0" right="0" bottom="0" top="0">
+        <s:fill>
+          <s:SolidColor color="#000000"/>
+        </s:fill>
+      </s:Rect>
+      <s:Label top="3" bottom="1" left="3" right="3" text="{model.label}"/>
+    </s:Group>
+  </s:Group>
+  <fx:Script><![CDATA[
+    import models.unit.MLoadable;
+
+    import utils.assets.AssetNames;
+    import utils.assets.ImagePreloader;
+
+    [Bindable]
+    public var model: MLoadable;
+
+    public override function set data(value: Object): void
+    {
+      super.data = value;
+      model = MLoadable(value);
+    }
+    ]]></fx:Script>
+</s:ItemRenderer>

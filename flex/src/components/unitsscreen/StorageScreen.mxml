@@ -245,14 +245,17 @@
          if (transferPossible) {
             EventBroker.subscribe(GResourcesEvent.WRECKAGES_UPDATED,
                     resetSliders);
+            var resultHash: Object = {};
+            resultHash[transporter.id] = {
+              metal: getResourceDiff(ResourceType.METAL),
+              energy: getResourceDiff(ResourceType.ENERGY),
+              zetium: getResourceDiff(ResourceType.ZETIUM)
+            };
             new UnitsCommand(
-                    UnitsCommand.TRANSFER_RESOURCES,
-                    {
-                       transporterId: transporter.id,
-                       metal: getResourceDiff(ResourceType.METAL),
-                       energy: getResourceDiff(ResourceType.ENERGY),
-                       zetium: getResourceDiff(ResourceType.ZETIUM)
-                    }).dispatch();
+              UnitsCommand.TRANSFER_RESOURCES,
+              {
+                 transporters: resultHash
+              }).dispatch();
          }
       }
 

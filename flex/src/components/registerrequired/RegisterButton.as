@@ -11,6 +11,7 @@ package components.registerrequired {
    import flash.display.BitmapData;
    import flash.events.MouseEvent;
    import flash.events.TimerEvent;
+   import flash.external.ExternalInterface;
    import flash.utils.Timer;
 
    import models.ModelLocator;
@@ -82,6 +83,7 @@ package components.registerrequired {
 
       private function setTimer(): void
       {
+         if (timer != null) removeTimer();
          popupVisible = false;
          timer = new Timer(TIMER_DELAY, 1);
          timer.addEventListener(TimerEvent.TIMER, showPopup);
@@ -114,7 +116,7 @@ package components.registerrequired {
       }
 
       private function this_clickHandler(event:MouseEvent = null) : void {
-         UrlNavigate.getInstance().showRegistrationUrl();
+         ExternalInterface.call("openTrialRegistration");
          setTimer();
       }
    }

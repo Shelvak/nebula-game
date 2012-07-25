@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<base:AdvancedContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                        xmlns:s="library://ns.adobe.com/flex/spark"
+                        xmlns:mx="library://ns.adobe.com/flex/mx"
+                        xmlns:base="components.base.*"
+                        visible="{bSidebar.selectedBuilding.npc}">
+  <fx:Script><![CDATA[
+    import models.building.MCBuildingSelectedSidebar;
+
+    import utils.locale.Localizer;
+
+    [Bindable]
+    private var bSidebar: MCBuildingSelectedSidebar =
+            MCBuildingSelectedSidebar.getInstance();
+
+    private function button1_clickHandler(event: MouseEvent): void {
+      bSidebar.openCurrent();
+    }
+
+    private function getString(key: String, params: Array = null): String {
+       return Localizer.string('BuildingSelectedSidebar', key, params);
+    }
+    ]]></fx:Script>
+  <base:Warning text="{getString('warning.attackNpc')}"
+                width="100%" showSign="false"/>
+  <s:Label text="{getString('noUnits')}"
+           visible="{!ML.latestPlanet.hasAggressiveGroundUnits()}"
+           styleName="unsatisfied" fontSize="16"/>
+  <s:Button enabled="{ML.latestPlanet.hasAggressiveGroundUnits()}"
+            horizontalCenter="0"
+            click="bSidebar.openCurrent()"
+            skinClass="components.skins.RedButtonSkin"
+            label="{getString('attack')}"/>
+  <base:layout>
+     <s:VerticalLayout horizontalAlign="center"
+             gap="9"/>
+  </base:layout>
+</base:AdvancedContainer>

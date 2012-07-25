@@ -16,6 +16,7 @@ package components.map.space.galaxy.entiregalaxy
 
    import models.galaxy.FOWMatrix;
    import models.galaxy.MEntireGalaxy;
+   import models.galaxy.events.MEntireGalaxyEvent;
 
    import mx.graphics.BitmapFillMode;
 
@@ -50,7 +51,15 @@ package components.map.space.galaxy.entiregalaxy
       private var _model: MEntireGalaxy;
       public function set model(value: MEntireGalaxy): void {
          if (_model != value) {
+            if (_model != null) {
+               _model.removeEventListener(
+                  MEntireGalaxyEvent.RERENDER, model_rerenderHandler, false);
+            }
             _model = value;
+            if (_model != null) {
+               _model.addEventListener(
+                  MEntireGalaxyEvent.RERENDER, model_rerenderHandler, false, 0, true);
+            }
             f_modelChanged = true;
             invalidateProperties();
          }
@@ -58,6 +67,11 @@ package components.map.space.galaxy.entiregalaxy
 
       private function get haveModel(): Boolean {
          return _model != null;
+      }
+
+      private function model_rerenderHandler(event: MEntireGalaxyEvent): void {
+         f_rerenderRequested = true;
+         invalidateProperties();
       }
 
       private var f_childrenCreated: Boolean = false;
@@ -80,17 +94,18 @@ package components.map.space.galaxy.entiregalaxy
       }
 
       private var f_modelChanged: Boolean = true;
+      private var f_rerenderRequested: Boolean = true;
 
       override protected function commitProperties(): void {
          super.commitProperties();
-         if (f_modelChanged) {
+         if (f_modelChanged || f_rerenderRequested) {
             if (haveModel) {
                const fowMatrix: FOWMatrix = _model.fowMatrix;
                _coordsTransform = new CoordsTransform(fowMatrix.getCoordsOffset());
                _coordsTransform.logicalWidth = fowMatrix.getBounds().width;
                _coordsTransform.logicalHeight = fowMatrix.getBounds().height;
                const bitmap: BitmapData = new EntireGalaxyRenderer(_model).bitmap;
-               _image.source = bitmap
+               _image.source = bitmap;
                width = bitmap.width;
                height = bitmap.height;
                const playerHome: MiniSS = _model.playerHomeSS;
@@ -99,6 +114,7 @@ package components.map.space.galaxy.entiregalaxy
             }
          }
          f_modelChanged = false;
+         f_rerenderRequested = false;
       }
 
       private function this_mouseMoveHandler(event: MouseEvent): void {

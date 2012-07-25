@@ -48,13 +48,17 @@ module Parts::Transportation
         raise GameLogicError.new(
           "Unit #{unit} must be in same location as #{self}!"
         ) unless unit.location == transporter_location
+
+        raise GameLogicError.new(
+          "Cannot load unit #{unit} that is still upgrading!"
+        ) if unit.upgrading?
       end
       
       taken_volume = self.class.calculate_volume(units)
 
       raise GameLogicError.new(
         "Not enough storage (#{stored}/#{storage
-          }) to load all requested units (volume #{taken_volume})!"
+          }) to load all requested units into #{self} (volume #{taken_volume})!"
       ) if taken_volume > (storage - stored)
 
       self.stored += taken_volume

@@ -4,6 +4,25 @@
    xmlns:s="library://ns.adobe.com/flex/spark"
    autoDrawBackground="false">
 
-   <s:Label text="{LegendEntry(data).text}" color="{LegendEntry(data).color}"/>
+   <fx:Binding source="MRenderedObjectType(data)" destination="model"/>
+
+   <fx:Script>
+      import models.galaxy.MRenderedObjectType;
+
+      [Bindable]
+      private var model: MRenderedObjectType;
+
+      private function checkBox_changeHandler(event: Event): void {
+         model.rendered = !model.rendered;
+         model.entireGalaxy.doRerender();
+      }
+   </fx:Script>
+
+   <s:layout>
+      <s:HorizontalLayout gap="6" verticalAlign="middle"/>
+   </s:layout>
+   <s:CheckBox selected="{model.rendered}" change="checkBox_changeHandler(event)"/>
+   <s:BitmapImage source="{model.legendImage}"/>
+   <s:Label text="{model.legendText}" paddingTop="3"/>
 
 </s:ItemRenderer>

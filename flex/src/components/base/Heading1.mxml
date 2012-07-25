@@ -20,7 +20,9 @@
    <s:BitmapImage source="{getImg('line_end')}" scaleX="-1"/>
    <s:BitmapImage source="{getImg('line')}" width="100%"/>
    <s:Label text="{text}" fontSize="24" color="#eec500" fontWeight="bold"
-            paddingLeft="10" paddingRight="10"/>
+            paddingLeft="10" paddingRight="10"
+            visible="{text != null}"
+            includeInLayout="{text != null}"/>
    <s:BitmapImage source="{getImg('line')}" width="100%"/>
    <s:BitmapImage source="{getImg('line_end')}"/>
    <s:layout>

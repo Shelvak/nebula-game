@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+    xmlns:s="library://ns.adobe.com/flex/spark"
+    xmlns:mx="library://ns.adobe.com/flex/mx">
+  <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+      AssetNames.LEFT_HIDABLE_MENU_IMAGES_FOLDER + 'hide_tip_left')}"
+      left="0" id="leftSide"/>
+  <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+      AssetNames.LEFT_HIDABLE_MENU_IMAGES_FOLDER + 'hide_tip_right')}"
+      right="0" id="rightSide"/>
+  <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+      AssetNames.LEFT_HIDABLE_MENU_IMAGES_FOLDER + 'hide_tip_center')}"
+      left="{leftSide.width}" right="{rightSide.width}" fillMode="repeat"/>
+  <s:Label text="{Localizer.string('HidableMenu', 'tipHide')}"
+    verticalCenter="7" left="11" right="12" fontSize="12" fontWeight="bold"/>
+  <fx:Script><![CDATA[
+    import utils.assets.AssetNames;
+    import utils.assets.ImagePreloader;
+    import utils.locale.Localizer;
+    ]]></fx:Script>
+</s:Group>

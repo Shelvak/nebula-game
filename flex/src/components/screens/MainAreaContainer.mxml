@@ -38,6 +38,7 @@
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.UNITS}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.STORAGE}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.LOAD_UNLOAD}"/>
+      <screen:MainAreaScreenContainer screenName="{MainAreaScreens.AUTO_LOAD}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.HEAL}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.INFO}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.NOTIFICATIONS}"/>
@@ -53,7 +54,6 @@
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ALLIANCE}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.CHAT}"/>
       <screen:MainAreaScreenContainer screenName="{MainAreaScreens.ENTIRE_GALAXY}"/>
-      <menus:LeftHidableMenu left="0" top="{this.height * 0.2}"/>
    </s:Group>
    
    <s:SkinnableContainer id="rightSidebarContainer"
