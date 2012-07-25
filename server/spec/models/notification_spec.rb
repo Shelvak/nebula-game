@@ -206,22 +206,33 @@ describe Notification do
       @player = @location.player
       @player.alliance = Factory.create(:alliance)
       @player.save!
+
       @building_type = "NpcHall"
+      @building_attacker_id = @player.id
 
       @player_id = @player.id
-      @alliances = "alliances"
+      @alliances = {"alliances" => true}
       @outcome = Combat::OUTCOME_WIN
       @combat_log = Factory.create :combat_log
-      @yane_units = "yane_units"
-      @leveled_up = "leveled_up"
-      @statistics = "statistics"
-      @resources = "resources"
+      @yane_units = {"yane_units" => true}
+      @leveled_up = ["leveled_up"]
+      @statistics = {"statistics" => true}
+      @wreckages = {"wreckages" => true}
 
-      @args = [
-        @player.id, @player.alliance_id, @alliances, @combat_log.sha1_id,
-        @location.client_location.as_json, @building_type, @outcome,
-        @yane_units, @leveled_up, @statistics, @resources, true
-      ]
+      @args = [@player.id, {
+        alliance_id: @player.alliance_id,
+        alliances: @alliances,
+        combat_log_id: @combat_log.sha1_id,
+        location_attrs: @location.client_location.as_json,
+        building_type: @building_type,
+        building_attacker_id: @building_attacker_id,
+        outcome: @outcome,
+        yane_units: @yane_units,
+        leveled_up_units: @leveled_up,
+        statistics: @statistics,
+        wreckages: @wreckages,
+        push_notification: true
+      }]
     end
 
     it_behaves_like "create for"
@@ -249,6 +260,12 @@ describe Notification do
         @method, *@args
       ).params['building_type'].should == @building_type
     end
+
+    it "should set params['building_attacker_id']" do
+      Notification.send(
+        @method, *@args
+      ).params['building_attacker_id'].should == @building_attacker_id
+    end
     
     it "should set log_id" do
       Notification.send(@method, *@args).params['log_id'].should == \
@@ -274,7 +291,7 @@ describe Notification do
     it "should set params['resources'] from resources" do
       Notification.send(
         @method, *@args
-      ).params['resources'].should == @resources
+      ).params['resources'].should == @wreckages
     end
 
     it "should set statistics" do
@@ -289,7 +306,7 @@ describe Notification do
     end
 
     it "should not dispatch created if push_notification=false" do
-      @args[11] = false # Lots of args suck...
+      @args[1][:push_notification] = false
       notification = Notification.send(@method, *@args)
       SPEC_EVENT_HANDLER.fired?(notification, EventBroker::CREATED).
         should == 0

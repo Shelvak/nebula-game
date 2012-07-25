@@ -57,7 +57,7 @@ class Combat
       npc_units + player_units,
       [],
       cooldown: false, skip_push_notifications_for: [player.id],
-      building_type: target_building.type
+      building_type: target_building.type, building_attacker_id: player.id
     )
   end
 end

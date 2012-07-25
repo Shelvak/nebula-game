@@ -9,16 +9,20 @@ module Combat::Simulation
   # pushed notifications about this combat. Default: []
   # :building_type (String|nil) - building type if attacking NPC building.
   # Default: nil
+  # :building_attacker_id (Fixnum|nil) - if attacking NPC building then this is
+  # player id which initiated the attack. Default: nil
   #
   # Returns +Combat::Assets+ object or nil if no combat happened.
   def run(location, players, nap_rules, units, buildings, options={})
     LOGGER.block("Running combat simulation in #{location.to_s}") do
       options.reverse_merge!(
-        cooldown: true, skip_push_notifications_for: [], building_type: nil
+        cooldown: true, skip_push_notifications_for: [], building_type: nil,
+        building_attacker_id: nil
       )
       options.ensure_options!(required: {
         cooldown: Boolean, skip_push_notifications_for: Array,
-        building_type: [NilClass, String]
+        building_type: [NilClass, String],
+        building_attacker_id: [NilClass, Fixnum]
       })
 
       # Units which are loaded into transporters.
@@ -98,9 +102,14 @@ module Combat::Simulation
 
     wreckages = add_wreckages(location, buildings, units)
     notification_ids = create_notifications(
-      response, client_location, options[:building_type],
-      filter_leveled_up(units), combat_log,
-      wreckages, options[:skip_push_notifications_for]
+      response: response,
+      client_location: client_location,
+      building_type: options[:building_type],
+      building_attacker_id: options[:building_attacker_id],
+      leveled_up_units: filter_leveled_up(players, units),
+      combat_log: combat_log,
+      wreckages: wreckages,
+      skip_push_notifications_for: options[:skip_push_notifications_for]
     )
     save_players(players, response['statistics'])
     save_updated_participants(units, buildings, killed_by)
@@ -170,7 +179,7 @@ module Combat::Simulation
     end]
   end
 
-  # Filters units leaving only those that can level up, grouping by player 
+  # Filters units leaving only those that can level up, grouping by player
   # id.
   #
   # Example output:
@@ -183,10 +192,11 @@ module Combat::Simulation
   #   ...
   # }
   #
-  def filter_leveled_up(units)
-    units.inject({}) do |hash, unit|
-      hash[unit.player_id] ||= []
-      unless unit.dead? or (level_count = unit.can_upgrade_by).zero?
+  def filter_leveled_up(players, units)
+    # players can have nil inside for NPC.
+    filtered = players.each_with_object({}) { |p, hash| hash[p.try(:id)] = [] }
+    units.each_with_object(filtered) do |unit, hash|
+      unless unit.dead? || (level_count = unit.can_upgrade_by).zero?
         hash[unit.player_id] << {
           :type => unit.class.to_s,
           :hp => unit.hp,
@@ -194,7 +204,6 @@ module Combat::Simulation
           :stance => unit.stance
         }
       end
-      hash
     end
   end
 end

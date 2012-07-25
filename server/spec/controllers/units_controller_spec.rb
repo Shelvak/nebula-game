@@ -180,16 +180,18 @@ describe UnitsController do
       @target = Factory.create :b_npc_solar_plant, :planet => @planet
       @target_units = [
         Factory.create(:u_gnat, :player => nil,
-          :location => @target, :level => 1, :hp => 80),
+          :location => @target, :level => 1, :hp_percentage => 0.2),
         Factory.create(:u_gnat, :player => nil,
-          :location => @target, :level => 1, :hp => 80)
+          :location => @target, :level => 1, :hp_percentage => 0.2)
       ]
 
+      # Ensure our side wins so we could test outcomes for ally attack
+      # notifications.
       @units = [
         Factory.create(:u_trooper, :player => player,
-          :location => @planet, :level => 1, :hp => 20),
+          :location => @planet, :level => 1, :hp_percentage => 1),
         Factory.create(:u_trooper, :player => player,
-          :location => @planet, :level => 1, :hp => 20),
+          :location => @planet, :level => 1, :hp_percentage => 1),
       ]
       @params = {
         'planet_id' => @planet.id,
@@ -205,6 +207,7 @@ describe UnitsController do
     def set_ally
       player.alliance = create_alliance; player.save!
       @planet.update_row! player_id: player.alliance.owner_id
+      @ally = player.alliance.owner
     end
 
     it "should raise RecordNotFound if it's not that player planet" do
@@ -280,6 +283,13 @@ describe UnitsController do
         object.is_a?(Notification) && event == EventBroker::CREATED &&
         object.player_id == @planet.player_id
       end.should be_true
+    end
+
+    it "should have same outcome in ally and attacker notifications" do
+      set_ally
+      invoke @action, @params
+      Notification.where(player_id: player.id).last.params['outcome'].should ==
+        Notification.where(player_id: @ally.id).last.params['outcome']
     end
 
     it "should respond with the notification" do
