@@ -4,6 +4,8 @@ package tests.movement
 
    import config.Config;
 
+   import controllers.startup.StartupInfo;
+
    import controllers.units.SquadronsController;
 
    import ext.hamcrest.collection.array;
@@ -56,6 +58,7 @@ package tests.movement
    import org.hamcrest.core.throws;
    import org.hamcrest.object.hasProperty;
    import org.hamcrest.object.isFalse;
+   import org.hamcrest.object.isTrue;
    import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
    import org.hamcrest.object.sameInstance;
@@ -403,26 +406,28 @@ package tests.movement
          route = squadsCtrl.createRoute(data, Owner.ENEMY);
          assertThat( "should have changed owner of the route", route.owner, equals (Owner.ENEMY) );
       }
-      
+
+      // TODO: uncomment this when server supports the old-new data format for routes|index
+      [Ignore]
       [Test]
       public function recreateRoutes(): void {
          allSquads.addItem(newSquad(1, 0, 0));
          allRoutes.addItem(new MRoute());
-         
+
          modelLoc.player.id = 1;
          modelLoc.player.name = "Me";
-         
+
          const routeData0: Object = routeData(1, 1);
          delete routeData0["player"]; routeData0["playerId"] = 1;
-         
+
          const routeData1: Object = routeData(2, 2);
          delete routeData1["player"]; routeData1["playerId"] = 2;
-         
+
          const routes: Array = [routeData0, routeData1];
          const players: Object = {"1": {"id": 1, "name": "Me"}, "2": {"id": 2, "name": "Ally"}};
-         
+
          squadsCtrl.recreateRoutes(routes, players);
-         
+
          assertThat( "should have removed all old routes and added new ones", allRoutes, arrayWithSize(2) );
          assertThat( "should have set players for both routes", allRoutes, hasItems(
             hasProperty("player", equals (new PlayerMinimal(1, "Me"))),
@@ -573,19 +578,64 @@ package tests.movement
             dateEqual(DateUtil.parseServerDTF("2000-01-03T00:00:00+03:00")));
       }
 
-      [Ignore]
+      [Test]
+      public function executeJump_stationaryVsMovingUnit(): void {
+         const galaxyLoc: LocationMinimal = newLoc().inGalaxy().id(1).GET;
+         const player: PlayerMinimal = new PlayerMinimal(1, "Test");
+         const route: MRoute = newRoute().id(1).ownerIsAlly().GET;
+         allRoutes.addItem(route);
+
+         function $unit(): UnitBuilder {
+            return newUnit().id(1).type("Dart").player(player).ownerIsAlly().location(galaxyLoc);
+         }
+
+         function $squad(): SquadronBuilder {
+            return newSquadron().player(player).ownerIsAlly().currentHopFrom(galaxyLoc);
+         }
+
+         function cleanAll(): void {
+            allUnits.removeAll();
+            allSquads.removeAll();
+         }
+
+         allUnits.addItem($unit().stationary().GET);
+         allSquads.addItem($squad().stationary().GET);
+
+         squadsCtrl.executeJump(newList($unit().squadronId(1).GET), newList(), null);
+         assertThat("should still be only one squadron", allSquads, arrayWithSize(1));
+         assertThat("should still be only one unit", allUnits, arrayWithSize(1));
+         const squad: MSquadron = allSquads.getFirst();
+         assertThat("the squad should be moving", squad.isMoving, isTrue());
+         assertThat("the squad should have route attached", squad.route, sameInstance (route));
+
+         cleanAll();
+      }
+
       [Test]
       public function updateRoute(): void {
+         const startupInfo: StartupInfo = StartupInfo.getInstance();
+         startupInfo.initializationComplete = false;
+         assertThat(
+            "should do nothing if route and squad to update is not found and app has not been initialized",
+            function():void{ squadsCtrl.updateRoute({"id": 1}) }, not (throws (Error)));
+         startupInfo.initializationComplete = true;
+         assertThat(
+            "should throw error if squad and route to update can't be found and app has been initialized",
+            function():void{ squadsCtrl.updateRoute({"id": 1}) }, throws (Error));
+
+         // TODO: refactor the method and finish test
       }
 
       [Ignore]
       [Test]
       public function stopSquadron(): void {
+         // TODO: implement test stopSquadron()
       }
 
       [Ignore]
       [Test]
       public function startMovement(): void {
+         // TODO implement test startMovement()
       }
 
       private function newList(... args): ArrayList {
