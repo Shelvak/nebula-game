@@ -113,13 +113,15 @@ class Chat::Hub
   # it was not.
   def channel_msg(channel_name, player, message)
     synchronize do
+      check_channel(channel_name)
+
       raise GameLogicError, "Trial players cannot send messages to chat!" \
         if player.trial?
       # Return if this was a control message.
       @control.message(player, message) and return false
-      @antiflood.message!(player.id)
+      @antiflood.message!(player.id) \
+        unless self.class.alliance_channel_name?(channel_name)
 
-      check_channel(channel_name)
       channel = @channels[channel_name]
       channel.message(player, message)
       true
@@ -170,6 +172,13 @@ class Chat::Hub
   # Returns alliance channel name for alliance with this _alliance_id_.
   def self.alliance_channel_name(alliance_id)
     "alliance-#{alliance_id}"
+  end
+
+  ALLIANCE_NAME_RE = /^alliance-\d+$/
+
+  # Returns if channel is an alliance channel.
+  def self.alliance_channel_name?(name)
+    !! ALLIANCE_NAME_RE.match(name)
   end
 
   private

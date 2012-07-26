@@ -228,6 +228,13 @@ describe Chat::Hub do
         @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, "test")
       end
 
+      it "should not check with antiflood if it is alliance channel" do
+        Chat::Hub.should_receive(:alliance_channel_name?).
+          with(Chat::Hub::GLOBAL_CHANNEL).and_return(true)
+        @antiflood.should_not_receive(:message!)
+        @hub.channel_msg(Chat::Hub::GLOBAL_CHANNEL, @player, "test")
+      end
+
       it "should send message to channel" do
         msg = "OMG"
         @channel.should_receive(:message).with(@player, msg)
@@ -481,6 +488,18 @@ describe Chat::Hub do
       @hub.should_not_receive(:leave)
       @hub.should_not_receive(:join)
       @hub.on_language_change(player)
+    end
+  end
+
+  describe ".alliance_channel_name?" do
+    it "should return true if it is alliance channel name" do
+      Chat::Hub.alliance_channel_name?(
+        Chat::Hub.alliance_channel_name(10)
+      ).should be_true
+    end
+
+    it "should return false if it is not alliance channel name" do
+      Chat::Hub.alliance_channel_name?("galaxy-1").should be_false
     end
   end
 end
