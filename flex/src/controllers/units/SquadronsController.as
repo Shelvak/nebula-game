@@ -394,7 +394,7 @@ package controllers.units
                   // 4. soon objects|destroyed for the route involved will be received
                   //    which should then stop this moving squadron for good
                   const removedUnits: ArrayList = new ArrayList();
-                  var removedUnit;
+                  var removedUnit: Unit;
                   for each (var unit: Unit in units.toArray()) {
                      removedUnit = UNITS.remove(unit.id, true);
                      if (removedUnit != null) {
