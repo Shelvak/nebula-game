@@ -650,6 +650,11 @@ $(document).ready(function() {
   // SWF file is from a different domain than the HTML page.
   params.allowscriptaccess = "always";
   params.allowfullscreen = "true";
+  if (isOneLt()) {
+    // Allow one.lt drop-downs to be rendered over flash.
+    // http://helpx.adobe.com/flash/kb/flash-object-embed-tag-attributes.html#main_Using_Window_Mode__wmode__values_
+    params.wmode = "opaque";
+  }
   var attributes = {};
   attributes.id = appName;
   attributes.name = appName;
@@ -658,9 +663,10 @@ $(document).ready(function() {
     ? fp.swf + ".swf"
     : fp.swf + "-" + fp.swfChecksum + ".swf"
   var minVersion = fp.binDebug ? "0.0.0" : fp.swfVersionStr;
-  swfobject.embedSWF(assetsUrl + swfName, "flashContent", 
-      "100%", "100%", minVersion, assetsUrl + "playerProductInstall.swf", 
-      flashvars, params, attributes);
+  swfobject.embedSWF(
+    assetsUrl + swfName, "flashContent", "100%", "100%", minVersion,
+    assetsUrl + "playerProductInstall.swf", flashvars, params, attributes
+  );
   swfobject.createCSS("#flashContent", "display:block;text-align:left;");
 });
 // }}}
