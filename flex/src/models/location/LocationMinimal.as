@@ -6,6 +6,9 @@ package models.location
    import models.map.MMap;
    import models.solarsystem.SSKind;
 
+   import utils.ObjectStringBuilder;
+   import utils.Objects;
+
    import utils.locale.Localizer;
 
 
@@ -19,10 +22,9 @@ package models.location
          return loc == null ? "" : Localizer.string('Location', 'sector') + " " + loc.sectorName;
       }
       
-      public function LocationMinimal(type: int = LocationType.GALAXY,
-                                      id: int = 0,
-                                      x: int = 0,
-                                      y: int = 0) {
+      public function LocationMinimal(
+         type: int = LocationType.GALAXY, id: int = 0, x: int = 0, y: int = 0)
+      {
          super();
          this.id = id;
          _type = type;
@@ -200,11 +202,15 @@ package models.location
        * <p>
        */
       public override function hashKey() : String {
-         return "models.location::LocationMinimal," + type + "," + id + "," + x + "," + y;
+         return Objects.getClassName(LocationMinimal) + "," + type + "," + id + "," + x + "," + y;
       }
       
       public override function toString() : String {
-         return "[class: " + className + ", type: " + type + ", id: " + id + ", x: " + x + ", y: " + y + "]";
+         return new ObjectStringBuilder(this)
+            .addProp("type")
+            .addProp("id")
+            .addProp("x")
+            .addProp("y").finish();
       }
    }
 }

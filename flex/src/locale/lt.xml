@@ -5128,7 +5128,7 @@
       <p>Minimalus atvykstančių karių kiekis: {0}</p>
       <p>
         Papildomai gali prisidėti dar {1 one[? karys] tens[? karių]
-        many[? kariai]}, kiekvienas karys prisideda su {2}% tikimybę.
+        many[? kariai]}, kiekvienas karys prisideda su {2}% tikimybe.
       </p>
     </tooltip.raidProbability>
 

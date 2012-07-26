@@ -1,5 +1,6 @@
 package utils
 {
+   import utils.*;
    import com.adobe.utils.DateUtil;
 
    import mx.formatters.DateFormatter;
@@ -52,6 +53,18 @@ package utils
        * @default 0
        */
       public static var timeDiff: Number = 0;
+
+      /**
+       * Subtracts time of two given dates and return the difference in milliseconds.
+       *
+       * @param minuend | <b>not null</b>
+       * @param subtrahend | <b>not null</b>
+       */
+      public static function subtractTime(minuend: Date, subtrahend: Date): Number {
+         Objects.paramNotNull("minuend", minuend);
+         Objects.paramNotNull("subtrahend", subtrahend)
+         return minuend.time - subtrahend.time;
+      }
 
       /**
        * Parses date and time of server format and returns that date.

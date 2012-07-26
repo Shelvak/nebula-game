@@ -4,10 +4,12 @@ package tests.maps
    import components.map.controllers.Sector;
    import components.map.controllers.SectorShips;
    import components.map.controllers.WatchedObjects;
-
+   
    import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
-
+   
+   import factories.newLocation;
+   
    import models.ModelLocator;
    import models.Owner;
    import models.galaxy.Galaxy;
@@ -17,9 +19,9 @@ package tests.maps
    import models.movement.MSquadron;
    import models.solarsystem.MSSMetadata;
    import models.solarsystem.MSolarSystem;
-
+   
    import mx.collections.ArrayCollection;
-
+   
    import org.hamcrest.assertThat;
    import org.hamcrest.collection.arrayWithSize;
    import org.hamcrest.collection.emptyArray;
@@ -28,8 +30,6 @@ package tests.maps
    import org.hamcrest.core.not;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.nullValue;
-
-   import testsutils.location.getGalaxyLocation;
 
 
    public class TC_WatchedObjects
@@ -180,9 +180,10 @@ package tests.maps
       /* ### HELPERS ### */
       /* ############### */
       
-      private function getSolarSystem(id: int, x: int, y: int,
-                                      playerShips: Boolean): MSolarSystem {
-         var ss: MSolarSystem = new MSolarSystem();
+      private function getSolarSystem(
+         id: int, x: int, y: int, playerShips: Boolean): MSolarSystem
+      {
+         const ss: MSolarSystem = new MSolarSystem();
          ss.id = id;
          ss.x = x;
          ss.y = y;
@@ -191,9 +192,8 @@ package tests.maps
          return ss;
       }
 
-      private function getSquadron(id: int, x: int, y: int,
-                                   hops: Array = null): MSquadron {
-         var squad: MSquadron = new MSquadron();
+      private function getSquadron(id: int, x: int, y: int, hops: Array = null): MSquadron {
+         const squad: MSquadron = new MSquadron();
          squad.id = id;
          squad.owner = Owner.PLAYER;
          squad.currentHop = new MHop();
@@ -202,23 +202,27 @@ package tests.maps
          return squad;
       }
 
-      private function getSector(x: int,
-                                 y: int,
-                                 solarSystem: MSolarSystem = null,
-                                 ships: SectorShips = null): Sector {
+      private function newGalaxyLoc(x:int, y:int): LocationMinimal {
+         return newLocation().inGalaxy().id(GALAXY_ID).x(x).y(y).GET;
+      }
+      
+      private function getSector(
+         x: int, y: int, solarSystem: MSolarSystem = null, ships: SectorShips = null): Sector
+      {
          return new Sector(
-            getGalaxyLocation(GALAXY_ID, x, y),
+            newGalaxyLoc(x, y),
             ships,
             solarSystem
          );
       }
 
-      private function getHop(index: int, x: int, y: int,
-                              arrivesAt: Date): MHop {
-         var hop: MHop = new MHop();
+      private function getHop(
+         index: int, x: int, y: int, arrivesAt: Date): MHop
+      {
+         const hop: MHop = new MHop();
          hop.index = index;
          hop.arrivalEvent.occursAt = arrivesAt;
-         hop.location = getGalaxyLocation(GALAXY_ID, x, y);
+         hop.location = newGalaxyLoc(x, y);
          return hop;
       }
    }

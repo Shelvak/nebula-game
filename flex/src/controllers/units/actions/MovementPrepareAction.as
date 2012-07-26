@@ -18,7 +18,7 @@ package controllers.units.actions
     * Client <<-- Server:</br>
     * <ul>
     *    <li><code>route</code> - route data as described above</li>
-    *    <li><code>unitIds</code> - ids of units that are beeing moved</li>
+    *    <li><code>unitIds</code> - ids of units that are being moved</li>
     *    <li><code>routeHops</code> - route hops in units current location</li>
     * </ul>
     * </p>
@@ -27,13 +27,10 @@ package controllers.units.actions
    {
       private var SQUADS_CTRL: SquadronsController = SquadronsController.getInstance();
 
-      public function MovementPrepareAction() {
-         super();
-      }
 
       public override function applyServerAction(cmd: CommunicationCommand): void {
-         var route: Object = cmd.parameters["route"];
-         var unitIds: Array = cmd.parameters["unitIds"];
+         const route: Object = cmd.parameters["route"];
+         const unitIds: Array = cmd.parameters["unitIds"];
          route["hops"] = cmd.parameters["routeHops"];
          SQUADS_CTRL.startMovement(route, unitIds);
       }

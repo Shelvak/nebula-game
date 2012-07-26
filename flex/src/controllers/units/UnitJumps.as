@@ -46,22 +46,22 @@ package controllers.units
     */
    public final class UnitJumps
    {
-      private static const _hash:Object = new Object();
+      private static const _hash: Object = new Object();
 
-      public static function buildLocationString(type: int,
-                                                 id: int,
-                                                 x: int,
-                                                 y: int): String {
+      public static function buildLocationString(
+         type: int, id: int, x: int, y: int): String
+      {
          return type + "," + id + "," + x + "," + y;
       }
 
-      public static function setPreJumpLocations(units: IList,
-                                                 location: LocationMinimal): void {
+      public static function setPreJumpLocations(
+         units: IList, location: LocationMinimal): void
+      {
          Objects.paramNotNull("location", location);
          if (units == null) {
             return;
          }
-         for each (var unit:Unit in units.toArray()) {
+         for each (var unit: Unit in units.toArray()) {
             setPreJumpLocation(
                unit.id,
                buildLocationString(
@@ -77,8 +77,7 @@ package controllers.units
          _hash[unitId] = location;
       }
 
-      public static function preJumpLocationMatches(unitId: int,
-                                                    location: String): Boolean {
+      public static function preJumpLocationMatches(unitId: int, location: String): Boolean {
          Objects.paramIsId("unitId", unitId);
          Objects.paramNotEmpty("location", location);
          return _hash[unitId] == location;

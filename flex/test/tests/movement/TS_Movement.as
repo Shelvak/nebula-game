@@ -8,5 +8,6 @@ package tests.movement
       public var tc_ModifierBasedSpeedControl: TC_ModifierBasedSpeedControl;
       public var tc_TimeBasedSpeedControl: TC_TimeBasedSpeedControl;
       public var tc_CSpeedControlPopupM: TC_CSpeedControlPopupM;
+      public var tc_SquadronsController: TC_SquadronsController;
    }
 }

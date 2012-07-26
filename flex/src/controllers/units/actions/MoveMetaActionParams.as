@@ -24,58 +24,51 @@ package controllers.units.actions
        * @see #targetLocation
        * @see #avoidNpc
        */
-      public function MoveMetaActionParams(unitIds:Array,
-                                              sourceLocation:LocationMinimal,
-                                              targetLocation:LocationMinimal,
-                                              avoidNpc:Boolean)
+      public function MoveMetaActionParams(
+         unitIds: Array, sourceLocation: LocationMinimal, targetLocation: LocationMinimal,
+         avoidNpc: Boolean)
       {
          Objects.paramNotNull("unitIds", unitIds);
-         if (unitIds.length == 0)
-         {
+         if (unitIds.length == 0) {
             throw new ArgumentError("[param unitIds] must contain at least one item");
          }
          Objects.paramNotNull("sourceLocation", sourceLocation);
          Objects.paramNotNull("targetLocation", targetLocation);
-         if (sourceLocation.equals(targetLocation))
-         {
+         if (sourceLocation.equals(targetLocation)) {
             throw new ArgumentError(
                "[param sourceLocation] and [param targetLocation] must not define the same location: " +
-               sourceLocation
+                  sourceLocation
             );
          }
-         
+
          this.unitIds = unitIds;
          this.sourceLocation = sourceLocation;
          this.targetLocation = targetLocation;
          this.avoidNpc = avoidNpc;
       }
       
-      
       /**
        * List of unit IDs that will be moved.
        * <b>Required. Not null. Must contain at least one item.</b>
        */
-      public var unitIds:Array;
-      
+      public var unitIds: Array;
       
       /**
        * Current location of units to be moved.
        * <b>Required. Not null. Must be different from <code>targetLocation</code>.</b>
        */
-      public var sourceLocation:LocationMinimal;
-      
+      public var sourceLocation: LocationMinimal;
       
       /**
        * Destination of units.
        * <b>Required. Not null. Must be different from <code>sourceLocation</code>.</b>
        */
-      public var targetLocation:LocationMinimal;
-      
+      public var targetLocation: LocationMinimal;
       
       /**
        * Should the squad avoid NPC units when flying.
        * <b>Required.</b>
        */
-      public var avoidNpc:Boolean;
+      public var avoidNpc: Boolean;
    }
 }

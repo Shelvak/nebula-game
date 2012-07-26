@@ -2,6 +2,7 @@ package controllers.planets.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.planets.PlanetsCommand;
    import controllers.ui.NavigationController;
    import controllers.units.SquadronsController;
 
@@ -68,7 +69,7 @@ package controllers.planets.actions
       override public function applyClientAction(cmd:CommunicationCommand) : void {
          var params:ShowActionParams = ShowActionParams(cmd.parameters);
          f_createMapOnly = params.createMapOnly;
-         sendMessage(new ClientRMO({"id": params.planetId}));
+         sendMessage(new ClientRMO({"id": params.planetId}, null, null, PlanetsCommand.SHOW));
       }
       
       override public function applyServerAction(cmd:CommunicationCommand) : void {

@@ -1,11 +1,12 @@
 package tests.planetboss
 {
    import config.Config;
-
+   
    import ext.hamcrest.object.equals;
-
-   import factories.newActiveUnit;
-
+   
+   import factories.newLocation;
+   import factories.newUnit;
+   
    import models.ModelLocator;
    import models.Owner;
    import models.galaxy.Galaxy;
@@ -17,13 +18,13 @@ package tests.planetboss
    import models.solarsystem.SSObjectType;
    import models.time.MTimeEventFixedMoment;
    import models.unit.Unit;
-
+   
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
-
+   
    import testsutils.LocalizerUtl;
-
+   
    import utils.DateUtil;
    import utils.SingletonFactory;
 
@@ -97,29 +98,31 @@ package tests.planetboss
             "can't spawn boss if user does not have military ground unit inside planet",
             boss.canSpawn, isFalse());
 
-         planetMap.units.addItem(newUnit(1, Owner.PLAYER, "Trooper"));
+         planetMap.units.addItem($unit(1, Owner.PLAYER, "Trooper"));
          planetMap.invalidateUnitCachesAndDispatchEvent();
          assertThat(
             "can spawn boss if user has military ground unit inside planet",
             boss.canSpawn, isTrue() );
 
-         planetMap.units.addItem(newUnit(2, Owner.NAP, "Dart"));
+         planetMap.units.addItem($unit(2, Owner.NAP, "Dart"));
          planetMap.invalidateUnitCachesAndDispatchEvent();
          assertThat(
             "can't spawn boss if there are nap units inside planet",
             boss.canSpawn, isFalse() );
 
          planetMap.units.removeItemAt(1);
-         planetMap.units.addItem(newUnit(2, Owner.ENEMY, "Trooper"));
+         planetMap.units.addItem($unit(2, Owner.ENEMY, "Trooper"));
          planetMap.invalidateUnitCachesAndDispatchEvent();
          assertThat(
             "can't spawn boss if there are enemy units inside planet",
             boss.canSpawn, isFalse() );
       }
 
-      private function newUnit(id: int, owner: int, type: String): Unit {
-         return newActiveUnit(
-            id, owner, type, new LocationMinimal(LocationType.SS_OBJECT, planet.id));
+      private function $unit(id: int, owner: int, type: String): Unit {
+         return newUnit()
+            .id(id).type(type).owner(owner).level(1)
+            .location(newLocation().inSSObject().id(planet.id).GET)
+            .GET;
       }
 
       [Test]

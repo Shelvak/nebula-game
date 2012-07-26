@@ -16,6 +16,13 @@ package utils.remote.rmo
    public class ClientRMO extends RemoteMessageObject
    {
       /**
+       * If this is set, messages processor waits for the non-response message from the given
+       * action and only then processes messages received in the time period between this outgoing
+       * message and the message of the action provided.
+       */
+      public var waitForAction: String = null;
+
+      /**
        * An instance of <code>IResponder</code> which is responsible for any
        * actions that must be taken when a response message corresponding to a
        * message sent by the client has been received.
@@ -41,11 +48,16 @@ package utils.remote.rmo
        * Creates an instance of <code>ClientRMO</code>. Id property is generated
        * during construction of the instance.
        */
-      public function ClientRMO(parameters: Object, model: BaseModel = null,
-                                additionalParams: Object = null,
-                                responder: IResponder = null,
-                                action: String = null) {
+      public function ClientRMO(
+         parameters: Object,
+         model: BaseModel = null,
+         additionalParams: Object = null,
+         waitForAction: String = null,
+         responder: IResponder = null,
+         action: String = null)
+      {
          this.action = action;
+         this.waitForAction = waitForAction;
          this.parameters = parameters;
          this.responder = responder;
          this.model = model;
