@@ -2,6 +2,7 @@ package controllers.players.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.startup.StartupInfo;
 
    import models.chat.MChat;
    import models.player.PlayerMinimal;
@@ -14,6 +15,9 @@ package controllers.players.actions
    public class RenameAction extends CommunicationAction
    {
       override public function applyServerAction(cmd: CommunicationCommand): void {
+         if (StartupInfo.relaxedServerMessagesHandlingMode) {
+            return;
+         }
          const playerId: int = cmd.parameters.id;
          const playerName: String = cmd.parameters.name;
          // Change name if it is our update.
