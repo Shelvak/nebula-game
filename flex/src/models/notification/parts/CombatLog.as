@@ -3,7 +3,10 @@ package models.notification.parts
    import config.Config;
    
    import models.BaseModel;
+   import models.building.Building;
+   import models.factories.BuildingFactory;
    import models.location.Location;
+   import models.location.LocationType;
    import models.notification.INotificationPart;
    import models.notification.Notification;
    
@@ -24,6 +27,12 @@ package models.notification.parts
          {
             var params: Object = notif.params;
             location = Objects.create(Location, params.location);
+            buildingType = params.buildingType;
+            if (buildingType != null)
+            {
+               fakeNpcBuilding = BuildingFactory.createDefault(buildingType);
+               buildingAttackerId = params.buildingAttackerId;
+            }
             logId = params.logId;
             outcome = params.outcome;
             units = params.units;
@@ -46,6 +55,10 @@ package models.notification.parts
       public var logId: String;
       
       public var location: Location;
+
+      private var buildingType: String;
+      public var fakeNpcBuilding: Building = null;
+      private var buildingAttackerId: int = 0;
       
       public function updateLocationName(id:int, name:String) : void {
          Location.updateName(location, id, name);
@@ -84,18 +97,17 @@ package models.notification.parts
       {
          return Localizer.string("Notifications", "title.combatLog");
       }
-      
-      
-      public function get message() : String
+
+      private function get normalMessage() : String
       {
-         return Localizer.string('Notifications', 'message.combatLog', 
+         return Localizer.string('Notifications', 'message.combatLog',
             [location.isGalaxy
                ?'galaxy'
                :(location.isBattleground
                   ?'battleground'
                   :(location.isSolarSystem
                      ?'ss'
-                     :'planet')), 
+                     :'planet')),
                location.isSSObject
                ?location.planetName
                :(location.isSolarSystem
@@ -104,6 +116,25 @@ package models.notification.parts
                location.isSSObject
                ?location.player.name
                :'']);
+      }
+
+      private function get npcBuildingMessage() : String
+      {
+            return Localizer.string('Notifications',
+               'message.combatLogInBuilding',
+               [buildingAttackerId == ML.player.id
+                    ? 'player'
+                    : 'ally',
+                location.planetName,
+                fakeNpcBuilding.name
+               ]
+            );
+      }
+      
+      public function get message() : String
+      {
+         return fakeNpcBuilding == null ? normalMessage : npcBuildingMessage;
+
       }
    }
 }

@@ -4,15 +4,28 @@ module Combat::Integration
   OUTCOME_TIE = 2
 
   # Returns {player_id => notification_id} hash.
-  # @param skip_push_notifications_for [Array] Fixnum[]
-  def create_notifications(
-    response, client_location, building_type,
-    leveled_up_units, combat_log, wreckages, skip_push_notifications_for
-  )
-    client_location_as_json = client_location.as_json
+  def create_notifications(args)
+    typesig binding, Hash
+    args.ensure_options!(required: {
+      response: Hash,
+      client_location: ClientLocation,
+      building_type: [String, NilClass],
+      building_attacker_id: [Fixnum, NilClass],
+      leveled_up_units: Hash,
+      combat_log: CombatLog,
+      wreckages: Hash,
+      skip_push_notifications_for: Array
+    })
 
-    Hash[response['alliances'].map do |alliance_id, alliance|
-      alliance['players'].map do |player|
+    response = args[:response]
+    client_location_as_json = args[:client_location].as_json
+    leveled_up_units = args[:leveled_up_units]
+    skip_push_notifications_for = args[:skip_push_notifications_for]
+
+    response['alliances'].each_with_object({}) do
+      |(alliance_id, alliance), hash|
+
+      alliance['players'].each do |player|
         if player.nil?
           nil
         else
@@ -20,23 +33,29 @@ module Combat::Integration
 
           notification = Notification.create_for_combat(
             player_id,
-            alliance_id,
-            response['classified_alliances'][player_id],
-            combat_log.sha1_id,
-            client_location_as_json,
-            building_type,
-            response['outcomes'][player_id],
-            response['yane'][player_id],
-            leveled_up_units[player_id],
-            response['statistics'][player_id],
-            wreckages,
-            ! skip_push_notifications_for.include?(player_id)
+            alliance_id: alliance_id,
+            alliances: response['classified_alliances'][player_id],
+            combat_log_id: args[:combat_log].sha1_id,
+            location_attrs: client_location_as_json,
+            building_type: args[:building_type],
+            building_attacker_id: args[:building_attacker_id],
+            outcome: response['outcomes'][
+              # Ensure that we use building_attacker_id for outcome to prevent
+              # case when ally attacks your NPC building, wins, but it is still
+              # reported as loss for you.
+              args[:building_attacker_id] || player_id
+            ],
+            yane_units: response['yane'][player_id],
+            leveled_up_units: leveled_up_units[player_id],
+            statistics: response['statistics'][player_id],
+            wreckages: args[:wreckages],
+            push_notification: ! skip_push_notifications_for.include?(player_id)
           )
 
-          [player_id, notification.id]
+          hash[player_id] = notification.id
         end
-      end.compact
-    end.flatten(1)]
+      end
+    end
   end
 
   def add_wreckages(location, units, buildings)

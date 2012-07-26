@@ -178,6 +178,8 @@ class Notification < ActiveRecord::Base
   # - _alliance_ - SpaceMule#combat response['classified_alliances'][player_id]
   # - _combat_log_id_ - CombatLog object id for that combat.
   # - _location_attrs_ - ClientLocation#as_json.
+  # - _building_type_ - see below.
+  # - _building_attacker_id_ - see below.
   # - _outcome_ - Combat::OUTCOME_* constant.
   # - _yane_units_ - SpaceMule#combat response['yane'][player_id]
   # - _leveled_up_ - Combat::NotificationHelpers#leveled_up_units.
@@ -205,6 +207,8 @@ class Notification < ActiveRecord::Base
   #  # and :building_type will be some String (without "Building::"). Otherwise
   #  # it is nil.
   #  :building_type => nil | building type (String, e.g. NpcHall)
+  #  # Player ID who initiated building attack.
+  #  :building_attacker_id => nil | player_id (Fixnum)
   #  # Combat::OUTCOME_WIN (0) || Combat::OUTCOME_LOSE (1)
   #   || Combat::OUTCOME_TIE (2) constant
   #  :outcome => outcome,
@@ -248,28 +252,34 @@ class Notification < ActiveRecord::Base
   #  }
   # }
   #
-  def self.create_for_combat(
-    player_id, alliance_id, alliances, combat_log_id, location_attrs,
-    building_type, outcome, yane_units, leveled_up, statistics, resources,
-    push_notification
-  )
+  def self.create_for_combat(player_id, args)
+    typesig binding, Fixnum, Hash
+    args.ensure_options!(required: {
+      alliance_id: Fixnum, alliances: Hash, combat_log_id: String,
+      location_attrs: Hash, building_type: [String, NilClass],
+      building_attacker_id: [Fixnum, NilClass],
+      outcome: Fixnum, yane_units: Hash, leveled_up_units: Array,
+      statistics: Hash, wreckages: Hash, push_notification: Boolean
+    })
+
     model = new
     model.event = EVENT_COMBAT
     model.player_id = player_id
 
     model.params = {
-      'alliance_id' => alliance_id.as_json,
-      'alliances' => alliances.as_json,
-      'log_id' => combat_log_id.as_json,
-      'location' => location_attrs.as_json,
-      'building_type' => building_type,
-      'outcome' => outcome.as_json,
-      'units' => yane_units.as_json,
-      'leveled_up' => leveled_up.as_json,
-      'statistics' => statistics.as_json,
-      'resources' => resources.as_json
+      'alliance_id' => args[:alliance_id].as_json,
+      'alliances' => args[:alliances].as_json,
+      'log_id' => args[:combat_log_id].as_json,
+      'location' => args[:location_attrs].as_json,
+      'building_type' => args[:building_type],
+      'building_attacker_id' => args[:building_attacker_id],
+      'outcome' => args[:outcome].as_json,
+      'units' => args[:yane_units].as_json,
+      'leveled_up' => args[:leveled_up_units].as_json,
+      'statistics' => args[:statistics].as_json,
+      'resources' => args[:wreckages].as_json
     }
-    model.skip_dispatch = ! push_notification
+    model.skip_dispatch = ! args[:push_notification]
     model.save!
 
     model   
