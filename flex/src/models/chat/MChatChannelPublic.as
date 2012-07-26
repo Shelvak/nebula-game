@@ -2,7 +2,9 @@ package models.chat
 {
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePublicActionParams;
-   
+
+   import models.time.MTimeEventFixedMoment;
+
    import utils.locale.Localizer;
    
    
@@ -44,8 +46,13 @@ package models.chat
       {
          return name.indexOf(MChat.ALLIANCE_CHANNEL_PREFIX) == 0;
       }
-      
-      
+
+
+      private const _neverSilenced: MTimeEventFixedMoment = new MTimeEventFixedMoment();
+      override public function get silenced(): MTimeEventFixedMoment {
+         return isAlliance ? _neverSilenced : super.silenced;
+      }
+
       /**
        * <code>true</code> if this channel is the main (galaxy) channel.
        */
