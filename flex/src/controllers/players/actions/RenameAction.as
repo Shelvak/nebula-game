@@ -15,7 +15,7 @@ package controllers.players.actions
    public class RenameAction extends CommunicationAction
    {
       override public function applyServerAction(cmd: CommunicationCommand): void {
-         if (StartupInfo.relaxedServerMessagesHandlingMode) {
+         if (StartupInfo.relaxedServerMessagesHandlingMode && ML.latestGalaxy == null) {
             return;
          }
          const playerId: int = cmd.parameters.id;
