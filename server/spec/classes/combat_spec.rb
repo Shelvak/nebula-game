@@ -2,6 +2,32 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe Combat do
+  describe ".run_npc!" do
+    let(:player) { Factory.create(:player) }
+    let(:planet) { Factory.create(:planet, player: player) }
+    let(:building) do
+      building = Factory.create(:b_npc_solar_plant, planet: planet)
+      Factory.create(:u_gnat, player: nil, location: building)
+      building
+    end
+    let(:ally) do
+      alliance = create_alliance
+      player.alliance = alliance
+      player.save!
+      alliance.owner
+    end
+    let(:ally_units) { Array.new(2) do
+      Factory.create(:u_trooper, player: ally, location: planet)
+    end }
+
+    it "should progress objective with correct planet owner outcome" do
+      Objective::Battle.should_receive(:progress).and_return do |outcomes|
+        outcomes[player.id].should == outcomes[ally.id]
+      end
+      Combat.run_npc!(planet, ally, ally_units, building)
+    end
+  end
+
   describe "simulation" do
     describe ".loaded_units" do
       before(:each) do

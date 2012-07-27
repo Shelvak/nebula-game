@@ -42,7 +42,11 @@ module Combat::Simulation
           'log' => response.log.from_scala,
           'killed_by' => response.killedBy.from_scala,
           'statistics' => transform_statistics(response.statistics),
-          'outcomes' => transform_outcomes(response.outcomes),
+          'outcomes' => transform_outcomes(
+            response.outcomes,
+            options[:building_attacker_id],
+            location.is_a?(SsObject::Planet) ? location.player_id : nil
+          ),
           'alliances' => response.alliances.from_scala,
           'classified_alliances' => response.classifiedAlliances.from_scala,
           'troop_changes' => response.troopChanges.from_scala,
@@ -77,12 +81,23 @@ module Combat::Simulation
   end
 
   # Transforms Scala outcomes to Ruby outcomes +Hash+
-  def transform_outcomes(scala_outcomes)
+  def transform_outcomes(scala_outcomes, building_attacker_id, planet_owner_id)
     outcomes = {}
     scala_outcomes.foreach do |tuple|
       player, outcome = tuple._1, tuple._2
       outcomes[player.empty? ? nil : player.get.id] = outcome.id
     end
+
+    # Ensure that we use building_attacker_id for outcome to prevent
+    # case when ally attacks your NPC building, wins, but it is still
+    # reported as loss for planet owner.
+    unless building_attacker_id.nil?
+      raise ArgumentError,
+        "planet_owner_id cannot be nil if building_attacker_id is not nil!" \
+        if planet_owner_id.nil?
+      outcomes[planet_owner_id] = outcomes[building_attacker_id]
+    end
+
     outcomes
   end
 

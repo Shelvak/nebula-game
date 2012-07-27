@@ -39,12 +39,7 @@ module Combat::Integration
             location_attrs: client_location_as_json,
             building_type: args[:building_type],
             building_attacker_id: args[:building_attacker_id],
-            outcome: response['outcomes'][
-              # Ensure that we use building_attacker_id for outcome to prevent
-              # case when ally attacks your NPC building, wins, but it is still
-              # reported as loss for you.
-              args[:building_attacker_id] || player_id
-            ],
+            outcome: response['outcomes'][player_id],
             yane_units: response['yane'][player_id],
             leveled_up_units: leveled_up_units[player_id],
             statistics: response['statistics'][player_id],
