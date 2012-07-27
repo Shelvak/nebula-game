@@ -5,6 +5,8 @@
       <![CDATA[
       import components.ratings.RatingsWidths;
 
+      import models.ModelLocator;
+
       import models.alliance.MAlliance;
 
       import utils.locale.Localizer;
@@ -41,6 +43,7 @@
       <s:Label text="{alliance.totalWarPoints}" width="{RatingsWidths.warPoints}" 
                textAlign="center"/>
       <s:Label text="{alliance.totalVictoryPoints}" width="{RatingsWidths.victoryPoints}" 
+               visible="{!ModelLocator.getInstance().latestGalaxy.apocalypseHasStarted}"
                textAlign="center"/>
       <s:Label text="{alliance.totalAllianceVps}" width="{RatingsWidths.allianceVictoryPoints}" 
                textAlign="center"/>

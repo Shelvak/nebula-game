@@ -21,8 +21,6 @@
       import mx.collections.ArrayCollection;
       import mx.events.FlexEvent;
 
-      import utils.DateUtil;
-
       import utils.UrlNavigate;
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
@@ -58,7 +56,7 @@
          NC.creationCompleteFunction(MainAreaScreens.PLAYER, this);
       }
 
-         [Bindable]
+      [Bindable]
       private var ML: ModelLocator = ModelLocator.getInstance();
       ]]>
    </fx:Script>
@@ -108,38 +106,6 @@
                   <s:Label visible="{player.alliance == null}" paddingBottom="8" paddingTop="3" 
                            text="{Localizer.string('Alliances', 'label.notInAlliance')}" />
                   <s:Group width="100%">
-
-                  <!--
-                  TODO: death date must be tied to what exactly?
-                  <s:Group width="100%">
-                     <s:Label width="120" text="{Localizer.string('Ratings', 'planetsCount.long')}"/>
-                     <s:Label text="{player.planetsCount + ' / ' + player.bgPlanetsCount}"
-                             toolTip="{Localizer.string('Ratings',
-                             'tooltip.planetsVsBattleground')}"
-                             visible="{player.planetsCount > 0
-                             || player.bgPlanetsCount > 0}"
-                             includeInLayout="{player.planetsCount > 0
-                             || player.bgPlanetsCount > 0}"/>
-
-                     <s:Label text="{player.deathDate == null ? ''
-                                 : Localizer.string('Ratings', 'label.deathDay',
-                                 [MRatingPlayer.getDays(
-                                 ML.latestGalaxy.apocalypseStartEvent.occursAt,
-                                 player.deathDate)])}"
-                              toolTip="{player.deathDate == null ? ''
-                                 : Localizer.string('Ratings', 'tooltip.deathDay',
-                                 [DateUtil.formatShortDateTime(
-                                 player.deathDate)])}"
-                              textAlign="center" visible="{player.planetsCount == 0
-                              &amp;&amp; player.bgPlanetsCount == 0}"
-                              includeInLayout="{player.planetsCount == 0
-                              &amp;&amp; player.bgPlanetsCount == 0}"
-                              styleName="unsatisfied"/>
-                     <s:layout>
-                        <s:HorizontalLayout/>
-                     </s:layout>
-                  </s:Group>
-                  -->
                   <s:Group width="100%">
                      <s:Label width="120" text="{Localizer.string('Ratings', 'economyPoints')}"/>
                      <s:Label text="{player.economyPoints}"/>
@@ -178,6 +144,15 @@
                   <s:Group width="100%">
                      <s:Label width="120" text="{Localizer.string('Ratings', 'points')}"/>
                      <s:Label text="{player.points}"/>
+                     <s:layout>
+                        <s:HorizontalLayout/>
+                     </s:layout>
+                  </s:Group>
+                  <s:Group width="100%"
+                           visible="{ML.latestGalaxy.apocalypseHasStarted}"
+                           includeInLayout="{ML.latestGalaxy.apocalypseHasStarted}">
+                     <s:Label width="120" text="{Localizer.string('Ratings', 'deathDay')}"/>
+                     <s:Label text="{player.deathDayLabel}" toolTip="{player.deathDayTooltip}"/>
                      <s:layout>
                         <s:HorizontalLayout/>
                      </s:layout>

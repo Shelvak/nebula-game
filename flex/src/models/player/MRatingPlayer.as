@@ -1,9 +1,10 @@
 package models.player
 {
    import components.player.OnlineStatusTooltip;
-   
+
    import models.BaseModel;
-   
+   import models.galaxy.Galaxy;
+
    import mx.collections.ArrayCollection;
    import mx.controls.ToolTip;
    import mx.events.ToolTipEvent;
@@ -92,7 +93,29 @@ package models.player
       public var online: Boolean = false;
       
       public var offlineSince: Date;
-      
+
+      public function get deathDayLabel(): String {
+         const galaxy: Galaxy = ML.latestGalaxy;
+         if (galaxy == null || !galaxy.apocalypseHasStarted || deathDate == null) {
+            return "-";
+         }
+         const apocalypseStart: Date = galaxy.apocalypseStartEvent.occursAt;
+         return Localizer.string(
+            'Ratings', 'label.deathDay', [getDays(apocalypseStart, deathDate)]);
+      }
+
+      public function get deathDayTooltip(): String {
+         const galaxy: Galaxy = ML.latestGalaxy;
+         if (galaxy == null || !galaxy.apocalypseHasStarted) {
+            return "";
+         }
+         if (deathDate == null) {
+            return "-";
+         }
+         return Localizer.string(
+            'Ratings', 'tooltip.deathDay', [DateUtil.formatShortDateTime(deathDate)]);
+      }
+
       public function getAllianceName(): String
       {
          if (alliance)

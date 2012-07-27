@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                xmlns:s="library://ns.adobe.com/flex/spark" 
-                xmlns:mx="library://ns.adobe.com/flex/mx"
-                autoDrawBackground="false" 
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:ratings="components.ratings.*"
+                autoDrawBackground="false"
                 xmlns:base="components.base.*">
    <fx:Script>
       <![CDATA[
-      import components.popups.ErrorPopUp;
       import components.ratings.RatingsWidths;
-
-      import utils.ApplicationLocker;
 
       import controllers.alliances.AlliancesCommand;
       import controllers.alliances.actions.InviteActionParams;
@@ -78,8 +75,7 @@
                textAlign="center"/>
       <s:Label text="{player.warPoints}" width="{RatingsWidths.warPoints}" 
                textAlign="center"/>
-      <s:Label text="{player.victoryPoints}" width="{RatingsWidths.victoryPoints}" 
-               textAlign="center"/>
+      <ratings:DeathOrVPLabel player="{player}"/>
       <s:Label text="{player.points}" width="{RatingsWidths.points}" 
                textAlign="center"/>
       <s:Group width="{RatingsWidths.action}"
