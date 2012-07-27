@@ -35,9 +35,7 @@ package controllers.players.actions
          RS.source = RatingsPlayerFactory.fromObjects(cmd.parameters.ratings);
          if (ML.latestGalaxy.apocalypseHasStarted)
          {
-            RS.sortList([new SortField('planetsCount', false, true, true),
-               new SortField('bgPlanetsCount', false, true, true),
-               new SortField('deathDate', false, true),
+            RS.sortList([new SortField('deathDate', false, true),
                new SortField('victoryPoints', false, true, true),
                new SortField('points', false, true, true),
                new SortField('name')]);
@@ -46,7 +44,6 @@ package controllers.players.actions
          {
             RS.sortList([new SortField('victoryPoints', false, true, true),
                new SortField('points', false, true, true),
-               new SortField('planetsCount', false, true, true),
                new SortField('name')]);
          }
          RS.ratings = new ListCollectionView(RS.source);

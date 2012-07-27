@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx">  
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark" xmlns:ratings="components.ratings.*">
    <fx:Metadata>
       [Event (name="listSort", type="models.events.HeaderEvent")]
    </fx:Metadata>
    <fx:Script>
       <![CDATA[
-         import models.events.HeaderEvent;
+      import models.ModelLocator;
+      import models.events.HeaderEvent;
          
          import flash.text.engine.FontWeight;
-         
-         import utils.locale.Localizer;
+
+      import models.galaxy.Galaxy;
+
+      import utils.locale.Localizer;
          
          protected function label_rollOverHandler(event:MouseEvent):void
          {
@@ -28,7 +30,20 @@
          }
          
          private var currentSortLabel: Label;
-         
+
+         private function deathOrVPLabel_clickHandler(event: MouseEvent): void {
+            const galaxy: Galaxy = ModelLocator.getInstance().latestGalaxy;
+            if (galaxy == null) {
+               return;
+            }
+            if (galaxy.apocalypseHasStarted) {
+               label_clickHandler(event, "deathDate");
+            }
+            else {
+               label_clickHandler(event, "victoryPoints");
+            }
+         }
+
          protected function label_clickHandler(event: MouseEvent, key: String):void
          {
             if (currentSortLabel && event.currentTarget != currentSortLabel)
@@ -89,28 +104,6 @@
             <s:SolidColorStroke color="0xffffff" weight="1"/>
          </s:stroke>
       </s:Line>
-      <s:Label width="{RatingsWidths.planetsCount}" 
-               text="{Localizer.string('Ratings', 'planetsCount')}" textAlign="center"
-               rollOver="label_rollOverHandler(event)" 
-               rollOut="label_rollOutHandler(event)"
-               click="label_clickHandler(event, 'planetsCount')"
-               toolTip="{Localizer.string('Ratings', 'tooltip.planetsCount')}"/>
-      <s:Line yFrom="0" yTo="24">
-         <s:stroke>
-            <s:SolidColorStroke color="0xffffff" weight="1"/>
-         </s:stroke>
-      </s:Line>
-      <s:Label width="{RatingsWidths.bgPlanetsCount}"
-               text="{Localizer.string('Ratings', 'bgPlanetsCount')}" textAlign="center"
-               rollOver="label_rollOverHandler(event)"
-               rollOut="label_rollOutHandler(event)"
-               click="label_clickHandler(event, 'bgPlanetsCount')"
-               toolTip="{Localizer.string('Ratings', 'tooltip.bgPlanetsCount')}"/>
-      <s:Line yFrom="0" yTo="24">
-         <s:stroke>
-            <s:SolidColorStroke color="0xffffff" weight="1"/>
-         </s:stroke>
-      </s:Line>
       <s:Label width="{RatingsWidths.economyPoints}" 
                text="{Localizer.string('Ratings', 'economyPoints')}" textAlign="center"
                paddingLeft="6" paddingRight="6"
@@ -155,12 +148,10 @@
             <s:SolidColorStroke color="0xffffff" weight="1"/>
          </s:stroke>
       </s:Line>
-      <s:Label width="{RatingsWidths.victoryPoints}" 
-               text="{Localizer.string('Ratings', 'victoryPoints')}" textAlign="center"
-               paddingLeft="6" paddingRight="6"
-               rollOver="label_rollOverHandler(event)" 
-               rollOut="label_rollOutHandler(event)"
-               click="label_clickHandler(event, 'victoryPoints')"/>
+      <ratings:DeathOrVPLabelHeader
+         rollOver="label_rollOverHandler(event)"
+         rollOut="label_rollOutHandler(event)"
+         click="deathOrVPLabel_clickHandler(event)"/>
       <s:Line yFrom="0" yTo="24">
          <s:stroke>
             <s:SolidColorStroke color="0xffffff" weight="1"/>

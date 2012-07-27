@@ -1,9 +1,10 @@
 package models.player
 {
    import components.player.OnlineStatusTooltip;
-   
+
    import models.BaseModel;
-   
+   import models.galaxy.Galaxy;
+
    import mx.collections.ArrayCollection;
    import mx.controls.ToolTip;
    import mx.events.ToolTipEvent;
@@ -18,7 +19,6 @@ package models.player
     # "id" => Fixnum (player ID),
     # "name" => String (player name),
     # "victory_points" => Fixnum,
-    # "planets_count" => Fixnum,
     # "war_points" => Fixnum,
     # "science_points" => Fixnum,
     # "economy_points" => Fixnum,
@@ -71,10 +71,6 @@ package models.player
       public var allianceId: int;
       [Required]
       public var name: String;
-      [Required]
-      public var planetsCount: int;
-      [Required]
-      public var bgPlanetsCount: int;
       [Optional]
       public var playersCount: int;
       [Optional]
@@ -100,7 +96,29 @@ package models.player
       public var vip: Boolean = false;
       
       public var offlineSince: Date;
-      
+
+      public function get deathDayLabel(): String {
+         const galaxy: Galaxy = ML.latestGalaxy;
+         if (galaxy == null || !galaxy.apocalypseHasStarted || deathDate == null) {
+            return "-";
+         }
+         const apocalypseStart: Date = galaxy.apocalypseStartEvent.occursAt;
+         return Localizer.string(
+            'Ratings', 'label.deathDay', [getDays(apocalypseStart, deathDate)]);
+      }
+
+      public function get deathDayTooltip(): String {
+         const galaxy: Galaxy = ML.latestGalaxy;
+         if (galaxy == null || !galaxy.apocalypseHasStarted) {
+            return "";
+         }
+         if (deathDate == null) {
+            return "-";
+         }
+         return Localizer.string(
+            'Ratings', 'tooltip.deathDay', [DateUtil.formatShortDateTime(deathDate)]);
+      }
+
       public function getAllianceName(): String
       {
          if (alliance)

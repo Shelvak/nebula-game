@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
-                xmlns:s="library://ns.adobe.com/flex/spark" 
-                xmlns:base="components.base.*"
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
+                xmlns:base="components.base.*" xmlns:ratings="components.ratings.*"
                 autoDrawBackground="false">
    <fx:Script>
       <![CDATA[
@@ -17,8 +17,6 @@
       import models.player.PlayerMinimal;
 
       import spark.components.PopUpAnchor;
-
-      import utils.DateUtil;
 
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
@@ -112,32 +110,6 @@
             AssetNames.getIconImageName('vipPlayer'))}"
             visible="{player.vip}" horizontalCenter="0"/>
       </s:Group>
-      <s:Label text="{player.planetsCount}" width="{RatingsWidths.planetsCount}"
-               textAlign="center" visible="{player.planetsCount > 0
-               || player.bgPlanetsCount > 0}"
-               includeInLayout="{player.planetsCount > 0
-               || player.bgPlanetsCount > 0}"/>
-      <s:Label text="{player.bgPlanetsCount}" width="{RatingsWidths.bgPlanetsCount}"
-               textAlign="center" visible="{player.planetsCount > 0
-               || player.bgPlanetsCount > 0}"
-               includeInLayout="{player.planetsCount > 0
-               || player.bgPlanetsCount > 0}"/>
-      <s:Label text="{player.deathDate == null ? ''
-               : Localizer.string('Ratings', 'label.deathDay',
-                  [MRatingPlayer.getDays(
-                     ML.latestGalaxy.apocalypseStartEvent.occursAt,
-                     player.deathDate)
-                  ])}"
-               toolTip="{player.deathDate == null ? ''
-               : Localizer.string('Ratings', 'tooltip.deathDay',
-                  [DateUtil.formatShortDateTime(
-                     player.deathDate)])}"
-               width="{RatingsWidths.planetsCount + 1 + RatingsWidths.bgPlanetsCount}"
-               textAlign="center" visible="{player.planetsCount == 0
-               &amp;&amp; player.bgPlanetsCount == 0}"
-               includeInLayout="{player.planetsCount == 0
-               &amp;&amp; player.bgPlanetsCount == 0}"
-               styleName="unsatisfied"/>
       <s:Label text="{player.economyPoints}" width="{RatingsWidths.economyPoints}" 
                textAlign="center"/>
       <s:Label text="{player.sciencePoints}" width="{RatingsWidths.sciencePoints}" 
@@ -146,8 +118,7 @@
                textAlign="center"/>
       <s:Label text="{player.warPoints}" width="{RatingsWidths.warPoints}" 
                textAlign="center"/>
-      <s:Label text="{player.victoryPoints}" width="{RatingsWidths.victoryPoints}" 
-               textAlign="center"/>
+      <ratings:DeathOrVPLabel player="{player}"/>
       <s:Label text="{player.allianceVps}" width="{RatingsWidths.allianceVictoryPoints}" 
                textAlign="center"/>
       <s:Label text="{player.points}" width="{RatingsWidths.points}" 

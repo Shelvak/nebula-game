@@ -21,7 +21,6 @@ package controllers.alliances.actions
          ML.allyRatings.sort = new Sort();
          ML.allyRatings.sort.fields = [new SortField('victoryPoints', true, true, true), 
             new SortField('points', true, true, true),
-            new SortField('planetsCount', true, true, true),
             new SortField('name')];
          ML.allyRatings.refresh();
          
