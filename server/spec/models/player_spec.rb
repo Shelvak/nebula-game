@@ -21,8 +21,7 @@ describe Player do
     end
 
     (
-      %w{id name victory_points alliance_vps death_date
-         planets_count bg_planets_count last_seen} +
+      %w{id name victory_points alliance_vps death_date last_seen} +
       Player::POINT_ATTRIBUTES
     ).each do |attr|
       it "should include #{attr}" do
@@ -53,6 +52,24 @@ describe Player do
 
     it "should say alliance is nil if player is not in alliance" do
       @result[1]["alliance"].should be_nil
+    end
+
+    it "should say vip=true if vip_level > 0" do
+      player = @players[0]
+      player.vip_level = 1; player.save!
+      result = Player.ratings(@alliance.galaxy_id)
+      result[0]['vip'].should be_true
+    end
+
+    it "should say vip=false if vip_level == 0" do
+      player = @players[0]
+      player.vip_level = 0; player.save!
+      result = Player.ratings(@alliance.galaxy_id)
+      result[0]['vip'].should be_false
+    end
+
+    it "should not include vip_level" do
+      @result.any? { |r| r.has_key?('vip_level') }.should be_false
     end
 
     it "should use condition if supplied" do

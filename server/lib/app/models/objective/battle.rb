@@ -11,13 +11,14 @@ class Objective::Battle < Objective
   # Leave only outcomes that we want and prepare data for #count_benefits
   # here.
   def filter(outcomes_array)
-    [Hash[outcomes_array[0].map do |string_player_id, outcome|
+    outcomes_array[0].each_with_object({}) do
+      |(string_player_id, outcome), hash|
+
       player_id = string_player_id.to_i
       # We progress objective by 1 if it's a player (not NPC) and outcome is
       # right.
-      player_id == 0 || outcome != self.outcome \
-        ? nil : [player_id, 1]
-    end.compact]]
+      hash[player_id] = 1 unless player_id == 0 || outcome != self.outcome
+    end
   end
 
   # Just return data that #filter has prepared for us.

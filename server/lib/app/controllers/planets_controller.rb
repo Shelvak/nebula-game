@@ -64,7 +64,7 @@ class PlanetsController < GenericController
   #
   # Parameters: None
   #
-  # Response: None
+  # Response: Fake, to increase seq number.
   #
   ACTION_UNSET_CURRENT = 'planets|unset_current'
 
@@ -75,6 +75,8 @@ class PlanetsController < GenericController
       set_current_planet_ss_id(m, nil)
       set_current_planet_id(m, nil)
     end
+
+    respond m, success: true
   end
 
   # Sends a list of planets player currently owns.
