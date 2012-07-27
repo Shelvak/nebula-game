@@ -4,6 +4,7 @@ package components.ratings
    {
       public static const rank: int = 40;
       public static const player: int = 186;
+      public static const vipStatus: int = 40;
       public static const alliance: int = 120;
       public static const playerAlliance: int = 80;
       public static const playersCount: int = 80;

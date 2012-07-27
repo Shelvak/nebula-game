@@ -107,6 +107,11 @@
             <s:HorizontalLayout verticalAlign="middle" paddingLeft="6" paddingRight="3"/>
          </base:layout>
       </base:AdvancedContainer>
+      <s:Group width="{RatingsWidths.vipStatus}">
+         <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+            AssetNames.getIconImageName('vipPlayer'))}"
+            visible="{player.vip}" horizontalCenter="0"/>
+      </s:Group>
       <s:Label text="{player.planetsCount}" width="{RatingsWidths.planetsCount}"
                textAlign="center" visible="{player.planetsCount > 0
                || player.bgPlanetsCount > 0}"

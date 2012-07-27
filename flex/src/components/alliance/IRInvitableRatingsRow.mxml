@@ -64,6 +64,11 @@
             <s:HorizontalLayout verticalAlign="middle" paddingLeft="6" paddingRight="3"/>
          </base:layout>
       </base:AdvancedContainer>
+      <s:Group width="{RatingsWidths.vipStatus}">
+         <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+            AssetNames.getIconImageName('vipPlayer'))}"
+            visible="{player.vip}" horizontalCenter="0"/>
+      </s:Group>
       <s:Group width="{RatingsWidths.playerAlliance}">
          <s:Button label="{player.getAllianceName()}" left="6" right="3"
                    visible="{player.alliance != null}"

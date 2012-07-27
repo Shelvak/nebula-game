@@ -69,7 +69,7 @@
             <s:SolidColorStroke color="0xffffff" weight="1"/>
          </s:stroke>
       </s:Line>
-      <s:Label width="{RatingsWidths.player}" 
+      <s:Label width="{RatingsWidths.player + RatingsWidths.vipStatus}"
                text="{Localizer.string('Ratings', 'player')}" textAlign="center"
                rollOver="label_rollOverHandler(event)" 
                rollOut="label_rollOutHandler(event)"

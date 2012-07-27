@@ -75,6 +75,11 @@
             <s:HorizontalLayout verticalAlign="middle" paddingLeft="6" paddingRight="3"/>
          </base:layout>
       </base:AdvancedContainer>
+      <s:Group width="{RatingsWidths.vipStatus}">
+         <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+            AssetNames.getIconImageName('vipPlayer'))}"
+            visible="{player.vip}" horizontalCenter="0"/>
+      </s:Group>
       <s:Group width="46" visible="{getImaginaryLevel(player.rank) > 0}">
          <unitsscreen:StarsContainer starCount="{getImaginaryLevel(player.rank)}" 
                                      horizontalCenter="-3"/>

@@ -95,6 +95,9 @@ package models.player
       public var alliance: Object;
       
       public var online: Boolean = false;
+
+      [Optional]
+      public var vip: Boolean = false;
       
       public var offlineSince: Date;
       
