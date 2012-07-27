@@ -172,6 +172,11 @@ describe PlanetsController do
       push @action, @params
       self.current_planet_ss_id.should be_nil
     end
+
+    it "should reply with success: true" do
+      push @action, @params
+      response.should == {success: true}
+    end
   end
 
   describe "planets|player_index" do
