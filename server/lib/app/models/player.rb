@@ -238,8 +238,7 @@ class Player < ActiveRecord::Base
 
   RATING_ATTRIBUTES_SQL = (
     %w{
-      id name victory_points alliance_vps death_date
-      planets_count bg_planets_count
+      id name victory_points alliance_vps death_date vip_level
     } + POINT_ATTRIBUTES
   ).map { |attr| "`#{table_name}`.`#{attr}`" }.join(", ")
 
@@ -259,12 +258,11 @@ class Player < ActiveRecord::Base
   #     "victory_points" => Fixnum,
   #     "alliance_vps" => Fixnum,
   #     "death_date" => Time | nil,
-  #     "planets_count" => Fixnum,
-  #     "bg_planets_count" => Fixnum,
   #     "war_points" => Fixnum,
   #     "science_points" => Fixnum,
   #     "economy_points" => Fixnum,
   #     "army_points" => Fixnum,
+  #     "vip" => Boolean,
   #     "alliance" => {"id" => Fixnum, "name" => String} | nil,
   #     "last_seen" => true (currently online) | Time | nil (never logged in),
   #   }
@@ -295,6 +293,7 @@ class Player < ActiveRecord::Base
         if row['last_seen'].is_a?(String)
       row['death_date'] = Time.parse(row['death_date']) \
         if row['death_date'].is_a?(String)
+      row['vip'] = row.delete('vip_level') > 0
       row
     end
   end
