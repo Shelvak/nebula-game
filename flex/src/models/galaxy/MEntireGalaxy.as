@@ -97,7 +97,7 @@ package models.galaxy
       }
 
 
-      function newRenderedSS(type: String): MRenderedSS {
+      private function newRenderedSS(type: String): MRenderedSS {
          return new MRenderedSS(this, type);
       }
    }
