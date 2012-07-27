@@ -107,16 +107,8 @@
             <s:HorizontalLayout verticalAlign="middle" paddingLeft="6" paddingRight="3"/>
          </base:layout>
       </base:AdvancedContainer>
-      <s:Label text="{player.planetsCount}" width="{RatingsWidths.planetsCount}"
-               textAlign="center" visible="{player.planetsCount > 0
-               || player.bgPlanetsCount > 0}"
-               includeInLayout="{player.planetsCount > 0
-               || player.bgPlanetsCount > 0}"/>
-      <s:Label text="{player.bgPlanetsCount}" width="{RatingsWidths.bgPlanetsCount}"
-               textAlign="center" visible="{player.planetsCount > 0
-               || player.bgPlanetsCount > 0}"
-               includeInLayout="{player.planetsCount > 0
-               || player.bgPlanetsCount > 0}"/>
+      <!--
+      TODO: death date must be used instead of points when apocalypse is active
       <s:Label text="{player.deathDate == null ? ''
                : Localizer.string('Ratings', 'label.deathDay',
                   [MRatingPlayer.getDays(
@@ -133,6 +125,7 @@
                includeInLayout="{player.planetsCount == 0
                &amp;&amp; player.bgPlanetsCount == 0}"
                styleName="unsatisfied"/>
+      -->
       <s:Label text="{player.economyPoints}" width="{RatingsWidths.economyPoints}" 
                textAlign="center"/>
       <s:Label text="{player.sciencePoints}" width="{RatingsWidths.sciencePoints}" 

@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
-         xmlns:s="library://ns.adobe.com/flex/spark" 
-         xmlns:mx="library://ns.adobe.com/flex/mx"
-         xmlns:base="components.base.*">
+         xmlns:s="library://ns.adobe.com/flex/spark">
    <fx:Script>
       <![CDATA[
-      import components.popups.ErrorPopUp;
       import components.ratings.RatingsWidths;
 
-      import controllers.alliances.AlliancesCommand;
-
-      import models.ModelLocator;
       import models.alliance.MAlliance;
 
-      import utils.assets.AssetNames;
-      import utils.assets.ImagePreloader;
       import utils.locale.Localizer;
 
 
@@ -40,10 +32,6 @@
       <s:Label width="{RatingsWidths.player}" 
                text="{Localizer.string('Alliances', 'label.total', 
                [alliance.players.length])}" textAlign="center"/>
-      <s:Label text="{alliance.totalPlanetsCount}" width="{RatingsWidths.planetsCount}" 
-               textAlign="center"/>
-      <s:Label text="{alliance.totalBgPlanetsCount}" width="{RatingsWidths.bgPlanetsCount}"
-               textAlign="center"/>
       <s:Label text="{alliance.totalEconomyPoints}" width="{RatingsWidths.economyPoints}" 
                textAlign="center"/>
       <s:Label text="{alliance.totalSciencePoints}" width="{RatingsWidths.sciencePoints}" 

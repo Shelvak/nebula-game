@@ -2,7 +2,6 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
-         xmlns:components="utils.components.*" 
          xmlns:base="components.base.*"
          xmlns:screens="components.screens.*"
          width="100%" height="100%"
@@ -109,6 +108,9 @@
                   <s:Label visible="{player.alliance == null}" paddingBottom="8" paddingTop="3" 
                            text="{Localizer.string('Alliances', 'label.notInAlliance')}" />
                   <s:Group width="100%">
+
+                  <!--
+                  TODO: death date must be tied to what exactly?
                   <s:Group width="100%">
                      <s:Label width="120" text="{Localizer.string('Ratings', 'planetsCount.long')}"/>
                      <s:Label text="{player.planetsCount + ' / ' + player.bgPlanetsCount}"
@@ -137,6 +139,7 @@
                         <s:HorizontalLayout/>
                      </s:layout>
                   </s:Group>
+                  -->
                   <s:Group width="100%">
                      <s:Label width="120" text="{Localizer.string('Ratings', 'economyPoints')}"/>
                      <s:Label text="{player.economyPoints}"/>

@@ -18,7 +18,6 @@ package models.player
     # "id" => Fixnum (player ID),
     # "name" => String (player name),
     # "victory_points" => Fixnum,
-    # "planets_count" => Fixnum,
     # "war_points" => Fixnum,
     # "science_points" => Fixnum,
     # "economy_points" => Fixnum,
@@ -71,10 +70,6 @@ package models.player
       public var allianceId: int;
       [Required]
       public var name: String;
-      [Required]
-      public var planetsCount: int;
-      [Required]
-      public var bgPlanetsCount: int;
       [Optional]
       public var playersCount: int;
       [Optional]
