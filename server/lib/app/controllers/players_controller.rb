@@ -211,10 +211,10 @@ class PlayersController < GenericController
   #
   # Parameters: None
   #
-  ACTION_VIP = "players|vip_stop"
+  ACTION_VIP_STOP = "players|vip_stop"
 
-  VIP_OPTIONS = logged_in
-  VIP_SCOPE = scope.world
+  VIP_STOP_OPTIONS = logged_in
+  VIP_STOP_SCOPE = scope.world
   def self.vip_stop_action(m)
     m.player.vip_stop!
   end
