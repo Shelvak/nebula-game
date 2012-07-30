@@ -77,6 +77,8 @@ package controllers.players
       public static const EDIT:String = "players|edit";
       
       public static const VIP:String = "players|vip";
+
+      public static const VIP_STOP:String = "players|vip_stop";
       
       public static const RATINGS:String = "players|ratings";
 

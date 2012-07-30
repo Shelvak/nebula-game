@@ -53,6 +53,22 @@
       }
 
 
+      protected function cancelVip(event: MouseEvent): void {
+         var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
+         popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
+         popUp.cancelButtonLabel = Localizer.string('Popups', 'label.no');
+         var lbl: Label = new Label();
+         lbl.minWidth = 300;
+         lbl.text = Localizer.string('Popups', 'message.cancelVip');
+         popUp.addElement(lbl);
+         popUp.title = Localizer.string('Popups', 'title.cancelVip');
+         popUp.confirmButtonClickHandler = function (button: Button = null): void {
+            new PlayersCommand(PlayersCommand.VIP_STOP).dispatch();
+         };
+         popUp.show();
+      }
+
+
       protected function button1_clickHandler(event: MouseEvent): void {
          var popUp: ActionConfirmationPopUp = new ActionConfirmationPopUp();
          popUp.confirmButtonLabel = Localizer.string('Popups', 'label.yes');
@@ -189,6 +205,18 @@
                          enabled="{credSelector.value >= VipLevelsData.getVipConvertRate(
                          ML.player.vipLevel)}"/>
             </s:Group>
+            <s:Group width="100%">
+              <base:Heading1 text="{getString('title.cancelVip')}" width="100%"/>
+              <base:Warning text="{getString('label.cancelVip')}" maxWidth="650"/>
+              <s:Button skinClass="components.skins.RedButtonSkin"
+                        label="{getString('label.cancelVipButton')}"
+                        click="cancelVip(event)"/>
+              <s:layout>
+                <s:VerticalLayout gap="6" horizontalAlign="center"
+                  paddingTop="6"/>
+              </s:layout>
+            </s:Group>
+
          </base:AdvancedContainer>
       </base:Panel>
       <s:Group horizontalCenter="0" top="10" visible="{ML.player.vipLevel == 0}">

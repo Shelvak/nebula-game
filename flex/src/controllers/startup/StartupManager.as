@@ -414,6 +414,7 @@ package controllers.startup
          bindPair(PlayersCommand.CONVERT_CREDS, new ConvertCredsAction());
          bindPair(PlayersCommand.EDIT, new controllers.players.actions.EditAction());
          bindPair(PlayersCommand.VIP, new VipAction());
+         bindPair(PlayersCommand.VIP_STOP, new VipStopAction());
          bindPair(PlayersCommand.STATUS_CHANGE, new StatusChangeAction());
       }
       private static function bindPlayerOptionsCommands() : void
