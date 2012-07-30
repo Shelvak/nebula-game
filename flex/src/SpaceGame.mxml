@@ -44,6 +44,8 @@
       import controllers.screens.Screens;
       import controllers.startup.StartupManager;
 
+      import flash.ui.ContextMenu;
+
       import globalevents.GlobalEvent;
 
       import models.ModelLocator;
@@ -68,18 +70,23 @@
          if (event.ctrlKey && event.keyCode == Keyboard.SPACE) {
             System.setClipboard(Profiler.resultsString);
          }
-         else if (event.ctrlKey && event.shiftKey
-           && event.keyCode == Keyboard.INSERT) {
-            System.setClipboard(ModelLocator.getInstance().debugLog);
-            new MSuccessEvent(Localizer.string("General", "message.copyToClipboardSuccessful"));
-         }
          else if (event.ctrlKey && event.keyCode == 144 /*NUMLOCK*/) {
             throw new Error("Dont you ever press ctrl+numlock again!");
          }
       }
 
-
       private function this_applicationCompleteHandler(event: FlexEvent): void {
+         // Tweak context menu items.
+         var contextMenu: ContextMenu = new ContextMenu();
+         contextMenu.hideBuiltInItems();
+         var copyLogItem: ContextMenuItem = new ContextMenuItem(
+           Localizer.string("ContextMenu", "copyLogItem")
+         );
+         copyLogItem.addEventListener(
+           ContextMenuEvent.MENU_ITEM_SELECT, copyLogItemEventHandler
+         );
+         contextMenu.customItems.push(copyLogItem);
+
          ExternalInterface.marshallExceptions = true;
          stage.addEventListener(
             KeyboardEvent.KEY_UP, stage_keyboardEventHandler
@@ -92,6 +99,12 @@
          _mainTimer.addEventListener(TimerEvent.TIMER, mainTimer_timerHandler);
       }
 
+      private function copyLogItemEventHandler(event: ContextMenuEvent): void {
+        System.setClipboard(ModelLocator.getInstance().debugLog);
+        new MSuccessEvent(
+           Localizer.string("General", "message.copyToClipboardSuccessful")
+        );
+      }
 
       private function stage_keyboardEventHandler(event: KeyboardEvent): void {
          EventBroker.broadcast(event);

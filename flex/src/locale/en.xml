@@ -1454,6 +1454,10 @@
     <label.reestablish value="Reconnect"/>
   </General>
 
+  <ContextMenu>
+    <copyLogItem value="Copy game log to clipboard" />
+  </ContextMenu>
+
   <Errors>
     <invalidBitmap.title>Broken bitmap</invalidBitmap.title>
     <invalidBitmap.message>

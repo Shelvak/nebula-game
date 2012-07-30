@@ -1581,6 +1581,10 @@
     <label.reestablish value="Jungtis iš naujo"/>
   </General>
 
+  <ContextMenu>
+    <copyLogItem value="Kopijuoti žaidimo žurnalą į iškarpinę" />
+  </ContextMenu>
+
   <Errors>
      <invalidBitmap.title>Sugadintas paveikslėlis</invalidBitmap.title>
      <invalidBitmap.message>
