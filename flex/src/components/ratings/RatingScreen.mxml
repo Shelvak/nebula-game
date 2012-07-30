@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <base:BaseContainer xmlns:fx="http://ns.adobe.com/mxml/2009"
                     xmlns:s="library://ns.adobe.com/flex/spark" 
-                    xmlns:mx="library://ns.adobe.com/flex/mx"
                     xmlns:base="components.base.*"
                     xmlns:ratings="components.ratings.*"
                     xmlns:screens="components.screens.*"
@@ -131,8 +130,6 @@
          private static const victoryPtsField: SortField = new SortField('victoryPoints', false, true, true);
          private static const pointsField: SortField = new SortField('points', false, true, true);
          private static const deathDayField: SortField = new SortField('deathDate', false, true);
-         private static const planetsCountField: SortField = new SortField('planetsCount', false, true, true);
-         private static const bgPlanetsCountField: SortField = new SortField('bgPlanetsCount', false, true, true);
          private static const economyPtsField: SortField = new SortField('economyPoints', false, true, true);
          private static const sciencePtsField: SortField = new SortField('sciencePoints', false, true, true);
          private static const armyPtsField: SortField = new SortField('armyPoints', false, true, true);
@@ -143,15 +140,13 @@
             {
                'rank':[rankField],
                'name':[nameField],
-               'alliance':[allianceField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
-               'planetsCount':[planetsCountField, bgPlanetsCountField, deathDayField, victoryPtsField, pointsField, nameField],
-               'bgPlanetsCount':[bgPlanetsCountField, planetsCountField, deathDayField, victoryPtsField, pointsField, nameField],
-               'economyPoints':[economyPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
-               'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
-               'armyPoints':[armyPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
-               'warPoints':[warPtsField, victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
-               'victoryPoints':[victoryPtsField, pointsField, bgPlanetsCountField, planetsCountField, nameField],
-               'points':[pointsField, victoryPtsField, bgPlanetsCountField, planetsCountField, nameField]
+               'alliance':[allianceField, victoryPtsField, pointsField, nameField],
+               'economyPoints':[economyPtsField, victoryPtsField, pointsField, nameField],
+               'sciencePoints':[sciencePtsField, victoryPtsField, pointsField, nameField],
+               'armyPoints':[armyPtsField, victoryPtsField, pointsField, nameField],
+               'warPoints':[warPtsField, victoryPtsField, pointsField, nameField],
+               'victoryPoints':[victoryPtsField, pointsField, nameField],
+               'points':[pointsField, victoryPtsField, nameField]
             }
          
          protected function header_ratingsSortHandler(event:HeaderEvent):void

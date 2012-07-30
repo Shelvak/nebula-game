@@ -624,6 +624,7 @@ assets:
         stance2.png: StanceAggressiveIcon.png
         online.png: Status_online.png
         offline.png: Status_offline.png
+        vipPlayer.png: Icon_vip.png
         hidden.png: Status_hidden.png
         cooldown.png: CooldownIcon.png
         cooldown_large.png: 20x20_cooldown.png

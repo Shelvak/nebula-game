@@ -2,7 +2,6 @@
 <s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
          xmlns:s="library://ns.adobe.com/flex/spark" 
          xmlns:mx="library://ns.adobe.com/flex/mx" 
-         xmlns:components="utils.components.*" 
          xmlns:base="components.base.*"
          xmlns:screens="components.screens.*"
          width="100%" height="100%"
@@ -21,8 +20,6 @@
 
       import mx.collections.ArrayCollection;
       import mx.events.FlexEvent;
-
-      import utils.DateUtil;
 
       import utils.UrlNavigate;
       import utils.assets.AssetNames;
@@ -59,7 +56,7 @@
          NC.creationCompleteFunction(MainAreaScreens.PLAYER, this);
       }
 
-         [Bindable]
+      [Bindable]
       private var ML: ModelLocator = ModelLocator.getInstance();
       ]]>
    </fx:Script>
@@ -85,13 +82,20 @@
                          horizontalAlign="center" verticalAlign="middle"
                          source="{UrlNavigate.getInstance().urlRoot + 
                          'user/avatar/' + player.name}"/>
-               <base:AdvancedContainer left="215" right="0" top="20">
+               <base:AdvancedContainer left="215" right="55" top="20">
                   <s:Group width="100%" 
                            toolTipCreate="player.createStatusTooltip(event)"
                            toolTip=" ">
                      <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
                                     AssetNames.getIconImageName(player.online?'online':'offline'))}"/>
-                     <s:Label text="{player.name}" fontSize="24" color="#eec500" width="100%"/>
+                     <s:Label text="{player.name}" fontSize="24" color="#eec500" width="100%"
+                               maxWidth="250" maxDisplayedLines="1" showTruncationTip="true"/>
+                     <s:Group>
+                        <s:BitmapImage source="{ImagePreloader.getInstance().getImage(
+                           AssetNames.getIconImageName('vipPlayer'))}"
+                           visible="{player != null &amp;&amp; player.vip}"
+                           horizontalCenter="0"/>
+                     </s:Group>
                      <s:layout>
                         <s:HorizontalLayout/>
                      </s:layout>
@@ -109,34 +113,6 @@
                   <s:Label visible="{player.alliance == null}" paddingBottom="8" paddingTop="3" 
                            text="{Localizer.string('Alliances', 'label.notInAlliance')}" />
                   <s:Group width="100%">
-                  <s:Group width="100%">
-                     <s:Label width="120" text="{Localizer.string('Ratings', 'planetsCount.long')}"/>
-                     <s:Label text="{player.planetsCount + ' / ' + player.bgPlanetsCount}"
-                             toolTip="{Localizer.string('Ratings',
-                             'tooltip.planetsVsBattleground')}"
-                             visible="{player.planetsCount > 0
-                             || player.bgPlanetsCount > 0}"
-                             includeInLayout="{player.planetsCount > 0
-                             || player.bgPlanetsCount > 0}"/>
-
-                     <s:Label text="{player.deathDate == null ? ''
-                                 : Localizer.string('Ratings', 'label.deathDay',
-                                 [MRatingPlayer.getDays(
-                                 ML.latestGalaxy.apocalypseStartEvent.occursAt,
-                                 player.deathDate)])}"
-                              toolTip="{player.deathDate == null ? ''
-                                 : Localizer.string('Ratings', 'tooltip.deathDay',
-                                 [DateUtil.formatShortDateTime(
-                                 player.deathDate)])}"
-                              textAlign="center" visible="{player.planetsCount == 0
-                              &amp;&amp; player.bgPlanetsCount == 0}"
-                              includeInLayout="{player.planetsCount == 0
-                              &amp;&amp; player.bgPlanetsCount == 0}"
-                              styleName="unsatisfied"/>
-                     <s:layout>
-                        <s:HorizontalLayout/>
-                     </s:layout>
-                  </s:Group>
                   <s:Group width="100%">
                      <s:Label width="120" text="{Localizer.string('Ratings', 'economyPoints')}"/>
                      <s:Label text="{player.economyPoints}"/>
@@ -179,6 +155,15 @@
                         <s:HorizontalLayout/>
                      </s:layout>
                   </s:Group>
+                  <s:Group width="100%"
+                           visible="{ML.latestGalaxy.apocalypseHasStarted}"
+                           includeInLayout="{ML.latestGalaxy.apocalypseHasStarted}">
+                     <s:Label width="120" text="{Localizer.string('Ratings', 'deathDay')}"/>
+                     <s:Label text="{player.deathDayLabel}" toolTip="{player.deathDayTooltip}"/>
+                     <s:layout>
+                        <s:HorizontalLayout/>
+                     </s:layout>
+                  </s:Group>
                      <s:layout>
                         <s:VerticalLayout gap="4"/>
                      </s:layout>
@@ -199,6 +184,7 @@
                </base:AdvancedContainer>
             </s:Group>
             <base:Panel skinClass="components.skins.LargePanelSkin"
+                        id="achievementsPanel"
                         title="{Localizer.string('Players', 'title.achievements')}">
                <s:DataGroup width="100%" dataProvider="{achievements}" 
                             itemRenderer="components.achievement.IRAchievement">

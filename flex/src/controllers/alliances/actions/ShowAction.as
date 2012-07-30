@@ -37,8 +37,6 @@ package controllers.alliances.actions
             ally.totalArmyPoints += player.armyPoints;
             ally.totalEconomyPoints += player.economyPoints;
             ally.totalPoints += player.points;
-            ally.totalPlanetsCount += player.planetsCount;
-            ally.totalBgPlanetsCount += player.bgPlanetsCount;
             ally.totalVictoryPoints += player.victoryPoints;
             player.allianceOwnerId = ally.ownerId;
          }
@@ -46,8 +44,6 @@ package controllers.alliances.actions
          if (ML.latestGalaxy.apocalypseHasStarted)
          {
             ally.players.sort.fields = [
-               AllianceScreenM.planetsCountField,
-               AllianceScreenM.bgPlanetsCountField,
                AllianceScreenM.deathDayField,
                AllianceScreenM.allianceVpsField,
                AllianceScreenM.victoryPtsField,
@@ -59,8 +55,6 @@ package controllers.alliances.actions
             {
                ally.invPlayers.sort = new Sort();
                ally.invPlayers.sort.fields = [
-                  AllianceScreenM.planetsCountField,
-                  AllianceScreenM.bgPlanetsCountField,
                   AllianceScreenM.deathDayField,
                   AllianceScreenM.victoryPtsField,
                   AllianceScreenM.pointsField,
@@ -76,8 +70,6 @@ package controllers.alliances.actions
                AllianceScreenM.allianceVpsField,
                AllianceScreenM.victoryPtsField,
                AllianceScreenM.pointsField,
-               AllianceScreenM.planetsCountField,
-               AllianceScreenM.bgPlanetsCountField,
                AllianceScreenM.nameField
             ];
 
@@ -87,8 +79,6 @@ package controllers.alliances.actions
                ally.invPlayers.sort.fields = [
                   AllianceScreenM.victoryPtsField,
                   AllianceScreenM.pointsField,
-                  AllianceScreenM.planetsCountField,
-                  AllianceScreenM.bgPlanetsCountField,
                   AllianceScreenM.nameField
                ];
                ally.invPlayers.refresh();

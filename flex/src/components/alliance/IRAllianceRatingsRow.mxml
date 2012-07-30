@@ -37,10 +37,6 @@
       </s:Group>
       <s:Label text="{ally.playersCount}" width="{RatingsWidths.playersCount}" 
                textAlign="center"/>
-      <s:Label text="{ally.planetsCount}" width="{RatingsWidths.planetsCount}" 
-               textAlign="center"/>
-      <s:Label text="{ally.bgPlanetsCount}" width="{RatingsWidths.bgPlanetsCount}"
-               textAlign="center"/>
       <s:Label text="{ally.economyPoints}" width="{RatingsWidths.economyPoints}" 
                textAlign="center"/>
       <s:Label text="{ally.sciencePoints}" width="{RatingsWidths.sciencePoints}" 
