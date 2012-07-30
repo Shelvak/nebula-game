@@ -40,7 +40,9 @@ package utils
          if (sourceEvents.length == 0) {
             throw new ArgumentError("[param sourceEvents] must have at least one event");
          }
-         return new SingleBridge(this, _source, _target, sourceEvents);
+         const bridge: SingleBridge = new SingleBridge(this, _source, _target, sourceEvents);
+         _bridges.push(bridge);
+         return bridge;
       }
 
       /**

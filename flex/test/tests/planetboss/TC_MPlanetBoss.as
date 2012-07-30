@@ -15,7 +15,6 @@ package tests.planetboss
 
    import models.ModelLocator;
    import models.Owner;
-   import models.cooldown.MCooldown;
    import models.galaxy.Galaxy;
    import models.planet.MPlanet;
    import models.planet.MPlanetBoss;
@@ -27,7 +26,6 @@ package tests.planetboss
    import models.unit.RaidingUnitEntry;
 
    import org.hamcrest.Matcher;
-
    import org.hamcrest.assertThat;
    import org.hamcrest.core.not;
    import org.hamcrest.object.hasProperty;
@@ -183,12 +181,6 @@ package tests.planetboss
          assertThat(
             "changing planet.owner",
             function():void{ planet.owner = Owner.ENEMY; },
-            causesAllSpawnChangeEvents()
-         );
-
-         assertThat(
-            "changing planet.cooldown",
-            function():void{ planet.cooldown = new MCooldown(); },
             causesAllSpawnChangeEvents()
          );
 

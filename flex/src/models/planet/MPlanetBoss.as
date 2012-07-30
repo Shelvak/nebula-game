@@ -46,7 +46,7 @@ package models.planet
       public function MPlanetBoss(planet: MSSObject) {
          _planet = Objects.paramNotNull("planet", planet);
          _planetEventBridge = new EventBridge(_planet, this)
-            .onEvents([MSSObjectEvent.COOLDOWN_CHANGE, MSSObjectEvent.OWNER_CHANGE])
+            .onEvents([MSSObjectEvent.OWNER_CHANGE])
                .dispatchSimple(MPlanetBossEvent, allSpawnChangeEvents)
             .onEvents([MSSObjectEvent.SPAWN_COUNTER_CHANGE])
                .dispatchSimple(MPlanetBossEvent, [MPlanetBossEvent.UNITS_CHANGE])
@@ -170,7 +170,7 @@ package models.planet
          }
          if (_planet.owner != Owner.PLAYER
                && _planet.owner != Owner.NPC
-               && _planet.owner == Owner.ALLY) {
+               && _planet.owner != Owner.ALLY) {
             addMessage("player");
          }
          if (_planetMap != null) {

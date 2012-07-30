@@ -17,8 +17,8 @@ package tests.planetboss
    import namespaces.change_flag;
 
    import org.hamcrest.assertThat;
-   import org.hamcrest.core.not;
    import org.hamcrest.object.isFalse;
+   import org.hamcrest.object.notNullValue;
    import org.hamcrest.object.nullValue;
 
    import utils.DateUtil;
@@ -65,13 +65,13 @@ package tests.planetboss
          ssObject = newSSObject(SSObjectType.PLANET, 100);
          assertThat(
             "boss should be created for battleground planets",
-            ssObject.boss, not (nullValue())
+            ssObject.boss, notNullValue()
          );
 
          ssObject = newSSObject(SSObjectType.PLANET, 50);
          assertThat(
             "boss should be created for mini-battleground planets",
-            ssObject.boss, not (nullValue())
+            ssObject.boss, notNullValue()
          );
       }
 
