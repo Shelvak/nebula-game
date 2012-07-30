@@ -189,6 +189,13 @@ if $SPEC_INITIALIZED.nil?
       Logging::Writer.instance.level = Logging::Writer::LEVEL_DEBUG
     end
 
+    # Enable lock tracking in specs.
+    #config.around(:each) do |example|
+    #  Parts::WithLocking.track_locks = true
+    #  example.call
+    #  Parts::WithLocking::LOCK_LIST.dump
+    #end
+
     config.before(:each) do
       App.server_state = App::SERVER_STATE_INITIALIZING
       start_transaction

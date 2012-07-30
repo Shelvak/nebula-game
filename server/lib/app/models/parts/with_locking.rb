@@ -1,4 +1,7 @@
 module Parts::WithLocking
+  class LockEntry < Struct.new(:sql, :sql_comment, :backtrace)
+  end
+
   def self.locking=(value)
     Thread.current[:with_locking] = value
   end
@@ -7,8 +10,18 @@ module Parts::WithLocking
     value.nil? ? true : value
   end
 
-  def self.comment=(value)
-    Thread.current[:comment] = value
+  def self.track_locks=(value)
+    Thread.current[:track_locks] = value
+  end
+  def self.track_locks?
+    !! Thread.current[:track_locks]
+  end
+
+  def self.sql_comment=(value)
+    Thread.current[:sql_comment] = value
+  end
+  def self.sql_comment
+    Thread.current[:sql_comment]
   end
 
   def self.included(receiver)
@@ -17,13 +30,84 @@ module Parts::WithLocking
       default_scope do
         if Parts::WithLocking.locking? && connection.open_transactions > 0
           thread_name = Logging::Logger.thread_name
-          comment = "#{thread_name}: #{Thread.current[:sql_comment] || "nil"}"
-
+          comment = "#{thread_name}: #{Parts::WithLocking.sql_comment || "nil"}"
           lock(true).where("?!=''", comment)
         end
       end
     end
   end
+
+  LOCK_LIST = Class.new do
+    include MonitorMixin
+
+    def initialize
+      super
+      @locks = Hash.new { |hash, thread_name| hash[thread_name] = Set.new }
+    end
+
+    # Clears locks for current thread.
+    def clear
+      synchronize do
+        @locks.delete(Logging::Logger.thread_name)
+      end
+    end
+
+    def add(sql)
+      synchronize do
+        backtrace = caller.accept do |str|
+          str.include?("server/lib/") &&
+            !str.include?("`add_lock'") &&
+            !str.include?("parts/with_locking.rb") &&
+            !str.include?("lib/initializer.rb") &&
+            !str.include?("server/monkey_squad.rb")
+        end.map do |str|
+          str.sub(%r{^.+?/server/lib/}, "")
+        end
+
+        unless backtrace.blank?
+          lock = LockEntry.new(sql, Parts::WithLocking.sql_comment, backtrace)
+          @locks[Logging::Logger.thread_name].add(lock)
+        end
+      end
+    end
+
+    def generate
+      builder = Java::java.lang.StringBuilder.new
+      synchronize do
+        @locks.each_with_object({}) do |(thread_name, locks), hash|
+          locks.each do |lock|
+            first_backtrace_line = lock.backtrace[0]
+            hash[first_backtrace_line] ||= {}
+            hash[first_backtrace_line][thread_name] ||= []
+            hash[first_backtrace_line][thread_name] << lock
+          end
+        end.to_a.sort_by { |k, v| k }.each do
+          |first_backtrace_line, thread_locks|
+
+          builder.append("### #{first_backtrace_line} ###\n\n")
+          thread_locks.each do |thread_name, locks|
+            builder.append("## Thread name: #{thread_name} ##\n\n")
+            locks.each do |lock|
+              builder.append("SQL: #{lock.sql}\n")
+              builder.append("SQL comment: #{lock.sql_comment || "none"}\n")
+              builder.append("Backtrace:\n#{lock.backtrace.join("\n")}\n\n")
+            end
+          end
+          builder.append("\n")
+        end
+      end
+      builder.to_s
+    end
+
+    def dump
+      synchronize do
+        File.open("#{ROOT_DIR}/locks.txt", "w") do |f|
+          f.write("Generated @ #{Time.now.to_s}\n\n")
+          f.write(generate)
+        end
+      end
+    end
+  end.new
 end
 
 # Disables SQL locking for this thread in given block. Only use this on
@@ -39,65 +123,26 @@ def without_locking
   ret_value
 end
 
-### Lock tracking - for finding deadlocks in development ###
+### Lock tracking - for finding deadlocks ###
 
-#raise "This should be commented out if in production!" if App.in_production?
-#
-#module ActiveRecord::ConnectionAdapters::DatabaseStatements
-#  def select_all_with_lock_tracking(arel, *args)
-#    should_add_lock = arel.is_a?(String) \
-#      ? arel.include?("FOR UPDATE") : arel.locked
-#    Parts::WithLocking::LOCK_LIST.add if should_add_lock
-#    select_all_without_lock_tracking(arel, *args)
-#  end
-#
-#  alias_method_chain :select_all, :lock_tracking
-#end
-#
-#module Parts::WithLocking
-#  LOCK_LIST = Class.new do
-#    include MonitorMixin
-#
-#    def initialize
-#      @locks = Set.new
-#      super
-#    end
-#
-#    def add
-#      synchronize do
-#        lock = caller.accept do |str|
-#          str.include?("server/lib/") &&
-#            !str.include?("`add_lock'") &&
-#            !str.include?("parts/with_locking.rb") &&
-#            !str.include?("lib/initializer.rb") &&
-#            !str.include?("server/monkey_squad.rb")
-#        end.map do |str|
-#          str.sub(%r{^.+?/server/lib/}, "")
-#        end
-#
-#        @locks.add(lock) unless lock.blank?
-#      end
-#    end
-#
-#    def dump
-#      synchronize do
-#        File.open("#{ROOT_DIR}/locks.txt", "w") do |f|
-#          @locks.each_with_object({}) do |lock, hash|
-#            hash[lock[0]] ||= []
-#            hash[lock[0]] << lock
-#          end.to_a.sort_by { |k, v| k }.each do |key, locks|
-#            f.write("### #{key} ###\n\n")
-#            locks.each do |lock|
-#              f.write(lock.join("\n") + "\n\n")
-#            end
-#            f.write("\n")
-#          end
-#        end
-#      end
-#    end
-#  end.new
-#end
-#
-#RSpec.configure do |config|
-#  config.after(:each) { Parts::WithLocking::LOCK_LIST.dump }
-#end
+module ActiveRecord::ConnectionAdapters::DatabaseStatements
+  def select_all_with_lock_tracking(arel, *args)
+    if Parts::WithLocking.track_locks?
+      should_add_lock = sql = nil
+      if arel.is_a?(String)
+        if arel.include?("FOR UPDATE")
+          should_add_lock = true
+          sql = arel
+        end
+      else
+        should_add_lock = arel.locked
+        sql = arel.to_sql
+      end
+
+      Parts::WithLocking::LOCK_LIST.add(sql) if should_add_lock
+    end
+    select_all_without_lock_tracking(arel, *args)
+  end
+
+  alias_method_chain :select_all, :lock_tracking
+end

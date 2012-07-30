@@ -3,8 +3,8 @@ class Threading::Director::Task
     "Deadlock found when trying to get lock",
     "Lock wait timeout exceeded"
   ]
-  INFO_FROM_RETRY = 2 # From which retry should innodb info be included?
-  MAX_RETRIES = 8
+  INFO_FROM_RETRY = 12 # From which retry should innodb info be included?
+  MAX_RETRIES = 15
   SLEEP_RANGE = 100..500
 
   # Creates a task, which cannot fail and crash the worker. All exceptions are
@@ -31,10 +31,10 @@ class Threading::Director::Task
 
   # Runs this task passing it worker name.
   def run(worker_name)
-    Thread.current[:sql_comment] = @short_description || @description
+    Parts::WithLocking.sql_comment = @short_description || @description
     @block.call(worker_name)
   ensure
-    Thread.current[:sql_comment] = nil
+    Parts::WithLocking.sql_comment = nil
   end
 
   def to_s
@@ -45,23 +45,35 @@ class Threading::Director::Task
     current_retry = 0
     begin
       DispatcherEventHandler::Buffer.instance.wrap do
-        ActiveRecord::Base.transaction(:joinable => false) do
-          yield
+        ActiveRecord::Base.transaction(joinable: false) do
+          if current_retry >= INFO_FROM_RETRY
+            begin
+              old_value = Parts::WithLocking.track_locks?
+              Parts::WithLocking.track_locks = true
+              yield
+            ensure
+              Parts::WithLocking.track_locks = old_value
+            end
+          else
+            yield
+          end
         end
       end
     rescue ActiveRecord::StatementInvalid, ActiveRecord::JDBCError,
         Java::java.sql.SQLException => e
-      if current_retry >= INFO_FROM_RETRY
-        innodb_info = ActiveRecord::Base.connection.
-          select_one("SHOW ENGINE INNODB STATUS")["Status"]
-        status_line = "\n\nInnoDB status:\n#{innodb_info}"
-        log_method = :warn
-      else
-        status_line = ""
-        log_method = :info
-      end
-
       if DEADLOCK_ERRORS.any? { |err| e.message.include?(err) }
+        if current_retry >= INFO_FROM_RETRY
+          innodb_info = ActiveRecord::Base.connection.
+            select_one("SHOW ENGINE INNODB STATUS")["Status"]
+          status_line = "\n\nInnoDB status:\n#{innodb_info}\n\nServer locks:\n#{
+            Parts::WithLocking::LOCK_LIST.generate}"
+          Parts::WithLocking::LOCK_LIST.clear
+          log_method = :warn
+        else
+          status_line = ""
+          log_method = :info
+        end
+
         if current_retry < MAX_RETRIES
           current_retry += 1
 

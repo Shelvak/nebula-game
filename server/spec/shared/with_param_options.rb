@@ -1,7 +1,7 @@
 shared_examples_for "with param options" do |required_params|
   options = required_params.is_a?(Array) \
     ? {:required => required_params} \
-    : required_params
+    : required_params || {}
   options.assert_valid_keys(
     :required, :only_push, :needs_login, :needs_control_token
   )
