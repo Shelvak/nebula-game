@@ -107,6 +107,8 @@ class LocaleChecker
           puts "    * Missing key #{missing_key.inspect}. Defined in #{files}."
         end
       end
+
+      raise "Locales are not OK!"
     else
       puts "Locales are ok."
     end

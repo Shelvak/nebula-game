@@ -11,7 +11,7 @@ class Objective::Battle < Objective
   # Leave only outcomes that we want and prepare data for #count_benefits
   # here.
   def filter(outcomes_array)
-    outcomes_array[0].each_with_object({}) do
+    filtered = outcomes_array[0].each_with_object({}) do
       |(string_player_id, outcome), hash|
 
       player_id = string_player_id.to_i
@@ -19,6 +19,7 @@ class Objective::Battle < Objective
       # right.
       hash[player_id] = 1 unless player_id == 0 || outcome != self.outcome
     end
+    [filtered]
   end
 
   # Just return data that #filter has prepared for us.

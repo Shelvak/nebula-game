@@ -46,16 +46,11 @@
 
       import globalevents.GlobalEvent;
 
-      import models.ModelLocator;
-      import models.notification.MSuccessEvent;
-      import models.notification.MTimedEvent;
-
       import mx.events.FlexEvent;
 
       import utils.ApplicationLocker;
       import utils.DateUtil;
       import utils.execution.GameLogicExecutionManager;
-      import utils.locale.Localizer;
       import utils.profiler.Profiler;
 
 
@@ -68,16 +63,10 @@
          if (event.ctrlKey && event.keyCode == Keyboard.SPACE) {
             System.setClipboard(Profiler.resultsString);
          }
-         else if (event.ctrlKey && event.shiftKey
-           && event.keyCode == Keyboard.INSERT) {
-            System.setClipboard(ModelLocator.getInstance().debugLog);
-            new MSuccessEvent(Localizer.string("General", "message.copyToClipboardSuccessful"));
-         }
          else if (event.ctrlKey && event.keyCode == 144 /*NUMLOCK*/) {
             throw new Error("Dont you ever press ctrl+numlock again!");
          }
       }
-
 
       private function this_applicationCompleteHandler(event: FlexEvent): void {
          ExternalInterface.marshallExceptions = true;
@@ -91,7 +80,6 @@
          _mainTimer.start();
          _mainTimer.addEventListener(TimerEvent.TIMER, mainTimer_timerHandler);
       }
-
 
       private function stage_keyboardEventHandler(event: KeyboardEvent): void {
          EventBroker.broadcast(event);

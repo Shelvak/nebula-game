@@ -22,11 +22,15 @@
       import controllers.startup.StartupInfo;
       import controllers.startup.StartupManager;
 
+      import models.ModelLocator;
+
       import models.events.LocaleEvent;
+      import models.notification.MSuccessEvent;
       import models.tips.MTip;
 
       import mx.binding.utils.BindingUtils;
       import mx.controls.Alert;
+      import mx.core.FlexGlobals;
 
       import namespaces.client_internal;
 
@@ -49,9 +53,10 @@
             loadChecksums();
          }
          else {
-            Alert
-               .show("ExternalInterface not available: please upgrade your browser.",
-                     "Error!");
+            Alert.show(
+               "ExternalInterface not available: please upgrade your browser.",
+               "Error!"
+            );
          }
       }
 
@@ -95,6 +100,7 @@
 
       private function bundlesLoader_completeHandler(event: Event): void {
          if (_bundlesLoader.loadSuccessful) {
+            setupContextMenu();
             dispatchBundlesLoadedEvent();
             lblPleaseWait.text = getString("label.pleaseWait");
             BindingUtils.bindSetter(setLblDownloadProgressText,
@@ -121,6 +127,26 @@
          _bundlesLoader = null;
       }
 
+      // Tweak context menu items.
+      private function setupContextMenu(): void {
+         var contextMenu: ContextMenu =
+            FlexGlobals.topLevelApplication.contextMenu;
+         contextMenu.hideBuiltInItems();
+         contextMenu.builtInItems.print = false;
+         var copyLogItem: ContextMenuItem = new ContextMenuItem(
+            Localizer.string("ContextMenu", "copyLogItem")
+         );
+         contextMenu.customItems.push(copyLogItem);
+         copyLogItem.addEventListener(
+            ContextMenuEvent.MENU_ITEM_SELECT,
+            function(event: ContextMenuEvent): void {
+               System.setClipboard(ModelLocator.getInstance().debugLog);
+               new MSuccessEvent(Localizer.string(
+                  "General", "message.copyToClipboardSuccessful"
+               ));
+            }
+         );
+      }
 
       /* ############## */
       /* ### IMAGES ### */
