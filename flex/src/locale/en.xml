@@ -1166,6 +1166,12 @@
 
   <Credits>
     <title.vip value="VIP" />
+    <title.cancelVip value="Cancel VIP"/>
+    <label.cancelVip>
+      <p>Here you can cancel your VIP membership.</p>
+      <p>If you do that you will loose all unspent VIP creds.</p>
+    </label.cancelVip>
+    <label.cancelVipButton value="Cancel"/>
     <label.currentVipLvl value="You are currently VIP level {0}" />
     <label.convertRate value="You can trade {0} VIP creds for 1 cred" />
     <label.selectedConvert 
@@ -2114,6 +2120,13 @@
     <title.cancelUpgrade value="Cancel upgrade" />
     <message.cancelUpgrade
     value="Are you sure you want to cancel upgrade of this building?"/>
+
+    <title.cancelVip value="Cancel VIP" />
+    <message.cancelVip>
+      <p>Are you sure you want to cancel your VIP membership?</p>
+      <p>If you cancel your VIP membership you will loose all unspent
+         VIP creds!</p>
+    </message.cancelVip>
 
     <title.cancelConstructor value="Cancel construction" />
     <message.cancelConstructor

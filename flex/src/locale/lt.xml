@@ -1311,6 +1311,12 @@
 
   <Credits>
     <title.vip value="VIP" />
+    <title.cancelVip value="Atšaukti VIP"/>
+    <label.cancelVip>
+      <p>Čia gali atšaukti savo VIP narystę.</p>
+      <p>Atšaukęs VIP prarasi visus neišleistus VIP kredus.</p>
+    </label.cancelVip>
+    <label.cancelVipButton value="Atšaukti"/>
     <label.currentVipLvl value="Dabar tu esi {0} lygio VIP" />
     <label.convertRate value="Tu gali iškeisti {0} VIP kredų į 1 kredą" />
     <label.selectedConvert>
@@ -2241,6 +2247,12 @@
     <title.cancelUnitTraining value="Atšaukti kario apmokymus" />
     <message.cancelUnitTraining 
     value="Ar tikrai nori atšaukti šio kario apmokymus?"/>
+
+    <title.cancelVip value="Atšaukti VIP narystę" />
+    <message.cancelVip>
+      <p>Ar tikrai nori atšaukti VIP narystę?</p>
+      <p>Jei atšauksi VIP narystę prarasi visus neišnaudotus VIP kredus!</p>
+    </message.cancelVip>
     
     <title.cancelUpgrade value="Atšaukti tobulinimą" />
     <message.cancelUpgrade 
