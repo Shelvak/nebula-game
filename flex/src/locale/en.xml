@@ -1875,7 +1875,7 @@
     <label.combatLog.copyToClipboard value="Copy to clipboard" />
 
     <message.playerAttached value="You have been moved" />
-    <title.playerAttached value="Wellcome back!" />
+    <title.playerAttached value="Welcome back!" />
     <insideMessage.playerAttached>
       <p>
         As a consequence of being inactive for a while, you have been moved
