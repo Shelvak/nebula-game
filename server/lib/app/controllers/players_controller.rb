@@ -187,7 +187,6 @@ class PlayersController < GenericController
     m.player.save!
   end
 
-
   # Starts VIP status for you. This action costs creds!
   #
   # Invocation: by client
@@ -206,6 +205,19 @@ class PlayersController < GenericController
     raise GameLogicError, e.message, e.backtrace
   end
 
+  # Stops VIP status for you.
+  #
+  # Invocation: by client
+  #
+  # Parameters: None
+  #
+  ACTION_VIP = "players|vip_stop"
+
+  VIP_OPTIONS = logged_in
+  VIP_SCOPE = scope.world
+  def self.vip_stop_action(m)
+    m.player.vip_stop!
+  end
 
   # Informs client that status of player has changed.
   #

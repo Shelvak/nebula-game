@@ -357,6 +357,27 @@ describe PlayersController do
       end
     end
 
+    describe "players|vip_stop" do
+      before(:each) do
+        player.vip_level = 1
+
+        @action = "players|vip_stop"
+        @params = {}
+      end
+
+      it_behaves_like "with param options"
+      it_should_behave_like "having controller action scope"
+
+      it "should invoke vip_stop!" do
+        player.should_receive(:vip_stop!)
+        invoke @action, @params
+      end
+
+      it "should work" do
+        invoke @action, @params
+      end
+    end
+
     describe "players|status_change" do
       before(:each) do
         @action = "players|status_change"
