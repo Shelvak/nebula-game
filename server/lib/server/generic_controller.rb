@@ -47,7 +47,12 @@ class GenericController
       # Register to chat hub. This needs to be done on the same thread as
       # players|login action, because we need to ensure register has finished
       # before pushing chat|index.
-      hub.register(player)
+      #
+      # Also only register to hub if player is still connected to dispatcher.
+      # Otherwise we might register a player while he has been disconnected in
+      # dispatcher thread, which would lead to player being unable to login
+      # because of check that is done above.
+      hub.register(player) if dispatcher.player_connected?(player.id)
 
       true
     end
