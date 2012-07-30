@@ -170,7 +170,7 @@ package models.planet
          }
          if (_planet.owner != Owner.PLAYER
                && _planet.owner != Owner.NPC
-               && _planet.owner == Owner.ALLY) {
+               && _planet.owner != Owner.ALLY) {
             addMessage("player");
          }
          if (_planetMap != null) {
