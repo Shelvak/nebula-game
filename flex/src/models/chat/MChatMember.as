@@ -5,6 +5,8 @@ package models.chat
    import models.BaseModel;
    import models.chat.events.MChatMemberEvent;
 
+   import namespaces.prop_name;
+
    import utils.autocomplete.IAutoCompleteValue;
 
 
@@ -24,10 +26,9 @@ package models.chat
     */
    public class MChatMember extends BaseModel implements IAutoCompleteValue
    {
-      public function MChatMember(id: int = 0,
-                                  name: String = null,
-                                  isOnline: Boolean = false,
-                                  isIgnored: Boolean = false) {
+      public function MChatMember(
+         id: int = 0, name: String = null, isOnline: Boolean = false, isIgnored: Boolean = false)
+      {
          super();
          this.id = id;
          this.name = name;
@@ -35,6 +36,7 @@ package models.chat
          this.isIgnored = isIgnored;
       }
 
+      static prop_name const name: String = "name";
       private var _name: String;
       [Bindable(event="nameChange")]
       /**
@@ -44,8 +46,10 @@ package models.chat
        */
       public function set name(value: String): void {
          if (_name != value) {
+            const oldValue: String = _name;
             _name = value;
             dispatchSimpleEvent(MChatMemberEvent, MChatMemberEvent.NAME_CHANGE);
+            dispatchPropertyUpdateEvent(prop_name::name, value, oldValue, this);
          }
       }
       public function get name(): String {

@@ -7,6 +7,7 @@ package tests.chat.models
    import controllers.ui.NavigationController;
    
    import ext.hamcrest.events.causes;
+   import ext.hamcrest.events.event;
    import ext.hamcrest.object.equals;
 
    import models.chat.MChat;
@@ -15,9 +16,13 @@ package tests.chat.models
    import models.chat.events.MChatMemberEvent;
    import models.player.PlayerOptions;
 
+   import mx.events.PropertyChangeEvent;
+
    import namespaces.client_internal;
-   
+   import namespaces.prop_name;
+
    import org.hamcrest.assertThat;
+   import org.hamcrest.object.hasProperties;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
 
@@ -70,6 +75,23 @@ package tests.chat.models
          assertThat(
             "autoCompleteValue returns member name",
             member.autoCompleteValue, equals (member.name)
+         );
+      }
+
+      [Test]
+      public function name(): void {
+         member.name = "OldName";
+         assertThat(
+            "changing name property",
+            function():void{ member.name = "NewName" },
+            causes (member).toDispatch (
+               event (MChatMemberEvent.NAME_CHANGE),
+               event (PropertyChangeEvent.PROPERTY_CHANGE, hasProperties({
+                  "source": member,
+                  "property": MChatMember.prop_name::name,
+                  "oldValue": "OldName",
+                  "newValue": "NewName"}))
+            )
          );
       }
 
