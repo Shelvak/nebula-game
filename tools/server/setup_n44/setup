@@ -211,7 +211,7 @@ check process nebula-server with pidfile /home/spacegame/nebula-server/shared/ru
   stop program = "/home/spacegame/bin/srvrunner lib/daemon.rb stop"
     as uid #{USER} and gid #{USER}
   # However it can take a while until tcp server is ready.
-  if failed port 55345 send "?\n" expect "!\n" with timeout 120 seconds then restart
+  if failed port 55345 send "?\n" expect "!\n" with timeout 180 seconds then restart
   depends on mysql
 }
 MONIT_DELAYED_JOB = %Q{
