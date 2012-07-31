@@ -1168,8 +1168,10 @@
     <title.vip value="VIP" />
     <title.cancelVip value="Cancel VIP"/>
     <label.cancelVip>
+      <![CDATA[
       <p>Here you can cancel your VIP membership.</p>
       <p>If you do that you will loose all unspent VIP creds.</p>
+      ]]>
     </label.cancelVip>
     <label.cancelVipButton value="Cancel"/>
     <label.currentVipLvl value="You are currently VIP level {0}" />

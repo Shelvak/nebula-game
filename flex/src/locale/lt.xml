@@ -1313,8 +1313,10 @@
     <title.vip value="VIP" />
     <title.cancelVip value="Atšaukti VIP"/>
     <label.cancelVip>
+      <![CDATA[
       <p>Čia gali atšaukti savo VIP narystę.</p>
       <p>Atšaukęs VIP prarasi visus neišleistus VIP kredus.</p>
+      ]]>
     </label.cancelVip>
     <label.cancelVipButton value="Atšaukti"/>
     <label.currentVipLvl value="Dabar tu esi {0} lygio VIP" />
