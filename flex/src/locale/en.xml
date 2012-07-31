@@ -2126,8 +2126,6 @@
     <title.cancelVip value="Cancel VIP" />
     <message.cancelVip>
       <p>Are you sure you want to cancel your VIP membership?</p>
-      <p>If you cancel your VIP membership you will loose all unspent
-         VIP creds!</p>
     </message.cancelVip>
 
     <title.cancelConstructor value="Cancel construction" />

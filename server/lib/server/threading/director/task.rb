@@ -3,8 +3,8 @@ class Threading::Director::Task
     "Deadlock found when trying to get lock",
     "Lock wait timeout exceeded"
   ]
-  INFO_FROM_RETRY = 12 # From which retry should innodb info be included?
-  MAX_RETRIES = 15
+  INFO_FROM_RETRY = 10 # From which retry should innodb info be included?
+  MAX_RETRIES = 12
   SLEEP_RANGE = 100..500
 
   # Creates a task, which cannot fail and crash the worker. All exceptions are
@@ -67,7 +67,6 @@ class Threading::Director::Task
             select_one("SHOW ENGINE INNODB STATUS")["Status"]
           status_line = "\n\nInnoDB status:\n#{innodb_info}\n\nServer locks:\n#{
             Parts::WithLocking::LOCK_LIST.generate}"
-          Parts::WithLocking::LOCK_LIST.clear
           log_method = :warn
         else
           status_line = ""
@@ -97,6 +96,8 @@ class Threading::Director::Task
       else
         raise e
       end
+    ensure
+      Parts::WithLocking::LOCK_LIST.clear
     end
   end
 end

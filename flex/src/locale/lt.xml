@@ -2253,7 +2253,6 @@
     <title.cancelVip value="Atšaukti VIP narystę" />
     <message.cancelVip>
       <p>Ar tikrai nori atšaukti VIP narystę?</p>
-      <p>Jei atšauksi VIP narystę prarasi visus neišnaudotus VIP kredus!</p>
     </message.cancelVip>
     
     <title.cancelUpgrade value="Atšaukti tobulinimą" />
