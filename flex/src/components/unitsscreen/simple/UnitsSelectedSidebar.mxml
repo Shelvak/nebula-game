@@ -114,6 +114,9 @@
                   visible="{US.currentKind == UnitKind.MOVING}"/>
          <base:Warning top="20" text="{getText('label.notYours')}" 
                        visible="{(US.owner != Owner.PLAYER)}"/>
+
+         <unitsscreen:ClaimEnemyUnitsPanel width="100%"/>
+
          <base:AdvancedContainer visible="{US.owner == Owner.PLAYER 
                                  &amp;&amp; US.currentKind != UnitKind.MOVING}">
             <base:Panel width="100%" title="{getText('label.select')}">
@@ -124,29 +127,7 @@
                <s:Button label="{getText('label.none')}" click="selectNone()"/>
             </base:Panel>
 
-            <base:Panel width="100%" title="{getText('label.autoLoad')}"
-              visible="{US.selectedTransporters.length > 0}">
-              <base:layout>
-                 <s:VerticalLayout gap="10" horizontalAlign="center"/>
-              </base:layout>
-              <s:Group visible="{ML.player.vipLevel > 0}" width="100%"
-                        includeInLayout="{ML.player.vipLevel > 0}">
-                <s:layout>
-                   <s:HorizontalLayout gap="10" horizontalAlign="center"/>
-                </s:layout>
-                <s:Button label="{getText('label.openAutoLoad.load')}"
-                          click="NavigationController.getInstance().showAutoLoad(
-                            US.location, null, US.selectedTransporters)"/>
-                <s:Button label="{getText('label.openAutoLoad.unload')}"
-                          click="NavigationController.getInstance().showAutoLoad(
-                            null, US.location, US.selectedTransporters)"/>
-              </s:Group>
-              <s:Group width="100%" visible="{ML.player.vipLevel == 0}"
-                       includeInLayout="{ML.player.vipLevel == 0}">
-                <s:Label text="{getText('label.autoLoadOnlyVip')}"
-                         left="6" right="6" color="#eec500"/>
-              </s:Group>
-            </base:Panel>
+            <unitsscreen:AutoLoadPanel width="100%"/>
             
             <base:Panel width="100%" title="{getText('label.setStance')}"
                         visible="{US.selection.length > 0}">

@@ -315,7 +315,7 @@ package controllers.startup
       private static function bindDailyBonusCommands() : void
       {
          bindPair(DailyBonusCommand.SHOW, new controllers.dailybonus.actions.ShowAction());
-         bindPair(DailyBonusCommand.CLAIM, new ClaimAction());
+         bindPair(DailyBonusCommand.CLAIM, new controllers.dailybonus.actions.ClaimAction());
       }
       private static function bindRoutesCommands() : void
       {
@@ -350,6 +350,7 @@ package controllers.startup
          bindPair(UnitsCommand.MOVEMENT_PREPARE, new MovementPrepareAction());
          bindPair(UnitsCommand.MOVE_META, new MoveMetaAction());
          bindPair(UnitsCommand.POSITIONS, new PositionsAction());
+         bindPair(UnitsCommand.CLAIM, new controllers.units.actions.ClaimAction());
       }
       private static function bindObjectsCommands() : void
       {
