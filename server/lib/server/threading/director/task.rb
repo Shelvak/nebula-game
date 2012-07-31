@@ -3,8 +3,8 @@ class Threading::Director::Task
     "Deadlock found when trying to get lock",
     "Lock wait timeout exceeded"
   ]
-  INFO_FROM_RETRY = 12 # From which retry should innodb info be included?
-  MAX_RETRIES = 15
+  INFO_FROM_RETRY = 10 # From which retry should innodb info be included?
+  MAX_RETRIES = 12
   SLEEP_RANGE = 100..500
 
   # Creates a task, which cannot fail and crash the worker. All exceptions are
