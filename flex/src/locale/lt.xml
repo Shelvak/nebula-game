@@ -5098,6 +5098,14 @@
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
+    <title.claimUnits value="Karių permėmimas"/>
+    <label.claimUnits value="Gali perimti nekovojančius karius."/>
+    <label.claimPopulationIncrease
+      value="Perėmus karius tavo populiacija padidės {0}"/>
+    <label.claimCooldownEnabled
+      value="Tu negali perimti karių kol planetoje yra mūšio pertrauka."/>
+    <label.buttonClaimUnits value="Perimti"/>
+
     <label.showNpc value="Rodyti"/>
 
     <tooltip.willBeQueued>

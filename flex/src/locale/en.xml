@@ -4978,6 +4978,15 @@
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
 
+    <title.claimUnits value="Claim units"/>
+    <label.claimUnits value="You can claim non-combat units here."/>
+    <label.claimPopulationIncrease
+      value="Your population will increase by {0} if you claim these units"/>
+    <label.claimCooldownEnabled>
+      You can't claim units while there is battle cooldown active in planet.
+    </label.claimCooldownEnabled>
+    <label.buttonClaimUnits value="Claim"/>
+
     <label.showNpc value="Show"/>
 
     <tooltip.willBeQueued>

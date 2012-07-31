@@ -18,8 +18,13 @@
            fontWeight="bold"
            styleName="{getPopulation(US.selection) + ML.player.population >
                        ML.player.populationMax? 'unsatisfied': null}"/>
+  <base:Warning text="{getText('label.claimCooldownEnabled')}"
+                 visible="{ML.latestPlanet != null
+                 &amp;&amp; ML.latestPlanet.ssObject.cooldown != null}"/>
   <s:Button label="{getText('label.buttonClaimUnits')}"
              click="claimConfirm(event)"
+             enabled="{ML.latestPlanet != null
+             &amp;&amp; ML.latestPlanet.ssObject.cooldown == null}"
              skinClass="components.skins.YellowButtonSkin"/>
   <fx:Script><![CDATA[
     import components.popups.ActionConfirmationPopUp;
