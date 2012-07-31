@@ -67,7 +67,6 @@ class Threading::Director::Task
             select_one("SHOW ENGINE INNODB STATUS")["Status"]
           status_line = "\n\nInnoDB status:\n#{innodb_info}\n\nServer locks:\n#{
             Parts::WithLocking::LOCK_LIST.generate}"
-          Parts::WithLocking::LOCK_LIST.clear
           log_method = :warn
         else
           status_line = ""
@@ -97,6 +96,8 @@ class Threading::Director::Task
       else
         raise e
       end
+    ensure
+      Parts::WithLocking::LOCK_LIST.clear
     end
   end
 end
