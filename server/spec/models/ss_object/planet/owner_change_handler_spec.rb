@@ -257,6 +257,16 @@ describe SsObject::Planet::OwnerChangeHandler do
       end.should change(player, :call).from([@old]).to([@new])
     end
 
+    it "should unhide hidden units" do
+      @transporter.hidden = true
+      @transporter.save!
+
+      lambda do
+        @handler.handle!
+        @transporter.reload
+      end.should change(@transporter, :hidden?).from(true).to(false)
+    end
+
     it "should take population from old player" do
       @old.recalculate_population
       lambda do

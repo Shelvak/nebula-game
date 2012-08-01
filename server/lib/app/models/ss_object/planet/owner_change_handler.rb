@@ -86,6 +86,8 @@ private
   def handle_units!
     changed = units.each_with_object([]) do |unit, array|
       unit.player = @new_player
+      # Unhide units to prevent passing them around between players.
+      unit.hidden = false
       array << unit
 
       if unit.transporter?
