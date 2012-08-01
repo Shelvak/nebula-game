@@ -880,7 +880,10 @@ package models.unit
 
       public function confirmClaim():void
       {
-         new UnitsCommand(UnitsCommand.CLAIM, {'unitIds': selectionIds}).dispatch();
+         new UnitsCommand(UnitsCommand.CLAIM, {
+            'unitIds': selectionIds,
+            'planetId': ML.latestPlanet.id
+         }).dispatch();
          deselectUnits();
       }
       
