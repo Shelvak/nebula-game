@@ -128,21 +128,6 @@ describe Player do
       end.should change(player, :alliance_vps).by(100)
     end
 
-    describe "finishing galaxy" do
-      it "should check it if vps were updated" do
-        player.victory_points += 100
-        player.galaxy.should_receive(:check_if_finished!).
-          with(player.victory_points)
-        player.save!
-      end
-
-      it "should not check it if vps were not updated" do
-        player.war_points += 1000
-        player.galaxy.should_not_receive(:check_if_finished!)
-        player.save!
-      end
-    end
-
     describe "finished galaxy" do
       before(:each) do
         player.galaxy.apocalypse_start = 10.days.from_now

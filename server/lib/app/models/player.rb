@@ -536,14 +536,10 @@ class Player < ActiveRecord::Base
       hub.on_language_change(self) if language_changed?
     end
 
-    if victory_points_changed?
-      galaxy.check_if_finished!(victory_points)
-
-      unless alliance.nil?
-        old, new = victory_points_change
-        alliance.victory_points += new - old
-        alliance.save!
-      end
+    if victory_points_changed? && ! alliance.nil?
+      old, new = victory_points_change
+      alliance.victory_points += new - old
+      alliance.save!
     end
 
     galaxy.check_if_apocalypse_finished! if dead_changed? && dead?
