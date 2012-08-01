@@ -31,7 +31,7 @@
          <s:HorizontalLayout gap="1" verticalAlign="middle"/>
       </s:layout>
       <s:Label text="#" width="{RatingsWidths.rank}" textAlign="center"/>
-      <s:Label width="{RatingsWidths.player}" 
+      <s:Label width="{RatingsWidths.player + RatingsWidths.vipStatus}"
                text="{Localizer.string('Alliances', 'label.total', 
                [alliance.players.length])}" textAlign="center"/>
       <s:Label text="{alliance.totalEconomyPoints}" width="{RatingsWidths.economyPoints}" 
