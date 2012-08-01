@@ -1932,6 +1932,11 @@
       <p>Buildings deactivated due to insufficient energy.</p>
     </message.buildingsDeactivated>
 
+    <title.unitsClaimed value="Units claimed" />
+    <message.unitsClaimed>
+      <p>Player "{0}" has claimed your non-combat units in his planet!</p>
+    </message.unitsClaimed>
+
     <title.planetBossSpawn value="Alien challenged" />
     <message.planetBossSpawn>
       <p>An alien has been challenged in your planet {0}</p>
@@ -4978,6 +4983,15 @@
     <property.population value="Population" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
+
+    <title.claimUnits value="Claim units"/>
+    <label.claimUnits value="You can claim non-combat units here."/>
+    <label.claimPopulationIncrease
+      value="Your population will increase by {0} if you claim these units"/>
+    <label.claimCooldownEnabled>
+      You can't claim units while there is battle cooldown active in planet.
+    </label.claimCooldownEnabled>
+    <label.buttonClaimUnits value="Claim"/>
 
     <label.showNpc value="Show"/>
 

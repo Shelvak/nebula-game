@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<base:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+            xmlns:base="components.base.*"
+            xmlns:s="library://ns.adobe.com/flex/spark"
+            title="{getText('label.autoLoad')}"
+            visible="{US.selectedTransporters.length > 0}">
+  <base:layout>
+     <s:VerticalLayout gap="10" horizontalAlign="center"/>
+  </base:layout>
+  <s:Group visible="{ML.player.vipLevel > 0}" width="100%"
+            includeInLayout="{ML.player.vipLevel > 0}">
+    <s:layout>
+       <s:HorizontalLayout gap="10" horizontalAlign="center"/>
+    </s:layout>
+    <s:Button label="{getText('label.openAutoLoad.load')}"
+              click="NavigationController.getInstance().showAutoLoad(
+                US.location, null, US.selectedTransporters)"/>
+    <s:Button label="{getText('label.openAutoLoad.unload')}"
+              click="NavigationController.getInstance().showAutoLoad(
+                null, US.location, US.selectedTransporters)"/>
+  </s:Group>
+  <s:Group width="100%" visible="{ML.player.vipLevel == 0}"
+           includeInLayout="{ML.player.vipLevel == 0}">
+    <s:Label text="{getText('label.autoLoadOnlyVip')}"
+             left="6" right="6" color="#eec500"/>
+  </s:Group>
+  <fx:Script><![CDATA[
+    import controllers.ui.NavigationController;
+
+    import models.unit.MCUnitScreen;
+
+    import utils.locale.Localizer;
+
+    [Bindable]
+    private var US: MCUnitScreen = MCUnitScreen.getInstance();
+
+    private function getText(prop: String, params: Array = null): String {
+       return Localizer.string('Units', prop, params);
+    }
+    ]]></fx:Script>
+</base:Panel>

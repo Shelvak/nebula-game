@@ -2065,6 +2065,12 @@
       <p>Kai kurie pastatai buvo išjungti dėl energijos stygiaus.</p>
     </message.buildingsDeactivated>
 
+    <title.unitsClaimed value="Kariai perimti" />
+    <message.unitsClaimed>
+      <p>Žaidėjas "{0}" perėmė tavo ne kovinius karius esančius jo
+        planetoje!</p>
+    </message.unitsClaimed>
+
     <title.planetBossSpawn value="Ateiviams mestas iššūkis" />
     <message.planetBossSpawn>
       <p>Tavo planetoje {0} buvo mestas iššūkis ateiviams</p>
@@ -5098,6 +5104,14 @@
     <property.population value="Populiacija" />
     <property.vpsOnDamage ref="Buildings/property.vpsOnDamage" />
     <property.credsForKilling ref="Buildings/property.credsForKilling" />
+
+    <title.claimUnits value="Karių permėmimas"/>
+    <label.claimUnits value="Gali perimti nekovojančius karius."/>
+    <label.claimPopulationIncrease
+      value="Perėmus karius tavo populiacija padidės {0}"/>
+    <label.claimCooldownEnabled
+      value="Tu negali perimti karių kol planetoje yra mūšio pertrauka."/>
+    <label.buttonClaimUnits value="Perimti"/>
 
     <label.showNpc value="Rodyti"/>
 

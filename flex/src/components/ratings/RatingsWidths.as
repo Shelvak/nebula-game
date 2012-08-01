@@ -17,7 +17,7 @@ package components.ratings
       public static const points: int = 80;
       public static const action: int = 210;
       
-      public static const totalWidth: int = rank + player
+      public static const totalWidth: int = rank + player + vipStatus +
               economyPoints + sciencePoints + armyPoints +
               warPoints + victoryPoints + allianceVictoryPoints + points + action;
    }

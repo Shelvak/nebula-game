@@ -23,6 +23,8 @@ package controllers.units
       public static const UNLOAD: String = "units|unload";
       
       public static const SHOW: String = "units|show";
+
+      public static const CLAIM: String = "units|claim";
       
       public static const DISMISS: String = "units|dismiss";
       

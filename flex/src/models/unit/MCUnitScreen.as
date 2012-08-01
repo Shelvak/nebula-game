@@ -877,6 +877,12 @@ package models.unit
          }
          deselectUnits();
       }
+
+      public function confirmClaim():void
+      {
+         new UnitsCommand(UnitsCommand.CLAIM, {'unitIds': selectionIds}).dispatch();
+         deselectUnits();
+      }
       
       public function selectAll(): void
       {
