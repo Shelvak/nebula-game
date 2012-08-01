@@ -2372,7 +2372,7 @@
 
     <title.noConnection value="Ryšys nutrūko!" />
     <message.noConnection>
-      <p>Su serveriu nutrūko ryšys. Paspausk „{0}“ kad prisijungti iš naujo.</p>
+      <p>Su serveriu nutrūko ryšys. Paspausk „{0}“ kad prisijungtum iš naujo.</p>
       <p>[reference:lookIntoForum]</p>
     </message.noConnection>
 
