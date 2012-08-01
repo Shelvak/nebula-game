@@ -25,8 +25,8 @@ package controllers.objects.actions.customcontrollers
       }
       
       private const NPC_PLAYER:PlayerMinimal = new PlayerMinimal();
-      private var ORDERS_CTRL:OrdersController = OrdersController.getInstance();
-      private var SQUADS_CTRL:SquadronsController = SquadronsController.getInstance();
+      private var ORDERS_CTRL: OrdersController = OrdersController.getInstance();
+      private var SQUADS_CTRL: SquadronsController = SquadronsController.getInstance();
       
       
       public function UnitController() {

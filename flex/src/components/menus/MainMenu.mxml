@@ -327,17 +327,25 @@
                   <s:HorizontalLayout paddingLeft="6" paddingTop="10"/>
                </s:layout>
             </s:Group>
-            <s:Group toolTip="{Localizer.string('Credits', 'label.credsTooltip', [ML.player.freeCreds])}">
-               <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.creds')) + ':'}" 
+            <s:Group toolTip="{Localizer.string('Credits', 'tooltip.freeCreds')}">
+               <s:Label text="{Localizer.string('Credits','label.freeCreds') + ':'}"
                         width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
                         color="#eec500"/>
-               <s:Label text="{ML.player.creds - ML.player.vipCreds}"/>
+               <s:Label text="{ML.player.freeCreds}"/>
                <s:layout>
                   <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
                </s:layout>
             </s:Group>
-            <s:Group visible="{ML.player.vipLevel > 0}"
-                     toolTip="{Localizer.string('Credits', 'label.credsTooltip', [ML.player.freeCreds])}">
+            <s:Group>
+               <s:Label text="{Localizer.string('Credits','label.pureCreds') + ':'}"
+                        width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
+                        color="#eec500"/>
+               <s:Label text="{ML.player.pureCreds}"/>
+               <s:layout>
+                  <s:HorizontalLayout paddingLeft="6" paddingTop="3"/>
+               </s:layout>
+            </s:Group>
+            <s:Group>
                <s:Label text="{StringUtil.firstToUpperCase(Localizer.string('Credits','label.credsSum')) + ':'}" 
                         width="{int(Localizer.string('MainMenu', 'panelWidth'))}"
                         color="#eec500"/>

@@ -1369,13 +1369,14 @@
     </tooltip.nextVipTick>
     <label.vipEndsIn value="VIP baigsis už" />
     <label.vipCreds value="VIP kredų" />
+    <label.freeCreds value="Nemokami kredai"/>
+    <label.pureCreds value = "Mokami kredai"/>
     <label.creds value="kredų" />
-    <!-- {0} amount of free creds -->
-    <label.credsTooltip>
-      <p>Iš kurių {0} yra gauti nemokamai (iš užduočių ar kitų žaidime atliktų
-        veiksmų, išskyrus turgaus pirkimus ir pardavimus).</p>
+    <tooltip.freeCreds>
+      <p>Šie kredai gauti nemokamai: iš užduočių ar kitų žaidime atliktų
+        veiksmų, išskyrus turgaus pirkimus ir pardavimus.</p>
       <p>Nemokamai gautų kredų negali naudoti turguje.</p>
-    </label.credsTooltip>
+    </tooltip.freeCreds>
     <label.waitingCreds value="Laukiama kredų..." />
     <label.instant value="Iš karto" />
     <label.confirm value="Patvirtinti" />
@@ -1863,7 +1864,7 @@
     <label.inviteFriend value="Pakviesk draugą"/>
     <label.entireGalaxy value="Visa galaktika"/>
     <tooltip.version value="Žaidimo versija" />
-    <panelWidth value="95" />
+    <panelWidth value="110" />
   </MainMenu>
 
   <MapViewportControls>
