@@ -320,7 +320,7 @@ class SsObject::Planet < SsObject
 
     grouped = units.group_by(&:player_id)
     units.each { |u| u.player_id = player_id }
-    BulkSql::Unit.save(units)
+    Unit.save_all_units(units)
     # Filter out NPC player.
     player_ids = ([player_id] + grouped.keys).compact
     Player.find(player_ids).each(&:recalculate_population!) \
