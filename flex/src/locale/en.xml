@@ -1226,8 +1226,9 @@
     <label.creds value="creds" />
     <!-- {0} amount of free creds -->
     <label.credsTooltip>
-      <p>{0} of them are quest rewards.</p>
-      <p>Creds received from quest rewards cannot be used in market.</p>
+      <p>{0} of them are free creds (from quest rewards or other in-game
+        activities, except market transactions).</p>
+      <p>Free creds cannot be used in market.</p>
     </label.credsTooltip>
     <label.waitingCreds value="Waiting for creds..." />
     <label.instant value="Instant" />

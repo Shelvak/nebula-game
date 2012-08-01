@@ -927,7 +927,7 @@ describe Combat do
   end
 
   describe "creds for killing" do
-    it "should give them for killing the unit" do
+    it "should give free creds for killing the unit" do
       player = nil
       assets = CombatDsl.new do
         location(:solar_system)
@@ -938,10 +938,10 @@ describe Combat do
       notification_id = assets.notification_ids[player.id]
       notification = Notification.find(notification_id)
 
-      [
-        notification.params['statistics'][Combat::STATS_CREDS_ATTR],
-        player.creds
-      ].should_not == [0, 0]
+      creds = notification.params['statistics'][Combat::STATS_CREDS_ATTR]
+      creds.should_not == 0
+      player.reload
+      [player.free_creds, player.pure_creds].should == [creds, 0]
     end
 
     it "should not give them for harming the unit" do

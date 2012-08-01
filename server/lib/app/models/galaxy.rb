@@ -312,7 +312,7 @@ class Galaxy < ActiveRecord::Base
           (player.alliance_vps / 2)
         added_creds = personal_creds + alliance_vps_per_player
         unless added_creds == 0
-          player.creds += added_creds
+          player.pure_creds += added_creds
           player.save!
           Notification.create_for_vps_to_creds_conversion(
             player.id, personal_creds, total_alliance_vps,
@@ -324,7 +324,7 @@ class Galaxy < ActiveRecord::Base
 
     players.where(:alliance_id => nil).find_each do |player|
       unless player.victory_points == 0
-        player.creds += player.victory_points
+        player.pure_creds += player.victory_points
         player.save!
         Notification.create_for_vps_to_creds_conversion(
           player.id, player.victory_points, nil, nil

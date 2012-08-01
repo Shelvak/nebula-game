@@ -20,7 +20,7 @@ class Building::NpcHall < Building
     player = planet.player
     if player
       player.victory_points += property('victory_points')
-      player.creds += property('creds')
+      player.free_creds += property('creds')
       player.save!
     end
 

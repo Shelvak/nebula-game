@@ -334,7 +334,7 @@ describe SsObject::Planet::OwnerChangeHandler do
       lambda do
         @handler.handle!
         @old.reload
-      end.should change(@old, :creds).by(@offers.sum(&:from_amount))
+      end.should change(@old, :pure_creds).by(@offers.sum(&:from_amount))
     end
 
     it "should destroy those offers" do

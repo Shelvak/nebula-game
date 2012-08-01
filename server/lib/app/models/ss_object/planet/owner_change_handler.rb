@@ -161,7 +161,7 @@ private
     MarketOffer.
       where(:planet_id => @planet.id, :from_kind => MarketOffer::KIND_CREDS).
       each do |market_offer|
-        @old_player.creds += market_offer.from_amount
+        @old_player.pure_creds += market_offer.from_amount
         market_offer.destroy!
       end
   end

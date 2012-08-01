@@ -299,7 +299,7 @@ describe Galaxy do
       @allies.each do |player|
         old_creds = player.creds
         player.reload
-        player.creds.should == old_creds +
+        player.pure_creds.should == old_creds +
           (player.victory_points - player.alliance_vps) +
           (player.alliance_vps / 2) + @alliance_per_player_creds
       end
