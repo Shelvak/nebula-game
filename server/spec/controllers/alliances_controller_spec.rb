@@ -75,6 +75,14 @@ describe AlliancesController do
       player.alliance.owner_id.should == player.id
     end
 
+    it "should set #victory_points to Player#victory_points" do
+      player.victory_points = 12312
+      player.save!
+      invoke @action, @params
+      player.reload
+      player.alliance.victory_points.should == player.victory_points
+    end
+
     it "should call #accept on alliance with owner" do
       alliance = Factory.build(:alliance, :owner => player)
       Alliance.should_receive(:new).and_return(alliance)

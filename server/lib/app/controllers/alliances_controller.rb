@@ -25,8 +25,8 @@ class AlliancesController < GenericController
         where("level > 0").exists?
 
     alliance = Alliance.new(
-      :name => m.params['name'], :galaxy_id => m.player.galaxy_id,
-      :owner_id => m.player.id
+      name: m.params['name'], galaxy_id: m.player.galaxy_id,
+      owner_id: m.player.id, victory_points: m.player.victory_points
     )
     alliance.save!
     alliance.accept(m.player)
