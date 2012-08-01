@@ -766,4 +766,30 @@ describe Notification do
       ).params['planet'].should == @planet.client_location.as_json
     end
   end
+
+  describe ".create_for_units_claimed" do
+    before(:all) do
+      @planet = Factory.create(:planet_with_player)
+      @player_id = Factory.create(:player).id
+
+      @event = Notification::EVENT_UNITS_CLAIMED
+      @method = :create_for_units_claimed
+      @unit_counts = {"Trooper" => 5, "Shocker" => 10}
+      @args = [@player_id, @planet, @unit_counts]
+    end
+
+    it_behaves_like "create for"
+
+    it "should have :planet" do
+      Notification.send(
+        @method, *@args
+      ).params['planet'].should == @planet.client_location.as_json
+    end
+
+    it "should have :unit_counts" do
+      Notification.send(
+        @method, *@args
+      ).params['unit_counts'].should == @unit_counts.as_json
+    end
+  end
 end

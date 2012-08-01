@@ -1225,6 +1225,9 @@ describe UnitsController do
       ]
     end
 
+    it_behaves_like "with param options"
+    it_should_behave_like "having controller action scope"
+
     it "should include positions for friendly units" do
       invoke @action, @params
       response_should_include(
@@ -1267,6 +1270,37 @@ describe UnitsController do
       response_should_include(
         :players => Player.minimal_from_objects(@units)
       )
+    end
+  end
+
+  describe "units|claim" do
+    let(:planet) { Factory.create(:planet, player: player) }
+    let(:units) { Array.new(5) { Factory.create!(:u_mdh, location: planet) } }
+    let(:unit_ids) { units.map(&:id) }
+
+    before(:each) do
+      @action = UnitsController::ACTION_CLAIM
+      @params = {'planet_id' => planet.id, 'unit_ids' => unit_ids}
+    end
+
+    it_behaves_like "with param options", %w{planet_id unit_ids}
+    it_should_behave_like "having controller action scope"
+
+    it "should fail if planet does not belong to player" do
+      planet.update_row! player_id: Factory.create(:player).id
+      lambda do
+        invoke @action, @params
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should invoke #claim_for_owner! on planet" do
+      SsObject::Planet.stub_chain(:where, :find).and_return(planet)
+      planet.should_receive(:claim_for_owner!).with(unit_ids)
+      invoke @action, @params
+    end
+
+    it "should work" do
+      invoke @action, @params
     end
   end
 end

@@ -33,6 +33,12 @@ class Unit < ActiveRecord::Base
     where("level > 0 AND `type` NOT IN (?) AND #{not_hidden_condition}",
           non_combat_types)
   }
+
+  scope :non_combat, proc {
+    where(
+      "level > 0 AND (`type` IN (?) OR #{hidden_condition})", non_combat_types
+    )
+  }
   
   # Regexp used to match building guns in config.
   GUNS_REGEXP = /^units\.(.+?)\.guns$/

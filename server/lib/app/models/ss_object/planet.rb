@@ -307,6 +307,29 @@ class SsObject::Planet < SsObject
     )
   end
 
+  # Claim given units that are in this planet and give them to planet owner.
+  # Recalculates population of all affected players.
+  def claim_for_owner!(unit_ids)
+    typesig binding, Array
+
+    raise GameLogicError,
+      "Cannot claim units for owner while cooldown is active!" \
+      unless Cooldown.for_planet(self).nil?
+
+    units = Unit.non_combat.where(location_ss_object_id: id).find(unit_ids)
+
+    grouped = units.group_by(&:player_id)
+    units.each { |u| u.player_id = player_id }
+    BulkSql::Unit.save(units)
+    Player.find([player_id] + grouped.keys).each(&:recalculate_population!)
+
+    grouped.each do |player_id, player_units|
+      counts = player_units.grouped_counts(&:type)
+
+      Notification.create_for_units_claimed(player_id, self, counts)
+    end
+  end
+
 private
 
   # Set #owner_changed.

@@ -630,7 +630,7 @@ class UnitsController < GenericController
   # - positions (Unit#positions): unit positions for friendly units.
   # - players (Player#minimal_from_objects): minimal players hash
   #
-  ACTION_POSITIONS = 'unit|positions'
+  ACTION_POSITIONS = 'units|positions'
 
   POSITIONS_OPTIONS = logged_in
   POSITIONS_SCOPE = scope.world
@@ -649,6 +649,30 @@ class UnitsController < GenericController
         :positions => positions,
         :players => players
     end
+  end
+
+  # Claim non-player non-combat units in player planet and turn them into player
+  # units.
+  #
+  # Cannot be done if there is cooldown in a planet, to prevent player from
+  # claiming & dismissing non-combat units during struggle for the planet.
+  #
+  # Parameters:
+  # - planet_id (Fixnum) - planet id where units are located
+  # - unit_ids (Fixnum[]) - unit ids that we should claim
+  #
+  # Response: None.
+  ACTION_CLAIM = 'units|claim'
+
+  CLAIM_OPTIONS = logged_in + required(planet_id: Fixnum, unit_ids: Array)
+  CLAIM_SCOPE = scope.world
+  def self.claim_action(m)
+    planet = without_locking do
+      SsObject::Planet.
+        where(player_id: m.player.id).find(m.params['planet_id'])
+    end
+
+    planet.claim_for_owner!(m.params['unit_ids'])
   end
 
   class << self

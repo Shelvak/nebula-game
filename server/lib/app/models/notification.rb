@@ -18,6 +18,7 @@
 # * Notification#create_for_player_attached
 # * Notification#create_for_ally_planet_boss_spawn
 # * Notification#create_for_ally_planet_reinitiate_combat
+# * Notification#create_for_units_claimed
 #
 class Notification < ActiveRecord::Base
   DScope = Dispatcher::Scope
@@ -73,6 +74,8 @@ class Notification < ActiveRecord::Base
   EVENT_ALLY_PLANET_BOSS_SPAWN = 16
   # Alliance member has reinitiated combat in your planet.
   EVENT_ALLY_PLANET_REINITIATE_COMBAT = 17
+  # Non-combat units claimed in other planet.
+  EVENT_UNITS_CLAIMED = 18
 
   serialize :params, JSON
   default_scope order("`read` ASC, `created_at` DESC")
@@ -620,6 +623,30 @@ class Notification < ActiveRecord::Base
       :params => {
         :reinitiator => reinitiator.as_json(mode: :minimal),
         :planet => planet.client_location.as_json
+      }
+    )
+    model.save!
+
+    model
+  end
+
+  # EVENT_UNITS_CLAIMED = 18
+  #
+  # params => {
+  #   # Planet in which combat was reinitiated.
+  #   :planet => ClientLocation#as_json,
+  #   # How much of which units were claimed.
+  #   :unit_counts => {type (String, e.g. Trooper) => count (Fixnum)}
+  # }
+  def self.create_for_units_claimed(player_id, planet, unit_counts)
+    typesig binding, Fixnum, SsObject::Planet, Hash
+
+    model = new(
+      event: EVENT_UNITS_CLAIMED,
+      player_id: player_id,
+      params: {
+        planet: planet.client_location.as_json,
+        unit_counts: unit_counts
       }
     )
     model.save!

@@ -1469,4 +1469,84 @@ describe SsObject::Planet do
       planet.spawn_boss!
     end
   end
+
+  describe "#claim_for_owner!" do
+    let(:player) { Factory.create(:player) }
+    let(:other_players) { Array.new(3) { Factory.create(:player) } }
+    let(:planet) { Factory.create(:planet, player: player) }
+    let(:units) do
+      Array.new(10) do |i|
+        Factory.create!(:u_mdh, opts_built + {
+          player: other_players[i % other_players.size], location: planet
+        })
+      end
+    end
+    let(:grouped_units) { units.group_by(&:player_id) }
+    let(:unit_ids) { units.map(&:id) }
+
+    it "should fail if cooldown exists in planet" do
+      Factory.create(:cooldown, location: planet)
+      lambda do
+        planet.claim_for_owner!(unit_ids)
+      end.should raise_error(GameLogicError)
+    end
+    
+    it "should fail if any combat unit ids are given" do
+      units << Factory.create(:u_trooper, opts_built + {
+        player: other_players.last, location: planet
+      })
+      lambda do
+        planet.claim_for_owner!(unit_ids)
+      end.should raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "should change #player_id for mentioned units" do
+      unit_player_ids = lambda do
+        units.map { |u| u.reload.player_id }.uniq
+      end
+
+      lambda do
+        planet.claim_for_owner!(unit_ids)
+      end.should change(unit_player_ids, :call).to([planet.player_id])
+    end
+
+    it "should not change #player_id for unmentioned units" do
+      unit = units.last
+      unit_ids.pop
+
+      lambda do
+        planet.claim_for_owner!(unit_ids)
+        unit.reload
+      end.should_not change(unit, :player_id)
+    end
+
+    it "should recalculate population of affected players" do
+      total = 0
+      pops = grouped_units.each_with_object({}) do |(player_id, units), hash|
+        hash[player_id] = units.map(&:population).sum
+        total += hash[player_id]
+      end
+
+      population = lambda do
+        ([player] + other_players).map { |p| p.reload.population }
+      end
+
+      ([player] + other_players).each(&:recalculate_population!)
+      old_pop = [0] + other_players.map { |player| pops[player.id] }
+      new_pop = [total] + Array.new(other_players.size, 0)
+
+      lambda do
+        planet.claim_for_owner!(unit_ids)
+      end.should change(population, :call).from(old_pop).to(new_pop)
+    end
+
+    it "should create notifications for old owners" do
+      grouped_units.each do |player_id, units|
+        counts = units.grouped_counts(&:type)
+        Notification.should_receive(:create_for_units_claimed).
+          with(player_id, planet, counts)
+      end
+      planet.claim_for_owner!(unit_ids)
+    end
+  end
 end
