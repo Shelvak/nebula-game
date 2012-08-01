@@ -2064,6 +2064,12 @@
       <p>Kai kurie pastatai buvo išjungti dėl energijos stygiaus.</p>
     </message.buildingsDeactivated>
 
+    <title.unitsClaimed value="Kariai perimti" />
+    <message.unitsClaimed>
+      <p>Žaidėjas "{0}" perėmė tavo ne kovinius karius esančius jo
+        planetoje!</p>
+    </message.unitsClaimed>
+
     <title.planetBossSpawn value="Ateiviams mestas iššūkis" />
     <message.planetBossSpawn>
       <p>Tavo planetoje {0} buvo mestas iššūkis ateiviams</p>

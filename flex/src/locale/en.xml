@@ -1931,6 +1931,11 @@
       <p>Buildings deactivated due to insufficient energy.</p>
     </message.buildingsDeactivated>
 
+    <title.unitsClaimed value="Units claimed" />
+    <message.unitsClaimed>
+      <p>Player "{0}" has claimed your non-combat units in his planet!</p>
+    </message.unitsClaimed>
+
     <title.planetBossSpawn value="Alien challenged" />
     <message.planetBossSpawn>
       <p>An alien has been challenged in your planet {0}</p>

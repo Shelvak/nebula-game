@@ -30,6 +30,7 @@ package components.notifications
       TYPE_TO_CLASS[NotificationType.PLAYER_ATTACHED] = IRPlayerAttached;
       TYPE_TO_CLASS[NotificationType.ALLY_PLANET_BOSS_SPAWN] = IRPlanetBossSpawn;
       TYPE_TO_CLASS[NotificationType.ALLY_PLANET_REINITIATE_COMBAT] = IRAllyReinitiateCombat;
+      TYPE_TO_CLASS[NotificationType.UNITS_CLAIMED] = IRUnitsClaimed;
       
       
       /**
