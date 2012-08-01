@@ -32,12 +32,12 @@ package models.notification.parts
             var params: Object = notif.params;
             location = Objects.create(Location, params.planet);
             units = new ArrayCollection();
-            for (var type:String in params.unit_counts)
+            for (var type:String in params.unitCounts)
             {
                units.addItem(
                   new UnitBuildingEntry(
                      ModelUtil.getModelType(ObjectClass.UNIT, type),
-                     params.unit_counts[type]
+                     params.unitCounts[type]
                   )
                );
             }

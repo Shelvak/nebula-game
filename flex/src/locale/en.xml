@@ -2130,6 +2130,10 @@
     <message.cancelUpgrade
     value="Are you sure you want to cancel upgrade of this building?"/>
 
+    <title.claimUnits value="Claim units" />
+    <message.claimUnits
+    value="Are you sure you want to claim selected units?"/>
+
     <title.cancelVip value="Cancel VIP" />
     <message.cancelVip>
       <p>Are you sure you want to cancel your VIP membership?</p>
@@ -4988,7 +4992,7 @@
     <title.claimUnits value="Claim units"/>
     <label.claimUnits value="You can claim non-combat units here."/>
     <label.claimPopulationIncrease
-      value="Your population will increase by {0} if you claim these units"/>
+      value="Your population will increase by {0} if you claim these units."/>
     <label.claimCooldownEnabled>
       You can't claim units while there is battle cooldown active in planet.
     </label.claimCooldownEnabled>

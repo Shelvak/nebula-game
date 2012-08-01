@@ -8,19 +8,23 @@
             &amp;&amp; ML.latestPlanet != null
             &amp;&amp; ML.latestPlanet.ssObject.ownerIsPlayer}">
   <base:layout>
-     <s:VerticalLayout gap="10" horizontalAlign="center"/>
+     <s:VerticalLayout gap="10" horizontalAlign="center"
+       paddingLeft="6" paddingRight="6"/>
   </base:layout>
-  <s:Group width="100%">
-    <s:Label text="{getText('label.claimUnits')}" left="0" right="0"/>
-  </s:Group>
-  <s:Label text="{getText('label.claimPopulationIncrease',
+  <base:AdvancedContainer width="100%">
+    <s:Label text="{getText('label.claimUnits')}"/>
+    <s:Label text="{getText('label.claimPopulationIncrease',
               [getPopulation(US.selection)])}"
            fontWeight="bold"
            styleName="{getPopulation(US.selection) + ML.player.population >
                        ML.player.populationMax? 'unsatisfied': null}"/>
-  <base:Warning text="{getText('label.claimCooldownEnabled')}"
-                 visible="{ML.latestPlanet != null
-                 &amp;&amp; ML.latestPlanet.ssObject.cooldown != null}"/>
+    <base:Warning text="{getText('label.claimCooldownEnabled')}"
+                   visible="{ML.latestPlanet != null
+                   &amp;&amp; ML.latestPlanet.ssObject.cooldown != null}"/>
+    <base:layout>
+       <s:VerticalLayout gap="10" horizontalAlign="justify"/>
+    </base:layout>
+  </base:AdvancedContainer>
   <s:Button label="{getText('label.buttonClaimUnits')}"
              click="claimConfirm(event)"
              enabled="{ML.latestPlanet != null
@@ -42,6 +46,10 @@
 
     private function meetsRequirements(selection: ArrayCollection): Boolean
     {
+       if (selection == null || selection.length == 0)
+       {
+         return false;
+       }
        for each (var unit: Unit in selection)
        {
          if (unit.kind == UnitKind.SPACE || unit.hasGuns)

@@ -320,13 +320,17 @@ class SsObject::Planet < SsObject
 
     grouped = units.group_by(&:player_id)
     units.each { |u| u.player_id = player_id }
-    BulkSql::Unit.save(units)
-    Player.find([player_id] + grouped.keys).each(&:recalculate_population!)
+    Unit.save_all_units(units)
+    # Filter out NPC player.
+    player_ids = ([player_id] + grouped.keys).compact
+    Player.find(player_ids).each(&:recalculate_population!) \
+      unless player_ids.blank?
 
     grouped.each do |player_id, player_units|
-      counts = player_units.grouped_counts(&:type)
-
-      Notification.create_for_units_claimed(player_id, self, counts)
+      unless player_id.nil?
+        counts = player_units.grouped_counts(&:type)
+        Notification.create_for_units_claimed(player_id, self, counts)
+      end
     end
   end
 

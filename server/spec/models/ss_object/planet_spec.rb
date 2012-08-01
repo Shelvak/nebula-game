@@ -1548,5 +1548,22 @@ describe SsObject::Planet do
       end
       planet.claim_for_owner!(unit_ids)
     end
+
+    it "should dispatch changed for units" do
+      should_fire_event(units, EventBroker::CHANGED) do
+        planet.claim_for_owner!(unit_ids)
+      end
+    end
+
+    it "should not fail if claiming NPC units" do
+      unit = units.last
+      unit.player = nil
+      unit.save!
+
+      Notification.should_not_receive(:create_for_units_claimed).
+        with(nil, planet, an_instance_of(Hash))
+
+      planet.claim_for_owner!(unit_ids)
+    end
   end
 end
