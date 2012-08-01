@@ -75,7 +75,7 @@
    <s:Group id="sidebarContainer" left="0" right="0" bottom="0" top="0">
       <base:Scroller stepMultiplier="8" left="0" right="0" top="0" bottom="0">
          <!-- This group makes scroller to work properly... Dont ask why... -->
-         <s:Group left="0" right="0">
+         <s:Group left="0" right="0" visible="{bSidebar.selectedBuilding != null}">
             <base:AdvancedContainer left="0" right="0">
                <base:layout>
                   <s:VerticalLayout horizontalAlign="justify"/>
@@ -179,7 +179,8 @@
                                         right="6"/>
                            </s:Group>
                            
-                           <buildingselectedsidebar:AttackNpcButtonGroup/>
+                           <buildingselectedsidebar:AttackNpcButtonGroup
+                             visible="{bSidebar.selectedBuilding.npc}"/>
                            
                            <base:layout>
                               <s:VerticalLayout paddingLeft="6" horizontalAlign="justify"/>
@@ -321,7 +322,8 @@
                      </base:layout>
                   </base:Panel>
                   
-                  <buildingselectedsidebar:NpcUnitsBuildingSidebarComponents height="100%"/>
+                  <buildingselectedsidebar:NpcUnitsBuildingSidebarComponents height="100%"
+                    visible="{bSidebar.selectedBuilding.npc}"/>
                   
                   <base:Panel title="{getString('selectedUpgradeCost')}" 
                               visible="{!(bSidebar.selectedBuilding.upgradePart.level == Config.getBuildingMaxLevel(bSidebar.selectedBuilding.type)
