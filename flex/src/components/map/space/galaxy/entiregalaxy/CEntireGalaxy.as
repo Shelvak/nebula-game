@@ -6,7 +6,6 @@ package components.map.space.galaxy.entiregalaxy
    import components.map.BaseMapCoordsTransform;
 
    import flash.display.BitmapData;
-
    import flash.events.MouseEvent;
    import flash.geom.Point;
 
@@ -100,6 +99,14 @@ package components.map.space.galaxy.entiregalaxy
          super.commitProperties();
          if (f_modelChanged || f_rerenderRequested) {
             if (haveModel) {
+               const playerHomeSS: MiniSS = _model.playerHomeSS;
+               const restoreCenter: Boolean =
+                  !f_modelChanged &&         // noting to restore as model have changed
+                  f_rerenderRequested &&
+                  _coordsTransform != null;  // we did not have a model before so noting to restore
+               const toCenter: Point = restoreCenter
+                  ? _coordsTransform.realToLogical(_viewport.centerPointViewport_CCS())
+                  : new Point(playerHomeSS.x, playerHomeSS.y);
                const fowMatrix: FOWMatrix = _model.fowMatrix;
                _coordsTransform = new CoordsTransform(fowMatrix.getCoordsOffset());
                _coordsTransform.logicalWidth = fowMatrix.getBounds().width;
@@ -108,9 +115,7 @@ package components.map.space.galaxy.entiregalaxy
                _image.source = bitmap;
                width = bitmap.width;
                height = bitmap.height;
-               const playerHome: MiniSS = _model.playerHomeSS;
-               _viewport.moveContentTo(
-                  _coordsTransform.logicalToReal(new Point(playerHome.x,  playerHome.y)));
+               _viewport.moveContentTo(_coordsTransform.logicalToReal(toCenter));
             }
          }
          f_modelChanged = false;
@@ -129,5 +134,6 @@ package components.map.space.galaxy.entiregalaxy
 
       [Bindable]
       public var logicalMouseY: int = 0;
+
    }
 }
