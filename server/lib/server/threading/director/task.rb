@@ -3,6 +3,7 @@ class Threading::Director::Task
     "Deadlock found when trying to get lock",
     "Lock wait timeout exceeded",
     # Also a multithreading error. Repeating query usually helps.
+    # See https://www.google.com/search?q=mysql+Can%27t+find+record+in
     "Can't find record in"
   ]
   INFO_FROM_RETRY = 10 # From which retry should innodb info be included?
