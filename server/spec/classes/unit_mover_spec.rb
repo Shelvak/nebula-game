@@ -12,6 +12,12 @@ describe UnitMover do
         Factory.create(:u_mule, :player => @player, :location => @ssp1)
       ]
     end
+
+    it "should fail if requesting for 0 units" do
+      lambda do
+        UnitMover.move_meta(@player.id, [], @ssp1, @ssp2)
+      end.should raise_error(GameLogicError)
+    end
     
     it "should give you arrival date" do
       arrives_at, _ = 
@@ -68,6 +74,12 @@ describe UnitMover do
 
       @units = @units_slow + @units_fast
       @unit_ids = @units.map(&:id)
+    end
+
+    it "should fail if requesting for 0 units" do
+      lambda do
+        UnitMover.move(@player.id, [], @source, @target)
+      end.should raise_error(GameLogicError)
     end
 
     it "should raise error if source == target" do
