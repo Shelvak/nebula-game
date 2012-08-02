@@ -1,7 +1,9 @@
 class Threading::Director::Task
   DEADLOCK_ERRORS = [
     "Deadlock found when trying to get lock",
-    "Lock wait timeout exceeded"
+    "Lock wait timeout exceeded",
+    # Also a multithreading error. Repeating query usually helps.
+    "Can't find record in"
   ]
   INFO_FROM_RETRY = 10 # From which retry should innodb info be included?
   MAX_RETRIES = 12
