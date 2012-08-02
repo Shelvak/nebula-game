@@ -27,6 +27,8 @@ cooldown.planet.duration: <%= 90.minutes %> / speed
 cooldown.after_jump.duration: <%= 1.minute %> / speed
 # Cooldown time after spawning units somewhere.
 cooldown.after_spawn.duration: <%= 5.minutes %> / speed
+# Cooldown time after planet changes owner.
+cooldown.after_planet_owner_change.duration: <%= 10.minutes %> / speed
 
 ### Stance coefficients ###
 

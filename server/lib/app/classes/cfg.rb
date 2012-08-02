@@ -69,6 +69,11 @@ class Cfg
       CONFIG.evalproperty('combat.cooldown.after_jump.duration').from_now
     end
 
+    def after_planet_owner_change_cooldown
+      CONFIG.evalproperty('combat.cooldown.after_planet_owner_change.duration').
+        from_now
+    end
+
     ### creds.yml ###
 
     def creds_upgradable_speed_up_data

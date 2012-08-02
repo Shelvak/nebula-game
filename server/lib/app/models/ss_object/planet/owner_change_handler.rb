@@ -31,6 +31,8 @@ class SsObject::Planet::OwnerChangeHandler
     handle_explorations!
     # Depends on #handle_planet_counts.
     handle_objectives!
+    # Add cooldown to planet on owner change.
+    handle_cooldown!
 
     EventBroker.fire(
       @planet, EventBroker::CHANGED, EventBroker::REASON_OWNER_CHANGED
@@ -184,6 +186,20 @@ private
     Notification.create_for_technologies_changed(
       @old_player.id, paused_technologies
     ) unless paused_technologies.blank?
+  end
+
+  # Create cooldown in planet after its owner changes to prevent following
+  # scenario:
+  # Planet is owned by A. It has 10 Crows hidden inside. B flies into it.
+  # Because non non-hidden combat units are there, A loses planet control and
+  # crows become unhidden. However crows now coexist peacefully with B units and
+  # B cannot claim planet, because there are enemy combat units inside.
+  #
+  # So we spawn a cooldown, that will check for combat after it expires and
+  # everything is perfect.
+  #
+  def handle_cooldown!
+    Cooldown.create_or_update!(@planet, Cfg.after_planet_owner_change_cooldown)
   end
 
   def save_players!

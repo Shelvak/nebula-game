@@ -477,4 +477,11 @@ describe SsObject::Planet::OwnerChangeHandler do
       end.should change(building, :cooldown_ends_at)
     end
   end
+
+  describe "cooldown in planet" do
+    it "should create planetary cooldown" do
+      @handler.handle!
+      @planet.should have_cooldown(Cfg.after_planet_owner_change_cooldown)
+    end
+  end
 end
