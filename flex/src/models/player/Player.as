@@ -134,29 +134,30 @@ package models.player
       }
 
       private var _creds: int = 0;
-      [Bindable(event="credsChange")]
       [Optional]
+      [Bindable(event="credsChange")]
       /**
        * Amount of credits player has (pure creds + vip creds).
        */
-      public function set creds(value: int): void
-      {
-         if (_creds != value)
-         {
+      public function set creds(value: int): void {
+         if (_creds != value) {
             _creds = value;
-            dispatchPlayerEvent(PlayerEvent.CREDS_CHANGE);
+            dispatchCredsChangeEvent();
          }
       }
-      /**
-       * @private
-       */
-      public function get creds(): int
-      {
+      public function get creds(): int {
          return _creds;
+      }
+
+      private function dispatchCredsChangeEvent(): void {
+         dispatchPlayerEvent(PlayerEvent.CREDS_CHANGE);
       }
       
       
       [Bindable(event="credsChange")]
+      /**
+       * Creds that have been paid for.
+       */
       public function get pureCreds(): int
       {
          return _creds - vipCreds - freeCreds
@@ -169,12 +170,32 @@ package models.player
       [Optional]
       public var vipLevel: int = 0;
       
+      private var _vipCreds: int = 0;
       [Optional]
-      public var vipCreds: int = 0;
-      
+      [Bindable(event="credsChange")]
+      public function set vipCreds(value: int): void {
+         if (_vipCreds != value) {
+            _vipCreds = value;
+            dispatchCredsChangeEvent();
+         }
+      }
+      public function get vipCreds(): int {
+         return _vipCreds;
+      }
+
+      private var _freeCreds: int = 0;
       [Optional]
-      public var freeCreds: int = 0;
-      
+      [Bindable(event="credsChange")]
+      public function set freeCreds(value: int): void {
+         if (_freeCreds != value) {
+            _freeCreds = value;
+            dispatchCredsChangeEvent();
+         }
+      }
+      public function get freeCreds(): int {
+         return _freeCreds;
+      }
+
       [Optional]
       public var vipCredsUntil: Date;
       public var vipCredsTime: String = null;
