@@ -10,6 +10,16 @@
 # 
 # #creds include normal creds + vip creds if player is a VIP.
 #
+# #pure_creds are paid creds + free creds.
+#
+# Illustration:
+#
+#  /---- pure ---\
+# |--------------------|
+# | paid  | free | vip |
+# |--------------------|
+#  \------ creds -----/
+#
 class Player < ActiveRecord::Base
   include Parts::WithLocking
 
