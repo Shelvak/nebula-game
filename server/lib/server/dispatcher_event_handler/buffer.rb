@@ -14,8 +14,12 @@ class DispatcherEventHandler::Buffer < BasicObject
   end
 
   def push_to_player(*args)
-    ::LOGGER.debug "Pushing entry, current size: #{buffer.size} entries.", TAG
-    buffer << args
+    if wrapped?
+      ::LOGGER.debug "Pushing entry, current size: #{buffer.size} entries.", TAG
+      buffer << args
+    else
+      dispatcher.push_to_player!(*args)
+    end
   end
 
   # For Dispatcher interchangeability.
@@ -33,7 +37,8 @@ class DispatcherEventHandler::Buffer < BasicObject
     end
 
     yield
-  ensure
+
+    # Commit buffer only if it is first wrap and there are no exceptions.
     if first_wrap
       ::LOGGER.debug "Commiting buffer of #{buffer.size} entries.", TAG
       ::LOGGER.debug "BUFFER: #{buffer.inspect}.", TAG
@@ -41,7 +46,9 @@ class DispatcherEventHandler::Buffer < BasicObject
       buffer.each do |args|
         dispatcher.push_to_player!(*args)
       end
-
+    end
+  ensure
+    if first_wrap
       self.wrapped = nil
     else
       ::LOGGER.debug "Still in wrapped block, dive out.", TAG
