@@ -820,7 +820,7 @@ package components.base.viewport
        * Coordinates of the point of the content visible in the center of the viewport in
        * <b>content coordinate space</b>
        */
-      protected function centerPointViewport_CCS() : Point {
+      public function centerPointViewport_CCS() : Point {
          return viewportToContent(new Point(width / 2, height / 2));
       }
       
