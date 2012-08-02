@@ -279,8 +279,7 @@ package components.map.planet
             return;
          }
 
-         var tileCoords: Point = _map.coordsTransform
-                                    .realToLogicalTileCoords(mouseX, mouseY);
+         var tileCoords: Point = _map.coordsTransform.realToLogicalTileCoords(mouseX, mouseY);
          var object: IInteractivePlanetMapObject =
                 tileCoords != null
                    ? getInteractiveObjectOnTile(tileCoords.x, tileCoords.y)
@@ -389,10 +388,6 @@ package components.map.planet
             return;
          }
          object.dispatchEvent(new MouseEvent(MouseEvent.MOUSE_OVER));
-         //         for each (var current:IInteractivePlanetMapObject in getOverlappingObjects(object))
-         //         {
-         //            current.faded = true;
-         //         }
       }
 
       private function object_mouseOutHandler(object: IInteractivePlanetMapObject,

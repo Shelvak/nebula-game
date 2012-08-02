@@ -1223,13 +1223,14 @@
     </tooltip.nextVipTick>
     <label.vipEndsIn value="VIP ends in" />
     <label.vipCreds value="VIP creds" />
+    <label.freeCreds value="Free creds"/>
+    <label.pureCreds value = "Regular creds"/>
     <label.creds value="creds" />
-    <!-- {0} amount of free creds -->
-    <label.credsTooltip>
-      <p>{0} of them are free creds (from quest rewards or other in-game
-        activities, except market transactions).</p>
+    <tooltip.freeCreds>
+      <p>These are creds from quest rewards or other in-game
+        activities, except market transactions.</p>
       <p>Free creds cannot be used in market.</p>
-    </label.credsTooltip>
+    </tooltip.freeCreds>
     <label.waitingCreds value="Waiting for creds..." />
     <label.instant value="Instant" />
     <label.confirm value="Confirm" />

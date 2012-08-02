@@ -1275,11 +1275,6 @@
     <label.whouldFinish value="Uzlabosies pēc" />
     <label.selectAccelerate value="Izvēlieties paātrinājuma apjomu" />
     <label.creds value="kredīti" />
-    <!-- {0} amount of free creds -->
-    <label.credsTooltip>
-      <p>{0} no tiem iz atalgojums par uzdevumiem.</p>
-      <p>Kredīti, kas saņemti kā apbalvojums no uzdevumiem, nevar tikt izmantoti tirgū.</p>
-    </label.credsTooltip>
     <label.credsSum value="Kopējie kredīti" />
     <label.waitingCreds value="Gaida kredītus..." />
     <label.instant value="Instant" />
