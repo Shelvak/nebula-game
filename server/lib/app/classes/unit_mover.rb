@@ -52,7 +52,8 @@ class UnitMover
       route
     end
 
-    private
+  private
+
     # Calculate route and its hops.
     def calculate_route(player_id, unit_ids, source, target, avoid_npc,
         speed_modifier)
@@ -63,6 +64,9 @@ class UnitMover
       ) if target.is_a?(SsObject) && ! target.landable?
 
       requested_count = unit_ids.size
+      raise GameLogicError, "You requested 0 units to move!" \
+        if requested_count == 0
+
       selected_count = 0
 
       hop_times = {
