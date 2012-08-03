@@ -548,7 +548,8 @@ describe Galaxy do
     end
 
     %w{
-      galaxy_id web_user_id name trial planets_count population_cap creds
+      galaxy_id web_user_id name trial planets_count population_cap
+      free_creds
     }.each do |attr|
       it "should set Player##{attr}" do
         player.send(attr).should == send(attr)

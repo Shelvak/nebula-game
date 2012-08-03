@@ -367,6 +367,10 @@ class Player < ActiveRecord::Base
     population > population_max
   end
 
+  def has_free_population?
+    population < population_max
+  end
+
   # Check if alliance cooldown has expired for alliance with _alliance_id_ or
   # all alliances if _alliance_id_ is nil.
   def alliance_cooldown_expired?(alliance_id)

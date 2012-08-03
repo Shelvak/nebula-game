@@ -126,7 +126,7 @@ class Galaxy < ActiveRecord::Base
       player = Player.new(
         galaxy_id: galaxy_id, web_user_id: web_user_id, name: name, trial: trial,
         planets_count: 1, population_cap: Building::Mothership.population(1),
-        creds: Cfg.player_starting_creds
+        free_creds: Cfg.player_starting_creds
       )
       player.save!
 

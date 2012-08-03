@@ -117,7 +117,8 @@ module Parts::PlanetExploration
       
       win_chance = Cfg.exploration_win_chance(width, height)
       win_lose_key = Random.chance(win_chance) ? "win" : "lose"
-      units_key = player.overpopulated? ? "without_units" : "with_units"
+      units_key = player.has_free_population? \
+        ? "with_units" : "without_units"
       rewards = Rewards.from_exploration(
         Cfg.exploration_rewards_random("#{win_lose_key}.#{units_key}")
       )
