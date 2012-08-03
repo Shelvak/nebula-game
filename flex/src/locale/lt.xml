@@ -1372,6 +1372,9 @@
     <label.freeCreds value="Nemokami kredai"/>
     <label.pureCreds value = "Mokami kredai"/>
     <label.creds value="kredų" />
+    <tooltip.pureCreds>
+      Tai kredai, kurie buvo pirkti arba gauti iš turgaus.
+    </tooltip.pureCreds>
     <tooltip.freeCreds>
       <p>Šie kredai gauti nemokamai: iš užduočių ar kitų žaidime atliktų
         veiksmų, išskyrus turgaus pirkimus ir pardavimus.</p>

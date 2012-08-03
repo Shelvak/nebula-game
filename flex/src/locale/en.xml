@@ -1226,6 +1226,9 @@
     <label.freeCreds value="Free creds"/>
     <label.pureCreds value = "Regular creds"/>
     <label.creds value="creds" />
+    <tooltip.pureCreds>
+      These are creds you have paid for or earned from the market.
+    </tooltip.pureCreds>
     <tooltip.freeCreds>
       <p>These are creds from quest rewards or other in-game
         activities, except market transactions.</p>
