@@ -575,7 +575,7 @@ describe MarketOffer do
       lambda do
         offer.cancel!
         player.reload
-      end.should change(player, :market_creds).by(offer.from_amount)
+      end.should change(player, :pure_creds).by(offer.from_amount)
     end
 
     it "should dispatch changed with planet" do

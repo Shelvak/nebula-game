@@ -327,7 +327,7 @@ describe Technology do
 
     describe "#accelerate!" do
       before(:each) do
-        @player.creds += 1000000
+        @player.pure_creds += 1000000
         @player.save!
         @model.upgrade!
       end

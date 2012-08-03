@@ -8,17 +8,11 @@
 # #population_cap holds actual value of maximum population from population
 # buildings. However #population_max should be used in all the checks.
 # 
-# #creds include normal creds + vip creds if player is a VIP.
+# #creds = #pure_creds + #free_creds + #vip_vreds.
 #
-# #pure_creds are paid creds + free creds.
-#
-# Illustration:
-#
-#  /---- pure ---\
-# |--------------------|
-# | paid  | free | vip |
-# |--------------------|
-#  \------ creds -----/
+# #pure_creds - creds which are covered by real money
+# #free_creds - creds which are gained in-game
+# #vip_creds  - creds given by VIP mode
 #
 class Player < ActiveRecord::Base
   include Parts::WithLocking
@@ -200,6 +194,28 @@ class Player < ActiveRecord::Base
     save!
   end
 
+  def creds; pure_creds + free_creds + vip_creds; end
+  def creds=(value)
+    old_value = creds
+    if value < old_value
+      # If we spent our creds.
+      spent = old_value - value
+      paid_with_vip = [spent, vip_creds].min
+      self.vip_creds -= paid_with_vip
+      spent -= paid_with_vip
+      paid_with_free = [spent, free_creds].min
+      self.free_creds -= paid_with_free
+      spent -= paid_with_free
+      self.pure_creds -= spent
+    else
+      raise ArgumentError,
+        "You should never increase #creds= on Player directly! " +
+        "Use #pure_creds= or #free_creds=!"
+    end
+
+    creds
+  end
+
   # Prepare for serialization to JSON.
   #
   # options:
@@ -221,11 +237,11 @@ class Player < ActiveRecord::Base
           economy_points army_points science_points war_points
           victory_points population population_cap
           alliance_id alliance_cooldown_ends_at alliance_cooldown_id
-          free_creds vip_creds vip_level vip_until vip_creds_until
+          free_creds pure_creds vip_creds vip_level vip_until
+          vip_creds_until
           planets_count bg_planets_count
           last_market_offer_cancel
         })
-        json['creds'] = creds
         json['portal_without_allies'] = portal_without_allies?
         json['trial'] = trial?
 
