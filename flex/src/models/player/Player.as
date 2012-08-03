@@ -133,43 +133,38 @@ package models.player
          return res == 0 ? NumberUtil.compare(p0.id, p1.id) : res;
       }
 
-      private var _creds: int = 0;
-      [Optional]
+      prop_name static const trial: String = "trial";
+      [Required]
+      public var trial: Boolean;
+
       [Bindable(event="credsChange")]
       /**
-       * Amount of credits player has (pure creds + vip creds).
+       * Total amount of credits player has.
        */
-      public function set creds(value: int): void {
-         if (_creds != value) {
-            _creds = value;
-            dispatchCredsChangeEvent();
-         }
-      }
       public function get creds(): int {
-         return _creds;
+         return pureCreds + freeCreds + vipCreds;
       }
 
       private function dispatchCredsChangeEvent(): void {
          dispatchPlayerEvent(PlayerEvent.CREDS_CHANGE);
       }
-      
-      
+
+      private var _pureCreds: int = 0;
+      [Optional]
       [Bindable(event="credsChange")]
       /**
        * Creds that have been paid for.
        */
-      public function get pureCreds(): int
-      {
-         return _creds - vipCreds - freeCreds
+      public function set pureCreds(value: int): void {
+         if (_pureCreds != value) {
+            _pureCreds = value;
+            dispatchCredsChangeEvent();
+         }
+      }
+      public function get pureCreds(): int {
+         return _pureCreds;
       }
 
-      prop_name static const trial: String = "trial";
-      [Required]
-      public var trial: Boolean;
-      
-      [Optional]
-      public var vipLevel: int = 0;
-      
       private var _vipCreds: int = 0;
       [Optional]
       [Bindable(event="credsChange")]
@@ -195,6 +190,9 @@ package models.player
       public function get freeCreds(): int {
          return _freeCreds;
       }
+
+      [Optional]
+      public var vipLevel: int = 0;
 
       [Optional]
       public var vipCredsUntil: Date;
