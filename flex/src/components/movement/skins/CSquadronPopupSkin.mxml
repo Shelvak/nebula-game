@@ -189,9 +189,10 @@
                 </s:Line>
                 <s:Group top="{honorLine.height + 6}"
                          toolTip="{getText('tooltip.honorCoef')}">
-                  <s:Label text="{getText('label.honorCoef')}" width="100"
+                  <s:Label id="lblHonorCoefLabel" text="{getText('label.honorCoef')}" width="100"
                            color="#afafaf"/>
-                  <s:Label id="lblHonorCoef" color="#afafaf"/>
+                  <s:Label id="lblHonorCoefValue" color="#afafaf"/>
+                  <s:Label id="lblNoHonorCoef" color="#afafaf"/>
                   <s:layout>
                     <s:HorizontalLayout/>
                   </s:layout>

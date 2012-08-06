@@ -29,6 +29,7 @@ package components.movement
    import models.unit.UnitKind;
 
    import mx.collections.ListCollectionView;
+   import mx.core.IVisualElement;
    import mx.events.CollectionEvent;
    import mx.events.CollectionEventKind;
 
@@ -283,11 +284,18 @@ package components.movement
             killRewardContainer.visible = true;
             lblKillCreds.text = totalCreds.toFixed();
             lblKillVps.text = totalVps.toFixed();
-            lblHonorCoef.text = (MKR.multiplier * 100).toFixed(2) + '%';
-            credsGroup.visible = credsGroup.includeInLayout = totalCreds > 0;
-            vpsGroup.visible = vpsGroup.includeInLayout = totalVps > 0;
-            honorGroup.visible = honorGroup.includeInLayout = (e != null);
-
+            setVisibleOf([credsGroup], totalCreds > 0);
+            setVisibleOf([vpsGroup], totalVps > 0);
+            setVisibleOf([honorGroup], e != null);
+            if (_squadron.currentHop.location.isBattleground) {
+               setVisibleOf([lblHonorCoefValue, lblHonorCoefLabel], false);
+               setVisibleOf([lblNoHonorCoef], true);
+            }
+            else {
+               lblHonorCoefValue.text = (MKR.multiplier * 100).toFixed(2) + '%';
+               setVisibleOf([lblHonorCoefValue, lblHonorCoefLabel], true);
+               setVisibleOf([lblNoHonorCoef], false);
+            }
          }
          else
          {
@@ -325,7 +333,13 @@ package components.movement
       public var lblKillVps:Label;
 
       [SkinPart(required="true")]
-      public var lblHonorCoef:Label;
+      public var lblHonorCoefLabel:Label;
+
+      [SkinPart(required="true")]
+      public var lblHonorCoefValue:Label;
+
+      [SkinPart(required="true")]
+      public var lblNoHonorCoef:Label;
 
       [SkinPart(required="true")]
       public var killRewardContainer:Group;
@@ -492,11 +506,14 @@ package components.movement
             addMoveButtonEventHandlers(btnMove);
             updateUnitsOrdersButtonsVisibility();
          }
-         else if (instance == btnOpenSourceLoc) {
-            addSourceLocButtonEventHandlers(btnOpenSourceLoc);
-         }
-         else if (instance == btnOpenDestLoc) {
-            addDestLocButtonEventHandlers(btnOpenDestLoc);
+         else if (instance == btnOpenSourceLoc || instance == btnOpenDestLoc) {
+            Button(instance).label = getString("label.location.open");
+            if (instance == btnOpenSourceLoc) {
+               addSourceLocButtonEventHandlers(btnOpenSourceLoc);
+            }
+            else {
+               addDestLocButtonEventHandlers(btnOpenDestLoc);
+            }
          }
          else if (instance == lblOwner) {
             lblOwner.text = getString("label.owner");
@@ -504,8 +521,11 @@ package components.movement
          else if (instance == btnOwner) {
             updateOwnerButton();
          }
-         if (instance == btnOpenSourceLoc || instance == btnOpenDestLoc) {
-            Button(instance).label = getString("label.location.open");
+         else if (instance == lblHonorCoefLabel) {
+            lblHonorCoefLabel.text = getString("label.honorCoef");
+         }
+         else if (instance == lblNoHonorCoef) {
+            lblNoHonorCoef.text = getString("label.noHonorCoef");
          }
       }
       
@@ -651,6 +671,15 @@ package components.movement
       /* ############### */
       /* ### HELPERS ### */
       /* ############### */
+
+      private function setVisibleOf(
+         targets: Array, visibleAndIncludeInLayout: Boolean): void
+      {
+         for each (var target: IVisualElement in targets) {
+            target.visible = visibleAndIncludeInLayout;
+            target.includeInLayout = visibleAndIncludeInLayout;
+         }
+      }
       
       private function getString(resourceName:String, parameters:Array = null) : String {
          return Localizer.string("Movement", resourceName, parameters);

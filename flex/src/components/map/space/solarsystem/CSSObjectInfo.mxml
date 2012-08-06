@@ -116,17 +116,31 @@
 
       <s:Group visible="{ssObject.owner == Owner.ENEMY
                 || ssObject.owner == Owner.NAP}"
-               toolTip="{getTooltip('honorCoef')}">
+               toolTip="{getTooltip('honorCoef')}"
+               width="100%">
         <s:layout>
-          <s:HorizontalLayout verticalAlign="middle" gap="5"/>
+          <s:HorizontalLayout verticalAlign="middle" gap="5" paddingLeft="5" paddingRight="5"/>
         </s:layout>
-        <s:Label text="{getLabel('honorCoef')}"/>
-        <s:Button id="btnShowHonorCoef"
-                  label="{honorCoefLabel == null
-                    ? getLabel('unknownHonorCoef')
-                    : honorCoefLabel}"
-                  click="btnShowHonorCoef_clickHandler(event)"
-                  skinClass="components.skins.LinkButtonSkin"/>
+        <s:Label
+           text="{getLabel('honorCoef')}"
+           visible="{!ssObject.inBattleground}"
+           includeInLayout="{!ssObject.inBattleground}"/>
+        <s:Button
+           id="btnShowHonorCoef"
+           label="{honorCoefLabel == null ? getLabel('unknownHonorCoef') : honorCoefLabel}"
+           visible="{!ssObject.inBattleground}"
+           includeInLayout="{!ssObject.inBattleground}"
+           click="btnShowHonorCoef_clickHandler(event)"
+           skinClass="components.skins.LinkButtonSkin"/>
+         <s:Group
+            includeInLayout="{ssObject.inBattleground}"
+            visible="{ssObject.inBattleground}" width="100%">
+
+            <s:Label
+               left="0" right="0" top="0" bottom="0"
+               textAlign="center"
+               text="{getLabel('noHonorCoef')}" lineBreak="toFit"/>
+         </s:Group>
       </s:Group>
 
       <!--- Allows player to invite the owner of this planet to the alliance -->

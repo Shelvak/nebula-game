@@ -1906,6 +1906,7 @@
     <label.credsKillBonus value="Kredai "/>
     <label.vpsKillBonus value="Pergalės taškai "/>
     <label.honorCoef value="Garbės koef."/>
+    <label.noHonorCoef value="Garbės koef. arenoje netaikomas."/>
     <tooltip.honorCoef>
       <p>
         Garbės koeficientas yra suskaičiuojamas lyginant tavo ir
@@ -4242,6 +4243,7 @@
     <label.planetArea value="Plotas: {0} x {1} langeliai"/>
     <label.totalVolume value="Bendra apimtis: {0}"/>
     <label.wreckageVolume value="(apimtis: {0})"/>
+    <label.noHonorCoef value="Garbės koef. arenoje netaikomas."/>
     <label.unknownHonorCoef value="nežinomas"/>
     <label.honorCoef value="Garbės koeficientas:"/>
     <tooltip.honorCoef ref="Movement/tooltip.honorCoef"/>
