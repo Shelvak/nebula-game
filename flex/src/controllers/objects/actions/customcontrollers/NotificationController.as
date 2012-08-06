@@ -1,5 +1,6 @@
 package controllers.objects.actions.customcontrollers
 {
+   import controllers.sounds.SoundsController;
    import controllers.startup.StartupInfo;
 
    import models.factories.NotificationFactory;
@@ -15,6 +16,7 @@ package controllers.objects.actions.customcontrollers
                                              reason: String): * {
          if (StartupInfo.getInstance().initializationComplete)
          {
+            SoundsController.playSound('notification');
             return NotificationFactory.fromObject(object);
          }
       }

@@ -2,6 +2,8 @@ package models.chat
 {
    import components.chat.IRChatMember;
 
+   import controllers.sounds.SoundsController;
+
    import flash.errors.IllegalOperationError;
    import flash.text.engine.FontWeight;
 
@@ -249,6 +251,7 @@ package models.chat
          MCHAT.messagePool.returnObject(message);
          if (!_visible) {
             setNumUnreadMessages(numUnreadMessages + 1);
+            SoundsController.playSound('beep');
          }
          dispatchChannelEvent(MChatChannelEvent.GOT_SOME_MESSAGE);
       }
