@@ -4891,7 +4891,7 @@
 
     <StorageSpecialization.name ref="Objects/Technology_StorageSpecialization"/>
     <StorageSpecialization.about>
-      <p>Šis patobulinimas padidina [obj:2:Unit_Mule:whos:dc] talpą</p>
+      <p>Šis patobulinimas padidina mulo klasės laivų talpą</p>
     </StorageSpecialization.about>
 
     <Trooper.name ref="Objects/Technology_Trooper" />
