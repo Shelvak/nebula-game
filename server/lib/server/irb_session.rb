@@ -215,7 +215,7 @@ module Dev
         player.population_cap = 10_000
       end
       player.scientists = player.scientists_total = 10_000 if opts[:scientists]
-      player.creds = 1_000_000 if opts[:creds]
+      player.pure_creds = 1_000_000 if opts[:creds]
       player.war_points = 1_000_000 if opts[:war_points]
 
       planet = player.planets.first
