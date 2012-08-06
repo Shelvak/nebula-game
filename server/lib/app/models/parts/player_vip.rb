@@ -17,30 +17,6 @@ module Parts
       def vip_creds_per_tick
         vip_level == 0 ? 0 : CONFIG['creds.vip'][vip_level - 1][1]
       end
-      
-      def market_creds; pure_creds - free_creds; end
-      def market_creds=(value)
-        self.pure_creds = value + free_creds
-      end
-  
-      def creds; pure_creds + vip_creds; end
-      def creds=(value)
-        old_value = creds
-        if value < old_value
-          # If we spent our creds.
-          spent = old_value - value
-          paid_with_vip = [spent, vip_creds].min
-          self.vip_creds -= paid_with_vip
-          still_unpaid = spent - paid_with_vip
-          self.pure_creds -= still_unpaid
-          self.free_creds = [free_creds - still_unpaid, 0].max
-        else
-          # If we gained our creds just add the difference to pure_creds.
-          self.pure_creds += value - old_value
-        end
-        
-        creds
-      end
 
       # Start VIP membership.
       def vip_start!(vip_level)
@@ -125,8 +101,11 @@ module Parts
           }, had #{vip_creds}.") unless vip_creds >= amount
 
         converted_creds = (amount / vip_conversion_rate).floor
-        self.pure_creds += converted_creds
-        self.free_creds += converted_creds if vip_free?
+        if vip_free?
+          self.free_creds += converted_creds
+        else
+          self.pure_creds += converted_creds
+        end
         self.vip_creds -= amount
 
         self

@@ -19,10 +19,12 @@ class Rewards
   KNOWN_RESOURCES = [METAL, ENERGY, ZETIUM]
 
   # Rewards assigned to +Player+
+  #
+  # [[attributes, reward_type], ...]
   REWARD_PLAYER = [
     [:xp, XP],
     [:economy_points, POINTS],
-    [[:creds, :free_creds], CREDS],
+    [:free_creds, CREDS],
     [[:scientists, :scientists_total], SCIENTISTS]
   ]
   
@@ -32,7 +34,7 @@ class Rewards
   def initialize(data={})
     @data = data
   end
-  
+
   def blank?
     @data.blank?
   end
@@ -128,8 +130,8 @@ class Rewards
   def claim!(planet, player, allow_overpopulation=false)
     if @data[UNITS] && @data[UNITS].size > 0
       raise GameLogicError.new(
-        "Cannot give units if player is overpopulated!"
-      ) if ! allow_overpopulation && player.overpopulated?
+        "Cannot give units if player does not have free population!"
+      ) if ! allow_overpopulation && player.has_free_population?
       
       units = []
 

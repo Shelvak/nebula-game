@@ -361,7 +361,7 @@ describe BuildingsController do
 
   describe "buildings|accelerate_constructor" do
     before(:each) do
-      player.creds += 100000
+      player.pure_creds += 100000
       player.save!
       @planet = Factory.create(:planet, :player => player)
       @constructor_opts = opts_active + {:planet => @planet}
@@ -400,7 +400,7 @@ describe BuildingsController do
       @constructor_opts = opts_active + {:planet => @planet}
       @building = Factory.create(:b_barracks, @constructor_opts)
 
-      player.creds += 100000
+      player.pure_creds += 100000
       player.vip_level = 1
       player.recalculate_population
       player.save!
@@ -431,7 +431,7 @@ describe BuildingsController do
 
   describe "buildings|accelerate_upgrade" do
     before(:each) do
-      player.creds += 100000
+      player.pure_creds += 100000
       player.save!
       @planet = Factory.create(:planet, :player => player)
       @building = Factory.create(:building, :planet => @planet)

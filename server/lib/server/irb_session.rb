@@ -69,7 +69,7 @@ module Dev
   def self.add_creds(player, creds=200000)
     DispatcherEventHandler::Buffer.instance.wrap do
       player = Player.find(player) if player.is_a?(Fixnum)
-      player.creds += creds
+      player.pure_creds += creds
       player.save!
 
       player

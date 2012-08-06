@@ -127,7 +127,7 @@ shared_examples_for "upgradable" do
           [365.days, 10],
           [0, 10]]
       }
-      @player.creds += 10
+      @player.pure_creds += 10
       @player.save!
       @model.upgrade!
       @model.reload
