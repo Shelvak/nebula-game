@@ -1200,6 +1200,18 @@ assets:
 
   # Unbundled assets.
 
+  "sounds":
+    opts:
+      flex:
+        # Sounds should not be processed.
+        save_as: ""
+
+    "flex":
+      "notifications":
+        notification1.mp3:  Notification1.mp3
+        beep.mp3:            Beep.mp3
+        beep_short.mp3:     BeepShort.mp3
+
   "unbundled":
     flex_unbundled:
       "images/tips":

@@ -19,6 +19,7 @@ package models.chat
    import models.chat.msgconverters.MemberMessageConverter;
    import models.chat.msgconverters.PlayerMessageConverter;
    import models.player.Player;
+   import models.player.PlayerOptions;
    import models.time.MTimeEventFixedMoment;
 
    import mx.core.ClassFactory;
@@ -251,7 +252,6 @@ package models.chat
          MCHAT.messagePool.returnObject(message);
          if (!_visible) {
             setNumUnreadMessages(numUnreadMessages + 1);
-            SoundsController.playSound('beep');
          }
          dispatchChannelEvent(MChatChannelEvent.GOT_SOME_MESSAGE);
       }

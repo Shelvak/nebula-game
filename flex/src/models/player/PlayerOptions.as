@@ -16,6 +16,8 @@ package models.player {
       public static const MIN_EVENT_SHOW_TIME: int = 1;
       public static const MAX_EVENT_SHOW_TIME: int = 30;
 
+      public static const NO_SOUND: int = -1;
+
       public static function loadOptions (options: Object, justRefreshOriginalData: Boolean = false): void
       {
          originalData = options;
@@ -40,6 +42,9 @@ package models.player {
          showInfoEvents = options.showInfoEvents;
          actionEventTime = options.actionEventTime;
          notificationEventTime = options.notificationEventTime;
+         soundForNotification = options.soundForNotification;
+         soundForPrivateMsg = options.soundForPrivateMsg;
+         soundForAllianceMsg = options.soundForAllianceMsg;
       }
 
       private static var originalData: Object;
@@ -60,7 +65,10 @@ package models.player {
             'showWormholeIcons': showWormholeIcons,
             'showInfoEvents': showInfoEvents,
             'actionEventTime': actionEventTime,
-            'notificationEventTime': notificationEventTime
+            'notificationEventTime': notificationEventTime,
+            'soundForNotification': soundForNotification,
+            'soundForPrivateMsg': soundForPrivateMsg,
+            'soundForAllianceMsg': soundForAllianceMsg
          }
       }
 
@@ -80,6 +88,9 @@ package models.player {
          showInfoEvents = originalData.showInfoEvents;
          actionEventTime = originalData.actionEventTime;
          notificationEventTime = originalData.notificationEventTime;
+         soundForNotification = originalData.soundForNotification;
+         soundForPrivateMsg = originalData.soundForPrivateMsg;
+         soundForAllianceMsg = originalData.soundForAllianceMsg;
          hasChanges = false;
       }
       [Bindable]
@@ -99,7 +110,10 @@ package models.player {
          && showWormholeIcons == originalData.showWormholeIcons
          && showInfoEvents == originalData.showInfoEvents
          && actionEventTime == originalData.actionEventTime
-         && notificationEventTime == originalData.notificationEventTime);
+         && notificationEventTime == originalData.notificationEventTime
+         && soundForNotification == originalData.soundForNotification
+         && soundForPrivateMsg == originalData.soundForPrivateMsg
+         && soundForAllianceMsg == originalData.soundForAllianceMsg);
       }
 
       public static function addIgnoredPlayer(playerName: String): void
@@ -159,5 +173,16 @@ package models.player {
 
       [Bindable]
       public static var showWormholeIcons: Boolean = true;
+
+      /*### Sound options ###*/
+
+      [Bindable]
+      public static var soundForNotification: int = NO_SOUND;
+
+      [Bindable]
+      public static var soundForPrivateMsg: int = NO_SOUND;
+
+      [Bindable]
+      public static var soundForAllianceMsg: int = NO_SOUND;
    }
 }

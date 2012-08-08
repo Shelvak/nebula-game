@@ -7,7 +7,7 @@ FLEX_SOURCE_DIR = File.expand_path(
 )
 
 # Bundles excluded from normal game
-GAME_EXCLUDED_BUNDLES = ["ImagesBattlefieldBundle"]
+GAME_EXCLUDED_BUNDLES = ["ImagesBattlefieldBundle", "SoundsBundle"]
 
 # Bundles for battlefield
 BATTLEFIELD_BUNDLES = [
@@ -27,6 +27,11 @@ MAP_EDITOR_BUNDLES = [
   "ImagesTileBundle"
 ]
 
+#Bundles for sounds
+SOUND_BUNDLES = [
+  "SoundsBundle"
+]
+
 namespace :flex do
   namespace :locales do
     desc "Checks locales for validity"
@@ -44,7 +49,7 @@ namespace :flex do
       BUNDLED_FILE_HASHES = File.join(
         Assets::HASHES_DIR, 'flex_bundled_file_hashes.txt'
       )
-      SUPPORTED_EXTENSIONS = "{jpg,png,swf}"
+      SUPPORTED_EXTENSIONS = "{jpg,png,swf,mp3}"
       FileUtils.mkdir_p File.dirname(BUNDLED_FILE_HASHES)
 
       base = AssetBase.new
@@ -112,6 +117,10 @@ namespace :flex do
         content = TemplatesBuilder.read_template(
           'AssetsBundle.as',
 
+          '%sound_modules%' => bundles.keys.reject do |mod|
+            ! SOUND_BUNDLES.include?(mod.name)
+          end.sort.map { |mod| '"%s"' % mod.name }.join(",\n"),
+
           '%game_modules%' => bundles.keys.reject do |mod|
             GAME_EXCLUDED_BUNDLES.include?(mod.name)
           end.sort.map { |mod| '"%s"' % mod.name }.join(",\n"),
@@ -129,19 +138,31 @@ namespace :flex do
       end
 
       bundles.keys.each do |bundle|
-        image_variables = []
-        image_mappings = []
+        asset_variables = []
+        asset_mappings = []
 
         bundles[bundle].keys.sort.each do |var_name|
           file_name, embed_file = bundles[bundle][var_name]
+          mime_type = if file_name.ends_with?(".swf")
+            "application/octet-stream"
+          elsif file_name.ends_with?(".mp3")
+            "audio/mpeg"
+          elsif file_name.ends_with?(".jpg") || file_name.ends_with?*(".jpeg")
+            "image/jpeg"
+          elsif file_name.ends_with?(".png")
+            "image/png"
+          else
+            raise "Cannot determine mime type for '#{embed_file}'!"
+          end
 
-          image_variables.push TemplatesBuilder.read_template(
-            'ImageVariable.as',
+          asset_variables.push TemplatesBuilder.read_template(
+            'AssetVariable.as',
 
             '%source%' => "../../assets/#{embed_file}",
-            '%var_name%' => var_name
+            '%var_name%' => var_name,
+            '%mime_type%' => mime_type
           )
-          image_mappings.push "      \"#{file_name}\": #{var_name}"
+          asset_mappings.push "      \"#{file_name}\": #{var_name}"
         end
 
         # Write bundle AS file
@@ -152,8 +173,8 @@ namespace :flex do
             'BundleModule.as',
 
             '%bundle_name%' => bundle.name,
-            '%image_variables%' => image_variables.join("\n"),
-            '%image_mappings%' => image_mappings.join(",\n")
+            '%asset_variables%' => asset_variables.join("\n"),
+            '%asset_mappings%' => asset_mappings.join(",\n")
           )
 
           file.write content

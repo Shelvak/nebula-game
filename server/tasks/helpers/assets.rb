@@ -120,7 +120,8 @@ class AssetBase
       optimize_png_level optimize_jpg_quality},
     :png => %w{pp_opts path_change quantize_speed optimize_png_level
       save_as},
-    :jpg => %w{pp_opts path_change optimize_jpg_quality save_as}
+    :jpg => %w{pp_opts path_change optimize_jpg_quality save_as},
+    :other => %w{save_as},
   }
 
   def initialize

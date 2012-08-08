@@ -4,6 +4,9 @@ package controllers.objects.actions.customcontrollers
    import controllers.startup.StartupInfo;
 
    import models.factories.NotificationFactory;
+   import models.player.PlayerOptions;
+
+   import utils.assets.AssetNames;
 
    public class NotificationController extends BaseObjectController
    {
@@ -16,7 +19,10 @@ package controllers.objects.actions.customcontrollers
                                              reason: String): * {
          if (StartupInfo.getInstance().initializationComplete)
          {
-            SoundsController.playSound('notification');
+            if (PlayerOptions.soundForNotification != PlayerOptions.NO_SOUND)
+            {
+               SoundsController.playSoundByIndex(PlayerOptions.soundForNotification);
+            }
             return NotificationFactory.fromObject(object);
          }
       }

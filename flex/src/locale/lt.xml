@@ -5867,6 +5867,11 @@
       value="Išradinėjamų technologijų rikiavimo būdas technologijų medyje:" />
     <label.techSortScientists value="Pagal mokslininkus"/>
     <label.techSortTime value="Pagal likusį laiką" />
+    <title.soundOptions value="Garso nustatymai" />
+    <label.soundForNotification value="Pranešimų garsas" />
+    <label.soundForPrivateMsg value="Privačių žinučių garsas" />
+    <label.soundForAllianceMsg value="Sąjungos žinučių garsas" />
+    <label.noSound value="Išjungta"/>
   </PlayerOptions>
 
   <PlanetBoss>

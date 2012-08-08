@@ -5783,6 +5783,11 @@
      value="Sort researched technologies in technology tree:" />
     <label.techSortScientists value="By scientists"/>
     <label.techSortTime value="By remaining time" />
+    <title.soundOptions value="Sound options" />
+    <label.soundForNotification value="Notification sound" />
+    <label.soundForPrivateMsg value="Private message sound" />
+    <label.soundForAllianceMsg value="Alliance message sound" />
+    <label.noSound value="None"/>
   </PlayerOptions>
 
   <PlanetBoss>

@@ -73,4 +73,13 @@ class PlayerOptions::Data < OptionsHash
   # Which property should technologies by sorted by in technology sidebar
   property :technologies_sort_type, :default => TECH_SORT_TYPE_SCIENTISTS,
     :valid => lambda { |val| TECH_SORT_TYPES.include?(val) }
+
+  # Which sound should we play when notification is received?
+  property :sound_for_notification, :default => 0, :valid => Fixnum
+
+  # Which sound should we play when private message is received?
+  property :sound_for_private_msg, :default => 1, :valid => Fixnum
+
+  # Which sound should we play when alliance message is received?
+  property :sound_for_alliance_msg, :default => 2, :valid => Fixnum
 end

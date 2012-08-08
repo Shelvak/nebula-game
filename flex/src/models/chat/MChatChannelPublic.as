@@ -2,6 +2,9 @@ package models.chat
 {
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePublicActionParams;
+   import controllers.sounds.SoundsController;
+
+   import models.player.PlayerOptions;
 
    import models.time.MTimeEventFixedMoment;
 
@@ -14,8 +17,17 @@ package models.chat
       {
          super(name);
       }
-      
-      
+
+      public override function receiveMessage (message: MChatMessage): void
+      {
+         super.receiveMessage(message);
+         if (isAlliance && !visible
+            && PlayerOptions.soundForAllianceMsg != PlayerOptions.NO_SOUND)
+         {
+            SoundsController.playSoundByIndex(PlayerOptions.soundForAllianceMsg);
+         }
+      }
+
       /**
        * Name of the public channel to be displayed for the user.
        */

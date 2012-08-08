@@ -22,6 +22,16 @@ package utils.assets
    public final class AssetNames
    {
       /**
+       * All sounds folder
+       */
+      public static const SOUND_FOLDER:String = "sounds/";
+
+      /**
+       * Notification sounds
+       */
+      public static const NOTIFICATION_SOUND_FOLDER: String = SOUND_FOLDER + "notifications/";
+
+      /**
        * Folder where all images reside.
        */
       public static const IMAGE_FOLDER:String = "images/";

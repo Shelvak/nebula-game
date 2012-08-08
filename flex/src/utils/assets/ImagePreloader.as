@@ -6,6 +6,8 @@ package utils.assets
 
    import config.Config;
 
+   import controllers.sounds.SoundsController;
+
    import controllers.startup.ChecksumsLoader;
    import controllers.startup.StartupInfo;
    import controllers.startup.StartupMode;
@@ -19,6 +21,7 @@ package utils.assets
    import flash.events.IOErrorEvent;
    import flash.events.TimerEvent;
    import flash.external.ExternalInterface;
+   import flash.media.Sound;
    import flash.utils.ByteArray;
    import flash.utils.Dictionary;
    import flash.utils.Timer;
@@ -181,7 +184,20 @@ package utils.assets
       /* ################ */
       /* ### DOWNLOAD ### */
       /* ################ */
-      
+
+      private function getSoundModules(): Array
+      {
+         switch (STARTUP_INFO.mode) {
+            case StartupMode.GAME:
+               return AssetsBundle.getSoundModules();
+            case StartupMode.BATTLE:
+               return [];
+            case StartupMode.MAP_EDITOR:
+               return [];
+         }
+         throw new Error("Unsupported game mode: " + STARTUP_INFO.mode);
+         return null;   // unreachable
+      }
       
       private function getModules() : Array
       {
@@ -393,17 +409,33 @@ package utils.assets
             _moduleInfo.unload();
             _moduleInfo = null;
          }
-         if (getModules().length == 0)
+         if (getModules().length == 0 && getSoundModules().length == 0)
          {
             finalizeDownload ();
             return;
          }
 
-         _currentModule = getModules().pop();
+         var isSoundModule: Boolean = false;
+         if (getModules().length == 0)
+         {
+            _currentModule = getSoundModules().pop();
+            isSoundModule = true;
+         }
+         else
+         {
+            _currentModule = getModules().pop();
+         }
          setCurrentModuleLabel();
          var moduleName: String = getModuleFileName(_currentModule);
          _moduleInfo = new ModuleInfo(STARTUP_INFO.assetsUrl + "assets/" + moduleName);
-         _moduleInfo.addEventListener(ExtendedModuleEvent.READY, moduleReadyHandler);
+         if (isSoundModule)
+         {
+            _moduleInfo.addEventListener(ExtendedModuleEvent.READY, soundModuleReadyHandler);
+         }
+         else
+         {
+            _moduleInfo.addEventListener(ExtendedModuleEvent.READY, moduleReadyHandler);
+         }
          _moduleInfo.addEventListener(ExtendedModuleEvent.PROGRESS, progressHandler);
          currentChecksumResult = moduleName;
          addFailHandler(_moduleInfo);
@@ -424,11 +456,20 @@ package utils.assets
          dispatchProgressEvent(e);
          unpackModule(e.module);
       }
+
+      private function soundModuleReadyHandler(e: ExtendedModuleEvent): void
+      {
+         e.module.removeEventListener(ExtendedModuleEvent.PROGRESS, progressHandler);
+         e.module.removeEventListener(ExtendedModuleEvent.READY, moduleReadyHandler);
+         dispatchProgressEvent(e);
+         unpackSoundModule(e.module);
+      }
       /**
        * Called when all modules have been downloaded and unpacked.
        */
       private function finalizeDownload() : void
       {
+         SoundsController.loadSounds(sounds);
          for each (var mLoader: LoaderObject in _swfLoaders)
          {
             loadersHash[mLoader.loader] = null;
@@ -454,7 +495,7 @@ package utils.assets
        */
       private function unpackModule(moduleInfo:IModuleInfo) : void
       {
-         _swfHash = moduleInfo.factory.create().getSWFsHash();
+         _swfHash = moduleInfo.factory.create().getAssetsHash();
          _swfNames = new Vector.<String>();
          for (var name:String in _swfHash)
          {
@@ -469,11 +510,27 @@ package utils.assets
          }
       }
 
+      private var sounds: Object = {};
+
+      /**
+       * Unpacks a sound module
+       */
+      private function unpackSoundModule(moduleInfo:IModuleInfo) : void
+      {
+         _swfHash = moduleInfo.factory.create().getAssetsHash();
+         for (var name:String in _swfHash)
+         {
+            sounds[name] = new _swfHash[name]() as Sound;
+         }
+         downloadNextModule();
+      }
+
       private var activeLoaders: int = 0;
       /*
       * Hash of {LoaderObject.loader => LoaderObject} pairs.
       */
       private var loadersHash: Dictionary = new Dictionary();
+
 
       private function loadNextSWF(mLoader: LoaderObject) : void
       {

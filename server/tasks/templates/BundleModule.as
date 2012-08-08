@@ -9,20 +9,20 @@ package assets {
   public class %bundle_name% extends ModuleBase
   {
 
-    // Variables with embedded images
-%image_variables%
+    // Variables with embedded assets
+%asset_variables%
 
-    // Hash for resolving name -> image.
-    private var images: Object = {
-%image_mappings%
+    // Hash for resolving name -> asset.
+    private var assetsHash: Object = {
+%asset_mappings%
     };
 
     /**
      * Returns a hash which maps SWFs names to actual byte array classes.
      */
-    public function getSWFsHash() : Object
+    public function getAssetsHash() : Object
     {
-      return images;
+      return assetsHash;
     }
   }
 }

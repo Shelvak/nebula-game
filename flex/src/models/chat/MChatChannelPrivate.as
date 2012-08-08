@@ -4,6 +4,7 @@ package models.chat
 
    import controllers.chat.ChatCommand;
    import controllers.chat.actions.MessagePrivateActionParams;
+   import controllers.sounds.SoundsController;
 
    import flash.errors.IllegalOperationError;
 
@@ -11,6 +12,7 @@ package models.chat
 
    import models.chat.events.MChatChannelEvent;
    import models.chat.events.MChatMemberEvent;
+   import models.player.PlayerOptions;
 
    import mx.core.ClassFactory;
    import mx.core.IFactory;
@@ -38,6 +40,15 @@ package models.chat
          {
             _friend.removeEventListener(MChatMemberEvent.IS_ONLINE_CHANGE, friend_isOnlineChangeHandler, false);
             _friend = null;
+         }
+      }
+
+      public override function receiveMessage (message: MChatMessage): void
+      {
+         super.receiveMessage(message);
+         if (!visible && PlayerOptions.soundForPrivateMsg != PlayerOptions.NO_SOUND)
+         {
+            SoundsController.playSoundByIndex(PlayerOptions.soundForPrivateMsg);
          }
       }
       
