@@ -62,8 +62,9 @@ package controllers.sounds {
          for (var source: String in sounds)
          {
             var parts: Array = source.split('/');
-            names.push(new MSound((parts[parts.length-1] as String).slice(
-               0, (parts[parts.length-1] as String).length-4),
+            names.push(new MSound(Localizer.string('PlayerOptions',
+               'label.sound.' + (parts[parts.length-1] as String).slice(
+               0, (parts[parts.length-1] as String).length-4)),
                source.slice(0, source.length-4)));
          }
          soundNames = new ArrayCollection(names);
