@@ -1690,6 +1690,7 @@
     <total value="Iš viso:" />
     <cost value="Kaina" />
     <deploysTo value="Išsiskleidžia į:" />
+    <label.bonusTechnologies value="Technologijos:" />
   </InfoScreen>
 
   <LoadingScreen>

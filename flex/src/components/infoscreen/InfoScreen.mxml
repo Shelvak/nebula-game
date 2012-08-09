@@ -11,81 +11,75 @@
                     width="100%" height="100%" xmlns:table="components.infoscreen.table.*">
    <fx:Script>
       <![CDATA[
-         import components.infoscreen.table.InfoTableLevel;
-         import components.skins.LargePanelSkin;
-         import components.skins.ListNonScrollableSkin;
+     import components.infoscreen.TechnologyBonusToolTip;
+     import components.infoscreen.table.InfoTableLevel;
+     import components.skins.LargePanelSkin;
+     import components.skins.ListNonScrollableSkin;
 
-         import config.Config;
+     import config.Config;
 
-         import controllers.objects.ObjectClass;
+     import controllers.objects.ObjectClass;
 
-         import models.infoscreen.ArmorTypes;
-         import models.infoscreen.Gun;
-         import models.infoscreen.MCInfoScreen;
-         import models.infoscreen.events.InfoScreenEvent;
-         import models.resource.ResourceType;
-         
-         import mx.events.FlexEvent;
-         
-         import spark.filters.BlurFilter;
-         
-         import utils.assets.AssetNames;
-         import utils.locale.Localizer;
-         
-         private static const blur: BlurFilter = new BlurFilter(1.3,1.3,1);
-         
-         private static const blurFilter: Array = new Array(blur);
-         
-         [Bindable]
-         private var INFO: MCInfoScreen = MCInfoScreen.getInstance();
-         
-         private function modelChanged(e: InfoScreenEvent = null): void
-         {
-            sViewport.verticalScrollPosition = 0; 
-            resetLevelSelector();
-         }
-         
-         private function resetLevelSelector(e: InfoScreenEvent = null): void
-         {
-            if (INFO.model != null)
-            {
-               lvlSelector.value = INFO.model.usefulLevel;
-            }
-         }
-         
-         private function refreshSelectedGun(e: Event = null): void
-         {
-            INFO.gunsList_changeHandler(gunsList.selectedItem);
-         }
-         
-         /**
-         * 
-         * Data provider is alreadyt built, but list will update it's items
-         * a bit later. We must catch this moment.
-         * 
-         */
-         private function refreshGuns(e: InfoScreenEvent = null): void
-         {
-            gunsList.validateNow();
-            refreshSelectedGun();
-         }
-         
-         protected function basecontainer1_creationCompleteHandler(event:FlexEvent):void
-         {
-            INFO.addEventListener(InfoScreenEvent.MODEL_CHANGE, modelChanged);
-            INFO.addEventListener(InfoScreenEvent.MODEL_LEVEL_CHANGE, resetLevelSelector);
-            INFO.addEventListener(InfoScreenEvent.REFRESH_SELECTED_GUN, refreshSelectedGun);
-            INFO.addEventListener(InfoScreenEvent.GUNS_CREATED, refreshGuns);
-            modelChanged();
-            refreshGuns();
-         }
-      
-         private function getString(prop: String,  params: Array = null): String
-         {
-            return Localizer.string('InfoScreen', prop, params);
-         }
-         
-      ]]>
+     import models.infoscreen.ArmorTypes;
+     import models.infoscreen.Gun;
+     import models.infoscreen.MCInfoScreen;
+     import models.infoscreen.events.InfoScreenEvent;
+     import models.resource.ResourceType;
+
+     import mx.events.FlexEvent;
+     import mx.events.ToolTipEvent;
+
+     import spark.filters.BlurFilter;
+
+     import utils.assets.AssetNames;
+     import utils.locale.Localizer;
+
+     private static const blur: BlurFilter = new BlurFilter(1.3, 1.3, 1);
+
+     private static const blurFilter: Array = new Array(blur);
+
+     [Bindable]
+     private var INFO: MCInfoScreen = MCInfoScreen.getInstance();
+
+     private function modelChanged(e: InfoScreenEvent = null): void {
+       sViewport.verticalScrollPosition = 0;
+       resetLevelSelector();
+     }
+
+     private function resetLevelSelector(e: InfoScreenEvent = null): void {
+       if (INFO.model != null) {
+         lvlSelector.value = INFO.model.usefulLevel;
+       }
+     }
+
+     private function refreshSelectedGun(e: Event = null): void {
+       INFO.gunsList_changeHandler(gunsList.selectedItem);
+     }
+
+     /**
+      *
+      * Data provider is alreadyt built, but list will update it's items
+      * a bit later. We must catch this moment.
+      *
+      */
+     private function refreshGuns(e: InfoScreenEvent = null): void {
+       gunsList.validateNow();
+       refreshSelectedGun();
+     }
+
+     protected function basecontainer1_creationCompleteHandler(event: FlexEvent): void {
+       INFO.addEventListener(InfoScreenEvent.MODEL_CHANGE, modelChanged);
+       INFO.addEventListener(InfoScreenEvent.MODEL_LEVEL_CHANGE, resetLevelSelector);
+       INFO.addEventListener(InfoScreenEvent.REFRESH_SELECTED_GUN, refreshSelectedGun);
+       INFO.addEventListener(InfoScreenEvent.GUNS_CREATED, refreshGuns);
+       modelChanged();
+       refreshGuns();
+     }
+
+     private function getString(prop: String, params: Array = null): String {
+       return Localizer.string('InfoScreen', prop, params);
+     }
+     ]]>
    </fx:Script>
    
    <screens:GradientBackground gradientWidth="{(width - contentGroup.width) / 2}"/>
@@ -132,7 +126,8 @@
                         <base:AdvancedContainer top="54" left="0" right="31">
                            <s:Group visible="{!(INFO.model.objectType != 'building' || INFO.getTechArmorMod(INFO.model.type) == 0)
                                     || !(INFO.model.objectType != 'unit' || INFO.getTechArmorMod(INFO.model.type) == 0)}"
-                                   toolTip="{getString('tooltip.armorFromTechs')}">
+                                    toolTip=" "
+                                    toolTipCreate="INFO.createArmorTooltip(event)">
                               
                               <s:Label text="{getString('armorFromTechs')}"/>
                               <s:Label text="{(INFO.getTechArmorMod(INFO.model.type) > 0? '+':'') + INFO.getTechArmorMod(INFO.model.type) + '%'}"
@@ -143,7 +138,8 @@
                            </s:Group>
                            <s:Group visible="{!(INFO.model.objectType != 'building' || INFO.getTechArmorMod(INFO.model.type) == 0)
                                      || !(INFO.model.objectType != 'unit' || INFO.getTechArmorMod(INFO.model.type) == 0)}"
-                                    toolTip="{getString('tooltip.absorptionFromTechs', [Config.getAbsorptionDivider()])}">
+                                    toolTip=" "
+                                    toolTipCreate="INFO.createAbsorptionTooltip(event)">
 
                              <s:Label text="{getString('absorptionFromTechs')}"/>
                              <s:Label text="{INFO.getTechAbsorptionMod(INFO.model.type) + '%'}"
@@ -187,7 +183,8 @@
                            <s:BitmapImage top="25" source="{IMG.getImage(AssetNames.INFO_SCREEN_IMAGES_FOLDER + 'line')}"/>
                            <base:AdvancedContainer top="38" width="100%">
                               <s:Group visible="{INFO.getTechDamageMod(INFO.model.type) != 0}"
-                                       toolTip="{getString('tooltip.damageFromTechs')}">
+                                       toolTip=" "
+                                       toolTipCreate="INFO.createDamageTooltip(event)">
                                  
                                  <s:Label text="{getString('damageFromTechs')}"/>
                                  <s:Label text="{(INFO.getTechDamageMod(INFO.model.type) > 0? '+':'') + INFO.getTechDamageMod(INFO.model.type) + '%'}"
@@ -197,7 +194,8 @@
                                  </s:layout>
                               </s:Group>
                               <s:Group visible="{INFO.getTechCriticalMod(INFO.model.type) != 0}"
-                                       toolTip="{getString('tooltip.criticalFromTechs', [Config.getCriticalMultiplier()])}">
+                                       toolTip=" "
+                                       toolTipCreate="INFO.createCriticalTooltip(event)">
 
                                 <s:Label text="{getString('criticalFromTechs')}"/>
                                 <s:Label text="{INFO.getTechCriticalMod(INFO.model.type) + '%'}"

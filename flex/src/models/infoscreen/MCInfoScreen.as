@@ -1,7 +1,9 @@
 package models.infoscreen
 {
    import com.developmentarc.core.utils.EventBroker;
-   
+
+   import components.infoscreen.TechnologyBonusToolTip;
+
    import components.infoscreen.UnitBuildingInfoEntry;
    import components.infoscreen.table.IRInfoTableRowEmpty;
    import components.infoscreen.table.IRInfoTableRowFull;
@@ -40,8 +42,10 @@ package models.infoscreen
    import mx.collections.SortField;
    import mx.core.ClassFactory;
    import mx.core.IFactory;
+   import mx.events.ToolTipEvent;
 
    import utils.DateUtil;
+   import utils.MathUtil;
    import utils.MathUtil;
    import utils.MathUtil;
    import utils.MathUtil;
@@ -668,6 +672,89 @@ package models.infoscreen
       {
          return Math.round(ML.technologies.getTechnologiesPropertyMod('damage', 
             model.objectType + '/' + StringUtil.camelCaseToUnderscore(applies)));
+      }
+
+      private function getString(prop: String, params: Array = null): String {
+        return Localizer.string('InfoScreen', prop, params);
+      }
+
+      private function buildTechBonusToolTipDataProvider(
+         mods: Object, prop: String): ArrayCollection
+      {
+         var tempData: Array = [];
+         for (var key: String in mods)
+         {
+            if (mods[key][prop] != null)
+            {
+               var currentTech: Technology =
+                  ML.technologies.getTechnologyByType(
+                     StringUtil.underscoreToCamelCase(key)
+                  );
+               if (currentTech.level > 0)
+               {
+                  tempData.push({
+                     'name': currentTech.title,
+                     'value': MathUtil.round(StringUtil.evalFormula(mods[key][prop],
+                        {'level': currentTech.level}), 2)
+                  })
+               }
+            }
+         }
+         return new ArrayCollection(tempData);
+      }
+
+      public function createDamageTooltip (event: ToolTipEvent): void {
+        var tltp: TechnologyBonusToolTip = new TechnologyBonusToolTip();
+        tltp.title = getString('tooltip.damageFromTechs');
+        tltp.technologies = buildTechBonusToolTipDataProvider(
+              Config.getTechnologiesMods(
+                 model.objectType + '/' +
+                    StringUtil.camelCaseToUnderscore(model.type)
+              ),
+              'damage'
+           );
+        event.toolTip = tltp;
+      }
+
+      public function createCriticalTooltip (event: ToolTipEvent): void {
+        var tltp: TechnologyBonusToolTip = new TechnologyBonusToolTip();
+        tltp.title = getString('tooltip.criticalFromTechs',
+           [Config.getCriticalMultiplier()]);
+        tltp.technologies = buildTechBonusToolTipDataProvider(
+              Config.getTechnologiesMods(
+                 model.objectType + '/' +
+                    StringUtil.camelCaseToUnderscore(model.type)
+              ),
+              'critical'
+           );
+        event.toolTip = tltp;
+      }
+
+      public function createArmorTooltip (event: ToolTipEvent): void {
+        var tltp: TechnologyBonusToolTip = new TechnologyBonusToolTip();
+        tltp.title = getString('tooltip.armorFromTechs');
+        tltp.technologies = buildTechBonusToolTipDataProvider(
+              Config.getTechnologiesMods(
+                 model.objectType + '/' +
+                    StringUtil.camelCaseToUnderscore(model.type)
+              ),
+              'armor'
+           );
+        event.toolTip = tltp;
+      }
+
+      public function createAbsorptionTooltip (event: ToolTipEvent): void {
+        var tltp: TechnologyBonusToolTip = new TechnologyBonusToolTip();
+        tltp.title = getString('tooltip.absorptionFromTechs',
+              [Config.getAbsorptionDivider()]);
+        tltp.technologies = buildTechBonusToolTipDataProvider(
+              Config.getTechnologiesMods(
+                 model.objectType + '/' +
+                    StringUtil.camelCaseToUnderscore(model.type)
+              ),
+              'absorption'
+           );
+        event.toolTip = tltp;
       }
       
       public function gunsList_changeHandler(gun: Gun):void
