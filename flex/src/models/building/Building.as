@@ -294,6 +294,7 @@ package models.building
       }
       
       [Bindable (event="levelChange")]
+      [Bindable (event="constructorModChange")]
       public function get totalConstructorMod(): int
       {
          return Math.min(100 - Config.getMinTimePercentage(), constructorMod + leveledConstructionMod);
@@ -631,11 +632,25 @@ package models.building
        * Mod which reduces construction/upgrade time for this building. 
        */      
       public var constructionMod: Number = 0;
+
       [Required]
+      [Bindable (event="constructorModChange")]
       /**
        * Mod which reduces construction/upgrade time for constructables it constructs.  
        */      
-      public var constructorMod: Number = 0;
+      public function set constructorMod(value: Number): void
+      {
+         _constructorMod = value;
+         dispatchConstructorModChangeEvent();
+      }
+
+      public function get constructorMod(): Number
+      {
+         return _constructorMod;
+      }
+
+      private var _constructorMod: Number = 0;
+
       [SkipProperty]
       public var bonuses:BuildingBonuses = new BuildingBonuses();
       
@@ -969,6 +984,14 @@ package models.building
          if (hasEventListener(BuildingEvent.EXPAND_FINISHED))
          {
             dispatchEvent(new BuildingEvent(BuildingEvent.EXPAND_FINISHED));
+         }
+      }
+
+      private function dispatchConstructorModChangeEvent(): void
+      {
+         if (hasEventListener(BuildingEvent.CONSTRUCTOR_MOD_CHANGE))
+         {
+            dispatchEvent(new BuildingEvent(BuildingEvent.CONSTRUCTOR_MOD_CHANGE));
          }
       }
    }

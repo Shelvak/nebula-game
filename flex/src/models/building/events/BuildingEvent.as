@@ -94,7 +94,7 @@ package models.building.events
        */
       public static const BUILDING_STATES_CHANGE:String="buildingsStatesChange";
       
-      
+      public static const CONSTRUCTOR_MOD_CHANGE: String = "constructorModChange";
       
 
       
