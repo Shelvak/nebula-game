@@ -152,7 +152,19 @@ class RouteHop < ActiveRecord::Base
 
   MOVEMENT_SCOPE = DScope.world
   def self.movement_callback(route_hop)
-    route_hop.move!
-    Combat::LocationCheckerAj.check_location(route_hop.location)
+    # Lock location because otherwise this bug happens:
+    #
+    # Worker1: Jump from destination A to C.
+    # Worker2: Jump from destination B to C.
+    #
+    # Because they both happen at same time, neither workers 1 or 2 are aware of
+    # each others transaction changes. So 1 doesn't pick location changes of 2
+    # and vice-versa, resulting with combat not happening.
+    #
+    # This lock ensures that these two movements are serialized.
+    LocationLock.with_lock(route_hop.location) do
+      route_hop.move!
+      Combat::LocationCheckerAj.check_location(route_hop.location)
+    end
   end
 end
