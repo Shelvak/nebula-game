@@ -1,6 +1,5 @@
 class CreateLocationLock < ActiveRecord::Migration
   def self.up
-    drop_table :location_locks
     create_table :location_locks, id: false do |t|
       t.belongs_to :location_galaxy
       t.belongs_to :location_solar_system
