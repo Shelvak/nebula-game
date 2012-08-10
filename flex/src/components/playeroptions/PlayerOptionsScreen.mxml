@@ -315,25 +315,6 @@
                    </s:layout>
                  </s:Group>
                  <s:Group>
-                    <s:Label text="{getString('label.soundForPrivateMsg')}"
-                      minWidth="180"/>
-                    <s:DropDownList dataProvider="{SoundsController.soundNames}"
-                                    id="soundForPrivateMsg"
-                                    minWidth="180"
-                                    selectedIndex="{PlayerOptions.soundForPrivateMsg + 1}"
-                                    change="PlayerOptions.soundForPrivateMsg =
-                                      soundForPrivateMsg.selectedIndex - 1;
-                                      PlayerOptions.changed()"
-                                    labelField="name"/>
-                    <s:Button skinClass="components.skins.PlayButtonSkin"
-                               enabled="{MSound(soundForPrivateMsg.selectedItem).source != null}"
-                               click="SoundsController.playSoundByIndex(
-                               soundForPrivateMsg.selectedIndex - 1)"/>
-                   <s:layout>
-                     <s:HorizontalLayout paddingLeft="15" verticalAlign="middle"/>
-                   </s:layout>
-                 </s:Group>
-                 <s:Group>
                     <s:Label text="{getString('label.soundForAllianceMsg')}"
                              minWidth="180"/>
                     <s:DropDownList dataProvider="{SoundsController.soundNames}"
@@ -348,6 +329,25 @@
                                enabled="{MSound(soundForAllianceMsg.selectedItem).source != null}"
                                click="SoundsController.playSoundByIndex(
                                soundForAllianceMsg.selectedIndex - 1)"/>
+                   <s:layout>
+                     <s:HorizontalLayout paddingLeft="15" verticalAlign="middle"/>
+                   </s:layout>
+                 </s:Group>
+                 <s:Group>
+                    <s:Label text="{getString('label.soundForPrivateMsg')}"
+                      minWidth="180"/>
+                    <s:DropDownList dataProvider="{SoundsController.soundNames}"
+                                    id="soundForPrivateMsg"
+                                    minWidth="180"
+                                    selectedIndex="{PlayerOptions.soundForPrivateMsg + 1}"
+                                    change="PlayerOptions.soundForPrivateMsg =
+                                      soundForPrivateMsg.selectedIndex - 1;
+                                      PlayerOptions.changed()"
+                                    labelField="name"/>
+                    <s:Button skinClass="components.skins.PlayButtonSkin"
+                               enabled="{MSound(soundForPrivateMsg.selectedItem).source != null}"
+                               click="SoundsController.playSoundByIndex(
+                               soundForPrivateMsg.selectedIndex - 1)"/>
                    <s:layout>
                      <s:HorizontalLayout paddingLeft="15" verticalAlign="middle"/>
                    </s:layout>
