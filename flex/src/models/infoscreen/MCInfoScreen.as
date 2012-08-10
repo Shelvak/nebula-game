@@ -58,6 +58,9 @@ package models.infoscreen
    
    public class MCInfoScreen extends EventDispatcher
    {
+      private static const FORMAT_TIME: String = 'time';
+      private static const FORMAT_NUMBER: String = 'number';
+
       private function get ML(): ModelLocator
       {
          return ModelLocator.getInstance();
@@ -449,7 +452,11 @@ package models.infoscreen
                      bundle, 'property.' + element + '.tooltip')
                         ? Localizer.string(
                            bundle, 'property.' + element + '.tooltip', params) : '';
-                  
+                  var format: String = Localizer.hasProperty(
+                     bundle, 'property.' + element + '.format')
+                        ? Localizer.string(
+                           bundle, 'property.' + element + '.format')
+                        : FORMAT_NUMBER;
                   var newValueString: String;
                   var currentValueString: String;
                   var diffString: String;
@@ -465,8 +472,13 @@ package models.infoscreen
                      diffString = NumberUtil.toShortString(newValue - currentValue)+ ' / ' +
                         Localizer.string('General', 'hour.short');
                   }
-                  else
+                  else if (format == FORMAT_TIME)
                   {
+                     newValueString = DateUtil.secondsToHumanString(newValue, 3);
+                     currentValueString = DateUtil.secondsToHumanString(currentValue, 3);
+                     diffString = DateUtil.secondsToHumanString(newValue - currentValue, 3);
+                  }
+                  else {
                      newValueString = newValue.toString();
                      currentValueString = currentValue.toString();
                      
