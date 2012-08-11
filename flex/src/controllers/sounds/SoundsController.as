@@ -43,9 +43,12 @@ package controllers.sounds {
          if (channels[name] == null)
          {
             var ch: SoundChannel = Sound(sounds[name + fileExtention]).play();
-            ch.addEventListener(Event.SOUND_COMPLETE, removeChannel);
-            channelNames[ch] = name;
-            channels[name] = ch;
+            // TODO: this is here as a result of some bug: http://bt.nebula44.com/view.php?id=3694
+            if (ch != null) {
+               ch.addEventListener(Event.SOUND_COMPLETE, removeChannel);
+               channelNames[ch] = name;
+               channels[name] = ch;
+            }
          }
       }
 
