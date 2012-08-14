@@ -95,6 +95,9 @@ class FilesBundle < Hash
 end
 
 class Asset
+  PNG_RE = /\.png$/i
+  JPG_RE = /\.jpe?g$/i
+
   def self.image?(path); png?(path) or jpg?(path); end
   def self.archive?(path); path.match(ARCHIVE_RE); end
   def self.png?(path); path.match(PNG_RE); end
@@ -242,7 +245,7 @@ class AssetBase
   end
 
   def process_file_options
-    # Iterate through keys because we're modyfing hash in loop.
+    # Iterate through keys because we're modifying hash in loop.
     @data['file_options'].keys.each do |target|
       @data['file_options'][target].keys.each do |regexp_string|
         options = @data['file_options'][target][regexp_string]
@@ -388,13 +391,13 @@ class Processor
   end
   
   def convert(path, options)
-    target_convert = "%s%s" % [path, ".converted"]
-      
-    cmd = %Q{convert "%s" %s "%s"} % [path, options, target_convert]
-
-    system(cmd)
-	  FileUtils.rm path if File.exists?(path)
-    FileUtils.mv target_convert, path, :force => true
+    #target_convert = "%s%s" % [path, ".converted"]
+    #
+    #cmd = %Q{convert "%s" %s "%s"} % [path, options, target_convert]
+    #
+    #system(cmd)
+    #FileUtils.rm path if File.exists?(path)
+    #FileUtils.mv target_convert, path, :force => true
   end
 
   # Ensure we have a format that png2swf understands
@@ -477,29 +480,29 @@ class Processor
     unless opts['save_as'].blank?
       type, params = opts['save_as'].split(":")
       
-      case type
-      when 'swf'
-        quality, = params
-
-        cmd = nil
-        if Asset.png?(path)
-          convert_for_png2swf(path)
-          cmd = png2swf(
-            quality,
-            "\"#{path.sub(PNG_RE, '.swf')}\"",
-            "\"#{path}\""
-          )
-        elsif Asset.jpg?(path)
-          cmd = jpeg2swf(quality, "\"#{path.sub(JPG_RE, '.swf')}\"",
-            "\"#{path}\"")
-        end
-
-        if cmd
-          info "->SWF(#{quality}%)"
-          system(cmd)
-          FileUtils.rm_f path
-        end
-      end
+      #case type
+      #when 'swf'
+      #  quality, = params
+      #
+      #  cmd = nil
+      #  if Asset.png?(path)
+      #    convert_for_png2swf(path)
+      #    cmd = png2swf(
+      #      quality,
+      #      "\"#{path.sub(PNG_RE, '.swf')}\"",
+      #      "\"#{path}\""
+      #    )
+      #  elsif Asset.jpg?(path)
+      #    cmd = jpeg2swf(quality, "\"#{path.sub(JPG_RE, '.swf')}\"",
+      #      "\"#{path}\"")
+      #  end
+      #
+      #  if cmd
+      #    info "->SWF(#{quality}%)"
+      #    system(cmd)
+      #    FileUtils.rm_f path
+      #  end
+      #end
     end
   end
 
@@ -523,7 +526,7 @@ class Processor
           # Ignore all paths
           file_name = File.basename(file_name)
 
-          # Metadata goes somewhere else.
+          ## Metadata goes somewhere else.
           if file_name == 'metadata.yml'
             parts = name.split("/")
             base = parts[0..-2]
@@ -559,7 +562,7 @@ class Processor
       base_name = name.sub(ARCHIVE_RE, '')
       base_dir = File.join(target_path, base_name)
       swf_name = "#{base_dir}.swf"
-      
+
       puts "#{base_name}/*.png (#{target}): combining to SWF (#{
         quality}% JPEG)."
 
@@ -570,7 +573,7 @@ class Processor
       end.join(" ")
       cmd = png2swf(quality, "\"#{swf_name}\"", pngs)
       system(cmd)
-      
+
       FileUtils.rm_rf(base_dir)
     end
   end

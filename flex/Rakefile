@@ -5,7 +5,8 @@ require 'digest/sha1'
 require 'socket'
 
 basedir = File.dirname(__FILE__)
-load basedir + '/../Rakefile'
+load basedir + '/../server/Rakefile'
+load basedir + '/tasks/assets.rake'
 
 namespace :build do
   # Required flash version
@@ -18,7 +19,7 @@ namespace :build do
     "FLEX_HOME environment variable is not set!"
   )
   as3_st = "#{basedir}/vendor/as3_st.jar"
-  FCSH = File.join(FLEX_HOME, "bin", windows? ? "fcsh.exe" : "fcsh")
+  FCSH = File.join(FLEX_HOME, "bin", Rake::Win32.windows? ? "fcsh.exe" : "fcsh")
   FCSHD_PORT = "53000"
   FCSHD = "#{basedir}/vendor/FlexShellScript.jar"
   src_dir = "#{basedir}/src"
@@ -34,7 +35,8 @@ namespace :build do
     #{html_extras_dir}/images
   }
   locale_dir = "#{src_dir}/locale"
-  assets_dir = "#{src_dir}/assets"
+  raw_assets_dir = "#{basedir}/../assets/data"
+  processed_assets_dir = "#{src_dir}/assets"
   lib_dir = "#{basedir}/libs"
   output_dir = "#{basedir}/target"
   bin_dir = "#{output_dir}/bin"
@@ -176,10 +178,12 @@ namespace :build do
   end
 
   namespace :prepare do
-    desc "Synchronize assets with wiki"
+    desc "Compile raw assets into SWFs."
     task :assets do
-      info "Synchronizing assets" do
-        Rake::Task['wiki:files:sync'].invoke
+      info "Preparing assets" do
+        processor = Tasks::Processor.
+          new("#{raw_assets_dir}/bundled", processed_assets_dir)
+        processor.invoke
       end
     end
   end
@@ -345,9 +349,9 @@ namespace :build do
 
     desc "Copy and checksum assets from src/assets to #{dist_locale_dir}"
     task :assets do
-      copy_and_checksum(assets_dir, "*.swf", dist_assets_dir)
+      copy_and_checksum(processed_assets_dir, "*.swf", dist_assets_dir)
       copy_and_checksum(
-        "#{assets_dir}/unbundled", "**/*.*",
+        "#{raw_assets_dir}/unbundled", "**/*.*",
         File.join(dist_assets_dir, 'unbundled')
       )
     end

@@ -11,9 +11,9 @@ GAME_EXCLUDED_BUNDLES = ["ImagesBattlefieldBundle", "SoundsBundle"]
 
 # Bundles for battlefield
 BATTLEFIELD_BUNDLES = [
+  "ImagesBattlefieldBundle",
   "ImagesSolarSystemBundle",
   "ImagesSolarSystemObjectBundle",
-  "ImagesBattlefieldBundle",
   "ImagesUiBundle",
   "ImagesTileBundle"
 ]
@@ -27,7 +27,7 @@ MAP_EDITOR_BUNDLES = [
   "ImagesTileBundle"
 ]
 
-#Bundles for sounds
+# Bundles for sounds
 SOUND_BUNDLES = [
   "SoundsBundle"
 ]
