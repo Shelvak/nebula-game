@@ -589,7 +589,7 @@ function onNoteSubmit() {
 
 // Also called from flash.
 function isOneLt() {
-  return urlParams["one_lt"] == "true";
+  return window.location.hostname.indexOf("one.lt") != -1;
 }
 
 // Setup one.lt top bar shown
