@@ -42,9 +42,10 @@ package controllers.sounds {
          var name: String = (soundNames.getItemAt(index + 1) as MSound).source;
          if (channels[name] == null)
          {
-            var ch: SoundChannel = Sound(sounds[name + fileExtention]).play();
+            const sound: Sound = Sound(sounds[name + fileExtention]);
             // TODO: this is here as a result of some bug: http://bt.nebula44.com/view.php?id=3694
-            if (ch != null) {
+            if (sound != null) {
+               const ch: SoundChannel = sound.play();
                ch.addEventListener(Event.SOUND_COMPLETE, removeChannel);
                channelNames[ch] = name;
                channels[name] = ch;
