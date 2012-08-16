@@ -98,9 +98,10 @@ package controllers.connection
 
       /**
        * Called by <code>controllers.players.action.DisconnectAction</code> when a message warning about
-       * upcoming disconnection is received.
+       * upcoming disconnection is received or by <code>controllers.players.MultiAccountController</code>
+       * when player using same computer logs in to the same galaxy.
        */
-      public function serverWillDisconnect(reason: String): void {
+      public function serverWillDisconnect(reason: String, showRetryButton: Boolean = true): void {
          _gotDisconnectWarning = true;
 
          if (reason == "unhandledMessage") {
@@ -114,6 +115,7 @@ package controllers.connection
          popup.showCancelButton = false;
          popup.retryButtonLabel = reconnectLabelText;
          popup.retryButtonClickHandler = retryButton_clickHandler;
+         popup.showRetryButton = showRetryButton;
 
          var title: String = popup.title = Localizer.string("Popups", "title.disconnect." + reason);
          if (title != null) {

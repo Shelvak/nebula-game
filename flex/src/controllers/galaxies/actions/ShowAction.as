@@ -6,6 +6,7 @@ package controllers.galaxies.actions
 
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
+   import controllers.players.MultiAccountController;
    import controllers.planets.PlanetsCommand;
    import controllers.planets.actions.ShowActionParams;
    import controllers.solarsystems.SolarSystemsCommand;
@@ -86,11 +87,17 @@ package controllers.galaxies.actions
       }
 
       public override function applyServerAction(cmd: CommunicationCommand): void {
-         StartupInfo.getInstance().initializationComplete = true;
+         var SI: StartupInfo = StartupInfo.getInstance();
+         SI.initializationComplete = true;
          MWaitingScreen.getInstance().visible = false;
          const startup: Boolean = ML.latestGalaxy == null;
          const params: Object = cmd.parameters;
          ML.player.galaxyId = params["galaxyId"];
+         if (SI.MACheck != null)
+         {
+            SI.MACheck.stop();
+         }
+         SI.MACheck = new MultiAccountController(SI.server + '_galaxy_' + ML.player.galaxyId);
          createGalaxy(
             ML.player.galaxyId,
             params["battlegroundId"],

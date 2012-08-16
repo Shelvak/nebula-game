@@ -1,5 +1,7 @@
 package controllers.startup
 {
+   import controllers.players.MultiAccountController;
+
    import models.BaseModel;
    
    import mx.utils.ObjectUtil;
@@ -25,6 +27,7 @@ package controllers.startup
          return SingletonFactory.getSingletonInstance(StartupInfo);
       }
 
+      public var MACheck: MultiAccountController;
 
       public var loadSuccessful: Boolean = false;
       public var initializationComplete: Boolean = false;
