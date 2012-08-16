@@ -42,22 +42,22 @@
          display: block;
       }
 
-      #trial_register {
+      #popup {
         display: none;
         z-index: 1000;
         position: absolute;
         top: 0px; bottom: 0px; left: 0px; right: 0px;
       }
 
-      #trial_register div {
+      #popup div {
         text-align: right;
         margin: 20px auto 0 auto;
         width: 700px;
       }
 
-      #trial_register div a img { border: none }
+      #popup div a img { border: none }
 
-      #trial_register iframe {
+      #popup iframe {
         display: block;
         margin: auto;
         width: 700px; height: 80%;
@@ -191,8 +191,8 @@ include(gameJs);
        <a href="javascript:window.refresh()"></a>
     </div>
 
-    <div id="trial_register">
-      <div class="alpha40"><a href="javascript:closeTrialRegistration()">
+    <div id="popup">
+      <div class="alpha40"><a href="javascript:closePopup()">
         <img /> <!-- src set by JS, because of assetsUrl -->
       </a></div>
       <iframe></iframe>
