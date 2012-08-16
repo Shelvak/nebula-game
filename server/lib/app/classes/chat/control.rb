@@ -96,8 +96,8 @@ class Chat::Control
     when "log"
       report(player.id, "/log - prints chat control log from server start")
     else
-      report(player.id, "Supported commands: silence log")
-      report(player.id, "Supported admin commands: adminify set_mod") \
+      report(player.id, "Supported commands: silence, log")
+      report(player.id, "Supported admin commands: adminify, set_mod") \
         if player.admin?
       report(player.id,
         "",

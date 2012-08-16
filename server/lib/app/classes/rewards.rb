@@ -131,7 +131,7 @@ class Rewards
     if @data[UNITS] && @data[UNITS].size > 0
       raise GameLogicError.new(
         "Cannot give units if player does not have free population!"
-      ) if ! allow_overpopulation && player.has_free_population?
+      ) unless allow_overpopulation || player.has_free_population?
       
       units = []
 
