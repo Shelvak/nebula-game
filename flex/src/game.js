@@ -645,7 +645,7 @@ function openKongregateBuyPopup() {
 }
 
 function isKongregateUser() {
-  return true; //window.location.host.indexOf('kongregate.com') !== -1;
+  return window.location.host.indexOf('kongregate.nebula44.com') !== -1;
 }
 
 // Load our swf {{{
