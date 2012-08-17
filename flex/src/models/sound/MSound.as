@@ -11,6 +11,7 @@ package models.sound {
       public var name: String;
       [Bindable]
       public var source: String;
+
       public function MSound(_name: String, _source: String) {
          name = _name;
          source = _source;
