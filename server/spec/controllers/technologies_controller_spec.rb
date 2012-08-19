@@ -178,7 +178,7 @@ describe TechnologiesController do
 
     before(:each) do
       @action = "technologies|accelerate"
-      player.creds = 1000000
+      player.pure_creds = 1000000
       player.save!
 
       @params = {

@@ -5789,9 +5789,6 @@
     <label.soundForPrivateMsg value="Private message sound" />
     <label.soundForAllianceMsg value="Alliance message sound" />
     <label.noSound value="None"/>
-    <label.sound.beep_short value="Beep"/>
-    <label.sound.beep value="Plom"/>
-    <label.sound.notification1 value="Clonkt"/>
   </PlayerOptions>
 
   <PlanetBoss>

@@ -288,7 +288,7 @@ describe PlanetsController do
   
   describe "planets|remove_foliage" do
     before(:each) do
-      player.creds = Cfg.foliage_removal_cost(3, 4)
+      player.pure_creds = Cfg.foliage_removal_cost(3, 4)
       player.save!
       @planet = Factory.create(:planet, :player => player)
       @tile = Factory.create(:t_folliage_3x4, :planet => @planet, 
@@ -387,7 +387,7 @@ describe PlanetsController do
   describe "planets|boost" do
     before(:each) do
       @planet = Factory.create(:planet, :player => player)
-      player.creds = CONFIG['creds.planet.resources.boost.cost']
+      player.pure_creds = CONFIG['creds.planet.resources.boost.cost']
       player.save!
 
       @action = "planets|boost"

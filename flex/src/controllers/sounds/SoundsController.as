@@ -59,17 +59,19 @@ package controllers.sounds {
       {
          sounds = from;
          var names: Array = [];
-         // For 'none' in sound selection
-         names.push(new MSound(Localizer.string('PlayerOptions',
-            'label.noSound'), null));
          for (var source: String in sounds)
          {
             var parts: Array = source.split('/');
-            names.push(new MSound(Localizer.string('PlayerOptions',
-               'label.sound.' + (parts[parts.length-1] as String).slice(
-               0, (parts[parts.length-1] as String).length-4)),
-               source.slice(0, source.length-4)));
+            var nameWithExt: String = parts[parts.length - 1] as String;
+            var name: String = nameWithExt.slice(0, nameWithExt.length - 4);
+            names.push(new MSound(name, source.slice(0, source.length - 4)));
          }
+
+         names.sortOn("name");
+         // For 'none' in sound selection.
+         names.unshift(
+            new MSound(Localizer.string('PlayerOptions', 'label.noSound'), null)
+         );
          soundNames = new ArrayCollection(names);
       }
 

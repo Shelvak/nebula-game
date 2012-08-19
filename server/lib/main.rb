@@ -49,9 +49,11 @@ trap("TERM", &stop_server)
 #  ! Celluloid::Actor[:server].alive?
 #)
 
-LOGGER.info "Starting EventMachine."
+host = "0.0.0.0"
+port = CONFIG['server']['port']
+LOGGER.info "Starting EventMachine at #{host}:#{port}."
 EventMachine::run {
-  EventMachine::start_server "0.0.0.0", CONFIG['server']['port'], ServerMachine
+  EventMachine::start_server host, port, ServerMachine
   EventMachine::add_periodic_timer(1) do
     if \
         # Normal server shutdown.

@@ -7,8 +7,9 @@ describe MarketRate do
   let(:from_kind) { MarketOffer::KIND_METAL }
   let(:to_kind) { MarketOffer::KIND_ENERGY }
   let(:model) do
-    Factory.create(:market_rate, :galaxy => galaxy, :from_kind => from_kind,
-                   :to_kind => to_kind)
+    Factory.create(
+      :market_rate, galaxy: galaxy, from_kind: from_kind, to_kind: to_kind
+    )
   end
 
   describe ".get" do
@@ -22,6 +23,12 @@ describe MarketRate do
     it "should lookup and return record if it exists" do
       MarketRate.get(model.galaxy_id, model.from_kind, model.to_kind).
         should == model
+    end
+
+    it "should fail if from_kind == to_kind" do
+      lambda do
+        MarketRate.get(galaxy.id, from_kind, from_kind)
+      end.should raise_error(ArgumentError)
     end
   end
 
@@ -331,6 +338,91 @@ describe MarketRate do
     it "should save record" do
       MarketRate.subtract_amount(model.galaxy_id, model.from_kind, model.to_kind,
         subtracted_amount).should be_saved
+    end
+  end
+  
+  describe ".adjust_rates" do
+    shared_examples_for "stopping on existing offers" do |from_kind, to_kind|
+      it "should not change #to_rate if market offers exist" do
+        # Avoid modifying avg. rate.
+        MarketRate.should_receive(:add).once.and_return(rate)
+        Factory.create(
+          :market_offer, galaxy: galaxy, from_kind: from_kind, to_kind: to_kind
+        )
+        lambda do
+          MarketRate.adjust_rates!(galaxy.id)
+          rate.reload
+        end.should_not change(rate, :to_rate)
+      end
+    end
+
+    MarketOffer::KINDS.each do |from_kind|
+      MarketOffer::KINDS.each do |to_kind|
+        next if from_kind == to_kind
+
+        describe "#{from_kind} -> #{to_kind}" do
+          let(:seed_rate) do
+            seed_amount, seed_rate = Cfg.market_seed(from_kind, to_kind)
+            seed_rate
+          end
+
+          describe "if avg. rate < seed rate" do
+            let(:rate) do
+              Factory.create(
+                :market_rate, galaxy: galaxy, to_rate: seed_rate / 10,
+                from_kind: from_kind, to_kind: to_kind
+              )
+            end
+
+            it_should_behave_like "stopping on existing offers",
+              from_kind, to_kind
+
+            it "should increase avg. rate by diff percentage" do
+              diff = (seed_rate - rate.to_rate) * Cfg.market_adjuster_percentage
+              lambda do
+                MarketRate.adjust_rates!(galaxy.id)
+                rate.reload
+              end.should change(rate, :to_rate).by(diff)
+            end
+          end
+
+          describe "if avg. rate > seed rate" do
+            let(:rate) do
+              Factory.create(
+                :market_rate, galaxy: galaxy, to_rate: seed_rate * 10,
+                from_kind: from_kind, to_kind: to_kind
+              )
+            end
+
+            it_should_behave_like "stopping on existing offers",
+              from_kind, to_kind
+
+            it "should decrease avg. rate by diff percentage" do
+              diff = (rate.to_rate - seed_rate) * Cfg.market_adjuster_percentage
+              lambda do
+                MarketRate.adjust_rates!(galaxy.id)
+                rate.reload
+              end.should change(rate, :to_rate).by(-diff)
+            end
+          end
+
+          describe "if avg. rate == seed_rate" do
+            let(:rate) do
+              Factory.create(
+                :market_rate, galaxy: galaxy, to_rate: seed_rate,
+                from_kind: from_kind, to_kind: to_kind
+              )
+            end
+
+            it "should not change #to_rate" do
+              lambda do
+                MarketRate.adjust_rates!(galaxy.id)
+                rate.reload
+              end.should_not change(rate, :to_rate)
+            end
+          end
+        end
+      end
     end
   end
 end

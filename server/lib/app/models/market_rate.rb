@@ -13,6 +13,10 @@ class MarketRate < ActiveRecord::Base
     #
     # Creates from seed values if it does not exist.
     def get(galaxy_id, from_kind, to_kind)
+      raise ArgumentError,
+        "Cannot get rate from kind #{from_kind} to itself in galaxy #{
+        galaxy_id}!" if from_kind == to_kind
+
       model = where(galaxy_id: galaxy_id, from_kind: from_kind,
                     to_kind: to_kind).first
       if model.nil?
@@ -86,6 +90,36 @@ class MarketRate < ActiveRecord::Base
         ).order(:to_rate).c_select_value
       end
       rate.is_a?(String) ? rate.to_f : rate
+    end
+
+    # Adjust market avg. rates in _galaxy_id_. For each kind pair unless market
+    # offers exist move avg. rate by a percentage to seed rate
+    def adjust_rates!(galaxy_id)
+      MarketOffer::KINDS.each do |from_kind|
+        MarketOffer::KINDS.each do |to_kind|
+          next if from_kind == to_kind
+          next if without_locking {
+            MarketOffer.where(
+              galaxy_id: galaxy_id, from_kind: from_kind, to_kind: to_kind
+            ).exists?
+          }
+
+          rate = get(galaxy_id, from_kind, to_kind)
+          seed_amount, seed_rate = Cfg.market_seed(from_kind, to_kind)
+
+          if rate.to_rate < seed_rate
+            rate.to_rate += (seed_rate - rate.to_rate) *
+              Cfg.market_adjuster_percentage
+          elsif rate.to_rate > seed_rate
+            rate.to_rate -= (rate.to_rate - seed_rate) *
+              Cfg.market_adjuster_percentage
+          end
+
+          rate.save!
+        end
+      end
+
+      true
     end
 
   protected
