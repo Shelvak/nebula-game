@@ -2405,6 +2405,13 @@
       saugumą.</p>
       <p>Paspausk „{0}“ kad prisijungtum iš naujo.</p>
     </message.disconnect.otherLogin>
+
+    <title.disconnect.multiAccount value="Saugumo klaida!" />
+    <message.disconnect.multiAccount>
+      <p>Iš tavo kompiuterio prie tos pačios galaktikos buvo prijungtas dar
+        vienas žaidėjas. Vienu metu galaktikoje su vienu kompiuteriu gali
+        žaisti tik vienas žaidėjas.</p>
+    </message.disconnect.multiAccount>
     
     <title.disconnect.playerErased value="Viso gero!" />
     <message.disconnect.playerErased>

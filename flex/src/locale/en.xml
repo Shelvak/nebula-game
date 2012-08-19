@@ -2277,6 +2277,13 @@
       </p>
       <p>Click '{0}' to reconnect.</p>
     </message.disconnect.otherLogin>
+
+    <title.disconnect.multiAccount value="Security error!" />
+    <message.disconnect.multiAccount>
+      <p>Other player logged in to the same galaxy using this computer.
+        Only one player can play in the same galaxy using one computer
+        at the same time.</p>
+    </message.disconnect.multiAccount>
     
     <title.disconnect.playerErased value="Bye bye!" />
     <message.disconnect.playerErased>
