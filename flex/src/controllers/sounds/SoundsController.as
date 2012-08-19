@@ -18,71 +18,87 @@ package controllers.sounds {
    import utils.locale.Localizer;
 
    public class SoundsController {
+      // Hash of {fullName => MSound}
+      private static var sounds: Object = {};
 
-      private static var sounds: Object;
+      private static const MP3: String = '.mp3';
+      private static const SOUNDS_PREFIX: String = 'sounds/';
+      public static const NOTIFICATION_PREFIX: String = 'notifications/';
 
-      private static var channelNames: Dictionary = new Dictionary(true);
-      private static var channels: Object = {};
-
-      public static const MP3: String = '.mp3';
-
-      public static function playSoundByName(name: String): void
+      /**
+       * Registers sound object to this controller. Strips .mp3 from name.
+       *
+       * @param name full sound name, e.g.: "sounds/notifications/n08.mp3"
+       * @param data
+       */
+      public static function registerSound(name: String, data: Sound): void
       {
-         if (channels[name] == null)
-         {
-            var ch: SoundChannel = Sound(sounds[name]).play();
-            ch.addEventListener(Event.SOUND_COMPLETE, removeChannel);
-            channelNames[ch] = name;
-            channels[name] = ch;
+         if (name.substr(0, SOUNDS_PREFIX.length) == SOUNDS_PREFIX) {
+            name = name.substr(SOUNDS_PREFIX.length);
          }
+         else {
+            throw new ArgumentError(
+               "Sound name '"+name+"' does not start with '"+SOUNDS_PREFIX+
+               "'! Are you sure you're registering a sound?"
+            );
+         }
+         name = stripMp3(name);
+
+         var sound: MSound = new MSound(name, data);
+         sounds[name] = sound;
       }
 
-      public static function playSoundByIndex(index: int, fileExtention: String = MP3): void
+      /**
+       * Fetches sound by name.
+       *
+       * @param name full sound name (must be without .mp3 extension)
+       * @return
+       */
+      public static function fetch(name: String): MSound
       {
-         var name: String = (soundNames.getItemAt(index + 1) as MSound).source;
-         if (channels[name] == null)
-         {
-            const sound: Sound = Sound(sounds[name + fileExtention]);
-            // TODO: this is here as a result of some bug: http://bt.nebula44.com/view.php?id=3694
-            if (sound != null) {
-               const ch: SoundChannel = sound.play();
-               ch.addEventListener(Event.SOUND_COMPLETE, removeChannel);
-               channelNames[ch] = name;
-               channels[name] = ch;
+         const sound: MSound = sounds[name];
+         if (sound == null) {
+            throw new ArgumentError("Unknown sound '"+name+"'!");
+         }
+
+         return sound;
+      }
+
+      /**
+       * Fetches notification sound by basename.
+       * @param basename
+       * @return
+       */
+      public static function fetchNotification(basename: String): MSound
+      {
+         return fetch(NOTIFICATION_PREFIX + basename);
+      }
+
+      /**
+       * Return a vector containing sounds to which callback returned true.
+       *
+       * @param callback callback function with one argument (MSound).
+       * @return
+       */
+      public static function filter(callback: Function): Vector.<MSound>
+      {
+         const vector: Vector.<MSound> = new Vector.<MSound>();
+         for each (var sound: MSound in sounds) {
+            if (callback(sound)) {
+               vector.push(sound);
             }
          }
+
+         return vector;
       }
 
-      [Bindable]
-      public static var soundNames: ArrayCollection;
-
-      public static function loadSounds(from: Object): void
+      private static function stripMp3(name: String): String
       {
-         sounds = from;
-         var names: Array = [];
-         for (var source: String in sounds)
-         {
-            var parts: Array = source.split('/');
-            var nameWithExt: String = parts[parts.length - 1] as String;
-            var name: String = nameWithExt.slice(0, nameWithExt.length - 4);
-            names.push(new MSound(name, source.slice(0, source.length - 4)));
+         const extension: String = name.substr(name.length - 4, 4);
+         if (extension == MP3) {
+            name = name.substr(0, name.length - 4);
          }
-
-         names.sortOn("name");
-         // For 'none' in sound selection.
-         names.unshift(
-            new MSound(Localizer.string('PlayerOptions', 'label.noSound'), null)
-         );
-         soundNames = new ArrayCollection(names);
-      }
-
-      private static function removeChannel(e: Event): void
-      {
-         var ch: SoundChannel = SoundChannel(e.currentTarget);
-         ch.removeEventListener(Event.SOUND_COMPLETE, removeChannel);
-         var name: String = channelNames[ch];
-         channels[name] = null;
-         channelNames[ch] = null;
+         return name;
       }
    }
 }

@@ -464,12 +464,12 @@ package utils.assets
          dispatchProgressEvent(e);
          unpackSoundModule(e.module);
       }
+
       /**
        * Called when all modules have been downloaded and unpacked.
        */
       private function finalizeDownload() : void
       {
-         SoundsController.loadSounds(sounds);
          for each (var mLoader: LoaderObject in _swfLoaders)
          {
             loadersHash[mLoader.loader] = null;
@@ -510,17 +510,16 @@ package utils.assets
          }
       }
 
-      private var sounds: Object = {};
-
       /**
-       * Unpacks a sound module
+       * Unpack sound module and register all sounds.
        */
       private function unpackSoundModule(moduleInfo:IModuleInfo) : void
       {
          _swfHash = moduleInfo.factory.create().getAssetsHash();
          for (var name:String in _swfHash)
          {
-            sounds[name] = new _swfHash[name]() as Sound;
+            var sound: Sound = new _swfHash[name]() as Sound;
+            SoundsController.registerSound(name, sound);
          }
          downloadNextModule();
       }

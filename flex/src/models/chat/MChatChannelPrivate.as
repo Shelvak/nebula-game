@@ -48,7 +48,8 @@ package models.chat
          super.receiveMessage(message);
          if (!visible && PlayerOptions.soundForPrivateMsg != PlayerOptions.NO_SOUND)
          {
-            SoundsController.playSoundByIndex(PlayerOptions.soundForPrivateMsg);
+            SoundsController.
+               fetchNotification(PlayerOptions.soundForPrivateMsg).play();
          }
       }
       

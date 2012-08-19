@@ -1,7 +1,13 @@
 package models.player {
    import com.adobe.utils.ArrayUtil;
 
+   import controllers.sounds.SoundsController;
+
+   import models.sound.MSound;
+
    import mx.collections.ArrayCollection;
+
+   import utils.locale.Localizer;
 
    public class PlayerOptions {
       public static const IGNORE_TYPE_COMPLETE: String = 'complete';
@@ -16,7 +22,7 @@ package models.player {
       public static const MIN_EVENT_SHOW_TIME: int = 1;
       public static const MAX_EVENT_SHOW_TIME: int = 30;
 
-      public static const NO_SOUND: int = -1;
+      public static const NO_SOUND: String = "";
 
       public static function loadOptions (options: Object, justRefreshOriginalData: Boolean = false): void
       {
@@ -176,13 +182,61 @@ package models.player {
 
       /*### Sound options ###*/
 
-      [Bindable]
-      public static var soundForNotification: int = NO_SOUND;
+      private static var notificationSoundsCollection: ArrayCollection;
+
+      public static function notificationSounds(): ArrayCollection
+      {
+         if (notificationSoundsCollection != null) {
+            return notificationSoundsCollection;
+         }
+
+         var names: Array = [];
+         var sounds: Vector.<MSound> = SoundsController.filter(
+            function(sound: MSound): Boolean {
+               return sound.name.
+                  indexOf(SoundsController.NOTIFICATION_PREFIX) == 0;
+            }
+         );
+
+         for each (var sound: MSound in sounds) {
+            names.push(new PlayerSoundOption(sound.basename, sound));
+         }
+         names.sortOn("name");
+
+         // For 'none' in sound selection.
+         names.unshift(
+            new PlayerSoundOption(
+               Localizer.string('PlayerOptions', 'label.noSound'), null
+            )
+         );
+
+         notificationSoundsCollection = new ArrayCollection(names);
+         return notificationSoundsCollection;
+      }
+
+      public static function notificationSoundIndex(name: String): int
+      {
+         var options: Array = notificationSounds().source;
+         var index: uint = 0;
+         for each (var soundOption: PlayerSoundOption in options) {
+            if (soundOption.name == name) {
+               return index;
+            }
+            else {
+               index++;
+            }
+         }
+
+         return -1;
+      }
 
       [Bindable]
-      public static var soundForPrivateMsg: int = NO_SOUND;
+      public static var soundForNotification: String = NO_SOUND;
 
       [Bindable]
-      public static var soundForAllianceMsg: int = NO_SOUND;
+      public static var soundForPrivateMsg: String = NO_SOUND;
+
+      [Bindable]
+      public static var soundForAllianceMsg: String = NO_SOUND;
    }
 }

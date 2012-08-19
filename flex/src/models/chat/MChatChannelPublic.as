@@ -24,7 +24,8 @@ package models.chat
          if (isAlliance && !visible
             && PlayerOptions.soundForAllianceMsg != PlayerOptions.NO_SOUND)
          {
-            SoundsController.playSoundByIndex(PlayerOptions.soundForAllianceMsg);
+            SoundsController.
+               fetchNotification(PlayerOptions.soundForAllianceMsg).play();
          }
       }
 

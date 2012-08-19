@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<s:Button
+  xmlns:fx="http://www.adobe.com/2006/mxml"
+  xmlns:s="library://ns.adobe.com/flex/spark"
+  skinClass="components.skins.PlayButtonSkin"
+  click="PlayerSoundOption(dropDown.selectedItem).play()"
+>
+   <fx:Script><![CDATA[
+      import models.player.PlayerSoundOption;
+      import spark.components.DropDownList;
+
+      public var dropDown: DropDownList;
+   ]]></fx:Script>
+</s:Button>

@@ -3,8 +3,9 @@
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:screens="components.screens.*"
          xmlns:base="components.base.*"
+         xmlns:playeroptions="components.playeroptions.*"
          width="100%" height="100%"
-  creationComplete="creationCompleteHandler(event)">
+         creationComplete="creationCompleteHandler(event)">
    <fx:Library>
       <fx:Definition name="VerticalSectionLayout">
          <s:VerticalLayout horizontalAlign="justify" gap="10"
@@ -21,6 +22,7 @@
 
 
      import models.player.PlayerOptions;
+     import models.player.PlayerSoundOption;
      import models.sound.MSound;
 
      import mx.core.LayoutDirection;
@@ -298,58 +300,61 @@
                  <s:Group>
                    <s:Label text="{getString('label.soundForNotification')}"
                             minWidth="180"/>
-                   <s:DropDownList dataProvider="{SoundsController.soundNames}"
-                                   id="soundForNotification"
-                                   minWidth="180"
-                                   selectedIndex="{PlayerOptions.soundForNotification + 1}"
-                                   change="PlayerOptions.soundForNotification =
-                                      soundForNotification.selectedIndex - 1;
-                                      PlayerOptions.changed()"
-                                   labelField="name"/>
-                   <s:Button skinClass="components.skins.PlayButtonSkin"
-                              enabled="{MSound(soundForNotification.selectedItem).source != null}"
-                              click="SoundsController.playSoundByIndex(
-                              soundForNotification.selectedIndex - 1)"/>
+                   <s:DropDownList
+                      dataProvider="{PlayerOptions.notificationSounds()}"
+                      id="soundForNotification"
+                      minWidth="180"
+                      selectedIndex="{PlayerOptions.notificationSoundIndex(
+                         PlayerOptions.soundForNotification
+                      )}"
+                      change="PlayerOptions.soundForNotification =
+                         PlayerSoundOption(soundForNotification.selectedItem).name;
+                         PlayerOptions.changed()"
+                      labelField="name"/>
+                   <playeroptions:SoundPlayButton
+                      dropDown="{soundForNotification}" />
                    <s:layout>
-                     <s:HorizontalLayout paddingLeft="15" verticalAlign="middle"/>
+                      <s:HorizontalLayout paddingLeft="15" verticalAlign="middle"/>
                    </s:layout>
                  </s:Group>
                  <s:Group>
                     <s:Label text="{getString('label.soundForAllianceMsg')}"
                              minWidth="180"/>
-                    <s:DropDownList dataProvider="{SoundsController.soundNames}"
-                                    id="soundForAllianceMsg"
-                                    minWidth="180"
-                                    selectedIndex="{PlayerOptions.soundForAllianceMsg + 1}"
-                                    change="PlayerOptions.soundForAllianceMsg =
-                                       soundForAllianceMsg.selectedIndex - 1;
-                                       PlayerOptions.changed()"
-                                    labelField="name"/>
-                    <s:Button skinClass="components.skins.PlayButtonSkin"
-                               enabled="{MSound(soundForAllianceMsg.selectedItem).source != null}"
-                               click="SoundsController.playSoundByIndex(
-                               soundForAllianceMsg.selectedIndex - 1)"/>
+                   <s:DropDownList
+                      dataProvider="{PlayerOptions.notificationSounds()}"
+                      id="soundForAllianceMsg"
+                      minWidth="180"
+                      selectedIndex="{PlayerOptions.notificationSoundIndex(
+                         PlayerOptions.soundForAllianceMsg
+                      )}"
+                      change="PlayerOptions.soundForAllianceMsg =
+                         PlayerSoundOption(soundForAllianceMsg.selectedItem).name;
+                         PlayerOptions.changed()"
+                      labelField="name"/>
+                   <playeroptions:SoundPlayButton
+                      dropDown="{soundForAllianceMsg}" />
                    <s:layout>
-                     <s:HorizontalLayout paddingLeft="15" verticalAlign="middle"/>
+                      <s:HorizontalLayout paddingLeft="15" verticalAlign="middle"/>
                    </s:layout>
                  </s:Group>
                  <s:Group>
                     <s:Label text="{getString('label.soundForPrivateMsg')}"
-                      minWidth="180"/>
-                    <s:DropDownList dataProvider="{SoundsController.soundNames}"
-                                    id="soundForPrivateMsg"
-                                    minWidth="180"
-                                    selectedIndex="{PlayerOptions.soundForPrivateMsg + 1}"
-                                    change="PlayerOptions.soundForPrivateMsg =
-                                      soundForPrivateMsg.selectedIndex - 1;
-                                      PlayerOptions.changed()"
-                                    labelField="name"/>
-                    <s:Button skinClass="components.skins.PlayButtonSkin"
-                               enabled="{MSound(soundForPrivateMsg.selectedItem).source != null}"
-                               click="SoundsController.playSoundByIndex(
-                               soundForPrivateMsg.selectedIndex - 1)"/>
+                       minWidth="180"/>
+                   <s:DropDownList
+                      dataProvider="{PlayerOptions.notificationSounds()}"
+                      id="soundForPrivateMsg"
+                      minWidth="180"
+                      selectedIndex="{PlayerOptions.notificationSoundIndex(
+                         PlayerOptions.soundForPrivateMsg
+                      )}"
+                      change="PlayerOptions.soundForPrivateMsg =
+                         PlayerSoundOption(soundForPrivateMsg.selectedItem).name;
+                         PlayerOptions.changed()"
+                      labelField="name"/>
+                   <playeroptions:SoundPlayButton
+                      dropDown="{soundForPrivateMsg}" />
                    <s:layout>
-                     <s:HorizontalLayout paddingLeft="15" verticalAlign="middle"/>
+                      <s:HorizontalLayout paddingLeft="15" verticalAlign="middle"/>
                    </s:layout>
                  </s:Group>
               </s:Group>
