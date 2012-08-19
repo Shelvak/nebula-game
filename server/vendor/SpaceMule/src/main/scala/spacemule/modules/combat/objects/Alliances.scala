@@ -8,11 +8,11 @@ import spacemule.modules.combat.Combat
 
 object Alliances {
   // alliance id -> alliance data
-  type DataMap = Map[Long, Map[String, Any]]
+  type DataMap = sc.Map[Long, Map[String, Any]]
   // alliance id -> alliance
-  type AlliancesMap = Map[Long, Alliance]
+  type AlliancesMap = sc.Map[Long, Alliance]
   // alliance id -> Seq[enemy alliance ids]
-  type EnemiesMap = Map[Long, IndexedSeq[Long]]
+  type EnemiesMap = sc.Map[Long, IndexedSeq[Long]]
 
   /**
    * Group players to map where keys are alliance ids and values are alliances.
@@ -27,38 +27,29 @@ object Alliances {
     napRules: Combat.NapRules,
     combatants: sc.Set[Combatant]
   ): Alliances = {
-    val notAllied: Long = 0
+    var notAlliedId: Long = 0
+    def nextNotAlliedId() = {
+      notAlliedId -= 1
+      notAlliedId
+    }
 
     // Players grouped by alliance ids, not allied players are in one alliance.
-    val grouped = players.groupBy { player =>
-      player match {
-        // Actual player
-        case Some(p) => p.allianceId
-        // NPC
-        case None => None
+    val grouped: sc.Map[Long, sc.Set[Option[Player]]] =
+      players.groupBy {
+        case Some(player) => player.allianceId.getOrElse { nextNotAlliedId() }
+        case None => nextNotAlliedId()
       }
-    }.map { case (allianceId, plrs) =>
-        (allianceId.getOrElse(notAllied) -> plrs) }
-
-    // Players grouped by alliance ids, not allied players have been given
-    // negative alliance ids.
-    var notAlliedId = notAllied
-    val expanded = (
-      (grouped - notAllied) ++
-        grouped.getOrElse(notAllied, Set.empty[Option[Player]]).map { player =>
-          notAlliedId -= 1
-          (notAlliedId -> Set(player))
-        }
-    )
 
     // Player -> alliance ID cache.
-    val cache: Map[Option[Player], Long] = expanded.map {
-      case (allianceId, plrs) =>
-        plrs.map { player => (player -> allianceId) }
-    }.flatten.toMap
+    val cache = grouped.foldLeft(Map.empty[Option[Player], Long]) {
+      case (map, (allianceId, plrs)) =>
+        plrs.foldLeft(map) { case (innerMap, player) =>
+          innerMap.updated(player, allianceId)
+        }
+    }
 
     // Create alliance id -> alliance map wth players and combatants.
-    val alliances = expanded.map { case (allianceId, plrs) =>
+    val alliances = grouped.map { case (allianceId, plrs) =>
       // Filter combatants that belong to this alliance.
       val allianceCombatants = combatants.filter { c =>
         cache(c.player) == allianceId
@@ -72,10 +63,9 @@ object Alliances {
 
     val allianceIds = alliances.keySet
     val enemies = alliances.map { case (allianceId, plrs) =>
-        (allianceId -> (
-            allianceIds - allianceId -- 
-              napRules.getOrElse(allianceId, Set.empty)
-        ).toIndexedSeq)
+      allianceId -> (
+        allianceIds - allianceId -- napRules.getOrElse(allianceId, Set.empty)
+      ).toIndexedSeq
     }
 
     new Alliances(planetOwner, alliances, enemies, cache)

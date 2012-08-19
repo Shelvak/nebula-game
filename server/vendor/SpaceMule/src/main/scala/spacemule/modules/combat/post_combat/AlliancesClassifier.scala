@@ -1,6 +1,7 @@
 package spacemule.modules.combat.post_combat
 
 import spacemule.modules.combat.objects._
+import scala.{collection => sc}
 
 object Classification extends Enumeration {
   val Friend = Value(0, "friend")
@@ -10,11 +11,11 @@ object Classification extends Enumeration {
 
 object AlliancesClassifier {
   // Map[key, value]
-  type Perspective = Map[String, Any]
+  type Perspective = sc.Map[String, Any]
   // alliance id -> entry map
-  type Entry = Map[Long, Perspective]
+  type Entry = sc.Map[Long, Perspective]
   // player id -> entry
-  type ClassificationMap = Map[Long, Entry]
+  type ClassificationMap = sc.Map[Long, Entry]
 }
 
 /**
