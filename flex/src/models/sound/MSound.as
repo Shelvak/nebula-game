@@ -44,8 +44,16 @@ package models.sound {
       public function play(allowOverlapping: Boolean = false): void {
          if (allowOverlapping || channels.length == 0) {
             const channel: SoundChannel = source.play();
-            channel.addEventListener(Event.SOUND_COMPLETE, removeChannel);
-            channels.push(channel);
+            /**
+             * From Flash ASDoc:
+             *
+             * This method returns null if you have no sound card or if you run out of available
+             * sound channels. The maximum number of sound channels available at once is 32.
+             */
+            if (channel != null) {
+               channel.addEventListener(Event.SOUND_COMPLETE, removeChannel);
+               channels.push(channel);
+            }
          }
       }
 
