@@ -107,6 +107,7 @@ class Galaxy < ActiveRecord::Base
       create_metal_system_offer_callback(galaxy)
       create_energy_system_offer_callback(galaxy)
       create_zetium_system_offer_callback(galaxy)
+      adjust_market_rates_callback(galaxy)
 
       galaxy
     end
@@ -124,8 +125,9 @@ class Galaxy < ActiveRecord::Base
 
     CONFIG.with_set_scope(ruleset) do
       player = Player.new(
-        galaxy_id: galaxy_id, web_user_id: web_user_id, name: name, trial: trial,
-        planets_count: 1, population_cap: Building::Mothership.population(1),
+        galaxy_id: galaxy_id, web_user_id: web_user_id, name: name,
+        trial: trial, planets_count: 1,
+        population_cap: Building::Mothership.population(1),
         free_creds: Cfg.player_starting_creds
       )
       player.save!
@@ -187,6 +189,15 @@ class Galaxy < ActiveRecord::Base
   CREATE_ZETIUM_SYSTEM_OFFER_SCOPE = DScope.world
   def self.create_zetium_system_offer_callback(galaxy)
     MarketOffer.create_system_offer(galaxy.id, MarketOffer::KIND_ZETIUM).save!
+  end
+
+  ADJUST_MARKET_RATES_SCOPE = DScope.world
+  def self.adjust_market_rates_callback(galaxy)
+    MarketRate.adjust_rates!(galaxy.id)
+    CallbackManager.register(
+      galaxy, CallbackManager::EVENT_ADJUST_MARKET_RATES,
+      Cfg.market_adjuster_next_date
+    )
   end
 
   # Saves statistical galaxy data for when somebody wins the galaxy.

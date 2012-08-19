@@ -258,6 +258,21 @@ class Cfg
       market_bot_random_resource_cooldown.seconds.from_now
     end
 
+    # @return [Fixnum] period in seconds
+    def market_adjuster_period
+      CONFIG['market.adjuster.period']
+    end
+
+    # @return [Time] next adjustment date
+    def market_adjuster_next_date
+      market_adjuster_period.from_now
+    end
+
+    # @return [Float] percentage: (0.0, 1]
+    def market_adjuster_percentage
+      CONFIG['market.adjuster.percentage'].to_f
+    end
+
     ### notifications.yml ###
 
     # Number of notifications sent to player.

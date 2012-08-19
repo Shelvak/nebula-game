@@ -37,6 +37,8 @@ class CallbackManager
   EVENT_CREATE_ENERGY_SYSTEM_OFFER = 13
   # Create system offer for creds -> zetium in galaxy.
   EVENT_CREATE_ZETIUM_SYSTEM_OFFER = 14
+  # Adjust market rates in the galaxy
+  EVENT_ADJUST_MARKET_RATES = 15
   
   TYPES = {
     EVENT_UPGRADE_FINISHED => :upgrade_finished,
@@ -54,6 +56,7 @@ class CallbackManager
     EVENT_CREATE_METAL_SYSTEM_OFFER => :create_metal_system_offer,
     EVENT_CREATE_ENERGY_SYSTEM_OFFER => :create_energy_system_offer,
     EVENT_CREATE_ZETIUM_SYSTEM_OFFER => :create_zetium_system_offer,
+    EVENT_ADJUST_MARKET_RATES => :adjust_market_rates,
   }
 
   CLASS_TO_COLUMN = {

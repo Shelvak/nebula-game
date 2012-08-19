@@ -50,7 +50,7 @@ battle.vp_zones: [<%= Location::GALAXY %>, <%= Location::SOLAR_SYSTEM %>, <%=
   Location::SS_OBJECT %>]
 # Points formula for fairness multiplier calculations.
 # Vars: economy, science, army, war, victory
-battle.fairness_points: economy / 2 + science / 2 + army + victory * 10
+battle.fairness_points: economy / 2 + science / 2 + army + victory * 50
 # Values below this for defender_points / attacker_points map to 0.
 battle.max_weakness: 0.7
 # How much victory points does these battles give?

@@ -19,3 +19,6 @@
 [submodule "server/vendor/plugins/game_server_connector"]
 	path = server/vendor/plugins/game_server_connector
 	url = git@thor.nebula44.com:nebula-game-server-connector.git
+[submodule "assets"]
+	path = assets
+	url = git@thor.nebula44.com:nebula-game-assets.git

@@ -21,7 +21,8 @@ package controllers.objects.actions.customcontrollers
          {
             if (PlayerOptions.soundForNotification != PlayerOptions.NO_SOUND)
             {
-               SoundsController.playSoundByIndex(PlayerOptions.soundForNotification);
+               SoundsController.
+                  fetchNotification(PlayerOptions.soundForNotification).play();
             }
             return NotificationFactory.fromObject(object);
          }

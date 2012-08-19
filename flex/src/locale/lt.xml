@@ -5880,9 +5880,6 @@
     <label.soundForPrivateMsg value="Privačių žinučių garsas" />
     <label.soundForAllianceMsg value="Sąjungos žinučių garsas" />
     <label.noSound value="Išjungta"/>
-    <label.sound.beep_short value="Pyp"/>
-    <label.sound.beep value="Klinkt"/>
-    <label.sound.notification1 value="Pliumpt"/>
   </PlayerOptions>
 
   <PlanetBoss>

@@ -23,6 +23,7 @@ class MarketOffer < ActiveRecord::Base
   KIND_ENERGY = 1
   KIND_ZETIUM = 2
   KIND_CREDS = 3
+  KINDS = [KIND_METAL, KIND_ENERGY, KIND_ZETIUM, KIND_CREDS]
   
   # Maps resource kind to callback manager event kind.
   CALLBACK_MAPPINGS = {

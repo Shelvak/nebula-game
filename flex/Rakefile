@@ -3,9 +3,11 @@ require 'rake'
 require 'fileutils'
 require 'digest/sha1'
 require 'socket'
+require 'yaml'
 
 basedir = File.dirname(__FILE__)
-load basedir + '/../Rakefile'
+load basedir + '/../server/Rakefile'
+Dir[basedir + '/tasks/*.rb'].each(&method(:require))
 
 namespace :build do
   # Required flash version
@@ -18,7 +20,7 @@ namespace :build do
     "FLEX_HOME environment variable is not set!"
   )
   as3_st = "#{basedir}/vendor/as3_st.jar"
-  FCSH = File.join(FLEX_HOME, "bin", windows? ? "fcsh.exe" : "fcsh")
+  FCSH = File.join(FLEX_HOME, "bin", Rake::Win32.windows? ? "fcsh.exe" : "fcsh")
   FCSHD_PORT = "53000"
   FCSHD = "#{basedir}/vendor/FlexShellScript.jar"
   src_dir = "#{basedir}/src"
@@ -34,7 +36,14 @@ namespace :build do
     #{html_extras_dir}/images
   }
   locale_dir = "#{src_dir}/locale"
-  assets_dir = "#{src_dir}/assets"
+  assets_dir = File.expand_path("#{basedir}/../assets")
+  raw_assets_dir = "#{assets_dir}/data"
+  bundles_yml = "#{raw_assets_dir}/bundles.yml"
+  anti_avast = "#{raw_assets_dir}/avastSucks.png"
+  assets_config_dir = "#{assets_dir}/current/config"
+  prepared_assets_dir = "#{assets_dir}/current/bundled-prepared"
+  compiled_assets_dir = "#{assets_dir}/current/bundled-compiled"
+  src_assets_dir = "#{src_dir}/assets"
   lib_dir = "#{basedir}/libs"
   output_dir = "#{basedir}/target"
   bin_dir = "#{output_dir}/bin"
@@ -150,6 +159,25 @@ namespace :build do
     file_name.sub(/\.(\w+)$/, "-#{checksum}.\\1")
   end
 
+  def remove_glob(path)
+    info "Removing: #{path}"
+    files = Dir[path]
+    FileUtils.rm_r files unless files.blank?
+  end
+
+  # Copies all files matched by glob. #copy is taken by Rake method.
+  def copy_glob(base_dir, glob, destination)
+    FileUtils.mkdir_p destination
+    Dir[File.join(base_dir, glob)].each do |path|
+      info "Copying #{path}"
+      basename = path.sub(/^#{base_dir}#{File::SEPARATOR}?/, '')
+
+      target = "#{destination}/#{basename}"
+      FileUtils.mkdir_p File.dirname(target)
+      FileUtils.cp path, target
+    end
+  end
+
   # Copies all files matched by glob, and writes their new names into
   # destination/checksums
   def copy_and_checksum(base_dir, glob, destination)
@@ -169,20 +197,69 @@ namespace :build do
     File.open("#{destination}/checksums", "wb") { |f| f.write checksums }
   end
 
-  desc "Remove all directories created during the build process."
-  task :clean do
-    info "Removing #{output_dir}."
-    FileUtils.rm_rf output_dir
+  namespace :clean do
+    desc "Remove all generated asset files."
+    task :assets do
+      [
+        "#{compiled_assets_dir}/*.swf", "#{compiled_assets_dir}/assets/*.as",
+        "#{assets_config_dir}/*.yml", "#{prepared_assets_dir}/*"
+      ].each do |path|
+        remove_glob(path)
+      end
+    end
+
+    desc "Remove all generated swf files."
+    task :swf do
+      remove_glob(output_dir)
+    end
   end
 
+  desc "Remove all files created during the build process."
+  task :clean => ["build:clean:assets", "build:clean:swf"]
+
   namespace :prepare do
-    desc "Synchronize assets with wiki"
+    desc "Checks locales for validity."
+    task :locales do
+      checker = Tasks::LocaleChecker.new(locale_dir)
+      checker.check
+      checker.report
+    end
+
+    desc "Compile raw assets into SWFs."
     task :assets do
-      info "Synchronizing assets" do
-        Rake::Task['wiki:files:sync'].invoke
+      info "Preparing assets" do
+        processor = Tasks::Assets::Processor.new(
+          "#{raw_assets_dir}/bundled", prepared_assets_dir, assets_config_dir,
+          ENV['debug'] == "1"
+        )
+        processor.invoke
+      end
+    end
+
+    desc "Generate files needed for bundle compilation."
+    task :bundles do
+      bundler = Tasks::Assets::Bundler.from_yaml(bundles_yml)
+      info "Generating AssetsBundle.as" do
+        File.open(File.join(src_dir, 'assets', 'AssetsBundle.as'), 'w') do |f|
+          f.write bundler.assets_bundle
+        end
+      end
+      info "Generating AssetsConfig.as" do
+        bundler.generate_assets_config(
+          anti_avast, assets_config_dir, compiled_assets_dir
+        )
+      end
+      info "Generating bundle .as files" do
+        bundler.generate_bundle_files(prepared_assets_dir, compiled_assets_dir)
       end
     end
   end
+
+  prepare_deps = [
+    "build:prepare:locales", "build:prepare:assets", "build:prepare:bundles"
+  ]
+  desc "Run all tasks in prepare namespace."
+  task :prepare => prepare_deps
 
   desc "Launches FCSH daemon."
   task :fcsh do
@@ -202,7 +279,8 @@ namespace :build do
     desc "Compile assets into SWF files"
     task :assets do
       info "Compiling assets" do
-        Rake::Task['flex:assets:build'].invoke
+        bundler = Tasks::Assets::Bundler.from_yaml(bundles_yml)
+        bundler.compile(compiled_assets_dir)
       end
     end
 
@@ -291,6 +369,10 @@ namespace :build do
     end
   end
 
+  compile_deps = ["build:compile:assets", "build:compile:swf"]
+  desc "Compile assets and SWF."
+  task :compile => compile_deps
+
   namespace :copy do
     desc "Copy SWF with prepared html-template to #{dist_dir}"
     task :swf do
@@ -337,25 +419,27 @@ namespace :build do
 
     desc "Copy and checksum locales from html-template to #{dist_locale_dir}"
     task :locales do
-      info "Checking locale syntax and validity" do
-        Rake::Task["flex:locales:check"].invoke
-      end
       copy_and_checksum(locale_dir, "*.xml", dist_locale_dir)
     end
 
     desc "Copy and checksum assets from src/assets to #{dist_locale_dir}"
     task :assets do
-      copy_and_checksum(assets_dir, "*.swf", dist_assets_dir)
+      copy_and_checksum(compiled_assets_dir, "*.swf", dist_assets_dir)
       copy_and_checksum(
-        "#{assets_dir}/unbundled", "**/*.*",
+        "#{raw_assets_dir}/unbundled", "**/*.*",
         File.join(dist_assets_dir, 'unbundled')
       )
     end
-  end
 
-  compile_deps = ["build:compile:assets", "build:compile:swf"]
-  desc "Compile assets and SWF."
-  task :compile => compile_deps
+    desc "Copy and checksum assets from src/assets to #{src_dir}/assets"
+    task :"assets-dev" do
+      copy_glob(compiled_assets_dir, "*.swf", src_assets_dir)
+      copy_glob(
+        "#{raw_assets_dir}/unbundled", "**/*.*",
+        File.join(src_assets_dir, 'unbundled')
+      )
+    end
+  end
 
   copy_deps = ["build:copy:swf", "build:copy:locales", "build:copy:assets"]
   desc "Copy SWF, locales and assets to #{dist_dir}"
@@ -365,7 +449,7 @@ namespace :build do
   task :dist do
     columns = 50
     times = []
-    (["build:prepare:assets"] + compile_deps + copy_deps).each do |task|
+    (prepare_deps + compile_deps + copy_deps).each do |task|
       start_time = Time.now
       Rake::Task[task].invoke
       time_taken = Time.now - start_time

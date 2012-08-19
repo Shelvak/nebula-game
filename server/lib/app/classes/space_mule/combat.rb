@@ -168,12 +168,16 @@ module SpaceMule::Combat
     when ::Combat::STANCE_AGGRESSIVE then CO.Stance.Aggressive
     end
 
+    player = hashed_sm_players[unit.player_id]
+    raise "Cannot find player #{unit.player_id.inspect} for #{unit.inspect
+      } in sm_players (#{hashed_sm_players.inspect}!" if player.nil?
+
     CO.Troop.new(
       unit.id,
       unit.type,
       unit.level,
       unit.hp,
-      hashed_sm_players[unit.player_id],
+      player,
       unit.flank,
       stance,
       unit.xp
