@@ -166,6 +166,23 @@ describe Galaxy do
         end
       end
     end
+
+    describe ".adjust_market_rates_callback" do
+      let(:galaxy) { Factory.create(:galaxy) }
+
+      it "should call MarketRate.adjust_rates!" do
+        MarketRate.should_receive(:adjust_rates!).with(galaxy.id)
+        Galaxy.adjust_market_rates_callback(galaxy)
+      end
+
+      it "should register next callback" do
+        Galaxy.adjust_market_rates_callback(galaxy)
+        galaxy.should have_callback(
+          CallbackManager::EVENT_ADJUST_MARKET_RATES,
+          Cfg.market_adjuster_next_date
+        )
+      end
+    end
   end
 
   describe "#check_if_finished!" do
@@ -486,6 +503,7 @@ describe Galaxy do
     %w{
       spawn_callback create_metal_system_offer_callback
       create_energy_system_offer_callback create_zetium_system_offer_callback
+      adjust_market_rates_callback
     }.each do |method|
       it "should call ##{method}" do
         Galaxy.should_receive(method).with(an_instance_of(Galaxy))

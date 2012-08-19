@@ -49,3 +49,12 @@ bot.resources.range.2: [750, 1500]          # zetium range
 bot.resources.day_divider: 3.0
 # Cooldown range for when system offer is totally bought out.
 bot.resources.cooldown: [<%= 10.minutes %> / speed, <%= 30.minutes %> / speed]
+
+### Market adjuster: return avg. rate back to seed rate if there is no offers.
+
+# How often we should run this adjuster.
+adjuster.period: <%= 1.hour %>
+# Percentage of a difference we should adjust avg. rate. For example: If seed
+# rate is 100 and current rate is 10, and percentage is 0.05, then after
+# adjustment rate would be: 10 + (100 - 10) * 0.05 = 14.5
+adjuster.percentage: 0.05
