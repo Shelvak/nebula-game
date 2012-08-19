@@ -369,7 +369,7 @@ describe AlliancesController do
   describe "alliances|edit" do
     before(:each) do
       @alliance = Factory.create(:alliance, :owner => player)
-      player.creds = CONFIG['creds.alliance.change']
+      player.pure_creds = CONFIG['creds.alliance.change']
       player.alliance = @alliance
       player.save!
 

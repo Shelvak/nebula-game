@@ -290,7 +290,7 @@ describe Galaxy do
       @alliance = create_alliance
       @alliance.owner.alliance_vps   = 8000
       @alliance.owner.victory_points = 10000
-      @alliance.owner.creds          = 5000
+      @alliance.owner.pure_creds     = 5000
       @alliance.owner.save!
 
       @galaxy = @alliance.galaxy
@@ -298,32 +298,32 @@ describe Galaxy do
       @allies = [
         @alliance.owner,
         Factory.create(:player,
-          :alliance => @alliance, :galaxy => @alliance.galaxy,
-          :creds => 10000, :victory_points => 12000, :alliance_vps => 10000),
+          alliance: @alliance, galaxy: @alliance.galaxy,
+          pure_creds: 10000, victory_points: 12000, alliance_vps: 10000),
         Factory.create(:player,
-          :alliance => @alliance, :galaxy => @alliance.galaxy,
-          :creds => 4000, :victory_points => 6000, :alliance_vps => 5000)
+          alliance: @alliance, galaxy: @alliance.galaxy,
+          pure_creds: 4000, victory_points: 6000, alliance_vps: 5000)
       ]
       @alliance_total_creds = @allies.map { |a| a.alliance_vps / 2 }.sum
       @alliance_per_player_creds = @alliance_total_creds / @allies.size
 
-      @non_ally = Factory.create(:player, :galaxy => @alliance.galaxy,
-        :creds => 2000, :victory_points => 6000, :alliance_vps => 5000)
+      @non_ally = Factory.create(:player, galaxy: @alliance.galaxy,
+        pure_creds: 2000, victory_points: 6000, alliance_vps: 5000)
     end
 
     it "should add creds by algorithm" do
       @galaxy.convert_vps_to_creds!
       @allies.each do |player|
-        old_creds = player.creds
+        old_creds = player.pure_creds
         player.reload
         player.pure_creds.should == old_creds +
           (player.victory_points - player.alliance_vps) +
           (player.alliance_vps / 2) + @alliance_per_player_creds
       end
 
-      old_creds = @non_ally.creds
+      old_creds = @non_ally.pure_creds
       @non_ally.reload
-      @non_ally.creds.should == old_creds + @non_ally.victory_points
+      @non_ally.pure_creds.should == old_creds + @non_ally.victory_points
     end
 
     it "should send out notifications" do
@@ -537,7 +537,7 @@ describe Galaxy do
     let(:trial) { true }
     let(:planets_count) { 1 }
     let(:population_cap) { Building::Mothership.population(1) }
-    let(:creds) { 5000 }
+    let(:free_creds) { 5000 }
     let(:pooled_ss) do
       [
         Factory.create(:ss_pooled, galaxy: galaxy),
@@ -560,7 +560,7 @@ describe Galaxy do
       # This ensures that creds are only set if we're wrapped in appropriate
       # ruleset.
       CONFIG.global.add_set(ruleset, 'default')
-      CONFIG.global.store("galaxy.player.creds.starting", ruleset, creds)
+      CONFIG.global.store("galaxy.player.creds.starting", ruleset, free_creds)
       other_ss
       home_ss
     end

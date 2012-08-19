@@ -125,8 +125,9 @@ class Galaxy < ActiveRecord::Base
 
     CONFIG.with_set_scope(ruleset) do
       player = Player.new(
-        galaxy_id: galaxy_id, web_user_id: web_user_id, name: name, trial: trial,
-        planets_count: 1, population_cap: Building::Mothership.population(1),
+        galaxy_id: galaxy_id, web_user_id: web_user_id, name: name,
+        trial: trial, planets_count: 1,
+        population_cap: Building::Mothership.population(1),
         free_creds: Cfg.player_starting_creds
       )
       player.save!

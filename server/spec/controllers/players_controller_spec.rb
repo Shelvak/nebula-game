@@ -332,7 +332,7 @@ describe PlayersController do
 
     describe "players|vip" do
       before(:each) do
-        player.creds = CONFIG['creds.vip'][0][0]
+        player.pure_creds = CONFIG['creds.vip'][0][0]
 
         @action = "players|vip"
         @params = {'vip_level' => 1}
@@ -416,7 +416,7 @@ describe PlayersController do
         @params = {'amount' => 1000}
         player.vip_level = 1
         player.vip_creds = @params['amount']
-        player.creds = @params['amount'] + 100
+        player.pure_creds = @params['amount'] + 100
       end
       
       it_behaves_like "with param options", %w{amount}
