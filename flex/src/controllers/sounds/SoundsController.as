@@ -43,12 +43,21 @@ package controllers.sounds {
          if (channels[name] == null)
          {
             const sound: Sound = Sound(sounds[name + fileExtention]);
-            // TODO: this is here as a result of some bug: http://bt.nebula44.com/view.php?id=3694
+            // Missing sound is not a critical error: just a minor glitch.
             if (sound != null) {
+               /**
+                *  SoundChannel.play() may return null. From ASDoc:
+                *
+                *  This method returns null if you have no sound card or if you run out of
+                *  available sound channels. The maximum number of sound channels available
+                *  at once is 32.
+                */
                const ch: SoundChannel = sound.play();
-               ch.addEventListener(Event.SOUND_COMPLETE, removeChannel);
-               channelNames[ch] = name;
-               channels[name] = ch;
+               if (ch != null) {
+                  ch.addEventListener(Event.SOUND_COMPLETE, removeChannel);
+                  channelNames[ch] = name;
+                  channels[name] = ch;
+               }
             }
          }
       }
