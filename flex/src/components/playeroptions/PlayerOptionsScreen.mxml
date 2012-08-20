@@ -308,7 +308,7 @@
                          PlayerOptions.soundForNotification
                       )}"
                       change="PlayerOptions.soundForNotification =
-                         PlayerSoundOption(soundForNotification.selectedItem).name;
+                         PlayerSoundOption(soundForNotification.selectedItem).value;
                          PlayerOptions.changed()"
                       labelField="name"/>
                    <playeroptions:SoundPlayButton
@@ -328,7 +328,7 @@
                          PlayerOptions.soundForAllianceMsg
                       )}"
                       change="PlayerOptions.soundForAllianceMsg =
-                         PlayerSoundOption(soundForAllianceMsg.selectedItem).name;
+                         PlayerSoundOption(soundForAllianceMsg.selectedItem).value;
                          PlayerOptions.changed()"
                       labelField="name"/>
                    <playeroptions:SoundPlayButton
@@ -348,7 +348,7 @@
                          PlayerOptions.soundForPrivateMsg
                       )}"
                       change="PlayerOptions.soundForPrivateMsg =
-                         PlayerSoundOption(soundForPrivateMsg.selectedItem).name;
+                         PlayerSoundOption(soundForPrivateMsg.selectedItem).value;
                          PlayerOptions.changed()"
                       labelField="name"/>
                    <playeroptions:SoundPlayButton

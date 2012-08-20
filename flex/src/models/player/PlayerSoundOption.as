@@ -14,11 +14,19 @@ package models.player {
    public class PlayerSoundOption {
       [Bindable]
       public var name: String;
+      private var _value: String;
       private var sound: MSound;
 
-      public function PlayerSoundOption(_name: String,  _sound: MSound) {
+      public function PlayerSoundOption(
+         _name: String, value: String, _sound: MSound
+      ) {
          name = _name;
+         _value = value;
          sound = _sound;
+      }
+
+      public function get value(): String {
+         return _value;
       }
 
       public function play(): void {

@@ -3,6 +3,8 @@ package models.player {
 
    import controllers.sounds.SoundsController;
 
+   import controllers.sounds.SoundsController;
+
    import models.sound.MSound;
 
    import mx.collections.ArrayCollection;
@@ -199,14 +201,17 @@ package models.player {
          );
 
          for each (var sound: MSound in sounds) {
-            names.push(new PlayerSoundOption(sound.basename, sound));
+            names.push(
+               new PlayerSoundOption(sound.basename, sound.basename, sound)
+            );
          }
          names.sortOn("name");
 
          // For 'none' in sound selection.
          names.unshift(
             new PlayerSoundOption(
-               Localizer.string('PlayerOptions', 'label.noSound'), null
+               Localizer.string('PlayerOptions', 'label.noSound'), NO_SOUND,
+               null
             )
          );
 
@@ -214,12 +219,12 @@ package models.player {
          return notificationSoundsCollection;
       }
 
-      public static function notificationSoundIndex(name: String): int
+      public static function notificationSoundIndex(value: String): int
       {
          var options: Array = notificationSounds().source;
          var index: uint = 0;
          for each (var soundOption: PlayerSoundOption in options) {
-            if (soundOption.name == name) {
+            if (soundOption.value == value) {
                return index;
             }
             else {
