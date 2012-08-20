@@ -2,8 +2,10 @@ package utils
 {
    import flash.errors.IllegalOperationError;
 
+   import interfaces.IEqualsComparable;
 
-   public class Enum
+
+   public class Enum implements IEqualsComparable
    {
       public function Enum(name: String) {
          const CLASS: Class = Objects.getClass(this);
@@ -24,6 +26,10 @@ package utils
 
       public function toString(): String {
          return "[Enum " + Objects.getClassName(this) + "." + name + "]";
+      }
+
+      public function equals(o: Object): Boolean {
+         return this === o;
       }
    }
 }
