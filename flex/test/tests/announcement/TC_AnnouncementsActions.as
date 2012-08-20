@@ -3,32 +3,32 @@ package tests.announcement
    import asmock.framework.Expect;
    import asmock.framework.MockRepository;
    import asmock.integration.flexunit.IncludeMocksRule;
-   
+
    import components.announcement.AnnouncementPopup;
-   
+
    import controllers.announcements.AnnouncementsCommand;
    import controllers.announcements.actions.NewAction;
    import controllers.startup.StartupInfo;
-   
+
    import ext.hamcrest.object.equals;
    import ext.mocks.Mock;
-   
+
    import models.announcement.MAnnouncement;
-   
+
    import mx.resources.IResourceBundle;
    import mx.resources.ResourceBundle;
    import mx.resources.ResourceManager;
-   
+
    import org.hamcrest.assertThat;
    import org.hamcrest.date.dateEqual;
 
    import utils.DateUtil;
-
    import utils.SingletonFactory;
    import utils.assets.ImagePreloader;
    import utils.locale.Locale;
    import utils.locale.Localizer;
    import utils.remote.rmo.ServerRMO;
+
 
    public class TC_AnnouncementsActions
    {
@@ -67,8 +67,8 @@ package tests.announcement
       [Before]
       public function setUp() : void {         
          repository = new MockRepository();
-         Mock.singleton(repository, ImagePreloader, Mock.TYPE_STUB);
-         Mock.singleton(repository, AnnouncementPopup, Mock.TYPE_STRICT);
+         Mock.singleton(repository, ImagePreloader);
+         Mock.singleton(repository, AnnouncementPopup);
          newAction = new NewAction();
          rmo = new ServerRMO();
          rmo.action = AnnouncementsCommand.NEW;
