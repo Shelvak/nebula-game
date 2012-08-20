@@ -191,7 +191,7 @@ package tests.movement
       public function playerHasEnoughCreds() : void
       {
          const hops: int = 10;
-         player.creds = Unit.getMovementSpeedUpCredsCost(0.25, hops);
+         player.freeCreds = Unit.getMovementSpeedUpCredsCost(0.25, hops);
 
          scpModel.client_internal::setSpeedModifier(1.0);
          assertThat(
@@ -214,7 +214,7 @@ package tests.movement
          assertThat(
             "should dispatch PLAYER_CREDS_CHANGE event when player.creds changes",
             function (): void {
-               player.creds = Unit.getMovementSpeedUpCredsCost(0.75, hops)
+               player.freeCreds = Unit.getMovementSpeedUpCredsCost(0.75, hops)
             },
             causes (scpModel) .toDispatchEvent
                (SpeedControlEvent.PLAYER_CREDS_CHANGE)
