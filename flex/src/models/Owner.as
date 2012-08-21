@@ -1,5 +1,6 @@
 package models
 {
+   // TODO: get rid of this class
    /**
     * Defines 4 available groups of property (unit, squadron and so on) owners.
     * 

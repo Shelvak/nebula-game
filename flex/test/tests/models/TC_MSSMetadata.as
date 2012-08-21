@@ -1,20 +1,25 @@
 package tests.models
 {
-   import ext.hamcrest.collection.array;
    import ext.hamcrest.object.definesProperties;
    import ext.hamcrest.object.definesProperty;
+   import ext.hamcrest.object.equals;
    import ext.hamcrest.object.metadata.withAttribute;
+   import ext.hamcrest.object.metadata.withAttributes;
    import ext.hamcrest.object.metadata.withMetadataTag;
+   import ext.hamcrest.object.metadata.withMetadataTags;
 
    import models.ModelLocator;
-
+   import models.OwnerType;
    import models.solarsystem.MSSMetadata;
-   import models.solarsystem.MSSMetadataOfOwner;
+   import models.solarsystem.MSSMetadataOfPlayer;
 
+   import org.hamcrest.Matcher;
    import org.hamcrest.assertThat;
-   import org.hamcrest.collection.emptyArray;
+   import org.hamcrest.collection.arrayWithSize;
+   import org.hamcrest.collection.hasItem;
+   import org.hamcrest.core.allOf;
    import org.hamcrest.object.isFalse;
-   import org.hamcrest.object.isTrue;
+   import org.hamcrest.object.notNullValue;
 
 
    public class TC_MSSMetadata
@@ -25,6 +30,8 @@ package tests.models
       [Before]
       public function setUp(): void {
          ML = ModelLocator.getInstance();
+         ML.player.id = 1;
+         ML.player.name = "Test1";
          model = new MSSMetadata();
       }
 
@@ -36,83 +43,64 @@ package tests.models
                "playerPlanets": withMetadataTag("Required")
             })
          );
-         for each (var prop:String in ["alliesWithPlanets", "alliesWithShips",
-                                       "enemiesWithPlanets", "enemiesWithShips",
-                                       "napsWithPlanets", "napsWithShips"]) {
-            assertThat(
-               MSSMetadata, definesProperty(
-                  prop, withMetadataTag("Required",
-                  withAttribute("elementType", "models.player.PlayerMinimal")))
-            );
+         for each (var ownerPrefix: String in ["allies", "naps", "enemies"]) {
+            var metadataProp: String = ownerPrefix + "Metadata";
+            var sourceWithPlanetsProp: String = ownerPrefix + "WithPlanets";
+            var sourceWithShipsProp: String = ownerPrefix + "WithShips";
+
+            var requiredMatcher: Matcher = withAttribute(
+               "aggregatesProps", sourceWithPlanetsProp + ", " + sourceWithShipsProp);
+            var propsMapMatchers: Object = new Object();
+            propsMapMatchers[sourceWithPlanetsProp] = "playersWithPlanets";
+            propsMapMatchers[sourceWithShipsProp] = "playersWithShips";
+
+            assertThat(MSSMetadata, definesProperty(metadataProp,
+               withMetadataTags({
+                  "Required": requiredMatcher,
+                  "PropsMap": withAttributes (propsMapMatchers)})
+            ));
          }
       }
 
       [Test]
       public function playerMetadata(): void {
-         model.playerPlanets = false;
-         assertThat("planets", model.playerMetadata.planets, emptyArray());
-         assertThat(
-            "should not have planets if playerPlanets is false",
-            model.playerMetadata.hasPlanets, isFalse()
-         );
-         model.playerPlanets = true;
-         assertThat("planets", model.playerMetadata.planets, array (ML.player));
-         assertThat(
-            "should have planets if playerPlanets is true",
-            model.playerMetadata.hasPlanets, isTrue()
-         );
 
-         model.playerShips = false;
-         assertThat("ships", model.playerMetadata.ships, emptyArray());
-         assertThat(
-            "should not have ships if playerShips is false",
-            model.playerMetadata.hasPlanets, isTrue()
-         );
-         model.playerShips = true;
-         assertThat("ships", model.playerMetadata.ships, array (ML.player));
-         assertThat(
-            "should have ships if playerShips is true",
-            model.playerMetadata.hasPlanets, isTrue()
-         );
-      }
-
-      [Test]
-      public function hasPlanetsAndShipsProperties(): void {
-         testOwnerMetadata("allies");
-         testOwnerMetadata("naps");
-         testOwnerMetadata("enemies");
-      }
-
-      private function testOwnerMetadata(propPrefix: String): void {
-         const planetsListName: String = propPrefix + "WithPlanets";
-         const shipsListName: String = propPrefix + "WithShips";
-         const metadataName: String = propPrefix + "Metadata";
-
-         function ownerMeta(): MSSMetadataOfOwner {
-            return model[metadataName];
+         function $metadata(hasPlanets: Boolean, hasShips: Boolean): MSSMetadataOfPlayer {
+            return new MSSMetadataOfPlayer(ML.player, OwnerType.PLAYER, hasPlanets, hasShips);
          }
 
-         model[planetsListName] = [];
+         model.playerPlanets = false;
+         model.playerShips = false;
          assertThat(
-            planetsListName + ": should not have planets if there are no "
-               + propPrefix + " players in the list",
-            ownerMeta().hasPlanets, isFalse());
-         model[shipsListName] = [];
+            "should have metadata instance if playerPlanets and playerShips are false",
+            model.playerMetadata, notNullValue());
          assertThat(
-            shipsListName + ": should not have ships if there are no "
-               + propPrefix + " players in the list",
-            ownerMeta().hasShips, isFalse());
+            "metadata instance should not have anything if playerShips and playerPlanets is false",
+            model.playerMetadata.hasSomething, isFalse());
 
-         model[planetsListName] = ["test"];
+         model.playerPlanets = true;
+         model.playerShips = false;
          assertThat(
-            planetsListName + ": should have planets if there are any "
-               + propPrefix + " players in the list",
-            ownerMeta().hasPlanets, isTrue());
-         model[shipsListName] = ["test"];
+            "should have single metadata entry if playerPlanets is true and playerShips is false",
+            model.playerMetadata.playersMetadata, allOf(
+               arrayWithSize (1),
+               hasItem (equals ($metadata(true, false)))));
+
+         model.playerPlanets = false;
+         model.playerShips = true;
          assertThat(
-            shipsListName + ": should have ships if there are any "
-               + propPrefix + " players in the list",
-            ownerMeta().hasShips, isTrue());
+            "should have single metadata entry if playerPlanets is false and playerShips is true",
+            model.playerMetadata.playersMetadata, allOf(
+               arrayWithSize (1),
+               hasItem (equals ($metadata(false, true)))));
+
+         model.playerPlanets = true;
+         model.playerShips = true;
+         assertThat(
+            "should have single metadata entry if playerPlanets and playerShips is true",
+            model.playerMetadata.playersMetadata, allOf(
+               arrayWithSize (1),
+               hasItem (equals ($metadata(true, true)))));
       }
    }
 }

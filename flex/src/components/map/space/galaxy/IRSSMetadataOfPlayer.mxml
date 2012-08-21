@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:ui="components.ui.*"
+         autoDrawBackground="false">
+   <fx:Binding source="MSSMetadataOfPlayer(data)" destination="model"/>
+   <fx:Script>
+      <![CDATA[
+      import models.solarsystem.MSSMetadataOfPlayer;
+
+
+      [Bindable]
+      private var model: MSSMetadataOfPlayer;
+      ]]>
+   </fx:Script>
+   <s:layout>
+      <s:HorizontalLayout verticalAlign="middle" horizontalAlign="left"/>
+   </s:layout>
+   <s:Group visible="{model.hasPlanets}" toolTip="{model.planetIconTooltip}">
+      <s:BitmapImage source="{model.planetIcon}"/>
+   </s:Group>
+   <s:Group visible="{model.hasShips}" toolTip="{model.shipIconTooltip}">
+      <s:BitmapImage source="{model.shipIcon}"/>
+   </s:Group>
+   <ui:PlayerProfileButton player="{model.player}" width="100%"/>
+</s:ItemRenderer>
