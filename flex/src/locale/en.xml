@@ -4979,6 +4979,8 @@
   <Units>
     <title.storageScreen value="Load / Unload"/>
     <label.totalEmptyStorage value="Total free storage: {0}"/>
+    <title.volume value="Volume" />
+    <label.totalVolume value="Total selected units volume: {0}"/>
     <!-- 0: not fitting string (x metal, y energy and z zetium)-->
     <message.didNotFit value="Planet did not have enough storage for {0}" />
   
