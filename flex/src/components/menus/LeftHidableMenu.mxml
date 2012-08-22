@@ -43,7 +43,7 @@
          return MMainQuestLine.getInstance();
       }
 
-      private function btnHide_clickHandler(): void {
+      private function hideMenu(): void {
          currentState = "hidden";
       }
 
@@ -87,6 +87,7 @@
          {
             NavigationController.getInstance().showQuests();
          }
+        hideMenu();
       }
 
       private function apocalypse_toolTipCreateHandler(event: ToolTipEvent): void {
@@ -165,7 +166,7 @@
   <s:Button
      id="btnHide"
      skinClass="components.menus.skins.LeftHidableMenuHideButtonSkin"
-     click="btnHide_clickHandler()"
+     click="hideMenu()"
      visible.visible="true"
      visible.hidden="false"
      rollOver="hovered = true"
