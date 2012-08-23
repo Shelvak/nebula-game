@@ -4977,6 +4977,13 @@
   </Technologies>
 
   <Units>
+    <label.shipSpeeds value="Your ships hop times:" />
+    <header.unitName value="Ship name" />
+    <header.ssHopTime value="Hop in system" />
+    <header.galaxyHopTime value="Hop in galaxy" />
+    <label.slowestShip
+      value="Your fleet will fly by the speed of bolded ship."/>
+
     <title.storageScreen value="Load / Unload"/>
     <label.totalEmptyStorage value="Total free storage: {0}"/>
     <title.volume value="Volume" />

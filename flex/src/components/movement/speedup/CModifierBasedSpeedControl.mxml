@@ -4,18 +4,27 @@
          xmlns:mx="library://ns.adobe.com/flex/mx">
    <fx:Script>
       <![CDATA[
-      [Bindable]
-      public var model: ModifierBasedSpeedControl;
+     import controllers.units.OrdersController;
 
-      private function dataTipFormatFunction(value: Number): String {
-         return (value * 100).toFixed(1) + "%";
-      }
-      ]]>
+     import mx.events.ToolTipEvent;
+
+     [Bindable]
+     public var model: ModifierBasedSpeedControl;
+
+     private function dataTipFormatFunction(value: Number): String {
+       return (value * 100).toFixed(1) + "%";
+     }
+
+     private function lblArrivesAt_toolTipCreateHandler(event: ToolTipEvent): void {
+       event.toolTip = OrdersController.getInstance().getTooltip();
+     }
+     ]]>
    </fx:Script>
    <s:layout>
       <s:VerticalLayout horizontalAlign="center"/>
    </s:layout>
-   <s:Label id="lblArrivesAt" text="{model.label_arrivesAt}"/>
+   <s:Label id="lblArrivesAt" text="{model.label_arrivesAt}"
+             toolTip=" " toolTipCreate="lblArrivesAt_toolTipCreateHandler(event)"/>
    <s:Group>
       <s:layout>
          <s:HorizontalLayout gap="5" verticalAlign="middle"/>

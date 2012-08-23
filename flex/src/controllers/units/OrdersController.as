@@ -3,6 +3,8 @@ package controllers.units
    import com.developmentarc.core.utils.EventBroker;
 
    import components.movement.CTargetLocationPopup;
+   import components.movement.speedInfoTooltip.CSpeedInfoTooltip;
+   import components.movement.speedInfoTooltip.MSpeedInfo;
 
    import controllers.ui.NavigationController;
    import controllers.units.actions.MoveActionParams;
@@ -105,7 +107,13 @@ package controllers.units
          _unitIds = null;
          _locTarget = null;
       }
-      
+
+      public function getTooltip(): CSpeedInfoTooltip
+      {
+         var tltp: CSpeedInfoTooltip = new CSpeedInfoTooltip();
+         tltp.model = new MSpeedInfo(units);
+         return tltp;
+      }
       
       private var _issuingOrders:Boolean = false;
       [Bindable(event="issuingOrdersChange")]
