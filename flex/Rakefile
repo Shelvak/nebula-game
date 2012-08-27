@@ -349,7 +349,7 @@ namespace :build do
             "#{src_pp_dir}/SpaceGame.mxml",
             bin_swf,
             :libraries => Dir["#{lib_dir}/*.swc"],
-            :keep_metadata => %w{Required Optional ArrayElementType SkipProperty},
+            :keep_metadata => %w{Required Optional ArrayElementType SkipProperty PropsMap},
             :flags => %w{
               -static-link-runtime-shared-libraries
               -compiler.show-binding-warnings=false

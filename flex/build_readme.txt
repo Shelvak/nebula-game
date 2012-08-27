@@ -18,7 +18,7 @@ of the Flex SDK you are using to compile SWFs:
    <!-- ############################################# -->
    <name>Required</name>
    <name>Optional</name>
-   <name>ArrayElementType</name>
+   <name>PropsMap</name>
    <name>SkipProperty</name>
 </keep-as3-metadata>
 
