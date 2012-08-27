@@ -15,5 +15,7 @@ package tests.models
       public var tc_BaseModel: TC_BaseModel;
       public var tc_Player: TC_Player;
       public var tc_MSSMetadata: TC_MSSMetadata;
+      public var tc_MSSMetadataOfOwnerType: TC_MSSMetadataOfOwnerType;
+      public var tc_MSSMetadataOfPlayer: TC_MSSMetadataOfPlayer;
    }
 }

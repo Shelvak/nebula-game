@@ -14,17 +14,16 @@ package tests.maps
    import components.map.controllers.SectorShips;
 
    import ext.hamcrest.collection.hasItems;
-
    import ext.hamcrest.object.equals;
 
    import models.ModelLocator;
-
    import models.Owner;
    import models.galaxy.Galaxy;
    import models.location.LocationMinimal;
    import models.location.LocationType;
    import models.movement.MHop;
    import models.movement.MSquadron;
+   import models.player.PlayerMinimal;
    import models.solarsystem.MSSMetadata;
    import models.solarsystem.MSolarSystem;
 
@@ -210,7 +209,9 @@ package tests.maps
          ss.y = y;
          ss.metadata = new MSSMetadata();
          ss.metadata.playerShips = playerShips;
-         ss.metadata.enemiesWithShips = enemyShips ? ["test"] : [];
+         ss.metadata.enemiesMetadata.playersWithShips = enemyShips
+            ? [new PlayerMinimal(10, "test")]
+            : [];
          return ss;
       }
 

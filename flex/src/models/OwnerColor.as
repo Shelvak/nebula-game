@@ -1,5 +1,6 @@
 package models
 {
+   // TODO: get rid of this class
    /**
     * Defines colors used to mark various objects as belonging to some owner group defined by
     * <code>Owner<code>.
@@ -26,6 +27,7 @@ package models
             case Owner.ALLY:   return ALLY;
             case Owner.NAP:    return NAP;
             case Owner.ENEMY:  return ENEMY;
+            case Owner.NPC:    return ENEMY;
             default:           return UNDEFINED;
          }
          return 0;

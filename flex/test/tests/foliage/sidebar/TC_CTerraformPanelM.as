@@ -4,14 +4,14 @@ package tests.foliage.sidebar
    import asmock.framework.MockRepository;
    import asmock.framework.SetupResult;
    import asmock.integration.flexunit.IncludeMocksRule;
-   
+
    import components.foliage.CTerraformPanelM;
    import components.foliage.events.CFoliageSidebarMEvent;
-   
+
    import config.Config;
-   
+
    import controllers.startup.StartupInfo;
-   
+
    import ext.hamcrest.events.DispatchesMatcher;
    import ext.hamcrest.events.causes;
    import ext.hamcrest.object.equals;
@@ -19,22 +19,20 @@ package tests.foliage.sidebar
 
    import models.ModelLocator;
    import models.folliage.BlockingFolliage;
-   
+
    import mx.resources.IResourceManager;
    import mx.resources.ResourceBundle;
    import mx.resources.ResourceManager;
-   
-   import namespaces.client_internal;
-   
+
    import org.hamcrest.assertThat;
    import org.hamcrest.object.isFalse;
    import org.hamcrest.object.isTrue;
-   
+
    import utils.SingletonFactory;
    import utils.UrlNavigate;
    import utils.locale.Locale;
-   
-   
+
+
    public class TC_CTerraformPanelM
    {
       private function get ML() : ModelLocator {
@@ -103,7 +101,7 @@ package tests.foliage.sidebar
       
       [Test]
       public function removeFoliageAndBuyCreditsButtonsVisibility() : void {
-         ML.player.creds = 10;
+         ML.player.freeCreds = 10;
          assertThat( "btn to remove foliage visible when player has more creds than needed",
             model.btnRemoveFoliageVisible, isTrue()
          );
@@ -111,7 +109,7 @@ package tests.foliage.sidebar
             model.btnBuyCredsVisible, isFalse()
          );
          
-         ML.player.creds = 4;
+         ML.player.freeCreds = 4;
          assertThat( "btn to remove foliage visible when player has exact amount of creds",
             model.btnRemoveFoliageVisible, isTrue()
          );
@@ -119,7 +117,7 @@ package tests.foliage.sidebar
             model.btnBuyCredsVisible, isFalse()
          );
          
-         ML.player.creds = 3;
+         ML.player.freeCreds = 3;
          assertThat( "btn to remove foliage not visible when player does not have enough creds",
             model.btnRemoveFoliageVisible, isFalse()
          );
@@ -139,7 +137,7 @@ package tests.foliage.sidebar
       [Test]
       public function stateChangeEventDispatching() : void {
          assertThat( "changing player credits",
-            function():void{ ML.player.creds = 100}, triggersStateChangeEvent()
+            function():void{ ML.player.freeCreds = 100}, triggersStateChangeEvent()
          );
          assertThat( "setting foliage to another instance",
             function():void{ model.foliage = new BlockingFolliage() }, triggersStateChangeEvent()

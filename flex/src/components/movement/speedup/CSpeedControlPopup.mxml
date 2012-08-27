@@ -8,9 +8,18 @@
    
    <fx:Script>
       <![CDATA[
-      [Bindable]
-      public var model: CSpeedControlPopupM;
-      ]]>
+     import controllers.units.OrdersController;
+
+     import mx.events.ToolTipEvent;
+
+     [Bindable]
+     public var model: CSpeedControlPopupM;
+
+
+     private function shipsSpeeds_toolTipCreateHandler(event: ToolTipEvent): void {
+       event.toolTip = OrdersController.getInstance().getTooltip();
+     }
+     ]]>
    </fx:Script>
    
    <space:layout>
@@ -43,7 +52,8 @@
          visible="{model.timeBasedControlsActive}"
          includeInLayout="{model.timeBasedControlsActive}"/>
    </s:Group>
-   <s:Label id="lblArrivesIn" text="{model.label_arrivesIn}"/>
+   <s:Label id="lblArrivesIn" text="{model.label_arrivesIn}"
+             toolTip=" " toolTipCreate="shipsSpeeds_toolTipCreateHandler(event)"/>
    <s:Button id="btnReset" width="100%" click="model.reset()"
              label="{model.label_resetButton}" />
    <s:Group width="100%">

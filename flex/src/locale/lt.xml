@@ -5099,8 +5099,17 @@
   </Technologies>
 
   <Units>
+    <label.shipSpeeds value="Tavo laivų greičiai:" />
+    <header.unitName value="Laivo pav." />
+    <header.ssHopTime value="Šuolis sistemoje" />
+    <header.galaxyHopTime value="Šuolis galaktikoje" />
+    <label.slowestShip
+      value="Laivynas skris pagal paryškinto laivo greitį."/>
+
     <title.storageScreen value="Įkrauti / Iškrauti"/>
     <label.totalEmptyStorage value="Laisvos vietos: {0}"/>
+    <title.volume value="Apimtis" />
+    <label.totalVolume value="Pažymėtų karių apimtis: {0}"/>
     <message.didNotFit value="Į planetą netilpo {0}" />
   
     <property.timeToFinish.short value="{0}" />

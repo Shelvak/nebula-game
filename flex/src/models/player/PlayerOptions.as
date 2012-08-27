@@ -3,13 +3,12 @@ package models.player {
 
    import controllers.sounds.SoundsController;
 
-   import controllers.sounds.SoundsController;
-
    import models.sound.MSound;
 
    import mx.collections.ArrayCollection;
 
    import utils.locale.Localizer;
+
 
    public class PlayerOptions {
       public static const IGNORE_TYPE_COMPLETE: String = 'complete';

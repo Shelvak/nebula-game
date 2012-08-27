@@ -103,6 +103,12 @@
       private function getText(prop: String, params: Array = null): String {
          return Localizer.string('Units', prop, params);
       }
+
+      private function getVolumeLabel(from: ArrayCollection): String
+      {
+        return getText('label.totalVolume',
+          [Unit.getVolume(from.toArray())]);
+      }
       ]]>
    </fx:Script>
   <base:Scroller top="0" left="0" right="-4" bottom="12" id="scroller"
@@ -170,6 +176,14 @@
             </base:Panel>
             
             <unitsscreen:NoSelectionPanel visible="{US.selection.length == 0}"/>
+
+            <base:Panel width="100%" title="{getText('title.volume')}"
+                         visible="{US.selection.length > 0
+                         &amp;&amp; US.currentKind == UnitKind.GROUND}">
+                 <s:Label left="6" right="6" top="6" fontWeight="bold" fontSize="14"
+                          text="{getVolumeLabel(US.selection)}"
+                          color="#eec500"/>
+            </base:Panel>
             
             <base:Panel width="100%" title="{getText('label.mission')}" 
                         visible="{!(US.selection.length == 0 
@@ -178,8 +192,8 @@
                         || (US.currentKind == UnitKind.SQUADRON)) 
                         || US.hasChanges)}">
                <base:AdvancedContainer width="100%">
-                  <s:Group visible="{hasEmptyStorage(US.selection)}">
-                     <s:Label left="3" right="3" top="6" fontWeight="bold" fontSize="14"
+                  <s:Group visible="{hasEmptyStorage(US.selection)}" width="100%">
+                     <s:Label left="6" right="6" top="6" fontWeight="bold" fontSize="14"
                               text="{getEmptyStorageLabel(US.selection)}"
                               color="#eec500"/>
                   </s:Group>

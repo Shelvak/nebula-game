@@ -1,7 +1,9 @@
 package models.solarsystem
 {
    import models.BaseModel;
-   import models.Owner;
+   import models.OwnerType;
+
+   import utils.ObjectStringBuilder;
 
 
    public class MSSMetadata extends BaseModel
@@ -19,45 +21,37 @@ package models.solarsystem
          return playerPlanets || playerShips;
       }
 
-      public function get playerMetadata(): MSSMetadataOfOwner {
-
-         return new MSSMetadataOfOwner(
-            Owner.PLAYER,
-            playerPlanets ? [ML.player]: [],
-            playerShips ? [ML.player]: []);
+      public function get playerMetadata(): MSSMetadataOfOwnerType {
+         const metadata: MSSMetadataOfOwnerType = new MSSMetadataOfOwnerType(OwnerType.PLAYER);
+         if (playerPlanets) {
+            metadata.playersWithPlanets = [ML.player];
+         }
+         if (playerShips) {
+            metadata.playersWithShips = [ML.player];
+         }
+         return metadata;
       }
 
-      [Required(elementType="models.player.PlayerMinimal")]
-      public var alliesWithPlanets: Array = [];
+      [Required(aggregatesProps="alliesWithPlanets, alliesWithShips")]
+      [PropsMap(
+         alliesWithPlanets="playersWithPlanets",
+         alliesWithShips="playersWithShips")]
+      public const alliesMetadata: MSSMetadataOfOwnerType =
+         new MSSMetadataOfOwnerType(OwnerType.ALLIANCE);
 
-      [Required(elementType="models.player.PlayerMinimal")]
-      public var alliesWithShips: Array = [];
+      [Required(aggregatesProps="enemiesWithPlanets, enemiesWithShips")]
+      [PropsMap(
+         enemiesWithPlanets="playersWithPlanets",
+         enemiesWithShips="playersWithShips")]
+      public const enemiesMetadata: MSSMetadataOfOwnerType =
+         new MSSMetadataOfOwnerType(OwnerType.ENEMY);
 
-      public function get alliesMetadata(): MSSMetadataOfOwner {
-         return new MSSMetadataOfOwner(Owner.ALLY, alliesWithPlanets, alliesWithShips);
-      }
-
-
-      [Required(elementType="models.player.PlayerMinimal")]
-      public var enemiesWithPlanets: Array = [];
-
-      [Required(elementType="models.player.PlayerMinimal")]
-      public var enemiesWithShips: Array = [];
-
-      public function get enemiesMetadata(): MSSMetadataOfOwner {
-         return new MSSMetadataOfOwner(Owner.ENEMY, enemiesWithPlanets, enemiesWithShips)
-      }
-
-
-      [Required(elementType="models.player.PlayerMinimal")]
-      public var napsWithPlanets: Array = [];
-
-      [Required(elementType="models.player.PlayerMinimal")]
-      public var napsWithShips: Array = [];
-
-      public function get napsMetadata(): MSSMetadataOfOwner {
-         return new MSSMetadataOfOwner(Owner.NAP, napsWithPlanets, napsWithShips)
-      }
+      [Required(aggregatesProps="napsWithPlanets, napsWithShips")]
+      [PropsMap(
+         napsWithPlanets="playersWithPlanets",
+         napsWithShips="playersWithShips")]
+      public const napsMetadata: MSSMetadataOfOwnerType =
+         new MSSMetadataOfOwnerType(OwnerType.NAP);
 
       
       /* ########################### */
@@ -65,15 +59,11 @@ package models.solarsystem
       /* ########################### */
       
       public override function toString() : String {
-         return "[class: " + className +
-                ", playerPlanets: " + playerPlanets +
-                ", playerShips: " + playerShips +
-                ", alliesWithPlanets: " + alliesWithPlanets +
-                ", alliesWithShips: " + alliesWithShips +
-                ", napsWithPlanets: " + napsWithPlanets +
-                ", napsWithShips: " + napsWithShips +
-                ", enemiesWithPlanets: " + enemiesWithPlanets +
-                ", enemiesWithShips: " + enemiesWithShips + "]";
+         return new ObjectStringBuilder(this)
+            .addProp("playerMetadata")
+            .addProp("alliesMetadata")
+            .addProp("napsMetadata")
+            .addProp("enemiesMetadata").finish();
       }
    }
 }

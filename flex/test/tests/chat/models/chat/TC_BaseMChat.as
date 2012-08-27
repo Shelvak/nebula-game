@@ -18,6 +18,8 @@ package tests.chat.models.chat
 
    import tests.chat.classes.ChatResourceBundle;
 
+   import testsutils.PlayerOptionsUtl;
+
    import utils.SingletonFactory;
    import utils.locale.Locale;
 
@@ -57,6 +59,7 @@ package tests.chat.models.chat
       [Before]
       public function setUp(): void {
          PlayerOptions.loadOptions({"ignoredChatPlayers": []});
+         PlayerOptionsUtl.muteSounds();
          RM.addResourceBundle(new ChatResourceBundle());
          RM.update();
          mockRepository = new MockRepository();

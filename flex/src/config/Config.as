@@ -585,6 +585,17 @@ package config
       {
          return getUnitProperty(type, 'population');
       }
+
+      public static function getUnitGalaxyHopTime(type: String): String
+      {
+         return getUnitProperty(type, 'move.galaxy.hopTime');
+      }
+
+      public static function getUnitSSHopTime(type: String): String
+      {
+         return getUnitProperty(type, 'move.solarSystem.hopTime');
+      }
+
       /**
        * Returns property of the unit of a given type.
        * 

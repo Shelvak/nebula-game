@@ -4,6 +4,8 @@ package models.player
    
    import models.BaseModel;
 
+   import utils.ObjectStringBuilder;
+
    import utils.Objects;
 
    import utils.locale.Localizer;
@@ -47,14 +49,17 @@ package models.player
       public var name:String = "";
 
       public override function equals(o: Object): Boolean {
-         const player: PlayerMinimal = o as PlayerMinimal;
-         if (player == null) {
-            return false;
-         }
-         return this.id == player.id;
+         const another: PlayerMinimal = o as PlayerMinimal;
+         return another != null && another.id == this.id;
       }
-      
-      
+
+
+      override public function toString(): String {
+         return new ObjectStringBuilder(this)
+            .addProp("id")
+            .addProp("name").finish();
+      }
+
       /* ########## */
       /* ### UI ### */
       /* ########## */

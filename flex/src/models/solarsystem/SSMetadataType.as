@@ -1,8 +1,6 @@
 package models.solarsystem
 {
-   import models.Owner;
-
-
+   // TODO: get rid of this class
    /**
     * Defines string type constants of available solar system metadata type
     * (actually name of status image). Used in <code>SolarSystemTileSkin</code> and
@@ -19,23 +17,5 @@ package models.solarsystem
       public static const NAP_PLANETS: String = "napPlanets";
       public static const NAP_SHIPS: String = "napShips";
       public static const NPC_SHIPS: String = "npcShips";
-
-      public static function getConstantNamePrefixFor(owner: int): String {
-         switch (owner) {
-            case Owner.PLAYER: return "PLAYER";
-            case Owner.ALLY: return "ALLIANCE";
-            case Owner.ENEMY: return "ENEMY";
-            case Owner.NAP: return "NAP";
-            case Owner.NPC: return "NPC";
-            default:
-               throw new ArgumentError(
-                  "[param owner] may only hold Owner.PLAYER (" + Owner.PLAYER
-                     + "), Owner.ALLY (" + Owner.ALLY
-                     + "), Owner.NAP (" + Owner.NAP
-                     + "), Owner.ENEMY (" + Owner.ENEMY
-                     + "), Owner.NPC (" + Owner.NPC
-                     + ") but was " + owner)
-         }
-      }
    }
 }

@@ -29,7 +29,7 @@
    </fx:Script>
    <base:layout><s:HorizontalLayout verticalAlign="middle" gap="2"/></base:layout>
    <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.PLAYER_PLANETS}"
-                    visible="{solarSystem.metadata.playerPlanets}"/>
+                    visible="{solarSystem.metadata.playerMetadata.hasPlanets}"/>
    <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.ALLIANCE_PLANETS}"
                     visible="{solarSystem.metadata.alliesMetadata.hasPlanets}"/>
    <ss:SSStatusIcon explanationVisible="{explanationVisible}" type="{SSMetadataType.NAP_PLANETS}"
