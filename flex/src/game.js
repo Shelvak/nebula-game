@@ -400,6 +400,10 @@ function loginSuccessful() {
         [name + '._trackPageview', '/play/' + playerType + '/game/login']
       );
     });
+
+  if (isKongregateUser()) {
+    window.parent.kongregate.stats.submit("initialized", 1);
+  }
 }
 
 // Ensure player does not close the game accidentally.
