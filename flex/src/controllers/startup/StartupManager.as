@@ -129,6 +129,7 @@ package controllers.startup
          // We need to find correct domain to allow staging.nebula44.lt
          // to access flash. Setting it to * for now. arturaz.
          Security.allowDomain("*");//startupInfo.webHost);
+         JavascriptController.registerCallbacks();
          
          // LoadingScreen takes over from this point forward
          return true;
