@@ -8,7 +8,6 @@
       <![CDATA[
       import models.solarsystem.MSSMetadataOfPlayer;
 
-
       [Bindable]
       private var model: MSSMetadataOfPlayer;
       ]]>
@@ -22,5 +21,12 @@
    <s:Group visible="{model.hasShips}" toolTip="{model.shipIconTooltip}">
       <s:BitmapImage source="{model.shipIcon}"/>
    </s:Group>
-   <ui:PlayerProfileButton player="{model.player}" width="100%"/>
+   <ui:PlayerProfileButton player="{model.player}" width="100"/>
+   <s:Button
+      skinClass="components.skins.LinkButtonSkin"
+      includeInLayout="{!model.player.isCurrentPlayer}"
+      visible="{!model.player.isCurrentPlayer}"
+      toolTip="{model.honorCoef.tooltip}"
+      label="({model.honorCoef.labelOrValue})"
+      click="model.honorCoef.retrieveHonorCoef()"/>
 </s:ItemRenderer>

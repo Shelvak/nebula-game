@@ -1531,6 +1531,7 @@
   </Formatters>
 
   <Galaxy>
+    <label.honorCoef value="GK"/>
     <title.solarSystemInfo value="Saulės sistemos informacija" />
     <label.playerPlanets value="Yra žaidėjo planetų" />
     <label.playerShips value="Yra žaidėjo laivų" />

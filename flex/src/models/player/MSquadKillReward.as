@@ -5,7 +5,7 @@
  * Time: 4:24 PM
  * To change this template use File | Settings | File Templates.
  */
-package models.movement {
+package models.player {
    import flash.events.EventDispatcher;
 
    import models.movement.events.MSquadronEvent;

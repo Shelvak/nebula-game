@@ -1399,6 +1399,7 @@
   </Formatters>
 
   <Galaxy>
+    <label.honorCoef value="HC"/>
     <title.solarSystemInfo value="Solar System info" />
     <label.playerPlanets value="Player planets detected" />
     <label.playerShips value="Player ships detected" />

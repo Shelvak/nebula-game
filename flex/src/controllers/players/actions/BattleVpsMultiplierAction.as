@@ -3,7 +3,7 @@ package controllers.players.actions
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
 
-   import models.movement.MSquadKillReward;
+   import models.player.MSquadKillReward;
 
    /**
     *

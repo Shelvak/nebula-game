@@ -37,6 +37,10 @@ package models.player
             this.name = Objects.paramNotEmpty("name", name);
          }
       }
+
+      public function get isCurrentPlayer(): Boolean {
+         return ML.player != null && ML.player.id == id;
+      }
       
       
       [Bindable]

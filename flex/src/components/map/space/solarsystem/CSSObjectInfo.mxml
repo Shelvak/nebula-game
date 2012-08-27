@@ -16,7 +16,7 @@
       import models.Owner;
       import models.location.LocationMinimal;
       import models.map.IMStaticSpaceObject;
-      import models.movement.MSquadKillReward;
+      import models.player.MSquadKillReward;
       import models.movement.events.MSquadronEvent;
       import models.solarsystem.MSSObject;
 
@@ -51,15 +51,15 @@
 
       private function getSectorLabel(ssObject: MSSObject): String {
          return ssObject == null
-                 ? "" : LocationMinimal.getSectorLabel(ssObject.currentLocation);
+               ? "" : LocationMinimal.getSectorLabel(ssObject.currentLocation);
       }
 
       private function getPlanetAreaLabel(ssObject: MSSObject): String {
          return ssObject == null
-                 ? ""
-                 : Localizer.string(
-                 "SSObjects", "label.planetArea",
-                 [ssObject.width, ssObject.height]
+               ? ""
+               : Localizer.string(
+               "SSObjects", "label.planetArea",
+               [ssObject.width, ssObject.height]
          );
       }
 
@@ -76,9 +76,9 @@
       private function btnShowHonorCoef_clickHandler(event: MouseEvent): void {
          MKR.addEventListener(MSquadronEvent.MULTIPLIER_CHANGE, showHonorCoef);
          new PlayersCommand(PlayersCommand.BATTLE_VPS_MULTIPLIER,
-                 {
-                    'targetId':ssObject.player.id
-                 }).dispatch();
+               {
+                  'targetId': ssObject.player.id
+               }).dispatch();
       }
       ]]>
    </fx:Script>

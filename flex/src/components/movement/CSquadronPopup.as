@@ -22,7 +22,7 @@ package components.movement
    import models.Owner;
    import models.events.BaseModelEvent;
    import models.factories.UnitFactory;
-   import models.movement.MSquadKillReward;
+   import models.player.MSquadKillReward;
    import models.movement.MSquadron;
    import models.movement.events.MSquadronEvent;
    import models.unit.Unit;

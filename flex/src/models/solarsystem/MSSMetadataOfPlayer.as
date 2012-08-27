@@ -5,6 +5,7 @@ package models.solarsystem
    import interfaces.IEqualsComparable;
 
    import models.OwnerType;
+   import models.player.MHonorCoef;
 
    import models.player.PlayerMinimal;
 
@@ -26,6 +27,15 @@ package models.solarsystem
          _ownerType = Objects.paramNotNull("ownerType", ownerType);
          _hasPlanets = hasPlanets;
          _hasShips = hasShips;
+      }
+
+      private var _honorCoef: MHonorCoef;
+      public function get honorCoef(): MHonorCoef {
+         if (_honorCoef == null) {
+            _honorCoef = new MHonorCoef(
+               _player.id, 0, Localizer.string("Galaxy", "label.honorCoef"));
+         }
+         return _honorCoef;
       }
 
       private var _player: PlayerMinimal;
