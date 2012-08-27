@@ -639,13 +639,18 @@ function closePopup() {
   window.oldBeforeUnloadHandler = null;
 }
 
+function getGalaxyId() {
+  return $('#nebula44').get(0).getGalaxyId();
+}
+
 // Called by client to open trial registration form.
 function openTrialRegistration() {
   openPopup('/trial/register');
 }
 
 function openKongregateBuyPopup() {
-  openPopup('/kongregate/purchase');
+  openPopup('/kongregate/purchase/' + getGalaxyId());
+
 }
 
 function isKongregateUser() {
