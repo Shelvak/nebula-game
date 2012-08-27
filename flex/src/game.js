@@ -400,6 +400,10 @@ function loginSuccessful() {
         [name + '._trackPageview', '/play/' + playerType + '/game/login']
       );
     });
+
+  if (isKongregateUser()) {
+    window.parent.kongregate.stats.submit("initialized", 1);
+  }
 }
 
 // Ensure player does not close the game accidentally.
@@ -608,32 +612,49 @@ function setupOneLtBar() {
 function hideOneLtBar() { $("#eads_menu_1").hide(); }
 function showOneLtBar() { $("#eads_menu_1").show(); }
 
-// Called by client to open trial registration form.
-function openTrialRegistration() {
+function openPopup(path) {
   if (isOneLt()) hideOneLtBar();
   // Opera hack to hide flash, otherwise it shows instead of background and we
   // cannot use display: none, because that unloads the client.
   $("object").css("visibility", "hidden");
-  $("#trial_register iframe").
-    attr("src", 'http://' + webHost + '/trial/register');
-  $("#trial_register img").attr("src", assetsUrl + "images/close_button.png");
-  $("#trial_register").css(
+  $("#popup iframe").
+    attr("src", 'http://' + webHost + path);
+  $("#popup img").attr("src", assetsUrl + "images/close_button.png");
+  $("#popup").css(
     "background", "url('" + assetsUrl + "images/background.jpeg')"
   ).show();
 
-  // Stupid hack for IE, that things that leaving iframe equals leaving site.
+  // Stupid hack for IE, that  things that leaving iframe equals leaving site.
   // You can't even put this in closeTrialRegistration(), because SOMEHOW IE
   // manages to run onbeforeunload handler even before .hide() is called!
   window.oldBeforeUnloadHandler = window.onbeforeunload;
   window.onbeforeunload = null;
 }
 
-function closeTrialRegistration() {
+function closePopup() {
   $("object").css("visibility", "visible");
-  $("#trial_register").hide();
+  $("#popup").hide();
   if (isOneLt()) showOneLtBar();
   window.onbeforeunload = window.oldBeforeUnloadHandler;
   window.oldBeforeUnloadHandler = null;
+}
+
+function getGalaxyId() {
+  return $('#nebula44').get(0).getGalaxyId();
+}
+
+// Called by client to open trial registration form.
+function openTrialRegistration() {
+  openPopup('/trial/register');
+}
+
+function openKongregateBuyPopup() {
+  openPopup('/kongregate/purchase/' + getGalaxyId());
+
+}
+
+function isKongregateUser() {
+  return window.location.host.indexOf('kongregate.nebula44.com') !== -1;
 }
 
 // Load our swf {{{
