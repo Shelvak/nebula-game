@@ -2,6 +2,8 @@ package utils
 {
    import controllers.startup.StartupInfo;
 
+   import flash.external.ExternalInterface;
+
    import flash.net.URLRequest;
    import flash.net.navigateToURL;
 
@@ -77,7 +79,14 @@ package utils
       }
 
       public function showBuyCreds(): void {
-         showUrl('buy-creds');
+         if (ExternalInterface.call('isKongregateUser'))
+         {
+            ExternalInterface.call('openKongregateBuyPopup');
+         }
+         else
+         {
+            showUrl('buy-creds');
+         }
       }
 
       public function showInfo(name: String): void {
