@@ -19,28 +19,29 @@ package components.movement.speedInfoTooltip {
    public class MSpeedInfo {
       [Bindable]
       public var names: ArrayCollection;
-      public function MSpeedInfo(units: ListCollectionView) {
+      public function MSpeedInfo(unitNames: Object) {
          var temp: Object = {};
          var slowestUnit: MUnitSpeed;
          var slowestDefault: int;
-         for each (var unit: Unit in units)
+         if (unitNames == null)
          {
-            var name: String = unit.name;
-            if (temp[name] == null)
+            return;
+         }
+         for (var type: String in unitNames)
+         {
+            var name: String = unitNames[type];
+            var defaultGalaxyTime: int = StringUtil.evalFormula(
+               Config.getUnitGalaxyHopTime(type));
+            var defaultSSTime: int = StringUtil.evalFormula(
+               Config.getUnitSSHopTime(type));
+            var unitSpeed: MUnitSpeed = new MUnitSpeed(name,
+                                 Unit.getJumpTime(defaultGalaxyTime, type),
+                                 Unit.getJumpTime(defaultSSTime, type));
+            temp[name] = unitSpeed;
+            if (slowestUnit == null || slowestDefault < defaultGalaxyTime)
             {
-               var defaultGalaxyTime: int = StringUtil.evalFormula(
-                  Config.getUnitGalaxyHopTime(unit.type));
-               var defaultSSTime: int = StringUtil.evalFormula(
-                  Config.getUnitSSHopTime(unit.type));
-               var unitSpeed: MUnitSpeed = new MUnitSpeed(name,
-                                    Unit.getJumpTime(defaultGalaxyTime, unit.type),
-                                    Unit.getJumpTime(defaultSSTime, unit.type));
-               temp[name] = unitSpeed;
-               if (slowestUnit == null || slowestDefault < defaultGalaxyTime)
-               {
-                  slowestUnit = unitSpeed;
-                  slowestDefault = defaultGalaxyTime;
-               }
+               slowestUnit = unitSpeed;
+               slowestDefault = defaultGalaxyTime;
             }
          }
          slowestUnit.isSlowest = true;

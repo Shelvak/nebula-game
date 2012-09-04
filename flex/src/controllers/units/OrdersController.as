@@ -111,7 +111,7 @@ package controllers.units
       public function getTooltip(): CSpeedInfoTooltip
       {
          var tltp: CSpeedInfoTooltip = new CSpeedInfoTooltip();
-         tltp.model = new MSpeedInfo(units);
+         tltp.model = new MSpeedInfo(unitNames);
          return tltp;
       }
       
@@ -250,6 +250,14 @@ package controllers.units
                return _unitIds != null ? _unitIds.indexOf(unit.id) >= 0 : false;
             }
          );
+         unitNames = {};
+         for each (var unit: Unit in this.units)
+         {
+            if (unitNames[unit.type] == null)
+            {
+               unitNames[unit.type] = unit.name;
+            }
+         }
          addUnitsListEventHandlers(this.units);
          setSourceLocations();
          issuingOrders = true;
@@ -271,7 +279,8 @@ package controllers.units
                break;
          }
       }
-      
+
+      private var unitNames: Object = {};
       
       /* ################### */
       /* ### SECOND STEP ### */
