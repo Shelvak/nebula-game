@@ -408,6 +408,9 @@ function loginSuccessful() {
 
 // Ensure player does not close the game accidentally.
 function setLeaveHandler(enabled) {
+  // Kongregate users don't need this.
+  if (isKongregateUser()) return;
+
   window.onbeforeunload = enabled
     ? function() { return locales.navigateAwayMessage(locale); }
     : null;
@@ -650,7 +653,6 @@ function openTrialRegistration() {
 
 function openKongregateBuyPopup() {
   openPopup('/kongregate/purchase/' + getGalaxyId());
-
 }
 
 function isKongregateUser() {

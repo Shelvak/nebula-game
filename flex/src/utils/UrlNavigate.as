@@ -79,9 +79,9 @@ package utils
       }
 
       public function showBuyCreds(): void {
-         if (ExternalInterface.call('isKongregateUser'))
+         if (Kongregate.isKongregate())
          {
-            ExternalInterface.call('openKongregateBuyPopup');
+            Kongregate.openBuyPopup();
          }
          else
          {

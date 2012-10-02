@@ -29,6 +29,8 @@
 
      import mx.events.FlexEvent;
 
+     import utils.Kongregate;
+
      import utils.locale.Localizer;
 
 
@@ -118,11 +120,14 @@
                <base:Heading1 text="{getString('title.genericOptions')}"/>
                <s:Group>
                   <s:layout><fx:VerticalSectionLayout/></s:layout>
+                  <!-- Kongregate users do not need this feature -->
                   <s:CheckBox id="warnBeforeUnload"
-                              label="{getString('label.warnBeforeUnload')}"
-                              selected="{PlayerOptions.warnBeforeUnload}"
-                              click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
-                              PlayerOptions.changed()"/>
+                     visible="{! Kongregate.isKongregate()}"
+                     includeInLayout="{! Kongregate.isKongregate()}"
+                     label="{getString('label.warnBeforeUnload')}"
+                     selected="{PlayerOptions.warnBeforeUnload}"
+                     click="PlayerOptions.warnBeforeUnload = !PlayerOptions.warnBeforeUnload;
+                     PlayerOptions.changed()"/>
                   <s:Label text="{getString('label.eventsOptions')}"/>
                   <s:Group>
                      <s:layout>
