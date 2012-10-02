@@ -2115,12 +2115,19 @@
     <label.yes value="Yes" />
     <label.no value="No" />
 
-     <register.title value="REGISTER NOW!"/>
-     <register.message.demo>
-        <![CDATA[This is a <span color="#EFC700">DEMO</span> account.]]>
-     </register.message.demo>
-     <register.message.progress
-        value="All progress will be lost if you log out."/>
+    <register.title value="REGISTER NOW!"/>
+    <register.message.demo>
+      <![CDATA[This is a <span color="#EFC700">DEMO</span> account.]]>
+    </register.message.demo>
+    <register.message.progress
+      value="All progress will be lost if you log out."/>
+
+    <register.kong.title value="COMPLETE REGISTRATION"/>
+    <register.kong.message.demo>
+      <![CDATA[A mighty commander needs a decent name!]]>
+    </register.kong.message.demo>
+    <register.kong.message.progress
+      value="Please provide one to finish your registration."/>
 
     <title.outdatedClient value="Client version outdated" />
     <message.outdatedClient>

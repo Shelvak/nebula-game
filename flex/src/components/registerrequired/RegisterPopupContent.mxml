@@ -4,6 +4,7 @@
          left="0" right="0" top="0" bottom="0">
    <fx:Script>
       <![CDATA[
+      import utils.Kongregate;
       import utils.TextFlowUtil;
       import utils.assets.AssetNames;
       import utils.assets.ImagePreloader;
@@ -11,6 +12,8 @@
 
 
       private function getString(property: String): String {
+         if (Kongregate.isKongregate()) property = "kong." + property;
+
          return Localizer.string("Popups", "register." + property);
       }
 
