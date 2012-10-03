@@ -139,10 +139,11 @@ class Galaxy < ActiveRecord::Base
         Cfg.player_inactivity_time(player.points).from_now
       )
 
+      # TODO: spec galaxy_id!
       connection.execute(%Q{
       UPDATE `#{SolarSystem.table_name}` SET
         kind=#{SolarSystem::KIND_NORMAL}, player_id=#{player.id}
-      WHERE kind=#{SolarSystem::KIND_POOLED} LIMIT 1
+      WHERE kind=#{SolarSystem::KIND_POOLED} AND galaxy_id=#{galaxy_id} LIMIT 1
       })
 
       home_ss = player.home_solar_system
