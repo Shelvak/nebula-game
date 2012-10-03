@@ -2254,6 +2254,13 @@
     <register.message.progress
        value="Jei atsijungsi, prarasi viską, ką iki šiol pasiekei."/>
 
+    <register.kong.title value="UŽBAIK REGISTRACIJĄ"/>
+    <register.kong.message.demo>
+      <![CDATA[Galingam komandorui pritinka didis vardas!]]>
+    </register.kong.message.demo>
+    <register.kong.message.progress
+      value="Pasakyk mums savo vardą ir užbaik registraciją."/>
+
     <title.outdatedClient value="Žaidimo versija pasenusi" />
     <message.outdatedClient>
       <p>Kol žaidei buvo atnaujinta žaidimo versija.</p>
