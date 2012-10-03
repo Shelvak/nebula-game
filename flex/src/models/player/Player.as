@@ -5,6 +5,7 @@ package models.player
    import interfaces.IUpdatable;
 
    import models.Reward;
+   import models.notification.MCredsGainedEvent;
    import models.parts.events.UpgradeEvent;
    import models.player.events.PlayerEvent;
    import models.solarsystem.MSSObject;
@@ -150,6 +151,7 @@ package models.player
       }
 
       private var _pureCreds: int = 0;
+      private var pureCredsSet: Boolean = false;
       [Optional]
       [Bindable(event="credsChange")]
       /**
@@ -157,7 +159,12 @@ package models.player
        */
       public function set pureCreds(value: int): void {
          if (_pureCreds != value) {
+            if (value > _pureCreds && pureCredsSet)
+            {
+               new MCredsGainedEvent(value - _pureCreds);
+            }
             _pureCreds = value;
+            pureCredsSet = true;
             dispatchCredsChangeEvent();
          }
       }
@@ -179,11 +186,17 @@ package models.player
       }
 
       private var _freeCreds: int = 0;
+      private var freeCredsSet: Boolean = false;
       [Optional]
       [Bindable(event="credsChange")]
       public function set freeCreds(value: int): void {
          if (_freeCreds != value) {
+            if (value > _freeCreds && freeCredsSet)
+            {
+               new MCredsGainedEvent(value - _freeCreds);
+            }
             _freeCreds = value;
+            freeCredsSet = true;
             dispatchCredsChangeEvent();
          }
       }

@@ -1954,6 +1954,10 @@
   </ListScreen>
 
   <Notifications>
+    <message.credsGained>
+      Sveikiname, tu gavai
+      {0 one[? kredą] 1sts[? kredą] tens[? kredų] many[? kredus]}!
+    </message.credsGained>
     <screenTitle value="Pranešimai" />
     <windowTitle>* {0
       one[Neperskaitytas pranešimas]

@@ -1827,6 +1827,10 @@
   </ListScreen>
 
   <Notifications>
+    <message.credsGained>
+      Congratulations, you have gained
+      {0 one[? cred] many[? creds]}!
+    </message.credsGained>
     <screenTitle value="Notifications" />
     <windowTitle>* {0
       one[Unread notification]
