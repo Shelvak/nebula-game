@@ -26,11 +26,12 @@ package models.notification {
 
          public override function get image(): BitmapData
          {
-            return IMG.getImage(AssetNames.ICONS_IMAGE_FOLDER + ResourceType.CREDS);
+            return IMG.getImage(AssetNames.UI_IMAGES_FOLDER +
+               ResourceType.CREDS + '_large');
          }
 
          public override function clickHandler(event: MouseEvent): void {
-            //TODO open main menu
+            //TODO maby someday implement open main menu
          }
       }
 }

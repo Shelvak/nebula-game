@@ -164,9 +164,9 @@ package models.player
                new MCredsGainedEvent(value - _pureCreds);
             }
             _pureCreds = value;
-            pureCredsSet = true;
             dispatchCredsChangeEvent();
          }
+         pureCredsSet = true;
       }
       public function get pureCreds(): int {
          return _pureCreds;
@@ -196,9 +196,9 @@ package models.player
                new MCredsGainedEvent(value - _freeCreds);
             }
             _freeCreds = value;
-            freeCredsSet = true;
             dispatchCredsChangeEvent();
          }
+         freeCredsSet = true;
       }
       public function get freeCreds(): int {
          return _freeCreds;
