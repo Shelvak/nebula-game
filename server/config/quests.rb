@@ -228,7 +228,9 @@ QUESTS = QuestDefinition.define(:debug => false) do
                  s_attack_screen]) do
     destroy_npc_building Building::NpcSolarPlant, :count => 5
 
-    reward_cost Building::ResearchCenter
+    reward_metal Building::ResearchCenter.metal_cost(1) * 1.2
+    reward_energy Building::ResearchCenter.energy_cost(1) * 1.2
+    reward_zetium Building::Mothership.zetium_storage(1) * 0.995
     # 1000 creds should be sufficient for completing research center.
     reward_creds 1000
   end.define(80, [s_claim_reward_rc, s_damaged_units,
