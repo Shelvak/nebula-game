@@ -6,8 +6,10 @@ package components.base
    
    import spark.components.Scroller;
    import spark.core.IViewport;
-   
-   
+
+   import utils.SystemInfo;
+
+
    /**
     * Modified version of <code>spark.components.Scroller</code> which has ability not to prevent default
     * behaviour of <code>MouseEvent.MOUSE_WHEEL</code> handlers if the scroller has not scrolled its content.
@@ -27,7 +29,7 @@ package components.base
          {
             value = 0;
          }
-         _stepMultiplier = value;
+         _stepMultiplier = (value * (SystemInfo.platformWindows ? 1 : 3));
       }
       /**
        * @private

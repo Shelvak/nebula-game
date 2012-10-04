@@ -4,6 +4,7 @@ package models
 
    import controllers.battle.BattleController;
    import controllers.screens.MainAreaScreens;
+   import controllers.startup.StartupInfo;
    import controllers.startup.StartupManager;
    import controllers.ui.NavigationController;
 
@@ -118,6 +119,7 @@ package models
       public function reset() : void
       {
          player.reset();
+         StartupInfo.getInstance().playerLoaded = false;
          notifications.removeAll();
          quests.removeAll();
          Collections.cleanListOfICleanables(squadrons);

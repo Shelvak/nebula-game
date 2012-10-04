@@ -36,6 +36,8 @@ package controllers.startup
       public function get port() : int {
          return 55345;
       }
+
+      public var playerLoaded: Boolean = false;
       
       [Required]
       public var locale:String = Locale.EN;
