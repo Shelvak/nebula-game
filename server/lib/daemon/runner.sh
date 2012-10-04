@@ -10,7 +10,7 @@ export JAVA_OPTS=""  # Clear Java opts
 
 opts="--1.9 -J-Dname=$server_name -J-Djruby.jit.max=25000 \
 --server -J-XX:+TieredCompilation \
--J-Xms128M -J-Xmx1024M -J-XX:MaxPermSize=256m"
+-J-Xms128M -J-Xmx2048M -J-XX:MaxPermSize=512m"
 
 jmxpass="$HOME/config/jmx.password"
 if [ -e "$jmxpass" ]; then
