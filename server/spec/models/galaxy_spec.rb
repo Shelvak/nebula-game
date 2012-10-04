@@ -594,6 +594,17 @@ describe Galaxy do
       player.home_solar_system.should == home_ss
     end
 
+    it "should assing home solar system from correct galaxy pool" do
+      galaxy
+      another_galaxy = Factory.create(:galaxy)
+      Factory.create(:ss_pooled, galaxy: another_galaxy)
+      # Zone for reattachment
+      Factory.create(:solar_system, galaxy: another_galaxy, x: 10)
+      Factory.create(:wormhole, galaxy: another_galaxy)
+      player = Galaxy.create_player(another_galaxy.id, web_user_id, name, trial)
+      player.home_solar_system.galaxy_id.should == another_galaxy.id
+    end
+
     it "should change kind of home solar system to normal" do
       player.home_solar_system.kind.should == SolarSystem::KIND_NORMAL
     end
