@@ -1,5 +1,0 @@
-if [ "$environment" != "production" ]; then
-  rvm use jruby-head-n16@nebulaserver --create
-else
-  rvm use jruby-head-n16 > /dev/null
-fi
