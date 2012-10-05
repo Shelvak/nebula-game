@@ -2,6 +2,8 @@ package models.player
 {
    import config.Config;
 
+   import controllers.startup.StartupInfo;
+
    import interfaces.IUpdatable;
 
    import models.Reward;
@@ -151,7 +153,6 @@ package models.player
       }
 
       private var _pureCreds: int = 0;
-      private var pureCredsSet: Boolean = false;
       [Optional]
       [Bindable(event="credsChange")]
       /**
@@ -159,14 +160,13 @@ package models.player
        */
       public function set pureCreds(value: int): void {
          if (_pureCreds != value) {
-            if (value > _pureCreds && pureCredsSet)
+            if (value > _pureCreds && StartupInfo.getInstance().playerLoaded)
             {
                new MCredsGainedEvent(value - _pureCreds);
             }
             _pureCreds = value;
             dispatchCredsChangeEvent();
          }
-         pureCredsSet = true;
       }
       public function get pureCreds(): int {
          return _pureCreds;
@@ -186,19 +186,17 @@ package models.player
       }
 
       private var _freeCreds: int = 0;
-      private var freeCredsSet: Boolean = false;
       [Optional]
       [Bindable(event="credsChange")]
       public function set freeCreds(value: int): void {
          if (_freeCreds != value) {
-            if (value > _freeCreds && freeCredsSet)
+            if (value > _freeCreds && StartupInfo.getInstance().playerLoaded)
             {
                new MCredsGainedEvent(value - _freeCreds);
             }
             _freeCreds = value;
             dispatchCredsChangeEvent();
          }
-         freeCredsSet = true;
       }
       public function get freeCreds(): int {
          return _freeCreds;

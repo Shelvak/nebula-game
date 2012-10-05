@@ -2,7 +2,8 @@ package controllers.players.actions
 {
    import controllers.CommunicationAction;
    import controllers.CommunicationCommand;
-   
+   import controllers.startup.StartupInfo;
+
    import models.player.Player;
    
    import utils.DateUtil;
@@ -22,6 +23,7 @@ package controllers.players.actions
          if (allianceCooldown != null) {
             ML.player.allianceCooldown.occursAt = DateUtil.parseServerDTF(allianceCooldown);
          }
+         StartupInfo.getInstance().playerLoaded = true;
       }
    }
 }
