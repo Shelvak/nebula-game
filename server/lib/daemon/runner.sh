@@ -29,6 +29,7 @@ echo >> "$logfile"
 echo >> "$logfile"
 echo >> "$logfile"
 echo "#### STARTING DAEMON ####" >> "$logfile"
+echo "PATH: $PATH" >> "$logfile"
 nohup jruby $opts "$appdir/main.rb" >> "$logfile" 2>&1 &
 pid=$!
 echo "Daemon pid: $pid" >> "$logfile"
