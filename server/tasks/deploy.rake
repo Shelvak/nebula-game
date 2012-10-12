@@ -67,7 +67,7 @@ DEPLOY_CONFIG = {
         "Rakefile",
         "Gemfile",
         "Gemfile.lock",
-        ".rvmrc",
+        ".rbenv-version",
       ].map do |relative|
         [relative, File.join(PROJECT_ROOT, 'server', relative)]
       end
