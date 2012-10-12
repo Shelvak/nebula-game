@@ -41,7 +41,7 @@ class SolarSystem < ActiveRecord::Base
   }
 
   def self.galaxy_battleground(galaxy_id)
-    where(:galaxy_id => galaxy_id, :x => nil, :y => nil).first
+    where(galaxy_id: galaxy_id, x: nil, y: nil, kind: KIND_BATTLEGROUND).first
   end
 
   # Is this solar system detached from galaxy map?

@@ -1,6 +1,34 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helper.rb'))
 
 describe SolarSystem do
+  describe ".galaxy_battleground" do
+    it "should find bg from correct galaxy" do
+      bg1 = Factory.create(:battleground)
+      bg2 = Factory.create(:battleground)
+      SolarSystem.galaxy_battleground(bg2.galaxy_id).should == bg2
+    end
+
+    it "should not find regular systems" do
+      ss = Factory.create(:solar_system)
+      SolarSystem.galaxy_battleground(ss.galaxy_id).should be_nil
+    end
+
+    it "should not find pulsars" do
+      ss = Factory.create(:mini_battleground)
+      SolarSystem.galaxy_battleground(ss.galaxy_id).should be_nil
+    end
+
+    it "should not find detached systems" do
+      ss = Factory.create(:ss_detached)
+      SolarSystem.galaxy_battleground(ss.galaxy_id).should be_nil
+    end
+
+    it "should not find pooled systems" do
+      ss = Factory.create(:ss_pooled)
+      SolarSystem.galaxy_battleground(ss.galaxy_id).should be_nil
+    end
+  end
+
   describe "#as_json" do
     it_behaves_like "as json", Factory.create(:solar_system), nil,
                     %w{id x y kind},
