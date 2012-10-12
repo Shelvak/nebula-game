@@ -116,6 +116,9 @@ innodb_lock_wait_timeout = 10
 innodb_autoinc_lock_mode = 2
 # To allow replication on lock mode 2.
 binlog_format=row
+# Nebula 44 was written without multithreading support in mind. This ensures
+# that data does not go haywire.
+transaction-isolation=SERIALIZABLE
 }
 
 SRVRUNNER = %Q{#!/bin/bash
