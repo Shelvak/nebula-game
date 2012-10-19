@@ -67,6 +67,7 @@ class ControlManager
   end
 
   def alliance_created(alliance)
+    return
     only_in_production("alliance_created invoked for #{alliance}") do
       player = alliance.owner
       response = post_to_web(alliance.galaxy.callback_url,
@@ -82,6 +83,7 @@ class ControlManager
   end
 
   def alliance_owner_changed(alliance, new_owner)
+    return
     only_in_production(
       "alliance_owner_changed invoked for #{alliance}, new owner: #{new_owner}"
     ) do
@@ -97,6 +99,7 @@ class ControlManager
   end
 
   def alliance_renamed(alliance)
+    return
     only_in_production("alliance_renamed invoked for #{alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,
         "alliance_renamed",
@@ -110,6 +113,7 @@ class ControlManager
   end
 
   def alliance_destroyed(alliance)
+    return
     only_in_production("alliance_destroyed invoked for #{alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,
         "alliance_destroyed",
@@ -122,6 +126,7 @@ class ControlManager
   end
 
   def player_joined_alliance(player, alliance)
+    return
     only_in_production("player_joined_alliance invoked for #{player}, #{
         alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,
@@ -136,6 +141,7 @@ class ControlManager
   end
 
   def player_left_alliance(player, alliance)
+    return
     only_in_production("player_left_alliance invoked for #{player}, #{
         alliance}") do
       response = post_to_web(alliance.galaxy.callback_url,
