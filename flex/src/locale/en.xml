@@ -1525,7 +1525,10 @@
     <gun.boss_heavy value="Shock Shells" />
     <gun.convoyship_light value="Photon Collider" />
     <gun.convoyship_heavy value="TR-3 Launcher" />
-    <gun.mantis_sniper value ="OSV-96 Sniper Rifle" />
+    <gun.mantis_sniper value="OSV-96 Sniper Rifle" />
+    <gun.worg_ground value="OG-20 Phase Cannon" />
+    <gun.worg_ground_siege value="OS-10 Siege Cannon" />
+    <gun.worg_air value="OA-20 Phase Cannon" />
     <armorType value="Armor type" />
     <damageInPercent value="Percentage" />
     <damage value="Damage" />

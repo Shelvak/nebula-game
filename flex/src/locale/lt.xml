@@ -1652,7 +1652,10 @@
     <gun.boss_heavy value="Šoko sviediniai" />
     <gun.convoyship_light value="Fotonų greitintuvas" />
     <gun.convoyship_heavy value="TR-3 leistuvas" />
-    <gun.mantis_sniper value ="OSV-96 snaiperinis šautuvas" />
+    <gun.mantis_sniper value="OSV-96 snaiperinis šautuvas" />
+    <gun.worg_ground value="OG-20 fazinė patranka" />
+    <gun.worg_ground_siege value="OS-10 apgulties patranka" />
+    <gun.worg_air value="OA-20 fazinė patranka" />
     <armorType value="Šarvų tipas" />
     <damageInPercent value="Procentai" />
     <damage value="Žala" />
