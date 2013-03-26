@@ -22,7 +22,7 @@ links.planet.weight: 0.2
 # How much time should jump from/to regular solar system take? Double!
 regular.jump.multiplier: 1.5
 # How much time should jump from/to global battleground take? Double!
-battleground.jump.multiplier: 4.0
+battleground.jump.multiplier: 8.0
 
 ### Unit spawning
 # Available strategies:
