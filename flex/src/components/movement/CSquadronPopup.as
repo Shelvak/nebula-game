@@ -213,8 +213,14 @@ package components.movement
             if (_squadron.owner == Owner.PLAYER
                || _squadron.owner == Owner.ALLY
                || _squadron.owner == Owner.NAP
-               || (!((isVpZone || _squadron.currentHop.location.isBattleground)
-               && _squadron.owner != Owner.NPC) && !hasShipsWithBonus))
+               || (
+                  !(
+                     (isVpZone || _squadron.currentHop.location.isBattleground)
+                     && _squadron.owner != Owner.NPC
+                  )
+                  && !hasShipsWithBonus
+               )
+            )
             {
                btnRewardInfo.visible = false;
             }
@@ -287,15 +293,16 @@ package components.movement
             setVisibleOf([credsGroup], totalCreds > 0);
             setVisibleOf([vpsGroup], totalVps > 0);
             setVisibleOf([honorGroup], e != null);
-            if (_squadron.currentHop.location.isBattleground) {
-               setVisibleOf([lblHonorCoefValue, lblHonorCoefLabel], false);
-               setVisibleOf([lblNoHonorCoef], true);
-            }
-            else {
+            //DEPRECATED
+          //  if (_squadron.currentHop.location.isBattleground) {
+          //     setVisibleOf([lblHonorCoefValue, lblHonorCoefLabel], false);
+          //     setVisibleOf([lblNoHonorCoef], true);
+           // }
+           // else {
                lblHonorCoefValue.text = (MKR.multiplier * 100).toFixed(2) + '%';
                setVisibleOf([lblHonorCoefValue, lblHonorCoefLabel], true);
                setVisibleOf([lblNoHonorCoef], false);
-            }
+           // }
          }
          else
          {
