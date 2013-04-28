@@ -6,7 +6,8 @@ class Objective::HaveUpgradedTo < Objective::UpgradeTo
   # Alliance objectives also count.
   def initial_completed(player_id)
     base = key.split("::")[0]
-    finder = key.constantize.where(["`level` >= ?", level])
+    finder = key.constantize.where(["`level` >= ?", level]).
+      lock("LOCK IN SHARE MODE")
     player_ids = alliance? \
       ? Player.find(player_id).friendly_ids \
       : player_id
