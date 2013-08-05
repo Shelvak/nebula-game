@@ -562,8 +562,8 @@ public class MainFrame extends javax.swing.JFrame {
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
       try {
         String metadata = metadataEdit.getText();
-        bundle.writeMetadata(metadata);
-        InfoManager.save(gatherer, metadata);
+        //bundle.writeMetadata(metadata); METADATA DISABLED
+        //InfoManager.save(gatherer, metadata);
         bundle.close();
         System.exit(0);
       } catch (IOException ex) {
@@ -725,7 +725,7 @@ public class MainFrame extends javax.swing.JFrame {
 
           boxImage = processor.process(gatherer.getBoxFrame());
           box = processor.getBox();
-          loadMetadata();
+          //loadMetadata(); METADATA DISABLED
           updateBoxLabel();
 
           statusLabel.setText("Data loaded.");
