@@ -1,6 +1,5 @@
 source "http://rubygems.org"
 #source 'http://production.cf.rubygems.org' # in case rubygems is down
-source "http://gems.github.com"
 
 # Gems that are necessary for correct functioning of the server.
 gem 'activesupport', '~>3.2.0', :require => 'active_support'
