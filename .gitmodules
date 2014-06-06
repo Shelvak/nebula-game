@@ -1,24 +1,24 @@
 [submodule "server/vendor/plugins/ar_clone_db"]
 	path = server/vendor/plugins/ar_clone_db
-	url = git@github.com:arturaz/ar_clone_db.git
+	url = https://github.com/arturaz/ar_clone_db.git
 [submodule "server/vendor/plugins/ar_destroy_bang"]
 	path = server/vendor/plugins/ar_destroy_bang
-	url = git@github.com:arturaz/ar_destroy_bang.git
+	url = https://github.com/arturaz/ar_destroy_bang.git
 [submodule "server/vendor/plugins/ar_mysql_migration_fk"]
 	path = server/vendor/plugins/ar_mysql_migration_fk
-	url = git@github.com:arturaz/ar_mysql_migration_fk.git
+	url = https://github.com/arturaz/ar_mysql_migration_fk.git
 [submodule "server/vendor/plugins/custom_serialize"]
 	path = server/vendor/plugins/custom_serialize
-	url = git@github.com:arturaz/custom_serialize.git
+	url = https://github.com/arturaz/custom_serialize.git
 [submodule "server/vendor/plugins/ruby_extensions"]
 	path = server/vendor/plugins/ruby_extensions
-	url = git@github.com:arturaz/ruby_extensions.git
+	url = https://github.com/arturaz/ruby_extensions.git
 [submodule "server/vendor/plugins/ar_binary_flag_attributes"]
 	path = server/vendor/plugins/ar_binary_flag_attributes
-	url = git@github.com:arturaz/ar_binary_flag_attributes.git
+	url = https://github.com/arturaz/ar_binary_flag_attributes.git
 [submodule "server/vendor/plugins/game_server_connector"]
 	path = server/vendor/plugins/game_server_connector
-	url = git@thor.nebula44.com:nebula-game-server-connector.git
+	url = https://github.com/nebula44/nebula-game-server-connector.git
 [submodule "assets"]
 	path = assets
-	url = git@thor.nebula44.com:nebula-game-assets.git
+	url = https://github.com/nebula44/nebula-game-assets.git
